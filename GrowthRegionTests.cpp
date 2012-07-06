@@ -1,6 +1,10 @@
 // GrowthRegionTests.cpp
 #include <gtest/gtest.h>
+#include "RegionModelTests.h"
+#include "ModelTests.h"
+
 #include "GrowthRegion.h"
+
 using namespace std;
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -19,6 +23,16 @@ protected:
     delete new_region_;
   }  
 };
+
+//- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+Model* GrowthRegionModelConstructor(){
+  return dynamic_cast<Model*>(new GrowthRegion());
+}
+
+//- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+RegionModel* GrowthRegionConstructor(){
+  return dynamic_cast<RegionModel*>(new GrowthRegion());
+}
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 TEST_F(GrowthRegionTest, CopyFreshModel) {

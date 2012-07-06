@@ -3,11 +3,13 @@
 
 #include "GrowthRegion.h"
 
+#include "InputXML.h"
 #include "Model.h"
 #include "SupplyDemand.h"
 #include "BuildingManager.h"
 #include "SymbolicFunctions.h"
 
+#include <stdlib.h>
 #include <map>
 #include <vector>
 #include <string>
@@ -47,36 +49,37 @@ void GrowthRegion::init(xmlNodePtr cur) {
   for (int i=0;i<commodity_nodes->nodeNr;i++) {
     // instantiate product
     string name = 
-      (const char*)XMLinput->get_xpath_content(commodity_nodes[i], "name");
+      (const char*)XMLinput->get_xpath_content(commodity_nodes->nodeTab[i], "name");
     commodities_.push_back(name);
     Commodity commodity(name);
 
     // instantiate demand
     string type = 
-      (const char*)XMLinput->get_xpath_content(commodity_nodes[i], "demand/type");
+      (const char*)XMLinput->get_xpath_content(commodity_nodes->nodeTab[i], "demand/type");
     string params = 
-      (const char*)XMLinput->get_xpath_content(commodity_nodes[i], "demand/parameters");
-    FunctionPtr demand = SymbolicFunctions::getFunctionPtr(type,params);
+      (const char*)XMLinput->get_xpath_content(commodity_nodes->nodeTab[i], "demand/parameters");
+    // FunctionPtr demand = SymbolicFunctions::getFunctionPtr(type,params); // need to add this capability to SymbolicFunctions
+    FunctionPtr demand;
 
     // set up producers vector  
     vector<Producer> producers;
     xmlNodeSetPtr producer_nodes = 
-      XMLinput->get_xpath_elements(commodity_nodes[i],"metby");
+      XMLinput->get_xpath_elements(commodity_nodes->nodeTab[i],"metby");
 
     for (int j=0;i<producer_nodes->nodeNr;i++){
       string fac_name = 
-        (const char*)XMLinput->get_xpath_content(producer_nodes[j], "facility");
+        (const char*)XMLinput->get_xpath_content(producer_nodes->nodeTab[j], "facility");
       double capacity = 
-        (double)XMLinput->get_xpath_content(producer_nodes[j], "capacity");
+        atof(XMLinput->get_xpath_content(producer_nodes->nodeTab[j], "capacity"));
       Producer p(fac_name,commodity,capacity,1); // cost = 1
       producers.push_back(p);
     } // end producer nodes
 
-    manager.registerCommodity(commodity,demand,producers);
+    sdmanager_.registerCommodity(commodity,demand,producers);
   } // end commodity nodes
 
   // instantiate building manager
-  buildmanager_ = BuildingManager(sdmanager_);
+  buildmanager_ = shared_ptr<BuildingManager>(new BuildingManager(sdmanager_));
   
   // parent_ and tick listener, model 'born'
   RegionModel::initSimInteraction(this); 
@@ -131,27 +134,27 @@ void GrowthRegion::populateProducerMaps() {
     throw CycOverrideException(err.str());
   }
 
-  // for each child
-  for(vector<Model*>::iterator inst = children_.begin();
-      inst != children_.end(); inst++) {
-    // for each prototype of that child
-    for(PrototypeIterator 
-          fac = (dynamic_cast<InstModel*>(*inst))->beginPrototype();
-        fac != (dynamic_cast<InstModel*>(*inst))->endPrototype(); 
-        fac++) {
-      producers_by_name.insert( (*fac)->name(), pair<Model*,Model*>((*inst),(*fac)) );
-    }  // end prototypes
-  } // end children
+  // // for each child
+  // for(vector<Model*>::iterator inst = children_.begin();
+  //     inst != children_.end(); inst++) {
+  //   // for each prototype of that child
+  //   for(PrototypeIterator 
+  //         fac = (dynamic_cast<InstModel*>(*inst))->beginPrototype();
+  //       fac != (dynamic_cast<InstModel*>(*inst))->endPrototype(); 
+  //       fac++) {
+  //     producers_by_name.insert( (*fac)->name(), pair<Model*,Model*>((*inst),(*fac)) );
+  //   }  // end prototypes
+  // } // end children
 
-  // populate the maps
-  for (CommodityIterator ci = sdmanager_.begin(); ci != sdmanager_.end(); ci++) {
+  // // populate the maps
+  // for (CommodityIterator ci = sdmanager_.begin(); ci != sdmanager_.end(); ci++) {
     
     
-  }
+  // }
   
   
   // if there are no builders, yell
-  if ( builders_->empty() ) {
+  if ( builders_.empty() ) {
     stringstream err("");
     err << "BuildRegion " << this->name() << " has finished populating"
         << " its list of builders, but that list is empty.";

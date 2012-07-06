@@ -9,16 +9,17 @@
 
 #include <map>
 #include <string>
+#include <boost/shared_ptr.hpp>
 
 /**
    The GrowthRegion class inherits from the RegionModel class and is 
    dynamically loaded by the Model class when requested. 
     
-   This region determines if there is a need to meet a certain capacity 
-   (as defined via input) at each time step. If there is such a need, 
-   the region will determine how many of each facility type are required 
-   and then determine, facility by facility, which of its institutions 
-   are available to build each facility. 
+   This region determines if there is a need to meet a certain 
+   capacity (as defined via input) at each time step. If there is 
+   such a need, the region will determine how many of each facility 
+   type are required and then determine, facility by facility, which 
+   of its institutions are available to build each facility. 
  */
 
 class GrowthRegion : public RegionModel  
@@ -53,8 +54,8 @@ class GrowthRegion : public RegionModel
   /**
      This drills down the dependency tree to initialize all relevant 
      parameters/containers. 
-     Note that this function must be defined only in the specific model 
-     in question and not in any inherited models preceding it. 
+     Note that this function must be defined only in the specific 
+     model in question and not in any inherited models preceding it. 
       
      @param src the pointer to the original (initialized ?) model to be 
    */
@@ -98,7 +99,7 @@ class GrowthRegion : public RegionModel
   SupplyDemandManager sdmanager_;
 
   /// manager for building things
-  BuildingManager buildmanager_;
+  boost::shared_ptr<BuildingManager> buildmanager_;
 
   /// a map for the institutions that can build a prototype
   std::map<Producer*,Model*> builders_;
@@ -107,7 +108,8 @@ class GrowthRegion : public RegionModel
   std::map<Producer*,Model*> producers_;
 
   /**
-     populates builders_ and producers_ once all initialization is complete
+     populates builders_ and producers_ once all initialization is 
+     complete
    */
   void populateProducerMaps();
 
