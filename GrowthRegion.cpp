@@ -64,7 +64,7 @@ void GrowthRegion::init(xmlNodePtr cur) {
     // set up producers vector  
     vector<Producer> producers;
     xmlNodeSetPtr producer_nodes = 
-      XMLinput->get_xpath_elements(commodity_nodes->nodeTab[i],"metby");
+      XMLinput->get_xpath_elements(commodity_nodes->nodeTab[i],"demand/metby");
 
     for (int j=0;i<producer_nodes->nodeNr;i++){
       string fac_name = 
