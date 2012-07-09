@@ -8,6 +8,7 @@
 #include "SupplyDemand.h"
 #include "BuildingManager.h"
 #include "SymbolicFunctionFactories.h"
+#include "CycException.h"
 
 #include <stdlib.h>
 #include <map>
@@ -43,15 +44,25 @@ void GrowthRegion::init(xmlNodePtr cur) {
   // initialize supply demand manager
   sdmanager_ = SupplyDemandManager();
 
+  // get all commodities
   xmlNodeSetPtr commodity_nodes = 
     XMLinput->get_xpath_elements(model_cur,"gcommodity");\
 
+  // for now we can only handle one commodity
+  if (commodity_nodes->nodeNr > 1) {
+    stringstream err("");
+    err << "GrowthRegion can currently only handle demand for "
+        << "one commodity type.";
+    throw CycException(err.str());
+  }
+
+  // populate supply demand manager info for each commodity
   for (int i=0;i<commodity_nodes->nodeNr;i++) {
     // instantiate product
     string name = 
       (const char*)XMLinput->get_xpath_content(commodity_nodes->nodeTab[i], "name");
-    commodities_.push_back(name);
     Commodity commodity(name);
+    commodities_.push_back(commodity);
 
     // instantiate demand
     string type = 
@@ -75,6 +86,7 @@ void GrowthRegion::init(xmlNodePtr cur) {
       producers.push_back(p);
     } // end producer nodes
 
+    // populate info
     sdmanager_.registerCommodity(commodity,demand,producers);
   } // end commodity nodes
 
@@ -124,8 +136,7 @@ void GrowthRegion::handleTick(int time) {
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - 
 void GrowthRegion::populateProducerMaps() {
-  map<string, pair<Model*,Model*> > producers_by_name;
-  
+
   // if there are no children, yell
   if ( children_.empty() ) {
     stringstream err("");
@@ -134,24 +145,22 @@ void GrowthRegion::populateProducerMaps() {
     throw CycOverrideException(err.str());
   }
 
-  // // for each child
-  // for(vector<Model*>::iterator inst = children_.begin();
-  //     inst != children_.end(); inst++) {
-  //   // for each prototype of that child
-  //   for(PrototypeIterator 
-  //         fac = (dynamic_cast<InstModel*>(*inst))->beginPrototype();
-  //       fac != (dynamic_cast<InstModel*>(*inst))->endPrototype(); 
-  //       fac++) {
-  //     producers_by_name.insert( (*fac)->name(), pair<Model*,Model*>((*inst),(*fac)) );
-  //   }  // end prototypes
-  // } // end children
-
-  // // populate the maps
-  // for (CommodityIterator ci = sdmanager_.begin(); ci != sdmanager_.end(); ci++) {
+  // for each commodity
+  for (int i = 0; i < commodities_.size(); i++) {
+    Commodity c = commodities_.at(i);
     
+    // map each producer's name to a pointer to it
+    map<string,Producer*> producer_names;
+    for (int j = 0; 
+         j < sdmanager_.nProducers(c); 
+         j++) {
+      Producer* p = sdmanager_.producer(c,j);
+      producer_names[p->name()]=p;
+    }
     
-  // }
-  
+    // populate the maps with those producer names
+    populateMaps(this,producer_names);
+  }
   
   // if there are no builders, yell
   if ( builders_.empty() ) {
@@ -162,7 +171,28 @@ void GrowthRegion::populateProducerMaps() {
   }
 }
 
-//- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - 
+//- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - 
+void GrowthRegion::populateMaps(Model* node, 
+                                std::map<std::string,Producer*>& 
+                                producer_names) {
+
+  // the name to search for
+  string model_name = node->name();
+
+  // if the model is in producers, log it as a producer
+  // and its parent as a builder
+  if (producer_names.find(model_name) != producer_names.end()) {
+    producers_[producer_names[model_name]] = node;
+    builders_[producer_names[model_name]] = node->parent();
+  }
+  
+  // perform the same operation for this node's children
+  for (int i = 0; i < node->nChildren(); i++) {
+    populateMaps(node->children(i),producer_names);
+  }
+}
+
+//- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - 
 void GrowthRegion::orderBuild(Model* builder, Model* buildee) {
 }
 /* -------------------- */

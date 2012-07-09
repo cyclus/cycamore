@@ -93,7 +93,7 @@ class GrowthRegion : public RegionModel
  */
  protected:
   /// a container of all commodities managed by region
-  std::vector<std::string> commodities_;
+  std::vector<Commodity> commodities_;
 
   /// manager for supply and demand
   SupplyDemandManager sdmanager_;
@@ -112,6 +112,17 @@ class GrowthRegion : public RegionModel
      complete
    */
   void populateProducerMaps();
+
+  /**
+     recursively looks to see if the current node is in the map
+     of producer names. if so, it will add that model to the 
+     appropriate map. in either case, the search continues to that
+     node's children.
+     @param node the current model node being investigated
+     @param producer_names a map of producer's names to thier pointer
+   */
+  void populateMaps(Model* node, 
+                    std::map<std::string,Producer*>& producer_names);
 
   /**
      orders builder to build buildee
