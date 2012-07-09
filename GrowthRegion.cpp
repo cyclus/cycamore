@@ -7,7 +7,7 @@
 #include "Model.h"
 #include "SupplyDemand.h"
 #include "BuildingManager.h"
-#include "SymbolicFunctions.h"
+#include "SymbolicFunctionFactories.h"
 
 #include <stdlib.h>
 #include <map>
@@ -58,8 +58,8 @@ void GrowthRegion::init(xmlNodePtr cur) {
       (const char*)XMLinput->get_xpath_content(commodity_nodes->nodeTab[i], "demand/type");
     string params = 
       (const char*)XMLinput->get_xpath_content(commodity_nodes->nodeTab[i], "demand/parameters");
-    // FunctionPtr demand = SymbolicFunctions::getFunctionPtr(type,params); // need to add this capability to SymbolicFunctions
-    FunctionPtr demand;
+    BasicFunctionFactory bff;
+    FunctionPtr demand = bff.getFunctionPtr(type,params);
 
     // set up producers vector  
     vector<Producer> producers;
