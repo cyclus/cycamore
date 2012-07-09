@@ -5,6 +5,7 @@
 
 #include "InputXML.h"
 #include "Model.h"
+#include "InstModel.h"
 #include "SupplyDemand.h"
 #include "BuildingManager.h"
 #include "SymbolicFunctionFactories.h"
@@ -130,6 +131,24 @@ std::string GrowthRegion::str() {
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - 
 void GrowthRegion::handleTick(int time) {
+
+  // for each commodity
+  for (int i = 0; i < commodities_.size(); i++) {
+    Commodity c = commodities_.at(i);
+    
+    // does demand exist?
+    double unmet_demand = 
+      sdmanager_.supply(c) - sdmanager_.demand(c,time);
+    
+    // if so, determine which prototypes to build and build them
+    if (unmet_demand > 0) {
+      vector<BuildOrder> orders = 
+        buildmanager_->makeBuildDecision(c,unmet_demand);
+      // build the prototypes
+      orderBuilds(orders);
+    }
+  }
+  
   // After we finish building, call the normal handleTick for a region
   RegionModel::handleTick(time);
 }
@@ -186,14 +205,30 @@ void GrowthRegion::populateMaps(Model* node,
     builders_[producer_names[model_name]] = node->parent();
   }
   
-  // perform the same operation for this node's children
+  // perform the same operation for each of this node's children
   for (int i = 0; i < node->nChildren(); i++) {
     populateMaps(node->children(i),producer_names);
   }
 }
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - 
-void GrowthRegion::orderBuild(Model* builder, Model* buildee) {
+void GrowthRegion::orderBuilds(std::vector<BuildOrder>& orders) {
+  // for each order
+  for (int i = 0; i < orders.size(); i++) {
+    BuildOrder bo = orders.at(i);
+    // for each instance of a prototype order
+    for (int j = 0; j < bo.number; j++) {
+      Model* builder = builders_[bo.producer];
+      Model* prototype = producers_[bo.producer];
+      orderBuild(builder,prototype);
+    }
+  }
+}
+
+//- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - 
+void GrowthRegion::orderBuild(Model* builder, Model* prototype) {
+  // build functions must know who is placing the build order
+  dynamic_cast<InstModel*>(builder)->build(prototype,this);
 }
 /* -------------------- */
 

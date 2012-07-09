@@ -77,9 +77,11 @@ class GrowthRegion : public RegionModel
  */
  public:
   /**
-     Each region is prompted to do its beginning-of-time-step stuff at 
-     the tick of the timer. The default behavior is to ignore the tick. 
-      
+     On each tick, the GrowthRegion queries its supply demand manager
+     to determine if there exists some demand. If demand for a 
+     commodity exists, then the building manager is queried to
+     determine which prototypes to build, and orderBuilds() is called.
+
      @param time is the time to perform the tick 
    */
   virtual void handleTick(int time);
@@ -125,11 +127,19 @@ class GrowthRegion : public RegionModel
                     std::map<std::string,Producer*>& producer_names);
 
   /**
-     orders builder to build buildee
-     @param builder the model that can build buildee
-     @param buildee the model to be built
+     calls the appropriate orderBuild() functions given some
+     build orders
+     @param orders the build orders as determined by the building
+     manager
    */
-  void orderBuild(Model* builder, Model* buildee);
+  void orderBuilds(std::vector<BuildOrder>& orders);
+
+  /**
+     orders builder to build a prototype
+     @param builder the model that can build buildee
+     @param prototype the model to be built
+   */
+  void orderBuild(Model* builder, Model* prototype);
 
 /* ------------------- */ 
 
