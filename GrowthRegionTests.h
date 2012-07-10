@@ -13,6 +13,7 @@ protected:
   GrowthRegion* new_region_; 
   virtual void SetUp();
   virtual void TearDown();
+  int buildersSize(GrowthRegion* reg);
 };
 
 #endif

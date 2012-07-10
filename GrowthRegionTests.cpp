@@ -19,6 +19,11 @@ void GrowthRegionTest::TearDown() {
   delete new_region_;
 }  
 
+//- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - 
+int GrowthRegionTest::buildersSize(GrowthRegion* reg) {
+  return reg_->builders_.size();
+}
+
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 Model* GrowthRegionModelConstructor(){
   return dynamic_cast<Model*>(new GrowthRegion());
@@ -35,6 +40,11 @@ TEST_F(GrowthRegionTest, CopyFreshModel) {
   EXPECT_NO_THROW(new_region_->copyFreshModel(dynamic_cast<Model*>(reg_))); 
   // still a build region
   EXPECT_NO_THROW(dynamic_cast<GrowthRegion*>(new_region_));
+}
+
+//- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+TEST_F(GrowthRegionTest, TestPrivateAccess) {
+  EXPECT_EQ(buildersSize(reg_),0);
 }
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -

@@ -29,6 +29,8 @@ using namespace boost;
 GrowthRegion::GrowthRegion() {
   builders_ = map<Producer*,Model*>();
   producers_ = map<Producer*,Model*>();
+  sdmanager_ = SupplyDemandManager();
+  commodities_ = vector<Commodity>();
 }
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - 
@@ -41,9 +43,6 @@ void GrowthRegion::init(xmlNodePtr cur) {
   // get path to this model
   xmlNodePtr model_cur = 
     XMLinput->get_xpath_element(cur,"model/GrowthRegion");
-
-  // initialize supply demand manager
-  sdmanager_ = SupplyDemandManager();
 
   // get all commodities
   xmlNodeSetPtr commodity_nodes = 
