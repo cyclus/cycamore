@@ -110,6 +110,13 @@ class GrowthRegion : public RegionModel
   std::map<Producer*,Model*> producers_;
 
   /**
+     initializes members based on commodity demand input
+     @param nodes the xml node corresponding to each demanded
+     commodity
+   */
+  void initCommodity(xmlNodePtr& node);
+
+  /**
      populates builders_ and producers_ once all initialization is 
      complete
    */

@@ -59,45 +59,8 @@ void GrowthRegion::init(xmlNodePtr cur) {
 
   // populate supply demand manager info for each commodity
   for (int i=0;i<commodity_nodes->nodeNr;i++) {
-    // instantiate product
-    string name = 
-      (const char*)XMLinput->
-      get_xpath_content(commodity_nodes->nodeTab[i],"name");
-    Commodity commodity(name);
-    commodities_.push_back(commodity);
-
-    // instantiate demand
-    string type = 
-      (const char*)XMLinput->
-      get_xpath_content(commodity_nodes->nodeTab[i],"demand/type");
-    string params = 
-      (const char*)XMLinput->
-      get_xpath_content(commodity_nodes->
-                        nodeTab[i],"demand/parameters");
-    BasicFunctionFactory bff;
-    FunctionPtr demand = bff.getFunctionPtr(type,params);
-
-    // set up producers vector  
-    vector<Producer> producers;
-    xmlNodeSetPtr producer_nodes = 
-      XMLinput->get_xpath_elements(commodity_nodes->
-                                   nodeTab[i],"demand/metby");
-
-    for (int j=0;i<producer_nodes->nodeNr;i++){
-      string fac_name = 
-        (const char*)XMLinput->
-        get_xpath_content(producer_nodes->nodeTab[j], "facility");
-      double capacity = 
-        atof(XMLinput->
-             get_xpath_content(producer_nodes->
-                               nodeTab[j], "capacity"));
-      Producer p(fac_name,commodity,capacity,1); // cost = 1
-      producers.push_back(p);
-    } // end producer nodes
-
-    // populate info
-    sdmanager_.registerCommodity(commodity,demand,producers);
-  } // end commodity nodes
+    initCommodity(commodity_nodes->nodeTab[i]);
+  }
 
   // instantiate building manager
   buildmanager_ = 
@@ -111,6 +74,42 @@ void GrowthRegion::init(xmlNodePtr cur) {
   // populate producers_, builders_
   populateProducerMaps();
 };
+
+//- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - 
+void GrowthRegion::initCommodity(xmlNodePtr& node) {
+    // instantiate product
+    string name = 
+      (const char*)XMLinput->get_xpath_content(node,"name");
+    Commodity commodity(name);
+    commodities_.push_back(commodity);
+
+    // instantiate demand
+    string type = 
+      (const char*)XMLinput->get_xpath_content(node,"demand/type");
+    string params = 
+      (const char*)XMLinput->get_xpath_content(node,"demand/parameters");
+    BasicFunctionFactory bff;
+    FunctionPtr demand = bff.getFunctionPtr(type,params);
+
+    // set up producers vector  
+    vector<Producer> producers;
+    xmlNodeSetPtr producer_nodes = 
+      XMLinput->get_xpath_elements(node,"demand/metby");
+
+    for (int i=0; i<producer_nodes->nodeNr; i++){
+      xmlNodePtr pnode = producer_nodes->nodeTab[i];
+      string fac_name = 
+        (const char*)XMLinput->get_xpath_content(pnode,"facility");
+      double capacity = 
+        atof((const char*)
+             XMLinput->get_xpath_content(pnode,"capacity"));
+      Producer p(fac_name,commodity,capacity,1); // cost = 1
+      producers.push_back(p);
+    } // end producer nodes
+
+    // populate info
+    sdmanager_.registerCommodity(commodity,demand,producers);
+}
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - 
 void GrowthRegion::copy(GrowthRegion* src) {
@@ -180,11 +179,9 @@ void GrowthRegion::populateProducerMaps() {
     
     // map each producer's name to a pointer to it
     map<string,Producer*> producer_names;
-    for (int j = 0; 
-         j < sdmanager_.nProducers(c); 
-         j++) {
+    for (int j = 0; j < sdmanager_.nProducers(c); j++) {
       Producer* p = sdmanager_.producer(c,j);
-      producer_names[p->name()]=p;
+      producer_names[p->name()] = p;
     }
     
     // populate the maps with those producer names
@@ -205,15 +202,15 @@ void GrowthRegion::populateProducerMaps() {
 void GrowthRegion::populateMaps(Model* node, 
                                 std::map<std::string,Producer*>& 
                                 producer_names) {
-
   // the name to search for
   string model_name = node->name();
 
   // if the model is in producers, log it as a producer
   // and its parent as a builder
   if (producer_names.find(model_name) != producer_names.end()) {
-    producers_[producer_names[model_name]] = node;
-    builders_[producer_names[model_name]] = node->parent();
+    Producer* p = producer_names[model_name]; 
+    producers_[p] = node;
+    builders_[p] = node->parent();
   }
   
   // perform the same operation for each of this node's children
@@ -248,7 +245,6 @@ void GrowthRegion::orderBuild(Model* builder, Model* prototype) {
  * Model Class Methods
  * --------------------
  */
-
 extern "C" Model* constructGrowthRegion() {
     return new GrowthRegion();
 }
