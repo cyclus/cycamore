@@ -61,28 +61,36 @@ void GrowthRegion::init(xmlNodePtr cur) {
   for (int i=0;i<commodity_nodes->nodeNr;i++) {
     // instantiate product
     string name = 
-      (const char*)XMLinput->get_xpath_content(commodity_nodes->nodeTab[i], "name");
+      (const char*)XMLinput->
+      get_xpath_content(commodity_nodes->nodeTab[i],"name");
     Commodity commodity(name);
     commodities_.push_back(commodity);
 
     // instantiate demand
     string type = 
-      (const char*)XMLinput->get_xpath_content(commodity_nodes->nodeTab[i], "demand/type");
+      (const char*)XMLinput->
+      get_xpath_content(commodity_nodes->nodeTab[i],"demand/type");
     string params = 
-      (const char*)XMLinput->get_xpath_content(commodity_nodes->nodeTab[i], "demand/parameters");
+      (const char*)XMLinput->
+      get_xpath_content(commodity_nodes->
+                        nodeTab[i],"demand/parameters");
     BasicFunctionFactory bff;
     FunctionPtr demand = bff.getFunctionPtr(type,params);
 
     // set up producers vector  
     vector<Producer> producers;
     xmlNodeSetPtr producer_nodes = 
-      XMLinput->get_xpath_elements(commodity_nodes->nodeTab[i],"demand/metby");
+      XMLinput->get_xpath_elements(commodity_nodes->
+                                   nodeTab[i],"demand/metby");
 
     for (int j=0;i<producer_nodes->nodeNr;i++){
       string fac_name = 
-        (const char*)XMLinput->get_xpath_content(producer_nodes->nodeTab[j], "facility");
+        (const char*)XMLinput->
+        get_xpath_content(producer_nodes->nodeTab[j], "facility");
       double capacity = 
-        atof(XMLinput->get_xpath_content(producer_nodes->nodeTab[j], "capacity"));
+        atof(XMLinput->
+             get_xpath_content(producer_nodes->
+                               nodeTab[j], "capacity"));
       Producer p(fac_name,commodity,capacity,1); // cost = 1
       producers.push_back(p);
     } // end producer nodes
@@ -92,7 +100,8 @@ void GrowthRegion::init(xmlNodePtr cur) {
   } // end commodity nodes
 
   // instantiate building manager
-  buildmanager_ = shared_ptr<BuildingManager>(new BuildingManager(sdmanager_));
+  buildmanager_ = 
+    shared_ptr<BuildingManager>(new BuildingManager(sdmanager_));
   
   // parent_ and tick listener, model 'born'
   RegionModel::initSimInteraction(this); 
@@ -159,7 +168,8 @@ void GrowthRegion::populateProducerMaps() {
   // if there are no children, yell
   if ( children_.empty() ) {
     stringstream err("");
-    err << "GrowthRegion " << this->name() << " cannot populate its list"
+    err << "GrowthRegion " << this->name() 
+        << " cannot populate its list"
         << " of builders because it has no children.";
     throw CycOverrideException(err.str());
   }
@@ -184,7 +194,8 @@ void GrowthRegion::populateProducerMaps() {
   // if there are no builders, yell
   if ( builders_.empty() ) {
     stringstream err("");
-    err << "BuildRegion " << this->name() << " has finished populating"
+    err << "BuildRegion " << this->name() 
+        << " has finished populating"
         << " its list of builders, but that list is empty.";
     throw CycOverrideException(err.str());
   }
