@@ -1,28 +1,23 @@
 // GrowthRegionTests.cpp
+#include "GrowthRegionTests.h"
+
 #include <gtest/gtest.h>
 #include "RegionModelTests.h"
 #include "ModelTests.h"
 
-#include "GrowthRegion.h"
-
 using namespace std;
 
-//- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-class GrowthRegionTest : public ::testing::Test {
-protected:
-  GrowthRegion* reg_;
-  GrowthRegion* new_region_; 
+//- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - 
+void GrowthRegionTest::SetUp() {
+  reg_ = new GrowthRegion();
+  new_region_ = new GrowthRegion();
+}
   
-  virtual void SetUp(){
-    reg_ = new GrowthRegion();
-    new_region_ = new GrowthRegion();
-  };
-  
-  virtual void TearDown() {
-    delete reg_;
-    delete new_region_;
-  }  
-};
+//- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - 
+void GrowthRegionTest::TearDown() {
+  delete reg_;
+  delete new_region_;
+}  
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 Model* GrowthRegionModelConstructor(){

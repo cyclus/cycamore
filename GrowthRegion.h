@@ -11,6 +11,9 @@
 #include <string>
 #include <boost/shared_ptr.hpp>
 
+class GrowthRegion;
+#include "GrowthRegionTests.h"
+
 /**
    The GrowthRegion class inherits from the RegionModel class and is 
    dynamically loaded by the Model class when requested. 
@@ -111,7 +114,7 @@ class GrowthRegion : public RegionModel
 
   /**
      initializes members based on commodity demand input
-     @param nodes the xml node corresponding to each demanded
+     @param node the xml node corresponding to each demanded
      commodity
    */
   void initCommodity(xmlNodePtr& node);
@@ -147,9 +150,9 @@ class GrowthRegion : public RegionModel
      @param prototype the model to be built
    */
   void orderBuild(Model* builder, Model* prototype);
-
-/* ------------------- */ 
-
+  
+  /* ------------------- */ 
+  friend class GrowthRegionTest;
 };
 
 #endif
