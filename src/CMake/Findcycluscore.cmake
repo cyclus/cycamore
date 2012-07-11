@@ -12,6 +12,11 @@ FIND_PATH(CYCLUS_CORE_INCLUDE_DIR suffix.h
   /usr/local/cyclus /opt/local/cyclus 
   PATH_SUFFIXES cyclus/include)
 
+# Add the root dir to the hints
+IF(NOT DEFINED CYCLUS_ROOT_DIR)
+  SET(CYCLUS_ROOT_DIR "${CYCLUS_CORE_INCLUDE_DIR}/..")
+ENDIF(NOT DEFINED CYCLUS_ROOT_DIR)
+
 # Look for the header files
 FIND_PATH(CYCLUS_CORE_SHARE_DIR cyclus.rng.in
   HINTS ${CYCLUS_ROOT_DIR} "${CYCLUS_ROOT_DIR}/cyclus" 
