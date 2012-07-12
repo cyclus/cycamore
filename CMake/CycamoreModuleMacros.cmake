@@ -46,3 +46,9 @@ macro(cyclus_init_model _type _name)
     PARENT_SCOPE)
 endmacro()
 
+
+macro(update_refs _type)
+  SET(${_type}_REFS ";${_type}_REFS;")
+  STRING(REPLACE ";" "@" ${_type}_REFS "${${_type}_REFS}")
+  SET(${_type}_EXTEND "\n\ \ \ \ \ \ \ \ @${_type}_REFS@")
+endmacro()
