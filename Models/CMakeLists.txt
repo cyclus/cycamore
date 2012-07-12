@@ -13,4 +13,13 @@ SET( TestSource ${ModelTestSource} PARENT_SCOPE)
 # --------------------- Configure the cyclus.rng file -------------------
 CONFIGURE_FILE(${CYCLUS_CORE_SHARE_DIR}/cyclus.rng.in 
   ${PROJECT_BINARY_DIR}/share/cyclus.rng @ONLY)
+SET(EXTEND "@EXTEND@")
+SET(Conv_EXTEND "@Conv_EXTEND@")
+SET(Facility_EXTEND "@Facility_EXTEND@")
+SET(Inst_EXTEND "@Inst_EXTEND@")
+SET(Market_EXTEND "@Market_EXTEND@")
+SET(Region_EXTEND "@Region_EXTEND@")
+CONFIGURE_FILE(${CYCLUS_CORE_SHARE_DIR}/cyclus.rng.in 
+  ${PROJECT_BINARY_DIR}/share/cyclus.rng.in @ONLY)
+
 
