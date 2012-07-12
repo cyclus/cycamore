@@ -10,9 +10,9 @@ MESSAGE(STATUS "CYCLUS_ROOT_DIR hint is : ${CYCLUS_ROOT_DIR}")
 
 # Look for the header files
 FIND_PATH(CYCLUS_CORE_INCLUDE_DIR suffix.h
-  HINTS ${CYCLUS_ROOT_DIR} "${CYCLUS_ROOT_DIR}/cyclus" 
+  HINTS "${CYCLUS_ROOT_DIR}" "${CYCLUS_ROOT_DIR}/cyclus" 
   /usr/local/cyclus /opt/local/cyclus 
-  PATH_SUFFIXES cyclus/include)
+  PATH_SUFFIXES cyclus/include include)
 
 # Add the root dir to the hints
 IF(NOT DEFINED CYCLUS_ROOT_DIR)
@@ -21,23 +21,23 @@ ENDIF(NOT DEFINED CYCLUS_ROOT_DIR)
 
 # Look for the header files
 FIND_PATH(CYCLUS_CORE_SHARE_DIR cyclus.rng.in
-  HINTS ${CYCLUS_ROOT_DIR} "${CYCLUS_ROOT_DIR}/cyclus" 
+  HINTS "${CYCLUS_ROOT_DIR}" "${CYCLUS_ROOT_DIR}/cyclus" 
   /usr/local/cyclus /opt/local/cyclus
-  PATH_SUFFIXES cyclus/share)
+  PATH_SUFFIXES cyclus/share share)
 
 # Look for the library
 FIND_LIBRARY(CYCLUS_CORE_LIBRARY NAMES cycluscore 
-  HINTS ${CYCLUS_ROOT_DIR} "${CYCLUS_ROOT_DIR}/cyclus" 
+  HINTS "${CYCLUS_ROOT_DIR}" "${CYCLUS_ROOT_DIR}/cyclus" 
   /usr/local/cyclus/lib /usr/local/cyclus 
   /opt/local /opt/local/cyclus
-  PATH_SUFFIXES cyclus/lib)
+  PATH_SUFFIXES cyclus/lib lib)
 
 # Look for the library
 FIND_LIBRARY(CYCLUS_GTEST_LIBRARY NAMES gtest
-  HINTS ${CYCLUS_ROOT_DIR} "${CYCLUS_ROOT_DIR}/cyclus" 
+  HINTS "${CYCLUS_ROOT_DIR}" "${CYCLUS_ROOT_DIR}/cyclus" 
   /usr/local/cyclus/lib /usr/local/cyclus 
   /opt/local/lib /opt/local/cyclus/lib 
-  PATH_SUFFIXES cyclus/lib)
+  PATH_SUFFIXES cyclus/lib lib)
 
 # Copy the results to the output variables.
 IF (CYCLUS_CORE_INCLUDE_DIR AND CYCLUS_CORE_LIBRARY AND CYCLUS_GTEST_LIBRARY AND CYCLUS_CORE_SHARE_DIR)
