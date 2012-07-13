@@ -60,11 +60,49 @@ macro(update_includes)
   SET(EXTEND "@RNG_INCLUDES@")
 endmacro()
 
-macro(set_initial)
+macro(extend_includes)
   SET(RNG_INCLUDES "@RNG_INCLUDES@@EXTEND@")
-  SET(Facility_REFS "@Facility_REFS@@Facility_EXTEND@")
-  SET(Inst_REFS "@Inst_REFS@@Inst_EXTEND@")
-  SET(Region_REFS "@Region_REFS@@Region_EXTEND@")
-  SET(Market_REFS "@Market_REFS@@Market_EXTEND@")
-  SET(Converter_REFS "@Converter_REFS@@Converter_EXTEND@")
 endmacro()
+
+macro(extend_refs _type)
+  SET(${_type}_REFS "@${_type}_REFS@@${_type}_EXTEND@")
+endmacro()
+
+macro(dont_extend_refs _type)
+  SET(${_type}_REFS "")
+  extend_refs(${_type})
+endmacro()
+
+macro(extend _type)
+  IF(${_type}_REFS MATCHES "ref")
+    extend_refs(${_type})
+  ELSE(${_type}_REFS MATCHES "ref")
+    dont_extend_refs(${_type})
+  ENDIF(${_type}_REFS MATCHES "ref")
+endmacro()
+
+macro(install_rng_in)
+  extend_includes()
+  extend(Facility)
+  extend(Inst)
+  extend(Region)
+  extend(Market)
+  extend(Converter)
+  CONFIGURE_FILE(${CYCLUS_CORE_SHARE_DIR}/cyclus.rng.in
+    ${PROJECT_BINARY_DIR}/share/cyclus.rng.tmp @ONLY)
+  update_includes()
+  update_refs(Facility)
+  update_refs(Inst)
+  update_refs(Region)
+  update_refs(Market)
+  update_refs(Converter)
+  CONFIGURE_FILE(${PROJECT_BINARY_DIR}/share/cyclus.rng.tmp
+    ${PROJECT_BINARY_DIR}/share/cyclus.rng.in @ONLY)
+  INSTALL(FILES
+    ${PROJECT_BINARY_DIR}/share/cyclus.rng.in
+    DESTINATION ${CYCLUS_CORE_SHARE_DIR}
+    COMPONENT data
+  )
+endmacro()
+
+
