@@ -15,19 +15,11 @@ CONFIGURE_FILE(${CYCLUS_CORE_SHARE_DIR}/cyclus.rng.in
   ${PROJECT_BINARY_DIR}/share/cyclus.rng @ONLY)
 
 # --------------------- Configure the cyclus.rng.in file -------------------
-SET(RNG_INCLUDES "@RNG_INCLUDES@@EXTEND@")
-SET(Region_REFS "@Region_REFS@@Region_EXTEND@")
-SET(Facility_REFS "@Facility_REFS@@Facility_EXTEND@")
-SET(Market_REFS "@Market_REFS@@Market_EXTEND@")
-SET(Converter_REFS "@Converter_REFS@@Converter_EXTEND@")
-SET(Inst_REFS "@Inst_REFS@@Inst_EXTEND@")
+set_initial()
 CONFIGURE_FILE(${CYCLUS_CORE_SHARE_DIR}/cyclus.rng.in 
   ${PROJECT_BINARY_DIR}/share/cyclus.rng.tmp @ONLY)
 
-SET(RNG_INCLUDES ";RNG_INCLUDES;")
-STRING(REPLACE ";" "@" RNG_INCLUDES "${RNG_INCLUDES}")
-SET(EXTEND "\n\ \ @RNG_INCLUDES@")
-
+update_includes()
 update_refs(Facility)
 update_refs(Inst)
 update_refs(Region)
