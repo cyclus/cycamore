@@ -148,17 +148,6 @@ INSTALL(TARGETS CycamoreUnitTestDriver
   COMPONENT testing
   )
 
-INSTALL(FILES 
-  ${PROJECT_BINARY_DIR}/share/cyclus.rng
-  DESTINATION ${CYCLUS_CORE_SHARE_DIR}
-  COMPONENT data
-  )
-INSTALL(FILES 
-  ${PROJECT_BINARY_DIR}/share/cyclus.rng.in
-  DESTINATION ${CYCLUS_CORE_SHARE_DIR}
-  COMPONENT data
-  )
-
 FILE(GLOB cyclus_shared "${CYCLUS_CORE_SHARE_DIR}/*")
 INSTALL(FILES ${cyclus_shared} 
   DESTINATION cycamore/share
