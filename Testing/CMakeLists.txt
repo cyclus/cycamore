@@ -23,14 +23,14 @@ INSTALL(FILES run_inputs.py
 # To add a new file, just add it to this list.  Any GoogleTests inside will be automatically
 # added to ctest.
 set ( CYCAMORE_TEST_CORE 
-  ${CMAKE_CURRENT_SOURCE_DIR}/ConverterModelTests.cpp
-  ${CMAKE_CURRENT_SOURCE_DIR}/FacilityModelTests.cpp 
-  ${CMAKE_CURRENT_SOURCE_DIR}/InstModelTests.cpp 
-  ${CMAKE_CURRENT_SOURCE_DIR}/MarketModelTests.cpp 
-  ${CMAKE_CURRENT_SOURCE_DIR}/ModelTests.cpp
-  ${CMAKE_CURRENT_SOURCE_DIR}/RegionModelTests.cpp 
-  ${CMAKE_CURRENT_SOURCE_DIR}/StubModelTests.cpp 
-  ${CMAKE_CURRENT_SOURCE_DIR}/StubCommModelTests.cpp 
+  ${CYCLUS_CORE_INCLUDE_DIR}/ConverterModelTests.cpp
+  ${CYCLUS_CORE_INCLUDE_DIR}/FacilityModelTests.cpp 
+  ${CYCLUS_CORE_INCLUDE_DIR}/InstModelTests.cpp 
+  ${CYCLUS_CORE_INCLUDE_DIR}/MarketModelTests.cpp 
+  ${CYCLUS_CORE_INCLUDE_DIR}/ModelTests.cpp
+  ${CYCLUS_CORE_INCLUDE_DIR}/RegionModelTests.cpp 
+  ${CYCLUS_CORE_INCLUDE_DIR}/StubModelTests.cpp 
+  ${CYCLUS_CORE_INCLUDE_DIR}/StubCommModelTests.cpp 
   PARENT_SCOPE)
 
 # Add all the tests by parsing the source code
