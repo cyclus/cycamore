@@ -188,6 +188,16 @@ Workflow Notes
           make install
           ../install/cycamore/bin/CycamoreUnitTestDriver
 
+      - There are also a suite of sample input files 
+        In addition to the CycamoreUnitTestDriver, a suite of input files can be run and 
+        tested using the run_inputs.py script that is configured, built, and installed 
+        with Cycamore. It relies on the input files that are part of your Cycamore 
+        repository, and only succeeds for input files that are correct (some may have 
+        known issues. See the issue list in cycamore for details.) To run the example 
+        input files, ::
+
+          python ../install/cycamore/bin/run_inputs.py
+
   * **Making a Pull Request** 
     
       - When you are ready to move changes from one of your topic branches into the 
