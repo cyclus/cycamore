@@ -13,4 +13,11 @@ SET( TestSource ${ModelTestSource} PARENT_SCOPE)
 # --------------------- Configure the cyclus.rng file -------------------
 CONFIGURE_FILE(${CYCLUS_CORE_SHARE_DIR}/cyclus.rng.in 
   ${PROJECT_BINARY_DIR}/share/cyclus.rng @ONLY)
+INSTALL(FILES 
+  ${PROJECT_BINARY_DIR}/share/cyclus.rng
+  DESTINATION ${CYCLUS_CORE_SHARE_DIR}
+  COMPONENT data
+  )
 
+# --------------------- Configure the cyclus.rng.in file -------------------
+install_rng_in()
