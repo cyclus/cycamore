@@ -118,6 +118,7 @@ you intend to develop for *Cyclus*, please visit it to learn more.
 .. _`Cycamore Homepage`: http://cycamore.github.com
 
 
+
 --------------------------------------------------------------------------
 The Developer Workflow
 --------------------------------------------------------------------------
@@ -129,9 +130,9 @@ the upstream repository (usually the "develop" branch) only after:
 
   * You have pulled the latest changes from the upstream repository.
   * You have completed a logical set of changes.
-  * Cycamore compiles with no errors.
+  * Cyclus compiles with no errors.
   * All tests pass.
-  * Cycamore input files run as expected.
+  * Cyclus input files run as expected.
   * (recommended) your code has been reviewed by another developer.
 
 Code from the "develop" branch generally must pass even more rigorous checks
@@ -150,7 +151,7 @@ Workflow Notes
 
   * Keep your own "master" and "develop" branches in sync with the upstream repository's
     "master" and "develop" branches. The master branch should always be the 'stable'
-    or 'production' release of cycamore.
+    or 'production' release of cyclus.
     
      - Pull the most recent history from the upstream repository "master"
        and/or "develop" branches before you merge changes into your
@@ -173,22 +174,68 @@ Workflow Notes
       git checkout [your topic branch]
       git rebase develop
 
-  * In general, **every commit** (notice this is not 'every push') to the
-    "develop" and "master" branches should compile and pass tests. This
-    means that when you are ready to move changes from one of your topic
-    branches into the "develop" branch, you should use a NON-fast-forward
-    merge.  For example::
-    
-      git checkout develop
-      git merge --no-ff [your topic branch]
-    
-    Possible exceptions to this 'no fast-forward' merge
-    include:
+  * **Passing Tests**
 
-     - your topic branch consists of only one (compileable and passes
-       tests) commit.
+      - To check that your branch passes the tests, you must build and install your topic 
+        branch and then run the CycamoreUnitTestDriver (at the moment, ```make 
+        test``` is insufficient). For example ::
+      
+          mkdir build
+          mkdir install
+          cd build
+          cmake ../src -DCMAKE_INSTALL_PREFIX=../install
+          make
+          make install
+          ../install/cycamore/bin/CycamoreUnitTestDriver
 
-     - every commit in your topic branch is compileable and passes tests.
+      - There are also a suite of sample input files 
+        In addition to the CycamoreUnitTestDriver, a suite of input files can be run and 
+        tested using the run_inputs.py script that is configured, built, and installed 
+        with Cycamore. It relies on the input files that are part of your Cycamore 
+        repository, and only succeeds for input files that are correct (some may have 
+        known issues. See the issue list in cycamore for details.) To run the example 
+        input files, ::
+
+          python ../install/cycamore/bin/run_inputs.py
+
+  * **Making a Pull Request** 
+    
+      - When you are ready to move changes from one of your topic branches into the 
+        "develop" branch, it must be reviewed and accepted by another 
+        developer. 
+
+      - You may want to review this `tutorial <https://help.github.com/articles/using-pull-requests/>`_ 
+        before you make a pull request to the develop branch.
+        
+  * **Reviewing a Pull Request** 
+
+     - Build, install, and test it. If you have added the remmote repository as 
+       a remote you can check it out and merge it with the current develop 
+       branch thusly, ::
+       
+         git checkout -b remote_name/branch_name
+         git merge develop
+
+     - Look over the code. 
+
+        - Check that it meets `our style guidelines <http://cyclus.github.com/devdoc/style_guide.html>`_.
+
+        - Make inline review comments concerning improvements. 
+      
+     - Accept the Pull Request    
+
+        - In general, **every commit** (notice this is not 'every push') to the
+          "develop" and "master" branches should compile and pass tests. This
+          is guaranteed by using a NON-fast-forward merge during the pull request 
+          acceptance process. 
+    
+        - The green "Merge Pull Request" button does a non-fast-forward merge by 
+          default. However, if that button is unavailable, you've made minor 
+          local changes to the pulled branch, or you just want to do it from the 
+          command line, make sure your merge is a non-fast-forward merge. For example::
+          
+            git checkout develop
+            git merge --no-ff remote_name/branch_name -m "A message""
 
 
 ~~~~~~~~~~~~~~~~~~~
@@ -231,6 +278,7 @@ in which we would like to work, i.e. where we can store all of our work that may
 yet pass tests or even compile, but where we also want to save our progress. Let us 
 call this branch "Work". So, when all is said and done, in our fork there will be 
 three branches: "Master", "Develop", and "Work".
+
 
 Acquiring Cycamore and Workflow
 =============================
@@ -292,23 +340,25 @@ We then follow the same process to update the work branch, except:
 Workflow: The End
 -----------------
 
+
 As time passes, you make some changes to files, and you commit those changes (to your *local work
 branch*). Eventually (hopefully) you come to a stopping point where you have finished your project 
 on your work branch *AND* it compiles *AND* it runs input files correctly *AND* it passes all tests!
 Perhaps you have found Nirvana. In any case, you've performed the final commit to your work branch,
-so it's time to merge those changes with the local develop branch and push them to origin's develop
-branch: ::
+so it's time to make a pull request online and wait for our developer friends to 
+review and accept it.
 
-    .../cycamore_dir/$ git checkout develop
-    .../cycamore_dir/$ git pull upstream develop
-    .../cycamore_dir/$ git merge work 
-    .../cycamore_dir/$ git push origin develop
+Sometimes, your pull request will be closed by the reviewer until further 
+changes are made to appease the reviewer's concerns. This may be frustrating, 
+but please act rationally, discuss the issues on the github space made for your 
+pull request, consult the `style guide <http://cyclus.github.com/devdoc/style_guide.html>`_, 
+email the developer listhost for further advice, and make changes to your topic branch 
+accordingly. The pull request will be updated with those changes when you push them 
+to your fork.  When you think your request is ready for another review, you can 
+reopen the review yourself with the button made available to you. 
 
-    .../cycamore_dir/$ git checkout work
-    .../cycamore_dir/$ git merge develop
-    .../cycamore_dir/$ git push origin work
+See also
+--------
 
-This time we want to update our local develop branch based on the changes we made in work. First we
-checkout and update develop in case the upstream develop branch introduced any changes. We then
-apply our changes via merging work into develop, and push that back up to origin. In case the upstream
-pull did introduce changes, we go ahead and update the work branch on origin.
+A good description of a git workflow with good graphics is available at
+http://nvie.com/posts/a-successful-git-branching-model/
