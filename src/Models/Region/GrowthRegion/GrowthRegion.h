@@ -10,6 +10,7 @@
 #include <map>
 #include <string>
 #include <boost/shared_ptr.hpp>
+#include <libxml/xpath.h>
 
 class GrowthRegion;
 #include "GrowthRegionTests.h"
@@ -24,7 +25,6 @@ class GrowthRegion;
    type are required and then determine, facility by facility, which 
    of its institutions are available to build each facility. 
  */
-
 class GrowthRegion : public RegionModel  
 {
 /* --------------------
@@ -44,6 +44,15 @@ class GrowthRegion : public RegionModel
 
   /**
      Initalize the GrowthRegion from xml. Calls the init function. 
+     
+     @param cur the curren xml node pointer 
+     @param context the context to query
+   */
+  virtual void init(xmlNodePtr cur, xmlXPathContextPtr context);
+
+  /**
+     Initalize the GrowthRegion from xml. Calls the init() function
+     using the InputXML context.
      
      @param cur the curren xml node pointer 
    */
@@ -114,10 +123,12 @@ class GrowthRegion : public RegionModel
 
   /**
      initializes members based on commodity demand input
+
      @param node the xml node corresponding to each demanded
      commodity
+     @param context the context to query
    */
-  void initCommodity(xmlNodePtr& node);
+  void initCommodity(xmlNodePtr& node, xmlXPathContextPtr context);
 
   /**
      populates builders_ and producers_ once all initialization is 

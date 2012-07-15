@@ -3,6 +3,8 @@
 #define GROWTHREGIONTESTS_H
 
 #include <gtest/gtest.h>
+#include <libxml/parser.h>
+#include <libxml/xpath.h>
 
 #include "GrowthRegion.h"
 
@@ -14,6 +16,8 @@ protected:
   virtual void SetUp();
   virtual void TearDown();
   int buildersSize(GrowthRegion* reg);
+  xmlDocPtr getXMLDoc();
+  void doInit(GrowthRegion* reg);
 };
 
 #endif

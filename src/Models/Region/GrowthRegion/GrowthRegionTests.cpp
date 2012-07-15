@@ -2,6 +2,9 @@
 #include "GrowthRegionTests.h"
 
 #include <gtest/gtest.h>
+#include <libxml/parser.h>
+#include <libxml/xpath.h>
+
 #include "RegionModelTests.h"
 #include "ModelTests.h"
 
@@ -22,6 +25,42 @@ void GrowthRegionTest::TearDown() {
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - 
 int GrowthRegionTest::buildersSize(GrowthRegion* reg) {
   return reg_->builders_.size();
+}
+
+//- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - 
+xmlDocPtr GrowthRegionTest::getXMLDoc() {  
+  
+  stringstream ss("");
+  ss <<
+    "<?xml version=\"1.0\"?>\n" <<
+    "<document>\n" <<
+    "  <name>power</name>\n" <<
+    "  <demand>\n" << 
+    "    <type>exponential</type>\n" <<
+    "    <parameters>5 0.0005 1800</parameters>\n" <<
+    "    <metby>\n" <<
+    "      <facility>ReactorA</facility>\n" <<
+    "      <capacity>1050</capacity>\n" <<
+    "    </metby>\n"<<
+    "    <metby>\n" <<
+    "      <facility>ReactorB</facility>\n" <<
+    "      <capacity>750</capacity>\n" <<
+    "    </metby>\n" <<
+    "  </demand>\n" <<
+    "</document>";
+  
+  string snippit = ss.str();
+
+  return xmlParseMemory(snippit.c_str(),snippit.size());
+}
+
+//- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - 
+void GrowthRegionTest::doInit(GrowthRegion* reg) {  
+  xmlDocPtr doc = getXMLDoc();
+  xmlXPathContextPtr xpathCtx = xmlXPathNewContext(doc);
+  xmlNodePtr startNode = doc->children;
+
+  reg_->initCommodity(startNode,xpathCtx);
 }
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -45,6 +84,7 @@ TEST_F(GrowthRegionTest, CopyFreshModel) {
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 TEST_F(GrowthRegionTest, TestPrivateAccess) {
   EXPECT_EQ(buildersSize(reg_),0);
+  EXPECT_NO_THROW(doInit(reg_));
 }
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
