@@ -16,6 +16,7 @@
 #include <vector>
 #include <string>
 #include <boost/shared_ptr.hpp>
+#include <libxml/xpath.h>
 
 using namespace std;
 using namespace boost;
@@ -34,7 +35,7 @@ GrowthRegion::GrowthRegion() {
 }
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - 
-void GrowthRegion::init(xmlNodePtr cur) {
+void GrowthRegion::init(xmlNodePtr cur, xmlXPathContextPtr context) {
   LOG(LEV_DEBUG2, "greg") << "A Growth Region is being initialized";
   // xml inits
   Model::init(cur); // name_ and model_impl_
@@ -42,11 +43,11 @@ void GrowthRegion::init(xmlNodePtr cur) {
 
   // get path to this model
   xmlNodePtr model_cur = 
-    XMLinput->get_xpath_element(cur,"model/GrowthRegion");
+    XMLinput->get_xpath_element(context,cur,"model/GrowthRegion");
 
   // get all commodities
   xmlNodeSetPtr commodity_nodes = 
-    XMLinput->get_xpath_elements(model_cur,"gcommodity");\
+    XMLinput->get_xpath_elements(context,model_cur,"gcommodity");\
 
   // for now we can only handle one commodity
   if (commodity_nodes->nodeNr > 1) {
@@ -58,7 +59,7 @@ void GrowthRegion::init(xmlNodePtr cur) {
 
   // populate supply demand manager info for each commodity
   for (int i=0;i<commodity_nodes->nodeNr;i++) {
-    initCommodity(commodity_nodes->nodeTab[i]);
+    initCommodity(commodity_nodes->nodeTab[i],XMLinput->context());
   }
 
   // instantiate building manager
@@ -75,33 +76,39 @@ void GrowthRegion::init(xmlNodePtr cur) {
 };
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - 
-void GrowthRegion::initCommodity(xmlNodePtr& node) {
+void GrowthRegion::init(xmlNodePtr cur) {
+  init(cur,XMLinput->context());
+}
+
+//- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - 
+void GrowthRegion::initCommodity(xmlNodePtr& node, 
+                                 xmlXPathContextPtr context) {
     // instantiate product
     string name = 
-      (const char*)XMLinput->get_xpath_content(node,"name");
+      (const char*)XMLinput->get_xpath_content(context,node,"name");
     Commodity commodity(name);
     commodities_.push_back(commodity);
 
     // instantiate demand
     string type = 
-      (const char*)XMLinput->get_xpath_content(node,"demand/type");
+      (const char*)XMLinput->get_xpath_content(context,node,"demand/type");
     string params = 
-      (const char*)XMLinput->get_xpath_content(node,"demand/parameters");
+      (const char*)XMLinput->get_xpath_content(context,node,"demand/parameters");
     BasicFunctionFactory bff;
     FunctionPtr demand = bff.getFunctionPtr(type,params);
 
     // set up producers vector  
     vector<Producer> producers;
     xmlNodeSetPtr producer_nodes = 
-      XMLinput->get_xpath_elements(node,"demand/metby");
+      XMLinput->get_xpath_elements(context,node,"demand/metby");
 
     for (int i=0; i<producer_nodes->nodeNr; i++){
       xmlNodePtr pnode = producer_nodes->nodeTab[i];
       string fac_name = 
-        (const char*)XMLinput->get_xpath_content(pnode,"facility");
+        (const char*)XMLinput->get_xpath_content(context,pnode,"facility");
       double capacity = 
         atof((const char*)
-             XMLinput->get_xpath_content(pnode,"capacity"));
+             XMLinput->get_xpath_content(context,pnode,"capacity"));
       Producer p(fac_name,commodity,capacity,1); // cost = 1
       producers.push_back(p);
     } // end producer nodes
