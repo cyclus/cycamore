@@ -9,7 +9,3 @@ foreach(dir ${all_valid_subdirs})
 endforeach(dir)
 
 SET(ModelTestSource ${ModelTestSource} ${RegionTestSource} PARENT_SCOPE)
-STRING(REPLACE ";" "\n\ \ \ \ \ \ \ \ " Region_REFS ";${Region_REFS}")
-STRING(REPLACE ";" "\n\ \ " RNG_INCLUDES "${RNG_INCLUDES}")
-SET(Region_REFS ${Region_REFS} PARENT_SCOPE)
-SET(RNG_INCLUDES ${RNG_INCLUDES} PARENT_SCOPE)
