@@ -10,5 +10,3 @@ ENDFOREACH(dir)
 
 SET( TestSource ${ModelTestSource} PARENT_SCOPE)
 
-# --------------------- Configure the cyclus.rng file -------------------
-install_rng()

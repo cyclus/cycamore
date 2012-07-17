@@ -177,4 +177,9 @@ SET(CPACK_PACKAGE_EXECUTABLES "cycamore" "CycamoreUnitTestDriver")
 
 INCLUDE(CPack)
 
+CONFIGURE_FILE("${PROJECT_SOURCE_DIR}/CMake/postinstall.cmake.in"
+  "${PROJECT_SOURCE_DIR}/CMake/postinstall.cmake" @ONLY)
 
+SET(ROOT_DIR "${CYCLUS_ROOT_DIR}")  
+SET(PROJ_DIR "${PROJECT_SOURCE_DIR}")  
+INSTALL(SCRIPT "${PROJECT_SOURCE_DIR}/CMake/postinstall.cmake")
