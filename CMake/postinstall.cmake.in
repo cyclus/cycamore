@@ -46,11 +46,6 @@ macro(install_rng)
   clean_all_refs()
   CONFIGURE_FILE(${CYCLUS_CORE_SHARE_DIR}/cyclus.rng.in
     ${PROJECT_BINARY_DIR}/share/cyclus.rng @ONLY)
-  INSTALL(FILES
-    ${PROJECT_BINARY_DIR}/share/cyclus.rng
-    DESTINATION ${CYCLUS_CORE_SHARE_DIR}
-    COMPONENT data
-  )
 endmacro()
 
 install_rng()
