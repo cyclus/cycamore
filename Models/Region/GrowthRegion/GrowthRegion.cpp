@@ -30,8 +30,8 @@ using namespace boost;
 GrowthRegion::GrowthRegion() {
   builders_ = map<Producer*,Model*>();
   producers_ = map<Producer*,Model*>();
-  sdmanager_ = SupplyDemandManager();
   commodities_ = vector<Commodity>();
+  sdmanager_ = SupplyDemandManager();
 }
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - 
@@ -73,7 +73,7 @@ void GrowthRegion::init(xmlNodePtr cur, xmlXPathContextPtr context) {
 
   // populate producers_, builders_
   populateProducerMaps();
-};
+}
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - 
 void GrowthRegion::init(xmlNodePtr cur) {
@@ -102,19 +102,25 @@ void GrowthRegion::initCommodity(xmlNodePtr& node,
     xmlNodeSetPtr producer_nodes = 
       XMLinput->get_xpath_elements(context,node,"demand/metby");
 
-    for (int i=0; i<producer_nodes->nodeNr; i++){
+    for (int i=0; i<producer_nodes->nodeNr; i++) {
       xmlNodePtr pnode = producer_nodes->nodeTab[i];
-      string fac_name = 
-        (const char*)XMLinput->get_xpath_content(context,pnode,"facility");
-      double capacity = 
-        atof((const char*)
-             XMLinput->get_xpath_content(context,pnode,"capacity"));
-      Producer p(fac_name,commodity,capacity,1); // cost = 1
-      producers.push_back(p);
+      producers.push_back(getProducer(context,pnode,commodity));
     } // end producer nodes
-
+    
     // populate info
     sdmanager_.registerCommodity(commodity,demand,producers);
+}
+
+//- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - 
+Producer GrowthRegion::getProducer(xmlXPathContextPtr& context, 
+                                   xmlNodePtr& node,
+                                   Commodity& commodity) {
+  string fac_name = 
+    (const char*)XMLinput->get_xpath_content(context,node,"facility");
+  double capacity = 
+    atof((const char*)
+         XMLinput->get_xpath_content(context,node,"capacity"));
+  return Producer(fac_name,commodity,capacity,1); // cost = 1
 }
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - 
