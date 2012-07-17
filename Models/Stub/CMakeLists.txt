@@ -10,7 +10,3 @@ endforeach(dir)
 
 
 SET(ModelTestSource ${ModelTestSource} ${StubTestSource} PARENT_SCOPE)
-STRING(REPLACE ";" "\n\ \ \ \ \ \ \ \ " Stub_REFS "${Stub_REFS}")
-STRING(REPLACE ";" "\n\ \ " RNG_INCLUDES "${RNG_INCLUDES}")
-SET(Stub_REFS ${Stub_REFS} PARENT_SCOPE)
-SET(RNG_INCLUDES ${RNG_INCLUDES} PARENT_SCOPE)
