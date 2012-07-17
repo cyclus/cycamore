@@ -131,6 +131,16 @@ class GrowthRegion : public RegionModel
   void initCommodity(xmlNodePtr& node, xmlXPathContextPtr context);
 
   /**
+     initializes members based on producer input
+
+     @param context the context to query
+     @param node the xml node corresponding to a producer
+     @param commodity the commodity produced
+   */
+  Producer getProducer(xmlXPathContextPtr& context, xmlNodePtr& node,
+                       Commodity& commodity);
+
+  /**
      populates builders_ and producers_ once all initialization is 
      complete
    */
