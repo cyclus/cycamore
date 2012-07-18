@@ -183,8 +183,3 @@ CONFIGURE_FILE("${CMAKE_CURRENT_SOURCE_DIR}/post_install/postinstall.cmake.in"
     "${CMAKE_CURRENT_BINARY_DIR}/post_install/postinstall.cmake" @ONLY)
 
 ADD_SUBDIRECTORY(post_install)
-
-#INSTALL(FILES ${PROJECT_BINARY_DIR}/share/cyclus.rng
-#  DESTINATION ${CYCLUS_CORE_SHARE_DIR}
-#  COMPONENT data
-#  )
