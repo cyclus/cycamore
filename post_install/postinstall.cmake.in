@@ -45,7 +45,7 @@ macro(install_rng)
   clean_includes()
   clean_all_refs()
   CONFIGURE_FILE(${CYCLUS_CORE_SHARE_DIR}/cyclus.rng.in
-    ${PROJECT_BINARY_DIR}/share/cyclus.rng @ONLY)
+    ${CMAKE_INSTALL_PREFIX}/cycamore/share/cyclus.rng @ONLY)
 endmacro()
 
 install_rng()
