@@ -63,8 +63,7 @@ void GrowthRegion::init(xmlNodePtr cur, xmlXPathContextPtr context) {
   }
 
   // instantiate building manager
-  buildmanager_ = 
-    shared_ptr<BuildingManager>(new BuildingManager(sdmanager_));
+  initBuildManager();
   
   // parent_ and tick listener, model 'born'
   RegionModel::initSimInteraction(this); 
@@ -73,6 +72,12 @@ void GrowthRegion::init(xmlNodePtr cur, xmlXPathContextPtr context) {
 
   // populate producers_, builders_
   populateProducerMaps();
+}
+
+//- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - 
+void GrowthRegion::initBuildManager() {
+  buildmanager_ = 
+    shared_ptr<BuildingManager>(new BuildingManager(sdmanager_));
 }
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - 
@@ -87,6 +92,7 @@ void GrowthRegion::initCommodity(xmlNodePtr& node,
     string name = 
       (const char*)XMLinput->get_xpath_content(context,node,"name");
     Commodity commodity(name);
+    int position = commodities_.size();
     commodities_.push_back(commodity);
 
     // instantiate demand
@@ -104,11 +110,11 @@ void GrowthRegion::initCommodity(xmlNodePtr& node,
 
     for (int i=0; i<producer_nodes->nodeNr; i++) {
       xmlNodePtr pnode = producer_nodes->nodeTab[i];
-      producers.push_back(getProducer(context,pnode,commodity));
+      producers.push_back(getProducer(context,pnode,commodities_.at(position)));
     } // end producer nodes
     
     // populate info
-    sdmanager_.registerCommodity(commodity,demand,producers);
+    sdmanager_.registerCommodity(commodities_.at(position),demand,producers);
 }
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - 
@@ -120,7 +126,8 @@ Producer GrowthRegion::getProducer(xmlXPathContextPtr& context,
   double capacity = 
     atof((const char*)
          XMLinput->get_xpath_content(context,node,"capacity"));
-  return Producer(fac_name,commodity,capacity,1); // cost = 1
+  double cost = capacity; // cost = capacity
+  return Producer(fac_name,commodity,capacity,cost);
 }
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - 
@@ -191,10 +198,7 @@ void GrowthRegion::populateProducerMaps() {
     
     // map each producer's name to a pointer to it
     map<string,Producer*> producer_names;
-    for (int j = 0; j < sdmanager_.nProducers(c); j++) {
-      Producer* p = sdmanager_.producer(c,j);
-      producer_names[p->name()] = p;
-    }
+    populateProducerNames(c,producer_names);
     
     // populate the maps with those producer names
     populateMaps(this,producer_names);
@@ -203,10 +207,20 @@ void GrowthRegion::populateProducerMaps() {
   // if there are no builders, yell
   if ( builders_.empty() ) {
     stringstream err("");
-    err << "BuildRegion " << this->name() 
+    err << "GrowthRegion " << this->name() 
         << " has finished populating"
         << " its list of builders, but that list is empty.";
     throw CycOverrideException(err.str());
+  }
+}
+
+//- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - 
+void GrowthRegion::populateProducerNames(Commodity& c, 
+                                         std::map<std::string,Producer*>& 
+                                         producer_names) {
+  for (int j = 0; j < sdmanager_.nProducers(c); j++) {
+    Producer* p = sdmanager_.producer(c,j);
+    producer_names[p->name()] = p;
   }
 }
 
@@ -219,16 +233,33 @@ void GrowthRegion::populateMaps(Model* node,
 
   // if the model is in producers, log it as a producer
   // and its parent as a builder
-  if (producer_names.find(model_name) != producer_names.end()) {
-    Producer* p = producer_names[model_name]; 
-    producers_[p] = node;
-    builders_[p] = node->parent();
+  map<string,Producer*>::iterator it = producer_names.find(model_name);
+  if (it != producer_names.end()) {
+    producers_[it->second] = node;
+    builders_[it->second] = node->parent();
   }
   
   // perform the same operation for each of this node's children
   for (int i = 0; i < node->nChildren(); i++) {
     populateMaps(node->children(i),producer_names);
   }
+}
+
+//- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - 
+std::string GrowthRegion::printMaps() {
+  stringstream ss("");
+  map<Producer*,Model*>::iterator it;
+  ss << "Producer map:" << endl;
+  for (it = producers_.begin(); it != producers_.end(); it++) {
+    ss << "\t" << it->first->name() << " producer produces model " 
+       << it->second->name() << endl;
+  }
+  ss << "Builder map:" << endl;
+  for (it = builders_.begin(); it != builders_.end(); it++) {
+    ss << "\t" << it->first->name() << " producer is built by model " 
+       << it->second->name() << endl;
+  }
+  return ss.str();
 }
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - 

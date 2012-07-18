@@ -35,6 +35,9 @@ protected:
   void testCommodityInit();
   void testMapsInit();
   void setUpChildren();
+  void testProducerNames();
+  void testBuildDecision();
+  void doInit();
 };
 
 #endif
