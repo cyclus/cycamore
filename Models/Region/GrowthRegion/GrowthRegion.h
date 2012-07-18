@@ -131,6 +131,11 @@ class GrowthRegion : public RegionModel
   void initCommodity(xmlNodePtr& node, xmlXPathContextPtr context);
 
   /**
+     initializes the building manager with a fully formed sdmanager_
+   */
+  void initBuildManager();
+
+  /**
      initializes members based on producer input
 
      @param context the context to query
@@ -147,6 +152,13 @@ class GrowthRegion : public RegionModel
   void populateProducerMaps();
 
   /**
+     populates producer_names with info from the sdmanager
+   */
+  void populateProducerNames(Commodity& c, 
+                             std::map<std::string,Producer*>& 
+                             producer_names);
+
+  /**
      recursively looks to see if the current node is in the map
      of producer names. if so, it will add that model to the 
      appropriate map. in either case, the search continues to that
@@ -156,6 +168,12 @@ class GrowthRegion : public RegionModel
    */
   void populateMaps(Model* node, 
                     std::map<std::string,Producer*>& producer_names);
+
+  /**
+     provides a string of information about the maps
+     @return info about the maps
+  */
+  std::string printMaps();
 
   /**
      calls the appropriate orderBuild() functions given some

@@ -9,6 +9,7 @@
 #include "ModelTests.h"
 #include "InputXML.h"
 #include "StubModel.h"
+#include "BuildingManager.h"
 
 using namespace std;
 
@@ -25,8 +26,10 @@ void GrowthRegionTest::SetUp() {
 void GrowthRegionTest::TearDown() {
   delete reg_;
   delete new_region_;
-  delete child1_;
-  delete child2_;
+  if (child1_)
+    //delete child1_;
+  if (child2_)
+    //delete child2_;
   delete p1_;
   delete p2_;
   delete commodity_;
@@ -47,8 +50,8 @@ xmlDocPtr GrowthRegionTest::getXMLDoc() {
     "<document>\n" <<
     "  <name>power</name>\n" <<
     "  <demand>\n" << 
-    "    <type>exponential</type>\n" <<
-    "    <parameters>5 0.0005 1800</parameters>\n" <<
+    "    <type>exp</type>\n" <<
+    "    <parameters>5 0.0005 1000</parameters>\n" <<
     "    <metby>\n" <<
     "      <facility>" << producer1_name_ << "</facility>\n" <<
     "      <capacity>" << producer1_capacity_ << "</capacity>\n" <<
@@ -83,11 +86,11 @@ Producer GrowthRegionTest::getProducer(GrowthRegion* reg, int i) {
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - 
 void GrowthRegionTest::initProducers() {
-  producer1_capacity_ = 1050;
-  producer1_cost_ = 1;
+  producer1_capacity_ = 800;
+  producer1_cost_ = producer1_capacity_;
   producer1_name_ = "ReactorA";
-  producer2_capacity_ = 750;
-  producer2_cost_ = 1;
+  producer2_capacity_ = 200;
+  producer2_cost_ = producer2_capacity_;
   producer2_name_ = "ReactorB";
   commodity_name_ = "power";
   commodity_ = new Commodity(commodity_name_);
@@ -109,7 +112,7 @@ void GrowthRegionTest::testProducerInit() {
   EXPECT_EQ(p,*p1_);
   // quick test other producer
   p = getProducer(reg_,1);
-  // EXPECT_EQ(p,*p2_);
+  EXPECT_EQ(p,*p2_);
 }
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - 
@@ -122,25 +125,68 @@ void GrowthRegionTest::testCommodityInit() {
 }
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+void GrowthRegionTest::setUpChildren() {
+  child1_->setName(producer1_name_);
+  reg_->addChild(child1_);
+  child1_->doSetParent(reg_);
+  child2_->setName(producer2_name_);
+  reg_->addChild(child2_);
+  child2_->doSetParent(reg_);
+}
+
+//- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+void GrowthRegionTest::testProducerNames() {
+    map<string,Producer*> producer_names;
+    reg_->populateProducerNames(*commodity_,producer_names);
+    map<string,Producer*>::iterator it;
+    for (it = producer_names.begin(); 
+         it != producer_names.end(); it++) {
+      EXPECT_EQ(it->first,it->second->name());
+    }
+    EXPECT_EQ(*producer_names[p1_->name()],*p1_);
+    EXPECT_EQ(*producer_names[p2_->name()],*p2_);
+}
+
+//- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 void GrowthRegionTest::testMapsInit() {
   string name = "region";
   reg_->setName(name);
   setUpChildren();
-  //EXPECT_NO_THROW(reg_->populateProducerMaps());
-  // EXPECT_EQ(reg_->builders_[*p1_],reg_);
-  // EXPECT_EQ(reg_->builders_[*p2_],reg_);
-  // EXPECT_EQ(reg_->producers_[*p1_],child1_);
-  // EXPECT_EQ(reg_->producers_[*p2_],child2_);
+  map<string,Producer*> producer_names;
+  reg_->populateProducerNames(*commodity_,producer_names);
+  reg_->populateMaps(reg_,producer_names);
+  //cout << reg_->printMaps();
+  //cout << reg_->printChildren();
+  EXPECT_EQ(reg_->builders_[producer_names[producer1_name_]],reg_);
+  EXPECT_EQ(reg_->builders_[producer_names[producer2_name_]],reg_);
+  EXPECT_EQ(reg_->producers_[producer_names[producer1_name_]],child1_);
+  EXPECT_EQ(reg_->producers_[producer_names[producer2_name_]],child2_);
 }
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-void GrowthRegionTest::setUpChildren() {
-  child1_->setName(producer1_name_);
-  //reg_->addChild(child1_);
-  child1_->doSetParent(reg_);
-  child2_->setName(producer2_name_);
-  //reg_->addChild(child2_);
-  //child2_->doSetParent(reg_);
+void GrowthRegionTest::doInit() {
+  xmlDocPtr doc = getXMLDoc();
+  xmlXPathContextPtr context = xmlXPathNewContext(doc);
+  xmlNodePtr node = doc->children;
+
+  reg_->initCommodity(node,context);
+  reg_->initBuildManager();
+  setUpChildren();
+  reg_->populateProducerMaps();
+}
+
+//- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+void GrowthRegionTest::testBuildDecision() {
+  doInit();
+  double supply = reg_->sdmanager_.supply(*commodity_);
+  double demand = reg_->sdmanager_.demand(*commodity_,0);
+  double unmet_demand = demand - supply;
+  vector<BuildOrder> orders = 
+    reg_->buildmanager_->makeBuildDecision(*commodity_,unmet_demand);
+  EXPECT_EQ(orders.at(0).number,1);
+  EXPECT_EQ(*orders.at(0).producer,*p1_);
+  EXPECT_EQ(orders.at(1).number,2);
+  EXPECT_EQ(*orders.at(1).producer,*p2_);
 }
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -162,12 +208,22 @@ TEST_F(GrowthRegionTest, CopyFreshModel) {
 }
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-TEST_F(GrowthRegionTest,TestInit) {
+TEST_F(GrowthRegionTest,TestInitParts) {
   EXPECT_EQ(containerSizes(reg_),0);
-  EXPECT_NO_THROW(testProducerInit());
-  EXPECT_NO_THROW(testCommodityInit());
-  EXPECT_NO_THROW(testMapsInit());
-  //EXPECT_NO_THROW(doInit(reg_));
+  testProducerInit();
+  testCommodityInit();
+  testProducerNames();
+  testMapsInit();
+}
+
+//- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+TEST_F(GrowthRegionTest,TestInitFull) {
+  EXPECT_NO_THROW(doInit());
+}
+
+//- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+TEST_F(GrowthRegionTest,TestBuildDecision) {
+  testBuildDecision();
 }
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
