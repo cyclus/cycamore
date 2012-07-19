@@ -14,30 +14,47 @@
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - 
 class GrowthRegionTest : public ::testing::Test {
 protected:
+  // region and constructor members
   GrowthRegion* reg_;
   GrowthRegion* new_region_; 
-  virtual void SetUp();
-  virtual void TearDown();
-  int containerSizes(GrowthRegion* reg);
-  xmlDocPtr getXMLDoc();
-  Producer getProducer(GrowthRegion* reg, int i);
-  int producer1_capacity_, producer2_capacity_;
-  int producer1_cost_, producer2_cost_;
-  std::string producer1_name_, producer2_name_;
-  std::string commodity_name_;
-  void initProducers();
+
+  // progeny interaction members
   StubModel* child1_;
   StubModel* child2_;
+
+  // supply demand members
+  int power_demand_;
   Commodity* commodity_;
+  std::string commodity_name_;
   Producer* p1_;
-  Producer* p2_;
+  std::string producer1_name_;
+  int producer1_cost_, producer2_cost_;
+  Producer* p2_; 
+  std::string producer2_name_;
+  int producer1_capacity_, producer2_capacity_;
+
+  // gtest construction and destruction
+  virtual void SetUp();
+  virtual void TearDown();
+  
+  // xml interpretation
+  xmlDocPtr getXMLDoc();
+
+  // member introspection
+  int containerSizes(GrowthRegion* reg);
+  Producer getProducer(GrowthRegion* reg, int i);
+
+  // member initialization
+  void initSupplyDemand();
+  void setUpChildren();
+  void doInit();
+
+  // method/member testing
   void testProducerInit();
   void testCommodityInit();
-  void testMapsInit();
-  void setUpChildren();
   void testProducerNames();
+  void testMapsInit();
   void testBuildDecision();
-  void doInit();
 };
 
 #endif
