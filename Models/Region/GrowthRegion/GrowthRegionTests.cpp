@@ -19,7 +19,7 @@ void GrowthRegionTest::SetUp() {
   new_region_ = new GrowthRegion();
   child1_ = new StubModel();
   child2_ = new StubModel();
-  initProducers();
+  initSupplyDemand();
 }
   
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - 
@@ -36,13 +36,6 @@ void GrowthRegionTest::TearDown() {
 }  
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - 
-int GrowthRegionTest::containerSizes(GrowthRegion* reg) {
-  int sizes = reg_->builders_.size() + reg_->producers_.size() +
-    reg_->commodities_.size();
-  return sizes;
-}
-
-//- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - 
 xmlDocPtr GrowthRegionTest::getXMLDoc() {  
   stringstream ss("");
   ss <<
@@ -51,7 +44,7 @@ xmlDocPtr GrowthRegionTest::getXMLDoc() {
     "  <name>power</name>\n" <<
     "  <demand>\n" << 
     "    <type>exp</type>\n" <<
-    "    <parameters>5 0.0005 1000</parameters>\n" <<
+    "    <parameters>5 0.0005 " << power_demand_ << "</parameters>\n" <<
     "    <metby>\n" <<
     "      <facility>" << producer1_name_ << "</facility>\n" <<
     "      <capacity>" << producer1_capacity_ << "</capacity>\n" <<
@@ -66,6 +59,13 @@ xmlDocPtr GrowthRegionTest::getXMLDoc() {
   string snippit = ss.str();
 
   return xmlParseMemory(snippit.c_str(),snippit.size());
+}
+
+//- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - 
+int GrowthRegionTest::containerSizes(GrowthRegion* reg) {
+  int sizes = reg_->builders_.size() + reg_->producers_.size() +
+    reg_->commodities_.size();
+  return sizes;
 }
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - 
@@ -85,7 +85,8 @@ Producer GrowthRegionTest::getProducer(GrowthRegion* reg, int i) {
 }
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - 
-void GrowthRegionTest::initProducers() {
+void GrowthRegionTest::initSupplyDemand() {
+  power_demand_ = 1000;
   producer1_capacity_ = 800;
   producer1_cost_ = producer1_capacity_;
   producer1_name_ = "ReactorA";
@@ -98,6 +99,28 @@ void GrowthRegionTest::initProducers() {
                      producer1_cost_);
   p2_ = new Producer(producer2_name_,*commodity_,producer2_capacity_,
                      producer2_cost_);
+}
+
+//- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+void GrowthRegionTest::setUpChildren() {
+  child1_->setName(producer1_name_);
+  reg_->addChild(child1_);
+  child1_->doSetParent(reg_);
+  child2_->setName(producer2_name_);
+  reg_->addChild(child2_);
+  child2_->doSetParent(reg_);
+}
+
+//- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+void GrowthRegionTest::doInit() {
+  xmlDocPtr doc = getXMLDoc();
+  xmlXPathContextPtr context = xmlXPathNewContext(doc);
+  xmlNodePtr node = doc->children;
+
+  reg_->initCommodity(node,context);
+  reg_->initBuildManager();
+  setUpChildren();
+  reg_->populateProducerMaps();
 }
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -122,16 +145,6 @@ void GrowthRegionTest::testCommodityInit() {
   xmlNodePtr node = doc->children;
 
   EXPECT_NO_THROW(reg_->initCommodity(node,context));
-}
-
-//- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-void GrowthRegionTest::setUpChildren() {
-  child1_->setName(producer1_name_);
-  reg_->addChild(child1_);
-  child1_->doSetParent(reg_);
-  child2_->setName(producer2_name_);
-  reg_->addChild(child2_);
-  child2_->doSetParent(reg_);
 }
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -161,18 +174,6 @@ void GrowthRegionTest::testMapsInit() {
   EXPECT_EQ(reg_->builders_[producer_names[producer2_name_]],reg_);
   EXPECT_EQ(reg_->producers_[producer_names[producer1_name_]],child1_);
   EXPECT_EQ(reg_->producers_[producer_names[producer2_name_]],child2_);
-}
-
-//- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-void GrowthRegionTest::doInit() {
-  xmlDocPtr doc = getXMLDoc();
-  xmlXPathContextPtr context = xmlXPathNewContext(doc);
-  xmlNodePtr node = doc->children;
-
-  reg_->initCommodity(node,context);
-  reg_->initBuildManager();
-  setUpChildren();
-  reg_->populateProducerMaps();
 }
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
