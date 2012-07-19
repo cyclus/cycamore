@@ -4,7 +4,7 @@
 
 #include "Logger.h"
 #include "GenericResource.h"
-#include "RecipeLogger.h"
+#include "RecipeLibrary.h"
 #include "CycException.h"
 #include "InputXML.h"
 #include "Timer.h"
@@ -63,11 +63,11 @@ void BatchReactor::init(xmlNodePtr cur) {
 
     // get in_recipe
     recipe_name = XMLinput->get_xpath_content(pair_node,"inrecipe");
-    setInRecipe(RecipeLogger::Recipe(recipe_name));
+    setInRecipe(RecipeLibrary::Recipe(recipe_name));
 
     // get out_recipe
     recipe_name = XMLinput->get_xpath_content(pair_node,"outrecipe");
-    setOutRecipe(RecipeLogger::Recipe(recipe_name));
+    setOutRecipe(RecipeLibrary::Recipe(recipe_name));
 
     fuelPairs_.push_back(make_pair(make_pair(in_commod,in_recipe_),
           make_pair(out_commod, out_recipe_)));
