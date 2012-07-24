@@ -6,7 +6,7 @@
 #include "SourceFacility.h"
 
 #include "Logger.h"
-#include "RecipeLogger.h"
+#include "RecipeLibrary.h"
 #include "GenericResource.h"
 #include "CycException.h"
 #include "InputXML.h"
@@ -40,7 +40,7 @@ void SourceFacility::init(xmlNodePtr cur) {
 
   // get recipe
   recipe_name_ = XMLinput->get_xpath_content(cur,"recipe");
-  recipe_ = RecipeLogger::Recipe(recipe_name_);
+  recipe_ = RecipeLibrary::Recipe(recipe_name_);
 
   // get capacity
   capacity_ = strtod(XMLinput->get_xpath_content(cur,"capacity"), NULL);
