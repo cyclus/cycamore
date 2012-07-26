@@ -5,6 +5,7 @@ CMAKE_MINIMUM_REQUIRED(VERSION 2.8)
 # Direct any out-of-source builds to this directory
 SET( CYCAMORE_SOURCE_DIR ${CMAKE_SOURCE_DIR} )
 
+IF(NOT CYCLUS_DOC_ONLY)
 # Direct any binary installation paths to this directory
 SET( CYCAMORE_BINARY_DIR ${CMAKE_BINARY_DIR} )
 
@@ -84,17 +85,6 @@ SET(CYCAMORE_INCLUDE_DIR ${CYCAMORE_INCLUDE_DIR} Testing )
 # include all the directories we just found
 INCLUDE_DIRECTORIES( ${CYCAMORE_INCLUDE_DIR} )
 
-# This is the directory that holds the doxygen doxyfile template (doxy.conf.in)
-SET( DOC_INPUT_DIR ${CYCAMORE_SOURCE_DIR}/doc)
-
-# If doxygen exists, use the doc/CMakeLists.txt file for further instructions. 
-FIND_PACKAGE(Doxygen)
-IF (DOXYGEN_FOUND)
-  ADD_SUBDIRECTORY(doc)
-  SET( DOC_OUTPUT_DIR ${CMAKE_BINARY_DIR}/doc )
-ELSE (DOXYGEN_FOUND)
-  MESSAGE(STATUS "WARNING: Doxygen not found - doc won't be created")
-ENDIF (DOXYGEN_FOUND)
 
 # ------------------------- Add the Models -----------------------------------
 ADD_SUBDIRECTORY(Models)
@@ -183,3 +173,17 @@ CONFIGURE_FILE("${CMAKE_CURRENT_SOURCE_DIR}/post_install/postinstall.cmake.in"
     "${CMAKE_CURRENT_BINARY_DIR}/post_install/postinstall.cmake" @ONLY)
 
 ADD_SUBDIRECTORY(post_install)
+
+ENDIF(NOT CYCLUS_DOC_ONLY)
+
+# This is the directory that holds the doxygen doxyfile template (doxy.conf.in)
+SET( DOC_INPUT_DIR ${CYCAMORE_SOURCE_DIR}/doc)
+
+# If doxygen exists, use the doc/CMakeLists.txt file for further instructions. 
+FIND_PACKAGE(Doxygen)
+IF (DOXYGEN_FOUND)
+  ADD_SUBDIRECTORY(doc)
+  SET( DOC_OUTPUT_DIR ${CMAKE_BINARY_DIR}/doc )
+ELSE (DOXYGEN_FOUND)
+  MESSAGE(STATUS "WARNING: Doxygen not found - doc won't be created")
+ENDIF (DOXYGEN_FOUND)
