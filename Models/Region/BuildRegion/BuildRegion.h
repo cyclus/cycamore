@@ -56,7 +56,7 @@ typedef std::list<Model*>::iterator ModelIterator;
      [number demanded] to be built at a given time.
      - pair <int, PrototypeDemand> PrototypeBuildOrder: A pair of the 
      [time] at which a particular [PrototypeDemand] has been issued.
-     - list <PrototypeBuildOrder> PrototypeOrders: A list of all 
+     - list \<PrototypeBuildOrder\> PrototypeOrders: A list of all 
      the orders for specific prototypes to be built.
    -# Capacity Build Information (when a given capacity demand is 
    declared explicitly) 
@@ -65,7 +65,7 @@ typedef std::list<Model*>::iterator ModelIterator;
      given time.
      - pair <int, CapacityDemand> CapacityBuildOrder: A pair of the 
      [time] at which a particular [CapacityDemand] has been issued.
-     - list <CapacityBuildOrder> CapacityBuildOrders: A list of all the 
+     - list \<CapacityBuildOrder\> CapacityBuildOrders: A list of all the 
      orders for specific capacities to be met 
     
    @section behavior Detailed Behavior 
