@@ -115,7 +115,7 @@ class BatchReactor : public FacilityModel  {
   /**
      Transacted resources are received through this method
       
-     @param msg the transaction to which these resource objects belong
+     @param trans the transaction to which these resource objects belong
      @param manifest is the set of resources being received
    */
   virtual void addResource(Transaction trans,
