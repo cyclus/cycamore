@@ -77,7 +77,7 @@ void GrowthRegion::init(xmlNodePtr cur, xmlXPathContextPtr context) {
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - 
 void GrowthRegion::initBuildManager() {
   buildmanager_ = 
-    shared_ptr<BuildingManager>(new BuildingManager(sdmanager_));
+    shared_ptr<BuildingManager>(new BuildingManager(&sdmanager_));
 }
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - 
