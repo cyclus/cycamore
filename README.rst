@@ -99,11 +99,13 @@ Once that's done, you can clone your repository.
 In a terminal on your machine, run the following code, replacing username with 
 your github user name and onegroupreactor with the new name of your fork.
 
+
 ```
 git clone https://github.com/username/onegroupreactor.git
 ```
 
 Add a remote, read-only branch that points to the cycstub repo : 
+
 
 ```
 cd onegroupreactor
@@ -115,9 +117,6 @@ git remote add cyclus git://github.com/cyclus/cycstub.git
 Modifying the Stubs 
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-Let's say you've decided to implement a new Facility model. Let's say it's a 
-one group burnup approximation of some kind. You want to call it OneGroupReactor.
-
 
 Remove Unneeded Stub Files
 ===========================
@@ -126,6 +125,7 @@ Since, in this example, you're only building a Facility model, you should
 delete all of the other model type directories. Note that not everyone 
 will be building Facility models.  These instructions will apply analgously 
 in your case, *mutatis mutandis*. 
+
 
 ```
 cd src/Models
