@@ -142,17 +142,16 @@ Your model isn't called StubFacility. It's called OneGroupReactor.
 You should search for instances of StubFacility (and STUBFACILITY and stubfacility) 
 and replace them with analogous OneGroupReactor text. 
 
+( This task will soon be scripted.) 
 
-RUN THE SCRIPT THAT HAS YET TO BE DEVELOPED. 
-
-Commit your changes.
+Commit your changes and push them to your fork.
 
 Rename Stub Files
 =============================
 
 Just as you removed references to Stub inside the files, you should now change all 
 directories and files named StubFacility to files analogously named 
-OneGroupReactor.
+OneGroupReactor. ( This task will also soon be scripted. )
 
 ::
 
@@ -164,10 +163,8 @@ OneGroupReactor.
   git mv StubFacilityTests.h OneGroupReactorTests.h
   ....
 
-This too should be scripted....
 
 Commit your changes and push them to your fork.
-
 
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 Implementing Your Model
@@ -235,7 +232,11 @@ The `Cyclus Homepage`_ has much more detailed guides and information.
 This Readme is intended to be a quick reference for building and installing the 
 the stub module libraries for the first time.
 
-The Cycamore code requires the following software and libraries.
+~~~~~~~~~~~~~~~~~~~~~~~~~~~
+Dependencies
+~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+Building a module for the Cyclus  code requires the following software and libraries.
 
 ====================   ==================
 Package                Minimum Version   
@@ -248,20 +249,20 @@ Package                Minimum Version
 ====================   ==================
 
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~
-Building Cycamore
+Building Your Module
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-In order to facilitate future compatibility with multiple platforms, Cycamore is
-built using  `Cmake <http://www.cmake.org>`_. This relies on CMake version
-2.8 or higher and the CMakeLists.txt file in `src/`. It is
-recommended that you use CMake to build the Cycamore libraries in a directory 
-external to the source code. Now, to use the cycamore modules within a cyclus 
-simulation, you must already have cyclus installed . Once that is done, build the 
-cycamore module libraries by the following steps::
+In order to facilitate future compatibility with multiple platforms, Cyclus and 
+its modules are, by default, built using  `Cmake <http://www.cmake.org>`_. This 
+relies on CMake version 2.8 or higher and the CMakeLists.txt file in `src/`. It is
+recommended that you use CMake to build your module libraries in a directory 
+external to the source code. Now, to use your module(s) within a cyclus 
+simulation, you must already have cyclus installed . Once that is done, build your
+module libraries by the following steps::
 
-    .../cycamore/$ mkdir build
-    .../cycamore/$ cd build
-    .../cycamore/build$ cmake ../src -DCYCLUS_ROOT_DIR=<cyclus location> 
+    .../onegroupreactor/$ mkdir build
+    .../onegroupreactor/$ cd build
+    .../onegroupreactor/build$ cmake ../src -DCYCLUS_ROOT_DIR=<cyclus location> 
 
 You should see output like this::
 
@@ -269,24 +270,24 @@ You should see output like this::
     ...
     >> -- Configuring done
     >> -- Generating done
-    >> -- Build files have been written to: .../cycamore/build
-    /cycamore/build$ make cycamore
-    >> Scanning dependencies of target cycamore
+    >> -- Build files have been written to: .../onegroupreactor/build
+    /onegroupreactor/build$ make onegroupreactor
+    >> Scanning dependencies of target onegroupreactor
     ...
     ...
-    >> [100%] Building CXX object CMakeFiles/cycamore.dir/SourceFac.cpp.o
-    >> Linking CXX executable cycamore
-    >> [100%] Built target cycamore
+    >> [100%] Building CXX object CMakeFiles/onegroupreactor.dir/SourceFac.cpp.o
+    >> Linking CXX executable onegroupreactor
+    >> [100%] Built target onegroupreactor
 
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~
-Installing Cycamore
+Installing Your Module
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-To allow cyclus to find the cycamore module libraries, you must install them within 
+To allow cyclus to find your module libraries, you must install them within 
 the cyclus installation directory. To do so, execute :: 
 
-    .../cycamore/build$ make
-    .../cycamore/build$ make install
+    .../onegroupreactor/build$ make
+    .../onegroupreactor/build$ make install
 
 If the cyclus installation directory is in a system location, you will need to 
 execute `sudo make install` instead of `make install`. 
@@ -295,43 +296,26 @@ you intend to develop for *Cyclus*, please visit it to learn more.
 
 
 .. _`Cyclus Homepage`: http://cyclus.github.com
-.. _`Cycamore Homepage`: http://cycamore.github.com
 
 
 
 --------------------------------------------------------------------------
-The Developer Workflow
+A Suggested Developer Workflow
 --------------------------------------------------------------------------
 
-*Note that "upstream" repository refers to the primary `cyclus/cycamore` repository.*
-
-As you do your development, push primarily only to your own fork. Push to
-the upstream repository (usually the "develop" branch) only after:
-
-  * You have pulled the latest changes from the upstream repository.
-  * You have completed a logical set of changes.
-  * Cyclus compiles with no errors.
-  * All tests pass.
-  * Cyclus input files run as expected.
-  * (recommended) your code has been reviewed by another developer.
-
-Code from the "develop" branch generally must pass even more rigorous checks
-before being integrated into the "master" branch. Hotfixes would be a
-possible exception to this.
+If you are working on your module with numerous developers, we recommend a
+branching workflow similar to the one described at http://progit.org/book/ch3-4.html.
 
 ~~~~~~~~~~~~~~~~~~~
 Workflow Notes
 ~~~~~~~~~~~~~~~~~~~
 
-  * Use a branching workflow similar to the one described at
-    http://progit.org/book/ch3-4.html.
-
-  * The "develop" branch is how cycamore developers will share (generally compilable) progress
+  * The "develop" branch is how developers will share (generally compilable) progress
     when we are not yet ready for the code to become 'production'.
 
   * Keep your own "master" and "develop" branches in sync with the upstream repository's
     "master" and "develop" branches. The master branch should always be the 'stable'
-    or 'production' release of cyclus.
+    or 'production' release of your module.
     
      - Pull the most recent history from the upstream repository "master"
        and/or "develop" branches before you merge changes into your
@@ -357,7 +341,7 @@ Workflow Notes
   * **Passing Tests**
 
       - To check that your branch passes the tests, you must build and install your topic 
-        branch and then run the CycamoreUnitTestDriver (at the moment, ```make 
+        branch and then run the OneGroupReactorUnitTestDriver (at the moment, ```make 
         test``` is insufficient). For example ::
       
           mkdir build
@@ -366,14 +350,14 @@ Workflow Notes
           cmake ../src -DCMAKE_INSTALL_PREFIX=../install
           make
           make install
-          ../install/cycamore/bin/CycamoreUnitTestDriver
+          ../install/onegroupreactor/bin/OneGroupReactorUnitTestDriver
 
       - There are also a suite of sample input files 
-        In addition to the CycamoreUnitTestDriver, a suite of input files can be run and 
+        In addition to the \*UnitTestDriver, a suite of input files can be run and 
         tested using the run_inputs.py script that is configured, built, and installed 
         with Cycamore. It relies on the input files that are part of your Cycamore 
         repository, and only succeeds for input files that are correct (some may have 
-        known issues. See the issue list in cycamore for details.) To run the example 
+        known issues. See the issue list in cyclus for details.) To run the example 
         input files, ::
 
           python ../install/cycamore/bin/run_inputs.py
