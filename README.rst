@@ -402,8 +402,9 @@ Workflow Notes
             git checkout develop
             git merge --no-ff remote_name/branch_name -m "A message of acceptance."
 
+~~~~~~~~~~~~~~~~~~~
 See also
---------
+~~~~~~~~~~~~~~~~~~~
 
 A good description of a git workflow with good graphics is available at
 http://nvie.com/posts/a-successful-git-branching-model/
