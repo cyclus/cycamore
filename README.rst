@@ -100,17 +100,17 @@ In a terminal on your machine, run the following code, replacing username with
 your github user name and onegroupreactor with the new name of your fork.
 
 
-```
-git clone https://github.com/username/onegroupreactor.git
-```
+::
+  git clone https://github.com/username/onegroupreactor.git
+ 
 
 Add a remote, read-only branch that points to the cycstub repo : 
 
 
-```
-cd onegroupreactor
-git remote add cyclus git://github.com/cyclus/cycstub.git
-```
+::
+  cd onegroupreactor
+  git remote add cyclus git://github.com/cyclus/cycstub.git
+
 
 
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -127,12 +127,12 @@ will be building Facility models.  These instructions will apply analgously
 in your case, *mutatis mutandis*. 
 
 
-```
-cd src/Models
-git rm -rf Market/ Inst/ Region/ Converter/
-git commit -am "removes unneccessary files"
-git push origin master
-```
+::
+  cd src/Models
+  git rm -rf Market/ Inst/ Region/ Converter/
+  git commit -am "removes unneccessary files"
+  git push origin master
+
 
 Search and Replace Stub 
 =============================
@@ -154,16 +154,14 @@ Just as you removed references to Stub inside the files, you should now change a
 directories and files named StubFacility to files analogously named 
 OneGroupReactor.
 
-
-```
-cd src/Models/Facility
-git mv StubFacility OneGroupReactor
-cd OneGroupReactor
-git mv StubFacility.h OneGroupReactor.h
-git mv StubFacility.cpp OneGroupReactor.cpp
-git mv StubFacilityTests.h OneGroupReactorTests.h
-....
-```
+::
+  cd src/Models/Facility
+  git mv StubFacility OneGroupReactor
+  cd OneGroupReactor
+  git mv StubFacility.h OneGroupReactor.h
+  git mv StubFacility.cpp OneGroupReactor.cpp
+  git mv StubFacilityTests.h OneGroupReactorTests.h
+  ....
 
 This too should be scripted....
 
@@ -187,21 +185,19 @@ repository, you'll need to take just a few steps.
 
 Create a new branch. 
 
-```
-git checkout -b update
-```
+::
+  git checkout -b update
 
 Fetch the changes from our repository.
 
-```
-git fetch cyclus/cycstub
-```
+::
+  git fetch cyclus/cycstub
 
 Then, merge
 
-```
-git merge cyclus/cycstub
-```
+::
+  git merge cyclus/cycstub
+
 
 Then, correct any instances of cycstub or StubFacility, or any such language, 
 with your own model names. Check this readme for changelogs addressing the 
