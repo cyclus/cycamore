@@ -1,14 +1,15 @@
 _______________________________________________________________________
-Cycamore : The CYClus Additional MOdules REpository
+Cycstub : Cyclus Stub Models 
 _______________________________________________________________________
 
-**Last Updated: 6.10.2012**
+**Last Updated: 8.8.2012**
 
-Additional modules for the Cyclus nuclear fuel cycle simulator from the 
-University of Wisconsin - Madison are intended to be support innovative 
-fuel cycle simulations with the Cyclus fuel cycle simulator. 
+This repository provides templates for creating modules for use with the 
+Cyclus nuclear fuel cycle simulator from the University of Wisconsin - 
+Madison. This repository is intended to support innovative fuel cycle 
+simulations with the Cyclus fuel cycle simulator. 
 
-To see user and developer documentation for this code, please visit the `Cycamore Homepage`_.
+To see user and developer documentation for the cyclus code, please visit the `Cyclus Homepage`_.
 
 
 -----------------------------------------------------------------------
@@ -48,12 +49,188 @@ LISCENSE
     POSSIBILITY OF SUCH DAMAGE.
 
 ------------------------------------------------------------------
-Building and Installing Cycamore
+How To Use cycstub
 ------------------------------------------------------------------
 
-The `Cyclus Homepage`_ and `Cycamore Homepage`_ have much more detailed guides and information.
+Let's say you've decided to implement a new Facility model. Let's say it's a 
+one group burnup approximation of some kind. You want to call it OneGroupReactor.
+
+
+
+
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+Forking this Repository
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+In order to download and use this repository in a way that will keep 
+track of changes in the Cyclus model interface, 
+
+First, if you're not already logged in, please 
+`log into github <https://github.com/login/>`_ .
+
+Once you're logged in and have navigated back to `this repository's page 
+<https://github.com/cyclus/cycstub/>`, there will be a button in the upper right 
+hand corner that says Fork. 
+
+You've now forked this repository, but it now exists only on github, and it has 
+the wrong name.
+
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+Renaming Your Fork
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+Your fork is, by default, called cycstub. You may rather call it 
+OneGroupReactor. To do this, go to your new fork (github should have taken you 
+there automatically, but you can find it at https://github.com/username/cycstub 
+).
+
+In the upper right hand corner of the browser will be a button called admin. 
+Click on that button and rename your fork.
+
+
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+Cloning and Configuring Your Fork
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+First, make sure you've `configured git on your computer 
+<https://help.github.com/articles/set-up-git/>`.
+
+Once that's done, you can clone your repository. 
+In a terminal on your machine, run the following code, replacing username with 
+your github user name and onegroupreactor with the new name of your fork.
+
+```
+git clone https://github.com/username/onegroupreactor.git
+```
+
+Add a remote, read-only branch that points to the cycstub repo : 
+
+```
+cd onegroupreactor
+git remote add cyclus git://github.com/cyclus/cycstub.git
+```
+
+
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+Modifying the Stubs 
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+Let's say you've decided to implement a new Facility model. Let's say it's a 
+one group burnup approximation of some kind. You want to call it OneGroupReactor.
+
+
+Remove Unneeded Stub Files
+===========================
+
+Since, in this example, you're only building a Facility model, you should 
+delete all of the other model type directories. Note that not everyone 
+will be building Facility models.  These instructions will apply analgously 
+in your case, *mutatis mutandis*. 
+
+```
+cd src/Models
+git rm -rf Market/ Inst/ Region/ Converter/
+git commit -am "removes unneccessary files"
+git push origin master
+```
+
+Search and Replace Stub 
+=============================
+
+Inside the files, there are references to StubFacility. 
+Your model isn't called StubFacility. It's called OneGroupReactor. 
+You should search for instances of StubFacility (and STUBFACILITY and stubfacility) 
+and replace them with analogous OneGroupReactor text. 
+
+
+RUN THE SCRIPT THAT HAS YET TO BE DEVELOPED. 
+
+Commit your changes.
+
+Rename Stub Files
+=============================
+
+Just as you removed references to Stub inside the files, you should now change all 
+directories and files named StubFacility to files analogously named 
+OneGroupReactor.
+
+
+```
+cd src/Models/Facility
+git mv StubFacility OneGroupReactor
+cd OneGroupReactor
+git mv StubFacility.h OneGroupReactor.h
+git mv StubFacility.cpp OneGroupReactor.cpp
+git mv StubFacilityTests.h OneGroupReactorTests.h
+....
+```
+
+This too should be scripted....
+
+Commit your changes and push them to your fork.
+
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+
+
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+Keeping your Model up-to-date
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+The Cyclus core doesn't promise to be backwards compatible, moving forward, 
+though we'll make every attempt to keep changes to our interface very minimal.
+If there are changes to the model interface, we'll make appropriate changes 
+here, to the cycstub repository. To incorporate those changes into your model 
+repository, you'll need to take just a few steps. 
+
+Create a new branch. 
+
+```
+git checkout -b update
+```
+
+Fetch the changes from our repository.
+
+```
+git fetch cyclus/cycstub
+```
+
+Then, merge
+
+```
+git merge cyclus/cycstub
+```
+
+Then, correct any instances of cycstub or StubFacility, or any such language, 
+with your own model names. Check this readme for changelogs addressing the 
+changes made for the interface.
+
+Then merge the update branch into your main repository. 
+
+
+
+
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+Letting Us Know
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+We like to know when someone is developing a tool for Cyclus.
+
+help you in the development process
+incorporate your model into cyclus
+
+
+
+
+------------------------------------------------------------------
+Building and Installing Your Module
+------------------------------------------------------------------
+
+The `Cyclus Homepage`_ has much more detailed guides and information.
 This Readme is intended to be a quick reference for building and installing the 
-cyamore module libraries for the first time.
+the stub module libraries for the first time.
 
 The Cycamore code requires the following software and libraries.
 
