@@ -49,7 +49,7 @@ SET( CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${CMAKE_DIR}/share/cmake-2.8/Module
 SET( CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} ${CYCAMORE_SOURCE_DIR}/CMake )
 
 # Include macros
-INCLUDE(CycamoreModuleMacros)
+INCLUDE(ModuleMacros)
 
 # Debian installs useful LibXML2 files to /usr/include/libxml2/libxml
 # KDHFLAG Necessary?
@@ -121,19 +121,19 @@ IF(CMAKE_USE_PTHREADS_INIT)  # The pthreads library is available.
   SET(cxx_base_flags "${cxx_base_flags} -DGTEST_HAS_PTHREAD=1")
 ENDIF()
 
-# Build CycamoreUnitTestDriver
-ADD_EXECUTABLE( CycamoreUnitTestDriver
-  Testing/CycamoreUnitTestDriver.cpp ${TestSource}
+# Build CycstubUnitTestDriver
+ADD_EXECUTABLE( CycstubUnitTestDriver
+  Testing/CycstubUnitTestDriver.cpp ${TestSource}
   ${GENERATED_TEST_SOURCE}
 )
-TARGET_LINK_LIBRARIES( CycamoreUnitTestDriver dl ${CYCAMORE_LIBRARIES} 
+TARGET_LINK_LIBRARIES( CycstubUnitTestDriver dl ${CYCAMORE_LIBRARIES} 
   dl ${LIBS} ${CYCLUS_GTEST_LIBRARIES})
 
 # Here we add all the tests
-add_google_tests( ${EXECUTABLE_OUTPUT_PATH}/bin/CycamoreUnitTestDriver 
+add_google_tests( ${EXECUTABLE_OUTPUT_PATH}/bin/CycstubUnitTestDriver 
   ${TestSource}) 
 
-INSTALL(TARGETS CycamoreUnitTestDriver
+INSTALL(TARGETS CycstubUnitTestDriver
   RUNTIME DESTINATION cycstub/bin
   COMPONENT testing
   )
@@ -148,7 +148,7 @@ INSTALL(FILES ${cyclus_shared}
 SET(CPACK_COMPONENTS_ALL cycstub testing libraries data core)
 
 # Here's where we package it with CPack
-SET(CPACK_PACKAGE_DESCRIPTION_SUMMARY "Cycamore : The Cyclus Additional Module Repository.")
+SET(CPACK_PACKAGE_DESCRIPTION_SUMMARY "Cycstub : The Cyclus Additional Module Repository.")
 SET(CPACK_DEBIAN_PACKAGE_MAINTAINER "CNERG, UW-Madison") #required
 SET(CPACK_PACKAGE_VENDOR "CNERG, UW-Madison")
 SET(CPACK_PACKAGE_DESCRIPTION_FILE "${CMAKE_CURRENT_SOURCE_DIR}/CMake/README.txt")
@@ -159,10 +159,10 @@ SET(CPACK_PACKAGE_VERSION_MINOR "1")
 SET(CPACK_PACKAGE_INSTALL_DIRECTORY "cycstub${CPACK_VERSION_MAJOR}.${CPACK_VERSION_MINOR}")
 SET(CPACK_PACKAGE_NAME "${CMAKE_PROJECT_NAME}")
  
-CONFIGURE_FILE("${CYCAMORE_SOURCE_DIR}/CMake/CycamoreCPackOptions.cmake.in"
-  "${CYCAMORE_BINARY_DIR}/CMake/CycamoreCPackOptions.cmake" @ONLY)
-SET(CPACK_PROJECT_CONFIG_FILE "${CYCAMORE_BINARY_DIR}/CMake/CycamoreCPackOptions.cmake")
-SET(CPACK_PACKAGE_EXECUTABLES "cycstub" "CycamoreUnitTestDriver")
+CONFIGURE_FILE("${CYCAMORE_SOURCE_DIR}/CMake/CPackOptions.cmake.in"
+  "${CYCAMORE_BINARY_DIR}/CMake/CycstubCPackOptions.cmake" @ONLY)
+SET(CPACK_PROJECT_CONFIG_FILE "${CYCAMORE_BINARY_DIR}/CMake/CPackOptions.cmake")
+SET(CPACK_PACKAGE_EXECUTABLES "cycstub" "CycstubUnitTestDriver")
 
 
 INCLUDE(CPack)
