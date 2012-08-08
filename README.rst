@@ -168,11 +168,14 @@ This too should be scripted....
 
 Commit your changes and push them to your fork.
 
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+Implementing Your Model
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-
+The model you've chosen to create can now be implemented within the 
+OneGroupReactor.cpp and .h files as well as any other files you generate and 
+include in the build system. 
 
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 Keeping your Model up-to-date
@@ -209,19 +212,19 @@ changes made for the interface.
 
 Then merge the update branch into your main repository. 
 
+:: 
 
+  git checkout develop
+  git merge update
 
 
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 Letting Us Know
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-We like to know when someone is developing a tool for Cyclus.
-
-help you in the development process
-incorporate your model into cyclus
-
-
+We like to know when someone is developing a tool for Cyclus. Please send us an 
+email when you get started. We can add you to the cyclus developers list, which 
+may help you in the development process.
 
 
 ------------------------------------------------------------------
