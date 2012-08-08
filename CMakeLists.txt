@@ -1,5 +1,5 @@
-# This project name is cycamore
-PROJECT(cycamore)
+# This project name is cycstub
+PROJECT(cycstub)
 CMAKE_MINIMUM_REQUIRED(VERSION 2.8)
 
 # Direct any out-of-source builds to this directory
@@ -32,16 +32,16 @@ SET(CMAKE_SKIP_BUILD_RPATH  FALSE)
 # (but later on when installing)
 SET(CMAKE_BUILD_WITH_INSTALL_RPATH FALSE) 
 
-SET(CMAKE_INSTALL_RPATH "${CMAKE_INSTALL_PREFIX}/cycamore/lib")
+SET(CMAKE_INSTALL_RPATH "${CMAKE_INSTALL_PREFIX}/cycstub/lib")
 
 # add the automatically determined parts of the RPATH
 # which point to directories outside the build tree to the install RPATH
 SET(CMAKE_INSTALL_RPATH_USE_LINK_PATH TRUE)
 
 # the RPATH to be used when installing, but only if it's not a system directory
-LIST(FIND CMAKE_PLATFORM_IMPLICIT_LINK_DIRECTORIES "${CMAKE_INSTALL_PREFIX}/cycamore/lib" isSystemDir)
+LIST(FIND CMAKE_PLATFORM_IMPLICIT_LINK_DIRECTORIES "${CMAKE_INSTALL_PREFIX}/cycstub/lib" isSystemDir)
 IF("${isSystemDir}" STREQUAL "-1")
-   SET(CMAKE_INSTALL_RPATH "${CMAKE_INSTALL_PREFIX}/cycamore/lib")
+   SET(CMAKE_INSTALL_RPATH "${CMAKE_INSTALL_PREFIX}/cycstub/lib")
 ENDIF("${isSystemDir}" STREQUAL "-1")
 
 # Tell CMake where the modules are
@@ -134,18 +134,18 @@ add_google_tests( ${EXECUTABLE_OUTPUT_PATH}/bin/CycamoreUnitTestDriver
   ${TestSource}) 
 
 INSTALL(TARGETS CycamoreUnitTestDriver
-  RUNTIME DESTINATION cycamore/bin
+  RUNTIME DESTINATION cycstub/bin
   COMPONENT testing
   )
 
 FILE(GLOB cyclus_shared "${CYCLUS_CORE_SHARE_DIR}/*")
 INSTALL(FILES ${cyclus_shared} 
-  DESTINATION cycamore/share
+  DESTINATION cycstub/share
   COMPONENT data
   )
 
 # Here we set some components for installation with cpack
-SET(CPACK_COMPONENTS_ALL cycamore testing libraries data core)
+SET(CPACK_COMPONENTS_ALL cycstub testing libraries data core)
 
 # Here's where we package it with CPack
 SET(CPACK_PACKAGE_DESCRIPTION_SUMMARY "Cycamore : The Cyclus Additional Module Repository.")
@@ -156,13 +156,13 @@ SET(CPACK_RESOURCE_FILE_LICENSE "${CMAKE_CURRENT_SOURCE_DIR}/CMake/LICENSE.txt")
 SET(CPACK_PACKAGE_VERSION_MAJOR "0")
 SET(CPACK_PACKAGE_VERSION_MINOR "1")
 #SET(CPACK_PACKAGE_VERSION_PATCH "2") # should use commit number here  ?
-SET(CPACK_PACKAGE_INSTALL_DIRECTORY "cycamore${CPACK_VERSION_MAJOR}.${CPACK_VERSION_MINOR}")
+SET(CPACK_PACKAGE_INSTALL_DIRECTORY "cycstub${CPACK_VERSION_MAJOR}.${CPACK_VERSION_MINOR}")
 SET(CPACK_PACKAGE_NAME "${CMAKE_PROJECT_NAME}")
  
 CONFIGURE_FILE("${CYCAMORE_SOURCE_DIR}/CMake/CycamoreCPackOptions.cmake.in"
   "${CYCAMORE_BINARY_DIR}/CMake/CycamoreCPackOptions.cmake" @ONLY)
 SET(CPACK_PROJECT_CONFIG_FILE "${CYCAMORE_BINARY_DIR}/CMake/CycamoreCPackOptions.cmake")
-SET(CPACK_PACKAGE_EXECUTABLES "cycamore" "CycamoreUnitTestDriver")
+SET(CPACK_PACKAGE_EXECUTABLES "cycstub" "CycamoreUnitTestDriver")
 
 
 INCLUDE(CPack)
