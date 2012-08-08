@@ -1,10 +1,11 @@
-Models
+SRC
 =======
 
-This is a directory intended to hold models of 
-various types. It mimics the installation hierarchy in cyclus. 
+This is a directory intended to hold the module source files.
+It mimics the installation hierarchy in cyclus. 
 
-That is, it is intended to hold the skeletal stub modules for assistance with 
+That is, it is the top level source directory for module building and is intended to 
+hold the skeletal stub modules for assistance with 
 developing new concrete model for Cyclus. It also holds a build system that facilitates 
 building and installation in tandem with the Cyclus building and installation 
 process. 
