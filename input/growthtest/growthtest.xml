@@ -76,6 +76,10 @@
         <lifetime>12</lifetime>
 	<coreloading>4</coreloading>
 	<batchespercore>4</batchespercore>
+	<CommodityProduction>
+	  <commodity>power</commodity>
+	  <productioncapacity>1050</productioncapacity>
+	</CommodityProduction>
       </BatchReactor>
     </model>
   </facility>
@@ -94,6 +98,10 @@
         <lifetime>12</lifetime>
 	<coreloading>4</coreloading>
 	<batchespercore>4</batchespercore>
+	<CommodityProduction>
+	  <commodity>power</commodity>
+	  <productioncapacity>750</productioncapacity>
+	</CommodityProduction>
       </BatchReactor>
     </model>
   </facility>
@@ -143,6 +151,7 @@
         <BuildInst>
 	  <availableprototype>ReactorA</availableprototype>
 	  <availableprototype>ReactorB</availableprototype>
+	  <ProducedCommodity>power</ProducedCommodity>
         </BuildInst>
       </model>
     </institution>
