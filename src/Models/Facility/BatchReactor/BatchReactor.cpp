@@ -34,14 +34,6 @@ BatchReactor::BatchReactor() {
 }
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -    
-BatchReactor::~BatchReactor() {
-  if (commod_) {
-    MarketPlayer::leaveMarket(*commod_);
-    delete commod_;
-  }
-};
-
-//- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -    
 void BatchReactor::init(xmlNodePtr cur) { 
   FacilityModel::init(cur);
   
@@ -358,6 +350,13 @@ void BatchReactor::addFuelPair(std::string incommod, IsoVector inFuel,
   fuelPairs_.push_back(make_pair(make_pair(incommod, inFuel),
                                  make_pair(outcommod, outFuel)));
 }
+
+//- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -    
+void BatchReactor::decommission() {
+  MarketPlayer::leaveMarket(*commod_);
+  delete commod_;
+  FacilityModel::decommission();
+};
 
 /* ------------------- */ 
 

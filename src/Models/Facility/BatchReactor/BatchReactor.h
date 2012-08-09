@@ -43,7 +43,7 @@ class BatchReactor : public FacilityModel, public MarketPlayer  {
   /**
      Destructor for the BatchReactor class. 
    */
-  virtual ~BatchReactor();
+  virtual ~BatchReactor() {};
 
   /**
      overridden doSetParent method to allow the reactor to enter its
@@ -142,6 +142,11 @@ class BatchReactor : public FacilityModel, public MarketPlayer  {
      @param time the time of the tock
    */
   virtual void handleTock(int time);
+
+  /**
+     exists the facility from its market and decommissions
+   */
+  virtual void decommission();
 
 /* ------------------- */ 
 
