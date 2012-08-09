@@ -6,6 +6,7 @@
 #include "Message.h"
 #include "InstModelTests.h"
 #include "ModelTests.h"
+#include "CycException.h"
 
 #include <string>
 #include <queue>
@@ -40,16 +41,13 @@ protected:
     src_inst->setParent(tst_region);
     new_inst = new FakeBuildInst();
     prototype = new BuildInst();
-    prototype->setModelType("Inst");
-    prototype->setModelImpl("BuildInst");
-    prototype->setName("test_prototype");
   };
   
   virtual void TearDown() {
+    delete prototype;
     delete src_inst;
     delete new_inst;
     delete tst_region;
-    delete prototype;
   }
 };
 
@@ -104,9 +102,9 @@ TEST_F(BuildInstTest, Tock) {
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - 
 TEST_F(BuildInstTest, BuildPrototype) {
-  EXPECT_NO_THROW( src_inst->wrapAddPrototype(prototype) );
-  EXPECT_EQ( src_inst->isAvailablePrototype(prototype), true );
-  EXPECT_NO_THROW( src_inst->build(prototype,tst_region) );
+  EXPECT_NO_THROW(src_inst->wrapAddPrototype(prototype));
+  EXPECT_TRUE(src_inst->isAvailablePrototype(prototype));
+  EXPECT_THROW(src_inst->build(prototype,tst_region),CycIOException);
 }
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - 

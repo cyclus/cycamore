@@ -6,6 +6,9 @@
 #include "Message.h"
 #include "FacilityModelTests.h"
 #include "ModelTests.h"
+#include "MarketPlayerManager.h"
+#include "MarketPlayer.h"
+#include "SupplyDemand.h"
 
 #include <string>
 #include <queue>
@@ -73,15 +76,24 @@ FacilityModel* BatchReactorConstructor(){
 }
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+class SomeManagerInst : public TestInst, public MarketPlayerManager {
+ public:
+  virtual ~SomeManagerInst() {};
+};
+
+//- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 class BatchReactorTest : public ::testing::Test {
 protected:
   FakeBatchReactor* src_facility;
   FakeBatchReactor* new_facility; 
   TestMarket* out_market_;
   TestMarket* in_market_;
+  SomeManagerInst* parent_;
+  Commodity* commod_;
 
   int lencycle, life, nbatch;
-  double loadcore;
+  double loadcore, capacity;
+  std::string commod_name;
 
   virtual void SetUp(){
     // set up model parameters
@@ -89,11 +101,19 @@ protected:
     life = 9;
     loadcore = 10.0;
     nbatch = 5;
+    capacity = 100;
+    commod_name = "commod";
 
     // set up models
+    commod_ = new Commodity(commod_name);
+    parent_ = new SomeManagerInst();
+    parent_->MarketPlayerManager::setCommodity(*commod_);
     src_facility = new FakeBatchReactor(lencycle, life, loadcore, nbatch);
-    src_facility->setParent(new TestInst());
+    src_facility->setProductionInformation(commod_name,capacity);
+    src_facility->doSetParent(parent_);
     new_facility = new FakeBatchReactor();
+    new_facility->setProductionInformation(commod_name,capacity);
+    new_facility->doSetParent(parent_);
     in_market_ = new TestMarket(src_facility->inCommod());
     out_market_ = new TestMarket(src_facility->outCommod());
   }
@@ -101,7 +121,9 @@ protected:
   virtual void TearDown() {
     delete src_facility;
     delete new_facility;
+    delete parent_;
     delete in_market_;
     delete out_market_;
+    delete commod_;
   }
 };

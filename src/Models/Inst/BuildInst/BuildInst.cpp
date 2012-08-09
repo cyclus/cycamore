@@ -56,7 +56,7 @@ void BuildInst::init(xmlNodePtr cur) {
   try {
     xmlNodeSetPtr nodes = 
     XMLinput->get_xpath_elements(model_cur,"ProducedCommodity");
-       string name = (const char*)nodes->nodeTab[0]->children->content;
+    string name = (const char*)nodes->nodeTab[0]->children->content;
     Commodity commod(name);
     MarketPlayerManager::setCommodity(commod);
   } catch (CycNullXPathException) {};
