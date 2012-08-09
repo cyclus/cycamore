@@ -7,6 +7,7 @@
 #include <set>
 
 #include "InstModel.h"
+#include "MarketPlayerManager.h"
 
 #include "Logger.h"
 
@@ -37,14 +38,12 @@
    prototypes when prompted via its build() method; however this call 
    must be made by its parent. 
  */
-
-class BuildInst : public InstModel  
-{
+//
+class BuildInst : public InstModel, public MarketPlayerManager {
 /* --------------------
  * all MODEL classes have these members
  * --------------------
  */
-
 public:
   /**
      Default constructor for the build inst 

@@ -11,6 +11,13 @@ datatypeLibrary="http://www.w3.org/2001/XMLSchema-datatypes">
       </element>
       </oneOrMore>
 
+      <optional>
+	<element name="ProducedCommodity">
+	  <text/>
+	</element>
+      </optional>
+
+
     </element>
   </define>
 
