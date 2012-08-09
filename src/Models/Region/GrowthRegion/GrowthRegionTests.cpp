@@ -17,19 +17,19 @@ using namespace std;
 void GrowthRegionTest::SetUp() {
   reg_ = new GrowthRegion();
   new_region_ = new GrowthRegion();
-  child1_ = new StubModel();
-  child2_ = new StubModel();
+  inst_ = new ManagerInst();
+  child1_ = new PlayerChild();
+  child2_ = new PlayerChild();
   initSupplyDemand();
 }
   
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - 
 void GrowthRegionTest::TearDown() {
+  delete child1_;
+  delete child2_;
+  delete inst_;
   delete reg_;
   delete new_region_;
-  if (child1_)
-    //delete child1_;
-  if (child2_)
-    //delete child2_;
   delete p1_;
   delete p2_;
   delete commodity_;
@@ -101,14 +101,29 @@ void GrowthRegionTest::initSupplyDemand() {
                      producer2_cost_);
 }
 
+//- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - 
+void GrowthRegionTest::initPlayers() {
+  inst_->setCommodity(*commodity_);
+
+  child1_->registerCommodity(*commodity_);
+  child1_->setProductionCapacity(producer1_capacity_,*commodity_);
+  child1_->registerManager(inst_,*commodity_);
+
+  child2_->registerCommodity(*commodity_);
+  child2_->setProductionCapacity(producer2_capacity_,*commodity_);
+  child2_->registerManager(inst_,*commodity_);
+}
+
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 void GrowthRegionTest::setUpChildren() {
   child1_->setName(producer1_name_);
-  reg_->addChild(child1_);
-  child1_->doSetParent(reg_);
+  inst_->addChild(child1_);
+  child1_->doSetParent(inst_);
   child2_->setName(producer2_name_);
-  reg_->addChild(child2_);
-  child2_->doSetParent(reg_);
+  inst_->addChild(child2_);
+  child2_->doSetParent(inst_);
+  reg_->addChild(inst_);
+  inst_->doSetParent(reg_);
 }
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -118,8 +133,10 @@ void GrowthRegionTest::doInit() {
   xmlNodePtr node = doc->children;
 
   reg_->initCommodity(node,context);
+  setUpChildren();  
+  initPlayers();
+  reg_->initPlayerManagers();
   reg_->initBuildManager();
-  setUpChildren();
   reg_->populateProducerMaps();
 }
 
@@ -170,8 +187,8 @@ void GrowthRegionTest::testMapsInit() {
   reg_->populateMaps(reg_,producer_names);
   //cout << reg_->printMaps();
   //cout << reg_->printChildren();
-  EXPECT_EQ(reg_->builders_[producer_names[producer1_name_]],reg_);
-  EXPECT_EQ(reg_->builders_[producer_names[producer2_name_]],reg_);
+  EXPECT_EQ(reg_->builders_[producer_names[producer1_name_]],inst_);
+  EXPECT_EQ(reg_->builders_[producer_names[producer2_name_]],inst_);
   EXPECT_EQ(reg_->producers_[producer_names[producer1_name_]],child1_);
   EXPECT_EQ(reg_->producers_[producer_names[producer2_name_]],child2_);
 }
@@ -188,6 +205,26 @@ void GrowthRegionTest::testBuildDecision() {
   EXPECT_EQ(*orders.at(0).producer,*p1_);
   EXPECT_EQ(orders.at(1).number,2);
   EXPECT_EQ(*orders.at(1).producer,*p2_);
+}
+
+//- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+void GrowthRegionTest::enterMarkets() {
+  EXPECT_EQ(reg_->sdmanager_.supply(*commodity_),0);
+  child1_->enterMarket(*commodity_);
+  EXPECT_EQ(reg_->sdmanager_.supply(*commodity_),producer1_capacity_);
+  child2_->enterMarket(*commodity_);
+  EXPECT_EQ(reg_->sdmanager_.supply(*commodity_),
+            producer1_capacity_ + producer2_capacity_);
+}
+
+//- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+void GrowthRegionTest::leaveMarkets() {
+  EXPECT_EQ(reg_->sdmanager_.supply(*commodity_),
+            producer1_capacity_ + producer2_capacity_);
+  child1_->leaveMarket(*commodity_);
+  EXPECT_EQ(reg_->sdmanager_.supply(*commodity_),producer2_capacity_);
+  child2_->leaveMarket(*commodity_);
+  EXPECT_EQ(reg_->sdmanager_.supply(*commodity_),0);
 }
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -220,6 +257,13 @@ TEST_F(GrowthRegionTest,TestInitParts) {
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 TEST_F(GrowthRegionTest,TestInitFull) {
   EXPECT_NO_THROW(doInit());
+}
+
+//- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+TEST_F(GrowthRegionTest,TestPlayerInteraction) {
+  doInit();
+  enterMarkets();
+  leaveMarkets();
 }
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -

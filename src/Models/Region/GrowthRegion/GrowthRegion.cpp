@@ -8,6 +8,7 @@
 #include "InstModel.h"
 #include "SupplyDemand.h"
 #include "BuildingManager.h"
+#include "MarketPlayerManager.h"
 #include "SymbolicFunctionFactories.h"
 #include "CycException.h"
 
@@ -62,22 +63,19 @@ void GrowthRegion::init(xmlNodePtr cur, xmlXPathContextPtr context) {
     initCommodity(commodity_nodes->nodeTab[i],XMLinput->context());
   }
 
-  // instantiate building manager
-  initBuildManager();
-  
   // parent_ and tick listener, model 'born'
   RegionModel::initSimInteraction(this); 
   // children->setParent, requires init()
   RegionModel::initChildren(cur); 
 
+  // register any children who are MarketPlayerManagers
+  initPlayerManagers();
+
+  // instantiate building manager
+  initBuildManager();
+  
   // populate producers_, builders_
   populateProducerMaps();
-}
-
-//- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - 
-void GrowthRegion::initBuildManager() {
-  buildmanager_ = 
-    shared_ptr<BuildingManager>(new BuildingManager(&sdmanager_));
 }
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - 
@@ -115,6 +113,23 @@ void GrowthRegion::initCommodity(xmlNodePtr& node,
     
     // populate info
     sdmanager_.registerCommodity(commodities_.at(position),demand,producers);
+}
+
+//- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - 
+void GrowthRegion::initPlayerManagers() {
+  for (int i = 0; i < nChildren(); i++) {
+    Model* child = children(i);
+    MarketPlayerManager* m = dynamic_cast<MarketPlayerManager*>(child);
+    if (m != 0) {
+      sdmanager_.registerPlayerManager(m->commodity(),m);
+    }
+  }
+}
+
+//- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - 
+void GrowthRegion::initBuildManager() {
+  buildmanager_ = 
+    shared_ptr<BuildingManager>(new BuildingManager(&sdmanager_));
 }
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - 

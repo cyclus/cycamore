@@ -10,6 +10,14 @@
 #include "GrowthRegion.h"
 #include "SupplyDemand.h"
 #include "StubModel.h"
+#include "MarketPlayerManager.h"
+#include "MarketPlayer.h"
+
+//- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - 
+class ManagerInst : public StubModel, public MarketPlayerManager {};
+
+//- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - 
+class PlayerChild : public StubModel, public MarketPlayer {};
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - 
 class GrowthRegionTest : public ::testing::Test {
@@ -19,8 +27,9 @@ protected:
   GrowthRegion* new_region_; 
 
   // progeny interaction members
-  StubModel* child1_;
-  StubModel* child2_;
+  ManagerInst* inst_;
+  PlayerChild* child1_;
+  PlayerChild* child2_;
 
   // supply demand members
   int power_demand_;
@@ -46,6 +55,7 @@ protected:
 
   // member initialization
   void initSupplyDemand();
+  void initPlayers();
   void setUpChildren();
   void doInit();
 
@@ -53,6 +63,8 @@ protected:
   void testProducerInit();
   void testCommodityInit();
   void testProducerNames();
+  void enterMarkets();
+  void leaveMarkets();
   void testMapsInit();
   void testBuildDecision();
 };
