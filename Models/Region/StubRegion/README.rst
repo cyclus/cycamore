@@ -1,5 +1,5 @@
-Region
-=======
+StubRegion
+===========
 
 This is a directory intended to hold RegionModel templates. 
 
@@ -8,7 +8,7 @@ developing new concrete RegionModels for Cyclus. It also holds elements of a bui
 system that facilitates building and installation in tandem with the Cyclus 
 building and installation process. 
 
-More information on regions can be found `here <http://cyclus.github.com/devdoc/make-models/region.html/>`.
+More information on regions can be found `here <http://cyclus.github.com/devdoc/make-models/region.html/>`_.
 
 What's in this directory?
 =========================

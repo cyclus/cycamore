@@ -1,5 +1,5 @@
-Facility
-==========
+StubFacility
+=============
 
 This is a directory intended to hold FacilityModel templates. 
 
@@ -8,7 +8,7 @@ developing new concrete FacilityModels for Cyclus. It also holds elements of a b
 siestem that facilitates building and installation in tandem with the Cyclus 
 building and installation process. 
 
-More information on facilities can be found `here <http://cyclus.github.com/devdoc/make-models/facility.html/>`.
+More information on facilities can be found `here <http://cyclus.github.com/devdoc/make-models/facility.html/>`_.
 
 What's in this directory?
 =========================
