@@ -1,7 +1,7 @@
 Models
 =======
 
-This is a directory intended to hold models of 
+This is a directory intended to hold model templates of 
 various types. It mimics the installation hierarchy in cyclus. 
 
 That is, it is intended to hold the skeletal stub modules for assistance with 
@@ -9,8 +9,8 @@ developing new concrete model for Cyclus. It also holds elements of a build
 system that facilitates building and installation in tandem with the Cyclus 
 building and installation process. 
 
-Contained 
-=========
+What's in this directory?
+=========================
 - CMakeLists.txt, a file directing the build for this directory
 - Converter, a directory that holds a skeletal 
   StubConverter.
