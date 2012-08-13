@@ -11,18 +11,18 @@ building and installation process.
 
 What's in this directory?
 =========================
-- CMakeLists.txt, a file directing the build for this directory
-- Converter, a directory that holds a skeletal 
+- **CMakeLists.txt**, a file directing the build for this directory
+- **Converter**, a directory that holds a skeletal 
   StubConverter.
-- Facility, a directory that holds a skeletal StubFacility
-  `more <http://cyclus.github.com/devdoc/make-models/facility.html/>`_
-- Inst, a directory that holds a skeletal StubInst
-  `more <http://cyclus.github.com/devdoc/make-models/inst.html/>`_...
-- Market, a directory that holds a skeletal StubMarket
-  `more <http://cyclus.github.com/devdoc/make-models/market.html/>`_...
-- Region, a directory that holds a skeletal StubRegion
-  `more <http://cyclus.github.com/devdoc/make-models/region.html/>`_...
-- Stub, a directory that holds a skeletal StubStub (for making classes of Model 
+- **Facility**, a directory that holds a skeletal StubFacility.
+  `more on facilities <http://cyclus.github.com/devdoc/make-models/facility.html/>`_
+- **Inst**, a directory that holds a skeletal StubInst
+  `more on institutions <http://cyclus.github.com/devdoc/make-models/inst.html/>`_
+- **Market**, a directory that holds a skeletal StubMarket
+  `more on markets <http://cyclus.github.com/devdoc/make-models/market.html/>`_
+- **Region**, a directory that holds a skeletal StubRegion
+  `more on regions <http://cyclus.github.com/devdoc/make-models/region.html/>`_
+- **Stub**, a directory that holds a skeletal StubStub (for making classes of Model 
   that do not yet exist )
-- StubComm, a directory that holds a skeletal StubStubComm (for making classes 
+- **StubComm**, a directory that holds a skeletal StubStubComm (for making classes 
   of Communicator Model that do not exist yet)
