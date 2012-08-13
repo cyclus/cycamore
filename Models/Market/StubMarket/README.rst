@@ -1,5 +1,5 @@
-Market
-=======
+StubMarket
+============
 
 This is a directory intended to hold MarketModel templates. 
 
@@ -8,7 +8,7 @@ developing new concrete MarketModels for Cyclus. It also holds elements of a bui
 system that facilitates building and installation in tandem with the Cyclus 
 building and installation process. 
 
-More information on markets can be found `here <http://cyclus.github.com/devdoc/make-models/market.html/>`.
+More information on markets can be found `here <http://cyclus.github.com/devdoc/make-models/market.html/>`_.
 
 What's in this directory?
 =========================
