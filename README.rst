@@ -10,10 +10,10 @@ developing new concrete model for Cyclus. It also holds a build system that faci
 building and installation in tandem with the Cyclus building and installation 
 process. 
 
-Contained 
-=========
+What's in this directory?
+=========================
 - CMake, a directory that holds build system configuration files
-- Models, a directory that holds concrete models
-- Testing, a directory that holds tests for the concrete models
+- Models, a directory that holds concrete model templates, called Stubs.
+- Testing, a directory that holds test templates for the model templates. 
 - doc, a directory that holds configuration files for the doxygen documentation
 - post_install, a directory that holds a post installation script 
