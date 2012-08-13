@@ -1,5 +1,5 @@
-Inst
-=======
+StubInst
+=========
 
 This is a directory intended to hold InstModel templates. 
 
@@ -8,7 +8,7 @@ developing new concrete Institution Models for Cyclus. It also holds elements of
 system that facilitates building and installation in tandem with the Cyclus 
 building and installation process. 
 
-More information on institutions can be found `here <http://cyclus.github.com/devdoc/make-models/inst.html/>`.
+More information on institutions can be found `here <http://cyclus.github.com/devdoc/make-models/inst.html/>`_.
 
 What's in this directory?
 =========================
