@@ -49,21 +49,54 @@ LISCENSE
     POSSIBILITY OF SUCH DAMAGE.
 
 ------------------------------------------------------------------
-How To Use cycstub
+The Purpose of Cycstub
+------------------------------------------------------------------
+
+One important goal of the Cyclus effort is to attract a community of developers
+contributing to a vibrant ecosystem of models for use by users. In addition to the 
+wide availability of the core infrastructure, an element that is critical to the 
+success of this community is a low-barrier to adoption of the *Cyclus* framework. 
+This Cycstub repository provides a template for quick-start development of fuel 
+cycle models within the cyclus framework. 
+
+Run-time modules, or plug-ins, developed with the use of the Cycstub templates can be 
+developed and distributed under any possible licensing scheme. By providing this 
+stub repository separately from the core infrastructure, the modules developed using
+these stubs will be distributed separately from the core infrastructure.  The 
+distribution responsibility will rest with the developer of each module. This 
+system will insulate the core infrastructure from accidental “pollution” by modules
+of a sensitive nature, and similarly limit issues regarding the authorization for
+distribution to the author’s organization. Ideally, most module developers will be
+authorized for open distribution of their modules, but if not, we recommend maintaining
+a private git repository on authorized servers. 
+
+Finally, the community will be relied upon to provide review and curation of available 
+modules, establishing both quality assurance practices and recommendations for best use
+cases for each contributed module.
+
+
+------------------------------------------------------------------
+How To Use Cycstub
 ------------------------------------------------------------------
 
 Let's say you've decided to implement a new Facility model. Let's say it's a 
-one group burnup approximation of some kind. You want to call it OneGroupReactor.
-
-
-
+one group burnup approximation of some kind, intended to generically represent 
+material transmutation in a reactor. You want to call it OneGroupReactor. A
+quick way to integrate your reactor model into a *Cyclus* simulation will be to 
+fork Cycstub, reconfigure it for your own use, and customize the StubFacility 
+template within it. During this process you can either choose to keep your code to
+yourself by keeping the code on private, authorized machines, distribute it freely 
+on the github fork you've created, or something in between. Please keep in mind 
+that module developers are solely responsible for distribution decisions of their 
+modules.
 
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 Forking this Repository
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 In order to download and use this repository in a way that will keep 
-track of changes in the Cyclus model interface, 
+track of changes in the Cyclus model interface, you'll need to *Fork* this 
+repository.  
 
 First, if you're not already logged in, please 
 `log into github <https://github.com/login/>`_ .

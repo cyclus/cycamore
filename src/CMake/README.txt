@@ -1,14 +1,15 @@
 _______________________________________________________________________
-Cyclus Core
+Cycstub : Cyclus Stub Models 
 _______________________________________________________________________
 
-**Last Updated: 2.28.2012**
+**Last Updated: 8.8.2012**
 
-The core of the Cyclus nuclear fuel cycle simulator from the University of 
-Wisconsin - Madison is intended to be a simulation framework upon which to 
-develop innovative fuel cycle simulations. 
+This repository provides templates for creating modules for use with the 
+Cyclus nuclear fuel cycle simulator from the University of Wisconsin - 
+Madison. This repository is intended to support innovative fuel cycle 
+simulations with the Cyclus fuel cycle simulator. 
 
-To see user and developer documentation for this code, please visit the `Cyclus Homepage`_.
+To see user and developer documentation for the cyclus code, please visit the `Cyclus Homepage`_.
 
 
 -----------------------------------------------------------------------
@@ -48,18 +49,232 @@ LISCENSE
     POSSIBILITY OF SUCH DAMAGE.
 
 ------------------------------------------------------------------
-Building Cyclus
+The Purpose of Cycstub
+------------------------------------------------------------------
+
+One important goal of the Cyclus effort is to attract a community of developers
+contributing to a vibrant ecosystem of models for use by users. In addition to the 
+wide availability of the core infrastructure, an element that is critical to the 
+success of this community is a low-barrier to adoption of the *Cyclus* framework. 
+This Cycstub repository provides a template for quick-start development of fuel 
+cycle models within the cyclus framework. 
+
+Run-time modules, or plug-ins, developed with the use of the Cycstub templates can be 
+developed and distributed under any possible licensing scheme. By providing this 
+stub repository separately from the core infrastructure, the modules developed using
+these stubs will be distributed separately from the core infrastructure.  The 
+distribution responsibility will rest with the developer of each module. This 
+system will insulate the core infrastructure from accidental “pollution” by modules
+of a sensitive nature, and similarly limit issues regarding the authorization for
+distribution to the author’s organization. Ideally, most module developers will be
+authorized for open distribution of their modules, but if not, we recommend maintaining
+a private git repository on authorized servers. 
+
+Finally, the community will be relied upon to provide review and curation of available 
+modules, establishing both quality assurance practices and recommendations for best use
+cases for each contributed module.
+
+
+------------------------------------------------------------------
+How To Use Cycstub
+------------------------------------------------------------------
+
+Let's say you've decided to implement a new Facility model. Let's say it's a 
+one group burnup approximation of some kind, intended to generically represent 
+material transmutation in a reactor. You want to call it OneGroupReactor. A
+quick way to integrate your reactor model into a *Cyclus* simulation will be to 
+fork Cycstub, reconfigure it for your own use, and customize the StubFacility 
+template within it. During this process you can either choose to keep your code to
+yourself by keeping the code on private, authorized machines, distribute it freely 
+on the github fork you've created, or something in between. Please keep in mind 
+that module developers are solely responsible for distribution decisions of their 
+modules.
+
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+Forking this Repository
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+In order to download and use this repository in a way that will keep 
+track of changes in the Cyclus model interface, you'll need to *Fork* this 
+repository.  
+
+First, if you're not already logged in, please 
+`log into github <https://github.com/login/>`_ .
+
+Once you're logged in and have navigated back to `this repository's page 
+<https://github.com/cyclus/cycstub/>`, there will be a button in the upper right 
+hand corner that says Fork. 
+
+You've now forked this repository, but it now exists only on github, and it has 
+the wrong name.
+
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+Renaming Your Fork
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+Your fork is, by default, called cycstub. You may rather call it 
+OneGroupReactor. To do this, go to your new fork (github should have taken you 
+there automatically, but you can find it at https://github.com/username/cycstub 
+).
+
+In the upper right hand corner of the browser will be a button called admin. 
+Click on that button and rename your fork.
+
+
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+Cloning and Configuring Your Fork
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+First, make sure you've `configured git on your computer 
+<https://help.github.com/articles/set-up-git/>`.
+
+Once that's done, you can clone your repository. 
+In a terminal on your machine, run the following code, replacing username with 
+your github user name and onegroupreactor with the new name of your fork.
+
+::
+
+  git clone https://github.com/username/onegroupreactor.git
+ 
+
+Add a remote, read-only branch that points to the cycstub repo : 
+
+::
+
+  cd onegroupreactor
+  git remote add cyclus git://github.com/cyclus/cycstub.git
+
+
+
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+Modifying the Stubs 
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+
+Remove Unneeded Stub Files
+===========================
+
+Since, in this example, you're only building a Facility model, you should 
+delete all of the other model type directories. Note that not everyone 
+will be building Facility models.  These instructions will apply analgously 
+in your case, *mutatis mutandis*. 
+
+::
+
+  cd src/Models
+  git rm -rf Market/ Inst/ Region/ Converter/
+  git commit -am "removes unneccessary files"
+  git push origin master
+
+
+Search and Replace Stub 
+=============================
+
+Inside the files, there are references to StubFacility. 
+Your model isn't called StubFacility. It's called OneGroupReactor. 
+You should search for instances of StubFacility (and STUBFACILITY and stubfacility) 
+and replace them with analogous OneGroupReactor text. 
+
+( This task will soon be scripted.) 
+
+Commit your changes and push them to your fork.
+
+Rename Stub Files
+=============================
+
+Just as you removed references to Stub inside the files, you should now change all 
+directories and files named StubFacility to files analogously named 
+OneGroupReactor. ( This task will also soon be scripted. )
+
+::
+
+  cd src/Models/Facility
+  git mv StubFacility OneGroupReactor
+  cd OneGroupReactor
+  git mv StubFacility.h OneGroupReactor.h
+  git mv StubFacility.cpp OneGroupReactor.cpp
+  git mv StubFacilityTests.h OneGroupReactorTests.h
+  ....
+
+
+Commit your changes and push them to your fork.
+
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+Implementing Your Model
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+The model you've chosen to create can now be implemented within the 
+OneGroupReactor.cpp and .h files as well as any other files you generate and 
+include in the build system. 
+
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+Keeping your Model up-to-date
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+The Cyclus core doesn't promise to be backwards compatible, moving forward, 
+though we'll make every attempt to keep changes to our interface very minimal.
+If there are changes to the model interface, we'll make appropriate changes 
+here, to the cycstub repository. To incorporate those changes into your model 
+repository, you'll need to take just a few steps. 
+
+Create a new branch. 
+
+::
+
+  git checkout -b update
+
+Fetch the changes from our repository.
+
+::
+
+  git fetch cyclus/cycstub
+
+Then, merge
+
+::
+
+  git merge cyclus/cycstub
+
+
+Then, correct any instances of cycstub or StubFacility, or any such language, 
+with your own model names. Check this readme for changelogs addressing the 
+changes made for the interface.
+
+Then merge the update branch into your main repository. 
+
+:: 
+
+  git checkout develop
+  git merge update
+
+
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+Letting Us Know
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+We like to know when someone is developing a tool for Cyclus. Please send us an 
+email when you get started. We can add you to the cyclus developers list, which 
+may help you in the development process.
+
+
+------------------------------------------------------------------
+Building and Installing Your Module
 ------------------------------------------------------------------
 
 The `Cyclus Homepage`_ has much more detailed guides and information.
-This Readme is intended to be a quick reference for building cyclus for the
-first time.
+This Readme is intended to be a quick reference for building and installing the 
+the stub module libraries for the first time.
 
-The Cyclus code requires the following software and libraries.
+~~~~~~~~~~~~~~~~~~~~~~~~~~~
+Dependencies
+~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+Building a module for the Cyclus  code requires the following software and libraries.
 
 ====================   ==================
 Package                Minimum Version   
 ====================   ==================
+`Cyclus`               0.1  
 `CMake`                2.8            
 `boost`                1.34.1
 `libxml2`              2                 
@@ -67,18 +282,20 @@ Package                Minimum Version
 ====================   ==================
 
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~
-Building and Running Cyclus
+Building Your Module
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-In order to facilitate future compatibility with multiple platforms, Cyclus is
-built using  `Cmake <http://www.cmake.org>`_. This relies on CMake version
-2.8 or higher and the CMakeLists.txt file in `src/`. It is
-recommended that you use CMake to build the Cyclus executable external to the
-source code. To do this, execute the following steps::
+In order to facilitate future compatibility with multiple platforms, Cyclus and 
+its modules are, by default, built using  `Cmake <http://www.cmake.org>`_. This 
+relies on CMake version 2.8 or higher and the CMakeLists.txt file in `src/`. It is
+recommended that you use CMake to build your module libraries in a directory 
+external to the source code. Now, to use your module(s) within a cyclus 
+simulation, you must already have cyclus installed . Once that is done, build your
+module libraries by the following steps::
 
-    .../core/$ mkdir build
-    .../core/$ cd build
-    .../core/build$ cmake ../src
+    .../onegroupreactor/$ mkdir build
+    .../onegroupreactor/$ cd build
+    .../onegroupreactor/build$ cmake ../src -DCYCLUS_ROOT_DIR=<cyclus location> 
 
 You should see output like this::
 
@@ -86,20 +303,27 @@ You should see output like this::
     ...
     >> -- Configuring done
     >> -- Generating done
-    >> -- Build files have been written to: .../core/build
-    /core/build$ make cyclus
-    >> Scanning dependencies of target cyclus
+    >> -- Build files have been written to: .../onegroupreactor/build
+    /onegroupreactor/build$ make onegroupreactor
+    >> Scanning dependencies of target onegroupreactor
     ...
     ...
-    >> [100%] Building CXX object CMakeFiles/cyclus.dir/SourceFac.cpp.o
-    >> Linking CXX executable cyclus
-    >> [100%] Built target cyclus
+    >> [100%] Building CXX object CMakeFiles/onegroupreactor.dir/SourceFac.cpp.o
+    >> Linking CXX executable onegroupreactor
+    >> [100%] Built target onegroupreactor
 
-Now, you can make cyclus, and run it with some input file, for this example, call it `input.xml`::
+~~~~~~~~~~~~~~~~~~~~~~~~~~~
+Installing Your Module
+~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-    .../core/build$ make
-    .../core/build$ ./cyclus input.xml
+To allow cyclus to find your module libraries, you must install them within 
+the cyclus installation directory. To do so, execute :: 
 
+    .../onegroupreactor/build$ make
+    .../onegroupreactor/build$ make install
+
+If the cyclus installation directory is in a system location, you will need to 
+execute `sudo make install` instead of `make install`. 
 The `Cyclus Homepage`_ has much more detailed guides and information.  If
 you intend to develop for *Cyclus*, please visit it to learn more.
 
@@ -107,197 +331,113 @@ you intend to develop for *Cyclus*, please visit it to learn more.
 .. _`Cyclus Homepage`: http://cyclus.github.com
 
 
+
 --------------------------------------------------------------------------
-The Developer Workflow
+Advanced : A Suggested Developer Workflow
 --------------------------------------------------------------------------
 
-*Note that "blessed" repository refers to the primary `cyclus/core` repository.*
-
-As you do your development, push primarily only to your own fork. Push to
-the blessed repository (usually the "develop" branch) only after:
-
-  * You have pulled the latest changes from the blessed repository.
-  * You have completed a logical set of changes.
-  * Cyclus compiles with no errors.
-  * All tests pass.
-  * Cyclus input files run as expected.
-  * (recommended) your code has been reviewed by another developer.
-
-Code from the "develop" branch generally must pass even more rigorous checks
-before being integrated into the "master" branch. Hotfixes would be a
-possible exception to this.
+If you are working on your module with numerous developers, we recommend a
+branching workflow similar to the one described at http://progit.org/book/ch3-4.html.
 
 ~~~~~~~~~~~~~~~~~~~
 Workflow Notes
 ~~~~~~~~~~~~~~~~~~~
 
-  * Use a branching workflow similar to the one described at
-    http://progit.org/book/ch3-4.html.
-
-  * The "develop" branch is how core developers will share (generally compilable) progress
+  * The "develop" branch is how developers will share (generally compilable) progress
     when we are not yet ready for the code to become 'production'.
 
-  * Keep your own "master" and "develop" branches in sync with the blessed repository's
+  * Keep your own "master" and "develop" branches in sync with the upstream repository's
     "master" and "develop" branches. The master branch should always be the 'stable'
-    or 'production' release of cyclus.
+    or 'production' release of your module.
     
-     - Pull the most recent history from the blessed repository "master"
+     - Pull the most recent history from the upstream repository "master"
        and/or "develop" branches before you merge changes into your
-       corresponding local branch. Consider doing a rebase pull instead of
-       a regular pull or 'fetch and merge'.  For example::
+       corresponding local branch. 
+       For example::
 
          git checkout develop
-         git pull --rebase blessed develop
+         git fetch upstream 
+         git pull upstream develop
 
      - Only merge changes into your "master" or "develop" branch when you
-       are ready for those changes to be integrated into the blessed
+       are ready for those changes to be integrated into the upstream
        repository's corresponding branch. 
 
   * As you do development on topic branches in your own fork, consider rebasing
-    the topic branch onto the "master" and/or "develop"  branches after *pulls* from the blessed
+    the topic branch onto the "master" and/or "develop"  branches after *pulls* from the upstream
     repository rather than merging the pulled changes into your branch.  This
     will help maintain a more linear (and clean) history.
-    *Please see caution about rebasing below*.  For example::
+    For example::
 
       git checkout [your topic branch]
-      git rebase develop
+      git merge develop
 
-  * In general, **every commit** (notice this is not 'every push') to the
-    "develop" and "master" branches should compile and pass tests. This
-    means that when you are ready to move changes from one of your topic
-    branches into the "develop" branch, you should use a NON-fast-forward
-    merge.  For example::
+  * **Passing Tests**
+
+      - To check that your branch passes the tests, you must build and install your topic 
+        branch and then run the OneGroupReactorUnitTestDriver (at the moment, ```make 
+        test``` is insufficient). For example ::
+      
+          mkdir build
+          mkdir install
+          cd build
+          cmake ../src -DCMAKE_INSTALL_PREFIX=../install
+          make
+          make install
+          ../install/onegroupreactor/bin/OneGroupReactorUnitTestDriver
+
+      - There are also a suite of sample input files 
+        In addition to the \*UnitTestDriver, a suite of input files can be run and 
+        tested using the run_inputs.py script that is configured, built, and installed 
+        with your module. It relies on the input files that are part of your Cycstub 
+        repository, and only succeeds for input files that are correct (some may have 
+        known issues. See the issue list in cyclus for details.) To run the example 
+        input files, ::
+
+          python ../install/onegroupreactor/bin/run_inputs.py
+
+  * **Making a Pull Request** 
     
-      git checkout develop
-      git merge --no-ff [your topic branch]
+      - When you are ready to move changes from one of your topic branches into the 
+        "develop" branch, it must be reviewed and accepted by another 
+        developer. 
+
+      - You may want to review this `tutorial <https://help.github.com/articles/using-pull-requests/>`_ 
+        before you make a pull request to the develop branch.
+        
+  * **Reviewing a Pull Request** 
+
+     - Build, install, and test it. If you have added the remote repository as 
+       a remote you can check it out and merge it with the current develop 
+       branch thusly, ::
+       
+         git checkout -b remote_name/branch_name
+         git merge develop
+
+     - Look over the code. 
+
+        - You may want your code to meet `our style guidelines <http://cyclus.github.com/devdoc/style_guide.html>`_.
+
+        - Make inline review comments concerning improvements. 
+      
+     - Accept the Pull Request    
+
+        - In general, **every commit** (notice this is not 'every push') to the
+          "develop" and "master" branches should compile and pass tests. This
+          is guaranteed by using a NON-fast-forward merge during the pull request 
+          acceptance process. 
     
-    Possible exceptions to this 'no fast-forward' merge
-    include:
-
-     - your topic branch consists of only one (compileable and passes
-       tests) commit.
-
-     - every commit in your topic branch is compileable and passes tests.
-
-
-~~~~~~~~~~~~~~~~~~~
-Cautions
-~~~~~~~~~~~~~~~~~~~
-
-  * **NEVER** merge the "master" branch into the "develop"
-    branch. Changes should only flow *to* the "master" branch *from* the
-    "develop" branch.
-
-  * **DO NOT** rebase any commits that have been pulled/pushed anywhere
-    else other than your own fork (especially if those commits have been
-    integrated into the blessed repository.  You should NEVER rebase
-    commits that are a part of the 'master' branch.  *If you do, you will be
-    flogged publicly*.
-
-  * Make sure that you are pushing/pulling from/to the right branches.
-    When in doubt, use the following syntax::
-
-      git push [remote] [from-branch]:[to-branch]
-
-    and (*note that pull always merges into the current checked out branch*)::
-
-      git pull [remote] [from-branch]
-
+        - The green "Merge Pull Request" button does a non-fast-forward merge by 
+          default. However, if that button is unavailable, you've made minor 
+          local changes to the pulled branch, or you just want to do it from the 
+          command line, make sure your merge is a non-fast-forward merge. For example::
+          
+            git checkout develop
+            git merge --no-ff remote_name/branch_name -m "A message of acceptance."
 
 ~~~~~~~~~~~~~~~~~~~
-An Example
+See also
 ~~~~~~~~~~~~~~~~~~~
 
-
-Introduction
-============
-
-As this type of workflow can be complicated to converts from SVN and very complicated
-for brand new programmers, an example is provided.
-
-For the sake of simplicity, let us assume that we want a single "sandbox" branch
-in which we would like to work, i.e. where we can store all of our work that may not
-yet pass tests or even compile, but where we also want to save our progress. Let us 
-call this branch "Work". So, when all is said and done, in our fork there will be 
-three branches: "Master", "Develop", and "Work".
-
-Acquiring Cyclus and Workflow
-=============================
-
-We begin with a fork of the main ("blessed") Cyclus repository. After initially forking
-the repo, we will have two branches in our fork: "Master" and "Develop".
-
-Acquiring a Fork of the Cyclus Repository
------------------------------------------
-
-A fork is *your* copy of Cyclus. Github offers an excelent 
-`tutorial <http://help.github.com/fork-a-repo/>`_ on how to set one up. The rest of this
-example assumes you have set up the "upstream" repository as cyclus/core. Note that git
-refers to your fork as "origin".
-
-First, let's make our "work" branch:
-::
-
-    .../cyclus_dir/$ git branch work
-    .../cyclus_dir/$ git push origin work
-
-
-We now have the following situation: there exists the "blessed" copy of the Master and
-Develop branches, there exists your fork's copy of the Master, Develop, and Work branches,
-*AND* there exists your *local* copy of the Master, Develop, and Work branches. It is 
-important now to note that you may wish to work from home or the office. If you keep your 
-fork's branches up to date (i.e., "push" your changes before you leave), only your *local*
-copies of your branches may be different when you next sit down at the other location.
-
-Workflow: The Beginning
------------------------
-
-Now, for the workflow! This is by no means the only way to perform this type of workflow, 
-but I assume that you wish to handle conflicts as often as possible (so as to keep their total 
-number small). Let us imagine that you have been at work, finished, and successfully pushed 
-your changes to your *Origin* repository. You are now at home, perhaps after dinner (let's just 
-say some time has passed), and want to continue working a bit (you're industrious, I suppose... 
-or a grad student). To begin, let's update our *home's local branches*.
-::
-
-    .../cyclus_dir/$ git checkout develop
-    .../cyclus_dir/$ git pull origin develop 
-    .../cyclus_dir/$ git pull upstream develop
-    .../cyclus_dir/$ git push origin develop
-
-    .../cyclus_dir/$ git checkout work
-    .../cyclus_dir/$ git pull origin work
-    .../cyclus_dir/$ git merge develop
-    .../cyclus_dir/$ git push origin work
-
-Perhaps a little explanation is required. We first want to make sure that this new local copy of 
-the develop branch is up-to-date with respect to the remote origin's branch and remote upstream's
-branch. If there was a change from the remote upstream's branch, we want to push that to origin. 
-We then follow the same process to update the work branch, except:
-
-#. we don't need to worry about the *upstream* repo because it doesn't have a work branch, and
-#. we want to incorporate any changes which may have been introduced in the develop branch update.
-
-Workflow: The End
------------------
-
-As time passes, you make some changes to files, and you commit those changes (to your *local work
-branch*). Eventually (hopefully) you come to a stopping point where you have finished your project 
-on your work branch *AND* it compiles *AND* it runs input files correctly *AND* it passes all tests!
-Perhaps you have found Nirvana. In any case, you've performed the final commit to your work branch,
-so it's time to merge those changes with the local develop branch and push them to origin's develop
-branch: ::
-
-    .../cyclus_dir/$ git checkout develop
-    .../cyclus_dir/$ git pull upstream develop
-    .../cyclus_dir/$ git merge work 
-    .../cyclus_dir/$ git push origin develop
-
-    .../cyclus_dir/$ git checkout work
-    .../cyclus_dir/$ git merge develop
-    .../cyclus_dir/$ git push origin work
-
-This time we want to update our local develop branch based on the changes we made in work. First we
-checkout and update develop in case the upstream develop branch introduced any changes. We then
-apply our changes via merging work into develop, and push that back up to origin. In case the upstream
-pull did introduce changes, we go ahead and update the work branch on origin.
+A good description of a git workflow with good graphics is available at
+http://nvie.com/posts/a-successful-git-branching-model/
