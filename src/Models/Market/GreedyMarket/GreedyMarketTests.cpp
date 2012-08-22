@@ -29,6 +29,8 @@ class FakeGreedyMarket : public GreedyMarket {
       Transaction trans(this, OFFER);
       msg_ = msg_ptr(new Message(this, this, trans));
       msg_->trans().setResource(res);
+      commodity_ = "none";
+      registerMarket(this);
     }
 
     virtual ~FakeGreedyMarket() {
@@ -101,12 +103,12 @@ class GreedyMarketTest : public ::testing::Test {
       requester = new FakeFacility();
 
       Transaction req(requester, REQUEST);
-      req.setCommod("none");
+      req.setCommod(src_market->commodity());
       req.setMinFrac(0.1);
       req.setPrice(3);
 
       Transaction off(supplier, OFFER);
-      off.setCommod("none");
+      off.setCommod(new_market->commodity());
       off.setMinFrac(0.1);
       off.setPrice(3);
 
