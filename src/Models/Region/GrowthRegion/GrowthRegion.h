@@ -136,6 +136,12 @@ class GrowthRegion : public RegionModel
   void initBuildManager();
 
   /**
+     adds any children that are MarketPlayerManagers to the
+     sdmanager_
+   */
+  void initPlayerManagers();
+
+  /**
      initializes members based on producer input
 
      @param context the context to query

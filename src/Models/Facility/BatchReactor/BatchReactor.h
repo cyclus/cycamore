@@ -7,6 +7,8 @@
 #include "Transaction.h"
 #include "Material.h"
 #include "MatBuff.h"
+#include "MarketPlayer.h"
+#include "SupplyDemand.h"
 
 #include "Logger.h"
 
@@ -27,7 +29,7 @@ enum Phase {INIT, BEGIN, OPERATION, REFUEL, END};
    This class is identical to the RecipeReactor, except that it
    operates in a batch-like manner, i.e. it refuels in batches.
  */
-class BatchReactor : public FacilityModel  {
+class BatchReactor : public FacilityModel, public MarketPlayer  {
 /* --------------------
  * all MODEL classes have these members
  * --------------------
@@ -42,6 +44,13 @@ class BatchReactor : public FacilityModel  {
      Destructor for the BatchReactor class. 
    */
   virtual ~BatchReactor() {};
+
+  /**
+     overridden doSetParent method to allow the reactor to enter its
+     commodity's market
+     @param parent the parent to set
+   */
+  virtual void doSetParent(Model* parent);
 
   /**
      initialize an object from XML input 
@@ -134,6 +143,11 @@ class BatchReactor : public FacilityModel  {
    */
   virtual void handleTock(int time);
 
+  /**
+     exists the facility from its market and decommissions
+   */
+  virtual void decommission();
+
 /* ------------------- */ 
 
 
@@ -141,6 +155,14 @@ class BatchReactor : public FacilityModel  {
  * _THIS_ MODEL class has these members
  * --------------------
  */
+  /**
+     set market player members
+     @param commod_name the name of the commodity
+     @param capacity the production capacity for the commodity
+   */
+  void setProductionInformation(std::string commod_name,
+                                double capacity);
+  
   /**
      set the cycle length 
    */
@@ -253,6 +275,11 @@ class BatchReactor : public FacilityModel  {
   Phase phase() {return phase_;}
 
  private:
+  /**
+     The commodity this batch reactor trades (power)
+   */
+  Commodity* commod_;
+
   /**
      The time between batch reloadings. 
    */

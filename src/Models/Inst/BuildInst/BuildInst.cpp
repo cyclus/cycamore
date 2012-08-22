@@ -8,7 +8,7 @@
 #include "BuildInst.h"
 
 #include "FacilityModel.h"
-
+#include "SupplyDemand.h"
 #include "Logger.h"
 #include "CycException.h"
 #include "InputXML.h"
@@ -51,6 +51,15 @@ void BuildInst::init(xmlNodePtr cur) {
         << "with no available prototypes!";
     throw CycOverrideException(err.str());
   }
+
+  // get commodity managed, if any
+  try {
+    xmlNodeSetPtr nodes = 
+    XMLinput->get_xpath_elements(model_cur,"ProducedCommodity");
+    string name = (const char*)nodes->nodeTab[0]->children->content;
+    Commodity commod(name);
+    MarketPlayerManager::setCommodity(commod);
+  } catch (CycNullXPathException) {};
 }
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - 

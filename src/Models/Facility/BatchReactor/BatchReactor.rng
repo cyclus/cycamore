@@ -26,6 +26,15 @@ datatypeLibrary="http://www.w3.org/2001/XMLSchema-datatypes">
           <data type="nonNegativeInteger"/>
 	</element>
 
+	<element name ="CommodityProduction">
+	  <element name="commodity">
+	    <text/>
+	  </element>
+	  <element name="productioncapacity">
+	    <text/>
+	  </element>
+	</element>
+
      </element>
   </define>
 

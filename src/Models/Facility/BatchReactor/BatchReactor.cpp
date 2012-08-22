@@ -8,6 +8,7 @@
 #include "CycException.h"
 #include "InputXML.h"
 #include "Timer.h"
+#include "SupplyDemand.h"
 
 #include <queue>
 #include <sstream>
@@ -73,7 +74,32 @@ void BatchReactor::init(xmlNodePtr cur) {
           make_pair(out_commod, out_recipe_)));
   }
 
+  // initialize MarketPlayer
+  cur = XMLinput->get_xpath_element(cur,"CommodityProduction");
+  string name = XMLinput->get_xpath_content(cur,"commodity");
+  double capacity = 
+    strtod(XMLinput->get_xpath_content(cur,"productioncapacity"),NULL);
+  setProductionInformation(name,capacity);
+
+  // set first phase
   setPhase(BEGIN);
+}
+
+//- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - 
+void BatchReactor::setProductionInformation(std::string commod_name,
+                                            double capacity) {
+  commod_ = new Commodity(commod_name);
+  MarketPlayer::registerCommodity(*commod_);
+  MarketPlayer::setProductionCapacity(capacity,*commod_);
+}
+
+//- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - 
+void BatchReactor::doSetParent(Model* parent) {
+  Model::doSetParent(parent);
+  if (commod_) {
+    MarketPlayer::registerManager(dynamic_cast<MarketPlayerManager*>(parent_),*commod_);
+    MarketPlayer::enterMarket(*commod_);
+  }
 }
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - 
@@ -324,6 +350,13 @@ void BatchReactor::addFuelPair(std::string incommod, IsoVector inFuel,
   fuelPairs_.push_back(make_pair(make_pair(incommod, inFuel),
                                  make_pair(outcommod, outFuel)));
 }
+
+//- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -    
+void BatchReactor::decommission() {
+  MarketPlayer::leaveMarket(*commod_);
+  delete commod_;
+  FacilityModel::decommission();
+};
 
 /* ------------------- */ 
 
