@@ -4,17 +4,15 @@
 
 #include "NullMarket.h"
 
-#include "Logger.h"
-#include "CycException.h"
-#include "InputXML.h"
 #include "Resource.h"
 
 using namespace std;
 
-//- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -  
-std::string NullMarket::str() {
-  return MarketModel::str();
-};
+//- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - 
+NullMarket::NullMarket() {}
+
+//- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - 
+NullMarket::~NullMarket() {}
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -  
 void NullMarket::receiveMessage(msg_ptr msg) {
