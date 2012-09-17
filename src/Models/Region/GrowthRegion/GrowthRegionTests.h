@@ -40,6 +40,7 @@ protected:
   Producer getProducer(GrowthRegion* reg, int i);
 
   // member initialization
+  std::string initString();
   void initSupplyDemand();
   void setUpChildren();
   void doInit();
