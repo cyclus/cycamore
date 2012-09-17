@@ -1,12 +1,30 @@
 // Deployinst.h
-#if !defined(_DEPLOYINST_H)
+#ifndef _DEPLOYINST_H
 #define _DEPLOYINST_H
-
-#include <iostream>
 
 #include "InstModel.h"
 
-#include "Logger.h"
+#include "Prototype.h"
+
+#include <pair>
+#include <set>
+#include <map>
+
+typedef std::pair<Prototype*,int> BuildOrder;
+
+/**
+   a helper class for storing and extracting build orders
+ */
+class BuildOrderList {
+  /// add a build order
+  void addBuildOrder(Prototype* p, int number, int time);
+
+  /// extract a set of build orders
+  std::set<BuildOrder> extractOrders(int time);
+
+ private:
+  std::map<int, std::set<BuildOrder> > all_orders_;
+};
 
 /**
    @class DeployInst 
@@ -25,54 +43,20 @@ class DeployInst : public InstModel {
   /**
      Default constructor 
    */
-  DeployInst() {};
+  DeployInst();
 
   /**
      Destructor 
    */
-  virtual ~DeployInst() {};
-   
-  // different ways to populate an object after creation
-  /**
-     initialize an object from XML input 
-   */
-  virtual void init(xmlNodePtr cur);
+  virtual ~DeployInst();
 
   /**
-     initialize an object by copying another 
+     Initialize members related to derived module class
+     @param qe a pointer to a QueryEngine object containing initialization data
    */
-  virtual void copy(DeployInst* src);
-
-  /**
-     This drills down the dependency tree to initialize all relevant 
-     parameters/containers.  
-     Note that this function must be defined only in the specific model 
-     in question and not in any inherited models preceding it. 
-      
-     @param src the pointer to the original (initialized ?) model to be 
-   */
-  virtual void copyFreshModel(Model* src);
-
-  /**
-     prints information about this inst 
-   */
-  virtual std::string str();
+  virtual void initModuleMembers(QueryEngine* qe);
 
 /* ------------------- */ 
-
-
-/* --------------------
- * all COMMUNICATOR classes have these members
- * --------------------
- */
- public:
-  /**
-     simply ignore incoming offers/requests. 
-   */
-  virtual void receiveMessage(msg_ptr msg) {};
-
-/* -------------------- */
-
 
 /* --------------------
  * all INSTMODEL classes have these members
@@ -93,14 +77,9 @@ class DeployInst : public InstModel {
  */
  protected:
   /**
-     a map of deployed models 
+     a collection of orders to build
    */
-  std::map<int,Model*> deployment_map_;
-
-  /**
-     a map of models to build 
-   */
-  std::map<int,Model*> to_build_map_;
+  BuildOrderList build_orders_;
   
 /* ------------------- */ 
 
