@@ -1,5 +1,5 @@
 // NullRegion.h
-#if !defined(_NULLREGION_H)
+#ifndef _NULLREGION_H
 #define _NULLREGION_H
 
 #include "RegionModel.h"
@@ -43,17 +43,12 @@ class NullRegion : public RegionModel  {
   /**
      The default constructor for the NullRegion 
    */
-  NullRegion() {};
+  NullRegion();
 
   /**
      The default destructor for the NullRegion 
    */
-  virtual ~NullRegion() {};
-  
-  /**
-     print information about the region 
-   */
-  virtual std::string str();
+  virtual ~NullRegion();
 
 /* ------------------- */ 
 
