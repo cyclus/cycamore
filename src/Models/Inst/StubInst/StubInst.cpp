@@ -16,26 +16,19 @@ StubInst::StubInst() {};
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 StubInst::~StubInst() {};
-    
-//- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-void StubInst::init(xmlNodePtr cur) { 
-  InstModel::init(cur); 
-};
-  
-//- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-void StubInst::copy(StubInst* src) { 
-  InstModel::copy(src); 
-};
 
-//- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-void StubInst::copyFreshModel(Model* src) { 
-  copy(dynamic_cast<StubInst*>(src)); 
-};
-
-//- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+//- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 std::string StubInst::str() { 
   return InstModel::str(); 
-};
+}
+
+//- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+void StubInst::initModuleMembers(QueryEngine* qe) {}
+
+//- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+void StubInst::enterSimulation(Model* parent) {
+  InstModel::enterSimulation(parent);
+}
 
 /* ------------------- */ 
 
@@ -67,6 +60,11 @@ void StubInst::receiveMessage(msg_ptr msg) {};
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 extern "C" Model* constructStubInst() {
   return new StubInst();
+}
+
+//- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+extern "C" void destructStubInst(Model* model) {
+  delete model;
 }
 
 /* ------------------- */ 
