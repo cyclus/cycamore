@@ -2,51 +2,38 @@
 #include <gtest/gtest.h>
 
 #include "StubRegion.h"
-#include "CycException.h"
+
 #include "Message.h"
 #include "RegionModelTests.h"
 #include "ModelTests.h"
 
 #include <string>
-#include <queue>
 
 using namespace std;
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-class FakeStubRegion : public StubRegion {
-  public:
-    FakeStubRegion() : StubRegion() {
-    }
-
-    virtual ~FakeStubRegion() {
-    }
-};
-
-//- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 class StubRegionTest : public ::testing::Test {
   protected:
-    FakeStubRegion* src_region_;
-    FakeStubRegion* new_region_; 
+    StubRegion* src_region_;
+    StubRegion* new_region_; 
 
     virtual void SetUp(){
-      src_region_ = new FakeStubRegion();
-      new_region_ = new FakeStubRegion();
+      src_region_ = new StubRegion();
     };
 
     virtual void TearDown() {
       delete src_region_;
-      delete new_region_;
     }
 };
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 Model* StubRegionModelConstructor(){
-  return dynamic_cast<Model*>(new FakeStubRegion());
+  return dynamic_cast<Model*>(new StubRegion());
 }
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 RegionModel* StubRegionConstructor(){
-  return dynamic_cast<RegionModel*>(new FakeStubRegion());
+  return dynamic_cast<RegionModel*>(new StubRegion());
 }
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - 
