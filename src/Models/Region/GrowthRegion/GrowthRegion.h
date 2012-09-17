@@ -2,16 +2,19 @@
 #ifndef GROWTHREGION_H
 #define GROWTHREGION_H
 
+#include "SupplyDemandManager.h"
 #include "RegionModel.h"
-#include "Model.h"
-#include "SupplyDemand.h"
-#include "BuildingManager.h"
 
 #include <map>
 #include <string>
 #include <boost/shared_ptr.hpp>
-#include <libxml/xpath.h>
 
+// forward declarations
+class QueryEngine;
+class Producer;
+class BuildingManager;
+class BuildOrder;
+class Commodity; 
 class GrowthRegion;
 #include "GrowthRegionTests.h"
 
@@ -43,42 +46,20 @@ class GrowthRegion : public RegionModel
   virtual ~GrowthRegion() {};
 
   /**
-     Initalize the GrowthRegion from xml. Calls the init function. 
-     
-     @param cur the curren xml node pointer 
-     @param context the context to query
-   */
-  virtual void init(xmlNodePtr cur, xmlXPathContextPtr context);
-
-  /**
-     Initalize the GrowthRegion from xml. Calls the init() function
-     using the InputXML context.
-     
-     @param cur the curren xml node pointer 
-   */
-  virtual void init(xmlNodePtr cur);
-
-  /**
-     initialize an object by copying another 
-   */
-  virtual void copy(GrowthRegion* src);
-
-  /**
-     This drills down the dependency tree to initialize all relevant 
-     parameters/containers. 
-     Note that this function must be defined only in the specific 
-     model in question and not in any inherited models preceding it. 
-      
-     @param src the pointer to the original (initialized ?) model to be 
-   */
-  virtual void copyFreshModel(Model* src) { 
-    copy(dynamic_cast<GrowthRegion*>(src)); 
-  }
-  
-  /**
      print information about the region 
    */
   virtual std::string str();
+
+  /**
+     Initialize members related to derived module class
+     @param qe a pointer to a QueryEngine object containing initialization data
+   */
+  virtual void initModuleMembers(QueryEngine* qe);
+
+  /**
+     perform all necessary actions for the model to enter the simulation
+   */
+  virtual void enterSimulation(Model* parent);
 
 /* ------------------- */ 
 
@@ -123,12 +104,9 @@ class GrowthRegion : public RegionModel
 
   /**
      initializes members based on commodity demand input
-
-     @param node the xml node corresponding to each demanded
-     commodity
-     @param context the context to query
+     @param qe the engine to query input
    */
-  void initCommodity(xmlNodePtr& node, xmlXPathContextPtr context);
+  void initCommodity(QueryEngine* qe);
 
   /**
      initializes the building manager with a fully formed sdmanager_
@@ -137,13 +115,10 @@ class GrowthRegion : public RegionModel
 
   /**
      initializes members based on producer input
-
-     @param context the context to query
-     @param node the xml node corresponding to a producer
+     @param qe the engine to query input
      @param commodity the commodity produced
    */
-  Producer getProducer(xmlXPathContextPtr& context, xmlNodePtr& node,
-                       Commodity& commodity);
+  Producer getProducer(QueryEngine* qe, Commodity& commodity);
 
   /**
      populates builders_ and producers_ once all initialization is 

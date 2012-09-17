@@ -2,8 +2,6 @@
 #if !defined(_NULLREGION_H)
 #define _NULLREGION_H
 
-#include <iostream>
-
 #include "RegionModel.h"
 
 /**
@@ -51,26 +49,6 @@ class NullRegion : public RegionModel  {
      The default destructor for the NullRegion 
    */
   virtual ~NullRegion() {};
-   
-  /**
-     initialize an object from XML input 
-   */
-  virtual void init(xmlNodePtr cur)  { RegionModel::init(cur); };
-
-  /**
-     initialize an object by copying another 
-   */
-  virtual void copy(NullRegion* src) { RegionModel::copy(src); } ;
-
-  /**
-     This drills down the dependency tree to initialize all relevant 
-     parameters/containers. 
-     Note that this function must be defined only in the specific model 
-     in question and not in any inherited models preceding it. 
-      
-     @param src the pointer to the original (initialized ?) model to be 
-   */
-  virtual void copyFreshModel(Model* src){ copy(dynamic_cast<NullRegion*>(src)); };
   
   /**
      print information about the region 

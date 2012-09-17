@@ -3,24 +3,19 @@
 
 #include "GrowthRegion.h"
 
-#include "InputXML.h"
-#include "Model.h"
-#include "InstModel.h"
+#include "Prototype.h"
+#include "QueryEngine.h"
 #include "SupplyDemand.h"
 #include "BuildingManager.h"
+#include "InstModel.h"
 #include "SymbolicFunctionFactories.h"
 #include "CycException.h"
 
 #include <stdlib.h>
-#include <map>
 #include <vector>
-#include <string>
-#include <boost/shared_ptr.hpp>
-#include <libxml/xpath.h>
 
 using namespace std;
 using namespace boost;
-
 
 /* --------------------
  * GrowthRegion Class Methods
@@ -35,22 +30,15 @@ GrowthRegion::GrowthRegion() {
 }
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - 
-void GrowthRegion::init(xmlNodePtr cur, xmlXPathContextPtr context) {
+void GrowthRegion::initModuleMembers(QueryEngine* qe) {
   LOG(LEV_DEBUG2, "greg") << "A Growth Region is being initialized";
-  // xml inits
-  Model::init(cur); // name_ and model_impl_
-  RegionModel::initAllowedFacilities(cur); // allowedFacilities_
+  
+  string query = "gcommodity";
 
-  // get path to this model
-  xmlNodePtr model_cur = 
-    XMLinput->get_xpath_element(context,cur,"model/GrowthRegion");
-
-  // get all commodities
-  xmlNodeSetPtr commodity_nodes = 
-    XMLinput->get_xpath_elements(context,model_cur,"gcommodity");\
+  int nCommodities = qe->nElementsMatchingQuery(query);
 
   // for now we can only handle one commodity
-  if (commodity_nodes->nodeNr > 1) {
+  if (nCommodities > 1) {
     stringstream err("");
     err << "GrowthRegion can currently only handle demand for "
         << "one commodity type.";
@@ -58,21 +46,20 @@ void GrowthRegion::init(xmlNodePtr cur, xmlXPathContextPtr context) {
   }
 
   // populate supply demand manager info for each commodity
-  for (int i=0;i<commodity_nodes->nodeNr;i++) {
-    initCommodity(commodity_nodes->nodeTab[i],XMLinput->context());
+  for (int i=0; i<nCommodities; i++) {
+    initCommodity(qe->queryElement(query,i));
   }
 
   // instantiate building manager
   initBuildManager();
-  
-  // parent_ and tick listener, model 'born'
-  RegionModel::initSimInteraction(this); 
-  // children->setParent, requires init()
-  RegionModel::initChildren(cur); 
+}
 
+//- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - 
+void GrowthRegion::enterSimulation(Model* parent) {
+  RegionModel::enterSimulation(parent);
   // populate producers_, builders_
   populateProducerMaps();
-}
+};
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - 
 void GrowthRegion::initBuildManager() {
@@ -81,78 +68,48 @@ void GrowthRegion::initBuildManager() {
 }
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - 
-void GrowthRegion::init(xmlNodePtr cur) {
-  init(cur,XMLinput->context());
-}
+void GrowthRegion::initCommodity(QueryEngine* qe) {
+  // instantiate product
+  string name = qe->getElementContent("name");
+  Commodity commodity(name);
+  int position = commodities_.size();
+  commodities_.push_back(commodity);
+  
+  // instantiate demand
+  QueryEngine* demand = qe->queryElement("demand");
+  string type = demand->getElementContent("type");
+  string params = demand->getElementContent("parameters");
+  BasicFunctionFactory bff;
+  FunctionPtr demand_function = bff.getFunctionPtr(type,params);
 
-//- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - 
-void GrowthRegion::initCommodity(xmlNodePtr& node, 
-                                 xmlXPathContextPtr context) {
-    // instantiate product
-    string name = 
-      (const char*)XMLinput->get_xpath_content(context,node,"name");
-    Commodity commodity(name);
-    int position = commodities_.size();
-    commodities_.push_back(commodity);
+  // set up producers vector  
+  vector<Producer> producers;
+  string query = "metby";
+  int nProducers = demand->nElementsMatchingQuery(query);
 
-    // instantiate demand
-    string type = 
-      (const char*)XMLinput->get_xpath_content(context,node,"demand/type");
-    string params = 
-      (const char*)XMLinput->get_xpath_content(context,node,"demand/parameters");
-    BasicFunctionFactory bff;
-    FunctionPtr demand = bff.getFunctionPtr(type,params);
-
-    // set up producers vector  
-    vector<Producer> producers;
-    xmlNodeSetPtr producer_nodes = 
-      XMLinput->get_xpath_elements(context,node,"demand/metby");
-
-    for (int i=0; i<producer_nodes->nodeNr; i++) {
-      xmlNodePtr pnode = producer_nodes->nodeTab[i];
-      producers.push_back(getProducer(context,pnode,commodities_.at(position)));
-    } // end producer nodes
+  for (int i=0; i<nProducers; i++) {
+    Producer p = 
+      getProducer(demand->
+                  queryElement(query,i),commodities_.at(position));
+    producers.push_back(p);
+  } // end producer nodes
     
     // populate info
-    sdmanager_.registerCommodity(commodities_.at(position),demand,producers);
+  sdmanager_.registerCommodity(commodities_.at(position),demand_function,producers);
 }
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - 
-Producer GrowthRegion::getProducer(xmlXPathContextPtr& context, 
-                                   xmlNodePtr& node,
+Producer GrowthRegion::getProducer(QueryEngine* qe,
                                    Commodity& commodity) {
-  string fac_name = 
-    (const char*)XMLinput->get_xpath_content(context,node,"facility");
-  double capacity = 
-    atof((const char*)
-         XMLinput->get_xpath_content(context,node,"capacity"));
+  string fac_name = qe->getElementContent("facility");
+  double capacity = strtol(qe->getElementContent("capacity").c_str(),NULL,10);
   double cost = capacity; // cost = capacity
   return Producer(fac_name,commodity,capacity,cost);
 }
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - 
-void GrowthRegion::copy(GrowthRegion* src) {
-  RegionModel::copy(src);
-}
-
-//- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - 
 std::string GrowthRegion::str() {
   std::string s = RegionModel::str();
-
-  // if ( builders_ == NULL || builders_->empty() ){
-  //   s += name() + " has no builders (currently)."; 
-  // } else {
-  //   s += name() + " has the following builders: " ; 
-  //   for(map<Model*, list<Model*>*>::iterator mit=builders_->begin();
-  //       mit != builders_->end(); mit++) {
-  //     s += " prototype=" + mit->first->name() + "("; 
-  //     for(list<Model*>::iterator inst = mit->second->begin();
-  //         inst != mit->second->end(); inst++) {
-  //       s += (*inst)->name() + ", "; 
-  //     }
-  //     s += "), ";
-  //   }
-  // }
   return s;
 }
 
@@ -279,7 +236,7 @@ void GrowthRegion::orderBuilds(std::vector<BuildOrder>& orders) {
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - 
 void GrowthRegion::orderBuild(Model* builder, Model* prototype) {
   // build functions must know who is placing the build order
-  dynamic_cast<InstModel*>(builder)->build(prototype,this);
+  dynamic_cast<InstModel*>(builder)->build(dynamic_cast<Prototype*>(prototype));
 }
 /* -------------------- */
 
@@ -288,7 +245,7 @@ void GrowthRegion::orderBuild(Model* builder, Model* prototype) {
  * Model Class Methods
  * --------------------
  */
-extern "C" Model* constructGrowthRegion() {
+extern "C" Model* constructGrowthRegionGrowthRegion() {
     return new GrowthRegion();
 }
 

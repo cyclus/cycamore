@@ -3,7 +3,6 @@
 #define _BUILDREGION_H
 
 #include "RegionModel.h"
-#include "Model.h"
 
 #include <set>
 #include <list>
@@ -18,6 +17,9 @@ typedef std::list<PrototypeBuildOrder*> PrototypeOrders;
 typedef std::list<PrototypeBuildOrder*>::iterator OrderIterator;
 // Sorting Model Lists
 typedef std::list<Model*>::iterator ModelIterator;
+
+// forward declarations
+class QueryEngine;
 
 /**
    The BuildRegion class inherits from the RegionModel class and is 
@@ -115,35 +117,22 @@ class BuildRegion : public RegionModel
      The default destructor for the BuildRegion 
    */
   virtual ~BuildRegion() {};
-
-  /**
-     Initalize the BuildRegion from xml. Calls the init function. 
-     
-     @param cur the curren xml node pointer 
-   */
-  virtual void init(xmlNodePtr cur);
-
-  /**
-     initialize an object by copying another 
-   */
-  virtual void copy(BuildRegion* src);
-
-  /**
-     This drills down the dependency tree to initialize all relevant 
-     parameters/containers. 
-     Note that this function must be defined only in the specific model 
-     in question and not in any inherited models preceding it. 
-      
-     @param src the pointer to the original (initialized ?) model to be 
-   */
-  virtual void copyFreshModel(Model* src) { 
-    copy(dynamic_cast<BuildRegion*>(src)); 
-  }
   
   /**
      print information about the region 
    */
   virtual std::string str();
+  
+  /**
+     Initialize members related to derived module class
+     @param qe a pointer to a QueryEngine object containing initialization data
+   */
+  virtual void initModuleMembers(QueryEngine* qe);
+
+  /**
+     perform all necessary actions for the model to enter the simulation
+   */
+  virtual void enterSimulation(Model* parent);
 
 /* ------------------- */ 
 
@@ -189,9 +178,9 @@ class BuildRegion : public RegionModel
      constructs a set of orders from xml and calls the general
      populateOrders() function.
 
-     @param cur the xml node corresponding to the demand for a prototype
+     @param qe the query engine corresponding to the demand for a prototype
   */
-  void populateOrders(xmlNodePtr cur);
+  void populateOrders(QueryEngine* qe);
 
   /**
      populates prototypeOrders_ given a set of orders. for each order 

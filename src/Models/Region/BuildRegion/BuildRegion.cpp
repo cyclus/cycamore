@@ -3,12 +3,12 @@
 
 #include "BuildRegion.h"
 
+#include "QueryEngine.h"
 #include "InstModel.h"
-
+#include "Prototype.h"
 #include "Timer.h"
 #include "Logger.h"
 #include "CycException.h"
-#include "InputXML.h"
 
 #include <list>
 #include <sstream>
@@ -35,45 +35,12 @@ bool compare_order_times(PrototypeBuildOrder* o1, PrototypeBuildOrder* o2) {
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - 
 BuildRegion::BuildRegion() {
   prototypeOrders_ = new PrototypeOrders();
-  builders_ = new map<Model*, std::list<Model*>*>();
-}
-
-//- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - 
-void BuildRegion::init(xmlNodePtr cur) {
-  LOG(LEV_DEBUG2, "breg") << "A Build Region is being initialized";
-  // xml inits
-  Model::init(cur); // name_ and model_impl_
-  RegionModel::initAllowedFacilities(cur); // allowedFacilities_
-  
-  // get path to this model
-  xmlNodePtr model_cur = 
-    XMLinput->get_xpath_element(cur,"model/BuildRegion");
-
-  // populate orders for each prototype
-  xmlNodeSetPtr prototype_nodes = 
-    XMLinput->get_xpath_elements(model_cur,"prototyperequirement");
-  for (int i=0;i<prototype_nodes->nodeNr;i++){
-    populateOrders(prototype_nodes->nodeTab[i]);
-  }
-  sortOrders();
-  
-  // parent_ and tick listener, model 'born'
-  RegionModel::initSimInteraction(this); 
-  // children->setParent, requires init()
-  RegionModel::initChildren(cur); 
-  
-  // populate the list of builders
-  populateBuilders();
-};
-
-//- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - 
-void BuildRegion::copy(BuildRegion* src) {
-  RegionModel::copy(src);
+  builders_ = new map<Model*, list<Model*>*>();
 }
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - 
 std::string BuildRegion::str() {
-  std::string s = RegionModel::str();
+  string s = RegionModel::str();
 
   if ( builders_ == NULL || builders_->empty() ){
     s += name() + " has no builders (currently)."; 
@@ -93,26 +60,49 @@ std::string BuildRegion::str() {
 }
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - 
-void BuildRegion::populateOrders(xmlNodePtr cur) {  
+void BuildRegion::initModuleMembers(QueryEngine* qe) {
+  LOG(LEV_DEBUG2, "breg") << "A Build Region is being initialized";
+  
+  string query = "prototyperequirement";
+
+  int nRequirements = qe->nElementsMatchingQuery(query);
+
+  // populate orders for each prototype
+  for (int i=0; i<nRequirements; i++){
+    populateOrders(qe->queryElement(query,i));
+  }
+  sortOrders();
+}
+
+//- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - 
+void BuildRegion::enterSimulation(Model* parent) {
+  RegionModel::enterSimulation(parent);
+  // populate the list of builders
+  populateBuilders();
+};
+
+//- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - 
+void BuildRegion::populateOrders(QueryEngine* qe) {  
   // get prototype
-  string name = 
-    (const char*)XMLinput->get_xpath_content(cur, "prototypename");
-  Model* prototype = Model::getTemplateByName(name);
+  string name = qe->getElementContent("prototypename");
+  Model* prototype = 
+    dynamic_cast<Model*>(Prototype::getRegisteredPrototype(name));
   
   // fill a set of orders with constructed orders
   PrototypeOrders* orders = new PrototypeOrders();
 
-  // for each entry, get time and number and construct an order
-  xmlNodeSetPtr entry_nodes = 
-    XMLinput->get_xpath_elements(cur,"demandschedule/entry");
-  string sTime, sNumber;
+  QueryEngine* demandsched = qe->queryElement("demandschedule");
+
+  int nEntries = demandsched->nElementsMatchingQuery("entry");
+
+  // for each entry, get time and number and construct an orde
   int time, number;
-  for (int i=0;i<entry_nodes->nodeNr;i++){
+  for (int i=0; i<nEntries; i++){
+    // get entry
+    QueryEngine* entry = demandsched->queryElement("entry",i);
     // get data
-    sTime = XMLinput->get_xpath_content(entry_nodes->nodeTab[i],"time");
-    sNumber = XMLinput->get_xpath_content(entry_nodes->nodeTab[i],"number");
-    time = strtol(sTime.c_str(),NULL,10);
-    number = strtol(sNumber.c_str(),NULL,10);
+    time = strtol(entry->getElementContent("time").c_str(),NULL,10);
+    number = strtol(entry->getElementContent("number").c_str(),NULL,10);
     // construct
     PrototypeBuildOrder* order = new PrototypeBuildOrder();
     order = constructOrder(prototype,number,time);
@@ -171,16 +161,17 @@ void BuildRegion::populateBuilders() {
         fac++) {
       
       list<Model*>* builder_list;
+      Model* facility = dynamic_cast<Model*>( (*fac) );
       // if fac not in builders_
-      if ( builders_->find( (*fac) ) == builders_->end() ) {
+      if ( builders_->find(facility) == builders_->end() ) {
         builder_list = new list<Model*>();
         builder_list->push_back( (*inst) );
         builders_->
-          insert( pair<Model*,list<Model*>*>( (*fac), builder_list) );
+          insert( pair<Model*,list<Model*>*>(facility, builder_list) );
       }
       // if fac in builders_
       else {
-        (*builders_)[(*fac)]->push_back( (*inst) );
+        (*builders_)[facility]->push_back( (*inst) );
       }
 
     }  // end prototypes
@@ -254,7 +245,7 @@ Model* BuildRegion::selectBuilder(Model* prototype,
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - 
 void BuildRegion::placeOrder(Model* prototype, Model* builder) {
   // build functions must know who is placing the build order
-  dynamic_cast<InstModel*>(builder)->build(prototype,this);
+  dynamic_cast<InstModel*>(builder)->build(dynamic_cast<Prototype*>(prototype));
 }
 
 /* -------------------- */
@@ -265,8 +256,14 @@ void BuildRegion::placeOrder(Model* prototype, Model* builder) {
  * --------------------
  */
 
+//- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 extern "C" Model* constructBuildRegion() {
-    return new BuildRegion();
+      return new BuildRegion();
+}
+
+//- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+extern "C" void destructBuildRegion(Model* model) {
+      delete model;
 }
 
 /* -------------------- */

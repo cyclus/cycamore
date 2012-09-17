@@ -55,14 +55,6 @@ TEST_F(StubRegionTest, InitialState) {
 }
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - 
-TEST_F(StubRegionTest, CopyFreshModel) {
-  new_region_->copyFreshModel(dynamic_cast<Model*>(src_region_)); // deep copy
-  EXPECT_NO_THROW(dynamic_cast<StubRegion*>(new_region_)); // still a stub region
-  EXPECT_NO_THROW(dynamic_cast<FakeStubRegion*>(new_region_)); // still a fake stub region
-  // Test that StubRegion specific parameters are initialized in the deep copy method here
-}
-
-//- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - 
 TEST_F(StubRegionTest, Print) {
   EXPECT_NO_THROW(std::string s = src_region_->str());
   // Test StubRegion specific aspects of the print method here

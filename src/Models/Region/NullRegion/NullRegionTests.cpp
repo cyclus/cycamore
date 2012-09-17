@@ -55,14 +55,6 @@ TEST_F(NullRegionTest, InitialState) {
 }
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - 
-TEST_F(NullRegionTest, CopyFreshModel) {
-  new_region_->copyFreshModel(dynamic_cast<Model*>(src_region_)); // deep copy
-  EXPECT_NO_THROW(dynamic_cast<NullRegion*>(new_region_)); // still a null region
-  EXPECT_NO_THROW(dynamic_cast<FakeNullRegion*>(new_region_)); // still a fake null region
-  // Test that NullRegion specific parameters are initialized in the deep copy method here
-}
-
-//- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - 
 TEST_F(NullRegionTest, Print) {
   EXPECT_NO_THROW(std::string s = src_region_->str());
   // Test NullRegion specific aspects of the print method here
