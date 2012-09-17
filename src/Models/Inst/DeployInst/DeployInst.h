@@ -6,7 +6,7 @@
 
 #include "Prototype.h"
 
-#include <pair>
+#include <utility>
 #include <set>
 #include <map>
 
@@ -16,6 +16,7 @@ typedef std::pair<Prototype*,int> BuildOrder;
    a helper class for storing and extracting build orders
  */
 class BuildOrderList {
+ public:
   /// add a build order
   void addBuildOrder(Prototype* p, int number, int time);
 

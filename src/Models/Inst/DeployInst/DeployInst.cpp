@@ -5,8 +5,6 @@
 
 #include "CycException.h"
 
-#include <utility>
-
 using namespace std;
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - 
@@ -18,7 +16,7 @@ void BuildOrderList::addBuildOrder(Prototype* p, int number,
   if (it == all_orders_.end()) {
     set<BuildOrder> orders;
     orders.insert(make_pair(p,number));
-    all_orders_.insert(orders);
+    all_orders_.insert(make_pair(time,orders));
   } else {
     it->second.insert(make_pair(p,number));
   }  
