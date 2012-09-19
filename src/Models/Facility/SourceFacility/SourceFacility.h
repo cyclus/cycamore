@@ -1,14 +1,12 @@
 // SourceFacility.h
-#if !defined(_SOURCEFACILITY_H)
+#ifndef _SOURCEFACILITY_H
 #define _SOURCEFACILITY_H
 
-#include <iostream>
 #include <deque>
-#include <queue>
 
-#include "Logger.h"
 #include "FacilityModel.h"
 #include "MatBuff.h"
+#include "QueryEngine.h"
 
 /**
    @class SourceFacility 
@@ -84,12 +82,10 @@
    What is the best way to allow offers of an infinite amount of 
    material on a market? 
  */
+
 class SourceFacility : public FacilityModel  {
-/* --------------------
- * all MODEL classes have these members
- * --------------------
- */
  public:
+  /* --- Module Methods --- */
   /**
      Default Constructor for the SourceFacility class 
    */
@@ -100,63 +96,27 @@ class SourceFacility : public FacilityModel  {
    */
   virtual ~SourceFacility();
 
-  // different ways to populate an object after creation
   /**
-     initialize an object from XML input 
+     Initialize members related to derived module class
+     @param qe a pointer to a QueryEngine object containing initialization data
    */
-  virtual void init(xmlNodePtr cur);
-
-  /**
-     initialize an object by copying another 
-   */
-  virtual void copy(SourceFacility* src);
-
-  /**
-     This drills down the dependency tree to initialize all relevant 
-     parameters/containers. 
-      
-     Note that this function must be defined only in the specific model 
-     in question and not in any inherited models preceding it. 
-      
-     @param src the pointer to the original (initialized ?) model to be 
-   */
-  virtual void copyFreshModel(Model* src);
+  virtual void initModuleMembers(QueryEngine* qe);
 
   /**
      Print information about this model 
    */
   virtual std::string str();
+  /* --- */
 
+  /* --- Facility Methods --- */
   /**
-     Transacted resources are extracted through this method 
-      
-     @param order the msg/order for which resource(s) are to be prepared 
-     @return list of resources to be sent for this order 
-      
-   */ 
-  virtual std::vector<rsrc_ptr> removeResource(Transaction order);
-
-/* ------------------- */ 
-
-
-/* --------------------
- * all COMMUNICATOR classes have these members
- * ------------------
- */
- public:
-  /**
-     When this facility receives a message, execute the transaction 
+     prototypes are required to provide the capacity to copy their
+     initialized members
    */
-  virtual void receiveMessage(msg_ptr msg);
+  virtual Prototype* clone();
+  /* --- */
 
-/* -------------------- */
-
-
-/* --------------------
- * all FACILITYMODEL classes have these members
- * --------------------
- */
- public:
+  /* --- Agent Methods --- */
   /**
      Each facility is prompted to do its beginning-of-time-step 
      stuff at the tick of the timer. 
@@ -172,31 +132,83 @@ class SourceFacility : public FacilityModel  {
      @param time is the time to perform the tock 
    */
   virtual void handleTock(int time);
+  /* --- */
 
-  double inventory() {return inventory_.quantity();}
-  void setInventory(double size) {inventory_.setCapacity(size);}
+  /* --- Transaction Methods --- */
+  /**
+     When this facility receives a message, execute the transaction 
+   */
+  virtual void receiveMessage(msg_ptr msg);
 
-  double capacity() {return capacity_;}
+  /**
+     Transacted resources are extracted through this method 
+      
+     @param order the msg/order for which resource(s) are to be prepared 
+     @return list of resources to be sent for this order 
+      
+   */ 
+  virtual std::vector<rsrc_ptr> removeResource(Transaction order);
+  /* --- */
 
-/* --------------------
- * _THIS_ FACILITYMODEL class has these members
- * --------------------
- */
+  /* --- SourceFacility Methods --- */
+  /**
+     sets the output commodity name
+     @param name the commodity name
+   */
+  void setCommodity(std::string name);
+
+  /// @return the output commodity
+  std::string commodity();
+
+  /**
+     sets the capacity of a material generated at any given time step
+     @param capacity the production capacity
+   */
+  void setCapacity(double capacity);
+
+  /// @return the production capacity at any given time step
+  double capacity();
+
+  /**
+     sets the name of the recipe to be produced
+     @param name the recipe name
+   */
+  void setRecipe(std::string name);
+
+  /// @return the name of the output recipe
+  std::string recipe();
+
+  /**
+     sets the size of the storage inventory for produced material
+     @param size the storage size
+   */
+  void setMaxInventorySize(double size);
+  
+  /// @return the maximum inventory storage size
+  double maxInventorySize();
+
+  /// @return the current inventory storage size
+  double inventorySize();
+  /* --- */
+
  protected:
+  /* --- SourceFacility Members and Methods --- */
   /**
      This facility has only one output commodity 
    */
   std::string out_commod_;
-  
-  /**
-     This facility has a specific recipe for its output 
-   */
-  IsoVector recipe_;
-  
+    
   /**
      Name of the recipe this facility uses. 
    */
   std::string recipe_name_;
+
+  /**
+     The capacity is defined in terms of the number of units of the 
+     recipe that can be provided each time step.  A very large number 
+     can be provided to represent infinte capacity. 
+   */
+  double capacity_;
 
   /**
      The price that the facility will charge for its output commodity. 
@@ -205,15 +217,20 @@ class SourceFacility : public FacilityModel  {
   double commod_price_;
 
   /**
+     A collection  that holds the "product" Material this Facility has 
+     on hand to send to others. 
+   */ 
+  MatBuff inventory_; // @MJG couldnt this be a RsrcBuff?
+
+  /**
      A list of orders to be processed on the Tock 
    */
   std::deque<msg_ptr> ordersWaiting_;
 
   /**
-     generates a material at a given time 
-     @param curr_time the current simulation time period 
+     generates a material
    */
-  void generateMaterial(int curr_time);
+  void generateMaterial();
      
   /**
      builds a transaction 
@@ -224,27 +241,7 @@ class SourceFacility : public FacilityModel  {
      sends a transaction as an offer 
    */
   void sendOffer(Transaction trans);
-
-  /**
-     indicates the time just before the facility was built 
-   */
-  int prev_time_;
-
-  /**
-     The capacity is defined in terms of the number of units of the 
-     recipe that can be provided each time step.  A very large number 
-     can be provided to represent infinte capacity. 
-   */
-  double capacity_;
-
-private:
-
-  /**
-     A collection  that holds the "product" Material this Facility has 
-     on hand to send to others. 
-   */ 
-  MatBuff inventory_; // @MJG couldnt this be a RsrcBuff?
-  
+  /* --- */
 };
 
 #endif

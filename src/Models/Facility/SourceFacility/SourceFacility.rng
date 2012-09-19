@@ -3,19 +3,14 @@ datatypeLibrary="http://www.w3.org/2001/XMLSchema-datatypes">
 
   <define name="SourceFacility">
      <element name="SourceFacility"> 
-        <oneOrMore>
-          <ref name="outcommodity"/>
-        </oneOrMore>
-        <oneOrMore>
-          <ref name="capacity"/>
-        </oneOrMore>
-        <oneOrMore>
-          <ref name="inventorysize"/>
-        </oneOrMore>
-        <ref name="commodprice"/>
-        <element name="recipe">
-          <data type="string"/>
-        </element>
+       <element name ="output">
+	 <ref name="outcommodity"/>
+	 <ref name="output_capacity"/>
+	 <ref name="inventorysize"/>
+	 <element name="recipe">
+	   <data type="string"/>
+	 </element>
+       </element>
      </element>
   </define>
 

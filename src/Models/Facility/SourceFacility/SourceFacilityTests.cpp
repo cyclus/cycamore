@@ -6,87 +6,96 @@
 #include "Message.h"
 #include "FacilityModelTests.h"
 #include "ModelTests.h"
+#include "TestMarket.h"
 
 #include <string>
 #include <queue>
 
 using namespace std;
 
-//- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-class FakeSourceFacility : public SourceFacility {
-  public:
-    FakeSourceFacility() {
-      out_commod_ = "out-commod";
+// //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+// class FakeSourceFacility : public SourceFacility {
+//   public:
+//     FakeSourceFacility() {
+//       out_commod_ = "out-commod";
 
-      int u235 = 92235;
-      double one = 1.0;
-      string test_mat_unit = "test_mat_unit";
-      string test_rec_name = "test_rec_name";
-      double test_size = 10.0;
-      bool test_template = true;
-      IsoVector test_comp;
+//       int u235 = 92235;
+//       double one = 1.0;
+//       string test_mat_unit = "test_mat_unit";
+//       string test_rec_name = "test_rec_name";
+//       double test_size = 10.0;
+//       bool test_template = true;
+//       IsoVector test_comp;
 
-      recipe_ = IsoVector(test_comp);
+//       recipe_ = IsoVector(test_comp);
 
-      capacity_ = 2;
-      commod_price_ = 5000;
-      setInventory(capacity() + 1);
-    }
+//       capacity_ = 2;
+//       commod_price_ = 5000;
+//       setInventory(capacity() + 1);
+//     }
 
-    virtual ~FakeSourceFacility() {
-    }
-};
+//     virtual ~FakeSourceFacility() {
+//     }
+// };
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 Model* SourceFacilityModelConstructor(){
-  return dynamic_cast<Model*>(new FakeSourceFacility());
+  return dynamic_cast<Model*>(new SourceFacility());
 }
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 FacilityModel* SourceFacilityConstructor(){
-  return dynamic_cast<FacilityModel*>(new FakeSourceFacility());
+  return dynamic_cast<FacilityModel*>(new SourceFacility());
 }
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 class SourceFacilityTest : public ::testing::Test {
-  protected:
-    FakeSourceFacility* src_facility;
-    FakeSourceFacility* new_facility; 
-    TestMarket* commod_market;
+protected:
+  SourceFacility* src_facility;
+  TestMarket* commod_market;
+  std::string commod_, recipe_name_;
+  CompMapPtr recipe_;
+    
+  virtual void SetUp(){
+    initParameters();
+    setUpSourceFacility();
+  }
+  
+  virtual void TearDown() {
+    delete src_facility;
+    delete commod_market;
+  }
 
-    virtual void SetUp(){
-      src_facility = new FakeSourceFacility();
-      src_facility->setParent(new TestInst());
-      new_facility = new FakeSourceFacility();
-      commod_market = new TestMarket("out-commod");
-    };
-
-    virtual void TearDown() {
-      delete src_facility;
-      delete new_facility;
-      delete commod_market;
-    }
+  void initParameters() {
+    commod_ = "commod";
+    recipe_name_ = "recipe";
+    recipe_ = CompMapPtr(new CompMap(ATOM));
+    RecipeLibrary::recordRecipe(recipe_name_,recipe_);
+    commod_market = new TestMarket(commod_);
+    MarketModel::registerMarket(commod_market);
+  }
+  
+  void setUpSourceFacility() {
+    src_facility = new SourceFacility();
+    src_facility->setCommodity(commod_);
+    src_facility->setRecipe(recipe_name_);
+  }
 };
-
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - 
 TEST_F(SourceFacilityTest, InitialState) {
   int time = 1;
-  EXPECT_DOUBLE_EQ(0.0, src_facility->inventory());
+  EXPECT_DOUBLE_EQ(0.0, src_facility->inventorySize());
 }
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - 
-TEST_F(SourceFacilityTest, CopyFacility) {
-  new_facility->copy(src_facility); 
-  EXPECT_DOUBLE_EQ(0.0, new_facility->inventory()); // fresh inventory
-}
-
-//- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - 
-TEST_F(SourceFacilityTest, CopyFreshModel) {
-  new_facility->copyFreshModel(dynamic_cast<Model*>(src_facility)); // deep copy
-  EXPECT_NO_THROW(dynamic_cast<SourceFacility*>(new_facility)); // still a source facility
-  EXPECT_NO_THROW(dynamic_cast<FakeSourceFacility*>(new_facility)); // still a fake source facility
-  EXPECT_DOUBLE_EQ(0.0, new_facility->inventory()); // fresh inventory
+TEST_F(SourceFacilityTest,clone) {
+  SourceFacility* new_facility = dynamic_cast<SourceFacility*>(src_facility->clone());
+  EXPECT_EQ(src_facility->commodity(),new_facility->commodity());
+  EXPECT_EQ(src_facility->capacity(),new_facility->capacity());
+  EXPECT_EQ(src_facility->maxInventorySize(),new_facility->maxInventorySize());
+  EXPECT_EQ(src_facility->recipe(),new_facility->recipe());
+  delete new_facility;
 }
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - 
@@ -104,16 +113,16 @@ TEST_F(SourceFacilityTest, ReceiveMessage) {
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - 
 TEST_F(SourceFacilityTest, Tick) {
   int time = 1;
-  ASSERT_DOUBLE_EQ(0.0, src_facility->inventory());
+  ASSERT_DOUBLE_EQ(0.0, src_facility->inventorySize());
   ASSERT_NO_THROW(src_facility->handleTick(time));
-  EXPECT_LT(0.0, src_facility->inventory());
-  EXPECT_LE(src_facility->capacity(), src_facility->inventory());
+  EXPECT_LT(0.0, src_facility->inventorySize());
+  EXPECT_LE(src_facility->capacity(), src_facility->inventorySize());
 }
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - 
 TEST_F(SourceFacilityTest, Tock) {
   int time = 1;
-  EXPECT_DOUBLE_EQ(0.0,src_facility->inventory());
+  EXPECT_DOUBLE_EQ(0.0,src_facility->inventorySize());
   EXPECT_NO_THROW(src_facility->handleTock(time));
 }
 
