@@ -1,1 +1,1 @@
-#cyclus_init_model("Facility" "SinkFacility")
+cyclus_init_model("Facility" "SinkFacility")

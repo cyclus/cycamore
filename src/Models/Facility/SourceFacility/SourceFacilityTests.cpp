@@ -71,7 +71,8 @@ protected:
     recipe_name_ = "recipe";
     recipe_ = CompMapPtr(new CompMap(ATOM));
     RecipeLibrary::recordRecipe(recipe_name_,recipe_);
-    commod_market = new TestMarket(commod_);
+    commod_market = new TestMarket();
+    commod_market->setCommodity(commod_);
     MarketModel::registerMarket(commod_market);
   }
   

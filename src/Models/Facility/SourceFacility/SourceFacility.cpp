@@ -212,6 +212,7 @@ void SourceFacility::sendOffer(Transaction trans) {
   MarketModel* market = MarketModel::marketForCommod(out_commod_);
 
   Communicator* recipient = dynamic_cast<Communicator*>(market);
+
   msg_ptr msg(new Message(this, recipient, trans)); 
   msg->sendOn();
 }

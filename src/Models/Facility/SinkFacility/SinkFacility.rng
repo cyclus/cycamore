@@ -3,12 +3,13 @@ datatypeLibrary="http://www.w3.org/2001/XMLSchema-datatypes">
 
   <define name="SinkFacility">
      <element name="SinkFacility"> 
-        <oneOrMore>
-          <ref name="incommodity"/>
-        </oneOrMore>
-        <ref name="capacity"/>
-        <ref name="inventorysize"/>
-        <ref name="commodprice"/>
+       <element name ="input">
+	 <element name = "commodities">
+	   <ref name="incommodity"/>
+	 </element>
+	 <ref name="input_capacity"/>
+	 <ref name="inventorysize"/>
+       </element>
      </element>
   </define>
 

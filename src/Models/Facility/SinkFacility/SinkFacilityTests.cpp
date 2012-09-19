@@ -13,79 +13,79 @@
 
 using namespace std;
 
-//- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-class FakeSinkFacility : public SinkFacility {
-  public:
-    FakeSinkFacility() : SinkFacility() {
-      in_commods_.push_back("in-commod");
-      capacity_ = 2;
-      inventory_.setCapacity(50);
-      commod_price_ = 5000;
-    }
+// //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+// class FakeSinkFacility : public SinkFacility {
+//   public:
+//     FakeSinkFacility() : SinkFacility() {
+//       in_commods_.push_back("in-commod");
+//       capacity_ = 2;
+//       inventory_.setCapacity(50);
+//       commod_price_ = 5000;
+//     }
 
-    virtual ~FakeSinkFacility() {
-    }
+//     virtual ~FakeSinkFacility() {
+//     }
 
-    double fakeCheckInventory() { return inventory_.quantity(); }
+//     double fakeCheckInventory() { return inventory_.quantity(); }
 
-    std::string getInCommod() {return in_commods_.front();}
-    double getCapacity() {return capacity_;}
-    double getInvSize() {return inventory_.capacity();}
-    double getCommodPrice() {return commod_price_;}
-};
+//     std::string getInCommod() {return in_commods_.front();}
+//     double getCapacity() {return capacity_;}
+//     double getInvSize() {return inventory_.capacity();}
+//     double getCommodPrice() {return commod_price_;}
+// };
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 Model* SinkFacilityModelConstructor(){
-  return dynamic_cast<Model*>(new FakeSinkFacility());
+  return dynamic_cast<Model*>(new SinkFacility());
 }
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 FacilityModel* SinkFacilityConstructor(){
-  return dynamic_cast<FacilityModel*>(new FakeSinkFacility());
+  return dynamic_cast<FacilityModel*>(new SinkFacility());
 }
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 class SinkFacilityTest : public ::testing::Test {
-  protected:
-    FakeSinkFacility* sink_facility;
-    FakeSinkFacility* new_facility; 
-    TestMarket* commod_market;
+protected:
+  SinkFacility* sink_facility;
+  TestMarket* commod_market;
+  std::string commod_;
+    
+  virtual void SetUp(){
+    initParameters();
+    setUpSinkFacility();
+  }
+  
+  virtual void TearDown() {
+    delete sink_facility;
+    delete commod_market;
+  }
 
-    virtual void SetUp(){
-      sink_facility = new FakeSinkFacility();
-      sink_facility->setParent(new TestInst());
-      new_facility = new FakeSinkFacility();
-      commod_market = new TestMarket(sink_facility->getInCommod());
-    };
-
-    virtual void TearDown() {
-      delete sink_facility;
-      delete new_facility;
-    }
+  void initParameters() {
+    commod_ = "incommod";
+    commod_market = new TestMarket();
+    commod_market->setCommodity(commod_);
+    MarketModel::registerMarket(commod_market);
+  }
+  
+  void setUpSinkFacility() {
+    sink_facility = new SinkFacility();
+    sink_facility->addCommodity(commod_);
+  }
 };
-
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - 
 TEST_F(SinkFacilityTest, InitialState) {
   int time = 1;
-  EXPECT_DOUBLE_EQ(0.0, sink_facility->fakeCheckInventory());
+  EXPECT_DOUBLE_EQ(0.0, sink_facility->inventorySize());
 }
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - 
-TEST_F(SinkFacilityTest, CopyFacility) {
-  new_facility->copy(sink_facility); 
-  EXPECT_DOUBLE_EQ(0.0, new_facility->fakeCheckInventory()); // fresh inventory
-}
-
-//- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - 
-TEST_F(SinkFacilityTest, CopyFreshModel) {
-  new_facility->copyFreshModel(dynamic_cast<Model*>(sink_facility)); // deep copy
-  EXPECT_NO_THROW(dynamic_cast<SinkFacility*>(new_facility)); // still a source facility
-  EXPECT_NO_THROW(dynamic_cast<FakeSinkFacility*>(new_facility)); // still a fake source facility
-  EXPECT_DOUBLE_EQ(0.0, new_facility->fakeCheckInventory()); // fresh inventory
-  EXPECT_EQ(sink_facility->getCapacity(), new_facility->getCapacity());
-  EXPECT_EQ(sink_facility->getInvSize(), new_facility->getInvSize());
-  EXPECT_EQ(sink_facility->getCommodPrice(), new_facility->getCommodPrice());
+TEST_F(SinkFacilityTest,clone) {
+  SinkFacility* new_facility = dynamic_cast<SinkFacility*>(sink_facility->clone());
+  EXPECT_EQ(sink_facility->capacity(),new_facility->capacity());
+  EXPECT_EQ(sink_facility->maxInventorySize(),new_facility->maxInventorySize());
+  delete new_facility;
 }
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - 
@@ -102,15 +102,15 @@ TEST_F(SinkFacilityTest, ReceiveMessage) {
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - 
 TEST_F(SinkFacilityTest, Tick) {
   int time = 1;
-  EXPECT_DOUBLE_EQ(0.0, sink_facility->fakeCheckInventory());
+  EXPECT_DOUBLE_EQ(0.0, sink_facility->inventorySize());
   EXPECT_NO_THROW(sink_facility->handleTick(time));
-  EXPECT_DOUBLE_EQ(0.0,sink_facility->fakeCheckInventory());
+  EXPECT_DOUBLE_EQ(0.0,sink_facility->inventorySize());
 }
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - 
 TEST_F(SinkFacilityTest, Tock) {
   int time = 1;
-  EXPECT_DOUBLE_EQ(0.0,sink_facility->fakeCheckInventory());
+  EXPECT_DOUBLE_EQ(0.0,sink_facility->inventorySize());
   EXPECT_NO_THROW(sink_facility->handleTock(time));
 }
 

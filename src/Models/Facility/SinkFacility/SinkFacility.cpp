@@ -1,69 +1,51 @@
 // SinkFacility.cpp
 // Implements the SinkFacility class
-#include <iostream>
 #include <sstream>
+#include <limits>
+
+#include <boost/lexical_cast.hpp>
 
 #include "SinkFacility.h"
 
 #include "Logger.h"
 #include "GenericResource.h"
 #include "CycException.h"
-#include "InputXML.h"
 #include "MarketModel.h"
 
 using namespace std;
+using boost::lexical_cast;
 
-//- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -    
-SinkFacility::SinkFacility(){
+//- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - 
+SinkFacility::SinkFacility() :
+  commod_price_(0), 
+  capacity_(numeric_limits<double>::max()) 
+{
+  in_commods_ = vector<string>();
+  inventory_ = MatBuff();
 }
 
-//- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -    
-SinkFacility::~SinkFacility(){ }
+//- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - 
+SinkFacility::~SinkFacility() {}
 
-//- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -    
-void SinkFacility::init(xmlNodePtr cur) {
-  FacilityModel::init(cur);
+//- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - 
+void SinkFacility::initModuleMembers(QueryEngine* qe) {
+  QueryEngine* input = qe->queryElement("input");
 
-  LOG(LEV_DEBUG2, "SnkFac") << "A Sink Facility is being initialized";
-
-  /// Sink facilities can have many input/output commodities
-  /// move XML pointer to current model
-  cur = XMLinput->get_xpath_element(cur,"model/SinkFacility");
-
-  /// all facilities require commodities - possibly many
-  string commod;
-  xmlNodeSetPtr nodes = XMLinput->get_xpath_elements(cur,"incommodity");
-  for (int i=0;i<nodes->nodeNr;i++) {
-    commod = (const char*)(nodes->nodeTab[i]->children->content);
-    in_commods_.push_back(commod);
+  QueryEngine* commodities = input->queryElement("commodities");
+  string query = "incommodity";
+  int nCommodities = input->nElementsMatchingQuery("incommodity");
+  for (int i = 0; i < nCommodities; i++) {
+    addCommodity(input->getElementContent(query,i));
   }
 
-  // get monthly capacity
-  capacity_ = strtod(XMLinput->get_xpath_content(cur,"capacity"), NULL);
-
-  double inv_size = strtod(XMLinput->get_xpath_content(cur,"inventorysize"), NULL);
-  inventory_.setCapacity(inv_size);
-
-  // get commodity price
-  commod_price_ = strtod(XMLinput->get_xpath_content(cur,"commodprice"), NULL);
+  string data;
+  data = input->getElementContent("input_capacity"); 
+  setCapacity(lexical_cast<double>(data));  
+  data = input->getElementContent("inventorysize"); 
+  setMaxInventorySize(lexical_cast<double>(data));
 }
 
-//- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -    
-void SinkFacility::copy(SinkFacility* src) {
-  FacilityModel::copy(src);
-
-  in_commods_ = src->in_commods_;
-  capacity_ = src->capacity_;
-  inventory_.setCapacity(src->inventory_.capacity());
-  commod_price_ = src->commod_price_;
-}
-
-//- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -    
-void SinkFacility::copyFreshModel(Model* src) {
-  copy(dynamic_cast<SinkFacility*>(src));
-}
-
-//- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -    
+//- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - 
 std::string SinkFacility::str() {
   std::stringstream ss;
   ss << FacilityModel::str();
@@ -79,9 +61,17 @@ std::string SinkFacility::str() {
   msg += "} until its inventory is full at ";
   ss << msg << inventory_.capacity() << " kg.";
   return "" + ss.str();
-};
+}
 
-//- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -    
+//- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - 
+Prototype* SinkFacility::clone() {
+  SinkFacility* clone = new SinkFacility();
+  clone->setCapacity(capacity());
+  clone->setMaxInventorySize(maxInventorySize());
+  return clone;
+}
+
+//- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - 
 void SinkFacility::handleTick(int time){
   LOG(LEV_INFO3, "SnkFac") << facName() << " is ticking {";
 
@@ -116,7 +106,7 @@ void SinkFacility::handleTick(int time){
   LOG(LEV_INFO3, "SnkFac") << "}";
 }
 
-//- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -    
+//- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - 
 void SinkFacility::handleTock(int time){
   LOG(LEV_INFO3, "SnkFac") << facName() << " is tocking {";
 
@@ -130,12 +120,42 @@ void SinkFacility::handleTock(int time){
   LOG(LEV_INFO3, "SnkFac") << "}";
 }
 
-//- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -    
+//- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - 
+void SinkFacility::addCommodity(std::string name) {
+  in_commods_.push_back(name);
+}
+
+//- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - 
+void SinkFacility::setCapacity(double capacity) {
+  capacity_ = capacity;
+}
+
+//- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - 
+double SinkFacility::capacity() {
+  return capacity_;
+}
+
+//- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - 
+void SinkFacility::setMaxInventorySize(double size) {
+  inventory_.setCapacity(size);
+}
+  
+//- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - 
+double SinkFacility::maxInventorySize() {
+  return inventory_.capacity();
+}
+
+//- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - 
+double SinkFacility::inventorySize() {
+  return inventory_.quantity();
+}
+
+//- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - 
 void SinkFacility::addResource(Transaction trans, std::vector<rsrc_ptr> manifest) {
   inventory_.pushAll(MatBuff::toMat(manifest));
 }
 
-//- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -    
+//- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - 
 const double SinkFacility::getRequestAmt(){
   // The sink facility should ask for as much stuff as it can reasonably receive.
   double requestAmt;
@@ -152,14 +172,13 @@ const double SinkFacility::getRequestAmt(){
   return requestAmt;
 }
 
-/* --------------------
- * all MODEL classes have these members
- * --------------------
- */
-
+//- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 extern "C" Model* constructSinkFacility() {
   return new SinkFacility();
 }
 
-/* ------------------- */ 
+//- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+extern "C" void destructSinkFacility(Model* model) {
+      delete model;
+}
 
