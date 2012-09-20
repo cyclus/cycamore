@@ -2,125 +2,191 @@
 // Implements the BatchReactor class
 #include "BatchReactor.h"
 
+#include <sstream>
+#include <cmath>
+
+#include <boost/lexical_cast.hpp>
+
 #include "Logger.h"
 #include "GenericResource.h"
 #include "RecipeLibrary.h"
-#include "CycException.h"
-#include "InputXML.h"
-#include "Timer.h"
-
-#include <queue>
-#include <sstream>
+#include "MarketModel.h"
 
 using namespace std;
-
-/**
-  TICK
-  TOCK
-  RECIEVE MATERIAL
-  SEND MATERIAL
- */
+using boost::lexical_cast;
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - 
-BatchReactor::BatchReactor() {
+BatchReactor::BatchReactor() : 
+  cycle_length_(1), 
+  batches_per_core_(1), 
+  core_loading_(1), 
+  in_commod_(""), 
+  in_recipe_(""), 
+  out_commod_(""), 
+  out_recipe_(""),
+  cycle_timer_(1), 
+  phase_(INIT)
+{
   preCore_.makeUnlimited();
   inCore_.makeUnlimited();
   postCore_.makeUnlimited();
-  request_amount_ = 0.0;
-  lifetime_ = 0;
-  operation_timer_ = -1;
-  phase_ = INIT;
 }
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - 
-void BatchReactor::init(xmlNodePtr cur) { 
-  FacilityModel::init(cur);
-  
-  // move XML pointer to current model
-  cur = XMLinput->get_xpath_element(cur,"model/BatchReactor");
-  
-  // initialize facility parameters
-  setCycleLength( strtod( XMLinput->get_xpath_content(cur,"cyclelength"), NULL ) );
-  setLifetime( strtol( XMLinput->get_xpath_content(cur,"lifetime"), NULL, 10 ) ); 
-  setCoreLoading( strtod( XMLinput->get_xpath_content(cur,"coreloading"), NULL ) );
-  setNBatches( strtol( XMLinput->get_xpath_content(cur,"batchespercore"), NULL, 10 ) ); 
-  setBatchLoading( core_loading_ / batches_per_core_ );
-  setOperationTimer(0);
-
-  // all facilities require commodities - possibly many
-  string recipe_name;
-  string in_commod;
-  string out_commod;
-  xmlNodeSetPtr nodes = XMLinput->get_xpath_elements(cur, "fuelpair");
-
-  // for each fuel pair, there is an in and an out commodity
-  for (int i = 0; i < nodes->nodeNr; i++) {
-    xmlNodePtr pair_node = nodes->nodeTab[i];
-
-    // get commods
-    in_commod = XMLinput->get_xpath_content(pair_node,"incommodity");
-    out_commod = XMLinput->get_xpath_content(pair_node,"outcommodity");
-
-    // get in_recipe
-    recipe_name = XMLinput->get_xpath_content(pair_node,"inrecipe");
-    setInRecipe(RecipeLibrary::Recipe(recipe_name));
-
-    // get out_recipe
-    recipe_name = XMLinput->get_xpath_content(pair_node,"outrecipe");
-    setOutRecipe(RecipeLibrary::Recipe(recipe_name));
-
-    fuelPairs_.push_back(make_pair(make_pair(in_commod,in_recipe_),
-          make_pair(out_commod, out_recipe_)));
+BatchReactor::~BatchReactor() {
+  bool empty = (preCore_.empty() && inCore_.empty() && 
+                postCore_.empty());
+  if (!empty) {
+    string msg = "Can't delete a BatchReactor with material still in its inventory.";
+    throw CycBatchReactorDestructException(msg);
   }
-
-  setPhase(BEGIN);
 }
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - 
-Prototype* BatchReactor::clone() {
+void BatchReactor::initModuleMembers(QueryEngine* qe) {
+  QueryEngine* input = qe->queryElement("fuel_input");
+  setInCommodity(input->getElementContent("incommodity"));
+  setInRecipe(input->getElementContent("inrecipe"));
 
-  FacilityModel::copy(src);
-
-  setCycleLength( src->cycleLength() ); 
-  setLifetime( src->lifetime() );
-  setCoreLoading( src->coreLoading() );
-  setNBatches( src->nBatches() );
-  setBatchLoading( coreLoading() / nBatches() ); 
-  setInRecipe( src->inRecipe() );
-  setOutRecipe( src->outRecipe() );
-  setOperationTimer(0);
-  fuelPairs_ = src->fuelPairs_;
-
-  setPhase(BEGIN);
-}
-
-//- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - 
-void BatchReactor::initializeConcreteMembers() {
-}
-
-//- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - 
-void BatchReactor::copyFreshModel(Model* src) {
-  copy(dynamic_cast<BatchReactor*>(src));
+  QueryEngine* output = qe->queryElement("fuel_output");
+  setOutCommodity(output->getElementContent("outcommodity"));
+  setOutRecipe(output->getElementContent("outrecipe"));
+  
+  string data;
+  data = qe->getElementContent("cyclelength"); 
+  setCycleLength(lexical_cast<int>(data));
+  data = qe->getElementContent("coreloading"); 
+  setCoreLoading(lexical_cast<double>(data));  
+  data = qe->getElementContent("batchespercore"); 
+  setNBatches(lexical_cast<int>(data));
 }
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - 
 std::string BatchReactor::str() { 
   std::stringstream ss;
   ss << FacilityModel::str();
-  ss << " has facility parmeters {"
-     << "Lifetime = " << lifetime()
+  ss << " has facility parameters {"
      << ", Cycle Length = " << cycleLength()
      << ", Core Loading = " << coreLoading()
      << ", Batches Per Core = " << nBatches()
-     << ", Batch Loading = " << batchLoading()
-     << ", converts commodity '";
-  if (fuelPairs_.size() > 0) {
-    ss << fuelPairs_.front().first.first
-       << "' into commodity '"
-       << this->fuelPairs_.front().second.first;
-  }
-  ss << "'}";
+     << ", converts commodity '" << inCommodity()
+     << "' into commodity '" << outCommodity()
+     << "'}";
   return ss.str();
+}
+
+//- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - 
+Prototype* BatchReactor::clone() {
+  BatchReactor* clone = new BatchReactor();
+  clone->setCycleLength(cycleLength());
+  clone->setCoreLoading(coreLoading());
+  clone->setNBatches(nBatches());
+  clone->setInCommodity(inCommodity());
+  clone->setOutCommodity(outCommodity());
+  clone->setInRecipe(inRecipe());
+  clone->setOutRecipe(outRecipe());
+  return clone;
+}
+
+//- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - 
+void BatchReactor::initializeConcreteMembers() {
+  preCore_.setCapacity(coreLoading());
+  inCore_.setCapacity(coreLoading());  
+  resetCycleTimer();
+  setPhase(BEGIN);
+}
+
+//- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - 
+void BatchReactor::handleTick(int time) {
+  LOG(LEV_INFO3, "BReact") << name() << " is ticking at time " 
+                           << time << " {";
+  LOG(LEV_DEBUG3, "BReact") << "The current phase is: " << phase();
+
+
+  if ( lifetimeReached() )
+    setPhase(END);
+  
+  double fuel_quantity, request;
+  string msg;
+
+  switch( phase() ) {
+  case OPERATION:
+    break;
+    
+  case REFUEL:
+    offloadBatch();
+    // intentional fall through
+
+  case WAITING:
+    // intentional fall through
+    
+  case BEGIN:
+    fuel_quantity = preCore_.quantity() + inCore_.quantity();
+    request = coreLoading() - fuel_quantity;
+    makeRequest(request);
+    break;
+    
+  case END:
+    offloadCore();
+    break;
+    
+  default:
+    msg = "BatchReactors have undefined behvaior during ticks for phase: " 
+      + phase();
+    throw CycBatchReactorPhaseBehaviorException(msg);
+    break;
+  }
+  
+  makeOffers();
+
+  LOG(LEV_INFO3, "BReact") << "}";
+}
+
+//- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - 
+void BatchReactor::handleTock(int time) { 
+  LOG(LEV_INFO3, "BReact") << name() << " is tocking {";
+  LOG(LEV_DEBUG3, "BReact") << "The current phase is: " << phase();
+  
+  handleOrders();
+
+  string msg;
+
+  switch( phase() ) {
+    
+  case END:
+    if ( postCore_.empty() )
+      decommission();
+    break;
+    
+  case BEGIN:
+    // intentional fall through
+    
+  case WAITING:
+    // intentional fall through
+    
+  case REFUEL:
+    loadCore();
+    if ( coreFilled() ) {
+      setPhase(OPERATION);
+    } else {
+      setPhase(WAITING);
+    }
+    break; 
+    
+  case OPERATION:
+    cycle_timer_++;
+    if (cycleComplete())
+      setPhase(REFUEL);
+    break;
+    
+  default:
+    msg = "BatchReactors have undefined behvaior during tocks for phase: " 
+      + phase();
+    throw CycBatchReactorPhaseBehaviorException(msg);
+    break;
+  }
+
+  LOG(LEV_INFO3, "BReact") << "}";
 }
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - 
@@ -143,25 +209,6 @@ void BatchReactor::sendMessage(Communicator* recipient, Transaction trans){
 }
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - 
-void BatchReactor::handleOrders() {
-  while(!ordersWaiting_.empty()){
-    msg_ptr order = ordersWaiting_.front();
-    order->trans().approveTransfer();
-    ordersWaiting_.pop_front();
-  };
-}
-
-//- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - 
-void BatchReactor::addResource(Transaction trans,
-                               std::vector<rsrc_ptr> manifest) {
-  double preQuantity = preCore_.quantity();
-  preCore_.pushAll(MatBuff::toMat(manifest));
-  double added = preCore_.quantity() - preQuantity;
-  LOG(LEV_DEBUG4, "BReact") << "BatchReactor " << name() << " added "
-                            << added << " to its precore buffer.";
-}
-  
-//- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - 
 vector<rsrc_ptr> BatchReactor::removeResource(Transaction order) {
   Transaction trans = order;
   double amt = trans.resource()->quantity();
@@ -174,121 +221,125 @@ vector<rsrc_ptr> BatchReactor::removeResource(Transaction order) {
 }
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - 
-void BatchReactor::handleTick(int time) {
-  LOG(LEV_INFO3, "BReact") << name() << " is ticking at time " << time << " {";
-
-  // end the facility's life if its time
-  if (lifetimeReached()) {
-    setPhase(END);
-  }
-  // request fuel if needed
-  if (requestAmt() > EPS_KG) {
-    makeRequest(requestAmt());
-  }
-  // offer used fuel if needed
-  if (!postCore_.empty()) {
-    makeOffers();
-  }
-
-  LOG(LEV_INFO3, "BReact") << "}";
+void BatchReactor::addResource(Transaction trans,
+                               std::vector<rsrc_ptr> manifest) {
+  double preQuantity = preCore_.quantity();
+  preCore_.pushAll(MatBuff::toMat(manifest));
+  double added = preCore_.quantity() - preQuantity;
+  LOG(LEV_DEBUG4, "BReact") << "BatchReactor " << name() << " added "
+                            << added << " to its precore buffer.";
+}
+                  
+//- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - 
+void BatchReactor::setCycleLength(int time) {
+  cycle_length_ = time;
 }
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - 
-void BatchReactor::handleTock(int time) { 
-  LOG(LEV_INFO3, "BReact") << name() << " is tocking {";
-  LOG(LEV_DEBUG3, "BReact") << "The current phase is: " << phase();
+int BatchReactor::cycleLength() { 
+  return cycle_length_;
+}
+
+//- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - 
+void BatchReactor::setCoreLoading(double size) {
+  core_loading_ = size;
+}
+
+//- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - 
+double BatchReactor::coreLoading() {
+  return core_loading_;
+}
+
+//- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - 
+void BatchReactor::setNBatches(int n) {
+  batches_per_core_ = n;
+}
+
+//- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - 
+int BatchReactor::nBatches() {
+  return batches_per_core_;
+}
+
+//- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - 
+double BatchReactor::batchLoading() {
+  return core_loading_ / batches_per_core_;
+}
+
+//- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - 
+void BatchReactor::setInCommodity(std::string name) {
+  in_commod_ = name;
+}
+
+//- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - 
+std::string BatchReactor::inCommodity() {
+  return in_commod_;
+}
+
+//- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - 
+void BatchReactor::setInRecipe(std::string name) {
+  in_recipe_ = name;
+}
+
+//- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - 
+std::string BatchReactor::inRecipe() {
+  return in_recipe_;
+}
   
-  handleOrders();
+//- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - 
+void BatchReactor::setOutCommodity(std::string name) {
+  out_commod_ = name;
+}
 
-  switch(phase()) {
-    case BEGIN:
-    case REFUEL:
-      if (requestMet()) {
-        loadCore();
-        setPhase(OPERATION);
-      }
-      else { 
-        setRequestAmt(requestAmt() - receivedAmt());
-      } 
-      break; // end BEGIN || REFUEL 
-    case OPERATION:
-      increaseCycleTimer();
-      if (cycleComplete()) {
-        setPhase(REFUEL);
-      }
-      break; // end OPERATION
-    case END:
-      if (postCore_.empty()) {
-        delete this;
-        return;
-      }
-      break; // end END
-  }
-  increaseOperationTimer();
+//- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - 
+std::string BatchReactor::outCommodity() {
+  return out_commod_;
+}
 
-  LOG(LEV_INFO3, "BReact") << "}";
+//- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - 
+void BatchReactor::setOutRecipe(std::string name) {
+  out_recipe_ = name;
+}
+  
+//- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - 
+std::string BatchReactor::outRecipe() {
+  return out_recipe_;
+}
+
+//- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - 
+Phase BatchReactor::phase() {
+  return phase_;
 }
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - 
 void BatchReactor::setPhase(Phase p) {
-  LOG(LEV_DEBUG3, "BReact") << "Setting phase to: " << p;
-  switch (p) {
-  case BEGIN:
-    setRequestAmt(coreLoading());
-    break;
-  case REFUEL:
-    offloadBatch();
-    setRequestAmt(batchLoading());
-    break;
-  case OPERATION:
-    resetRequestAmt();
-    resetCycleTimer();
-    break;
-  case END:
-    resetRequestAmt();
-    offloadCore();
-    break;
-  default:
-    stringstream err("");
-    err << "BatchReactor " << this->name() << " does not have a phase "
-        << "enumerated by " << p << ".";
-    throw CycOverrideException(err.str()); 
-    break;
-  }
   phase_ = p;
 }
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - 
-bool BatchReactor::requestMet() {
-  double remaining = requestAmt() - receivedAmt();
-
-  LOG(LEV_DEBUG5, "BReact") << "BatchReactor is determining if a request is "
-                            << "met the request amount, received amout, and "
-                            << "their difference being ";
-  LOG(LEV_DEBUG5, "BReact") << "  * " << requestAmt();
-  LOG(LEV_DEBUG5, "BReact") << "  * " << receivedAmt();
-  LOG(LEV_DEBUG5, "BReact") << "  * " << remaining;
-
-  if (remaining > EPS_KG) {
-    return false;
-  }
-  else if (remaining < -1*EPS_KG) {
-    stringstream err("");
-    err << "BatchReactor " << this->name() << " received more fuel than was "
-        << "expected, which is not currently acceptable behavior; it has a "
-        << "surplus of " << -1*remaining << ".";
-    throw CycOverrideException(err.str()); 
-  }
-  return true;
+void BatchReactor::resetCycleTimer() {
+  cycle_timer_ = 1;
 }
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - 
-void BatchReactor::moveFuel(MatBuff& fromBuff, MatBuff& toBuff, double amt) {
-  //  toBuff->pushAll(fromBuff->popQty(amt));
-  vector<mat_rsrc_ptr> to_delete = fromBuff.popQty(amt);
-  mat_rsrc_ptr newMat = mat_rsrc_ptr(new Material(out_recipe_));
-  newMat->setQuantity(amt);
-  toBuff.pushOne(newMat);
+bool BatchReactor::cycleComplete() {
+  return (cycle_timer_ >= cycle_length_);
+}
+
+//- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - 
+bool BatchReactor::coreFilled() {
+  return (abs(inCore_.quantity() - inCore_.capacity()) < EPS_KG);
+}
+
+//- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - 
+void BatchReactor::makeRequest(double amt) {
+  interactWithMarket(inCommodity(),amt,REQUEST);
+}
+
+//- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - 
+void BatchReactor::makeOffers() {
+  if (!postCore_.empty()) {
+    interactWithMarket(outCommodity(),postCore_.quantity(),OFFER);
+  }
 }
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - 
@@ -323,10 +374,42 @@ void BatchReactor::interactWithMarket(std::string commod, double amt, TransType 
 }
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - 
-void BatchReactor::addFuelPair(std::string incommod, IsoVector inFuel,
-                                std::string outcommod, IsoVector outFuel) {
-  fuelPairs_.push_back(make_pair(make_pair(incommod, inFuel),
-                                 make_pair(outcommod, outFuel)));
+void BatchReactor::handleOrders() {
+  while(!ordersWaiting_.empty()){
+    msg_ptr order = ordersWaiting_.front();
+    order->trans().approveTransfer();
+    ordersWaiting_.pop_front();
+  };
+}
+
+//- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - 
+void BatchReactor::moveFuel(MatBuff& fromBuff, MatBuff& toBuff, double amt) {
+  vector<mat_rsrc_ptr> to_move = fromBuff.popQty(amt);
+  for (int i = 0; i < to_move.size(); i++) {
+    mat_rsrc_ptr newMat = mat_rsrc_ptr(new Material(RecipeLibrary::Recipe(out_recipe_)));
+    newMat->setQuantity(to_move.at(i)->quantity());
+    toBuff.pushOne(newMat);
+  }
+}
+
+//- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - 
+void BatchReactor::moveFuel(MatBuff& fromBuff, MatBuff& toBuff) {
+  moveFuel(fromBuff,toBuff,fromBuff.quantity());
+}
+
+//- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - 
+void BatchReactor::loadCore() {
+  moveFuel(preCore_,inCore_);
+}
+
+//- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - 
+void BatchReactor::offloadBatch() {
+  moveFuel(inCore_,postCore_,batchLoading());
+}
+
+//- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - 
+void BatchReactor::offloadCore() {
+  moveFuel(inCore_,postCore_);
 }
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -

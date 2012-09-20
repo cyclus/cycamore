@@ -18,7 +18,6 @@ datatypeLibrary="http://www.w3.org/2001/XMLSchema-datatypes">
         <element name="cyclelength">
           <data type="nonNegativeInteger"/>
 	</element>
-        <ref name="lifetime"/>
 	<element name ="coreloading">
           <data type="double"/>
 	</element>

@@ -4,21 +4,15 @@
 
 #include "FacilityModel.h"
 
-#include "Transaction.h"
-#include "Material.h"
 #include "MatBuff.h"
 
+#include <string>
 #include <queue>
-
-// Useful typedefs
-typedef std::pair<std::string, mat_rsrc_ptr> Fuel; 
-typedef std::pair<std::string, IsoVector> Recipe; 
-typedef std::pair<Recipe, Recipe> FuelPair;
 
 /**
    Defines all possible phases this facility can be in
  */
-enum Phase {INIT, BEGIN, OPERATION, REFUEL, END};
+enum Phase {INIT, BEGIN, OPERATION, REFUEL, WAITING, END};
 
 /**
    @class BatchReactor 
@@ -37,7 +31,7 @@ class BatchReactor : public FacilityModel  {
   /**
      Destructor for the BatchReactor class. 
   */
-  virtual ~BatchReactor() {};
+  virtual ~BatchReactor();
   
   /**
      Initialize members related to derived module class
@@ -112,245 +106,174 @@ class BatchReactor : public FacilityModel  {
   /* --- BatchReactor Methods --- */
   /**
      set the cycle length 
+     @param time the cycle length time
    */
-  void setCycleLength(int l) {cycle_length_ = l;}
+  void setCycleLength(int time);
 
   /**
-     return the cycle length 
+     @return the cycle length 
    */
-  int cycleLength() {return cycle_length_;}
+  int cycleLength();
 
   /**
      set the core loading
+     @param size the core loading size
    */
-  void setCoreLoading(double size) {core_loading_ = size;}
+  void setCoreLoading(double size);
 
   /**
-     return the core loading
+     @return the core loading
    */
-  double coreLoading() {return core_loading_;}
+  double coreLoading();
 
   /**
      set the number of batches per core
+     @param n the number of batches to set
    */
-  void setNBatches(int n) {batches_per_core_ = n;}
+  void setNBatches(int n);
 
   /**
-     return the number of batches per core
+     @return the number of batches per core
    */
-  int nBatches() {return batches_per_core_;}
-
-  /**
-     set the batch loading
-   */
-  void setBatchLoading(double size) {batch_loading_ = size;}
+  int nBatches();
 
   /**
      return the batch loading
    */
-  double batchLoading() {return batch_loading_;}
+  double batchLoading();
 
   /**
-     set the facility lifetime 
+     set the input commodity 
+     @param name the commodity name
    */
-  void setLifetime(int l) {lifetime_ = l;}
+  void setInCommodity(std::string name);
 
   /**
-     return the facility lifetime 
-   */
-  int lifetime() {return lifetime_;}
-
-  /**
-     set the facility's time in operation 
-   */
-  void setOperationTimer(int l) {operation_timer_ = l;}
-
-  /**
-     increase the operation timer by one time step
-   */
-  void increaseOperationTimer() {operation_timer_++;}
-
-  /**
-     return true if the facility has reached the end of its life
-   */
-  bool lifetimeReached() {return (lifetime_ <= operation_timer_);}
+     @return the input commodity 
+  */
+  std::string inCommodity();
 
   /**
      set the input recipe 
+     @param name the recipe name
    */
-  void setInRecipe(IsoVector r) {in_recipe_ = r;}
+  void setInRecipe(std::string name);
 
   /**
-     return the input recipe 
+     @return the input recipe 
+  */
+  std::string inRecipe();
+
+  /**
+     set the output commodity 
+     @param name the commodity name
    */
-  IsoVector inRecipe() {return in_recipe_;}
+  void setOutCommodity(std::string name);
+
+  /**
+     @return the output commodity
+   */
+  std::string outCommodity();
 
   /**
      set the output recipe 
+     @param name the recipe name
    */
-  void setOutRecipe(IsoVector r) {out_recipe_ = r;}
+  void setOutRecipe(std::string name);
 
   /**
-     set the cycle length 
+     @return the output recipe
    */
-  IsoVector outRecipe() {return out_recipe_;}
+  std::string outRecipe();
 
   /**
-     add a fuel pair 
-      
-     @param incommod the input commodity 
-     @param inFuel the isotopics of the input fuel 
-     @param outcommod the output commodity 
-     @param outFuel the isotopics of the output fuel 
-   */
-  void addFuelPair(std::string incommod, IsoVector inFuel, 
-		   std::string outcommod, IsoVector outFuel);
-
-  /**
-     return the input commodity 
-   */
-  std::string inCommod() {return fuelPairs_.front().first.first;}
-
-  /**
-     return the output commodity 
-   */
-  std::string outCommod() {return fuelPairs_.front().second.first;}
-
-  /**
-     get the current phase
+     @return the current phase
   */
-  Phase phase() {return phase_;}
+  Phase phase();
   /* --- */
 
  private:
   /* --- BatchReactor Members and Methods --- */
-  /**
-     The time between batch reloadings. 
-   */
+  /// The time between batch reloadings. 
   int cycle_length_;
 
-  /**
-     The current time step in the cycle
-   */
-  int cycle_timer_;
-
-  /**
-     The number of months that a facility stays operational. 
-   */
-  int lifetime_;
-
-  /**
-     The current time step in the facility's operation
-   */
-  int operation_timer_;
-
-  /**
-     The number of batches per core
-  */
+  /// batches per core
   int batches_per_core_;
   
-  /**
-     The total mass per core
-  */
+  /// The total mass per core
   double core_loading_;
 
-  /**
-     The total mass per batch
-  */
-  double batch_loading_;
+  /// the name of the input commodity
+  std::string in_commod_;
 
-  /**
-     The receipe of input materials. 
-   */
-  IsoVector in_recipe_;
+  /// the name of the input recipe
+  std::string in_recipe_;
 
-  /**
-     The receipe of the output material. 
-   */
-  IsoVector out_recipe_;
+  /// the name of the output commodity
+  std::string out_commod_;
 
-  /**
-     The amout of input material still needed
-     at a time step
-   */
-  double request_amount_;
+  /// the name of the output recipe
+  std::string out_recipe_;
 
-  /**
-     a matbuff for material before they enter the core
-   */
+  /// The current time step in the cycle
+  int cycle_timer_;
+
+  /// The current phase this facility is in
+  Phase phase_;
+
+  /// a matbuff for material before they enter the core
   MatBuff preCore_;
 
-  /**
-     a matbuff for material while they are inside the core
-   */
+  /// a matbuff for material while they are inside the core
   MatBuff inCore_;
 
-  /**
-     a matbuff for material after they exit the core
-   */
+  /// a matbuff for material after they exit the core
   MatBuff postCore_;
 
-  /**
-     The BatchReactor has pairs of input and output fuel 
-   */
-  std::deque<FuelPair> fuelPairs_;
-
-  /**
-     The list of orders to process on the Tock 
-   */
+  /// The list of orders to process on the Tock 
   std::deque<msg_ptr> ordersWaiting_;
 
   /**
-     The current phase this facility is in
+     resets the cycle timer
    */
-  Phase phase_;
-
-  /**
-     set the next phase
-   */
-  void setPhase(Phase p);
-
-  /**
-     set the requested amount of fresh fuel
-   */
-  void setRequestAmt(double a) {request_amount_ = a;}
-
-  /**
-     resets the request amount to -1
-  */
-  void resetRequestAmt() {setRequestAmt(-1.0);}
-
-  /**
-     return the current request amount
-  */
-  double requestAmt() {return request_amount_;}
-
-  /**
-     return the current received amount
-  */
-  double receivedAmt() {return preCore_.quantity();}
-
-  /**
-     return the amount of material requested less 
-     the amount of material received
-  */
-  bool requestMet();
-
-  /**
-     resets the cycle timer to 1
-   */
-  void resetCycleTimer() {cycle_timer_ = 1;}
-
-  /**
-     increase the cycle timer by one time step
-   */
-  void increaseCycleTimer() {cycle_timer_++;}
+  void resetCycleTimer();
 
   /**
      return true if the cycle timer is >= the 
      cycle length
    */
-  bool cycleComplete() {return (cycle_timer_ >= cycle_length_);}
+  bool cycleComplete();
+
+  /**
+     return true if the core is filled
+   */
+  bool coreFilled();
+
+  /**
+     set the next phase
+     @param p the next phase
+   */
+  void setPhase(Phase p);
+
+  /**
+     make reqest for a specific amount of fuel
+   */
+  void makeRequest(double amt);
+
+  /**
+     offer all off-loaded fuel
+   */
+  void makeOffers();
+
+  /**
+     sends a request of offer to the commodity's market
+   */
+  void interactWithMarket(std::string commod, double amt, TransType type);
+
+  /**
+     Processes all orders in ordersWaiting_
+   */
+  void handleOrders();
 
   /**
      move a certain amount of fuel from one buffer to another
@@ -360,44 +283,42 @@ class BatchReactor : public FacilityModel  {
   /**
      move all fuel from one buffer to another
   */
-  void moveFuel(MatBuff& fromBuff, MatBuff& toBuff) 
-  {moveFuel(fromBuff,toBuff,fromBuff.quantity());}
+  void moveFuel(MatBuff& fromBuff, MatBuff& toBuff);
 
   /**
      load fuel from preCore_ into inCore_
    */
-  void loadCore() {moveFuel(preCore_,inCore_);}
+  void loadCore();
 
   /**
      move a batch from inCore_ to postCore_
    */
-  void offloadBatch() {moveFuel(inCore_,postCore_,batchLoading());}
+  void offloadBatch();
 
   /**
      move all material from inCore_ to postCore_
    */
-  void offloadCore() {moveFuel(inCore_,postCore_);}
-
-  /**
-     sends a request of offer to the commodity's market
-   */
-  void interactWithMarket(std::string commod, double amt, TransType type);
-
-  /**
-     make reqest for a specific amount of fuel
-   */
-  void makeRequest(double amt) {interactWithMarket(inCommod(),amt,REQUEST);}
-
-  /**
-     offer all off-loaded fuel
-   */
-  void makeOffers() {interactWithMarket(outCommod(),postCore_.quantity(),OFFER);}
-
-  /**
-     Processes all orders in ordersWaiting_
-   */
-  void handleOrders();
+  void offloadCore();
   /* --- */
+};
+
+#include "CycException.h"
+/**
+   An exception class for BatchReactors that aren't empty when
+   their destructor is called
+*/
+class CycBatchReactorDestructException : public CycException {
+ public: 
+ CycBatchReactorDestructException(std::string msg) : CycException(msg) {};
+};
+
+/**
+   An exception class for BatchReactors that exhibit undefined behavior
+   for a given phase
+*/
+class CycBatchReactorPhaseBehaviorException : public CycException {
+ public: 
+ CycBatchReactorPhaseBehaviorException(std::string msg) : CycException(msg) {};
 };
 
 #endif
