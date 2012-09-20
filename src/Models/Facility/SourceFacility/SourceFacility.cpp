@@ -226,4 +226,3 @@ extern "C" Model* constructSourceFacility() {
 extern "C" void destructSourceFacility(Model* model) {
       delete model;
 }
-

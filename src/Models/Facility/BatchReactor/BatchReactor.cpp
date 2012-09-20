@@ -21,7 +21,7 @@ using namespace std;
   SEND MATERIAL
  */
 
-//- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -    
+//- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - 
 BatchReactor::BatchReactor() {
   preCore_.makeUnlimited();
   inCore_.makeUnlimited();
@@ -32,7 +32,7 @@ BatchReactor::BatchReactor() {
   phase_ = INIT;
 }
 
-//- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -    
+//- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - 
 void BatchReactor::init(xmlNodePtr cur) { 
   FacilityModel::init(cur);
   
@@ -76,8 +76,8 @@ void BatchReactor::init(xmlNodePtr cur) {
   setPhase(BEGIN);
 }
 
-//- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - 
-void BatchReactor::copy(BatchReactor* src) {
+//- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - 
+Prototype* BatchReactor::clone() {
 
   FacilityModel::copy(src);
 
@@ -94,12 +94,16 @@ void BatchReactor::copy(BatchReactor* src) {
   setPhase(BEGIN);
 }
 
-//- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -    
+//- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - 
+void BatchReactor::initializeConcreteMembers() {
+}
+
+//- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - 
 void BatchReactor::copyFreshModel(Model* src) {
   copy(dynamic_cast<BatchReactor*>(src));
 }
 
-//- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -    
+//- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - 
 std::string BatchReactor::str() { 
   std::stringstream ss;
   ss << FacilityModel::str();
@@ -119,7 +123,7 @@ std::string BatchReactor::str() {
   return ss.str();
 }
 
-//- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -    
+//- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - 
 void BatchReactor::receiveMessage(msg_ptr msg) {
   // is this a message from on high? 
   if(msg->trans().supplier()==this){
@@ -132,13 +136,13 @@ void BatchReactor::receiveMessage(msg_ptr msg) {
   }
 }
 
-//- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -    
+//- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - 
 void BatchReactor::sendMessage(Communicator* recipient, Transaction trans){
       msg_ptr msg(new Message(this, recipient, trans)); 
       msg->sendOn();
 }
 
-//- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -    
+//- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - 
 void BatchReactor::handleOrders() {
   while(!ordersWaiting_.empty()){
     msg_ptr order = ordersWaiting_.front();
@@ -147,7 +151,7 @@ void BatchReactor::handleOrders() {
   };
 }
 
-//- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -    
+//- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - 
 void BatchReactor::addResource(Transaction trans,
                                std::vector<rsrc_ptr> manifest) {
   double preQuantity = preCore_.quantity();
@@ -157,7 +161,7 @@ void BatchReactor::addResource(Transaction trans,
                             << added << " to its precore buffer.";
 }
   
-//- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -    
+//- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - 
 vector<rsrc_ptr> BatchReactor::removeResource(Transaction order) {
   Transaction trans = order;
   double amt = trans.resource()->quantity();
@@ -169,7 +173,7 @@ vector<rsrc_ptr> BatchReactor::removeResource(Transaction order) {
   return MatBuff::toRes(postCore_.popQty(amt));
 }
 
-//- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -    
+//- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - 
 void BatchReactor::handleTick(int time) {
   LOG(LEV_INFO3, "BReact") << name() << " is ticking at time " << time << " {";
 
@@ -189,7 +193,7 @@ void BatchReactor::handleTick(int time) {
   LOG(LEV_INFO3, "BReact") << "}";
 }
 
-//- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -    
+//- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - 
 void BatchReactor::handleTock(int time) { 
   LOG(LEV_INFO3, "BReact") << name() << " is tocking {";
   LOG(LEV_DEBUG3, "BReact") << "The current phase is: " << phase();
@@ -225,7 +229,7 @@ void BatchReactor::handleTock(int time) {
   LOG(LEV_INFO3, "BReact") << "}";
 }
 
-//- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -    
+//- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - 
 void BatchReactor::setPhase(Phase p) {
   LOG(LEV_DEBUG3, "BReact") << "Setting phase to: " << p;
   switch (p) {
@@ -254,7 +258,7 @@ void BatchReactor::setPhase(Phase p) {
   phase_ = p;
 }
 
-//- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -    
+//- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - 
 bool BatchReactor::requestMet() {
   double remaining = requestAmt() - receivedAmt();
 
@@ -278,7 +282,7 @@ bool BatchReactor::requestMet() {
   return true;
 }
 
-//- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -    
+//- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - 
 void BatchReactor::moveFuel(MatBuff& fromBuff, MatBuff& toBuff, double amt) {
   //  toBuff->pushAll(fromBuff->popQty(amt));
   vector<mat_rsrc_ptr> to_delete = fromBuff.popQty(amt);
@@ -287,7 +291,7 @@ void BatchReactor::moveFuel(MatBuff& fromBuff, MatBuff& toBuff, double amt) {
   toBuff.pushOne(newMat);
 }
 
-//- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -    
+//- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - 
 void BatchReactor::interactWithMarket(std::string commod, double amt, TransType type) {
   LOG(LEV_INFO4, "BReact") << " making requests {";  
   // get the market
@@ -318,24 +322,19 @@ void BatchReactor::interactWithMarket(std::string commod, double amt, TransType 
   LOG(LEV_INFO4, "BReact") << "}";
 }
 
-//- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -    
+//- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - 
 void BatchReactor::addFuelPair(std::string incommod, IsoVector inFuel,
                                 std::string outcommod, IsoVector outFuel) {
   fuelPairs_.push_back(make_pair(make_pair(incommod, inFuel),
                                  make_pair(outcommod, outFuel)));
 }
 
-/* ------------------- */ 
-
-
-/* --------------------
- * all MODEL classes have these members
- * --------------------
- */
-
+//- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 extern "C" Model* constructBatchReactor() {
   return new BatchReactor();
 }
 
-/* ------------------- */ 
-
+//- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+extern "C" void destructBatchReactor(Model* model) {
+      delete model;
+}

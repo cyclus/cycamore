@@ -1,5 +1,5 @@
 // BatchReactor.h
-#if !defined(_BATCHREACTOR_H)
+#ifndef _BATCHREACTOR_H
 #define _BATCHREACTOR_H
 
 #include "FacilityModel.h"
@@ -7,8 +7,6 @@
 #include "Transaction.h"
 #include "Material.h"
 #include "MatBuff.h"
-
-#include "Logger.h"
 
 #include <queue>
 
@@ -27,120 +25,91 @@ enum Phase {INIT, BEGIN, OPERATION, REFUEL, END};
    This class is identical to the RecipeReactor, except that it
    operates in a batch-like manner, i.e. it refuels in batches.
  */
+
 class BatchReactor : public FacilityModel  {
-/* --------------------
- * all MODEL classes have these members
- * --------------------
- */
  public:  
+  /* --- Module Methods --- */
   /**
      Constructor for the BatchReactor class. 
-   */
+  */
   BatchReactor();
   
   /**
      Destructor for the BatchReactor class. 
-   */
+  */
   virtual ~BatchReactor() {};
-
+  
   /**
-     initialize an object from XML input 
-   */
-  virtual void init(xmlNodePtr cur);
-
-  /**
-     initialize an object by copying another 
-   */
-  virtual void copy(BatchReactor* src);
-
-  /**
-     This drills down the dependency tree to initialize all relevant 
-     parameters/containers. 
-      
-     Note that this function must be defined only in the specific model 
-     in question and not in any inherited models preceding it. 
-      
-     @param src the pointer to the original (initialized ?) model to be 
-   */
-  virtual void copyFreshModel(Model* src);
-
+     Initialize members related to derived module class
+     @param qe a pointer to a QueryEngine object containing initialization data
+  */
+  virtual void initModuleMembers(QueryEngine* qe);
+  
   /**
      Print information about this model 
-   */
+  */
   virtual std::string str();
+  /* --- */
 
-/* ------------------- */ 
-
-
-/* --------------------
- * all COMMUNICATOR classes have these members
- * --------------------
- */
- public:
+  /* --- Facility Methods --- */
   /**
-     When the facility receives a message, execute any transaction
+     prototypes are required to provide the capacity to copy their
+     initialized members
    */
-  virtual void receiveMessage(msg_ptr msg);
-
-/* ------------------- */ 
-
-
-/* --------------------
- * _THIS_ COMMUNICATOR classes have these members
- * --------------------
- */
-  /**
-     send messages up through the institution 
-     
-     @param recipient the final recipient 
-     @param trans the transaction to send 
-   */
-  void sendMessage(Communicator* recipient, Transaction trans);
-
-/* ------------------- */ 
-
-
-/* --------------------
- * Facility MODEL class has these members
- * --------------------
- */
-  /**
-     Transacted resources are extracted through this method
-      
-     @param order the msg/order for which resource(s) are to be prepared
-     @return list of resources to be sent for this order
-   */
-  virtual std::vector<rsrc_ptr> removeResource(Transaction order);
+  virtual Prototype* clone();
 
   /**
-     Transacted resources are received through this method
-      
-     @param trans the transaction to which these resource objects belong
-     @param manifest is the set of resources being received
+     allows facilities to define what members need to be initialized
+     after their prototypes have been cloned and entered into the 
+     simulation
    */
-  virtual void addResource(Transaction trans,
-        		   std::vector<rsrc_ptr> manifest);
+  virtual void initializeConcreteMembers();
+  /* --- */
+
+  /* --- Agent Methods --- */
   /**
      The handleTick function specific to the BatchReactor.
-      
      @param time the time of the tick
    */
   virtual void handleTick(int time);
 
   /**
      The handleTick function specific to the BatchReactor.
-      
      @param time the time of the tock
    */
   virtual void handleTock(int time);
+  /* --- */
 
-/* ------------------- */ 
+  /* --- Transaction Methods --- */
+  /**
+     When the facility receives a message, execute any transaction
+   */
+  virtual void receiveMessage(msg_ptr msg);
 
+  /**
+     send messages up through the institution 
+     @param recipient the final recipient 
+     @param trans the transaction to send 
+   */
+  void sendMessage(Communicator* recipient, Transaction trans);
 
-/* --------------------
- * _THIS_ MODEL class has these members
- * --------------------
- */
+  /**
+     Transacted resources are extracted through this method
+     @param order the msg/order for which resource(s) are to be prepared
+     @return list of resources to be sent for this order
+   */
+  virtual std::vector<rsrc_ptr> removeResource(Transaction order);
+
+  /**
+     Transacted resources are received through this method      
+     @param trans the transaction to which these resource objects belong
+     @param manifest is the set of resources being received
+   */
+  virtual void addResource(Transaction trans,
+        		   std::vector<rsrc_ptr> manifest);
+  /* --- */
+
+  /* --- BatchReactor Methods --- */
   /**
      set the cycle length 
    */
@@ -251,8 +220,10 @@ class BatchReactor : public FacilityModel  {
      get the current phase
   */
   Phase phase() {return phase_;}
+  /* --- */
 
  private:
+  /* --- BatchReactor Members and Methods --- */
   /**
      The time between batch reloadings. 
    */
@@ -426,9 +397,7 @@ class BatchReactor : public FacilityModel  {
      Processes all orders in ordersWaiting_
    */
   void handleOrders();
-  
-/* ------------------- */ 
-
+  /* --- */
 };
 
 #endif
