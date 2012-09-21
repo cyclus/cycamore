@@ -1,89 +1,87 @@
 <?xml version="1.0"?>
-<!-- 1 SourceFacility FrontEnd, 1 SinkFacility BackEnd, and 1 NullMarket -->
+<!-- 1 SourceFacility Source, 1 SinkFacility Sink -->
+
 <simulation>
-  <duration>10</duration>
-  <startmonth>1</startmonth>
-  <startyear>2000</startyear>
-  <simstart>0</simstart>
-  <decay>2</decay>
+  
+  <control>
+    <duration>10</duration>
+    <startmonth>1</startmonth>
+    <startyear>2000</startyear>
+    <simstart>0</simstart>
+    <decay>2</decay>
+  </control>
 
   <commodity>
-    <name>uo2</name>
+    <name>commodity</name>
   </commodity>
 
   <market>
-    <name>uo2market</name>
-    <mktcommodity>uo2</mktcommodity>
+    <name>commodity_market</name>
+    <mktcommodity>commodity</mktcommodity>
     <model>
       <NullMarket/>
     </model>
   </market>
 
   <facility>
-    <name>FrontEnd</name>
+    <name>Source</name>
+    <outcommodity>commodity</outcommodity>
     <model>
       <SourceFacility>
-        <outcommodity>uo2</outcommodity>
-        <capacity>5e3</capacity>
-        <inventorysize>1e4</inventorysize>
-        <commodprice>0</commodprice>
-        <recipe>fresh_50gwd</recipe>
+	<output>
+	  <outcommodity>commodity</outcommodity>
+	  <outputcapacity>1</outputcapacity>
+	  <recipe>commod_recipe</recipe>
+	</output>
+      </SourceFacility>
+    </model>
+  </facility>
+  
+  <facility>
+    <name>Sink</name>
+    <incommodity>commodity</incommodity>
+    <model>
+      <SourceFacility>
+	<input>
+	  <incommodity>commodity</incommodity>
+	  <inputcapacity>1</inputcapacity>
+	</input>
       </SourceFacility>
     </model>
   </facility>
 
-  <facility>
-    <name>BackEnd</name>
-    <model>
-      <SinkFacility>
-        <incommodity>uo2</incommodity>
-        <capacity>6000</capacity>
-        <inventorysize>1e6</inventorysize>
-        <commodprice>0</commodprice>
-      </SinkFacility>
-    </model>
-  </facility>
-
   <region>
-    <name>oneRegion</name>
-    <allowedfacility>FrontEnd</allowedfacility>
-    <allowedfacility>BackEnd</allowedfacility>
+    <name>SingleRegion</name>
+    <allowedfacility>Source</allowedfacility>
+    <allowedfacility>Sink</allowedfacility>
     <model>
       <NullRegion/>
     </model>
     <institution>
-      <name>oneInst</name>
+      <name>SingleInstitution</name>
+      <availableprototype>Source</availableprototype>
+      <availableprototype>Sink</availableprototype>
+      <initialfacilitylist>
+	<prototype>Source</prototype>
+	<number>1</number>
+      </initialfacilitylist>
+      <initialfacilitylist>
+	<prototype>Sink</prototype>
+	<number>1</number>
+      </initialfacilitylist>
       <model>
-        <FixedInst>
-          <facility>
-            <type>FrontEnd</type>
-            <name>FrontEnd</name>
-          </facility>
-          <facility>
-            <type>BackEnd</type>
-            <name>BackEnd</name>
-          </facility>
-        </FixedInst>
+        <NullInst/>
       </model>
     </institution>
   </region>
 
   <recipe>
-    <name>fresh_50gwd</name>
+    <name>commod_recipe</name>
     <basis>mass</basis>
-    <unit>assembly</unit>
-    <total>1000</total>
+    <total>1</total>
     <isotope>
-      <id>92235</id>
-      <comp>0.05</comp>
-    </isotope>
-    <isotope>
-      <id>92238</id>
-      <comp>0.95</comp>
-    </isotope>
-    <isotope>
-      <id>08016</id>
-      <comp>0.13</comp>
+      <id>01001</id>
+      <comp>1</comp>
     </isotope>
   </recipe>
 

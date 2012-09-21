@@ -41,8 +41,12 @@ void SinkFacility::initModuleMembers(QueryEngine* qe) {
   string data;
   data = input->getElementContent("input_capacity"); 
   setCapacity(lexical_cast<double>(data));  
-  data = input->getElementContent("inventorysize"); 
-  setMaxInventorySize(lexical_cast<double>(data));
+  try {
+    data = input->getElementContent("inventorysize"); 
+    setMaxInventorySize(lexical_cast<double>(data));
+  } catch (CycNullQueryException e) {
+    setMaxInventorySize(numeric_limits<double>::max());
+  }
 }
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - 
@@ -181,4 +185,3 @@ extern "C" Model* constructSinkFacility() {
 extern "C" void destructSinkFacility(Model* model) {
       delete model;
 }
-

@@ -41,8 +41,12 @@ void SourceFacility::initModuleMembers(QueryEngine* qe) {
   string data;
   data = output->getElementContent("output_capacity"); 
   setCapacity(lexical_cast<double>(data));  
-  data = output->getElementContent("inventorysize"); 
-  setMaxInventorySize(lexical_cast<double>(data));
+  try {
+    data = output->getElementContent("inventorysize"); 
+    setMaxInventorySize(lexical_cast<double>(data));
+  } catch (CycNullQueryException e) {
+    setMaxInventorySize(numeric_limits<double>::max());
+  }
 }
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - 

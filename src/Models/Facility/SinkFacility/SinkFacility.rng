@@ -8,7 +8,9 @@ datatypeLibrary="http://www.w3.org/2001/XMLSchema-datatypes">
 	   <ref name="incommodity"/>
 	 </element>
 	 <ref name="input_capacity"/>
-	 <ref name="inventorysize"/>
+	 <optional>
+	   <ref name="inventorysize"/>
+	 </optional>
        </element>
      </element>
   </define>
