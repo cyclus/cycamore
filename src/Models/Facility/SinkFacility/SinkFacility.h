@@ -103,10 +103,10 @@ class SinkFacility : public FacilityModel  {
 
   /* --- Facility Methods --- */
   /**
-     prototypes are required to provide the capacity to copy their
-     initialized members
+     Copy module members from a source model
+     @param sourceModel the model to copy from
    */
-  virtual Prototype* clone();
+  virtual void cloneModuleMembersFrom(FacilityModel* sourceModel);
   /* --- */
 
   /* --- Agent Methods --- */

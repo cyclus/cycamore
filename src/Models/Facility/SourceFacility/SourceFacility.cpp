@@ -62,13 +62,12 @@ std::string SourceFacility::str() {
 }
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - 
-Prototype* SourceFacility::clone() {
-  SourceFacility* clone = new SourceFacility();
-  clone->setCommodity(commodity());
-  clone->setCapacity(capacity());
-  clone->setRecipe(recipe());
-  clone->setMaxInventorySize(maxInventorySize());
-  return clone;
+void SourceFacility::cloneModuleMembersFrom(FacilityModel* sourceModel) {
+  SourceFacility* source = dynamic_cast<SourceFacility*>(sourceModel);
+  setCommodity(source->commodity());
+  setCapacity(source->capacity());
+  setRecipe(source->recipe());
+  setMaxInventorySize(source->maxInventorySize());
 }
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - 

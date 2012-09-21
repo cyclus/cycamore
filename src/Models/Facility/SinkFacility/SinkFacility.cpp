@@ -68,11 +68,10 @@ std::string SinkFacility::str() {
 }
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - 
-Prototype* SinkFacility::clone() {
-  SinkFacility* clone = new SinkFacility();
-  clone->setCapacity(capacity());
-  clone->setMaxInventorySize(maxInventorySize());
-  return clone;
+void SinkFacility::cloneModuleMembersFrom(FacilityModel* sourceModel) {
+  SinkFacility* source = dynamic_cast<SinkFacility*>(sourceModel);
+  setCapacity(source->capacity());
+  setMaxInventorySize(source->maxInventorySize());
 }
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - 

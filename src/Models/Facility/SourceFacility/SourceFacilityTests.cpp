@@ -41,15 +41,15 @@ TEST_F(SourceFacilityTest, InitialState) {
   EXPECT_DOUBLE_EQ(0.0, src_facility->inventorySize());
 }
 
-//- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - 
-TEST_F(SourceFacilityTest,clone) {
-  SourceFacility* new_facility = dynamic_cast<SourceFacility*>(src_facility->clone());
-  EXPECT_EQ(src_facility->commodity(),new_facility->commodity());
-  EXPECT_EQ(src_facility->capacity(),new_facility->capacity());
-  EXPECT_EQ(src_facility->maxInventorySize(),new_facility->maxInventorySize());
-  EXPECT_EQ(src_facility->recipe(),new_facility->recipe());
-  delete new_facility;
-}
+// //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - 
+// TEST_F(SourceFacilityTest,clone) {
+//   SourceFacility* new_facility = dynamic_cast<SourceFacility*>(src_facility->clone());
+//   EXPECT_EQ(src_facility->commodity(),new_facility->commodity());
+//   EXPECT_EQ(src_facility->capacity(),new_facility->capacity());
+//   EXPECT_EQ(src_facility->maxInventorySize(),new_facility->maxInventorySize());
+//   EXPECT_EQ(src_facility->recipe(),new_facility->recipe());
+//   delete new_facility;
+// }
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - 
 TEST_F(SourceFacilityTest, Print) {
