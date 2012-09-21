@@ -1,78 +1,35 @@
 // SinkFacilityTests.cpp
 #include <gtest/gtest.h>
 
-#include "SinkFacility.h"
-#include "CycException.h"
-#include "Message.h"
-#include "Model.h"
-#include "FacilityModelTests.h"
-#include "ModelTests.h"
-
-#include <string>
-#include <queue>
+#include "SinkFacilityTests.h"
 
 using namespace std;
 
-// //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-// class FakeSinkFacility : public SinkFacility {
-//   public:
-//     FakeSinkFacility() : SinkFacility() {
-//       in_commods_.push_back("in-commod");
-//       capacity_ = 2;
-//       inventory_.setCapacity(50);
-//       commod_price_ = 5000;
-//     }
-
-//     virtual ~FakeSinkFacility() {
-//     }
-
-//     double fakeCheckInventory() { return inventory_.quantity(); }
-
-//     std::string getInCommod() {return in_commods_.front();}
-//     double getCapacity() {return capacity_;}
-//     double getInvSize() {return inventory_.capacity();}
-//     double getCommodPrice() {return commod_price_;}
-// };
-
-//- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-Model* SinkFacilityModelConstructor(){
-  return dynamic_cast<Model*>(new SinkFacility());
+//- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - 
+void SinkFacilityTest::SetUp() {
+  initParameters();
+  setUpSinkFacility();
 }
 
-//- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-FacilityModel* SinkFacilityConstructor(){
-  return dynamic_cast<FacilityModel*>(new SinkFacility());
+//- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - 
+void SinkFacilityTest::TearDown() {
+  delete sink_facility;
+  delete commod_market;
 }
 
-//- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-class SinkFacilityTest : public ::testing::Test {
-protected:
-  SinkFacility* sink_facility;
-  TestMarket* commod_market;
-  std::string commod_;
-    
-  virtual void SetUp(){
-    initParameters();
-    setUpSinkFacility();
-  }
-  
-  virtual void TearDown() {
-    delete sink_facility;
-    delete commod_market;
-  }
+//- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - 
+void SinkFacilityTest::initParameters() {
+  commod_ = "incommod";
+  commod_market = new TestMarket();
+  commod_market->setCommodity(commod_);
+  MarketModel::registerMarket(commod_market);
+}
 
-  void initParameters() {
-    commod_ = "incommod";
-    commod_market = new TestMarket();
-    commod_market->setCommodity(commod_);
-    MarketModel::registerMarket(commod_market);
-  }
-  
-  void setUpSinkFacility() {
-    sink_facility = new SinkFacility();
-    sink_facility->addCommodity(commod_);
-  }
-};
+//- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - 
+void SinkFacilityTest::setUpSinkFacility() {
+  sink_facility = new SinkFacility();
+  sink_facility->addCommodity(commod_);
+}
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - 
 TEST_F(SinkFacilityTest, InitialState) {
