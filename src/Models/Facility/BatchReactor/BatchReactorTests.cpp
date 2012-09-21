@@ -3,54 +3,99 @@
 
 #include "BatchReactorTests.h"
 
+#include "XMLQueryEngine.h"
+#include <sstream>
+
 using namespace std;
 
-// //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - 
-// TEST_F(BatchReactorTest, InitialState) {
-//   // Test things about the initial state of the facility here
-//   EXPECT_EQ(lencycle,src_facility->cycleLength());
-//   EXPECT_EQ(life,src_facility->lifetime());
-//   EXPECT_EQ(loadcore,src_facility->coreLoading());
-//   EXPECT_EQ(nbatch,src_facility->nBatches());
-// }
+//- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - 
+void BatchReactorTest::SetUp() {
+  // set up model parameters
+  lencycle = 3;
+  loadcore = 10.0;
+  nbatch = 5;
+  in_commod = "inc";
+  out_commod = "outc";
+  in_recipe = "inr";
+  out_recipe = "outr";
+  initSrcFacility();
+  initWorld();
+}
 
-// //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - 
-// TEST_F(BatchReactorTest, CopyFreshModel) {
-//   new_facility->copyFreshModel(dynamic_cast<Model*>(src_facility)); // deep copy
-//   EXPECT_NO_THROW(dynamic_cast<BatchReactor*>(new_facility)); // still a recipe reactor
-//   EXPECT_NO_THROW(dynamic_cast<FakeBatchReactor*>(new_facility)); // still a fake recipe reactor
-//   // Test that BatchReactor specific parameters are initialized in the deep copy method here
-//   EXPECT_EQ( lencycle, new_facility->cycleLength() );
-//   EXPECT_EQ( life, new_facility->lifetime() );
-//   EXPECT_EQ( loadcore, new_facility->coreLoading() );
-//   EXPECT_EQ( nbatch, new_facility->nBatches() );
-// }
+//- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - 
+void BatchReactorTest::TearDown() {
+  delete src_facility;
+  delete incommod_market;
+  delete outcommod_market;
+}
 
-// //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - 
-// TEST_F(BatchReactorTest, Print) {
-//   EXPECT_NO_THROW(std::string s = src_facility->str());
-//   //Test BatchReactor specific aspects of the print method here
-// }
+//- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - 
+void BatchReactorTest::initSrcFacility() {
+  stringstream ss("");
+  ss << "<start>"
+     << "  <fuel_input>"
+     << "    <incommodity>" << in_commod << "</incommodity>"
+     << "    <inrecipe>" << in_recipe << "</inrecipe>"
+     << "  </fuel_input>"
+     << "  <fuel_output>"
+     << "    <outcommodity>" << out_commod << "</outcommodity>"
+     << "    <outrecipe>" << out_recipe << "</outrecipe>"
+     << "  </fuel_output>"
+     << "  <cyclelength>" << lencycle << "</cyclelength>"
+     << "  <coreloading>" << loadcore << "</coreloading>"
+     << "  <batchespercore>" << nbatch << "</batchespercore>"
+     << "</start>";
 
-// //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - 
-// TEST_F(BatchReactorTest, ReceiveMessage) {
-//   msg_ptr msg;
-//   //Test BatchReactor specific behaviors of the receiveMessage function here
-// }
+  XMLParser parser(ss);
+  XMLQueryEngine* engine = new XMLQueryEngine(parser);
+  src_facility = new BatchReactor();
+  src_facility->initModuleMembers(engine);
+  delete engine;
+}
 
-// //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - 
-// TEST_F(BatchReactorTest, Tick) {
-//   int time = 1;
-//   EXPECT_NO_THROW(src_facility->handleTick(time));
-//   //Test BatchReactor specific behaviors of the handleTick function here
-// }
+//- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - 
+void BatchReactorTest::initWorld() {
+  incommod_market = new TestMarket();
+  incommod_market->setCommodity(in_commod);
+  MarketModel::registerMarket(incommod_market);
 
-// //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - 
-// TEST_F(BatchReactorTest, Tock) {
-//   int time = 1;
-//   EXPECT_NO_THROW(src_facility->handleTick(time));
-//   //Test BatchReactor specific behaviors of the handleTock function here
-// }
+  outcommod_market = new TestMarket();
+  outcommod_market->setCommodity(out_commod);
+  MarketModel::registerMarket(outcommod_market);
+}
+
+//- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - 
+TEST_F(BatchReactorTest,initialstate) {
+  EXPECT_EQ(lencycle,src_facility->cycleLength());
+  EXPECT_EQ(loadcore,src_facility->coreLoading());
+  EXPECT_EQ(nbatch,src_facility->nBatches());
+}
+
+//- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - 
+TEST_F(BatchReactorTest,clone) {
+  BatchReactor* new_facility = dynamic_cast<BatchReactor*>(src_facility->clone());
+  EXPECT_EQ( lencycle, new_facility->cycleLength() );
+  EXPECT_EQ( loadcore, new_facility->coreLoading() );
+  EXPECT_EQ( nbatch, new_facility->nBatches() );
+}
+
+//- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - 
+TEST_F(BatchReactorTest, Print) {
+  EXPECT_NO_THROW(std::string s = src_facility->str());
+  //Test BatchReactor specific aspects of the print method here
+}
+
+//- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - 
+TEST_F(BatchReactorTest, Tick) {
+  int time = 1;
+  EXPECT_NO_THROW(src_facility->handleTick(time););
+}
+
+//- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - 
+TEST_F(BatchReactorTest, Tock) {
+  int time = 1;
+  EXPECT_ANY_THROW(src_facility->handleTock(time));
+}
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - 
 INSTANTIATE_TEST_CASE_P(BatchReactor, FacilityModelTests, Values(&BatchReactorConstructor));

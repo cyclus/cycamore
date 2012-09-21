@@ -13,31 +13,6 @@
 
 using namespace std;
 
-// //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-// class FakeSourceFacility : public SourceFacility {
-//   public:
-//     FakeSourceFacility() {
-//       out_commod_ = "out-commod";
-
-//       int u235 = 92235;
-//       double one = 1.0;
-//       string test_mat_unit = "test_mat_unit";
-//       string test_rec_name = "test_rec_name";
-//       double test_size = 10.0;
-//       bool test_template = true;
-//       IsoVector test_comp;
-
-//       recipe_ = IsoVector(test_comp);
-
-//       capacity_ = 2;
-//       commod_price_ = 5000;
-//       setInventory(capacity() + 1);
-//     }
-
-//     virtual ~FakeSourceFacility() {
-//     }
-// };
-
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 Model* SourceFacilityModelConstructor(){
   return dynamic_cast<Model*>(new SourceFacility());

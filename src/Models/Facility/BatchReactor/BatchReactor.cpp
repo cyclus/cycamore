@@ -121,9 +121,9 @@ void BatchReactor::handleTick(int time) {
     // intentional fall through
     
   case BEGIN:
-    fuel_quantity = preCore_.quantity() + inCore_.quantity();
-    request = coreLoading() - fuel_quantity;
-    makeRequest(request);
+    // fuel_quantity = preCore_.quantity() + inCore_.quantity();
+    // request = coreLoading() - fuel_quantity;
+    // makeRequest(request);
     break;
     
   case END:
@@ -137,7 +137,7 @@ void BatchReactor::handleTick(int time) {
     break;
   }
   
-  makeOffers();
+  // makeOffers();
 
   LOG(LEV_INFO3, "BReact") << "}";
 }
@@ -394,7 +394,8 @@ void BatchReactor::moveFuel(MatBuff& fromBuff, MatBuff& toBuff, double amt) {
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - 
 void BatchReactor::moveFuel(MatBuff& fromBuff, MatBuff& toBuff) {
-  moveFuel(fromBuff,toBuff,fromBuff.quantity());
+  if (!fromBuff.empty()) // @MJGFlag this check shouldn't have to be made
+    moveFuel(fromBuff,toBuff,fromBuff.quantity());
 }
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - 
