@@ -63,10 +63,14 @@
       <availableprototype>Source</availableprototype>
       <availableprototype>Sink</availableprototype>
       <initialfacilitylist>
-	<prototype>Source</prototype>
-	<number>1</number>
-	<prototype>Sink</prototype>
-	<number>1</number>
+	<entry>
+	  <prototype>Source</prototype>
+	  <number>1</number>
+	</entry>
+	<entry>
+	  <prototype>Sink</prototype>
+	  <number>1</number>
+	</entry>
       </initialfacilitylist>
       <model>
         <NullInst/>

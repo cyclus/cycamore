@@ -71,13 +71,13 @@ TEST_F(BatchReactorTest,initialstate) {
   EXPECT_EQ(nbatch,src_facility->nBatches());
 }
 
-//- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - 
-TEST_F(BatchReactorTest,clone) {
-  BatchReactor* new_facility = dynamic_cast<BatchReactor*>(src_facility->clone());
-  EXPECT_EQ( lencycle, new_facility->cycleLength() );
-  EXPECT_EQ( loadcore, new_facility->coreLoading() );
-  EXPECT_EQ( nbatch, new_facility->nBatches() );
-}
+// //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - 
+// TEST_F(BatchReactorTest,clone) {
+//   BatchReactor* new_facility = dynamic_cast<BatchReactor*>(src_facility->clone());
+//   EXPECT_EQ( lencycle, new_facility->cycleLength() );
+//   EXPECT_EQ( loadcore, new_facility->coreLoading() );
+//   EXPECT_EQ( nbatch, new_facility->nBatches() );
+// }
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - 
 TEST_F(BatchReactorTest, Print) {

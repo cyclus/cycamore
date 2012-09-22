@@ -76,16 +76,15 @@ std::string BatchReactor::str() {
 }
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - 
-Prototype* BatchReactor::clone() {
-  BatchReactor* clone = new BatchReactor();
-  clone->setCycleLength(cycleLength());
-  clone->setCoreLoading(coreLoading());
-  clone->setNBatches(nBatches());
-  clone->setInCommodity(inCommodity());
-  clone->setOutCommodity(outCommodity());
-  clone->setInRecipe(inRecipe());
-  clone->setOutRecipe(outRecipe());
-  return clone;
+void BatchReactor::cloneModuleMembersFrom(FacilityModel* sourceModel) {
+  BatchReactor* source = dynamic_cast<BatchReactor*>(sourceModel);
+  setCycleLength(source->cycleLength());
+  setCoreLoading(source->coreLoading());
+  setNBatches(source->nBatches());
+  setInCommodity(source->inCommodity());
+  setOutCommodity(source->outCommodity());
+  setInRecipe(source->inRecipe());
+  setOutRecipe(source->outRecipe());
 }
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - 
