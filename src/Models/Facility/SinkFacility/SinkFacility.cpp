@@ -33,9 +33,9 @@ void SinkFacility::initModuleMembers(QueryEngine* qe) {
 
   QueryEngine* commodities = input->queryElement("commodities");
   string query = "incommodity";
-  int nCommodities = input->nElementsMatchingQuery("incommodity");
+  int nCommodities = commodities->nElementsMatchingQuery(query);
   for (int i = 0; i < nCommodities; i++) {
-    addCommodity(input->getElementContent(query,i));
+    addCommodity(commodities->getElementContent(query,i));
   }
 
   string data;
@@ -72,6 +72,9 @@ void SinkFacility::cloneModuleMembersFrom(FacilityModel* sourceModel) {
   SinkFacility* source = dynamic_cast<SinkFacility*>(sourceModel);
   setCapacity(source->capacity());
   setMaxInventorySize(source->maxInventorySize());
+  in_commods_ = source->inputCommodities();
+  CLOG(LEV_DEBUG3) << "SinkFacility cloned: " << str();
+  CLOG(LEV_DEBUG3) << "               From: " << sourceModel->str();
 }
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - 
@@ -79,9 +82,13 @@ void SinkFacility::handleTick(int time){
   LOG(LEV_INFO3, "SnkFac") << facName() << " is ticking {";
 
   double requestAmt = getRequestAmt(); 
+  CLOG(LEV_DEBUG3) << "SinkFacility " << name() << " on the tick has "
+                   << "a request amount of: " << requestAmt;
   double minAmt = 0;
 
+
   if (requestAmt>EPS_KG){
+
     // for each potential commodity, make a request
     for (vector<string>::iterator commod = in_commods_.begin();
         commod != in_commods_.end();
@@ -151,6 +158,11 @@ double SinkFacility::maxInventorySize() {
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - 
 double SinkFacility::inventorySize() {
   return inventory_.quantity();
+}
+
+//- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - 
+std::vector<std::string> SinkFacility::inputCommodities() {
+  return in_commods_;
 }
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - 

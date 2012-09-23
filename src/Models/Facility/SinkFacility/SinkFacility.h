@@ -169,6 +169,9 @@ class SinkFacility : public FacilityModel  {
 
   /// @return the current inventory storage size
   double inventorySize();
+
+  /// @return the input commodities
+  std::vector<std::string> inputCommodities();
   /* --- */
 
  protected:
@@ -184,7 +187,7 @@ class SinkFacility : public FacilityModel  {
   double capacity_;
 
   /**
-     commodity price 
+     commodity price
    */
   double commod_price_;
 
