@@ -73,8 +73,6 @@ void SinkFacility::cloneModuleMembersFrom(FacilityModel* sourceModel) {
   setCapacity(source->capacity());
   setMaxInventorySize(source->maxInventorySize());
   in_commods_ = source->inputCommodities();
-  CLOG(LEV_DEBUG3) << "SinkFacility cloned: " << str();
-  CLOG(LEV_DEBUG3) << "               From: " << sourceModel->str();
 }
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - 
@@ -128,6 +126,8 @@ void SinkFacility::handleTock(int time){
                   << " units of material at the close of month " << time
                   << ".";
   LOG(LEV_INFO3, "SnkFac") << "}";
+  
+  FacilityModel::handleTock(time);
 }
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - 
