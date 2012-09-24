@@ -27,11 +27,11 @@
     <lifetime>5</lifetime>
     <model>
       <SourceFacility>
-	<output>
-	  <outcommodity>commodity</outcommodity>
-	  <output_capacity>1</output_capacity>
-	  <recipe>commod_recipe</recipe>
-	</output>
+        <output>
+          <outcommodity>commodity</outcommodity>
+          <output_capacity>1</output_capacity>
+          <recipe>commod_recipe</recipe>
+        </output>
       </SourceFacility>
     </model>
     <outcommodity>commodity</outcommodity>
@@ -41,12 +41,12 @@
     <name>Sink</name>
     <model>
       <SinkFacility>
-	<input>
-	  <commodities>
-	    <incommodity>commodity</incommodity>
-	  </commodities>
-	  <input_capacity>3</input_capacity>
-	</input>
+        <input>
+          <commodities>
+            <incommodity>commodity</incommodity>
+          </commodities>
+          <input_capacity>3</input_capacity>
+        </input>
       </SinkFacility>
     </model>
     <incommodity>commodity</incommodity>
@@ -64,14 +64,14 @@
       <availableprototype>Source</availableprototype>
       <availableprototype>Sink</availableprototype>
       <initialfacilitylist>
-	<entry>
-	  <prototype>Source</prototype>
-	  <number>3</number>
-	</entry>
-	<entry>
-	  <prototype>Sink</prototype>
-	  <number>1</number>
-	</entry>
+        <entry>
+          <prototype>Source</prototype>
+          <number>3</number>
+        </entry>
+        <entry>
+          <prototype>Sink</prototype>
+          <number>1</number>
+        </entry>
       </initialfacilitylist>
       <model>
         <NullInst/>
