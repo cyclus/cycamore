@@ -1,5 +1,5 @@
 <grammar xmlns="http://relaxng.org/ns/structure/1.0"
-	 datatypeLibrary="http://www.w3.org/2001/XMLSchema-datatypes">
+         datatypeLibrary="http://www.w3.org/2001/XMLSchema-datatypes">
   
   <!-- GrowthRegion -->  
   <define name="GrowthRegion">
@@ -7,33 +7,33 @@
       
       <!-- Commodity Requirements -->
       <oneOrMore>
-	<element name = "gcommodity">
-	  
-	  <element name = "name">
-	    <text/>
-	  </element>
-	  
-	  <element name = "demand">
-	    <!-- defines demand function -->
-	    <element name="type">
-	      <text/>
-	    </element>
-	    <element name="parameters">
-	      <text/>
-	    </element>
-	    <oneOrMore>
-	      <element name = "metby">
-		<element name="facility">
-		  <text/>
-		</element>
-		<element name="capacity">
-		  <data type = "double"/>
-		</element>
-	      </element>
-	    </oneOrMore>
-	  </element>
+        <element name = "gcommodity">
+          
+          <element name = "name">
+            <text/>
+          </element>
+          
+          <element name = "demand">
+            <!-- defines demand function -->
+            <element name="type">
+              <text/>
+            </element>
+            <element name="parameters">
+              <text/>
+            </element>
+            <oneOrMore>
+              <element name = "metby">
+                <element name="facility">
+                  <text/>
+                </element>
+                <element name="capacity">
+                  <data type = "double"/>
+                </element>
+              </element>
+            </oneOrMore>
+          </element>
 
-	</element>
+        </element>
       </oneOrMore>
       <!-- end Commodity Requirements -->
 
@@ -43,4 +43,3 @@
   
   
 </grammar>
-  
