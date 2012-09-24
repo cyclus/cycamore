@@ -88,7 +88,7 @@ void BatchReactor::cloneModuleMembersFrom(FacilityModel* sourceModel) {
 }
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - 
-void BatchReactor::initializeConcreteMembers() {
+void BatchReactor::enterSimulationAsModule() {
   preCore_.setCapacity(coreLoading());
   inCore_.setCapacity(coreLoading());  
   resetCycleTimer();
@@ -109,6 +109,9 @@ void BatchReactor::handleTick(int time) {
   string msg;
 
   switch( phase() ) {
+  case INIT:
+    break;
+
   case OPERATION:
     break;
     

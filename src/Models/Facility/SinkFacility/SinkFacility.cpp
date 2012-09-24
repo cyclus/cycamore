@@ -126,8 +126,6 @@ void SinkFacility::handleTock(int time){
                   << " units of material at the close of month " << time
                   << ".";
   LOG(LEV_INFO3, "SnkFac") << "}";
-  
-  FacilityModel::handleTock(time);
 }
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - 
