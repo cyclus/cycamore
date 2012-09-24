@@ -34,12 +34,6 @@ BatchReactor::BatchReactor() :
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - 
 BatchReactor::~BatchReactor() {
-  bool empty = (preCore_.empty() && inCore_.empty() && 
-                postCore_.empty());
-  if (!empty) {
-    string msg = "Can't delete a BatchReactor with material still in its inventory.";
-    throw CycBatchReactorDestructException(msg);
-  }
 }
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - 
@@ -310,6 +304,17 @@ std::string BatchReactor::outRecipe() {
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - 
 Phase BatchReactor::phase() {
   return phase_;
+}
+
+//- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - 
+bool BatchReactor::checkDecommissionCondition() {
+  bool empty = (preCore_.empty() && inCore_.empty() && 
+                postCore_.empty());
+  // if (!empty) {
+  //   string msg = "Can't delete a BatchReactor with material still in its inventory.";
+  //   throw CycBatchReactorDestructException(msg);
+  // }
+  return empty;
 }
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - 

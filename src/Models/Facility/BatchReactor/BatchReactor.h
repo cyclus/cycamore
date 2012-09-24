@@ -190,6 +190,15 @@ class BatchReactor : public FacilityModel  {
   Phase phase();
   /* --- */
 
+ protected:
+  /* --- Facility Methods --- */
+  /**
+     facilities over write this method if a condition must be met
+     before their destructors can be called
+  */
+  virtual bool checkDecommissionCondition();
+  /* --- */
+
  private:
   /* --- BatchReactor Members and Methods --- */
   /// The time between batch reloadings. 
