@@ -2,53 +2,36 @@
 #include <gtest/gtest.h>
 
 #include "StubInst.h"
-#include "CycException.h"
 #include "Message.h"
 #include "InstModelTests.h"
 #include "ModelTests.h"
 
 #include <string>
-#include <queue>
 
 using namespace std;
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-class FakeStubInst : public StubInst {
-  public:
-    FakeStubInst() : StubInst() {
-    }
-
-    virtual ~FakeStubInst() {
-    }
-};
-
-//- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 class StubInstTest : public ::testing::Test {
   protected:
-    FakeStubInst* src_inst;
-    FakeStubInst* new_inst; 
+    StubInst* src_inst;
 
     virtual void SetUp(){
-      src_inst = new FakeStubInst();
-      src_inst->setParent(new TestRegion());
-      new_inst = new FakeStubInst();
-      // for facilities that trade commodities, create appropriate markets here
+      src_inst = new StubInst();
     };
 
     virtual void TearDown() {
       delete src_inst;
-      // for facilities that trade commodities, delete appropriate markets here
     }
 };
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 Model* StubInstModelConstructor(){
-  return dynamic_cast<Model*>(new FakeStubInst());
+  return dynamic_cast<Model*>(new StubInst());
 }
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 InstModel* StubInstConstructor(){
-  return dynamic_cast<InstModel*>(new FakeStubInst());
+  return dynamic_cast<InstModel*>(new StubInst());
 }
 
 
@@ -58,19 +41,10 @@ TEST_F(StubInstTest, InitialState) {
 }
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - 
-TEST_F(StubInstTest, CopyFreshModel) {
-  new_inst->copyFreshModel(dynamic_cast<Model*>(src_inst)); // deep copy
-  EXPECT_NO_THROW(dynamic_cast<StubInst*>(new_inst)); // still a stub inst
-  EXPECT_NO_THROW(dynamic_cast<FakeStubInst*>(new_inst)); // still a fake stub inst
-  // Test that StubInst specific parameters are initialized in the deep copy method here
-}
-
-//- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - 
 TEST_F(StubInstTest, Print) {
-  EXPECT_NO_THROW(std::string s = src_inst->str());
+  EXPECT_NO_THROW(string s = src_inst->str());
   // Test StubInst specific aspects of the print method here
 }
-
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - 
 TEST_F(StubInstTest, ReceiveMessage) {

@@ -2,8 +2,8 @@
 #if !defined(_STUBINST_H)
 #define _STUBINST_H
 
-#include "Logger.h"
 #include "InstModel.h"
+#include "QueryEngine.h"
 
 /**
    @class StubInst 
@@ -46,35 +46,22 @@ class StubInst : public InstModel {
      every model should be destructable 
    */
   virtual ~StubInst();
-    
-  /**
-     every model needs a method to initialize from XML 
-      
-     @param cur is the pointer to the model's xml node 
-   */
-  virtual void init(xmlNodePtr cur);
-  
-  /**
-     every model needs a method to copy one object to another 
-      
-     @param src is the StubStub to copy 
-   */
-  virtual void copy(StubInst* src) ;
-
-  /**
-     This drills down the dependency tree to initialize all relevant 
-     parameters/containers.  
-     Note that this function must be defined only in the specific model 
-     in question and not in any inherited models preceding it. 
-      
-     @param src the pointer to the original (initialized ?) model to be 
-   */
-  virtual void copyFreshModel(Model* src);
 
   /**
      every model should be able to print a verbose description 
    */
    virtual std::string str();
+  
+  /**
+     Initialize members related to derived module class
+     @param qe a pointer to a QueryEngine object containing initialization data
+   */
+  virtual void initModuleMembers(QueryEngine* qe);
+
+  /**
+     perform all necessary actions for the model to enter the simulation
+   */
+  virtual void enterSimulation(Model* parent);
 
 /* ------------------- */ 
 

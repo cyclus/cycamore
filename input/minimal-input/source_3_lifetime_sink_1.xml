@@ -2,7 +2,6 @@
 <!-- 1 SourceFacility Source, 1 SinkFacility Sink -->
 
 <simulation>
-  
   <control>
     <duration>10</duration>
     <startmonth>1</startmonth>
@@ -25,29 +24,32 @@
 
   <facility>
     <name>Source</name>
-    <outcommodity>commodity</outcommodity>
+    <lifetime>5</lifetime>
     <model>
       <SourceFacility>
-	<output>
-	  <outcommodity>commodity</outcommodity>
-	  <outputcapacity>1</outputcapacity>
-	  <recipe>commod_recipe</recipe>
-	</output>
+        <output>
+          <outcommodity>commodity</outcommodity>
+          <output_capacity>1</output_capacity>
+          <recipe>commod_recipe</recipe>
+        </output>
       </SourceFacility>
     </model>
+    <outcommodity>commodity</outcommodity>
   </facility>
   
   <facility>
     <name>Sink</name>
-    <incommodity>commodity</incommodity>
     <model>
-      <SourceFacility>
-	<input>
-	  <incommodity>commodity</incommodity>
-	  <inputcapacity>1</inputcapacity>
-	</input>
-      </SourceFacility>
+      <SinkFacility>
+        <input>
+          <commodities>
+            <incommodity>commodity</incommodity>
+          </commodities>
+          <input_capacity>3</input_capacity>
+        </input>
+      </SinkFacility>
     </model>
+    <incommodity>commodity</incommodity>
   </facility>
 
   <region>
@@ -62,12 +64,14 @@
       <availableprototype>Source</availableprototype>
       <availableprototype>Sink</availableprototype>
       <initialfacilitylist>
-	<prototype>Source</prototype>
-	<number>1</number>
-      </initialfacilitylist>
-      <initialfacilitylist>
-	<prototype>Sink</prototype>
-	<number>1</number>
+        <entry>
+          <prototype>Source</prototype>
+          <number>3</number>
+        </entry>
+        <entry>
+          <prototype>Sink</prototype>
+          <number>1</number>
+        </entry>
       </initialfacilitylist>
       <model>
         <NullInst/>
@@ -78,7 +82,6 @@
   <recipe>
     <name>commod_recipe</name>
     <basis>mass</basis>
-    <total>1</total>
     <isotope>
       <id>01001</id>
       <comp>1</comp>

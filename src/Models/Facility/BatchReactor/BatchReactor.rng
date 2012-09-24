@@ -5,26 +5,25 @@ datatypeLibrary="http://www.w3.org/2001/XMLSchema-datatypes">
      <element name="BatchReactor"> 
 
        <!-- Material In/Out  -->
-        <oneOrMore>
-          <element name="fuelpair">
-            <ref name="incommodity"/>
-            <ref name="inrecipe"/>
-            <ref name="outcommodity"/>
-            <ref name="outrecipe"/>
-            </element>
-        </oneOrMore>
+       <element name="fuel_input">
+         <ref name="incommodity"/>
+         <ref name="inrecipe"/>
+       </element>
+       <element name="fuel_output">
+         <ref name="outcommodity"/>
+         <ref name="outrecipe"/>
+       </element>
 
-	<!-- Facility Parameters -->
+        <!-- Facility Parameters -->
         <element name="cyclelength">
           <data type="nonNegativeInteger"/>
-	</element>
-        <ref name="lifetime"/>
-	<element name ="coreloading">
+        </element>
+        <element name ="coreloading">
           <data type="double"/>
-	</element>
+        </element>
         <element name="batchespercore">
           <data type="nonNegativeInteger"/>
-	</element>
+        </element>
 
      </element>
   </define>

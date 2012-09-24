@@ -5,24 +5,20 @@ datatypeLibrary="http://www.w3.org/2001/XMLSchema-datatypes">
   <define name="DeployInst">
     <element name="DeployInst">
       <oneOrMore>
-      <ref name="deploy"/>
+	<element name="buildorder">
+	  <element name="prototype">
+	    <data type="string"/>
+	  </element>   
+	  <element name="number">
+	    <data type="nonNegativeInteger"/>
+	  </element>   
+	  <element name="date">
+	    <data type="nonNegativeInteger"/>
+	  </element>
+	</element>
       </oneOrMore>       
     </element>
   </define>
-
-  <define name="deploy">
-    <element name="deploy">
-      <element name="type">
-        <data type="string"/>
-      </element>   
-      <element name="name">
-        <data type="string"/>
-      </element>   
-      <element name="start">
-        <data type="nonNegativeInteger"/>
-      </element>
-    </element>
-  </define>
-
+  
 
 </grammar>
