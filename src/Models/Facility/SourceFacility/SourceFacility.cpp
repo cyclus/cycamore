@@ -108,8 +108,6 @@ void SourceFacility::handleTock(int time){
                   << ".";
 
   LOG(LEV_INFO3, "SrcFac") << "}";
-
-  FacilityModel::handleTock(time);
 }
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - 

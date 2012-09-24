@@ -53,11 +53,9 @@ class BatchReactor : public FacilityModel  {
   virtual void cloneModuleMembersFrom(FacilityModel* sourceModel);
 
   /**
-     allows facilities to define what members need to be initialized
-     after their prototypes have been cloned and entered into the 
-     simulation
+     perform module-specific tasks when entering the simulation
    */
-  virtual void initializeConcreteMembers();
+  virtual void enterSimulationAsModule();
   /* --- */
 
   /* --- Agent Methods --- */
