@@ -33,8 +33,7 @@ BatchReactor::BatchReactor() :
 }
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - 
-BatchReactor::~BatchReactor() {
-}
+BatchReactor::~BatchReactor() {}
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - 
 void BatchReactor::initModuleMembers(QueryEngine* qe) {
@@ -104,22 +103,21 @@ void BatchReactor::handleTick(int time) {
 
   switch( phase() ) {
   case INIT:
-    break;
+    // intentional fall through
 
   case OPERATION:
     break;
     
   case REFUEL:
     offloadBatch();
-    // intentional fall through
 
   case WAITING:
     // intentional fall through
     
   case BEGIN:
-    // fuel_quantity = preCore_.quantity() + inCore_.quantity();
-    // request = coreLoading() - fuel_quantity;
-    // makeRequest(request);
+    fuel_quantity = preCore_.quantity() + inCore_.quantity();
+    request = coreLoading() - fuel_quantity;
+    makeRequest(request);
     break;
     
   case END:
@@ -133,7 +131,7 @@ void BatchReactor::handleTick(int time) {
     break;
   }
   
-  // makeOffers();
+  makeOffers();
 
   LOG(LEV_INFO3, "BReact") << "}";
 }
