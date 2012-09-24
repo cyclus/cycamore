@@ -57,10 +57,9 @@ class GrowthRegion : public RegionModel
   virtual void initModuleMembers(QueryEngine* qe);
 
   /**
-     perform all necessary actions for the model to enter the simulation
+     perform module-specific tasks when entering the simulation
    */
-  virtual void enterSimulation(Model* parent);
-
+  virtual void enterSimulationAsModule();
 /* ------------------- */ 
 
 

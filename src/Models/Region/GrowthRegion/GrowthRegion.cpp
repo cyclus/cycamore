@@ -17,10 +17,6 @@
 using namespace std;
 using namespace boost;
 
-/* --------------------
- * GrowthRegion Class Methods
- * --------------------
- */
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - 
 GrowthRegion::GrowthRegion() {
   builders_ = map<Producer*,Model*>();
@@ -55,8 +51,7 @@ void GrowthRegion::initModuleMembers(QueryEngine* qe) {
 }
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - 
-void GrowthRegion::enterSimulation(Model* parent) {
-  RegionModel::enterSimulation(parent);
+void GrowthRegion::enterSimulationAsModule() {
   // populate producers_, builders_
   populateProducerMaps();
 };
@@ -238,16 +233,14 @@ void GrowthRegion::orderBuild(Model* builder, Model* prototype) {
   // build functions must know who is placing the build order
   dynamic_cast<InstModel*>(builder)->build(dynamic_cast<Prototype*>(prototype));
 }
-/* -------------------- */
 
-
-/* --------------------
- * Model Class Methods
- * --------------------
- */
-extern "C" Model* constructGrowthRegionGrowthRegion() {
-    return new GrowthRegion();
+//- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+extern "C" Model* constructGrowthRegion() {
+  return new GrowthRegion();
 }
 
-/* -------------------- */
+//- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+extern "C" void destructGrowthRegion(Model* model) {
+      delete model;
+}
 
