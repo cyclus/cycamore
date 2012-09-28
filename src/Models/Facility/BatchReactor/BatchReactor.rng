@@ -28,15 +28,16 @@ datatypeLibrary="http://www.w3.org/2001/XMLSchema-datatypes">
        <!-- Power Production  -->
        <element name="commodity_production">
          <element name="commodity">
-           <data type="string">
+           <data type="string"/>
          </element>
          <element name="capacity">
-           <data type="double">
+           <data type="double"/>
          </element>
          <element name="cost">
-           <data type="double">
+           <data type="double"/>
          </element>
        </element>
+
      </element>
   </define>
 
