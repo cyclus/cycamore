@@ -1,1 +1,1 @@
-#cyclus_init_model("Region" "GrowthRegion")
+cyclus_init_model("Region" "GrowthRegion")

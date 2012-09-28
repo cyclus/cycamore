@@ -7,7 +7,7 @@
       
       <!-- Commodity Requirements -->
       <oneOrMore>
-        <element name = "gcommodity">
+        <element name = "commodity">
           
           <element name = "name">
             <text/>

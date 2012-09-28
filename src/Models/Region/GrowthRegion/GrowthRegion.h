@@ -3,7 +3,19 @@
 #define GROWTHREGION_H
 
 #include "RegionModel.h"
+#include "Commodity.h"
 #include "SupplyDemandManager.h"
+#include "BuildingManager.h"
+//#include "QueryEngine.h"//
+
+#include <set>
+
+// forward declarations
+class QueryEngine;
+class GrowthRegion;
+
+// forward includes
+#include "GrowthRegionTests.h"
 
 /**
    The GrowthRegion class inherits from the RegionModel class and is 
@@ -16,7 +28,8 @@
    of its institutions are available to build each facility. 
  */
 class GrowthRegion : public RegionModel  
-{
+{  
+  friend class GrowthRegionTests;
  public:
   /* --- Module Members --- */
   /**
@@ -27,12 +40,7 @@ class GrowthRegion : public RegionModel
   /**
      The default destructor for the GrowthRegion 
    */
-  virtual ~GrowthRegion() {};
-
-  /**
-     print information about the region 
-   */
-  virtual std::string str();
+  virtual ~GrowthRegion();
   /* --- */
 
   /* --- Region Members --- */
@@ -43,6 +51,12 @@ class GrowthRegion : public RegionModel
   virtual void initModuleMembers(QueryEngine* qe);
 
   /**
+     add a demand for a commodity on which this region request that
+     facilities be built
+   */
+  void addCommodityDemand(QueryEngine* qe);
+
+  /**
      perform module-specific tasks when entering the simulation
    */
   virtual void enterSimulationAsModule();
@@ -50,9 +64,8 @@ class GrowthRegion : public RegionModel
   /**
      On each tick, the GrowthRegion queries its supply demand manager
      to determine if there exists some demand. If demand for a 
-     commodity exists, then the building manager is queried to
-     determine which prototypes to build, and orderBuilds() is called.
-
+     commodity exists, then the correct build order for that demand
+     is constructed and executed.
      @param time is the time to perform the tick 
    */
   virtual void handleTick(int time);
@@ -61,21 +74,40 @@ class GrowthRegion : public RegionModel
  protected:
   /* --- GrowthRegion Members --- */
   /// a container of all commodities managed by region
-  std::set<Commodity> commodities_;
+  std::set<Commodity,CommodityCompare> commodities_;
 
   /// manager for supply and demand
   SupplyDemandManager sdmanager_;
 
   /// manager for building things
-  BuildingManager buildmanager_;
+  ActionBuilding::BuildingManager buildmanager_;
 
   /**
-     calls the appropriate orderBuild() functions given some
-     build orders
-     @param orders the build orders as determined by the building
-     manager
+     register a commodity for which production capacity is being 
+     demanded region
+     @param commodity a reference to the commodity
    */
-  void orderBuilds(std::vector<BuildOrder>& orders);
+  void registerCommodity(Commodity& commodity);
+
+  /**
+     register a child as a commodity producer manager if it is one
+     @param model the child to register
+   */
+  void registerCommodityProducerManager(Model* model);
+
+  /**
+     register a child as a builder if it is one
+     @param model the child to register
+   */
+  void registerBuilder(Model* model);
+
+  /**
+     orders builds given a commodity and an unmet demand for production
+     capacity of that commodity
+     @param commodity the commodity being demanded
+     @param unmet_demand the unmet demand
+   */
+  void orderBuilds(Commodity& commodity, double unmet_demand);
 
   /**
      orders builder to build a prototype
