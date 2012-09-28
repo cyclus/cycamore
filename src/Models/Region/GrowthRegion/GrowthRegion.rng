@@ -14,23 +14,12 @@
           </element>
           
           <element name = "demand">
-            <!-- defines demand function -->
             <element name="type">
               <text/>
             </element>
             <element name="parameters">
               <text/>
             </element>
-            <oneOrMore>
-              <element name = "metby">
-                <element name="facility">
-                  <text/>
-                </element>
-                <element name="capacity">
-                  <data type = "double"/>
-                </element>
-              </element>
-            </oneOrMore>
           </element>
 
         </element>

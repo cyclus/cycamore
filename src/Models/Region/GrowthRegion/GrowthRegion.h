@@ -2,21 +2,8 @@
 #ifndef GROWTHREGION_H
 #define GROWTHREGION_H
 
-#include "SupplyDemandManager.h"
 #include "RegionModel.h"
-
-#include <map>
-#include <string>
-#include <boost/shared_ptr.hpp>
-
-// forward declarations
-class QueryEngine;
-class Producer;
-class BuildingManager;
-class BuildOrder;
-class Commodity; 
-class GrowthRegion;
-#include "GrowthRegionTests.h"
+#include "SupplyDemandManager.h"
 
 /**
    The GrowthRegion class inherits from the RegionModel class and is 
@@ -30,11 +17,8 @@ class GrowthRegion;
  */
 class GrowthRegion : public RegionModel  
 {
-/* --------------------
- * all MODEL classes have these members
- * --------------------
- */
  public:
+  /* --- Module Members --- */
   /**
      The default constructor for the GrowthRegion 
    */
@@ -49,7 +33,9 @@ class GrowthRegion : public RegionModel
      print information about the region 
    */
   virtual std::string str();
+  /* --- */
 
+  /* --- Region Members --- */
   /**
      Initialize members related to derived module class
      @param qe a pointer to a QueryEngine object containing initialization data
@@ -60,14 +46,7 @@ class GrowthRegion : public RegionModel
      perform module-specific tasks when entering the simulation
    */
   virtual void enterSimulationAsModule();
-/* ------------------- */ 
 
-
-/* --------------------
- * all COMMUNICATOR classes have these members
- * --------------------
- */
- public:
   /**
      On each tick, the GrowthRegion queries its supply demand manager
      to determine if there exists some demand. If demand for a 
@@ -77,77 +56,18 @@ class GrowthRegion : public RegionModel
      @param time is the time to perform the tick 
    */
   virtual void handleTick(int time);
+  /* --- */
 
-/* -------------------- */
-
-
-/* --------------------
- * the GrowthRegion class has these members
- * --------------------
- */
  protected:
+  /* --- GrowthRegion Members --- */
   /// a container of all commodities managed by region
-  std::vector<Commodity> commodities_;
+  std::set<Commodity> commodities_;
 
   /// manager for supply and demand
   SupplyDemandManager sdmanager_;
 
   /// manager for building things
-  boost::shared_ptr<BuildingManager> buildmanager_;
-
-  /// a map for the institutions that can build a prototype
-  std::map<Producer*,Model*> builders_;
-
-  /// a map for the prototypes that correspond to supplydemand's producer
-  std::map<Producer*,Model*> producers_;
-
-  /**
-     initializes members based on commodity demand input
-     @param qe the engine to query input
-   */
-  void initCommodity(QueryEngine* qe);
-
-  /**
-     initializes the building manager with a fully formed sdmanager_
-   */
-  void initBuildManager();
-
-  /**
-     initializes members based on producer input
-     @param qe the engine to query input
-     @param commodity the commodity produced
-   */
-  Producer getProducer(QueryEngine* qe, Commodity& commodity);
-
-  /**
-     populates builders_ and producers_ once all initialization is 
-     complete
-   */
-  void populateProducerMaps();
-
-  /**
-     populates producer_names with info from the sdmanager
-   */
-  void populateProducerNames(Commodity& c, 
-                             std::map<std::string,Producer*>& 
-                             producer_names);
-
-  /**
-     recursively looks to see if the current node is in the map
-     of producer names. if so, it will add that model to the 
-     appropriate map. in either case, the search continues to that
-     node's children.
-     @param node the current model node being investigated
-     @param producer_names a map of producer's names to thier pointer
-   */
-  void populateMaps(Model* node, 
-                    std::map<std::string,Producer*>& producer_names);
-
-  /**
-     provides a string of information about the maps
-     @return info about the maps
-  */
-  std::string printMaps();
+  BuildingManager buildmanager_;
 
   /**
      calls the appropriate orderBuild() functions given some
@@ -163,9 +83,7 @@ class GrowthRegion : public RegionModel
      @param prototype the model to be built
    */
   void orderBuild(Model* builder, Model* prototype);
-  
-  /* ------------------- */ 
-  friend class GrowthRegionTest;
+  /* --- */
 };
 
 #endif
