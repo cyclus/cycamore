@@ -3,6 +3,7 @@
 #define _BATCHREACTOR_H
 
 #include "FacilityModel.h"
+#include "CommodityProducer.h"
 
 #include "MatBuff.h"
 
@@ -19,8 +20,8 @@ enum Phase {INIT, BEGIN, OPERATION, REFUEL, WAITING, END};
    This class is identical to the RecipeReactor, except that it
    operates in a batch-like manner, i.e. it refuels in batches.
  */
-
-class BatchReactor : public FacilityModel  {
+class BatchReactor : public FacilityModel, public SupplyDemand::CommodityProducer  
+{
  public:  
   /* --- Module Methods --- */
   /**
