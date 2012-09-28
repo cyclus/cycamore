@@ -1,0 +1,23 @@
+<grammar xmlns="http://relaxng.org/ns/structure/1.0"
+datatypeLibrary="http://www.w3.org/2001/XMLSchema-datatypes">
+
+  <define name="ManagerInst">
+    <element name="ManagerInst">
+      <element name="managedcommodity">
+        <data type="string"/>
+      </element>
+      <oneOrMore>
+        <element name="managedprototype">
+          <element name="name">
+            <data type="string"/>
+          </element>
+          <element name="capacity">
+            <data type="double"/>
+          </element>
+        </element>
+      </oneOrMore>
+     </element>
+  </define>
+
+
+</grammar>
