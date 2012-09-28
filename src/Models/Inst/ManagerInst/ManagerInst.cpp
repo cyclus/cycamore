@@ -20,7 +20,7 @@ void ManagerInst::registerAvailablePrototype(Prototype* prototype)
   if (cast) 
     {
       Builder::registerProducer(cast);
-    }  
+    }
 }
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
