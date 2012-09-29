@@ -87,6 +87,7 @@ void BatchReactor::cloneModuleMembersFrom(FacilityModel* sourceModel) {
   setOutCommodity(source->outCommodity());
   setInRecipe(source->inRecipe());
   setOutRecipe(source->outRecipe());
+  copyProducedCommoditiesFrom(source);
 }
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - 

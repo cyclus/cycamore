@@ -3,8 +3,9 @@
 #define _MANAGERINST_H
 
 #include "InstModel.h"
-#include "CommodityProducerManager.h"
 #include "Builder.h"
+#include "CommodityProducerManager.h"
+#include "CommodityProducer.h"
 
 /**
    @class ManagerInst 
@@ -48,6 +49,13 @@ class ManagerInst : public InstModel,
      @param clone the to-be-decommissioned prototype
    */
   virtual void registerCloneAsDecommissioned(Prototype* clone);
+
+  /**
+     write information about a commodity producer to a stream
+     @param producer the producer
+     @param stream the stream
+   */
+  void writeProducerInformation(SupplyDemand::CommodityProducer* producer);
 };
 
 #endif
