@@ -150,7 +150,7 @@ void GrowthRegion::orderBuilds(Commodity& commodity, double unmet_demand)
 
           for (int j = 0; j < order.number; j++)
             {
-              LOG(LEV_DEBUG3,"greg") << "Ordering build number: " << j+1; 
+              LOG(LEV_DEBUG2,"greg") << "Ordering build number: " << j+1; 
               instcast->build(protocast);
             }
         }
