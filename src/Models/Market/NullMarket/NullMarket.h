@@ -44,38 +44,12 @@ class NullMarket : public MarketModel
   /**
      Default constructor 
    */
-  NullMarket() {};
+  NullMarket();
   
   /** 
      Destructor 
    */
-  virtual ~NullMarket() {};
-  
-  // different ways to populate an object after creation
-  /**
-     initialize an object from XML input 
-   */
-  virtual void init(xmlNodePtr cur)  { MarketModel::init(cur); };
-
-  /**
-     initialize an object by copying another 
-   */
-  virtual void copy(NullMarket* src) { MarketModel::copy(src); } ;
-
-  /**
-     This drills down the dependency tree to initialize all relevant 
-     parameters/containers.  
-     Note that this function must be defined only in the specific model 
-     in question and not in any inherited models preceding it. 
-      
-     @param src the pointer to the original (initialized ?) model to be 
-   */
-  virtual void copyFreshModel(Model* src){ copy(dynamic_cast<NullMarket*>(src));};
-
-  /** 
-     Prints information about this model. 
-   */
-  virtual std::string str();
+  virtual ~NullMarket();
 
 /* -------------------- */
 

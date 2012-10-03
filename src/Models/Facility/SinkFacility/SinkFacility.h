@@ -1,15 +1,14 @@
 // SinkFacility.h
-#if !defined(_SINKFACILITY_H)
+#ifndef _SINKFACILITY_H
 #define _SINKFACILITY_H
 
-#include <iostream>
-#include <deque>
-#include <queue>
 #include <string>
 
-#include "Logger.h"
 #include "FacilityModel.h"
+
+#include "QueryEngine.h"
 #include "MatBuff.h"
+#include "Logger.h"
 
 /**
    @class SinkFacility 
@@ -78,79 +77,39 @@
    material on a market? 
  */
 class SinkFacility : public FacilityModel  {
-/* --------------------
- * all MODEL classes have these members
- * --------------------
- */
- public:
+ public: 
+  /* --- Module Methods --- */
   /**
      Constructor for the SinkFacility class. 
-   */
+  */
   SinkFacility();
   
   /**
      Destructor for the SinkFacility class. 
-   */
+  */
   virtual ~SinkFacility();
 
-  // different ways to populate an object after creation
   /**
-     initialize an object from XML input 
+     Initialize members related to derived module class
+     @param qe a pointer to a QueryEngine object containing initialization data
    */
-  virtual void init(xmlNodePtr cur);
-
-  /**
-     initialize an object by copying another 
-   */
-  virtual void copy(SinkFacility* src);
-
-  /**
-     This drills down the dependency tree to initialize all relevant 
-     parameters/containers. 
-      
-     Note that this function must be defined only in the specific model 
-     in question and not in any inherited models preceding it. 
-      
-     @param src the pointer to the original (initialized ?) model to be 
-   */
-  virtual void copyFreshModel(Model* src);
-
+  virtual void initModuleMembers(QueryEngine* qe);
+  
   /**
      A verbose printer for the Sink Facility. 
    */
   virtual std::string str();
+  /* --- */
 
+  /* --- Facility Methods --- */
   /**
-     Transacted resources are received through this method 
-      
-     @param trans the transaction to which these resource objects belong 
-     @param manifest is the set of resources being received 
-   */ 
-  virtual void addResource(Transaction trans,
-                              std::vector<rsrc_ptr> manifest);
-
-/* ------------------- */ 
-
-
-/* --------------------
- * all COMMUNICATOR classes have these members
- * --------------------
- */
- public:
-  /**
-     The sink Facility doesn't need to do anything if it gets a message. 
-     It never sends any matieral to anyone. 
+     Copy module members from a source model
+     @param sourceModel the model to copy from
    */
-  virtual void receiveMessage(msg_ptr msg) {};
+  virtual void cloneModuleMembersFrom(FacilityModel* sourceModel);
+  /* --- */
 
-/* -------------------- */
-
-
-/* --------------------
- * all FACILITYMODEL classes have these members
- * --------------------
- */
- public:
+  /* --- Agent Methods --- */
   /**
      The SinkFacility can handle the Tick. 
       
@@ -164,15 +123,59 @@ class SinkFacility : public FacilityModel  {
      @param time the current simulation time. 
    */
   virtual void handleTock(int time);
+  /* --- */
 
-/* ------------------- */ 
+  /* --- Transaction Methods --- */
+  /**
+     Transacted resources are received through this method 
+      
+     @param trans the transaction to which these resource objects belong 
+     @param manifest is the set of resources being received 
+   */ 
+  virtual void addResource(Transaction trans,
+                              std::vector<rsrc_ptr> manifest);
 
+  /**
+     The sink Facility doesn't need to do anything if it gets a message. 
+     It never sends any matieral to anyone. 
+   */
+  virtual void receiveMessage(msg_ptr msg) {};
+  /* --- */
 
-/* --------------------
- * _THIS_ FACILITYMODEL class has these members
- * --------------------
- */
+  /* --- SinkFacility Methods --- */
+  /**
+     add a commodity to the set of input commodities
+     @param name the commodity name
+   */
+  void addCommodity(std::string name);
+
+  /**
+     sets the capacity of a material generated at any given time step
+     @param capacity the reception capacity
+   */
+  void setCapacity(double capacity);
+
+  /// @return the reception capacity at any given time step
+  double capacity();
+
+  /**
+     sets the size of the storage inventory for received material
+     @param size the storage size
+   */
+  void setMaxInventorySize(double size);
+  
+  /// @return the maximum inventory storage size
+  double maxInventorySize();
+
+  /// @return the current inventory storage size
+  double inventorySize();
+
+  /// @return the input commodities
+  std::vector<std::string> inputCommodities();
+  /* --- */
+
  protected:
+  /* --- SourceFacility Members and Methods --- */
   /**
      all facilities must have at least one input commodity 
    */
@@ -184,22 +187,19 @@ class SinkFacility : public FacilityModel  {
   double capacity_;
 
   /**
-     commodity price 
+     commodity price
    */
   double commod_price_;
-
-  /**
-     determines the amount to request 
-   */
-  const double getRequestAmt() ;
 
   /**
      this facility holds material in storage. 
    */
   MatBuff inventory_;
 
-/* ------------------- */ 
-
+  /**
+     determines the amount to request 
+   */
+  const double getRequestAmt();
 };
 
 #endif

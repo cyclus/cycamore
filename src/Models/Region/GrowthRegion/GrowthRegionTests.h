@@ -3,8 +3,6 @@
 #define GROWTHREGIONTESTS_H
 
 #include <gtest/gtest.h>
-#include <libxml/parser.h>
-#include <libxml/xpath.h>
 #include <string>
 
 #include "GrowthRegion.h"
@@ -37,14 +35,12 @@ protected:
   virtual void SetUp();
   virtual void TearDown();
   
-  // xml interpretation
-  xmlDocPtr getXMLDoc();
-
   // member introspection
   int containerSizes(GrowthRegion* reg);
   Producer getProducer(GrowthRegion* reg, int i);
 
   // member initialization
+  std::string initString();
   void initSupplyDemand();
   void setUpChildren();
   void doInit();

@@ -47,11 +47,9 @@ MarketModel* NullMarketConstructor(){
 class NullMarketTest : public ::testing::Test {
   protected:
     FakeNullMarket* src_market;
-    FakeNullMarket* new_market; 
 
     virtual void SetUp(){
       src_market = new FakeNullMarket();
-      new_market = new FakeNullMarket();
     };
 
     virtual void TearDown() {
@@ -59,22 +57,6 @@ class NullMarketTest : public ::testing::Test {
     }
 };
 
-
-//- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - 
-TEST_F(NullMarketTest, InitialState) {
-}
-
-//- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - 
-TEST_F(NullMarketTest, CopyMarket) {
-  new_market->copy(src_market); 
-}
-
-//- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - 
-TEST_F(NullMarketTest, CopyFreshModel) {
-  new_market->copyFreshModel(dynamic_cast<Model*>(src_market)); // deep copy
-  EXPECT_NO_THROW(dynamic_cast<NullMarket*>(new_market)); // still a source market
-  EXPECT_NO_THROW(dynamic_cast<FakeNullMarket*>(new_market)); // still a fake source market
-}
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - 
 TEST_F(NullMarketTest, Print) {

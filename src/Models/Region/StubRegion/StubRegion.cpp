@@ -3,34 +3,29 @@
 
 #include "StubRegion.h"
 
-#include "Logger.h"
-
 /* --------------------
  * all MODEL classes have these members
  * --------------------
  */
 
-//- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-StubRegion::StubRegion() {};
+//- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+StubRegion::StubRegion() {}
 
-//- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-StubRegion::~StubRegion() {};
-    
-//- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-void StubRegion::init(xmlNodePtr cur) { 
-  RegionModel::init(cur); 
-};
-  
-//- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-void StubRegion::copy(StubRegion* src) { 
-  RegionModel::copy(src); 
-};
+//- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+StubRegion::~StubRegion() {}
 
-
-//- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+//- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 std::string StubRegion::str() { 
   return RegionModel::str(); 
-};
+}
+
+//- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+void StubRegion::initModuleMembers(QueryEngine* qe) {}
+
+//- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+void StubRegion::enterSimulation(Model* parent) {
+  RegionModel::enterSimulation(parent);
+}
 
 /* ------------------- */ 
 
@@ -40,8 +35,8 @@ std::string StubRegion::str() {
  * --------------------
  */
 
-//- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-void StubRegion::receiveMessage(msg_ptr msg) {};
+//- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+void StubRegion::receiveMessage(msg_ptr msg) {}
 
 /* ------------------- */ 
 
@@ -59,9 +54,14 @@ void StubRegion::receiveMessage(msg_ptr msg) {};
  * --------------------
  */
 
-//- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+//- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 extern "C" Model* constructStubRegion() {
-    return new StubRegion();
+      return new StubRegion();
+}
+
+//- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+extern "C" void destructStubRegion(Model* model) {
+      delete model;
 }
 
 /* ------------------- */ 
