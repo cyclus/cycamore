@@ -4,6 +4,7 @@
 #include "BatchReactor.h"
 #include "FacilityModelTests.h"
 #include "ModelTests.h"
+#include <string>
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 Model* BatchReactorModelConstructor(){
@@ -25,7 +26,9 @@ protected:
   std::string in_commod, in_recipe, out_commod, out_recipe;
   TestMarket* incommod_market;
   TestMarket* outcommod_market;
-
+  std::string commodity;
+  double capacity, cost;
+  
   virtual void SetUp();
   virtual void TearDown();
   void initSrcFacility();
