@@ -14,6 +14,7 @@
 
 using namespace std;
 using boost::lexical_cast;
+using namespace SupplyDemand;
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - 
 BatchReactor::BatchReactor() : 
@@ -52,6 +53,14 @@ void BatchReactor::initModuleMembers(QueryEngine* qe) {
   setCoreLoading(lexical_cast<double>(data));  
   data = qe->getElementContent("batchespercore"); 
   setNBatches(lexical_cast<int>(data));
+
+  QueryEngine* commodity = qe->queryElement("commodity_production");
+  Commodity commod(commodity->getElementContent("commodity"));
+  addCommodity(commod);
+  data = commodity->getElementContent("capacity");
+  CommodityProducer::setCapacity(commod,lexical_cast<double>(data));
+  data = commodity->getElementContent("cost");
+  CommodityProducer::setCost(commod,lexical_cast<double>(data));
 }
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - 

@@ -2,7 +2,7 @@
 #include <gtest/gtest.h>
 
 #include "BatchReactorTests.h"
-
+#include "Commodity.h"
 #include "XMLQueryEngine.h"
 #include <sstream>
 
@@ -18,6 +18,9 @@ void BatchReactorTest::SetUp() {
   out_commod = "outc";
   in_recipe = "inr";
   out_recipe = "outr";
+  commodity = "power";
+  capacity = 200;
+  cost = capacity;
   initSrcFacility();
   initWorld();
 }
@@ -44,6 +47,11 @@ void BatchReactorTest::initSrcFacility() {
      << "  <cyclelength>" << lencycle << "</cyclelength>"
      << "  <coreloading>" << loadcore << "</coreloading>"
      << "  <batchespercore>" << nbatch << "</batchespercore>"
+     << "  <commodity_production>"
+     << "    <commodity>" << commodity << "</commodity>"
+     << "    <capacity>" << capacity << "</capacity>"
+     << "    <cost>" << cost << "</cost>"
+     << "  </commodity_production>"
      << "</start>";
 
   XMLParser parser(ss);
@@ -69,6 +77,10 @@ TEST_F(BatchReactorTest,initialstate) {
   EXPECT_EQ(lencycle,src_facility->cycleLength());
   EXPECT_EQ(loadcore,src_facility->coreLoading());
   EXPECT_EQ(nbatch,src_facility->nBatches());
+  Commodity commod(commodity);
+  EXPECT_TRUE(src_facility->producesCommodity(commod)); 
+  EXPECT_EQ(capacity,src_facility->productionCapacity(commod));
+  EXPECT_EQ(cost,src_facility->productionCost(commod));
 }
 
 // //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - 
