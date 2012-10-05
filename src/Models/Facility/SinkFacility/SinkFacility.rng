@@ -6,8 +6,10 @@ datatypeLibrary="http://www.w3.org/2001/XMLSchema-datatypes">
        <element name ="input">
          <element name = "commodities">
            <ref name="incommodity"/>
-         </element>
-         <ref name="input_capacity"/>
+         </element>         
+          <optional>
+           <ref name="input_capacity"/>
+         </optional>
          <optional>
            <ref name="inventorysize"/>
          </optional>
