@@ -77,6 +77,7 @@ void SourceFacility::cloneModuleMembersFrom(FacilityModel* sourceModel) {
   setCapacity(source->capacity());
   setRecipe(source->recipe());
   setMaxInventorySize(source->maxInventorySize());
+  copyProducedCommoditiesFrom(source);
 }
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - 

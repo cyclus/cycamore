@@ -1,12 +1,15 @@
 // StorageFacility.h
-#if !defined(_STORAGEFACILITY_H)
+#ifndef _STORAGEFACILITY_H
 #define _STORAGEFACILITY_H
 
-#include <iostream>
+#include "FacilityModel.h"
+
+#include "ResourceBuff.h"
+
 #include <queue>
 
-#include "Logger.h"
-#include "FacilityModel.h"
+// forward declarations
+class QueryEngine;
 
 /**
    @class StorageFacility 
@@ -38,11 +41,8 @@
  */
 class StorageFacility : public FacilityModel  
 {
-/* --------------------
- * all MODEL classes have these members
- * --------------------
- */
  public:
+  /* --- Module Methods --- */
   /** 
      Default constructor for the StorageFacility class. 
    */
@@ -51,34 +51,42 @@ class StorageFacility : public FacilityModel
   /**
      Destructor for the StorageFacility class. 
    */
-  virtual ~StorageFacility() {};
-  
-  // different ways to populate an object after creation
-  /**
-     initialize an object from XML input 
-   */
-  virtual void init(xmlNodePtr cur);
-
-  /**
-     initialize an object by copying another 
-   */
-  virtual void copy(StorageFacility* src);
-
-  /**
-     This drills down the dependency tree to initialize all relevant 
-     parameters/containers.  
-     Note that this function must be defined only in the specific model 
-     in question and not in any inherited models preceding it. 
-      
-     @param src the pointer to the original (initialized ?) model to be 
-   */
-  virtual void copyFreshModel(Model* src);
+  virtual ~StorageFacility() {};  
 
   /**
      Print information about this model 
    */
   virtual std::string str();
-  
+  /* --- */
+
+  /* --- Facility Methods --- */
+  /**
+     Copy module members from a source model
+     @param sourceModel the model to copy from
+   */
+  virtual void cloneModuleMembersFrom(FacilityModel* sourceModel);
+  /* --- */
+
+  /* --- Agent Methods --- */  
+  /**
+     The handleTick function specific to the StorageFacility. 
+     At each tick, it requests as much raw inCommod as it can process 
+     this month and offers as much outCommod as it will have in its 
+     inventory by the end of the month.       
+     @param time the time of the tick 
+   */
+  virtual void handleTick(int time);
+
+  /**
+     The handleTick function specific to the StorageFacility. 
+     At each tock, it processes material and handles orders, and records 
+     this month's actions.       
+     @param time the time of the tock 
+   */
+  virtual void handleTock(int time);
+  /* --- */
+
+  /* --- Transaction Methods --- */  
   /**
      Transacted resources are extracted through this method 
       
@@ -97,105 +105,65 @@ class StorageFacility : public FacilityModel
   virtual void addResource(Transaction trans,
 			   std::vector<rsrc_ptr> manifest);
 
-/* ------------------- */ 
-  
-
-/* --------------------
- * all COMMUNICATOR classes have these members
- * --------------------
- */
- public:
   /**
      When the facility receives a message, execute any transaction 
    */
   virtual void receiveMessage(msg_ptr msg);
-  
-/* -------------------- */
+  /* --- */
 
-
-/* --------------------
- * all FACILITYMODEL classes have these members
- * --------------------
- */
- public:
+  /* --- StorageFacility Methods --- */
   /**
-     The handlePreHistory function specific to the StorageFacility. 
-     This function fills the StorageFacility with its initial stocks. 
+     sets the inputput commodity name
+     @param name the commodity name
    */
-  virtual void handlePreHistory();
+  void setInCommodity(std::string name);
+
+  /// @return the input commodity
+  std::string inCommodity();
 
   /**
-     The handleTick function specific to the StorageFacility. 
-     At each tick, it requests as much raw inCommod as it can process 
-     this month and offers as much outCommod as it will have in its 
-     inventory by the end of the month. 
-      
-     @param time the time of the tick 
+     sets the capacity of a able to enter at any given time step
+     @param capacity the input capacity
    */
-  virtual void handleTick(int time);
+  void setInCapacity(double capacity);
+
+  /// @return the input capacity at any given time step
+  double inCapacity();
 
   /**
-     The handleTick function specific to the StorageFacility. 
-     At each tock, it processes material and handles orders, and records 
-     this month's actions. 
-      
-     @param time the time of the tock 
+     sets the outputput commodity name
+     @param name the commodity name
    */
-  virtual void handleTock(int time);
+  void setOutCommodity(std::string name);
 
-/* ------------------- */ 
+  /// @return the output commodity
+  std::string outCommodity();
 
+  /**
+     sets the capacity of a able to enter at any given time step
+     @param capacity the output capacity
+   */
+  void setOutCapacity(double capacity);
 
-/* --------------------
- * _THIS_ FACILITYMODEL class has these members
- * --------------------
- */
+  /// @return the output capacity at any given time step
+  double outCapacity();
+
  protected:
   /**
-     The StorageFacility has one commodity. It's the same in and out. 
    */
-  std::string incommod_;
+  std::string in_commod_;
 
   /**
-     The StorageFacility has a limit to how material it can process. 
-     Units vary. It will be in the commodity unit per month. 
    */
-  double capacity_;
+  std::string out_commod_;
 
   /**
-     The stocks of entering material 
-     These are not yet old enough to leave 
    */
-  std::deque<mat_rsrc_ptr> stocks_;
-    
-  /**
-     The inventory of material ready to exit 
-   */
-  std::deque<mat_rsrc_ptr> inventory_;
+  double in_capacity_;
 
   /**
-     The list of the entry times for each material 
    */
-  std::deque< std::pair<int, mat_rsrc_ptr> > entryTimes_;
-
-  /**
-     The list of orders to process on the Tock 
-   */
-  std::deque<msg_ptr> ordersWaiting_;
-
-  /**
-     get the total mass of the stuff in the inventory 
-      
-     @return the total mass of the processed materials in storage 
-   */
-  Mass checkInventory();
-
-  /**
-     get the total mass of the stuff in the stocks 
-      
-     @return the total mass of the raw materials in storage 
-   */
-  Mass checkStocks();
+  double out_capacity_;
 
   /**
      The minimum time that the stock material spends in the facility. 
@@ -203,22 +171,29 @@ class StorageFacility : public FacilityModel
   int residence_time_;
 
   /**
-     The maximum (number of commodity units?) that the inventory can 
-     grow to. The StorageFacility must stop processing the material in 
-     its stocks when its inventory is full. 
    */
-  Mass inventory_size_;
+  double offer_price_;
 
   /**
-     XML cursor for facility initial state information 
+     The stocks of entering material 
+     These are not yet old enough to leave 
    */
-  xmlNodePtr initialStateCur_;
+  ResourceBuff in_buffer_;
 
   /**
-     This function populated the Storage Facility with some inital 
+     The stocks of entering material 
+     These are not yet old enough to leave 
    */
-  void getInitialState(xmlNodePtr cur);
+  ResourceBuff out_buffer_;
+    
+  /**
+     The list of orders to process on the Tock 
+   */
+  std::deque<msg_ptr> ordersWaiting_;
 
+  /**
+   */
+  std::queue<double> enter_times_;
 /* ------------------- */ 
 
 };

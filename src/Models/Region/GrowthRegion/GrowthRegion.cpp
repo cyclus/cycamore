@@ -72,13 +72,24 @@ void GrowthRegion::handleTick(int time)
   for (it = commodities_.begin(); it != commodities_.end(); it++)
     {
       Commodity commodity = *it;
-      double unmet_demand = sdmanager_.demand(commodity,time) - 
-        sdmanager_.supply(commodity);
+      double demand = sdmanager_.demand(commodity,time);
+      double supply = sdmanager_.supply(commodity);
+      double unmet_demand = demand - supply;
+
+      LOG(LEV_INFO3,"greg") << "GrowthRegion: " << name() 
+                            << " at time: " << time 
+                            << " has the following values regaring "
+                            << " commodity: " << commodity.name();
+      LOG(LEV_INFO3,"greg") << "  * demand = " << demand;
+      LOG(LEV_INFO3,"greg") << "  * supply = " << supply;
+      LOG(LEV_INFO3,"greg") << "  * unmet demand = " << unmet_demand;
+      
       if (unmet_demand > 0)
         {
           orderBuilds(commodity,unmet_demand);
         }
     }
+  RegionModel::handleTick(time);
 }
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - 
@@ -119,6 +130,11 @@ void GrowthRegion::registerBuilder(Model* child)
 void GrowthRegion::orderBuilds(Commodity& commodity, double unmet_demand)
 {
   vector<BuildOrder> orders = buildmanager_.makeBuildDecision(commodity,unmet_demand);
+  
+  LOG(LEV_INFO3,"greg") << "The build orders have been determined. " 
+                        << orders.size() 
+                        << " different type(s) of prototypes will be built.";
+
   for (int i = 0; i < orders.size(); i++)
     {
       BuildOrder order = orders.at(i);
@@ -126,8 +142,15 @@ void GrowthRegion::orderBuilds(Commodity& commodity, double unmet_demand)
       Prototype* protocast = dynamic_cast<Prototype*>(order.producer);
       if(instcast && protocast)
         {
-          for (int j = 0; i < order.number; j++)
+          LOG(LEV_INFO3,"greg") << "A build order for " << order.number
+                                << " prototype(s) of type " 
+                                << dynamic_cast<Model*>(protocast)->name()
+                                << " from builder " << instcast->name()
+                                << " is being placed.";
+
+          for (int j = 0; j < order.number; j++)
             {
+              LOG(LEV_DEBUG2,"greg") << "Ordering build number: " << j+1; 
               instcast->build(protocast);
             }
         }

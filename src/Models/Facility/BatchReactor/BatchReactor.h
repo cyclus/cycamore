@@ -9,6 +9,7 @@
 
 #include <string>
 #include <queue>
+#include <map>
 
 /**
    Defines all possible phases this facility can be in
@@ -202,6 +203,9 @@ class BatchReactor : public FacilityModel, public SupplyDemand::CommodityProduce
 
  private:
   /* --- BatchReactor Members and Methods --- */
+  /// a map of phase names
+  static std::map<Phase,std::string> phase_names_;
+
   /// The time between batch reloadings. 
   int cycle_length_;
 
@@ -240,6 +244,11 @@ class BatchReactor : public FacilityModel, public SupplyDemand::CommodityProduce
 
   /// The list of orders to process on the Tock 
   std::deque<msg_ptr> ordersWaiting_;
+
+  /**
+     populate the phase name map
+   */
+  void setUpPhaseNames();
 
   /**
      resets the cycle timer

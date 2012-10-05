@@ -4,12 +4,14 @@
 #include "BatchReactorTests.h"
 #include "Commodity.h"
 #include "XMLQueryEngine.h"
+#include "Model.h"
 #include <sstream>
 
 using namespace std;
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - 
-void BatchReactorTest::SetUp() {
+void BatchReactorTest::SetUp() 
+{
   // set up model parameters
   lencycle = 3;
   loadcore = 10.0;
@@ -26,14 +28,16 @@ void BatchReactorTest::SetUp() {
 }
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - 
-void BatchReactorTest::TearDown() {
+void BatchReactorTest::TearDown() 
+{
   delete src_facility;
   delete incommod_market;
   delete outcommod_market;
 }
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - 
-void BatchReactorTest::initSrcFacility() {
+void BatchReactorTest::initSrcFacility() 
+{
   stringstream ss("");
   ss << "<start>"
      << "  <fuel_input>"
@@ -62,7 +66,8 @@ void BatchReactorTest::initSrcFacility() {
 }
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - 
-void BatchReactorTest::initWorld() {
+void BatchReactorTest::initWorld() 
+{
   incommod_market = new TestMarket();
   incommod_market->setCommodity(in_commod);
   MarketModel::registerMarket(incommod_market);
@@ -73,7 +78,8 @@ void BatchReactorTest::initWorld() {
 }
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - 
-TEST_F(BatchReactorTest,initialstate) {
+TEST_F(BatchReactorTest,initialstate) 
+{
   EXPECT_EQ(lencycle,src_facility->cycleLength());
   EXPECT_EQ(loadcore,src_facility->coreLoading());
   EXPECT_EQ(nbatch,src_facility->nBatches());
@@ -83,28 +89,39 @@ TEST_F(BatchReactorTest,initialstate) {
   EXPECT_EQ(cost,src_facility->productionCost(commod));
 }
 
-// //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - 
-// TEST_F(BatchReactorTest,clone) {
-//   BatchReactor* new_facility = dynamic_cast<BatchReactor*>(src_facility->clone());
-//   EXPECT_EQ( lencycle, new_facility->cycleLength() );
-//   EXPECT_EQ( loadcore, new_facility->coreLoading() );
-//   EXPECT_EQ( nbatch, new_facility->nBatches() );
-// }
+//- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - 
+TEST_F(BatchReactorTest,clone) 
+{
+  Model::loadModule("Facility","BatchReactor");
+  src_facility->setModelImpl("BatchReactor");
+  BatchReactor* new_facility = dynamic_cast<BatchReactor*>(src_facility->clone());
+  EXPECT_EQ( lencycle, new_facility->cycleLength() );
+  EXPECT_EQ( loadcore, new_facility->coreLoading() );
+  EXPECT_EQ( nbatch, new_facility->nBatches() );
+  Commodity commod(commodity);
+  EXPECT_TRUE(new_facility->producesCommodity(commod)); 
+  EXPECT_EQ(capacity,new_facility->productionCapacity(commod));
+  EXPECT_EQ(cost,new_facility->productionCost(commod));
+
+}
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - 
-TEST_F(BatchReactorTest, Print) {
+TEST_F(BatchReactorTest, Print) 
+{
   EXPECT_NO_THROW(std::string s = src_facility->str());
   //Test BatchReactor specific aspects of the print method here
 }
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - 
-TEST_F(BatchReactorTest, Tick) {
+TEST_F(BatchReactorTest, Tick) 
+{
   int time = 1;
   EXPECT_NO_THROW(src_facility->handleTick(time););
 }
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - 
-TEST_F(BatchReactorTest, Tock) {
+TEST_F(BatchReactorTest, Tock) 
+{
   int time = 1;
   EXPECT_ANY_THROW(src_facility->handleTock(time));
 }
