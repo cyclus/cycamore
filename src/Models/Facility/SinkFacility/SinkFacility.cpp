@@ -39,8 +39,13 @@ void SinkFacility::initModuleMembers(QueryEngine* qe) {
   }
 
   string data;
-  data = input->getElementContent("input_capacity"); 
-  setCapacity(lexical_cast<double>(data));  
+  try {
+    data = input->getElementContent("input_capacity");   
+    setCapacity(lexical_cast<double>(data));
+  } catch (CycNullQueryException e) {
+    setCapacity(numeric_limits<double>::max());
+  }
+
   try {
     data = input->getElementContent("inventorysize"); 
     setMaxInventorySize(lexical_cast<double>(data));

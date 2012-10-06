@@ -3,11 +3,13 @@
 #define _BATCHREACTOR_H
 
 #include "FacilityModel.h"
+#include "CommodityProducer.h"
 
 #include "MatBuff.h"
 
 #include <string>
 #include <queue>
+#include <map>
 
 /**
    Defines all possible phases this facility can be in
@@ -19,8 +21,8 @@ enum Phase {INIT, BEGIN, OPERATION, REFUEL, WAITING, END};
    This class is identical to the RecipeReactor, except that it
    operates in a batch-like manner, i.e. it refuels in batches.
  */
-
-class BatchReactor : public FacilityModel  {
+class BatchReactor : public FacilityModel, public SupplyDemand::CommodityProducer  
+{
  public:  
   /* --- Module Methods --- */
   /**
@@ -201,6 +203,9 @@ class BatchReactor : public FacilityModel  {
 
  private:
   /* --- BatchReactor Members and Methods --- */
+  /// a map of phase names
+  static std::map<Phase,std::string> phase_names_;
+
   /// The time between batch reloadings. 
   int cycle_length_;
 
@@ -239,6 +244,11 @@ class BatchReactor : public FacilityModel  {
 
   /// The list of orders to process on the Tock 
   std::deque<msg_ptr> ordersWaiting_;
+
+  /**
+     populate the phase name map
+   */
+  void setUpPhaseNames();
 
   /**
      resets the cycle timer

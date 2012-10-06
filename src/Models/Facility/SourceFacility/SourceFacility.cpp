@@ -1,17 +1,18 @@
 // SourceFacility.cpp
 // Implements the SourceFacility class
-#include <sstream>
-#include <limits>
-
-#include <boost/lexical_cast.hpp>
-
 #include "SourceFacility.h"
 
+#include "QueryEngine.h"
 #include "Logger.h"
 #include "RecipeLibrary.h"
 #include "GenericResource.h"
 #include "CycException.h"
 #include "MarketModel.h"
+
+#include <sstream>
+#include <limits>
+
+#include <boost/lexical_cast.hpp>
 
 using namespace std;
 using boost::lexical_cast;
@@ -35,18 +36,26 @@ SourceFacility::~SourceFacility() {}
 void SourceFacility::initModuleMembers(QueryEngine* qe) {
   QueryEngine* output = qe->queryElement("output");
 
-  setCommodity(output->getElementContent("outcommodity"));
   setRecipe(output->getElementContent("recipe"));
 
-  string data;
+  string data = output->getElementContent("outcommodity");
+  setCommodity(data);
+  Commodity commod(data);
+  CommodityProducer::addCommodity(commod);
+
   data = output->getElementContent("output_capacity"); 
+  CommodityProducer::setCapacity(commod,lexical_cast<double>(data));
   setCapacity(lexical_cast<double>(data));  
-  try {
-    data = output->getElementContent("inventorysize"); 
-    setMaxInventorySize(lexical_cast<double>(data));
-  } catch (CycNullQueryException e) {
-    setMaxInventorySize(numeric_limits<double>::max());
-  }
+
+  try
+    {
+      data = output->getElementContent("inventorysize"); 
+      setMaxInventorySize(lexical_cast<double>(data));
+    } 
+  catch (CycNullQueryException e) 
+    {
+      setMaxInventorySize(numeric_limits<double>::max());
+    }
 }
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - 
@@ -68,6 +77,7 @@ void SourceFacility::cloneModuleMembersFrom(FacilityModel* sourceModel) {
   setCapacity(source->capacity());
   setRecipe(source->recipe());
   setMaxInventorySize(source->maxInventorySize());
+  copyProducedCommoditiesFrom(source);
 }
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - 

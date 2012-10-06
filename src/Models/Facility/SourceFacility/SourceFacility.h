@@ -2,11 +2,15 @@
 #ifndef _SOURCEFACILITY_H
 #define _SOURCEFACILITY_H
 
+#include "FacilityModel.h"
+#include "CommodityProducer.h"
+
+#include "MatBuff.h"
+
 #include <deque>
 
-#include "FacilityModel.h"
-#include "MatBuff.h"
-#include "QueryEngine.h"
+// forward declarations
+class QueryEngine;
 
 /**
    @class SourceFacility 
@@ -83,7 +87,9 @@
    material on a market? 
  */
 
-class SourceFacility : public FacilityModel  {
+class SourceFacility : public FacilityModel, 
+  public SupplyDemand::CommodityProducer  
+{
  public:
   /* --- Module Methods --- */
   /**

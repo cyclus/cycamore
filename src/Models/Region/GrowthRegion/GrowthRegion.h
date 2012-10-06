@@ -2,20 +2,19 @@
 #ifndef GROWTHREGION_H
 #define GROWTHREGION_H
 
-#include "SupplyDemandManager.h"
 #include "RegionModel.h"
+#include "Commodity.h"
+#include "SupplyDemandManager.h"
+#include "BuildingManager.h"
+//#include "QueryEngine.h"//
 
-#include <map>
-#include <string>
-#include <boost/shared_ptr.hpp>
+#include <set>
 
 // forward declarations
 class QueryEngine;
-class Producer;
-class BuildingManager;
-class BuildOrder;
-class Commodity; 
 class GrowthRegion;
+
+// forward includes
 #include "GrowthRegionTests.h"
 
 /**
@@ -29,12 +28,10 @@ class GrowthRegion;
    of its institutions are available to build each facility. 
  */
 class GrowthRegion : public RegionModel  
-{
-/* --------------------
- * all MODEL classes have these members
- * --------------------
- */
+{  
+  friend class GrowthRegionTests;
  public:
+  /* --- Module Members --- */
   /**
      The default constructor for the GrowthRegion 
    */
@@ -43,13 +40,10 @@ class GrowthRegion : public RegionModel
   /**
      The default destructor for the GrowthRegion 
    */
-  virtual ~GrowthRegion() {};
+  virtual ~GrowthRegion();
+  /* --- */
 
-  /**
-     print information about the region 
-   */
-  virtual std::string str();
-
+  /* --- Region Members --- */
   /**
      Initialize members related to derived module class
      @param qe a pointer to a QueryEngine object containing initialization data
@@ -57,105 +51,63 @@ class GrowthRegion : public RegionModel
   virtual void initModuleMembers(QueryEngine* qe);
 
   /**
+     add a demand for a commodity on which this region request that
+     facilities be built
+   */
+  void addCommodityDemand(QueryEngine* qe);
+
+  /**
      perform module-specific tasks when entering the simulation
    */
   virtual void enterSimulationAsModule();
-/* ------------------- */ 
 
-
-/* --------------------
- * all COMMUNICATOR classes have these members
- * --------------------
- */
- public:
   /**
      On each tick, the GrowthRegion queries its supply demand manager
      to determine if there exists some demand. If demand for a 
-     commodity exists, then the building manager is queried to
-     determine which prototypes to build, and orderBuilds() is called.
-
+     commodity exists, then the correct build order for that demand
+     is constructed and executed.
      @param time is the time to perform the tick 
    */
   virtual void handleTick(int time);
+  /* --- */
 
-/* -------------------- */
-
-
-/* --------------------
- * the GrowthRegion class has these members
- * --------------------
- */
  protected:
+  /* --- GrowthRegion Members --- */
   /// a container of all commodities managed by region
-  std::vector<Commodity> commodities_;
+  std::set<Commodity,CommodityCompare> commodities_;
 
   /// manager for supply and demand
   SupplyDemandManager sdmanager_;
 
   /// manager for building things
-  boost::shared_ptr<BuildingManager> buildmanager_;
-
-  /// a map for the institutions that can build a prototype
-  std::map<Producer*,Model*> builders_;
-
-  /// a map for the prototypes that correspond to supplydemand's producer
-  std::map<Producer*,Model*> producers_;
+  ActionBuilding::BuildingManager buildmanager_;
 
   /**
-     initializes members based on commodity demand input
-     @param qe the engine to query input
+     register a commodity for which production capacity is being 
+     demanded region
+     @param commodity a reference to the commodity
    */
-  void initCommodity(QueryEngine* qe);
+  void registerCommodity(Commodity& commodity);
 
   /**
-     initializes the building manager with a fully formed sdmanager_
+     register a child as a commodity producer manager if it is one
+     @param model the child to register
    */
-  void initBuildManager();
+  void registerCommodityProducerManager(Model* model);
 
   /**
-     initializes members based on producer input
-     @param qe the engine to query input
-     @param commodity the commodity produced
+     register a child as a builder if it is one
+     @param model the child to register
    */
-  Producer getProducer(QueryEngine* qe, Commodity& commodity);
+  void registerBuilder(Model* model);
 
   /**
-     populates builders_ and producers_ once all initialization is 
-     complete
+     orders builds given a commodity and an unmet demand for production
+     capacity of that commodity
+     @param commodity the commodity being demanded
+     @param unmet_demand the unmet demand
    */
-  void populateProducerMaps();
-
-  /**
-     populates producer_names with info from the sdmanager
-   */
-  void populateProducerNames(Commodity& c, 
-                             std::map<std::string,Producer*>& 
-                             producer_names);
-
-  /**
-     recursively looks to see if the current node is in the map
-     of producer names. if so, it will add that model to the 
-     appropriate map. in either case, the search continues to that
-     node's children.
-     @param node the current model node being investigated
-     @param producer_names a map of producer's names to thier pointer
-   */
-  void populateMaps(Model* node, 
-                    std::map<std::string,Producer*>& producer_names);
-
-  /**
-     provides a string of information about the maps
-     @return info about the maps
-  */
-  std::string printMaps();
-
-  /**
-     calls the appropriate orderBuild() functions given some
-     build orders
-     @param orders the build orders as determined by the building
-     manager
-   */
-  void orderBuilds(std::vector<BuildOrder>& orders);
+  void orderBuilds(Commodity& commodity, double unmet_demand);
 
   /**
      orders builder to build a prototype
@@ -163,9 +115,7 @@ class GrowthRegion : public RegionModel
      @param prototype the model to be built
    */
   void orderBuild(Model* builder, Model* prototype);
-  
-  /* ------------------- */ 
-  friend class GrowthRegionTest;
+  /* --- */
 };
 
 #endif
