@@ -1,6 +1,6 @@
 // EnrichmentFacility.h
-#ifndef _SOURCEFACILITY_H
-#define _SOURCEFACILITY_H
+#ifndef _ENRICHMENTFACILITY_H
+#define _ENRICHMENTFACILITY_H
 
 #include "FacilityModel.h"
 
@@ -29,7 +29,7 @@ class EnrichmentFacility : public FacilityModel
      Destructor for the EnrichmentFacility class 
    */
   virtual ~EnrichmentFacility();
-
+ 
   /**
      Initialize members related to derived module class
      @param qe a pointer to a QueryEngine object containing initialization data
@@ -96,11 +96,6 @@ class EnrichmentFacility : public FacilityModel
 
  protected:  
   /* --- Transaction Methods --- */     
-  /**
-     builds a transaction 
-   */
-  Transaction buildTransaction();
-
   /**
      sends a transaction as an offer 
    */

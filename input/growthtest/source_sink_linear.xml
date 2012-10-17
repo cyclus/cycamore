@@ -24,7 +24,6 @@
 
   <facility>
     <name>Source</name>
-    <lifetime>5</lifetime>
     <model>
       <SourceFacility>
 	<output>
@@ -61,7 +60,7 @@
           <name>commodity</name>
           <demand>
             <type>linear</type>
-            <parameters>0 1</parameters>
+            <parameters>1 1</parameters>
           </demand>
         </commodity>
       </GrowthRegion>
