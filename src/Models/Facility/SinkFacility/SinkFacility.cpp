@@ -19,13 +19,11 @@ using boost::lexical_cast;
 SinkFacility::SinkFacility() :
   commod_price_(0), 
   capacity_(numeric_limits<double>::max()) 
-{
-  in_commods_ = vector<string>();
-  inventory_ = MatBuff();
-}
+{}
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - 
-SinkFacility::~SinkFacility() {}
+SinkFacility::~SinkFacility() 
+{}
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - 
 void SinkFacility::initModuleMembers(QueryEngine* qe) {
