@@ -7,6 +7,7 @@
 #include "CycException.h"
 #include <sstream>
 #include <limits>
+#include <cmath>
 
 #include <boost/lexical_cast.hpp>
 
@@ -14,8 +15,51 @@ using namespace std;
 using boost::lexical_cast;
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - 
-EnrichmentFacility::EnrichmentFacility()
-commod_price_(0) 
+Assays::Assays(double feed, double product, double tails) :
+  feed_(feed),
+  product_(product),
+  tails_(tails),
+  error_(false)
+{
+  double sum = feed_ + product_ + tails_;
+  if (abs(1-sum) < EPS) 
+    error_ = true;
+}
+
+//- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - 
+double Assays::feed()
+{
+  checkSum();
+  return feed_;
+}
+
+//- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - 
+double Assays::product()
+{
+  checkSum();
+  return product_;
+}
+
+//- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - 
+double Assays::tails()
+{
+  checkSum();
+  return tails_;
+}
+
+//- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - 
+void Assays::checkSum()
+{
+  if (error_) throw CycOverrideException("Assay sums don't add up to 1.");
+}
+
+//- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - 
+EnrichmentFacility::EnrichmentFacility() :
+  commod_price_(0),
+  tails_assay_(0),
+  in_commodity_(""),
+  in_recipe_(""),
+  out_commodity_("")
 {}
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - 
@@ -154,6 +198,9 @@ void EnrichmentFacility::makeOffer()
 
   Communicator* recipient = dynamic_cast<Communicator*>(market);
 
+
+  // note that this is a hack. the amount of the resource being offered
+  // is greater than the possible amount that can be serviced
   msg_ptr msg(new Message(this, recipient, buildTransaction())); 
   msg->sendOn();
 }
@@ -165,6 +212,7 @@ void EnrichmentFacility::processOutgoingMaterial()
   while (!orders_.empty())
     {
       Transaction order = orders_.front()->trans();
+      double product_qty = order.resource()->quantity();
       double natural_u = naturalUraniumRequired(order->trans);
       double swu = swuRequired(order->trans);
       recordEnrichment(natural_u,swu);
@@ -199,6 +247,47 @@ std::vector<rsrc_ptr> EnrichmentFacility::removeResource(Transaction order)
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - 
 void EnrichmentFacility::sendOffer(Transaction trans) 
 {
+}
+
+//- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - 
+double EnrichmentFacility::feed_qty(double product_qty, const Assays& assays) 
+{
+  double factor = 
+    (assays.product() - assays.tails())
+    /
+    (assays.feed() - assasys.tails());
+  return product_qty * factor;
+}
+
+//- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - 
+double EnrichmentFacility::tails_qty(double product_qty, const Assays& assays) 
+{
+  double factor = 
+    (assays.product() - assays.feed())
+    /
+    (assays.feed() - assasys.tails());
+  return product_qty * factor;
+}
+
+//- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - 
+double EnrichmentFacility::value_func(double frac) 
+{
+  if (frac < 0 || frac > 1.0)
+    throw CycRangeException("Value fraction function requires a fraction value");
+
+  return (1-2*frac)*log(1/frac - 1);
+}
+
+//- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - 
+double EnrichmentFacility::swu(double product_qty, const Assays& assays) 
+{
+  double feed = feed_qty(product_qty,assays);
+  double tails = tails_qty(product_qty,assays);
+  double swu = 
+    product_qty * value_func(assays.product()) +
+    feed * value_func(assays.feed()) +
+    tails * value_func(assays.tails());
+  return swu;
 }
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - 

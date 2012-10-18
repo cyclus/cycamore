@@ -18,6 +18,29 @@ class QueryEngine;
  */
 class EnrichmentFacility : public FacilityModel
 {
+  /* --- EnrichmentFacility Classes --- */
+  class Assays
+  {
+  public:
+    /// constructor, an error flag is set if the fractions don't equal 1
+    Assays(double feed, double product, double tails);
+    
+    /// returns the feed assay, but throws an error if the fractions don't equal 1
+    double feed();
+
+    /// returns the product assay, but throws an error if the fractions don't equal 1
+    double product();
+
+    /// returns the tails assay, but throws an error if the fractions don't equal 1
+    double tails();
+
+  private:
+    double feed_, product_, tails_;
+    bool error_;
+    void checkSum();
+  };
+  /* --- */
+
  public:
   /* --- Module Methods --- */
   /**
