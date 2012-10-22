@@ -27,6 +27,8 @@ void StubMarket::initModuleMembers(QueryEngine* qe) {
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 void StubMarket::cloneModuleMembersFrom(MarketModel* src) { 
   StubMarket* src_stub = dynamic_cast<StubMarket*>(src);
+  //copy data members here. For example : 
+  //commodity_ = src_stub->commodity();
 };
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -

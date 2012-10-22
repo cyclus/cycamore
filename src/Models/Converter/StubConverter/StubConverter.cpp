@@ -22,6 +22,8 @@ void StubConverter::initModuleMembers(QueryEngine* qe) {
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 void StubConverter::cloneModuleMembersFrom(ConverterModel* src) { 
   StubConverter* src_conv = dynamic_cast<StubConverter*>(src);
+  //copy data members here. For example : 
+  //incommodity_ = src_stub->inCommodity();
 };
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -

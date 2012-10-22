@@ -28,6 +28,8 @@ void StubStubComm::initModuleMembers(QueryEngine* qe) {
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 void StubStubComm::cloneModuleMembersFrom(StubCommModel* src) { 
   StubStubComm* src_stub = dynamic_cast<StubStubComm*>(src);
+  //copy data members here. For example : 
+  //incommodity_ = src_stub->inCommodity();
 };
 
 
