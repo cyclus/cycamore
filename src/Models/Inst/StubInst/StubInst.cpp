@@ -18,18 +18,13 @@ StubInst::StubInst() {};
 StubInst::~StubInst() {};
     
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-void StubInst::init(xmlNodePtr cur) { 
-  InstModel::init(cur); 
+void StubInst::initModuleMembers(QueryEngine* qe) { 
+  QueryEngine* input = qe->queryElement("input");
 };
   
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-void StubInst::copy(StubInst* src) { 
-  InstModel::copy(src); 
-};
-
-//- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-void StubInst::copyFreshModel(Model* src) { 
-  copy(dynamic_cast<StubInst*>(src)); 
+void StubInst::cloneModuleMembers(InstModel* src) { 
+  StubInst* src_stub = dynamic_cast<StubInst*>(src);
 };
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
