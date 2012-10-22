@@ -5,8 +5,43 @@
 #include "FacilityModel.h"
 
 #include "MatBuff.h"
+#include "Table.h"
+#include "Transaction.h"
 
+#include <string>
 #include <deque>
+
+namespace Enrichment
+{
+  /**
+     a simple container class for enrichment assays
+   */
+  class Assays
+  {
+  public:
+    /// constructor
+    Assays(double feed, double product, double tails);
+    
+    /// returns the feed assay
+    double feed();
+
+    /// returns the product assay
+    double product();
+
+    /// returns the tails assay
+    double tails();
+
+  private:
+    double feed_, product_, tails_;
+  };
+
+  double uranium_assay(mat_rsrc_ptr mat);
+  double uranium_qty(mat_rsrc_ptr mat);
+  double feed_qty(double product_qty, Assays& assays);
+  double tails_qty(double product_qty, Assays& assays);
+  double swu_required(double product_qty, Assays& assays);
+  double value_func(double frac);
+};
 
 // forward declarations
 class QueryEngine;
@@ -18,29 +53,6 @@ class QueryEngine;
  */
 class EnrichmentFacility : public FacilityModel
 {
-  /* --- EnrichmentFacility Classes --- */
-  class Assays
-  {
-  public:
-    /// constructor, an error flag is set if the fractions don't equal 1
-    Assays(double feed, double product, double tails);
-    
-    /// returns the feed assay, but throws an error if the fractions don't equal 1
-    double feed();
-
-    /// returns the product assay, but throws an error if the fractions don't equal 1
-    double product();
-
-    /// returns the tails assay, but throws an error if the fractions don't equal 1
-    double tails();
-
-  private:
-    double feed_, product_, tails_;
-    bool error_;
-    void checkSum();
-  };
-  /* --- */
-
  public:
   /* --- Module Methods --- */
   /**
@@ -115,6 +127,77 @@ class EnrichmentFacility : public FacilityModel
   /* --- */
 
   /* --- EnrichmentFacility Methods --- */  
+  Enrichment::Assays getAssays(mat_rsrc_ptr mat);
+
+  inline void set_in_commodity(std::string in_commod)
+  {
+    in_commodity_ = in_commod;
+  }
+
+  inline std::string in_commodity() 
+  {
+    return in_commodity_;
+  }   
+    
+  inline void set_out_commodity(std::string out_commod)
+  {
+    out_commodity_ = out_commod;
+  }
+
+  inline std::string out_commodity() 
+  {
+    return out_commodity_;
+  }   
+    
+  inline void set_in_recipe(std::string in_recipe)
+  {
+    in_recipe_ = in_recipe;
+  }   
+
+  inline std::string in_recipe() 
+  {
+    return in_recipe_;
+  }   
+  
+  inline void setMaxInventorySize(double size)
+  {
+    inventory_.setCapacity(size);
+  }
+    
+  inline double maxInventorySize() 
+  {
+    return inventory_.capacity();
+  }
+    
+  inline void set_feed_assay(double assay)
+  {
+    feed_assay_ = assay;
+  }   
+
+  inline double feed_assay()
+  {
+    return feed_assay_;
+  }
+
+  inline void set_tails_assay(double assay)
+  {
+    tails_assay_ = assay;
+  }   
+
+  inline double tails_assay()
+  {
+    return tails_assay_;
+  }
+
+  inline void set_commodity_price(double price)
+  {
+    commodity_price_ = price;
+  }   
+
+  inline double commodity_price()
+  {
+    return commodity_price_;
+  }
   /* --- */
 
  protected:  
@@ -123,11 +206,52 @@ class EnrichmentFacility : public FacilityModel
      sends a transaction as an offer 
    */
   void sendOffer(Transaction trans);
+
+  /**
+   */
+  void makeRequest();
+
+  /**
+   */
+  void makeOffer();
+
+  /**
+   */
+  Transaction buildTransaction();
   /* --- */
 
   /* --- EnrichmentFacility Members and Methods --- */  
+  /**
+   */
+  void processOutgoingMaterial();
+
+  /**
+   */
+  void define_table();
+
+  /**
+   */
+  void recordEnrichment(double natural_u, double swu);
+
+  std::string in_commodity_;
+
+  std::string out_commodity_;
+
+  std::string in_recipe_;
+
+  double commodity_price_;
+
+  double feed_assay_;
+  
+  double tails_assay_;  
+
+  MatBuff inventory_;
+
+  static table_ptr table_;
+  
+  ///   A list of orders to be processed on the Tock 
+  std::deque<msg_ptr> orders_;
   /* --- */
 };
-
 #endif
 

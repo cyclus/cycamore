@@ -2,9 +2,14 @@
 // Implements the EnrichmentFacility class
 #include "EnrichmentFacility.h"
 
+#include "MarketModel.h"
 #include "QueryEngine.h"
 #include "Logger.h"
 #include "CycException.h"
+#include "GenericResource.h"
+#include "Material.h"
+#include "Timer.h"
+
 #include <sstream>
 #include <limits>
 #include <cmath>
@@ -12,51 +17,18 @@
 #include <boost/lexical_cast.hpp>
 
 using namespace std;
+using namespace boost;
 using boost::lexical_cast;
+using namespace Enrichment;
 
-//- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - 
-Assays::Assays(double feed, double product, double tails) :
-  feed_(feed),
-  product_(product),
-  tails_(tails),
-  error_(false)
-{
-  double sum = feed_ + product_ + tails_;
-  if (abs(1-sum) < EPS) 
-    error_ = true;
-}
-
-//- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - 
-double Assays::feed()
-{
-  checkSum();
-  return feed_;
-}
-
-//- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - 
-double Assays::product()
-{
-  checkSum();
-  return product_;
-}
-
-//- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - 
-double Assays::tails()
-{
-  checkSum();
-  return tails_;
-}
-
-//- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - 
-void Assays::checkSum()
-{
-  if (error_) throw CycOverrideException("Assay sums don't add up to 1.");
-}
+// initialize table member
+table_ptr EnrichmentFacility::table_ = table_ptr(new Table("Enrichment")); 
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - 
 EnrichmentFacility::EnrichmentFacility() :
-  commod_price_(0),
+  commodity_price_(0),
   tails_assay_(0),
+  feed_assay_(0),
   in_commodity_(""),
   in_recipe_(""),
   out_commodity_("")
@@ -78,11 +50,11 @@ void EnrichmentFacility::initModuleMembers(QueryEngine* qe)
   try 
     {
       data = input->getElementContent("inventorysize"); 
-      set_max_inventory_size(lexical_cast<double>(data));
+      setMaxInventorySize(lexical_cast<double>(data));
     }
   catch (CycNullQueryException e) 
     {
-      set_max_inventory_size(numeric_limits<double>::max());
+      setMaxInventorySize(numeric_limits<double>::max());
     }
 
   QueryEngine* output = qe->queryElement("output");
@@ -90,6 +62,8 @@ void EnrichmentFacility::initModuleMembers(QueryEngine* qe)
 
   data = qe->getElementContent("tails_assay");
   set_tails_assay(lexical_cast<double>(data));
+
+  set_feed_assay(uranium_assay(mat_rsrc_ptr(new Material(RecipeLibrary::Recipe(in_recipe_)))));
 }
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - 
@@ -98,9 +72,10 @@ std::string EnrichmentFacility::str()
   std::stringstream ss;
   ss << FacilityModel::str()
      << " with enrichment facility parameters:"
-     << " * Tails assay: " << tails_assay_;
-     << " * Input Commodity: " << in_commodity_;
-     << " * Output Commodity: " << out_commodity_;
+     << " * Tails assay: " << tails_assay()
+     << " * Feed assay: " << feed_assay()
+     << " * Input Commodity: " << in_commodity()
+     << " * Output Commodity: " << out_commodity();
   return ss.str();
 }
 
@@ -108,10 +83,13 @@ std::string EnrichmentFacility::str()
 void EnrichmentFacility::cloneModuleMembersFrom(FacilityModel* sourceModel) 
 {
   EnrichmentFacility* source = dynamic_cast<EnrichmentFacility*>(sourceModel);
-  tails_assay_ = source->tails_assay();
-  in_commodity_ = source->in_commodity();
-  out_commodity_ = source->out_commodity();
-  setMaxInventorySize(source->max_inventory_size());
+  set_tails_assay(source->tails_assay());
+  set_feed_assay(source->feed_assay());
+  set_in_commodity(source->in_commodity());
+  set_in_recipe(source->in_recipe());
+  set_out_commodity(source->out_commodity());
+  setMaxInventorySize(source->maxInventorySize() );
+  set_commodity_price(source->commodity_price());
 }
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - 
@@ -155,16 +133,17 @@ void EnrichmentFacility::makeRequest()
       MarketModel* market = MarketModel::marketForCommod(commodity);
       Communicator* recipient = dynamic_cast<Communicator*>(market);
 
-      // create a generic resource
+      // create a material resource
+      // @MJGFlag note that this doesn't matter in the current state
       mat_rsrc_ptr request_res = 
-        mat_rsrc_ptr(new Material(RecipeLibrary::Recipe(recipe_name_)));
+        mat_rsrc_ptr(new Material(RecipeLibrary::Recipe(in_recipe_)));
       request_res->setQuantity(amt);
       
       // build the transaction and message
       Transaction trans(this, REQUEST);
       trans.setCommod(commodity);
       trans.setMinFrac(min_amt/amt);
-      trans.setPrice(commod_price_);
+      trans.setPrice(commodity_price_);
       trans.setResource(request_res);
 
       msg_ptr request(new Message(this, recipient, trans)); 
@@ -201,25 +180,42 @@ void EnrichmentFacility::makeOffer()
 
   // note that this is a hack. the amount of the resource being offered
   // is greater than the possible amount that can be serviced
-  msg_ptr msg(new Message(this, recipient, buildTransaction())); 
+  Transaction trans = buildTransaction();
+  msg_ptr msg(new Message(this, recipient, trans)); 
   msg->sendOn();
 }
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - 
 void EnrichmentFacility::processOutgoingMaterial()
 {
-  // while ! orders empty?
+  double remove_total = 0;
   while (!orders_.empty())
     {
-      Transaction order = orders_.front()->trans();
-      double product_qty = order.resource()->quantity();
-      double natural_u = naturalUraniumRequired(order->trans);
-      double swu = swuRequired(order->trans);
-      recordEnrichment(natural_u,swu);
-      inventory_.popQty(natural_u);
-      order.approveTransfer();
+      Transaction trans = orders_.front()->trans();
+
+      rsrc_ptr prsrc = trans.resource();
+      if (!Material::isMaterial(prsrc)) 
+        throw CycOverrideException("Can't process a resource as a non-material");
+
+      mat_rsrc_ptr rsrc = dynamic_pointer_cast<Material>(prsrc);
+
+      Assays assays = getAssays(rsrc);
+      double product_qty = uranium_qty(rsrc);
+      remove_total += feed_qty(product_qty,assays);
+
+      if (remove_total > inventory_.quantity())
+        throw CycOverrideException("Can't process more than an EnrFac's inventory size");
+
+      trans.approveTransfer();
       orders_.pop_front();
     }
+}
+
+//- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - 
+Enrichment::Assays EnrichmentFacility::getAssays(mat_rsrc_ptr rsrc)
+{
+  double product_assay = uranium_assay(rsrc);
+  return Assays(feed_assay(),product_assay,tails_assay());
 }
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - 
@@ -241,53 +237,51 @@ void EnrichmentFacility::receiveMessage(msg_ptr msg)
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - 
 std::vector<rsrc_ptr> EnrichmentFacility::removeResource(Transaction order) 
 {
-  return vector<rsrc_ptr>();
+  rsrc_ptr prsrc = order.resource();
+  if (!Material::isMaterial(prsrc)) 
+    throw CycOverrideException("Can't process a resource as a non-material");
+  
+  mat_rsrc_ptr rsrc = dynamic_pointer_cast<Material>(prsrc);
+
+  Assays assays = getAssays(rsrc);
+  double product_qty = uranium_qty(rsrc);
+  double swu = swu_required(product_qty,assays);
+  double natural_u = feed_qty(product_qty,assays);
+  inventory_.popQty(natural_u);
+  recordEnrichment(natural_u,swu);
+
+  vector<rsrc_ptr> ret;
+  ret.push_back(order.resource());
+  return ret;
 }
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - 
-void EnrichmentFacility::sendOffer(Transaction trans) 
+void EnrichmentFacility::define_table()
 {
+  // declare the state id columns and add it to the table
+  table_->addField("ID","INTEGER");
+  table_->addField("Time","INTEGER");
+  table_->addField("Natural_Uranium","REAL");
+  table_->addField("SWU","REAL");
+  // we've now defined the table
+  table_->tableDefined();
 }
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - 
-double EnrichmentFacility::feed_qty(double product_qty, const Assays& assays) 
+void EnrichmentFacility::recordEnrichment(double natural_u, double swu)
 {
-  double factor = 
-    (assays.product() - assays.tails())
-    /
-    (assays.feed() - assasys.tails());
-  return product_qty * factor;
-}
+  if ( !table_->defined() ) define_table();
 
-//- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - 
-double EnrichmentFacility::tails_qty(double product_qty, const Assays& assays) 
-{
-  double factor = 
-    (assays.product() - assays.feed())
-    /
-    (assays.feed() - assasys.tails());
-  return product_qty * factor;
-}
-
-//- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - 
-double EnrichmentFacility::value_func(double frac) 
-{
-  if (frac < 0 || frac > 1.0)
-    throw CycRangeException("Value fraction function requires a fraction value");
-
-  return (1-2*frac)*log(1/frac - 1);
-}
-
-//- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - 
-double EnrichmentFacility::swu(double product_qty, const Assays& assays) 
-{
-  double feed = feed_qty(product_qty,assays);
-  double tails = tails_qty(product_qty,assays);
-  double swu = 
-    product_qty * value_func(assays.product()) +
-    feed * value_func(assays.feed()) +
-    tails * value_func(assays.tails());
-  return swu;
+  data an_id(ID()), time_data(TI->time()), 
+    nat_u_data(natural_u), swu_data(swu);
+  entry id("ID",an_id), time("Time",time_data), 
+    natl_u("Natural_Uranium",nat_u_data), swu_req("SWU",swu_data);
+  // construct row
+  row aRow;
+  aRow.push_back(id), aRow.push_back(time), 
+    aRow.push_back(natl_u), aRow.push_back(swu_req);
+  // add the row
+  table_->addRow(aRow);
 }
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - 
@@ -300,4 +294,93 @@ extern "C" Model* constructEnrichmentFacility()
 extern "C" void destructEnrichmentFacility(Model* model) 
 {
       delete model;
+}
+
+//- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - 
+Enrichment::Assays::Assays(double feed, double product, double tails) :
+  feed_(feed),
+  product_(product),
+  tails_(tails)
+{}
+
+//- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - 
+double Enrichment::Assays::feed()
+{
+  return feed_;
+}
+
+//- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - 
+double Enrichment::Assays::product()
+{
+  return product_;
+}
+
+//- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - 
+double Enrichment::Assays::tails()
+{
+  return tails_;
+}
+
+//- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - 
+double Enrichment::uranium_assay(mat_rsrc_ptr rsrc)
+{
+  double value;
+  double u235 = rsrc->isoVector().atomFraction(92235);
+  double u238 = rsrc->isoVector().atomFraction(92238);
+  if (u235 + u238 > 0)
+    {
+      value = u235 / (u235 + u238);
+    }
+  else
+    {
+      value = 0;
+    }
+  return value;
+}
+
+//- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - 
+double Enrichment::uranium_qty(mat_rsrc_ptr rsrc)
+{
+  return rsrc->mass(92238,KG) + rsrc->mass(92235,KG);
+}
+
+//- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - 
+double Enrichment::feed_qty(double product_qty, Assays& assays) 
+{
+  double factor = 
+    (assays.product() - assays.tails())
+    /
+    (assays.feed() - assays.tails());
+  return product_qty * factor;
+}
+
+//- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - 
+double Enrichment::tails_qty(double product_qty, Assays& assays) 
+{
+  double factor = 
+    (assays.product() - assays.feed())
+    /
+    (assays.feed() - assays.tails());
+  return product_qty * factor;
+}
+
+//- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - 
+double Enrichment::value_func(double frac) 
+{
+  if (frac < 0 || frac > 1.0)
+    throw CycRangeException("Value fraction function requires a fraction value");
+
+  return (1-2*frac)*log(1/frac - 1);
+}
+
+//- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - 
+double Enrichment::swu_required(double product_qty, Assays& assays) 
+{
+  double feed = feed_qty(product_qty,assays);
+  double tails = tails_qty(product_qty,assays);
+  double swu = 
+    product_qty * value_func(assays.product()) +
+    feed * value_func(assays.feed()) +
+    tails * value_func(assays.tails());
+  return swu;
 }
