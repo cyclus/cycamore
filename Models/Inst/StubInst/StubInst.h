@@ -59,7 +59,7 @@ class StubInst : public InstModel {
       
      @param src is the InstModel to copy 
    */
-  virtual void cloneModuleMembers(InstModel* src) ;
+  virtual void cloneModuleMembersFrom(InstModel* src) ;
 
   /**
      every model should be able to print a verbose description 

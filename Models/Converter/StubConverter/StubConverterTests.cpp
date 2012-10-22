@@ -61,7 +61,7 @@ TEST_F(StubConverterTest, InitialState) {
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - 
 TEST_F(StubConverterTest, CopyFreshModel) {
-  new_facility->copyFreshModel(dynamic_cast<Model*>(src_facility)); // deep copy
+  new_facility->cloneModuleMembersFrom(src_facility); // deep copy
   EXPECT_NO_THROW(dynamic_cast<StubConverter*>(new_facility)); // still a stub facility
   EXPECT_NO_THROW(dynamic_cast<FakeStubConverter*>(new_facility)); // still a fake stub facility
   // Test that StubConverter specific parameters are initialized in the deep copy method here

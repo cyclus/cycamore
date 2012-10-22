@@ -56,7 +56,7 @@ TEST_F(StubRegionTest, InitialState) {
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - 
 TEST_F(StubRegionTest, CopyFreshModel) {
-  new_region_->copyFreshModel(dynamic_cast<Model*>(src_region_)); // deep copy
+  new_region_->cloneModuleMembersFrom(src_region_); // deep copy
   EXPECT_NO_THROW(dynamic_cast<StubRegion*>(new_region_)); // still a stub region
   EXPECT_NO_THROW(dynamic_cast<FakeStubRegion*>(new_region_)); // still a fake stub region
   // Test that StubRegion specific parameters are initialized in the deep copy method here

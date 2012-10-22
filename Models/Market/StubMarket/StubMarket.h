@@ -59,7 +59,7 @@ class StubMarket : public MarketModel {
       
      @param src is the MarketModel to copy 
    */
-  virtual void cloneModuleMembers(MarketModel* src);
+  virtual void cloneModuleMembersFrom(MarketModel* src);
 
   /**
      every model should be able to print a verbose description 
