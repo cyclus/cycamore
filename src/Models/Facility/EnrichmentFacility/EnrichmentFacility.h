@@ -7,41 +7,10 @@
 #include "MatBuff.h"
 #include "Table.h"
 #include "Transaction.h"
+#include "Enrichment.h"
 
 #include <string>
 #include <deque>
-
-namespace Enrichment
-{
-  /**
-     a simple container class for enrichment assays
-   */
-  class Assays
-  {
-  public:
-    /// constructor
-    Assays(double feed, double product, double tails);
-    
-    /// returns the feed assay
-    double feed();
-
-    /// returns the product assay
-    double product();
-
-    /// returns the tails assay
-    double tails();
-
-  private:
-    double feed_, product_, tails_;
-  };
-
-  double uranium_assay(mat_rsrc_ptr mat);
-  double uranium_qty(mat_rsrc_ptr mat);
-  double feed_qty(double product_qty, Assays& assays);
-  double tails_qty(double product_qty, Assays& assays);
-  double swu_required(double product_qty, Assays& assays);
-  double value_func(double frac);
-};
 
 // forward declarations
 class QueryEngine;
