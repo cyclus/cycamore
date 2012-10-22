@@ -41,7 +41,7 @@ class StubStubComm : public StubCommModel {
 
      @param src is the StubCommModel to copy 
    */
-  virtual void copy(StubStubComm* src) ;
+  virtual void cloneModuleMembersFrom(StubCommModel* src) ;
   
   /**
      every model should be able to print a verbose description 

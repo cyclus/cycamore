@@ -22,7 +22,7 @@ void StubMarket::initModuleMembers(QueryEngine* qe) {
 };
   
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-void StubMarket::cloneModuleMembers(MarketModel* src) { 
+void StubMarket::cloneModuleMembersFrom(MarketModel* src) { 
   StubMarket* src_stub = dynamic_cast<StubMarket*>(src);
 };
 

@@ -63,7 +63,7 @@ class StubConverter : public ConverterModel {
       
      @param src is the Converter to copy 
    */
-  virtual void cloneModuleMembers(ConverterModel* src) ;
+  virtual void cloneModuleMembersFrom(ConverterModel* src) ;
 
   /**
      A verbose printer for the StubConverter

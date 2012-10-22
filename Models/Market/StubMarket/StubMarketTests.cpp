@@ -57,13 +57,13 @@ TEST_F(StubMarketTest, InitialState) {
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - 
 TEST_F(StubMarketTest, CopyMarket) {
-  new_market->copy(src_market); 
+  new_market->cloneModuleMembersFrom(src_market); 
   EXPECT_TRUE(true);
 }
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - 
 TEST_F(StubMarketTest, CopyFreshModel) {
-  new_market->copyFreshModel(dynamic_cast<Model*>(src_market)); // deep copy
+  new_market->cloneModuleMembersFrom(src_market); // deep copy
   EXPECT_NO_THROW(dynamic_cast<StubMarket*>(new_market)); // still a source market
   EXPECT_NO_THROW(dynamic_cast<FakeStubMarket*>(new_market)); // still a fake source market
 }
