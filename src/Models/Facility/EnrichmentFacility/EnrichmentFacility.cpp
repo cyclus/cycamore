@@ -19,7 +19,7 @@
 using namespace std;
 using namespace boost;
 using boost::lexical_cast;
-using namespace Enrichment;
+using namespace enrichment;
 
 // initialize table member
 table_ptr EnrichmentFacility::table_ = table_ptr(new Table("Enrichment")); 
@@ -93,6 +93,49 @@ void EnrichmentFacility::cloneModuleMembersFrom(FacilityModel* sourceModel)
 }
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - 
+void EnrichmentFacility::addResource(Transaction trans, std::vector<rsrc_ptr> manifest) 
+{
+  inventory_.pushAll(MatBuff::toMat(manifest));
+}
+
+//- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - 
+std::vector<rsrc_ptr> EnrichmentFacility::removeResource(Transaction order) 
+{
+  rsrc_ptr prsrc = order.resource();
+  if (!Material::isMaterial(prsrc)) 
+    throw CycOverrideException("Can't process a resource as a non-material");
+  
+  mat_rsrc_ptr rsrc = dynamic_pointer_cast<Material>(prsrc);
+
+  Assays assays = getAssays(rsrc);
+  double product_qty = uranium_qty(rsrc);
+  double swu = swu_required(product_qty,assays);
+  double natural_u = feed_qty(product_qty,assays);
+  inventory_.popQty(natural_u);
+  recordEnrichment(natural_u,swu);
+
+  vector<rsrc_ptr> ret;
+  ret.push_back(order.resource());
+  return ret;
+}
+
+//- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - 
+void EnrichmentFacility::receiveMessage(msg_ptr msg)
+{
+  // is this a message from on high? 
+  if(msg->trans().supplier() == this)
+    {
+      // file the order
+      orders_.push_back(msg);
+      LOG(LEV_INFO5, "EnrFac") << name() << " just received an order.";
+    } 
+  else 
+    {
+      throw CycException("EnrFacility is not the supplier of this msg.");
+    }
+}
+
+//- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - 
 void EnrichmentFacility::handleTick(int time)
 {
   LOG(LEV_INFO3, "EnrFac") << facName() << " is tocking {";
@@ -111,12 +154,6 @@ void EnrichmentFacility::handleTock(int time)
   processOutgoingMaterial();
 
   LOG(LEV_INFO3, "EnrFac") << "}";
-}
-
-//- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - 
-void EnrichmentFacility::addResource(Transaction trans, std::vector<rsrc_ptr> manifest) 
-{
-  inventory_.pushAll(MatBuff::toMat(manifest));
 }
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - 
@@ -203,56 +240,24 @@ void EnrichmentFacility::processOutgoingMaterial()
       double product_qty = uranium_qty(rsrc);
       remove_total += feed_qty(product_qty,assays);
 
-      if (remove_total > inventory_.quantity())
-        throw CycOverrideException("Can't process more than an EnrFac's inventory size");
+      if (remove_total < inventory_.quantity())
+        {
+          trans.approveTransfer();
+        }
+      // else
+      //   {
+      //     throw CycOverrideException("Can't process more than an EnrFac's inventory size");
+      //   }
 
-      trans.approveTransfer();
       orders_.pop_front();
     }
 }
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - 
-Enrichment::Assays EnrichmentFacility::getAssays(mat_rsrc_ptr rsrc)
+enrichment::Assays EnrichmentFacility::getAssays(mat_rsrc_ptr rsrc)
 {
   double product_assay = uranium_assay(rsrc);
   return Assays(feed_assay(),product_assay,tails_assay());
-}
-
-//- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - 
-void EnrichmentFacility::receiveMessage(msg_ptr msg)
-{
-  // is this a message from on high? 
-  if(msg->trans().supplier() == this)
-    {
-      // file the order
-      orders_.push_back(msg);
-      LOG(LEV_INFO5, "EnrFac") << name() << " just received an order.";
-    } 
-  else 
-    {
-      throw CycException("EnrFacility is not the supplier of this msg.");
-    }
-}
-
-//- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - 
-std::vector<rsrc_ptr> EnrichmentFacility::removeResource(Transaction order) 
-{
-  rsrc_ptr prsrc = order.resource();
-  if (!Material::isMaterial(prsrc)) 
-    throw CycOverrideException("Can't process a resource as a non-material");
-  
-  mat_rsrc_ptr rsrc = dynamic_pointer_cast<Material>(prsrc);
-
-  Assays assays = getAssays(rsrc);
-  double product_qty = uranium_qty(rsrc);
-  double swu = swu_required(product_qty,assays);
-  double natural_u = feed_qty(product_qty,assays);
-  inventory_.popQty(natural_u);
-  recordEnrichment(natural_u,swu);
-
-  vector<rsrc_ptr> ret;
-  ret.push_back(order.resource());
-  return ret;
 }
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - 

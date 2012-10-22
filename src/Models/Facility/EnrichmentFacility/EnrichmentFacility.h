@@ -96,7 +96,7 @@ class EnrichmentFacility : public FacilityModel
   /* --- */
 
   /* --- EnrichmentFacility Methods --- */  
-  Enrichment::Assays getAssays(mat_rsrc_ptr mat);
+  enrichment::Assays getAssays(mat_rsrc_ptr mat);
 
   inline void set_in_commodity(std::string in_commod)
   {

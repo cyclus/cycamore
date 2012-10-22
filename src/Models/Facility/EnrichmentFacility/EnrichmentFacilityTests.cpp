@@ -30,7 +30,7 @@ FacilityModel* EnrichmentFacilityConstructor()
   return dynamic_cast<FacilityModel*>(new EnrichmentFacility());
 }
 
-// //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - 
-// INSTANTIATE_TEST_CASE_P(EnrichmentFac, FacilityModelTests, Values(&EnrichmentFacilityConstructor));
-// INSTANTIATE_TEST_CASE_P(EnrichmentFac, ModelTests, Values(&EnrichmentFacilityModelConstructor));
+//- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - 
+INSTANTIATE_TEST_CASE_P(EnrichmentFac, FacilityModelTests, Values(&EnrichmentFacilityConstructor));
+INSTANTIATE_TEST_CASE_P(EnrichmentFac, ModelTests, Values(&EnrichmentFacilityModelConstructor));
 
