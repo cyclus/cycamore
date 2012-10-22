@@ -1,5 +1,5 @@
 // StubMarket.h
-#if !defined(_STUBMARKET_H)
+#ifndef _STUBMARKET_H
 #define _STUBMARKET_H
 
 #include "Logger.h"
