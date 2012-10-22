@@ -1,5 +1,5 @@
 // StubRegion.h
-#if !defined(_STUBREGION_H)
+#ifndef _STUBREGION_H
 #define _STUBREGION_H
 
 #include "RegionModel.h"

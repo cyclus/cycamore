@@ -1,5 +1,5 @@
 // StubStubComm.h
-#if !defined(_STUBSTUBCOMM_H)
+#ifndef _STUBSTUBCOMM_H
 #define _STUBSTUBCOMM_H
 
 #include "StubCommModel.h"

@@ -1,5 +1,5 @@
 // StubConverter.h
-#if !defined(_STUBCONVERTER_H)
+#ifndef _STUBCONVERTER_H
 #define _STUBCONVERTER_H
 
 #include <queue>
