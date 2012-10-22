@@ -5,7 +5,6 @@
 
 #include "Logger.h"
 #include "CycException.h"
-#include "InputXML.h"
 
 using namespace std;
 
@@ -21,21 +20,18 @@ StubFacility::StubFacility() {};
 StubFacility::~StubFacility() {};
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -    
-void StubFacility::init(xmlNodePtr cur) {
-  FacilityModel::init(cur);
-  /// move XML pointer to current model
-  cur = XMLinput->get_xpath_element(cur,"model/StubFacility");
-  /// initialize any StubFacility-specific datamembers here
+void StubFacility::initModuleMembers(QueryEngine* qe) {
+  QueryEngine* input = qe->queryElement("input");
+  //retrieve input data members here. For example :  
+  //string query = "incommodity";
+  //incommodity_ = lexical_cast<double>(input->getElementContent(query));
 }
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -    
-void StubFacility::copy(StubFacility* src) {
-  FacilityModel::copy(src);
-}
-
-//- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -    
-void StubFacility::copyFreshModel(Model* src) {
-  copy(dynamic_cast<StubFacility*>(src));
+void StubFacility::cloneModuleMembersFrom(FacilityModel* src) {
+  StubFacility* src_stub = dynamic_cast<StubFacility*>(src);
+  //copy data members here. For example : 
+  //incommodity_ = src_stub->inCommodity();
 }
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -    
@@ -84,6 +80,10 @@ void StubFacility::handleTock(int time){}
 
 extern "C" Model* constructStubFacility() {
   return new StubFacility();
+}
+
+extern "C" void destructStbuFacility(Model* model) {
+  delete model;
 }
 
 /* ------------------- */ 
