@@ -1,5 +1,5 @@
 // StubFacility.h
-#ifndef(_STUBFACILITY_H)
+#ifndef _STUBFACILITY_H
 #define _STUBFACILITY_H
 
 #include "Logger.h"
