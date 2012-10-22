@@ -17,18 +17,13 @@ StubMarket::StubMarket() {};
 StubMarket::~StubMarket() {};
     
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-void StubMarket::init(xmlNodePtr cur) { 
-  MarketModel::init(cur); 
+void StubMarket::initModuleMembers(QueryEngine* qe) { 
+  QueryEngine* input = qe->queryElement("input");
 };
   
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-void StubMarket::copy(StubMarket* src) { 
-  MarketModel::copy(src); 
-};
-
-//- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-void StubMarket::copyFreshModel(Model* src){
-  copy(dynamic_cast<StubMarket*>(src));
+void StubMarket::cloneModuleMembers(MarketModel* src) { 
+  StubMarket* src_stub = dynamic_cast<StubMarket*>(src);
 };
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -71,5 +66,8 @@ extern "C" Model* constructStubMarket() {
   return new StubMarket();
 }
 
+extern "C" void destructStubMarket(Model* model) {
+  delete model;
+}
 /* -------------------- */
 

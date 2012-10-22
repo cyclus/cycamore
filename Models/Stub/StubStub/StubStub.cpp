@@ -17,13 +17,13 @@ StubStub::StubStub() {};
 StubStub::~StubStub() {};
     
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-void StubStub::init(xmlNodePtr cur) { 
-  StubModel::init(cur); 
+void StubStub::initModuleMembers(QueryEngine* qe) { 
+  QueryEngine* input = qe->queryElement("input");
 };
   
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-void StubStub::copy(StubStub* src) { 
-  StubModel::copy(src); 
+void StubStub::cloneModuleMembers(StubModel* src) { 
+  StubStub* src_stub = dynamic_cast<StubStub*>(src);
 };
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -33,7 +33,10 @@ std::string StubStub::str() {
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 extern "C" Model* constructStubStub() {
-      return new StubStub();
+  return new StubStub();
+}
+extern "C" void destructStubStub(Model* model) { 
+  delete model;
 }
 
 /* -------------------- */

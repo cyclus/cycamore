@@ -17,8 +17,8 @@ void StubConverter::initModuleMembers(QueryEngine* qe) {
 };
   
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-void StubConverter::cloneModuleMembers(Converter* src) { 
-  StubConverter* src_conv = dynamic_cast<Converter*>(src)
+void StubConverter::cloneModuleMembers(ConverterModel* src) { 
+  StubConverter* src_conv = dynamic_cast<StubConverter*>(src);
 };
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
