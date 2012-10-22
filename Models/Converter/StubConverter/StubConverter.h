@@ -53,29 +53,19 @@ class StubConverter : public ConverterModel {
   /**
      every model needs a method to initialize from XML 
       
-     @param cur is the pointer to the model's xml node 
+     @param qe a pointer to a QueryEngine object containing initialization data
    */
-  virtual void init(xmlNodePtr cur);
+  virtual void init(QueryEngine* qe);
 
   /**
      every model needs a method to copy one object to another 
       
-     @param src is the StubConverter to copy 
+     @param src is the Converter to copy 
    */
-  virtual void copy(StubConverter* src) ;
+  virtual void cloneModuleMembers(Converter* src) ;
 
   /**
-     This drills down the dependency tree to initialize all relevant 
-     parameters/containers.  
-     Note that this function must be defined only in the specific model 
-     in question and not in any inherited models preceding it. 
-      
-     @param src the pointer to the original (initialized ?) model to be 
-   */
-  virtual void copyFreshModel(Model* src);
-
-  /**
-     every model should be able to print a verbose description 
+     A verbose printer for the StubConverter
    */
   virtual std::string str();
 
