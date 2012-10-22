@@ -4,6 +4,7 @@
 #include "StubStubComm.h"
 
 #include "Logger.h"
+#include "QueryEngine.h"
 
 /* --------------------
  * all MODEL classes have these members
@@ -17,13 +18,13 @@ StubStubComm::StubStubComm() {};
 StubStubComm::~StubStubComm() {};
     
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-void StubStubComm::init(xmlNodePtr cur) { 
-  StubCommModel::init(cur); 
+void StubStubComm::initModuleMembers(QueryEngine* qe) { 
+  QueryEngine* input = qe->queryElement("input");
 };
   
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-void StubStubComm::copy(StubStubComm* src) { 
-  StubCommModel::copy(src); 
+void StubStubComm::cloneModuleMembers(StubCommModel* src) { 
+  StubStubComm* src_stub = <StubStubComm*>(src);
 };
 
 
@@ -61,7 +62,10 @@ void StubStubComm::receiveMessage(msg_ptr msg) {};
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 extern "C" Model* constructStubStubComm() {
-    return new StubStubComm();
+  return new StubStubComm();
+}
+extern "C" void destructStubStubComm(Model* model) {
+  delete model;
 }
 
 /* -------------------- */

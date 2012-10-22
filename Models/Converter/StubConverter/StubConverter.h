@@ -7,6 +7,7 @@
 #include "ConverterModel.h"
 
 #include "Logger.h"
+#include "QueryEngine.h"
 
 /**
    @class StubConverter 
@@ -55,14 +56,14 @@ class StubConverter : public ConverterModel {
       
      @param qe a pointer to a QueryEngine object containing initialization data
    */
-  virtual void init(QueryEngine* qe);
+  virtual void initModuleMembers(QueryEngine* qe);
 
   /**
      every model needs a method to copy one object to another 
       
      @param src is the Converter to copy 
    */
-  virtual void cloneModuleMembers(Converter* src) ;
+  virtual void cloneModuleMembers(ConverterModel* src) ;
 
   /**
      A verbose printer for the StubConverter

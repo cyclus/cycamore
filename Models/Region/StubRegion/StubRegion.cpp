@@ -17,13 +17,13 @@ StubRegion::StubRegion() {};
 StubRegion::~StubRegion() {};
     
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-void StubRegion::init(xmlNodePtr cur) { 
-  RegionModel::init(cur); 
+void StubRegion::initModuleMembers(QueryEngine* qe) { 
+  QueryEngine* input = qe->queryElement("input");
 };
   
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-void StubRegion::copy(StubRegion* src) { 
-  RegionModel::copy(src); 
+void StubRegion::cloneModuleMembers(RegionModel* src) { 
+  StubRegion* src_stub = dynamic_cast<StubRegion*>(src);
 };
 
 
@@ -61,7 +61,9 @@ void StubRegion::receiveMessage(msg_ptr msg) {};
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 extern "C" Model* constructStubRegion() {
-    return new StubRegion();
+  return new StubRegion();
 }
-
+extern "C" void destructStubRegion(Model* model) { 
+  delete model;
+}
 /* ------------------- */ 
