@@ -19,6 +19,9 @@ StubRegion::~StubRegion() {};
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 void StubRegion::initModuleMembers(QueryEngine* qe) { 
   QueryEngine* input = qe->queryElement("input");
+  //retrieve input data members here. For example :  
+  //string query = "tax_rate";
+  //tax_rate_ = lexical_cast<double>(input->getElementContent(query));
 };
   
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -

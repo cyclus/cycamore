@@ -19,6 +19,9 @@ StubMarket::~StubMarket() {};
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 void StubMarket::initModuleMembers(QueryEngine* qe) { 
   QueryEngine* input = qe->queryElement("input");
+  //retrieve input data members here. For example :  
+  //string query = "commodity";
+  //commodity_ = lexical_cast<double>(input->getElementContent(query));
 };
   
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
