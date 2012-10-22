@@ -20,6 +20,9 @@ StubInst::~StubInst() {};
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 void StubInst::initModuleMembers(QueryEngine* qe) { 
   QueryEngine* input = qe->queryElement("input");
+  //retrieve input data members here. For example :  
+  //string query = "tax_rate";
+  //tax_rate_ = lexical_cast<double>(input->getElementContent(query));
 };
   
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -64,6 +67,9 @@ extern "C" Model* constructStubInst() {
   return new StubInst();
 }
 
+extern "C" void destructStubInst(Model* model) { 
+  delete model;
+}
 /* ------------------- */ 
 
 
