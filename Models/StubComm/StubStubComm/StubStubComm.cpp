@@ -20,6 +20,9 @@ StubStubComm::~StubStubComm() {};
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 void StubStubComm::initModuleMembers(QueryEngine* qe) { 
   QueryEngine* input = qe->queryElement("input");
+  //retrieve input data members here. For example :  
+  //string query = "incommodity";
+  //incommodity_ = lexical_cast<double>(input->getElementContent(query));
 };
   
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
