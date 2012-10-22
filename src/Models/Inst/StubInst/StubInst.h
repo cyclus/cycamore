@@ -1,5 +1,5 @@
 // StubInst.h
-#if !defined(_STUBINST_H)
+#ifndef _STUBINST_H
 #define _STUBINST_H
 
 #include "Logger.h"
