@@ -81,8 +81,7 @@ class EnrichmentFacility : public FacilityModel
   /**
      Transacted resources are extracted through this method       
      @param order the msg/order for which resource(s) are to be prepared 
-     @return list of resources to be sent for this order 
-      
+     @return list of resources to be sent for this order       
    */ 
   virtual std::vector<rsrc_ptr> removeResource(Transaction order);
 
@@ -136,6 +135,11 @@ class EnrichmentFacility : public FacilityModel
   inline double maxInventorySize() 
   {
     return inventory_.capacity();
+  }
+    
+  inline double inventoryQty() 
+  {
+    return inventory_.quantity();
   }
     
   inline void set_feed_assay(double assay)

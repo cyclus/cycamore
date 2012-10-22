@@ -60,7 +60,7 @@ void EnrichmentFacility::initModuleMembers(QueryEngine* qe)
   QueryEngine* output = qe->queryElement("output");
   set_out_commodity(output->getElementContent("outcommodity"));
 
-  data = qe->getElementContent("tails_assay");
+  data = output->getElementContent("tails_assay");
   set_tails_assay(lexical_cast<double>(data));
 
   set_feed_assay(uranium_assay(mat_rsrc_ptr(new Material(RecipeLibrary::Recipe(in_recipe_)))));
@@ -88,7 +88,7 @@ void EnrichmentFacility::cloneModuleMembersFrom(FacilityModel* sourceModel)
   set_in_commodity(source->in_commodity());
   set_in_recipe(source->in_recipe());
   set_out_commodity(source->out_commodity());
-  setMaxInventorySize(source->maxInventorySize() );
+  setMaxInventorySize(source->maxInventorySize());
   set_commodity_price(source->commodity_price());
 }
 

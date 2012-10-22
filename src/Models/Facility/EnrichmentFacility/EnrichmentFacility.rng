@@ -12,9 +12,9 @@ datatypeLibrary="http://www.w3.org/2001/XMLSchema-datatypes">
        </element>
        <element name ="output">
          <ref name="outcommodity"/>
-       </element>
-       <element name ="tails_assay">
-         <data type="double"/>
+          <element name ="tails_assay">
+            <data type="double"/>
+          </element>
        </element>
      </element>
   </define>
