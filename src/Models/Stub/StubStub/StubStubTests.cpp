@@ -55,7 +55,7 @@ TEST_F(StubStubTest, InitialState) {
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - 
 TEST_F(StubStubTest, CopyFreshModel) {
-  new_stub_->copyFreshModel(dynamic_cast<Model*>(src_stub_)); // deep copy
+  new_stub_->cloneModuleMembersFrom(src_stub_); // deep copy
   EXPECT_NO_THROW(dynamic_cast<StubStub*>(new_stub_)); // still a build stub
   EXPECT_NO_THROW(dynamic_cast<FakeStubStub*>(new_stub_)); // still a fake build stub
   // Test that StubStub specific parameters are initialized in the deep copy method here

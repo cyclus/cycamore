@@ -59,7 +59,7 @@ class StubRegion : public RegionModel {
       
      @param src is the RegionModel to copy 
    */
-  virtual void cloneModuleMembers(RegionModel* src) ;
+  virtual void cloneModuleMembersFrom(RegionModel* src) ;
 
   /**
      every model should be able to print a verbose description 

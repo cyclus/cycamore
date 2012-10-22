@@ -23,8 +23,8 @@ void StubStubComm::initModuleMembers(QueryEngine* qe) {
 };
   
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-void StubStubComm::cloneModuleMembers(StubCommModel* src) { 
-  StubStubComm* src_stub = <StubStubComm*>(src);
+void StubStubComm::cloneModuleMembersFrom(StubCommModel* src) { 
+  StubStubComm* src_stub = dynamic_cast<StubStubComm*>(src);
 };
 
 

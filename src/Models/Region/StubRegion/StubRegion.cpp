@@ -22,7 +22,7 @@ void StubRegion::initModuleMembers(QueryEngine* qe) {
 };
   
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-void StubRegion::cloneModuleMembers(RegionModel* src) { 
+void StubRegion::cloneModuleMembersFrom(RegionModel* src) { 
   StubRegion* src_stub = dynamic_cast<StubRegion*>(src);
 };
 
