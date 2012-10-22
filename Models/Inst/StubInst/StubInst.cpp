@@ -28,6 +28,8 @@ void StubInst::initModuleMembers(QueryEngine* qe) {
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 void StubInst::cloneModuleMembersFrom(InstModel* src) { 
   StubInst* src_stub = dynamic_cast<StubInst*>(src);
+  //copy data members here. For example : 
+  //tax_rate_ = src_stub->taxRate();
 };
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -

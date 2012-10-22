@@ -27,6 +27,8 @@ void StubRegion::initModuleMembers(QueryEngine* qe) {
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 void StubRegion::cloneModuleMembersFrom(RegionModel* src) { 
   StubRegion* src_stub = dynamic_cast<StubRegion*>(src);
+  //copy data members here. For example : 
+  //tax_rate_ = src_stub->taxRate();
 };
 
 
