@@ -1,11 +1,13 @@
 <?xml version="1.0"?>
 <!-- 1 StubFacility, 1 StubRegion, 1 StubInst, and 1 StubMarket -->
 <simulation>
-  <duration>10</duration>
-  <startmonth>1</startmonth>
-  <startyear>2000</startyear>
-  <simstart>0</simstart>
-  <decay>2</decay>
+  <control>
+    <duration>10</duration>
+    <startmonth>1</startmonth>
+    <startyear>2000</startyear>
+    <simstart>0</simstart>
+    <decay>2</decay>
+  </control>
 
   <commodity>
     <name>uo2</name>
@@ -15,7 +17,9 @@
     <name>uo2market</name>
     <mktcommodity>uo2</mktcommodity>
     <model>
-      <StubMarket/>
+      <StubMarket>
+        <input/>
+      </StubMarket>
     </model>
   </market>
 
@@ -23,8 +27,10 @@
     <name>FrontEnd</name>
     <model>
       <StubFacility>
-        <incommodity>uo2</incommodity>
-        <outcommodity>uo2</outcommodity>
+        <input>
+          <incommodity>uo2</incommodity>
+          <outcommodity>uo2</outcommodity>
+        </input>
       </StubFacility>
     </model>
   </facility>
@@ -33,12 +39,16 @@
     <name>oneRegion</name>
     <allowedfacility>FrontEnd</allowedfacility>
     <model>
-      <StubRegion/>
+      <StubRegion>
+        <input/>
+      </StubRegion>
     </model>
     <institution>
       <name>oneInst</name>
       <model>
-        <StubInst/>
+        <StubInst>
+          <input/>
+        </StubInst>
       </model>
     </institution>
   </region>
