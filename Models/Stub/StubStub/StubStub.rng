@@ -3,7 +3,9 @@ datatypeLibrary="http://www.w3.org/2001/XMLSchema-datatypes">
 
   <define name="StubStub">
      <element name="StubStub">
-        <text/>
+       <element name="input">
+         <text/>
+       </element>
      </element>
   </define>
 

@@ -3,7 +3,9 @@ datatypeLibrary="http://www.w3.org/2001/XMLSchema-datatypes">
 
   <define name="StubRegion">
      <element name="StubRegion">
-        <text/>
+       <element name="input">
+         <text/>
+       </element>
      </element>
   </define>
 
