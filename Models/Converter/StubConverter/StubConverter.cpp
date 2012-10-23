@@ -3,7 +3,6 @@
 
 #include "Logger.h"
 #include "CycException.h"
-#include "InputXML.h"
 #include "StubConverter.h"
 
 /* --------------------
