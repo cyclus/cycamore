@@ -223,14 +223,14 @@ Transaction SourceFacility::buildTransaction()
   double min_amt = 0;
   double offer_amt = inventory_.quantity();
 
-  gen_rsrc_ptr offer_res = 
-    gen_rsrc_ptr(new GenericResource(out_commod_,"kg",offer_amt));
+  mat_rsrc_ptr trade_res = mat_rsrc_ptr(new Material(RecipeLibrary::Recipe(recipe())));
+  trade_res->setQuantity(offer_amt);
 
   Transaction trans(this, OFFER);
   trans.setCommod(out_commod_);
   trans.setMinFrac(min_amt/offer_amt);
   trans.setPrice(commod_price_);
-  trans.setResource(offer_res);
+  trans.setResource(trade_res);
 
   return trans;
 }
