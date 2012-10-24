@@ -100,7 +100,7 @@ void SinkFacility::handleTick(int time){
       Communicator* recipient = dynamic_cast<Communicator*>(market);
 
       // create a generic resource
-      gen_rsrc_ptr request_res = gen_rsrc_ptr(new GenericResource((*commod), "kg", requestAmt));
+      gen_rsrc_ptr request_res = gen_rsrc_ptr(new GenericResource("kg",*commod,requestAmt));
 
       // build the transaction and message
       Transaction trans(this, REQUEST);
