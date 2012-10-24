@@ -70,10 +70,10 @@
       <availableprototype>Source</availableprototype>
       <availableprototype>Sink</availableprototype>
       <initialfacilitylist>
-	<!-- <entry> -->
-	<!--   <prototype>Source</prototype> -->
-	<!--   <number>1</number> -->
-	<!-- </entry> -->
+	<entry>
+	  <prototype>Source</prototype>
+	  <number>1</number>
+	</entry>
 	<entry>
 	  <prototype>Sink</prototype>
 	  <number>1</number>
