@@ -440,13 +440,27 @@ void BatchReactor::interactWithMarket(std::string commod, double amt, TransType 
   // set the price
   double commod_price = 0;
   // request a generic resource
-  gen_rsrc_ptr trade_res = gen_rsrc_ptr(new GenericResource(commod, "kg", amt));
   // build the transaction and message
   Transaction trans(this, type);
   trans.setCommod(commod);
   trans.setMinFrac(1.0);
   trans.setPrice(commod_price);
-  trans.setResource(trade_res);
+
+  if (type == OFFER)
+    {
+      gen_rsrc_ptr trade_res = gen_rsrc_ptr(new GenericResource( "kg",commod, amt));
+      trans.setResource(trade_res);
+    }
+  else
+    {
+      mat_rsrc_ptr trade_res = mat_rsrc_ptr(new Material(RecipeLibrary::Recipe(in_recipe_)));
+      trade_res->setQuantity(amt);
+      trans.setResource(trade_res);
+
+      LOG(LEV_DEBUG1, "BatR") << "Requesting material: ";
+      trade_res->print();
+    }
+
   // log the event
   string text;
   if (type == OFFER) 
