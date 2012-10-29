@@ -198,6 +198,18 @@ class SourceFacility : public FacilityModel,
   /* --- */
 
  protected:
+  /* --- Transaction Methods --- */     
+  /**
+     builds a transaction 
+   */
+  Transaction buildTransaction();
+
+  /**
+     sends a transaction as an offer 
+   */
+  void sendOffer(Transaction trans);
+  /* --- */
+
   /* --- SourceFacility Members and Methods --- */
   /**
      This facility has only one output commodity 
@@ -237,16 +249,6 @@ class SourceFacility : public FacilityModel,
      generates a material
    */
   void generateMaterial();
-     
-  /**
-     builds a transaction 
-   */
-  Transaction buildTransaction();
-
-  /**
-     sends a transaction as an offer 
-   */
-  void sendOffer(Transaction trans);
   /* --- */
 };
 

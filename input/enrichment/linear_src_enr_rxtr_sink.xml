@@ -1,0 +1,200 @@
+<?xml version="1.0"?>
+<!-- 1 SourceFacility Source, 1 SinkFacility Sink -->
+
+<simulation>
+  <control>
+    <duration>12</duration>
+    <startmonth>1</startmonth>
+    <startyear>2000</startyear>
+    <simstart>0</simstart>
+    <decay>2</decay>
+  </control>
+
+  <commodity>
+    <name>natl_u</name>
+  </commodity>
+
+  <commodity>
+    <name>enriched_u</name>
+  </commodity>
+
+  <commodity>
+    <name>waste</name>
+  </commodity>
+
+  <market>
+    <name>natl_u_market</name>
+    <mktcommodity>natl_u</mktcommodity>
+    <model>
+      <NullMarket/>
+    </model>
+  </market>
+
+  <market>
+    <name>enr_u_market</name>
+    <mktcommodity>enriched_u</mktcommodity>
+    <model>
+      <NullMarket/>
+    </model>
+  </market>
+
+  <market>
+    <name>waste_market</name>
+    <mktcommodity>waste</mktcommodity>
+    <model>
+      <NullMarket/>
+    </model>
+  </market>
+
+  <facility>
+    <name>Source</name>
+    <model>
+      <SourceFacility>
+        <output>
+          <outcommodity>natl_u</outcommodity>
+          <output_capacity>1000</output_capacity>
+          <recipe>natl_u</recipe>
+        </output>
+      </SourceFacility>
+    </model>
+    <outcommodity>natl_u</outcommodity>
+  </facility>
+
+  <facility>
+    <name>Enrichment</name>
+    <model>
+      <EnrichmentFacility>
+        <input>
+          <incommodity>natl_u</incommodity>
+          <inrecipe>natl_u</inrecipe>
+        </input>
+        <output>
+          <outcommodity>enriched_u</outcommodity>
+          <tails_assay>0.003</tails_assay>
+        </output>
+      </EnrichmentFacility>
+    </model>
+    <incommodity>natl_u</incommodity>
+    <outcommodity>enriched_u</outcommodity>
+  </facility>
+
+  <facility>
+    <name>Reactor</name>
+    <model>
+      <BatchReactor>
+        <fuel_input>
+         <incommodity>enriched_u</incommodity>
+         <inrecipe>fuel_recipe</inrecipe>
+        </fuel_input>
+        <fuel_output>
+         <outcommodity>waste</outcommodity>
+         <outrecipe>used_fuel_recipe</outrecipe>
+        </fuel_output>
+        <cyclelength>1</cyclelength>
+        <coreloading>2</coreloading>
+        <batchespercore>1</batchespercore>
+        <commodity_production>
+          <commodity>power</commodity>
+          <capacity>10</capacity>
+          <cost>10</cost>
+        </commodity_production>
+      </BatchReactor>
+    </model>
+    <incommodity>enriched_u</incommodity>
+    <outcommodity>waste</outcommodity>
+  </facility>
+  
+  <facility>
+    <name>Sink</name>
+    <model>
+      <SinkFacility>
+        <input>
+          <commodities>
+            <incommodity>waste</incommodity>
+          </commodities>
+          <input_capacity>1000</input_capacity>
+        </input>
+      </SinkFacility>
+    </model>
+    <incommodity>waste</incommodity>
+  </facility>
+
+  <region>
+    <name>SingleRegion</name>
+    <allowedfacility>Source</allowedfacility>
+    <allowedfacility>Enrichment</allowedfacility>
+    <allowedfacility>Reactor</allowedfacility>
+    <allowedfacility>Sink</allowedfacility>
+    <model>
+      <GrowthRegion>
+        <commodity>
+          <name>power</name>
+          <demand>
+            <type>linear</type>
+            <parameters>10 0</parameters>
+          </demand>
+        </commodity>
+      </GrowthRegion>
+    </model>
+    <institution>
+      <name>SingleInstitution</name>
+      <availableprototype>Source</availableprototype>
+      <availableprototype>Enrichment</availableprototype>
+      <availableprototype>Reactor</availableprototype>
+      <availableprototype>Sink</availableprototype>
+      <initialfacilitylist>
+        <entry>
+          <prototype>Source</prototype>
+          <number>1</number>
+        </entry>
+        <entry>
+          <prototype>Enrichment</prototype>
+          <number>1</number>
+        </entry>
+        <entry>
+          <prototype>Sink</prototype>
+          <number>1</number>
+        </entry>
+      </initialfacilitylist>
+      <model>
+        <ManagerInst/>
+      </model>
+    </institution>
+  </region>
+
+  <recipe>
+    <name>natl_u</name>
+    <basis>atom</basis>
+    <isotope>
+      <id>92235</id>
+      <comp>0.7</comp>
+    </isotope>
+    <isotope>
+      <id>92238</id>
+      <comp>99.3</comp>
+    </isotope>
+  </recipe>
+
+  <recipe>
+    <name>fuel_recipe</name>
+    <basis>atom</basis>
+    <isotope>
+      <id>92235</id>
+      <comp>4.5</comp>
+    </isotope>
+    <isotope>
+      <id>92238</id>
+      <comp>95.5</comp>
+    </isotope>
+  </recipe>
+
+  <recipe>
+    <name>used_fuel_recipe</name>
+    <basis>atom</basis>
+    <isotope>
+      <id>1001</id>
+      <comp>100</comp>
+    </isotope>
+  </recipe>
+
+</simulation>

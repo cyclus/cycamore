@@ -4,6 +4,7 @@
 
 #include "NullMarket.h"
 
+#include "CycLimits.h"
 #include "Resource.h"
 
 using namespace std;
@@ -112,17 +113,18 @@ bool NullMarket::match_request(sortedMsgList::iterator request)
         msg_ptr maybe_offer = offerMsg->clone(); 
         maybe_offer->trans().resource()->setQuantity(requestAmt);
         maybe_offer->trans().matchWith(requestMsg->trans());
-
+        maybe_offer->trans().setResource(requestMsg->trans().resource());
         matchedOffers_.insert(offerMsg);
 
         orders_.push_back(maybe_offer);
 
         LOG(LEV_DEBUG2, "none!") << "NullMarket has resolved a match from "
-          << maybe_offer->trans().supplier()->ID()
-          << " to "
-          << maybe_offer->trans().requester()->ID()
-          << " for the amount:  " 
-          << maybe_offer->trans().resource()->quantity();
+                                 << maybe_offer->trans().supplier()->ID()
+                                 << " to "
+                                 << maybe_offer->trans().requester()->ID()
+                                 << " for " << maybe_offer->trans().resource()->quantity()
+                                 << " of ";
+        maybe_offer->trans().resource()->print();
 
         // reduce the offer amount
         offerAmt -= requestAmt;
@@ -130,7 +132,7 @@ bool NullMarket::match_request(sortedMsgList::iterator request)
         // if the residual is above threshold,
         // make a new offer with reduced amount
 
-        if(offerAmt > EPS_RSRC){
+        if(offerAmt > cyclus::eps()){
           msg_ptr new_offer = offerMsg->clone();
           new_offer->trans().resource()->setQuantity(offerAmt);
           receiveMessage(new_offer);
