@@ -4,6 +4,7 @@
 
 #include "NullMarket.h"
 
+#include "CycLimits.h"
 #include "Resource.h"
 
 using namespace std;
@@ -131,7 +132,7 @@ bool NullMarket::match_request(sortedMsgList::iterator request)
         // if the residual is above threshold,
         // make a new offer with reduced amount
 
-        if(offerAmt > EPS_RSRC){
+        if(offerAmt > cyclus::eps()){
           msg_ptr new_offer = offerMsg->clone();
           new_offer->trans().resource()->setQuantity(offerAmt);
           receiveMessage(new_offer);

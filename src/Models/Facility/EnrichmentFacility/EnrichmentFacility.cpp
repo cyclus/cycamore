@@ -6,6 +6,7 @@
 #include "QueryEngine.h"
 #include "Logger.h"
 #include "CycException.h"
+#include "CycLimits.h"
 #include "GenericResource.h"
 #include "Material.h"
 #include "Timer.h"
@@ -177,7 +178,7 @@ void EnrichmentFacility::makeRequest()
   double min_amt = 0;
   string commodity = in_commodity();
 
-  if (amt > EPS_KG)
+  if (amt > cyclus::eps())
     {
       LOG(LEV_INFO4, "EnrFac") << " requests "<< amt << " kg of " << commodity << ".";
 

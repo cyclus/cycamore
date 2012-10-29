@@ -11,6 +11,7 @@
 #include "GenericResource.h"
 #include "RecipeLibrary.h"
 #include "MarketModel.h"
+#include "CycLimits.h"
 
 using namespace std;
 using boost::lexical_cast;
@@ -414,7 +415,7 @@ bool BatchReactor::coreFilled()
   LOG(LEV_DEBUG2,"BReact") << "  * core capacity: " << inCore_.capacity();
   // @MJGFlag need to assert that the in core capacity must be > 0
   // 9/29/12 error with a negative in core capacity
-  return (abs(inCore_.quantity() - inCore_.capacity()) < EPS_KG);
+  return (abs(inCore_.quantity() - inCore_.capacity()) < cyclus::eps());
 }
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - 

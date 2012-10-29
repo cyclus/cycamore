@@ -7,6 +7,7 @@
 #include "RecipeLibrary.h"
 #include "GenericResource.h"
 #include "CycException.h"
+#include "CycLimits.h"
 #include "MarketModel.h"
 
 #include <sstream>
@@ -22,8 +23,7 @@ SourceFacility::SourceFacility() :
   out_commod_(""), 
   recipe_name_(""), 
   commod_price_(0), 
-  capacity_(numeric_limits<double>::max()) 
-{
+  capacity_(numeric_limits<double>::max()) {
   ordersWaiting_ = deque<msg_ptr>();
   inventory_ = MatBuff();
   setMaxInventorySize(numeric_limits<double>::max());
@@ -103,7 +103,7 @@ void SourceFacility::handleTock(int time){
   // send material if you have it now
   while (!ordersWaiting_.empty()) {
     Transaction order = ordersWaiting_.front()->trans();
-    if (order.resource()->quantity() - inventory_.quantity() > EPS_KG) {
+    if (order.resource()->quantity() - inventory_.quantity() > cyclus::eps()) {
       LOG(LEV_INFO3, "SrcFac") << "Not enough inventory. Waitlisting remaining orders.";
       break;
     } else {
@@ -121,87 +121,72 @@ void SourceFacility::handleTock(int time){
 }
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - 
-void SourceFacility::receiveMessage(msg_ptr msg)
-{
+void SourceFacility::receiveMessage(msg_ptr msg) {
   // is this a message from on high? 
-  if(msg->trans().supplier() == this)
-    {
+  if(msg->trans().supplier() == this) {
     // file the order
-      ordersWaiting_.push_front(msg);
-      LOG(LEV_INFO5, "SrcFac") << name() << " just received an order.";
-    } 
-  else 
-    {
-      throw CycException("SourceFacility is not the supplier of this msg.");
-    }
+    ordersWaiting_.push_front(msg);
+    LOG(LEV_INFO5, "SrcFac") << name() << " just received an order.";
+  } else {
+    throw CycException("SourceFacility is not the supplier of this msg.");
+  }
 }
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - 
-vector<rsrc_ptr> SourceFacility::removeResource(Transaction order) 
-{
+vector<rsrc_ptr> SourceFacility::removeResource(Transaction order) {
   return MatBuff::toRes(inventory_.popQty(order.resource()->quantity()));
 }
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - 
-void SourceFacility::setCommodity(std::string name) 
-{
+void SourceFacility::setCommodity(std::string name) {
   out_commod_ = name;
 }
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - 
-std::string SourceFacility::commodity() 
-{
+std::string SourceFacility::commodity() {
   return out_commod_;
 }
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - 
-void SourceFacility::setCapacity(double capacity) 
-{
+void SourceFacility::setCapacity(double capacity) {
   capacity_ = capacity;
 }
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - 
-double SourceFacility::capacity() 
-{
+double SourceFacility::capacity() {
   return capacity_;
 }
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - 
-void SourceFacility::setRecipe(std::string name) 
-{
+void SourceFacility::setRecipe(std::string name) {
   recipe_name_ = name;
 }
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - 
-std::string SourceFacility::recipe() 
-{
+std::string SourceFacility::recipe() {
   return recipe_name_;
 }
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - 
-void SourceFacility::setMaxInventorySize(double size) 
-{
+void SourceFacility::setMaxInventorySize(double size) {
   inventory_.setCapacity(size);
 }
   
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - 
-double SourceFacility::maxInventorySize() 
-{
+double SourceFacility::maxInventorySize() {
   return inventory_.capacity();
 }
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - 
-double SourceFacility::inventorySize() 
-{
+double SourceFacility::inventorySize() {
   return inventory_.quantity();
 }
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - 
-void SourceFacility::generateMaterial() 
-{
+void SourceFacility::generateMaterial() {
 
   double empty_space = inventory_.space();
-  if (empty_space < EPS_KG) {
+  if (empty_space < cyclus::eps()) {
     return; // no room
   }
 
@@ -217,8 +202,7 @@ void SourceFacility::generateMaterial()
 }
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - 
-Transaction SourceFacility::buildTransaction() 
-{
+Transaction SourceFacility::buildTransaction() {
   // there is no minimum amount a source facility may send
   double min_amt = 0;
   double offer_amt = inventory_.quantity();
@@ -236,8 +220,7 @@ Transaction SourceFacility::buildTransaction()
 }
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - 
-void SourceFacility::sendOffer(Transaction trans) 
-{
+void SourceFacility::sendOffer(Transaction trans) {
   MarketModel* market = MarketModel::marketForCommod(out_commod_);
 
   Communicator* recipient = dynamic_cast<Communicator*>(market);
@@ -247,13 +230,11 @@ void SourceFacility::sendOffer(Transaction trans)
 }
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - 
-extern "C" Model* constructSourceFacility() 
-{
+extern "C" Model* constructSourceFacility() {
   return new SourceFacility();
 }
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-extern "C" void destructSourceFacility(Model* model) 
-{
+extern "C" void destructSourceFacility(Model* model) {
   delete model;
 }

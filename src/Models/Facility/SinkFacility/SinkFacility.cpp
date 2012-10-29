@@ -10,6 +10,7 @@
 #include "Logger.h"
 #include "GenericResource.h"
 #include "CycException.h"
+#include "CycLimits.h"
 #include "MarketModel.h"
 
 using namespace std;
@@ -18,12 +19,10 @@ using boost::lexical_cast;
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - 
 SinkFacility::SinkFacility() :
   commod_price_(0), 
-  capacity_(numeric_limits<double>::max()) 
-{}
+  capacity_(numeric_limits<double>::max()) {}
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - 
-SinkFacility::~SinkFacility() 
-{}
+SinkFacility::~SinkFacility() {}
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - 
 void SinkFacility::initModuleMembers(QueryEngine* qe) {
@@ -88,7 +87,7 @@ void SinkFacility::handleTick(int time){
   double minAmt = 0;
 
 
-  if (requestAmt>EPS_KG){
+  if (requestAmt>cyclus::eps()){
 
     // for each potential commodity, make a request
     for (vector<string>::iterator commod = in_commods_.begin();
