@@ -1,0 +1,23 @@
+<grammar xmlns="http://relaxng.org/ns/structure/1.0"
+datatypeLibrary="http://www.w3.org/2001/XMLSchema-datatypes">
+
+  <define name="EnrichmentFacility">
+     <element name="EnrichmentFacility"> 
+       <element name ="input">
+         <ref name="incommodity"/>
+         <ref name="inrecipe"/>
+         <optional>
+           <ref name="inventorysize"/>
+         </optional>
+       </element>
+       <element name ="output">
+         <ref name="outcommodity"/>
+          <element name ="tails_assay">
+            <data type="double"/>
+          </element>
+       </element>
+     </element>
+  </define>
+
+
+</grammar>

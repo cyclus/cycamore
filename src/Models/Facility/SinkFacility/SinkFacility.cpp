@@ -10,6 +10,7 @@
 #include "Logger.h"
 #include "GenericResource.h"
 #include "CycException.h"
+#include "CycLimits.h"
 #include "MarketModel.h"
 
 using namespace std;
@@ -18,11 +19,7 @@ using boost::lexical_cast;
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - 
 SinkFacility::SinkFacility() :
   commod_price_(0), 
-  capacity_(numeric_limits<double>::max()) 
-{
-  in_commods_ = vector<string>();
-  inventory_ = MatBuff();
-}
+  capacity_(numeric_limits<double>::max()) {}
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - 
 SinkFacility::~SinkFacility() {}
@@ -90,7 +87,7 @@ void SinkFacility::handleTick(int time){
   double minAmt = 0;
 
 
-  if (requestAmt>EPS_KG){
+  if (requestAmt>cyclus::eps()){
 
     // for each potential commodity, make a request
     for (vector<string>::iterator commod = in_commods_.begin();
@@ -102,7 +99,7 @@ void SinkFacility::handleTick(int time){
       Communicator* recipient = dynamic_cast<Communicator*>(market);
 
       // create a generic resource
-      gen_rsrc_ptr request_res = gen_rsrc_ptr(new GenericResource((*commod), "kg", requestAmt));
+      gen_rsrc_ptr request_res = gen_rsrc_ptr(new GenericResource("kg",*commod,requestAmt));
 
       // build the transaction and message
       Transaction trans(this, REQUEST);

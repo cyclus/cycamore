@@ -7,6 +7,7 @@
 #include "RecipeLibrary.h"
 #include "GenericResource.h"
 #include "CycException.h"
+#include "CycLimits.h"
 #include "MarketModel.h"
 
 #include <sstream>
@@ -22,8 +23,7 @@ SourceFacility::SourceFacility() :
   out_commod_(""), 
   recipe_name_(""), 
   commod_price_(0), 
-  capacity_(numeric_limits<double>::max()) 
-{
+  capacity_(numeric_limits<double>::max()) {
   ordersWaiting_ = deque<msg_ptr>();
   inventory_ = MatBuff();
   setMaxInventorySize(numeric_limits<double>::max());
@@ -103,7 +103,7 @@ void SourceFacility::handleTock(int time){
   // send material if you have it now
   while (!ordersWaiting_.empty()) {
     Transaction order = ordersWaiting_.front()->trans();
-    if (order.resource()->quantity() - inventory_.quantity() > EPS_KG) {
+    if (order.resource()->quantity() - inventory_.quantity() > cyclus::eps()) {
       LOG(LEV_INFO3, "SrcFac") << "Not enough inventory. Waitlisting remaining orders.";
       break;
     } else {
@@ -121,10 +121,9 @@ void SourceFacility::handleTock(int time){
 }
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - 
-void SourceFacility::receiveMessage(msg_ptr msg){
-
+void SourceFacility::receiveMessage(msg_ptr msg) {
   // is this a message from on high? 
-  if(msg->trans().supplier() == this){
+  if(msg->trans().supplier() == this) {
     // file the order
     ordersWaiting_.push_front(msg);
     LOG(LEV_INFO5, "SrcFac") << name() << " just received an order.";
@@ -187,7 +186,7 @@ double SourceFacility::inventorySize() {
 void SourceFacility::generateMaterial() {
 
   double empty_space = inventory_.space();
-  if (empty_space < EPS_KG) {
+  if (empty_space < cyclus::eps()) {
     return; // no room
   }
 
@@ -208,14 +207,14 @@ Transaction SourceFacility::buildTransaction() {
   double min_amt = 0;
   double offer_amt = inventory_.quantity();
 
-  gen_rsrc_ptr offer_res = 
-    gen_rsrc_ptr(new GenericResource(out_commod_,"kg",offer_amt));
+  mat_rsrc_ptr trade_res = mat_rsrc_ptr(new Material(RecipeLibrary::Recipe(recipe())));
+  trade_res->setQuantity(offer_amt);
 
   Transaction trans(this, OFFER);
   trans.setCommod(out_commod_);
   trans.setMinFrac(min_amt/offer_amt);
   trans.setPrice(commod_price_);
-  trans.setResource(offer_res);
+  trans.setResource(trade_res);
 
   return trans;
 }
@@ -237,5 +236,5 @@ extern "C" Model* constructSourceFacility() {
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 extern "C" void destructSourceFacility(Model* model) {
-      delete model;
+  delete model;
 }

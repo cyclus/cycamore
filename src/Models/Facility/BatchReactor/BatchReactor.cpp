@@ -11,6 +11,7 @@
 #include "GenericResource.h"
 #include "RecipeLibrary.h"
 #include "MarketModel.h"
+#include "CycLimits.h"
 
 using namespace std;
 using boost::lexical_cast;
@@ -414,7 +415,7 @@ bool BatchReactor::coreFilled()
   LOG(LEV_DEBUG2,"BReact") << "  * core capacity: " << inCore_.capacity();
   // @MJGFlag need to assert that the in core capacity must be > 0
   // 9/29/12 error with a negative in core capacity
-  return (abs(inCore_.quantity() - inCore_.capacity()) < EPS_KG);
+  return (abs(inCore_.quantity() - inCore_.capacity()) < cyclus::eps());
 }
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - 
@@ -440,13 +441,27 @@ void BatchReactor::interactWithMarket(std::string commod, double amt, TransType 
   // set the price
   double commod_price = 0;
   // request a generic resource
-  gen_rsrc_ptr trade_res = gen_rsrc_ptr(new GenericResource(commod, "kg", amt));
   // build the transaction and message
   Transaction trans(this, type);
   trans.setCommod(commod);
   trans.setMinFrac(1.0);
   trans.setPrice(commod_price);
-  trans.setResource(trade_res);
+
+  if (type == OFFER)
+    {
+      gen_rsrc_ptr trade_res = gen_rsrc_ptr(new GenericResource( "kg",commod, amt));
+      trans.setResource(trade_res);
+    }
+  else
+    {
+      mat_rsrc_ptr trade_res = mat_rsrc_ptr(new Material(RecipeLibrary::Recipe(in_recipe_)));
+      trade_res->setQuantity(amt);
+      trans.setResource(trade_res);
+
+      LOG(LEV_DEBUG1, "BatR") << "Requesting material: ";
+      trade_res->print();
+    }
+
   // log the event
   string text;
   if (type == OFFER) 
