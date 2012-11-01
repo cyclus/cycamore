@@ -308,13 +308,21 @@ class BatchReactor : public FacilityModel, public SupplyDemand::CommodityProduce
 
   /**
      move a certain amount of fuel from one buffer to another
+     @param fromBuff the buffer to move fuel from
+     @param toBuff the buffer to move fuel to
+     @param amt the amount of fuel to move
   */
   void moveFuel(MatBuff& fromBuff, MatBuff& toBuff, double amt);
 
   /**
-     move all fuel from one buffer to another
+     moves and amount of fuel out of the core. this action will remove
+     the amount of fuel from the core and add a different amount to
+     the recieving buffer by a factor of 
+     out_core_loading()/in_core_loading(). The recipe will also be 
+     changed to out_recipe();
+     @param amt the amount of fuel to offload
   */
-  void moveFuel(MatBuff& fromBuff, MatBuff& toBuff);
+  void offLoadFuel(double amt);
 
   /**
      load fuel from preCore_ into inCore_

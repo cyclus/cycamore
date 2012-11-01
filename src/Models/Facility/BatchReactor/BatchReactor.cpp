@@ -524,23 +524,25 @@ void BatchReactor::moveFuel(MatBuff& fromBuff, MatBuff& toBuff, double amt)
   vector<mat_rsrc_ptr> to_move = fromBuff.popQty(amt);
   for (int i = 0; i < to_move.size(); i++) 
     {
-      mat_rsrc_ptr newMat = mat_rsrc_ptr(new Material(RecipeLibrary::Recipe(out_recipe_)));
-      newMat->setQuantity(to_move.at(i)->quantity());
-      toBuff.pushOne(newMat);
+      toBuff.pushOne(to_move.at(i));
     }
 }
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - 
-void BatchReactor::moveFuel(MatBuff& fromBuff, MatBuff& toBuff) 
+void BatchReactor::offLoadFuel(double amt) 
 {
-  if (!fromBuff.empty()) // @MJGFlag this check shouldn't have to be made
-    moveFuel(fromBuff,toBuff,fromBuff.quantity());
+  inCore_.popQty(amt);
+  double factor = out_core_loading() / in_core_loading();
+  double out_amount = amt * factor;
+  mat_rsrc_ptr out_fuel = mat_rsrc_ptr(new Material(RecipeLibrary::Recipe(out_recipe())));
+  out_fuel->setQuantity(out_amount);
+  postCore_.pushOne(out_fuel);
 }
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - 
 void BatchReactor::loadCore() 
 {
-  moveFuel(preCore_,inCore_);
+  moveFuel(preCore_,inCore_,preCore_.quantity());
   LOG(LEV_DEBUG2, "BReact") << "BatchReactor " << name() 
                             << " moved fuel into the core:";
   LOG(LEV_DEBUG2, "BReact") << "  precore level: " << preCore_.quantity();
@@ -550,7 +552,8 @@ void BatchReactor::loadCore()
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - 
 void BatchReactor::offloadBatch() 
 {
-  moveFuel(inCore_,postCore_,batchLoading());
+  offLoadFuel(batchLoading());
+  
   LOG(LEV_DEBUG2, "BReact") << "BatchReactor " << name() 
                             << " removed a batch of fuel from the core:";
   LOG(LEV_DEBUG2, "BReact") << "  incore level: " << inCore_.quantity();
@@ -560,7 +563,7 @@ void BatchReactor::offloadBatch()
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - 
 void BatchReactor::offloadCore() 
 {
-  moveFuel(inCore_,postCore_);
+  offLoadFuel(inCore_.quantity());
   LOG(LEV_DEBUG2, "BReact") << "BatchReactor " << name() 
                             << " removed a core of fuel from the core:";
   LOG(LEV_DEBUG2, "BReact") << "  precore level: " << preCore_.quantity();
