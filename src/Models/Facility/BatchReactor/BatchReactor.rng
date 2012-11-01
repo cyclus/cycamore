@@ -18,6 +18,11 @@ datatypeLibrary="http://www.w3.org/2001/XMLSchema-datatypes">
         <element name="cyclelength">
           <data type="nonNegativeInteger"/>
         </element>
+        <optional>
+          <element name ="refueldelay">
+            <data type="nonNegativeInteger"/>
+          </element>
+        </optional>
         <element name ="incoreloading">
           <data type="double"/>
         </element>

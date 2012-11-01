@@ -50,6 +50,7 @@ void BatchReactorTest::initSrcFacility()
      << "    <outrecipe>" << out_recipe << "</outrecipe>"
      << "  </fuel_output>"
      << "  <cyclelength>" << lencycle << "</cyclelength>"
+     << "  <refueldelay>" << lencycle << "</refueldelay>"
      << "  <incoreloading>" << in_loadcore << "</incoreloading>"
      << "  <outcoreloading>" << out_loadcore << "</outcoreloading>"
      << "  <batchespercore>" << nbatch << "</batchespercore>"
@@ -83,6 +84,7 @@ void BatchReactorTest::initWorld()
 TEST_F(BatchReactorTest,initialstate) 
 {
   EXPECT_EQ(lencycle,src_facility->cycle_length());
+  EXPECT_EQ(lencycle,src_facility->refuel_delay());
   EXPECT_EQ(in_loadcore,src_facility->in_core_loading());
   EXPECT_EQ(out_loadcore,src_facility->out_core_loading());
   EXPECT_EQ(nbatch,src_facility->batches_per_core());
@@ -104,6 +106,7 @@ TEST_F(BatchReactorTest,clone)
   src_facility->setModelImpl("BatchReactor");
   BatchReactor* new_facility = dynamic_cast<BatchReactor*>(src_facility->clone());
   EXPECT_EQ( lencycle, new_facility->cycle_length() );
+  EXPECT_EQ( lencycle, new_facility->refuel_delay() );
   EXPECT_EQ( in_loadcore, new_facility->in_core_loading() );
   EXPECT_EQ( out_loadcore, new_facility->out_core_loading() );
   EXPECT_EQ( nbatch, new_facility->batches_per_core() );

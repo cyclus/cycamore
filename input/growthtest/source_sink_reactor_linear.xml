@@ -58,7 +58,7 @@
        </fuel_output>
 	<cyclelength>1</cyclelength>
 	<incoreloading>2</incoreloading>
-	<outcoreloading>1</outcoreloading>
+	<outcoreloading>2</outcoreloading>
 	<batchespercore>1</batchespercore>
         <commodity_production>
           <commodity>power</commodity>

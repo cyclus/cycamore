@@ -14,7 +14,18 @@
 /**
    Defines all possible phases this facility can be in
  */
-enum Phase {INIT, BEGIN, OPERATION, REFUEL, WAITING, END};
+enum Phase {INIT, BEGIN, OPERATION, REFUEL, REFUEL_DELAY, WAITING, END};
+
+/* /\** */
+/*    information about an entry into the spent fuel pool */
+/*  *\/ */
+/* struct PoolEntry */
+/* { */
+/*   int exit_time; */
+/*   mat_rsrc_ptr mat; */
+  
+/* PoolEntry(int time, mat_rsr_ptr mat) : exit_time(time), mat(mat_ptr) {}; */
+/* }; */
 
 /**
    @class BatchReactor 
@@ -114,6 +125,17 @@ class BatchReactor : public FacilityModel, public SupplyDemand::CommodityProduce
      @return the cycle length
    */
   int cycle_length();
+
+  /**
+     set the time required to refuel the reactor 
+     @param time the refuel delay time
+   */
+  void set_refuel_delay(int time);
+
+  /**
+     @return the refuel delay time
+   */
+  int refuel_delay();
 
   /**
      set the input core loading
@@ -219,6 +241,12 @@ class BatchReactor : public FacilityModel, public SupplyDemand::CommodityProduce
 
   /// The time between batch reloadings. 
   int cycle_length_;
+
+  /// The time required to refuel the reactor
+  int refuel_delay_;
+
+  /// The time the present reactor has spent in phase REFUEL_DELAY
+  int time_delayed_;
 
   /// batches per core
   int batches_per_core_;

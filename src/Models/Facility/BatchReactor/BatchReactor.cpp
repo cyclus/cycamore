@@ -23,6 +23,7 @@ map<Phase,string> BatchReactor::phase_names_ = map<Phase,string>();
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - 
 BatchReactor::BatchReactor() : 
   cycle_length_(1), 
+  refuel_delay_(0), 
   batches_per_core_(1), 
   in_core_loading_(1), 
   out_core_loading_(1), 
@@ -58,6 +59,13 @@ void BatchReactor::initModuleMembers(QueryEngine* qe)
   data = qe->getElementContent("cyclelength"); 
   set_cycle_length(lexical_cast<int>(data));
 
+  try 
+    {
+      data = qe->getElementContent("refueldelay"); 
+      set_refuel_delay(lexical_cast<double>(data));  
+    }
+  catch (CycNullQueryException e) {}
+
   data = qe->getElementContent("incoreloading"); 
   set_in_core_loading(lexical_cast<double>(data));  
  
@@ -90,6 +98,7 @@ std::string BatchReactor::str()
   ss << FacilityModel::str();
   ss << " has facility parameters {"
      << ", Cycle Length = " << cycle_length()
+     << ", Refuel Delay = " << refuel_delay()
      << ", InCore Loading = " << in_core_loading()
      << ", OutCore Loading = " << out_core_loading()
      << ", Batches Per Core = " << batches_per_core()
@@ -104,6 +113,7 @@ void BatchReactor::cloneModuleMembersFrom(FacilityModel* sourceModel)
 {
   BatchReactor* source = dynamic_cast<BatchReactor*>(sourceModel);
   set_cycle_length(source->cycle_length());
+  set_refuel_delay(source->refuel_delay());
   set_in_core_loading(source->in_core_loading());
   set_out_core_loading(source->out_core_loading());
   set_batches_per_core(source->batches_per_core());
@@ -150,12 +160,15 @@ void BatchReactor::handleTick(int time)
     {
     case INIT:
       // intentional fall through
-   
+
     case OPERATION:
       break;
    
     case REFUEL:
       offloadBatch();
+
+    case REFUEL_DELAY:
+      // intentional fall through
 
     case WAITING:
       // intentional fall through
@@ -163,7 +176,8 @@ void BatchReactor::handleTick(int time)
     case BEGIN:
       fuel_quantity = preCore_.quantity() + inCore_.quantity();
       request = in_core_loading() - fuel_quantity;
-      makeRequest(request);
+      if (request > cyclus::eps())
+        makeRequest(request);
       break;
     
     case END:
@@ -205,20 +219,32 @@ void BatchReactor::handleTock(int time)
       // intentional fall through
     
     case WAITING:
-      // intentional fall through
-    
-    case REFUEL:
       loadCore();
       if ( coreFilled() ) 
         {
           setPhase(OPERATION);
         } 
-      else 
+      else
         {
           setPhase(WAITING);
         }
-      break; 
-      
+      break;
+
+    case REFUEL:
+      setPhase(REFUEL_DELAY);
+      time_delayed_ = 0;
+    case REFUEL_DELAY:
+      loadCore();
+      if ( time_delayed_ >= refuel_delay() && coreFilled() ) 
+        {
+          setPhase(OPERATION);
+        }
+      else
+        {
+          ++time_delayed_;
+        }
+      break;
+
     case OPERATION:
       cycle_timer_++;
       if (cycleComplete())
@@ -292,6 +318,18 @@ void BatchReactor::set_cycle_length(int time)
 int BatchReactor::cycle_length() 
 { 
   return cycle_length_;
+}
+
+//- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - 
+void BatchReactor::set_refuel_delay(int time) 
+{
+  refuel_delay_ = time;
+}
+
+//- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - 
+int BatchReactor::refuel_delay() 
+{ 
+  return refuel_delay_;
 }
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - 
@@ -419,6 +457,7 @@ void BatchReactor::setUpPhaseNames()
   phase_names_.insert(make_pair(BEGIN,"beginning"));
   phase_names_.insert(make_pair(OPERATION,"operation"));
   phase_names_.insert(make_pair(REFUEL,"refueling"));
+  phase_names_.insert(make_pair(REFUEL_DELAY,"refueling with delay"));
   phase_names_.insert(make_pair(WAITING,"waiting for fuel"));
   phase_names_.insert(make_pair(END,"ending"));
 }
@@ -542,11 +581,14 @@ void BatchReactor::offLoadFuel(double amt)
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - 
 void BatchReactor::loadCore() 
 {
-  moveFuel(preCore_,inCore_,preCore_.quantity());
-  LOG(LEV_DEBUG2, "BReact") << "BatchReactor " << name() 
-                            << " moved fuel into the core:";
-  LOG(LEV_DEBUG2, "BReact") << "  precore level: " << preCore_.quantity();
-  LOG(LEV_DEBUG2, "BReact") << "  incore level: " << inCore_.quantity();
+  if (preCore_.quantity() > cyclus::eps())
+    {
+      moveFuel(preCore_,inCore_,preCore_.quantity());
+      LOG(LEV_DEBUG2, "BReact") << "BatchReactor " << name() 
+                                << " moved fuel into the core:";
+      LOG(LEV_DEBUG2, "BReact") << "  precore level: " << preCore_.quantity();
+      LOG(LEV_DEBUG2, "BReact") << "  incore level: " << inCore_.quantity();
+    }
 }
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - 
