@@ -24,10 +24,11 @@ map<Phase,string> BatchReactor::phase_names_ = map<Phase,string>();
 BatchReactor::BatchReactor() : 
   cycle_length_(1), 
   batches_per_core_(1), 
-  core_loading_(1), 
-  in_commod_(""), 
+  in_core_loading_(1), 
+  out_core_loading_(1), 
+  in_commodity_(""), 
   in_recipe_(""), 
-  out_commod_(""), 
+  out_commodity_(""), 
   out_recipe_(""),
   cycle_timer_(1), 
   phase_(INIT)
@@ -46,20 +47,32 @@ BatchReactor::~BatchReactor() {}
 void BatchReactor::initModuleMembers(QueryEngine* qe) 
 {
   QueryEngine* input = qe->queryElement("fuel_input");
-  setInCommodity(input->getElementContent("incommodity"));
-  setInRecipe(input->getElementContent("inrecipe"));
+  set_in_commodity(input->getElementContent("incommodity"));
+  set_in_recipe(input->getElementContent("inrecipe"));
 
   QueryEngine* output = qe->queryElement("fuel_output");
-  setOutCommodity(output->getElementContent("outcommodity"));
-  setOutRecipe(output->getElementContent("outrecipe"));
+  set_out_commodity(output->getElementContent("outcommodity"));
+  set_out_recipe(output->getElementContent("outrecipe"));
   
   string data;
   data = qe->getElementContent("cyclelength"); 
-  setCycleLength(lexical_cast<int>(data));
-  data = qe->getElementContent("coreloading"); 
-  setCoreLoading(lexical_cast<double>(data));  
+  set_cycle_length(lexical_cast<int>(data));
+
+  data = qe->getElementContent("incoreloading"); 
+  set_in_core_loading(lexical_cast<double>(data));  
+ 
+  try 
+    {
+      data = qe->getElementContent("outcoreloading"); 
+      set_out_core_loading(lexical_cast<double>(data));  
+    }
+  catch (CycNullQueryException e)
+    {
+      set_out_core_loading(in_core_loading());
+    }
+
   data = qe->getElementContent("batchespercore"); 
-  setNBatches(lexical_cast<int>(data));
+  set_batches_per_core(lexical_cast<int>(data));
 
   QueryEngine* commodity = qe->queryElement("commodity_production");
   Commodity commod(commodity->getElementContent("commodity"));
@@ -76,11 +89,12 @@ std::string BatchReactor::str()
   std::stringstream ss;
   ss << FacilityModel::str();
   ss << " has facility parameters {"
-     << ", Cycle Length = " << cycleLength()
-     << ", Core Loading = " << coreLoading()
-     << ", Batches Per Core = " << nBatches()
-     << ", converts commodity '" << inCommodity()
-     << "' into commodity '" << outCommodity()
+     << ", Cycle Length = " << cycle_length()
+     << ", InCore Loading = " << in_core_loading()
+     << ", OutCore Loading = " << out_core_loading()
+     << ", Batches Per Core = " << batches_per_core()
+     << ", converts commodity '" << in_commodity()
+     << "' into commodity '" << out_commodity()
      << "'}";
   return ss.str();
 }
@@ -89,26 +103,28 @@ std::string BatchReactor::str()
 void BatchReactor::cloneModuleMembersFrom(FacilityModel* sourceModel) 
 {
   BatchReactor* source = dynamic_cast<BatchReactor*>(sourceModel);
-  setCycleLength(source->cycleLength());
-  setCoreLoading(source->coreLoading());
-  setNBatches(source->nBatches());
-  setInCommodity(source->inCommodity());
-  setOutCommodity(source->outCommodity());
-  setInRecipe(source->inRecipe());
-  setOutRecipe(source->outRecipe());
+  set_cycle_length(source->cycle_length());
+  set_in_core_loading(source->in_core_loading());
+  set_out_core_loading(source->out_core_loading());
+  set_batches_per_core(source->batches_per_core());
+  set_in_commodity(source->in_commodity());
+  set_out_commodity(source->out_commodity());
+  set_in_recipe(source->in_recipe());
+  set_out_recipe(source->out_recipe());
   copyProducedCommoditiesFrom(source);
 }
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - 
 void BatchReactor::enterSimulationAsModule() 
 {
-  preCore_.setCapacity(coreLoading());
-  inCore_.setCapacity(coreLoading());  
+  preCore_.setCapacity(in_core_loading());
+  inCore_.setCapacity(in_core_loading());  
   resetCycleTimer();
   setPhase(BEGIN);
   LOG(LEV_DEBUG2,"BReact") << "Batch Reactor " << name() 
                            << " is entering the simuluation with members:";
-  LOG(LEV_DEBUG2,"BReact") << "  * core loading: " << coreLoading();
+  LOG(LEV_DEBUG2,"BReact") << "  * in core loading: " << in_core_loading();
+  LOG(LEV_DEBUG2,"BReact") << "  * out core loading: " << out_core_loading();
   LOG(LEV_DEBUG2,"BReact") << "  * pre core capacity: " << preCore_.capacity();
   LOG(LEV_DEBUG2,"BReact") << "  * in core capacity: " << inCore_.capacity();
   LOG(LEV_DEBUG2,"BReact") << "  * cycle timer: " << cycle_timer_;
@@ -146,7 +162,7 @@ void BatchReactor::handleTick(int time)
     
     case BEGIN:
       fuel_quantity = preCore_.quantity() + inCore_.quantity();
-      request = coreLoading() - fuel_quantity;
+      request = in_core_loading() - fuel_quantity;
       makeRequest(request);
       break;
     
@@ -267,37 +283,49 @@ void BatchReactor::addResource(Transaction trans,
 }
                   
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - 
-void BatchReactor::setCycleLength(int time) 
+void BatchReactor::set_cycle_length(int time) 
 {
   cycle_length_ = time;
 }
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - 
-int BatchReactor::cycleLength() 
+int BatchReactor::cycle_length() 
 { 
   return cycle_length_;
 }
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - 
-void BatchReactor::setCoreLoading(double size) 
+void BatchReactor::set_in_core_loading(double size) 
 {
-  core_loading_ = size;
+  in_core_loading_ = size;
 }
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - 
-double BatchReactor::coreLoading() 
+double BatchReactor::in_core_loading() 
 {
-  return core_loading_;
+  return in_core_loading_;
 }
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - 
-void BatchReactor::setNBatches(int n) 
+void BatchReactor::set_out_core_loading(double size) 
+{
+  out_core_loading_ = size;
+}
+
+//- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - 
+double BatchReactor::out_core_loading() 
+{
+  return out_core_loading_;
+}
+
+//- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - 
+void BatchReactor::set_batches_per_core(int n) 
 {
   batches_per_core_ = n;
 }
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - 
-int BatchReactor::nBatches() 
+int BatchReactor::batches_per_core() 
 {
   return batches_per_core_;
 }
@@ -305,53 +333,53 @@ int BatchReactor::nBatches()
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - 
 double BatchReactor::batchLoading() 
 {
-  return core_loading_ / batches_per_core_;
+  return in_core_loading_ / batches_per_core_;
 }
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - 
-void BatchReactor::setInCommodity(std::string name) 
+void BatchReactor::set_in_commodity(std::string name) 
 {
-  in_commod_ = name;
+  in_commodity_ = name;
 }
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - 
-std::string BatchReactor::inCommodity() 
+std::string BatchReactor::in_commodity() 
 {
-  return in_commod_;
+  return in_commodity_;
 }
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - 
-void BatchReactor::setInRecipe(std::string name) 
+void BatchReactor::set_in_recipe(std::string name) 
 {
   in_recipe_ = name;
 }
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - 
-std::string BatchReactor::inRecipe() 
+std::string BatchReactor::in_recipe() 
 {
   return in_recipe_;
 }
   
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - 
-void BatchReactor::setOutCommodity(std::string name) 
+void BatchReactor::set_out_commodity(std::string name) 
 {
-  out_commod_ = name;
+  out_commodity_ = name;
 }
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - 
-std::string BatchReactor::outCommodity() 
+std::string BatchReactor::out_commodity() 
 {
-  return out_commod_;
+  return out_commodity_;
 }
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - 
-void BatchReactor::setOutRecipe(std::string name) 
+void BatchReactor::set_out_recipe(std::string name) 
 {
   out_recipe_ = name;
 }
   
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - 
-std::string BatchReactor::outRecipe() 
+std::string BatchReactor::out_recipe() 
 {
   return out_recipe_;
 }
@@ -421,14 +449,14 @@ bool BatchReactor::coreFilled()
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - 
 void BatchReactor::makeRequest(double amt) 
 {
-  interactWithMarket(inCommodity(),amt,REQUEST);
+  interactWithMarket(in_commodity(),amt,REQUEST);
 }
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - 
 void BatchReactor::makeOffers() 
 {
   if (!postCore_.empty())
-    interactWithMarket(outCommodity(),postCore_.quantity(),OFFER);
+    interactWithMarket(out_commodity(),postCore_.quantity(),OFFER);
 }
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - 
@@ -439,13 +467,13 @@ void BatchReactor::interactWithMarket(std::string commod, double amt, TransType 
   MarketModel* market = MarketModel::marketForCommod(commod);
   Communicator* recipient = dynamic_cast<Communicator*>(market);
   // set the price
-  double commod_price = 0;
+  double commodity_price = 0;
   // request a generic resource
   // build the transaction and message
   Transaction trans(this, type);
   trans.setCommod(commod);
   trans.setMinFrac(1.0);
-  trans.setPrice(commod_price);
+  trans.setPrice(commodity_price);
 
   if (type == OFFER)
     {

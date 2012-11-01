@@ -18,9 +18,14 @@ datatypeLibrary="http://www.w3.org/2001/XMLSchema-datatypes">
         <element name="cyclelength">
           <data type="nonNegativeInteger"/>
         </element>
-        <element name ="coreloading">
+        <element name ="incoreloading">
           <data type="double"/>
         </element>
+        <optional>
+          <element name ="outcoreloading">
+            <data type="double"/>
+          </element>
+        </optional>
         <element name="batchespercore">
           <data type="nonNegativeInteger"/>
         </element>
