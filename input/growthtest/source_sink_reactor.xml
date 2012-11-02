@@ -57,7 +57,9 @@
          <outrecipe>commod_recipe</outrecipe>
        </fuel_output>
 	<cyclelength>1</cyclelength>
-	<coreloading>2</coreloading>
+        <refueldelay>1</refueldelay>	
+        <incoreloading>2</incoreloading>
+	<outcoreloading>1</outcoreloading>
 	<batchespercore>1</batchespercore>
         <commodity_production>
           <commodity>power</commodity>

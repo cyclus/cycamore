@@ -14,7 +14,8 @@ void BatchReactorTest::SetUp()
 {
   // set up model parameters
   lencycle = 3;
-  loadcore = 10.0;
+  in_loadcore = 10.0;
+  out_loadcore = 9.0;
   nbatch = 5;
   in_commod = "inc";
   out_commod = "outc";
@@ -49,7 +50,9 @@ void BatchReactorTest::initSrcFacility()
      << "    <outrecipe>" << out_recipe << "</outrecipe>"
      << "  </fuel_output>"
      << "  <cyclelength>" << lencycle << "</cyclelength>"
-     << "  <coreloading>" << loadcore << "</coreloading>"
+     << "  <refueldelay>" << lencycle << "</refueldelay>"
+     << "  <incoreloading>" << in_loadcore << "</incoreloading>"
+     << "  <outcoreloading>" << out_loadcore << "</outcoreloading>"
      << "  <batchespercore>" << nbatch << "</batchespercore>"
      << "  <commodity_production>"
      << "    <commodity>" << commodity << "</commodity>"
@@ -80,9 +83,16 @@ void BatchReactorTest::initWorld()
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - 
 TEST_F(BatchReactorTest,initialstate) 
 {
-  EXPECT_EQ(lencycle,src_facility->cycleLength());
-  EXPECT_EQ(loadcore,src_facility->coreLoading());
-  EXPECT_EQ(nbatch,src_facility->nBatches());
+  EXPECT_EQ(lencycle,src_facility->cycle_length());
+  EXPECT_EQ(lencycle,src_facility->refuel_delay());
+  EXPECT_EQ(in_loadcore,src_facility->in_core_loading());
+  EXPECT_EQ(out_loadcore,src_facility->out_core_loading());
+  EXPECT_EQ(nbatch,src_facility->batches_per_core());
+  EXPECT_EQ(in_commod,src_facility->in_commodity());
+  EXPECT_EQ(out_commod,src_facility->out_commodity());
+  EXPECT_EQ(in_recipe,src_facility->in_recipe());
+  EXPECT_EQ(out_recipe,src_facility->out_recipe());
+  
   Commodity commod(commodity);
   EXPECT_TRUE(src_facility->producesCommodity(commod)); 
   EXPECT_EQ(capacity,src_facility->productionCapacity(commod));
@@ -95,14 +105,20 @@ TEST_F(BatchReactorTest,clone)
   Model::loadModule("Facility","BatchReactor");
   src_facility->setModelImpl("BatchReactor");
   BatchReactor* new_facility = dynamic_cast<BatchReactor*>(src_facility->clone());
-  EXPECT_EQ( lencycle, new_facility->cycleLength() );
-  EXPECT_EQ( loadcore, new_facility->coreLoading() );
-  EXPECT_EQ( nbatch, new_facility->nBatches() );
+  EXPECT_EQ( lencycle, new_facility->cycle_length() );
+  EXPECT_EQ( lencycle, new_facility->refuel_delay() );
+  EXPECT_EQ( in_loadcore, new_facility->in_core_loading() );
+  EXPECT_EQ( out_loadcore, new_facility->out_core_loading() );
+  EXPECT_EQ( nbatch, new_facility->batches_per_core() );
+  EXPECT_EQ(in_commod,new_facility->in_commodity());
+  EXPECT_EQ(out_commod,new_facility->out_commodity());
+  EXPECT_EQ(in_recipe,new_facility->in_recipe());
+  EXPECT_EQ(out_recipe,new_facility->out_recipe());
+
   Commodity commod(commodity);
   EXPECT_TRUE(new_facility->producesCommodity(commod)); 
   EXPECT_EQ(capacity,new_facility->productionCapacity(commod));
   EXPECT_EQ(cost,new_facility->productionCost(commod));
-
 }
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - 
