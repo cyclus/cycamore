@@ -11,7 +11,10 @@
 
 #include <vector>
 
+#include <boost/lexical_cast.hpp>
+
 using namespace std;
+using boost::lexical_cast;
 using namespace SupplyDemand;
 using namespace ActionBuilding;
 
@@ -44,14 +47,33 @@ void GrowthRegion::addCommodityDemand(QueryEngine* qe)
   registerCommodity(commodity);
 
   // instantiate demand
-  QueryEngine* demand = qe->queryElement("demand");
-  string type = demand->getElementContent("type");
-  string params = demand->getElementContent("parameters");
-  BasicFunctionFactory bff;
-  FunctionPtr demand_function = bff.getFunctionPtr(type,params);
+  string query = "demand";
+  int n = qe->nElementsMatchingQuery(query);
+  PiecewiseFunctionFactory pff;
+
+  for (int i = 0; i < n; i++)
+    {
+      QueryEngine* demand = qe->queryElement(query,i);
+
+      string type = demand->getElementContent("type");
+      string params = demand->getElementContent("parameters");
+      int time;
+      try 
+        {
+          time = lexical_cast<int>(demand->getElementContent("start_time"));
+        }
+      catch (CycNullQueryException e) 
+        {
+          time = 0;
+        }
+
+      BasicFunctionFactory bff;
+      bool continuous = (i != 0); // the first entry is not continuous
+      pff.addFunction(bff.getFunctionPtr(type,params),time,continuous);
+    }
 
   // register the commodity and demand
-  sdmanager_.registerCommodity(commodity,demand_function);
+  sdmanager_.registerCommodity(commodity,pff.getFunctionPtr());
 }
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - 

@@ -17,6 +17,7 @@ void GrowthRegionTests::SetUp()
   commodity_name = "commod";
   demand_type = "linear";
   demand_params = "5 5";
+  demand_start = "0";
 }
   
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - 
@@ -47,6 +48,7 @@ void GrowthRegionTests::initRegion()
      << "    <demand>"
      << "      <type>" << demand_type << "</type>"
      << "      <parameters>" << demand_params << "</parameters>"
+     << "      <start_time>" << demand_start << "</start_time>"
      << "    </demand>"
      << "  </commodity>"
      << "</start>";
