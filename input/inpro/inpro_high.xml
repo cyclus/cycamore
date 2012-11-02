@@ -162,14 +162,36 @@
           <name>lwr_power</name>
           <demand>
             <type>linear</type>
-            <parameters>10 0</parameters>
+            <parameters>1.367 3.497e6</parameters> <!-- 372 GWe * 0.94 -->
+            <start_time>1</start_time>
+          </demand>
+          <demand>
+            <type>linear</type>
+            <parameters>2.222 0</parameters>
+            <start_time>241</start_time>
+          </demand>
+          <demand>
+            <type>linear</type>
+            <parameters>5.833 0</parameters>
+            <start_time>601</start_time>
           </demand>
         </commodity>
         <commodity>
           <name>hwr_power</name>
           <demand>
             <type>linear</type>
-            <parameters>10 0</parameters>
+            <parameters>1.367 0.223e6</parameters> <!-- 372 GWe * 0.06 -->
+            <start_time>1</start_time>
+          </demand>
+          <demand>
+            <type>linear</type>
+            <parameters>2.222 0</parameters>
+            <start_time>241</start_time>
+          </demand>
+          <demand>
+            <type>linear</type>
+            <parameters>5.833 0</parameters>
+            <start_time>601</start_time>
           </demand>
         </commodity>
       </GrowthRegion>
