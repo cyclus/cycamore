@@ -211,8 +211,8 @@ void BatchReactor::handleTock(int time)
     {
     
     case END:
-      if ( postCore_.empty() )
-        decommission();
+      // if ( postCore_.empty() )
+      //   decommission();
       break;
     
     case BEGIN:
