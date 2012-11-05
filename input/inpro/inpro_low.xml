@@ -80,6 +80,7 @@
 
   <facility>
     <name>LWR_Reactor</name>
+    <lifetime>480</lifetime>
     <model>
       <BatchReactor>
         <fuel_input>
@@ -108,6 +109,7 @@
 
   <facility>
     <name>HWR_Reactor</name>
+    <lifetime>480</lifetime>
     <model>
       <BatchReactor>
         <fuel_input>
