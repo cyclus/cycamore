@@ -3,7 +3,7 @@
 
 <simulation>
   <control>
-    <duration>1201</duration>
+    <duration>1105</duration>
     <startmonth>11</startmonth>
     <startyear>2007</startyear>
     <simstart>0</simstart>
@@ -164,36 +164,36 @@
           <name>lwr_power</name>
           <demand>
             <type>linear</type>
-            <parameters>0.95e3 3.497e5</parameters> <!-- 372 GWe * 0.94 -->
+            <parameters>811.82 349680</parameters> <!-- 372 GWe * 0.94 -->
             <start_time>1</start_time>
           </demand>
           <demand>
             <type>linear</type>
-            <parameters>1.111e3 0</parameters>
-            <start_time>241</start_time>
+            <parameters>1566.7 0</parameters>
+            <start_time>265</start_time>
           </demand>
           <demand>
             <type>linear</type>
-            <parameters>2.500e3 0</parameters>
-            <start_time>601</start_time>
+            <parameters>2350 0</parameters>
+            <start_time>505</start_time>
           </demand>
         </commodity>
         <commodity>
           <name>hwr_power</name>
           <demand>
             <type>linear</type>
-            <parameters>0.95e3 0.223e5</parameters> <!-- 372 GWe * 0.06 -->
+            <parameters>51.812 22320</parameters> <!-- 372 GWe * 0.06 -->
             <start_time>1</start_time>
           </demand>
           <demand>
             <type>linear</type>
-            <parameters>1.111e3 0</parameters>
-            <start_time>241</start_time>
+            <parameters>100 0</parameters>
+            <start_time>265</start_time>
           </demand>
           <demand>
             <type>linear</type>
-            <parameters>2.500e3 0</parameters>
-            <start_time>601</start_time>
+            <parameters>150 0</parameters>
+            <start_time>505</start_time>
           </demand>
         </commodity>
       </GrowthRegion>
