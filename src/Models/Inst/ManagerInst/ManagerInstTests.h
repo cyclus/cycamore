@@ -14,13 +14,12 @@ class TestProducer :
   TestProducer();
   virtual ~TestProducer();
 
+  void cloneModuleMembersFrom(FacilityModel* source) {};
+  void handleTock(int time){};
+  void handleTick(int time){};
   void receiveMessage(msg_ptr msg) {
     msg->setDir(DOWN_MSG);
   }
-
-  /* void receiveMaterial(Transaction trans, std::vector<mat_rsrc_ptr> manifest) { } */
-  
-  /* Prototype* clone() { return new TestFacility(); } */
 
 };
 
