@@ -18,18 +18,18 @@ StubInst::StubInst() {};
 StubInst::~StubInst() {};
     
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-void StubInst::init(xmlNodePtr cur) { 
-  InstModel::init(cur); 
+void StubInst::initModuleMembers(QueryEngine* qe) { 
+  QueryEngine* input = qe->queryElement("input");
+  //retrieve input data members here. For example :  
+  //string query = "tax_rate";
+  //tax_rate_ = lexical_cast<double>(input->getElementContent(query));
 };
   
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-void StubInst::copy(StubInst* src) { 
-  InstModel::copy(src); 
-};
-
-//- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-void StubInst::copyFreshModel(Model* src) { 
-  copy(dynamic_cast<StubInst*>(src)); 
+void StubInst::cloneModuleMembersFrom(InstModel* src) { 
+  StubInst* src_stub = dynamic_cast<StubInst*>(src);
+  //copy data members here. For example : 
+  //tax_rate_ = src_stub->taxRate();
 };
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -69,6 +69,9 @@ extern "C" Model* constructStubInst() {
   return new StubInst();
 }
 
+extern "C" void destructStubInst(Model* model) { 
+  delete model;
+}
 /* ------------------- */ 
 
 

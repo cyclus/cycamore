@@ -1,10 +1,11 @@
 // StubStub.h
-#if !defined(_STUBSTUB_H)
+#ifndef _STUBSTUB_H
 #define _STUBSTUB_H
 
 #include "StubModel.h"
 
 #include "Logger.h"
+#include "QueryEngine.h"
 
 /**
    The StubStub class inherits from the StubModel class and is 
@@ -30,18 +31,18 @@ class StubStub : public StubModel {
   virtual ~StubStub();
     
   /**
-     every model needs a method to initialize from XML 
+     Initializes data members from data contained in a QueryEngine object
       
-     @param cur is the pointer to the model's xml node 
+     @param qe is a QueryEngine object that contains initialization data 
    */
-  virtual void init(xmlNodePtr cur);
+  virtual void initModuleMembers(QueryEngine* qe);
   
   /**
      every model needs a method to copy one object to another 
       
-     @param src is the StubStub to copy 
+     @param src is the StubModel to copy 
    */
-  virtual void copy(StubStub* src) ;
+  virtual void cloneModuleMembersFrom(StubModel* src) ;
 
   /**
      every model should be able to print a verbose description 

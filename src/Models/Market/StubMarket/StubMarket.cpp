@@ -17,18 +17,18 @@ StubMarket::StubMarket() {};
 StubMarket::~StubMarket() {};
     
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-void StubMarket::init(xmlNodePtr cur) { 
-  MarketModel::init(cur); 
+void StubMarket::initModuleMembers(QueryEngine* qe) { 
+  QueryEngine* input = qe->queryElement("input");
+  //retrieve input data members here. For example :  
+  //string query = "commodity";
+  //commodity_ = lexical_cast<double>(input->getElementContent(query));
 };
   
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-void StubMarket::copy(StubMarket* src) { 
-  MarketModel::copy(src); 
-};
-
-//- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-void StubMarket::copyFreshModel(Model* src){
-  copy(dynamic_cast<StubMarket*>(src));
+void StubMarket::cloneModuleMembersFrom(MarketModel* src) { 
+  StubMarket* src_stub = dynamic_cast<StubMarket*>(src);
+  //copy data members here. For example : 
+  //commodity_ = src_stub->commodity();
 };
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -71,5 +71,8 @@ extern "C" Model* constructStubMarket() {
   return new StubMarket();
 }
 
+extern "C" void destructStubMarket(Model* model) {
+  delete model;
+}
 /* -------------------- */
 

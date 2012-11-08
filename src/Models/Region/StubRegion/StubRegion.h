@@ -1,5 +1,5 @@
 // StubRegion.h
-#if !defined(_STUBREGION_H)
+#ifndef _STUBREGION_H
 #define _STUBREGION_H
 
 #include "RegionModel.h"
@@ -48,28 +48,18 @@ class StubRegion : public RegionModel {
   virtual ~StubRegion();
     
   /**
-     every model needs a method to initialize from XML 
+     Initializes the model data members from data in the QueryEngine object
       
-     @param cur is the pointer to the model's xml node 
+     @param qe a QueryEngine object containing initialization data
    */
-  virtual void init(xmlNodePtr cur);
+  virtual void initModuleMembers(QueryEngine* qe);
   
   /**
-     every model needs a method to copy one object to another 
+     Copies data members based on those of the src RegionModel
       
-     @param src is the StubStub to copy 
+     @param src is the RegionModel to copy 
    */
-  virtual void copy(StubRegion* src) ;
-  
-  /**
-     This drills down the dependency tree to initialize all relevant 
-     parameters/containers.  
-     Note that this function must be defined only in the specific model 
-     in question and not in any inherited models preceding it. 
-      
-     @param src the pointer to the original (initialized ?) model to be 
-   */
-  virtual void copyFreshModel(Model* src){copy(dynamic_cast<StubRegion*>(src));}
+  virtual void cloneModuleMembersFrom(RegionModel* src) ;
 
   /**
      every model should be able to print a verbose description 

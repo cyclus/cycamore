@@ -1,5 +1,5 @@
 // StubInst.h
-#if !defined(_STUBINST_H)
+#ifndef _STUBINST_H
 #define _STUBINST_H
 
 #include "Logger.h"
@@ -48,28 +48,18 @@ class StubInst : public InstModel {
   virtual ~StubInst();
     
   /**
-     every model needs a method to initialize from XML 
+     Initializes the module member data from the data in a QueryEngine object
       
-     @param cur is the pointer to the model's xml node 
+     @param qe is a QueryEngine object that contains intialization data
    */
-  virtual void init(xmlNodePtr cur);
+  virtual void initModuleMembers(QueryEngine* qe);
   
   /**
-     every model needs a method to copy one object to another 
+     Copies the data from one object to another 
       
-     @param src is the StubStub to copy 
+     @param src is the InstModel to copy 
    */
-  virtual void copy(StubInst* src) ;
-
-  /**
-     This drills down the dependency tree to initialize all relevant 
-     parameters/containers.  
-     Note that this function must be defined only in the specific model 
-     in question and not in any inherited models preceding it. 
-      
-     @param src the pointer to the original (initialized ?) model to be 
-   */
-  virtual void copyFreshModel(Model* src);
+  virtual void cloneModuleMembersFrom(InstModel* src) ;
 
   /**
      every model should be able to print a verbose description 

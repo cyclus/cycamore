@@ -3,10 +3,12 @@ datatypeLibrary="http://www.w3.org/2001/XMLSchema-datatypes">
 
   <define name="StubFacility">
     <element name="StubFacility"> 
-      <ref name="incommodity"/>
-      <oneOrMore>
-        <ref name="outcommodity"/>
-      </oneOrMore>
+      <element name="input">
+        <ref name="incommodity"/>
+        <oneOrMore>
+          <ref name="outcommodity"/>
+        </oneOrMore>
+      </element>
     </element>
   </define>
 

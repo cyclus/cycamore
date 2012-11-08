@@ -17,13 +17,18 @@ StubRegion::StubRegion() {};
 StubRegion::~StubRegion() {};
     
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-void StubRegion::init(xmlNodePtr cur) { 
-  RegionModel::init(cur); 
+void StubRegion::initModuleMembers(QueryEngine* qe) { 
+  QueryEngine* input = qe->queryElement("input");
+  //retrieve input data members here. For example :  
+  //string query = "tax_rate";
+  //tax_rate_ = lexical_cast<double>(input->getElementContent(query));
 };
   
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-void StubRegion::copy(StubRegion* src) { 
-  RegionModel::copy(src); 
+void StubRegion::cloneModuleMembersFrom(RegionModel* src) { 
+  StubRegion* src_stub = dynamic_cast<StubRegion*>(src);
+  //copy data members here. For example : 
+  //tax_rate_ = src_stub->taxRate();
 };
 
 
@@ -61,7 +66,9 @@ void StubRegion::receiveMessage(msg_ptr msg) {};
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 extern "C" Model* constructStubRegion() {
-    return new StubRegion();
+  return new StubRegion();
 }
-
+extern "C" void destructStubRegion(Model* model) { 
+  delete model;
+}
 /* ------------------- */ 

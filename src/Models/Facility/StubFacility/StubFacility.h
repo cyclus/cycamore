@@ -1,9 +1,10 @@
 // StubFacility.h
-#if !defined(_STUBFACILITY_H)
+#ifndef _STUBFACILITY_H
 #define _STUBFACILITY_H
 
 #include "Logger.h"
 #include "FacilityModel.h"
+#include "QueryEngine.h"
 
 /**
    @class StubFacility 
@@ -47,34 +48,23 @@ class StubFacility : public FacilityModel  {
   virtual ~StubFacility();
     
   /**
-     every model needs a method to initialize from XML 
-      
-     @param cur is the pointer to the model's xml node 
+     Initialize members related to derived module class
+
+     @param qe a pointer to a QueryEngine object containing initialization data
    */
-  virtual void init(xmlNodePtr cur);
+  virtual void initModuleMembers(QueryEngine* qe);
   
   /**
-     every model needs a method to copy one object to another 
-      
-     @param src is the StubStub to copy 
-   */
-  virtual void copy(StubFacility* src) ;
-
-  /**
-     This drills down the dependency tree to initialize all relevant 
-     parameters/containers. 
-      
-     Note that this function must be defined only in the specific model 
-     in question and not in any inherited models preceding it. 
-      
-     @param src the pointer to the original (initialized ?) model to be 
-   */
-  virtual void copyFreshModel(Model* src);
-
-  /**
-     every model should be able to print a verbose description 
+     A verbose printer for the StubFacility
    */
    virtual std::string str();
+
+  /**
+     Initializes a StubFacility object by copying the members of another.
+
+     @param src the model from which to copy initialized members
+    */
+   virtual void cloneModuleMembersFrom(FacilityModel* src);
 
   /**
      Transacted resources are extracted through this method 

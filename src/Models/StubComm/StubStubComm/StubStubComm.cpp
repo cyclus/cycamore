@@ -4,6 +4,7 @@
 #include "StubStubComm.h"
 
 #include "Logger.h"
+#include "QueryEngine.h"
 
 /* --------------------
  * all MODEL classes have these members
@@ -17,13 +18,18 @@ StubStubComm::StubStubComm() {};
 StubStubComm::~StubStubComm() {};
     
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-void StubStubComm::init(xmlNodePtr cur) { 
-  StubCommModel::init(cur); 
+void StubStubComm::initModuleMembers(QueryEngine* qe) { 
+  QueryEngine* input = qe->queryElement("input");
+  //retrieve input data members here. For example :  
+  //string query = "incommodity";
+  //incommodity_ = lexical_cast<double>(input->getElementContent(query));
 };
   
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-void StubStubComm::copy(StubStubComm* src) { 
-  StubCommModel::copy(src); 
+void StubStubComm::cloneModuleMembersFrom(StubCommModel* src) { 
+  StubStubComm* src_stub = dynamic_cast<StubStubComm*>(src);
+  //copy data members here. For example : 
+  //incommodity_ = src_stub->inCommodity();
 };
 
 
@@ -61,7 +67,10 @@ void StubStubComm::receiveMessage(msg_ptr msg) {};
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 extern "C" Model* constructStubStubComm() {
-    return new StubStubComm();
+  return new StubStubComm();
+}
+extern "C" void destructStubStubComm(Model* model) {
+  delete model;
 }
 
 /* -------------------- */

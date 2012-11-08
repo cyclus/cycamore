@@ -1,9 +1,10 @@
 // StubMarket.h
-#if !defined(_STUBMARKET_H)
+#ifndef _STUBMARKET_H
 #define _STUBMARKET_H
 
 #include "Logger.h"
 #include "MarketModel.h"
+#include "QueryEngine.h"
 
 /**
    @class StubMarket 
@@ -47,28 +48,18 @@ class StubMarket : public MarketModel {
   virtual ~StubMarket();
     
   /**
-     every model needs a method to initialize from XML 
+     Initializes module data members from the data contained in QueryEngine object
       
-     @param cur is the pointer to the model's xml node 
+     @param qe is a pointer to a QueryEngine object containing initialization data
    */
-  virtual void init(xmlNodePtr cur);
+  virtual void initModuleMembers(QueryEngine* qe);
   
   /**
-     every model needs a method to copy one object to another 
+     Initializes data members by cloning those of the source MarketModel
       
-     @param src is the StubStub to copy 
+     @param src is the MarketModel to copy 
    */
-  virtual void copy(StubMarket* src);
-
-  /**
-     This drills down the dependency tree to initialize all relevant 
-     parameters/containers.  
-     Note that this function must be defined only in the specific model 
-     in question and not in any inherited models preceding it. 
-      
-     @param src the pointer to the original (initialized ?) model to be 
-   */
-  virtual void copyFreshModel(Model* src);
+  virtual void cloneModuleMembersFrom(MarketModel* src);
 
   /**
      every model should be able to print a verbose description 

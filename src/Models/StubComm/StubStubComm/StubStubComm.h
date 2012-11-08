@@ -1,5 +1,5 @@
 // StubStubComm.h
-#if !defined(_STUBSTUBCOMM_H)
+#ifndef _STUBSTUBCOMM_H
 #define _STUBSTUBCOMM_H
 
 #include "StubCommModel.h"
@@ -30,18 +30,18 @@ class StubStubComm : public StubCommModel {
   virtual ~StubStubComm();
     
   /**
-     every model needs a method to initialize from XML 
+     Initializes the data members of this module based on the data in the QueryEngine
       
-     @param cur is the pointer to the model's xml node 
+     @param qe the QueryEngine object containing initialization data 
    */
-  virtual void init(xmlNodePtr cur);
+  virtual void initModuleMembers(QueryEngine* qe);
   
   /**
-     every model needs a method to copy one object to another 
-      
-     @param src is the StubStub to copy 
+     Copies the data members of another StubCommModel 
+
+     @param src is the StubCommModel to copy 
    */
-  virtual void copy(StubStubComm* src) ;
+  virtual void cloneModuleMembersFrom(StubCommModel* src) ;
   
   /**
      every model should be able to print a verbose description 
