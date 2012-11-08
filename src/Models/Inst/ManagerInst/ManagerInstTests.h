@@ -14,6 +14,10 @@ class TestProducer :
   TestProducer();
   virtual ~TestProducer();
 
+  void handleTick(int time) {}
+  void handleTock(int time) {}
+  void cloneModuleMembersFrom(FacilityModel*) {}
+
   void receiveMessage(msg_ptr msg) {
     msg->setDir(DOWN_MSG);
   }
