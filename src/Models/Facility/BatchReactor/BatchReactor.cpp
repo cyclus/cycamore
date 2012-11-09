@@ -150,7 +150,7 @@ void BatchReactor::handleTick(int time)
                             << phase_names_[phase_];
 
 
-  if ( lifetimeReached() )
+  if ( lifetimeReached(time) )
     setPhase(END);
   
   double fuel_quantity, request;
