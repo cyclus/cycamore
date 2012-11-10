@@ -31,7 +31,7 @@ BatchReactor::BatchReactor() :
   in_recipe_(""), 
   out_commodity_(""), 
   out_recipe_(""),
-  cycle_timer_(1), 
+  cycle_timer_(0), 
   phase_(INIT)
 {
   preCore_.makeUnlimited();
@@ -162,6 +162,7 @@ void BatchReactor::handleTick(int time)
       // intentional fall through
 
     case OPERATION:
+      cycle_timer_++;
       break;
    
     case REFUEL:
@@ -174,6 +175,7 @@ void BatchReactor::handleTick(int time)
       // intentional fall through
     
     case BEGIN:
+      cycle_timer_++;
       fuel_quantity = preCore_.quantity() + inCore_.quantity();
       request = in_core_loading() - fuel_quantity;
       if (request > cyclus::eps())
@@ -237,7 +239,7 @@ void BatchReactor::handleTock(int time)
       time_delayed_ = 0;
     case REFUEL_DELAY:
       loadCore();
-      if ( time_delayed_ >= refuel_delay() && coreFilled() ) 
+      if ( time_delayed_ > refuel_delay() && coreFilled() ) 
         {
           setPhase(OPERATION);
           reset_cycle_timer();
@@ -249,7 +251,6 @@ void BatchReactor::handleTock(int time)
       break;
 
     case OPERATION:
-      cycle_timer_++;
       if (cycleComplete())
         setPhase(REFUEL);
       break;
@@ -260,7 +261,11 @@ void BatchReactor::handleTock(int time)
       throw CycBatchReactorPhaseBehaviorException(msg);
       break;
     }
-  
+
+  LOG(LEV_DEBUG3, "BReact") << "cycle timer: " 
+                            << cycle_timer_;
+  LOG(LEV_DEBUG3, "BReact") << "delay: " 
+                            << time_delayed_;  
   LOG(LEV_INFO3, "BReact") << "}";
 }
 
@@ -474,7 +479,7 @@ void BatchReactor::reset_cycle_timer()
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - 
 bool BatchReactor::cycleComplete() 
 {
-  return (cycle_timer_ >= cycle_length_);
+  return (cycle_timer_ >= cycle_length_ - 1);
 }
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - 
