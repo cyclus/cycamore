@@ -129,7 +129,7 @@ void BatchReactor::enterSimulationAsModule()
 {
   preCore_.setCapacity(in_core_loading());
   inCore_.setCapacity(in_core_loading());  
-  resetCycleTimer();
+  reset_cycle_timer();
   setPhase(BEGIN);
   LOG(LEV_DEBUG2,"BReact") << "Batch Reactor " << name() 
                            << " is entering the simuluation with members:";
@@ -222,7 +222,9 @@ void BatchReactor::handleTock(int time)
       loadCore();
       if ( coreFilled() ) 
         {
+          
           setPhase(OPERATION);
+          reset_cycle_timer();
         } 
       else
         {
@@ -238,6 +240,7 @@ void BatchReactor::handleTock(int time)
       if ( time_delayed_ >= refuel_delay() && coreFilled() ) 
         {
           setPhase(OPERATION);
+          reset_cycle_timer();
         }
       else
         {
@@ -463,7 +466,7 @@ void BatchReactor::setUpPhaseNames()
 }
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - 
-void BatchReactor::resetCycleTimer() 
+void BatchReactor::reset_cycle_timer() 
 {
   cycle_timer_ = 1;
 }

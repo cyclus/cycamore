@@ -3,7 +3,7 @@
 
 <simulation>
   <control>
-    <duration>12</duration>
+    <duration>50</duration>
     <startmonth>1</startmonth>
     <startyear>2000</startyear>
     <simstart>0</simstart>
@@ -56,8 +56,8 @@
          <outcommodity>outcommodity</outcommodity>
          <outrecipe>commod_recipe</outrecipe>
        </fuel_output>
-	<cyclelength>1</cyclelength>
-        <refueldelay>1</refueldelay>	
+	<cyclelength>10</cyclelength>
+        <refueldelay>2</refueldelay>	
         <incoreloading>2</incoreloading>
 	<outcoreloading>1</outcoreloading>
 	<batchespercore>1</batchespercore>

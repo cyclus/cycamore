@@ -295,7 +295,7 @@ class BatchReactor : public FacilityModel, public SupplyDemand::CommodityProduce
   /**
      resets the cycle timer
    */
-  void resetCycleTimer();
+  void reset_cycle_timer();
 
   /**
      return true if the cycle timer is >= the 
