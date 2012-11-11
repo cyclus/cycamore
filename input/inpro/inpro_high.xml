@@ -122,8 +122,8 @@
         </fuel_output>
         <cyclelength>10</cyclelength>
         <refueldelay>2</refueldelay>
-        <incoreloading>1.39142873e6</incoreloading>
-        <outcoreloading>1.38138735e6</outcoreloading>
+        <incoreloading>1.39142873e5</incoreloading>
+        <outcoreloading>1.38138735e5</outcoreloading>
         <batchespercore>1</batchespercore>
         <commodity_production>
           <commodity>hwr_power</commodity>
