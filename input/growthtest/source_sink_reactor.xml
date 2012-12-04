@@ -34,11 +34,11 @@
     <name>Source</name>
     <model>
       <SourceFacility>
-	<output>
-	  <outcommodity>incommodity</outcommodity>
-	  <output_capacity>2</output_capacity>
-	  <recipe>commod_recipe</recipe>
-	</output>
+        <output>
+          <outcommodity>incommodity</outcommodity>
+          <output_capacity>2</output_capacity>
+          <recipe>commod_recipe</recipe>
+        </output>
       </SourceFacility>
     </model>
     <outcommodity>incommodity</outcommodity>
@@ -51,16 +51,16 @@
         <fuel_input>
          <incommodity>incommodity</incommodity>
          <inrecipe>commod_recipe</inrecipe>
-       </fuel_input>
+        </fuel_input>
         <fuel_output>
          <outcommodity>outcommodity</outcommodity>
          <outrecipe>commod_recipe</outrecipe>
-       </fuel_output>
-	<cyclelength>10</cyclelength>
-        <refueldelay>2</refueldelay>	
+        </fuel_output>
+        <cyclelength>10</cyclelength>
+        <refueldelay>2</refueldelay>    
         <incoreloading>2</incoreloading>
-	<outcoreloading>1</outcoreloading>
-	<batchespercore>1</batchespercore>
+        <outcoreloading>1</outcoreloading>
+        <batchespercore>1</batchespercore>
         <commodity_production>
           <commodity>power</commodity>
           <capacity>10</capacity>
@@ -76,12 +76,12 @@
     <name>Sink</name>
     <model>
       <SinkFacility>
-	<input>
-	  <commodities>
-	    <incommodity>outcommodity</incommodity>
-	  </commodities>
-	  <input_capacity>2</input_capacity>
-	</input>
+        <input>
+          <commodities>
+            <incommodity>outcommodity</incommodity>
+          </commodities>
+          <input_capacity>2</input_capacity>
+        </input>
       </SinkFacility>
     </model>
     <incommodity>outcommodity</incommodity>
@@ -109,14 +109,14 @@
       <availableprototype>Reactor</availableprototype>
       <availableprototype>Sink</availableprototype>
       <initialfacilitylist>
-	<entry>
-	  <prototype>Source</prototype>
-	  <number>1</number>
-	</entry>
-	<entry>
-	  <prototype>Sink</prototype>
-	  <number>1</number>
-	</entry>
+        <entry>
+          <prototype>Source</prototype>
+          <number>1</number>
+        </entry>
+        <entry>
+          <prototype>Sink</prototype>
+          <number>1</number>
+        </entry>
       </initialfacilitylist>
       <model>
         <ManagerInst/>
