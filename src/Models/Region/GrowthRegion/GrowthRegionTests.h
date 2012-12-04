@@ -10,7 +10,7 @@
 class GrowthRegionTests : public ::testing::Test {
  protected:
   GrowthRegion* region;
-  std::string commodity_name, demand_type, demand_params;
+  std::string commodity_name, demand_type, demand_params, demand_start;
 
   virtual void SetUp();
   virtual void TearDown();

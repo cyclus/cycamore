@@ -14,7 +14,18 @@
 /**
    Defines all possible phases this facility can be in
  */
-enum Phase {INIT, BEGIN, OPERATION, REFUEL, WAITING, END};
+enum Phase {INIT, BEGIN, OPERATION, REFUEL, REFUEL_DELAY, WAITING, END};
+
+/* /\** */
+/*    information about an entry into the spent fuel pool */
+/*  *\/ */
+/* struct PoolEntry */
+/* { */
+/*   int exit_time; */
+/*   mat_rsrc_ptr mat; */
+  
+/* PoolEntry(int time, mat_rsr_ptr mat) : exit_time(time), mat(mat_ptr) {}; */
+/* }; */
 
 /**
    @class BatchReactor 
@@ -108,34 +119,56 @@ class BatchReactor : public FacilityModel, public SupplyDemand::CommodityProduce
      set the cycle length 
      @param time the cycle length time
    */
-  void setCycleLength(int time);
+  void set_cycle_length(int time);
 
   /**
-     @return the cycle length 
+     @return the cycle length
    */
-  int cycleLength();
+  int cycle_length();
 
   /**
-     set the core loading
-     @param size the core loading size
+     set the time required to refuel the reactor 
+     @param time the refuel delay time
    */
-  void setCoreLoading(double size);
+  void set_refuel_delay(int time);
 
   /**
-     @return the core loading
+     @return the refuel delay time
    */
-  double coreLoading();
+  int refuel_delay();
+
+  /**
+     set the input core loading
+     @param size the core loading size in kilograms
+   */
+  void set_in_core_loading(double size);
+
+  /**
+     @return the input core loading in kilograms
+   */
+  double in_core_loading();
+
+  /**
+     set the output core loading
+     @param size the core loading size out kilograms
+   */
+  void set_out_core_loading(double size);
+
+  /**
+     @return the output core loading out kilograms
+   */
+  double out_core_loading();
 
   /**
      set the number of batches per core
      @param n the number of batches to set
    */
-  void setNBatches(int n);
+  void set_batches_per_core(int n);
 
   /**
      @return the number of batches per core
    */
-  int nBatches();
+  int batches_per_core();
 
   /**
      return the batch loading
@@ -146,45 +179,45 @@ class BatchReactor : public FacilityModel, public SupplyDemand::CommodityProduce
      set the input commodity 
      @param name the commodity name
    */
-  void setInCommodity(std::string name);
+  void set_in_commodity(std::string name);
 
   /**
      @return the input commodity 
   */
-  std::string inCommodity();
+  std::string in_commodity();
 
   /**
      set the input recipe 
      @param name the recipe name
    */
-  void setInRecipe(std::string name);
+  void set_in_recipe(std::string name);
 
   /**
      @return the input recipe 
   */
-  std::string inRecipe();
+  std::string in_recipe();
 
   /**
      set the output commodity 
      @param name the commodity name
    */
-  void setOutCommodity(std::string name);
+  void set_out_commodity(std::string name);
 
   /**
      @return the output commodity
    */
-  std::string outCommodity();
+  std::string out_commodity();
 
   /**
      set the output recipe 
      @param name the recipe name
    */
-  void setOutRecipe(std::string name);
+  void set_out_recipe(std::string name);
 
   /**
      @return the output recipe
    */
-  std::string outRecipe();
+  std::string out_recipe();
 
   /**
      @return the current phase
@@ -209,20 +242,29 @@ class BatchReactor : public FacilityModel, public SupplyDemand::CommodityProduce
   /// The time between batch reloadings. 
   int cycle_length_;
 
+  /// The time required to refuel the reactor
+  int refuel_delay_;
+
+  /// The time the present reactor has spent in phase REFUEL_DELAY
+  int time_delayed_;
+
   /// batches per core
   int batches_per_core_;
   
-  /// The total mass per core
-  double core_loading_;
+  /// The total mass per core upon entry
+  double in_core_loading_;
+
+  /// The total mass per core upon exit
+  double out_core_loading_;
 
   /// the name of the input commodity
-  std::string in_commod_;
+  std::string in_commodity_;
 
   /// the name of the input recipe
   std::string in_recipe_;
 
   /// the name of the output commodity
-  std::string out_commod_;
+  std::string out_commodity_;
 
   /// the name of the output recipe
   std::string out_recipe_;
@@ -253,7 +295,7 @@ class BatchReactor : public FacilityModel, public SupplyDemand::CommodityProduce
   /**
      resets the cycle timer
    */
-  void resetCycleTimer();
+  void reset_cycle_timer();
 
   /**
      return true if the cycle timer is >= the 
@@ -294,13 +336,21 @@ class BatchReactor : public FacilityModel, public SupplyDemand::CommodityProduce
 
   /**
      move a certain amount of fuel from one buffer to another
+     @param fromBuff the buffer to move fuel from
+     @param toBuff the buffer to move fuel to
+     @param amt the amount of fuel to move
   */
   void moveFuel(MatBuff& fromBuff, MatBuff& toBuff, double amt);
 
   /**
-     move all fuel from one buffer to another
+     moves and amount of fuel out of the core. this action will remove
+     the amount of fuel from the core and add a different amount to
+     the recieving buffer by a factor of 
+     out_core_loading()/in_core_loading(). The recipe will also be 
+     changed to out_recipe();
+     @param amt the amount of fuel to offload
   */
-  void moveFuel(MatBuff& fromBuff, MatBuff& toBuff);
+  void offLoadFuel(double amt);
 
   /**
      load fuel from preCore_ into inCore_

@@ -17,6 +17,7 @@ class TestProducer :
   void cloneModuleMembersFrom(FacilityModel* source) {};
   void handleTock(int time){};
   void handleTick(int time){};
+
   void receiveMessage(msg_ptr msg) {
     msg->setDir(DOWN_MSG);
   }

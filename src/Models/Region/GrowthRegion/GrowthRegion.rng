@@ -12,15 +12,22 @@
           <element name = "name">
             <text/>
           </element>
-          
-          <element name = "demand">
-            <element name="type">
-              <text/>
+
+          <oneOrMore>
+            <element name = "demand">
+              <element name="type">
+                <text/>
+              </element>
+              <element name="parameters">
+                <text/>
+              </element>
+              <optional>
+                <element name="start_time">
+                  <data type="nonNegativeInteger"/>
+                </element>
+              </optional>
             </element>
-            <element name="parameters">
-              <text/>
-            </element>
-          </element>
+          </oneOrMore>
 
         </element>
       </oneOrMore>

@@ -221,6 +221,8 @@ class EnrichmentFacility : public FacilityModel
   MatBuff inventory_;
 
   static table_ptr table_;
+
+  static int entry_;
   
   ///   A list of orders to be processed on the Tock 
   std::deque<msg_ptr> orders_;

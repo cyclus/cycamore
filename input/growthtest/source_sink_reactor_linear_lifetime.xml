@@ -3,7 +3,7 @@
 
 <simulation>
   <control>
-    <duration>50</duration>
+    <duration>12</duration>
     <startmonth>1</startmonth>
     <startyear>2000</startyear>
     <simstart>0</simstart>
@@ -36,7 +36,7 @@
       <SourceFacility>
         <output>
           <outcommodity>incommodity</outcommodity>
-          <output_capacity>2</output_capacity>
+          <output_capacity>20</output_capacity>
           <recipe>commod_recipe</recipe>
         </output>
       </SourceFacility>
@@ -46,19 +46,19 @@
 
   <facility>
     <name>Reactor</name>
+    <lifetime>1</lifetime>
     <model>
       <BatchReactor>
         <fuel_input>
          <incommodity>incommodity</incommodity>
          <inrecipe>commod_recipe</inrecipe>
-        </fuel_input>
+       </fuel_input>
         <fuel_output>
          <outcommodity>outcommodity</outcommodity>
          <outrecipe>commod_recipe</outrecipe>
-        </fuel_output>
-        <cyclelength>10</cyclelength>
-        <refueldelay>2</refueldelay>    
-        <incoreloading>2</incoreloading>
+       </fuel_output>
+        <cyclelength>1</cyclelength>
+        <incoreloading>1</incoreloading>
         <outcoreloading>1</outcoreloading>
         <batchespercore>1</batchespercore>
         <commodity_production>
@@ -80,7 +80,7 @@
           <commodities>
             <incommodity>outcommodity</incommodity>
           </commodities>
-          <input_capacity>2</input_capacity>
+          <input_capacity>20</input_capacity>
         </input>
       </SinkFacility>
     </model>
@@ -98,7 +98,7 @@
           <name>power</name>
           <demand>
             <type>linear</type>
-            <parameters>0 10</parameters>
+            <parameters>10 10</parameters>
           </demand>
         </commodity>
       </GrowthRegion>

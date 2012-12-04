@@ -22,7 +22,7 @@ protected:
   
   BatchReactor* src_facility;
   int lencycle, nbatch;
-  double loadcore;
+  double in_loadcore, out_loadcore;
   std::string in_commod, in_recipe, out_commod, out_recipe;
   TestMarket* incommod_market;
   TestMarket* outcommod_market;
