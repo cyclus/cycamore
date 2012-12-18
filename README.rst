@@ -163,10 +163,17 @@ like:
     .../cyclus/cycamore/build$ cmake ../src -DCMAKE_INSTALL_PREFIX=../../install -DCYCLOPTS_ROOT_DIR=../../install -DCYCLUS_ROOT_DIR=../../install -DCOIN_ROOT_DIR=/the/path/to/coin/install 
     .../cyclus/cycamore/build$ make && make install
 
+.. _`CMake`: http://www.cmake.org
+.. _`apt-get`: http://linux.die.net/man/8/apt-get
 .. _`Cyclus Homepage`: http://cyclus.github.com
+.. _`Cyclus repo`: https://github.com/cyclus/cyclus
 .. _`Cyclus readme`: http://github.com/cyclus/cyclus
-.. _`Cyclopts readme`: http://github.com/cyclus/cyclopts
 .. _`Cycamore Homepage`: http://cycamore.github.com
+.. _`Cycamore repo`: https://github.com/cyclus/cycamore
+.. _`Cycamore readme`: https://github.com/cyclus/cycamore
+.. _`Cyclopts Homepage`: http://cyclopts.github.com
+.. _`Cyclopts repo`: https://github.com/cyclus/cyclopts
+.. _`Cyclopts readme`: https://github.com/cyclus/cyclopts
 
 **********************
 The Developer Workflow
@@ -309,7 +316,6 @@ Cautions
 
 An Example
 ----------
-
 
 Introduction
 ============
