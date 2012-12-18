@@ -168,9 +168,9 @@ like:
 .. _`Cyclopts readme`: http://github.com/cyclus/cyclopts
 .. _`Cycamore Homepage`: http://cycamore.github.com
 
---------------------------------------------------------------------------
+**********************
 The Developer Workflow
---------------------------------------------------------------------------
+**********************
 
 *Note that "upstream" repository refers to the primary `cyclus/cycamore` repository.*
 
@@ -188,9 +188,8 @@ Code from the "develop" branch generally must pass even more rigorous checks
 before being integrated into the "master" branch. Hotfixes would be a
 possible exception to this.
 
-~~~~~~~~~~~~~~~~~~~
 Workflow Notes
-~~~~~~~~~~~~~~~~~~~
+--------------
 
   * Use a branching workflow similar to the one described at
     http://progit.org/book/ch3-4.html.
@@ -286,10 +285,8 @@ Workflow Notes
             git checkout develop
             git merge --no-ff remote_name/branch_name -m "A message""
 
-
-~~~~~~~~~~~~~~~~~~~
 Cautions
-~~~~~~~~~~~~~~~~~~~
+--------
 
   * **NEVER** merge the "master" branch into the "develop"
     branch. Changes should only flow *to* the "master" branch *from* the
@@ -310,10 +307,8 @@ Cautions
 
       git pull [remote] [from-branch]
 
-
-~~~~~~~~~~~~~~~~~~~
 An Example
-~~~~~~~~~~~~~~~~~~~
+----------
 
 
 Introduction
@@ -336,7 +331,7 @@ We begin with a fork of the main ("upstream") Cycamore repository. After initial
 the repo, we will have two branches in our fork: "Master" and "Develop".
 
 Acquiring a Fork of the Cycamore Repository
------------------------------------------
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 A fork is *your* copy of Cycamore. Github offers an excelent 
 `tutorial <http://help.github.com/fork-a-repo/>`_ on how to set one up. The rest of this
@@ -358,7 +353,7 @@ fork's branches up to date (i.e., "push" your changes before you leave), only yo
 copies of your branches may be different when you next sit down at the other location.
 
 Workflow: The Beginning
------------------------
+^^^^^^^^^^^^^^^^^^^^^^^
 
 Now, for the workflow! This is by no means the only way to perform this type of workflow, 
 but I assume that you wish to handle conflicts as often as possible (so as to keep their total 
@@ -387,7 +382,7 @@ We then follow the same process to update the work branch, except:
 #. we want to incorporate any changes which may have been introduced in the develop branch update.
 
 Workflow: The End
------------------
+^^^^^^^^^^^^^^^^^
 
 
 As time passes, you make some changes to files, and you commit those changes (to your *local work
