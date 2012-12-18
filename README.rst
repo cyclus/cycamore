@@ -9,9 +9,9 @@ fuel cycle simulations with the Cyclus fuel cycle simulator.
 To see user and developer documentation for this code, please visit 
 the `Cycamore Homepage`_.
 
-********
-LISCENSE
-********
+*******
+LICENSE
+*******
 ::
 
     Copyright (c) 2010-2012, University of Wisconsin Computational Nuclear Engineering Research Group
@@ -196,7 +196,7 @@ before being integrated into the "master" branch. Hotfixes would be a
 possible exception to this.
 
 Workflow Notes
---------------
+==============
 
   * Use a branching workflow similar to the one described at
     http://progit.org/book/ch3-4.html.
@@ -293,7 +293,7 @@ Workflow Notes
             git merge --no-ff remote_name/branch_name -m "A message""
 
 Cautions
---------
+========
 
   * **NEVER** merge the "master" branch into the "develop"
     branch. Changes should only flow *to* the "master" branch *from* the
@@ -315,10 +315,10 @@ Cautions
       git pull [remote] [from-branch]
 
 An Example
-----------
+==========
 
 Introduction
-============
+------------
 
 As this type of workflow can be complicated to converts from SVN and very complicated
 for brand new programmers, an example is provided.
@@ -331,7 +331,7 @@ three branches: "Master", "Develop", and "Work".
 
 
 Acquiring Cycamore and Workflow
-=============================
+-------------------------------
 
 We begin with a fork of the main ("upstream") Cycamore repository. After initially forking
 the repo, we will have two branches in our fork: "Master" and "Develop".
@@ -389,7 +389,6 @@ We then follow the same process to update the work branch, except:
 
 Workflow: The End
 ^^^^^^^^^^^^^^^^^
-
 
 As time passes, you make some changes to files, and you commit those changes (to your *local work
 branch*). Eventually (hopefully) you come to a stopping point where you have finished your project 
