@@ -158,14 +158,6 @@ class StorageFacility : public FacilityModel
   std::string out_commod_;
 
   /**
-   */
-  double in_capacity_;
-
-  /**
-   */
-  double out_capacity_;
-
-  /**
      The minimum time that the stock material spends in the facility. 
    */
   int residence_time_;

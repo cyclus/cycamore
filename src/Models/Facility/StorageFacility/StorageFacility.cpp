@@ -5,7 +5,6 @@
 #include "Timer.h"
 
 #include <sstream>
-#include <limits>
 
 #include <boost/lexical_cast.hpp>
 
@@ -33,13 +32,11 @@ using boost::lexical_cast;
 StorageFacility::StorageFacility() :
   out_commod_(""),
   in_commod_(""),
-  out_capacity(numeric_limits<double>::max()),
-  in_capacity(numeric_limits<double>::max()),
   residence_time_(0),
   offer_price_(0.0)
 {
-  out_buffer_.makeUnlimited();
-  in_buffer_.makeUnlimited();
+  out_buffer_.setCapacity(BUFF_INFINITY);
+  in_buffer_.setCapacity(BUFF_INFINITY);
 }
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - 
