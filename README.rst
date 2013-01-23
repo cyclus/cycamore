@@ -1,20 +1,17 @@
-_______________________________________________________________________
+###################################################
 Cycamore : The CYClus Additional MOdules REpository
-_______________________________________________________________________
-
-**Last Updated: 6.10.2012**
+###################################################
 
 Additional modules for the Cyclus nuclear fuel cycle simulator from the 
 University of Wisconsin - Madison are intended to be support innovative 
 fuel cycle simulations with the Cyclus fuel cycle simulator. 
 
-To see user and developer documentation for this code, please visit the `Cycamore Homepage`_.
+To see user and developer documentation for this code, please visit 
+the `Cycamore Homepage`_.
 
-
------------------------------------------------------------------------
-LISCENSE
------------------------------------------------------------------------
-
+*******
+LICENSE
+*******
 ::
 
     Copyright (c) 2010-2012, University of Wisconsin Computational Nuclear Engineering Research Group
@@ -47,81 +44,140 @@ LISCENSE
     ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
     POSSIBILITY OF SUCH DAMAGE.
 
-------------------------------------------------------------------
+********************************
 Building and Installing Cycamore
-------------------------------------------------------------------
+********************************
 
-The `Cyclus Homepage`_ and `Cycamore Homepage`_ have much more detailed guides and information.
-This Readme is intended to be a quick reference for building and installing the 
-cyamore module libraries for the first time.
-
-The Cycamore code requires the following software and libraries.
+In order to facilitate future compatibility with multiple platforms, 
+Cycamore is built using `CMake`_. A full list of the Cycamore package 
+dependencies is show below:
 
 ====================   ==================
 Package                Minimum Version   
 ====================   ==================
-`Cyclus`               0.1  
 `CMake`                2.8            
 `boost`                1.34.1
-`libxml2`              2                 
-`sqlite3`              3.7.10            
+`libxml2`              2   
+`Cyclopts`             0.1               
+`Cyclus`               0.1            
 ====================   ==================
 
-~~~~~~~~~~~~~~~~~~~~~~~~~~~
-Building Cycamore
-~~~~~~~~~~~~~~~~~~~~~~~~~~~
+As with all software, the build/install can be broken into two steps:
 
-In order to facilitate future compatibility with multiple platforms, Cycamore is
-built using  `Cmake <http://www.cmake.org>`_. This relies on CMake version
-2.8 or higher and the CMakeLists.txt file in `src/`. It is
-recommended that you use CMake to build the Cycamore libraries in a directory 
-external to the source code. Now, to use the cycamore modules within a cyclus 
-simulation, you must already have cyclus installed . Once that is done, build the 
-cycamore module libraries by the following steps::
+  #. building and installing the dependencies
+  #. building and installing Cycamore
 
-    .../cycamore/$ mkdir build
-    .../cycamore/$ cd build
-    .../cycamore/build$ cmake ../src -DCYCLUS_ROOT_DIR=<cyclus location> 
+Installing Dependencies
+=======================
 
-You should see output like this::
+This guide assumes that the user has root access (to issue sudo 
+commands) and access to a package manager or has some other suitable 
+method of automatically installing established libraries. This process
+was tested using a fresh install of Ubuntu 12.10. 
 
-    ...
-    ...
-    >> -- Configuring done
-    >> -- Generating done
-    >> -- Build files have been written to: .../cycamore/build
-    /cycamore/build$ make cycamore
-    >> Scanning dependencies of target cycamore
-    ...
-    ...
-    >> [100%] Building CXX object CMakeFiles/cycamore.dir/SourceFac.cpp.o
-    >> Linking CXX executable cycamore
-    >> [100%] Built target cycamore
+Cyclus
+------
 
-~~~~~~~~~~~~~~~~~~~~~~~~~~~
+The Cyclus Library is the simulation-engine core of the more general 
+Cyclus package, of which Cycamore is a part. Detailed build/install
+instructions are provided in the `Cyclus readme`_. We assume that the 
+user has successfully built and installed Cyclus (as well as Cyclopts 
+and CMake) for the following discussion. 
+
+All Others
+----------
+
+All other dependencies are common libraries available through package
+managers. We provide an example using `apt-get`_. All required 
+commands will take the form of:
+
+.. code-block:: bash
+
+  sudo apt-get install package
+
+Where you will replace "package" with the correct package name. The
+list of required package names are:
+
+  #. libboost-all-dev
+  #. libxml++2.6-dev
+
+So, for example, in order to install libxml++ on your system, you will
+type:
+
+.. code-block:: bash
+
+  sudo apt-get install libxml++2.6-dev
+
+Let us take a moment to note the Boost library dependency. As it 
+currently stands, we in fact depend on a small subset of the Boost 
+libraries:
+
+  #. libboost-filesystem-dev
+  #. libboost-system-dev
+
+However, it is possible (likely) that additional Boost libraries will
+be used because they are an industry standard. Accordingly, we suggest
+simply installing libboost-all-dev to limit any headaches due to 
+possible dependency additions in the future.
+
 Installing Cycamore
-~~~~~~~~~~~~~~~~~~~~~~~~~~~
+===================
 
-To allow cyclus to find the cycamore module libraries, you must install them within 
-the cyclus installation directory. To do so, execute :: 
+Assuming you have the dependencies installed correctly, it's pretty
+straightforward to install Cycamore. We make the following assumptions
+in this guide:
 
-    .../cycamore/build$ make
-    .../cycamore/build$ make install
+  #. there is some master directory in which you're placing all
+     Cyclus-related files called .../cyclus
+  #. you have a directory named .../cyclus/install in which you plan
+     to install all Cyclus-related files
+  #. you have acquired the Cycamore source code from the 
+     `Cycamore repo`_
+  #. you have placed the Cycamore repository in .../cyclus/cycamore
+  #. you have a directory named .../cyclus/cycamore/build in which 
+     you plan to encapsulate all build-related files (they get in the
+     way otherwise)
+  #. you have installed Cyclopts using the CMAKE_INSTALL_PREFIX 
+     variable set to ../cyclus/install (see the `Cyclopts readme`_)
+  #. you have installed Cyclus using the CMAKE_INSTALL_PREFIX 
+     variable set to ../cyclus/install (see the `Cyclus readme`_)
 
-If the cyclus installation directory is in a system location, you will need to 
-execute `sudo make install` instead of `make install`. 
-The `Cyclus Homepage`_ has much more detailed guides and information.  If
-you intend to develop for *Cyclus*, please visit it to learn more.
+Under these assumptions **and** if you used a package manager to 
+install coin-Cbc (i.e. it's installed in a standard location), the
+Cyclus building and installation process will look like:
 
+.. code-block:: bash
 
+    .../cyclus/cycamore$ cd build
+    .../cyclus/cycamore/build$ cmake ../src -DCMAKE_INSTALL_PREFIX=../../install -DCYCLOPTS_ROOT_DIR=../../install -DCYCLUS_ROOT_DIR=../../install
+    .../cyclus/cycamore/build$ make && make install
+
+If you have installed coin-Cbc from source or otherwise have it 
+installed in a non-standard location, you should make use of the CMake
+COIN_ROOT_DIR variable. The otherwise identical process would look 
+like:
+
+.. code-block:: bash
+
+    .../cyclus/cycamore$ cd build
+    .../cyclus/cycamore/build$ cmake ../src -DCMAKE_INSTALL_PREFIX=../../install -DCYCLOPTS_ROOT_DIR=../../install -DCYCLUS_ROOT_DIR=../../install -DCOIN_ROOT_DIR=/the/path/to/coin/install 
+    .../cyclus/cycamore/build$ make && make install
+
+.. _`CMake`: http://www.cmake.org
+.. _`apt-get`: http://linux.die.net/man/8/apt-get
 .. _`Cyclus Homepage`: http://cyclus.github.com
+.. _`Cyclus repo`: https://github.com/cyclus/cyclus
+.. _`Cyclus readme`: http://github.com/cyclus/cyclus
 .. _`Cycamore Homepage`: http://cycamore.github.com
+.. _`Cycamore repo`: https://github.com/cyclus/cycamore
+.. _`Cycamore readme`: https://github.com/cyclus/cycamore
+.. _`Cyclopts Homepage`: http://cyclopts.github.com
+.. _`Cyclopts repo`: https://github.com/cyclus/cyclopts
+.. _`Cyclopts readme`: https://github.com/cyclus/cyclopts
 
-
-
---------------------------------------------------------------------------
+**********************
 The Developer Workflow
---------------------------------------------------------------------------
+**********************
 
 *Note that "upstream" repository refers to the primary `cyclus/cycamore` repository.*
 
@@ -139,9 +195,8 @@ Code from the "develop" branch generally must pass even more rigorous checks
 before being integrated into the "master" branch. Hotfixes would be a
 possible exception to this.
 
-~~~~~~~~~~~~~~~~~~~
 Workflow Notes
-~~~~~~~~~~~~~~~~~~~
+==============
 
   * Use a branching workflow similar to the one described at
     http://progit.org/book/ch3-4.html.
@@ -237,10 +292,8 @@ Workflow Notes
             git checkout develop
             git merge --no-ff remote_name/branch_name -m "A message""
 
-
-~~~~~~~~~~~~~~~~~~~
 Cautions
-~~~~~~~~~~~~~~~~~~~
+========
 
   * **NEVER** merge the "master" branch into the "develop"
     branch. Changes should only flow *to* the "master" branch *from* the
@@ -261,14 +314,11 @@ Cautions
 
       git pull [remote] [from-branch]
 
-
-~~~~~~~~~~~~~~~~~~~
 An Example
-~~~~~~~~~~~~~~~~~~~
-
+==========
 
 Introduction
-============
+------------
 
 As this type of workflow can be complicated to converts from SVN and very complicated
 for brand new programmers, an example is provided.
@@ -281,13 +331,13 @@ three branches: "Master", "Develop", and "Work".
 
 
 Acquiring Cycamore and Workflow
-=============================
+-------------------------------
 
 We begin with a fork of the main ("upstream") Cycamore repository. After initially forking
 the repo, we will have two branches in our fork: "Master" and "Develop".
 
 Acquiring a Fork of the Cycamore Repository
------------------------------------------
+^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 A fork is *your* copy of Cycamore. Github offers an excelent 
 `tutorial <http://help.github.com/fork-a-repo/>`_ on how to set one up. The rest of this
@@ -309,7 +359,7 @@ fork's branches up to date (i.e., "push" your changes before you leave), only yo
 copies of your branches may be different when you next sit down at the other location.
 
 Workflow: The Beginning
------------------------
+^^^^^^^^^^^^^^^^^^^^^^^
 
 Now, for the workflow! This is by no means the only way to perform this type of workflow, 
 but I assume that you wish to handle conflicts as often as possible (so as to keep their total 
@@ -338,8 +388,7 @@ We then follow the same process to update the work branch, except:
 #. we want to incorporate any changes which may have been introduced in the develop branch update.
 
 Workflow: The End
------------------
-
+^^^^^^^^^^^^^^^^^
 
 As time passes, you make some changes to files, and you commit those changes (to your *local work
 branch*). Eventually (hopefully) you come to a stopping point where you have finished your project 
