@@ -100,7 +100,7 @@ TEST_F(BatchReactorTest,initialstate)
 }
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - 
-TEST_F(BatchReactorTest,DISABLED_clone) 
+TEST_F(BatchReactorTest,clone) 
 {
   Model::loadModule("Facility","BatchReactor");
   src_facility->setModelImpl("BatchReactor");
