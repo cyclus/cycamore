@@ -2,25 +2,35 @@
 #  CYCLUS_CORE_INCLUDE_DIR - the Cyclus include directory
 #  CYCLUS_CORE_LIBRARIES - The libraries needed to use the Cyclus Core Library
 
-IF(NOT DEFINED CYCLUS_ROOT_DIR)
-  SET(CYCLUS_ROOT_DIR "$ENV{CYCLUS_ROOT_DIR}")
-ENDIF(NOT DEFINED CYCLUS_ROOT_DIR)
+# Check if we have an environment variable to cyclus root
+IF(DEFINED ENV{CYCLUS_ROOT_DIR})
+  IF(NOT DEFINED CYCLUS_ROOT_DIR)
+    SET(CYCLUS_ROOT_DIR "$ENV{CYCLUS_ROOT_DIR}")
+  ELSE(NOT DEFINED CYCLUS_ROOT_DIR)
+    # Yell if both exist
+    MESSAGE(STATUS "\tTwo CYCLUS_ROOT_DIRs have been found:")
+    MESSAGE(STATUS "\t\tThe defined cmake variable CYCLUS_ROOT_DIR: ${CYCLUS_ROOT_DIR}")
+    MESSAGE(STATUS "\t\tThe environment variable CYCLUS_ROOT_DIR: $ENV{CYCLUS_ROOT_DIR}")
+  ENDIF(NOT DEFINED CYCLUS_ROOT_DIR)
+ENDIF(DEFINED ENV{CYCLUS_ROOT_DIR})
 
-# Look for the header files
+# Let the user know if we're using a hint
+IF(DEFINED CYCLUS_ROOT_DIR)
+  MESSAGE(STATUS "CYCLUS_ROOT_DIR hint is : ${CYCLUS_ROOT_DIR}")
+ELSE(DEFINED CYCLUS_ROOT_DIR)
+  MESSAGE(STATUS "No hint is used for CYCLUS_ROOT_DIR")
+ENDIF(DEFINED CYCLUS_ROOT_DIR)
+
+# Set the include dir, this will be the future basis for other
+# defined dirs
 FIND_PATH(CYCLUS_CORE_INCLUDE_DIR suffix.h
   HINTS "${CYCLUS_ROOT_DIR}" "${CYCLUS_ROOT_DIR}/cyclus" 
   /usr/local/cyclus /opt/local/cyclus 
   PATH_SUFFIXES cyclus/include include)
 
-MESSAGE(STATUS "CYCLUS_ROOT_DIR hint is : ${CYCLUS_ROOT_DIR}")
-
 # Add the root dir to the hints
-IF(CYCLUS_ROOT_DIR MATCHES "/")
-ELSE(CYCLUS_ROOT_DIR MATCHES "/")
-  SET(CYCLUS_ROOT_DIR "${CYCLUS_CORE_INCLUDE_DIR}/..")
-  MESSAGE(STATUS "CYCLUS_ROOT_DIR hint has been set to : ${CYCLUS_ROOT_DIR}")
-ENDIF(CYCLUS_ROOT_DIR MATCHES "/")
-
+SET(CYCLUS_ROOT_DIR "${CYCLUS_CORE_INCLUDE_DIR}/..")
+MESSAGE(STATUS "CYCLUS_ROOT_DIR hint has been set to : ${CYCLUS_ROOT_DIR}")
 
 # Look for the header files
 FIND_PATH(CYCLUS_CORE_SHARE_DIR cyclus.rng.in
