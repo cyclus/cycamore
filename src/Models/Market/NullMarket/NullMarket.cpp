@@ -82,7 +82,12 @@ bool NullMarket::match_request(sortedMsgList::iterator request)
     offers_.erase(offer);
   
     if (requestMsg->trans().resource()->checkQuality(offerMsg->trans().resource())){
-      if (requestAmt > offerAmt) { 
+      
+      LOG(LEV_DEBUG1,"NulMkt") << "Comparing " << requestAmt << " >= " 
+                               << offerAmt
+                               << ": " << (requestAmt>=offerAmt);
+      
+      if (requestAmt >= offerAmt) { 
         // put a new message in the order stack
         // it goes down to supplier
         offerMsg->trans().matchWith(requestMsg->trans());
@@ -106,7 +111,7 @@ bool NullMarket::match_request(sortedMsgList::iterator request)
 
         requestAmt -= offerAmt;
       } 
-      else if (offerAmt >= requestAmt){
+      else if (offerAmt < requestAmt){
         // split offer
 
         // queue a new order
