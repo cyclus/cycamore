@@ -111,7 +111,7 @@ bool NullMarket::match_request(sortedMsgList::iterator request)
 
         requestAmt -= offerAmt;
       } 
-      else if (offerAmt < requestAmt){
+      else {
         // split offer
 
         // queue a new order
