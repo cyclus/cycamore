@@ -103,7 +103,7 @@ TEST_F(EnrichmentFacilityTest,clone)
   EXPECT_DOUBLE_EQ(feed_assay,cloned_fac->feed_assay());
   EXPECT_DOUBLE_EQ(inv_size,cloned_fac->maxInventorySize());
   EXPECT_DOUBLE_EQ(commodity_price,cloned_fac->commodity_price());  
-
+  
   delete cloned_fac;
 }
 

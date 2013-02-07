@@ -20,7 +20,7 @@ FacilityModel* SinkFacilityConstructor(){
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 class SinkFacilityTest : public ::testing::Test {
 protected:
-  SinkFacility* sink_facility;
+  SinkFacility* src_facility;
   TestMarket* commod_market;
   std::string commod_;
     
