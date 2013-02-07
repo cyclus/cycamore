@@ -99,26 +99,29 @@ TEST_F(BatchReactorTest,initialstate)
   EXPECT_EQ(cost,src_facility->productionCost(commod));
 }
 
-//- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - 
+//- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - 
 TEST_F(BatchReactorTest,clone) 
 {
-  Model::loadModule("Facility","BatchReactor");
-  src_facility->setModelImpl("BatchReactor");
-  BatchReactor* new_facility = dynamic_cast<BatchReactor*>(src_facility->clone());
-  EXPECT_EQ( lencycle, new_facility->cycle_length() );
-  EXPECT_EQ( lencycle, new_facility->refuel_delay() );
-  EXPECT_EQ( in_loadcore, new_facility->in_core_loading() );
-  EXPECT_EQ( out_loadcore, new_facility->out_core_loading() );
-  EXPECT_EQ( nbatch, new_facility->batches_per_core() );
-  EXPECT_EQ(in_commod,new_facility->in_commodity());
-  EXPECT_EQ(out_commod,new_facility->out_commodity());
-  EXPECT_EQ(in_recipe,new_facility->in_recipe());
-  EXPECT_EQ(out_recipe,new_facility->out_recipe());
+  BatchReactor* cloned_fac = new BatchReactor();
+  cloned_fac->cloneModuleMembersFrom(src_facility);
+ 
+
+  EXPECT_EQ( lencycle, cloned_fac->cycle_length() );
+  EXPECT_EQ( lencycle, cloned_fac->refuel_delay() );
+  EXPECT_EQ( in_loadcore, cloned_fac->in_core_loading() );
+  EXPECT_EQ( out_loadcore, cloned_fac->out_core_loading() );
+  EXPECT_EQ( nbatch, cloned_fac->batches_per_core() );
+  EXPECT_EQ(in_commod,cloned_fac->in_commodity());
+  EXPECT_EQ(out_commod,cloned_fac->out_commodity());
+  EXPECT_EQ(in_recipe,cloned_fac->in_recipe());
+  EXPECT_EQ(out_recipe,cloned_fac->out_recipe());
 
   Commodity commod(commodity);
-  EXPECT_TRUE(new_facility->producesCommodity(commod)); 
-  EXPECT_EQ(capacity,new_facility->productionCapacity(commod));
-  EXPECT_EQ(cost,new_facility->productionCost(commod));
+  EXPECT_TRUE(cloned_fac->producesCommodity(commod)); 
+  EXPECT_EQ(capacity,cloned_fac->productionCapacity(commod));
+  EXPECT_EQ(cost,cloned_fac->productionCost(commod));
+
+  delete cloned_fac;
 }
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - 
