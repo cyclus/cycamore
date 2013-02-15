@@ -5,7 +5,6 @@
 #include "FacilityModel.h"
 
 #include "MatBuff.h"
-#include "Table.h"
 #include "Transaction.h"
 #include "Enrichment.h"
 
@@ -200,10 +199,6 @@ class EnrichmentFacility : public FacilityModel
 
   /**
    */
-  void define_table();
-
-  /**
-   */
   void recordEnrichment(double natural_u, double swu);
 
   std::string in_commodity_;
@@ -219,8 +214,6 @@ class EnrichmentFacility : public FacilityModel
   double tails_assay_;  
 
   MatBuff inventory_;
-
-  static table_ptr table_;
 
   static int entry_;
   
