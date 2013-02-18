@@ -34,9 +34,9 @@ BatchReactor::BatchReactor() :
   cycle_timer_(0), 
   phase_(INIT)
 {
-  preCore_.setCapacity(BUFF_INFINITY);
-  inCore_.setCapacity(BUFF_INFINITY);
-  postCore_.setCapacity(BUFF_INFINITY);
+  preCore_.setCapacity(kBuffInfinity);
+  inCore_.setCapacity(kBuffInfinity);
+  postCore_.setCapacity(kBuffInfinity);
   if (phase_names_.size() < 1)
     setUpPhaseNames();
 }

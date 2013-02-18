@@ -35,8 +35,8 @@ StorageFacility::StorageFacility() :
   residence_time_(0),
   offer_price_(0.0)
 {
-  out_buffer_.setCapacity(BUFF_INFINITY);
-  in_buffer_.setCapacity(BUFF_INFINITY);
+  out_buffer_.setCapacity(kBuffInfinity);
+  in_buffer_.setCapacity(kBuffInfinity);
 }
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - 
