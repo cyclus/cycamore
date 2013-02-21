@@ -293,7 +293,7 @@ void EnrichmentFacility::recordEnrichment(double natural_u, double swu)
   LOG(LEV_DEBUG1, "EnrFac") << "  * Amount: " << natural_u;
   LOG(LEV_DEBUG1, "EnrFac") << "  *    SWU: " << swu;
 
-  EM->newEvent(this, "Enrichments")
+  EM->newEvent(modelImpl() + "_Enrichments")
     ->addVal("ENTRY", ++entry_)
     ->addVal("ID", ID())
     ->addVal("Time", TI->time())
