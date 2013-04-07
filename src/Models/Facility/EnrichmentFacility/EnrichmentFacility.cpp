@@ -10,6 +10,7 @@
 #include "GenericResource.h"
 #include "Material.h"
 #include "Timer.h"
+#include "EventManager.h"
 
 #include <sstream>
 #include <limits>
@@ -22,8 +23,6 @@ using namespace boost;
 using boost::lexical_cast;
 using namespace enrichment;
 
-// initialize table member
-table_ptr EnrichmentFacility::table_ = table_ptr(new Table("Enrichment")); 
 int EnrichmentFacility::entry_ = 0;
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - 
@@ -288,38 +287,19 @@ enrichment::Assays EnrichmentFacility::getAssays(mat_rsrc_ptr rsrc)
 }
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - 
-void EnrichmentFacility::define_table()
-{
-  // declare the state id columns and add it to the table
-  table_->addField("ENTRY","INTEGER");
-  table_->addField("ID","INTEGER");
-  table_->addField("Time","INTEGER");
-  table_->addField("Natural_Uranium","REAL");
-  table_->addField("SWU","REAL");
-  agent_table->setPrimaryKey("ENTRY");
-  // we've now defined the table
-  table_->tableDefined();
-}
-
-//- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - 
 void EnrichmentFacility::recordEnrichment(double natural_u, double swu)
 {
   LOG(LEV_DEBUG1, "EnrFac") << name() << " has enriched a material:";
   LOG(LEV_DEBUG1, "EnrFac") << "  * Amount: " << natural_u;
   LOG(LEV_DEBUG1, "EnrFac") << "  *    SWU: " << swu;
 
-  if ( !table_->defined() ) define_table();
-
-  data an_entry(++entry_), an_id(ID()), time_data(TI->time()), 
-    nat_u_data(natural_u), swu_data(swu);
-  entry u_entry("ENTRY",an_entry), id("ID",an_id), time("Time",time_data), 
-    natl_u("Natural_Uranium",nat_u_data), swu_req("SWU",swu_data);
-  // construct row
-  row aRow;
-  aRow.push_back(u_entry), aRow.push_back(id), aRow.push_back(time), 
-    aRow.push_back(natl_u), aRow.push_back(swu_req);
-  // add the row
-  table_->addRow(aRow);
+  EM->newEvent("Enrichments")
+    ->addVal("ENTRY", ++entry_)
+    ->addVal("ID", ID())
+    ->addVal("Time", TI->time())
+    ->addVal("Natural_Uranium", natural_u)
+    ->addVal("SWU", swu)
+    ->record();
 }
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - 

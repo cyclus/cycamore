@@ -103,10 +103,13 @@ void SourceFacility::handleTock(int time){
   // send material if you have it now
   while (!ordersWaiting_.empty()) {
     Transaction order = ordersWaiting_.front()->trans();
+    LOG(LEV_INFO3, "SrcFac") << "Order is for: " << order.resource()->quantity();
+    LOG(LEV_INFO3, "SrcFac") << "Inventory is: " << inventory_.quantity();
     if (order.resource()->quantity() - inventory_.quantity() > cyclus::eps()) {
       LOG(LEV_INFO3, "SrcFac") << "Not enough inventory. Waitlisting remaining orders.";
       break;
     } else {
+      LOG(LEV_INFO3, "SrcFac") << "Satisfying order.";
       order.approveTransfer();
       ordersWaiting_.pop_front();
     }
@@ -127,6 +130,8 @@ void SourceFacility::receiveMessage(msg_ptr msg) {
     // file the order
     ordersWaiting_.push_front(msg);
     LOG(LEV_INFO5, "SrcFac") << name() << " just received an order.";
+    LOG(LEV_INFO5, "SrcFac") << "for " << msg->trans().resource()->quantity() 
+                             << " of " << msg->trans().commod();
   } else {
     throw CycException("SourceFacility is not the supplier of this msg.");
   }

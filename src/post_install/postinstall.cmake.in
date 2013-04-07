@@ -1,5 +1,5 @@
 SET(CYCLUS_ROOT_DIR "@ROOT_DIR@")
-SET(CYCLUS_CORE_SHARE_DIR "${CYCLUS_ROOT_DIR}/share")
+SET(CYCLUS_CORE_SHARE_DIR "@CORE_SHARE_DIR@")
 SET(PROJECT_BINARY_DIR "@PROJ_DIR@")
 
 macro(find_modules _type)
@@ -8,7 +8,7 @@ macro(find_modules _type)
   FOREACH(dir ${all_valid_subdirs})
     STRING(REPLACE "${CYCLUS_ROOT_DIR}/lib/Models/${_type}/" "" model_name "${dir}" )
     SET(${_type}_REFS ${${_type}_REFS} "<ref name='${model_name}'/>")
-    SET(RNG_INCLUDES ${RNG_INCLUDES} "<include href='../lib/Models/${_type}/${model_name}/${model_name}.rng'/>")
+    SET(RNG_INCLUDES ${RNG_INCLUDES} "<include href='${CYCLUS_ROOT_DIR}/lib/Models/${_type}/${model_name}/${model_name}.rng'/>")
   ENDFOREACH(dir) 
 endmacro()
 
