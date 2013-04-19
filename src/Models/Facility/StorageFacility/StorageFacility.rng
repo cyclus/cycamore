@@ -9,8 +9,17 @@ datatypeLibrary="http://www.w3.org/2001/XMLSchema-datatypes">
         <element name="capacity">
           <data type="double"/>
         </element>
-        <element name="inventorysize">
-          <data type="double"/>
+        <element name="Inventory Size">
+          <data type="double">
+            <param name="minExclusive">0</param>
+            <param name="maxInclusive">1e9</param>
+	    <cycic:units>kg</cycic:units>
+            <cycic:default>0</cycic:default>
+          </data>
+          <cycic:userlevel>0</cycic:userlevel>
+	  <cycic:tooltip>The inventory of this storage facility.</cycic:tooltip>
+          <cycic:help>Blah Blah Blah</cycic:help>
+          <cycic:minVersion>0.1</cycic:minVersion>
         </element>
         <element name="residencetime">
           <data type="nonNegativeInteger"/>
