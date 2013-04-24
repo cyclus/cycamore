@@ -5,6 +5,7 @@
 
 #include "Commodity.h"
 #include "XMLQueryEngine.h"
+#include "XMLParser.h"
 
 #include <sstream>
 
@@ -53,7 +54,8 @@ void GrowthRegionTests::initRegion()
      << "  </commodity>"
      << "</start>";
 
-  XMLParser parser(ss);
+  XMLParser parser;
+  parser.init(ss);
   XMLQueryEngine* engine = new XMLQueryEngine(parser);
   region->initModuleMembers(engine);
   delete engine;

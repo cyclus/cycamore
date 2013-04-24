@@ -71,7 +71,8 @@ void EnrichmentFacilityTest::initFacility()
      << "  </output>"
      << "</start>";
 
-  XMLParser parser(ss);
+  XMLParser parser;
+  parser.init(ss);
   XMLQueryEngine* engine = new XMLQueryEngine(parser);
 
   EXPECT_NO_THROW(src_facility->initModuleMembers(engine));
