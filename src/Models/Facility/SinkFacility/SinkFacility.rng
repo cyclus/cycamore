@@ -5,7 +5,9 @@ datatypeLibrary="http://www.w3.org/2001/XMLSchema-datatypes">
      <element name="SinkFacility"> 
        <element name ="input">
          <element name = "commodities">
-           <ref name="incommodity"/>
+           <oneOrMore>
+             <ref name="incommodity"/>
+           </oneOrMore>
          </element>         
           <optional>
            <ref name="input_capacity"/>
