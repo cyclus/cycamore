@@ -42,10 +42,16 @@ void SourceFacility::initModuleMembers(QueryEngine* qe) {
   setCommodity(data);
   Commodity commod(data);
   CommodityProducer::addCommodity(commod);
-
-  data = output->getElementContent("output_capacity"); 
-  CommodityProducer::setCapacity(commod,lexical_cast<double>(data));
-  setCapacity(lexical_cast<double>(data));  
+  
+  double val = numeric_limits<double>::max();
+  try
+  {
+    data = output->getElementContent("output_capacity"); 
+    val = lexical_cast<double>(data); // overwrite default if given a value
+  }
+  catch (CycNullQueryException e) {}
+  CommodityProducer::setCapacity(commod, val);
+  setCapacity(val);  
 
   try
     {
