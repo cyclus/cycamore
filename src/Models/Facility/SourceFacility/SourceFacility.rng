@@ -5,7 +5,9 @@ datatypeLibrary="http://www.w3.org/2001/XMLSchema-datatypes">
      <element name="SourceFacility"> 
        <element name ="output">
          <ref name="outcommodity"/>
-         <ref name="output_capacity"/>
+         <optional>
+           <ref name="output_capacity"/>
+         </optional>
          <optional>
            <ref name="inventorysize"/>
          </optional>
