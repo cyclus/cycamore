@@ -102,10 +102,8 @@ in this guide:
   #. you have a directory named .../cyclus/cycamore/build in which 
      you plan to encapsulate all build-related files (they get in the
      way otherwise)
-  #. you have installed Cyclopts using the CMAKE_INSTALL_PREFIX 
-     variable set to ../cyclus/install (see the `Cyclopts readme`_)
-  #. you have installed Cyclus using the CMAKE_INSTALL_PREFIX 
-     variable set to ../cyclus/install (see the `Cyclus readme`_)
+  #. you have installed Cyclopts in .../cyclus/install (see the `Cyclopts readme`_)
+  #. you have installed Cyclus  in .../cyclus/install (see the `Cyclus readme`_)
 
 Under these assumptions **and** if you used a package manager to 
 install coin-Cbc (i.e. it's installed in a standard location), the
@@ -113,20 +111,30 @@ Cyclus building and installation process will look like:
 
 .. code-block:: bash
 
+    .../cyclus/cycamore$ mkdir build
     .../cyclus/cycamore$ cd build
-    .../cyclus/cycamore/build$ cmake ../src -DCMAKE_INSTALL_PREFIX=../../install -DCYCLOPTS_ROOT_DIR=../../install -DCYCLUS_ROOT_DIR=../../install
-    .../cyclus/cycamore/build$ make && make install
+    .../cyclus/cycamore/build$ python ../setup.py --prefix=../../install --cyclusRoot=../../install --cycloptsRoot=../../install
 
 If you have installed coin-Cbc from source or otherwise have it 
-installed in a non-standard location, you should make use of the CMake
-COIN_ROOT_DIR variable. The otherwise identical process would look 
+installed in a non-standard location, you should make use of the
+``coinRoot`` flag. The otherwise identical process would look 
 like:
 
 .. code-block:: bash
 
     .../cyclus/cycamore$ cd build
-    .../cyclus/cycamore/build$ cmake ../src -DCMAKE_INSTALL_PREFIX=../../install -DCYCLOPTS_ROOT_DIR=../../install -DCYCLUS_ROOT_DIR=../../install -DCOIN_ROOT_DIR=/the/path/to/coin/install 
-    .../cyclus/cycamore/build$ make && make install
+    .../cyclus/cycamore/build$ python ../setup.py --prefix=../../install --coinRoot=/path/to/coin --cyclusRoot=../../install --cycloptsRoot=../../install
+
+Additionally, if you have installed Boost from source or otherwise have it
+installed in a non-standard location, you should make use of the
+``boostRoot`` flag. The otherwise identical process would look
+like:
+
+.. code-block:: bash
+
+    .../cyclus/cycamore$ cd build
+    .../cyclus/cycamore/build$ python ../setup.py --prefix=../../install --coinRoot=/path/to/coin --cyclusRoot=../../install --cycloptsRoot=../../install --boostRoot=/path/to/boost
+
 
 .. _`CMake`: http://www.cmake.org
 .. _`apt-get`: http://linux.die.net/man/8/apt-get
