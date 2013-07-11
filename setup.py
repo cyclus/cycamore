@@ -22,36 +22,36 @@ def check_windows_cmake(cmake_cmd):
         cmake_cmd = ' '.join(cmake_cmd)
 
 def install_cycamore(args):
-    if not os.path.exists(args.buildDir):
-        os.mkdir(args.buildDir)
+    if not os.path.exists(args.build_dir):
+        os.mkdir(args.build_dir)
     elif args.replace:
-        shutil.rmtree(args.buildDir)
-        os.mkdir(args.buildDir)
+        shutil.rmtree(args.build_dir)
+        os.mkdir(args.build_dir)
         
     root_dir = os.path.split(__file__)[0]
     src_dir = os.path.join(root_dir, 'src')
-    makefile = os.path.join(args.buildDir, 'Makefile')
+    makefile = os.path.join(args.build_dir, 'Makefile')
 
     if not os.path.exists(makefile):
-        cmake_cmd = ['cmake', src_dir]
+        cmake_cmd = ['cmake', os.path.abspath(src_dir)]
         if args.prefix:
-            cmake_cmd += ['-DCMAKE_INSTALL_PREFIX=' + args.prefix]
-        if args.coinRoot:
-            cmake_cmd += ['-DCOIN_ROOT_DIR=' + args.coinRoot]
-        if args.boostRoot:
-            cmake_cmd += ['-DBOOST_ROOT=' + args.boostRoot]
-        if args.cycloptsRoot:
-            cmake_cmd += ['-DCYCLOPTS_ROOT_DIR='+args.cycloptsRoot]
-        if args.cyclusRoot:
-            cmake_cmd += ['-DCYCLUS_ROOT_DIR='+args.cyclusRoot]
+            cmake_cmd += ['-DCMAKE_INSTALL_PREFIX=' + os.path.abspath(args.prefix)]
+        if args.coin_root:
+            cmake_cmd += ['-DCOIN_ROOT_DIR=' + os.path.abspath(args.coin_root)]
+        if args.boost_root:
+            cmake_cmd += ['-DBOOST_ROOT=' + os.path.abspath(args.boost_root)]
+        if args.cyclopts_root:
+            cmake_cmd += ['-DCYCLOPTS_ROOT_DIR='+os.path.abspath(args.cyclopts_root)]
+        if args.cyclus_root:
+            cmake_cmd += ['-DCYCLUS_ROOT_DIR='+os.path.abspath(args.cyclus_root)]
         check_windows_cmake(cmake_cmd)
-        rtn = subprocess.check_call(cmake_cmd, cwd=args.buildDir, shell=(os.name=='nt'))
+        rtn = subprocess.check_call(cmake_cmd, cwd=os.path.abspath(args.build_dir), shell=(os.name=='nt'))
 
     make_cmd = ['make']
     if args.threads:
         make_cmd += ['-j' + str(args.threads)]
     make_cmd += ['install']
-    rtn = subprocess.check_call(make_cmd, cwd=args.buildDir, shell=(os.name=='nt'))
+    rtn = subprocess.check_call(make_cmd, cwd=os.path.abspath(args.build_dir), shell=(os.name=='nt'))
 
 def main():
     description = "Install Cycamore. Optional arguments include: " + \
@@ -64,11 +64,11 @@ def main():
     "a path to the Boost libraries." 
     parser = ap.ArgumentParser(description=description)
 
-    buildDir = 'where to place the build directory'
-    parser.add_argument('--buildDir', help=buildDir, default='./')
+    build_dir = 'where to place the build directory'
+    parser.add_argument('--build_dir', help=build_dir, default='build')
 
     replace = 'whether or not to remove the build directory if it exists'
-    parser.add_argument('--replace', type=bool, help=replace, default=False)
+    parser.add_argument('--replace', type=bool, help=replace, default=True)
 
     threads = "the number of threads to use in the make step"
     parser.add_argument('-j', '--threads', type=int, help=threads)
@@ -77,16 +77,16 @@ def main():
     parser.add_argument('--prefix', help=install)
 
     coin = "the relative path to the Coin-OR libraries directory"
-    parser.add_argument('--coinRoot', help=coin)
+    parser.add_argument('--coin_root', help=coin)
 
     cyclopts = "the relative path to Cyclopts installation directory"
-    parser.add_argument('--cycloptsRoot',help=cyclopts)
+    parser.add_argument('--cyclopts_root',help=cyclopts)
 
     cyclus = "the relative path to Cyclus installation directory"
-    parser.add_argument('--cyclusRoot',help=cyclus)
+    parser.add_argument('--cyclus_root',help=cyclus)
 
     boost = "the relative path to the Boost libraries directory"
-    parser.add_argument('--boostRoot', help=boost)
+    parser.add_argument('--boost_root', help=boost)
 
     install_cycamore(parser.parse_args())
 
