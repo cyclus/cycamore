@@ -99,9 +99,6 @@ in this guide:
   #. you have acquired the Cycamore source code from the 
      `Cycamore repo`_
   #. you have placed the Cycamore repository in .../cyclus/cycamore
-  #. you have a directory named .../cyclus/cycamore/build in which 
-     you plan to encapsulate all build-related files (they get in the
-     way otherwise)
   #. you have installed Cyclopts in .../cyclus/install (see the `Cyclopts readme`_)
   #. you have installed Cyclus  in .../cyclus/install (see the `Cyclus readme`_)
 
@@ -111,9 +108,7 @@ Cyclus building and installation process will look like:
 
 .. code-block:: bash
 
-    .../cyclus/cycamore$ mkdir build
-    .../cyclus/cycamore$ cd build
-    .../cyclus/cycamore/build$ python ../setup.py --prefix=../../install --cyclusRoot=../../install --cycloptsRoot=../../install
+    .../cyclus/cycamore$ python setup.py --prefix=../install --cyclus_root=../install --cyclopts_root=../install
 
 If you have installed coin-Cbc from source or otherwise have it 
 installed in a non-standard location, you should make use of the
@@ -122,8 +117,7 @@ like:
 
 .. code-block:: bash
 
-    .../cyclus/cycamore$ cd build
-    .../cyclus/cycamore/build$ python ../setup.py --prefix=../../install --coinRoot=/path/to/coin --cyclusRoot=../../install --cycloptsRoot=../../install
+    .../cyclus/cycamore$ python setup.py --prefix=../install --coin_root=/path/to/coin --cyclus_root=../install --cyclopts_root=../install
 
 Additionally, if you have installed Boost from source or otherwise have it
 installed in a non-standard location, you should make use of the
@@ -132,8 +126,7 @@ like:
 
 .. code-block:: bash
 
-    .../cyclus/cycamore$ cd build
-    .../cyclus/cycamore/build$ python ../setup.py --prefix=../../install --coinRoot=/path/to/coin --cyclusRoot=../../install --cycloptsRoot=../../install --boostRoot=/path/to/boost
+    .../cyclus/cycamore$ python setup.py --prefix=../install --coin_root=/path/to/coin --cyclus_root=../install --cyclopts_root=../install --boost_root=/path/to/boost
 
 
 .. _`CMake`: http://www.cmake.org
@@ -208,10 +201,8 @@ Workflow Notes
         branch and then run the CycamoreUnitTestDriver (at the moment, ```make 
         test``` is insufficient). For example ::
       
-          mkdir build
           mkdir install
-          cd build
-          python ../setup.py --prefix=../install ...
+          python setup.py --prefix=../install ...
           ../install/cycamore/bin/CycamoreUnitTestDriver
 
       - There are also a suite of sample input files 
