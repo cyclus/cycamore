@@ -211,9 +211,7 @@ Workflow Notes
           mkdir build
           mkdir install
           cd build
-          cmake ../src -DCMAKE_INSTALL_PREFIX=../install
-          make
-          make install
+          python ../setup.py --prefix=../install ...
           ../install/cycamore/bin/CycamoreUnitTestDriver
 
       - There are also a suite of sample input files 
