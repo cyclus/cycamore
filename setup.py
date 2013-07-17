@@ -7,6 +7,8 @@ try:
 except ImportError:
     import pyne._argparse as ap
 
+absexpanduser = lambda x: os.path.abspath(os.path.expanduser(x))
+
 def check_windows_cmake(cmake_cmd):
     if os.name == 'nt':
         files_on_path = set()
@@ -33,27 +35,27 @@ def install_cycamore(args):
     makefile = os.path.join(args.build_dir, 'Makefile')
 
     if not os.path.exists(makefile):
-        cmake_cmd = ['cmake', os.path.abspath(src_dir)]
+        cmake_cmd = ['cmake', absexpanduser(src_dir)]
         if args.prefix:
-            cmake_cmd += ['-DCMAKE_INSTALL_PREFIX=' + os.path.abspath(args.prefix)]
+            cmake_cmd += ['-DCMAKE_INSTALL_PREFIX=' + absexpanduser(args.prefix)]
         if args.cmake_prefix_path:
-            cmake_cmd += ['-DCMAKE_PREFIX_PATH=' + os.path.abspath(args.cmake_prefix_path)]
+            cmake_cmd += ['-DCMAKE_PREFIX_PATH=' + absexpanduser(args.cmake_prefix_path)]
         if args.coin_root:
-            cmake_cmd += ['-DCOIN_ROOT_DIR=' + os.path.abspath(args.coin_root)]
+            cmake_cmd += ['-DCOIN_ROOT_DIR=' + absexpanduser(args.coin_root)]
         if args.boost_root:
-            cmake_cmd += ['-DBOOST_ROOT=' + os.path.abspath(args.boost_root)]
+            cmake_cmd += ['-DBOOST_ROOT=' + absexpanduser(args.boost_root)]
         if args.cyclopts_root:
-            cmake_cmd += ['-DCYCLOPTS_ROOT_DIR='+os.path.abspath(args.cyclopts_root)]
+            cmake_cmd += ['-DCYCLOPTS_ROOT_DIR='+absexpanduser(args.cyclopts_root)]
         if args.cyclus_root:
-            cmake_cmd += ['-DCYCLUS_ROOT_DIR='+os.path.abspath(args.cyclus_root)]
+            cmake_cmd += ['-DCYCLUS_ROOT_DIR='+absexpanduser(args.cyclus_root)]
         check_windows_cmake(cmake_cmd)
-        rtn = subprocess.check_call(cmake_cmd, cwd=os.path.abspath(args.build_dir), shell=(os.name=='nt'))
+        rtn = subprocess.check_call(cmake_cmd, cwd=absexpanduser(args.build_dir), shell=(os.name=='nt'))
 
     make_cmd = ['make']
     if args.threads:
         make_cmd += ['-j' + str(args.threads)]
     make_cmd += ['install']
-    rtn = subprocess.check_call(make_cmd, cwd=os.path.abspath(args.build_dir), shell=(os.name=='nt'))
+    rtn = subprocess.check_call(make_cmd, cwd=absexpanduser(args.build_dir), shell=(os.name=='nt'))
 
 def main():
 
