@@ -53,7 +53,6 @@ class ManagerInst : public InstModel,
   /**
      write information about a commodity producer to a stream
      @param producer the producer
-     @param stream the stream
    */
   void writeProducerInformation(SupplyDemand::CommodityProducer* producer);
 };

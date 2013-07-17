@@ -87,6 +87,7 @@ class StorageFacility : public FacilityModel
   /* --- */
 
   /* --- Transaction Methods --- */  
+
   /**
      Transacted resources are extracted through this method 
       
@@ -109,6 +110,17 @@ class StorageFacility : public FacilityModel
      When the facility receives a message, execute any transaction 
    */
   virtual void receiveMessage(msg_ptr msg);
+
+ protected:
+  /**
+     builds a transaction 
+   */
+  Transaction buildTransaction();
+
+  /**
+     sends a transaction as an offer 
+   */
+  void sendOffer(Transaction trans);
   /* --- */
 
   /* --- StorageFacility Methods --- */
