@@ -137,11 +137,15 @@ INSTALL(TARGETS CycamoreUnitTestDriver
   COMPONENT testing
   )
 
-FILE(GLOB cyclus_shared "${CYCLUS_CORE_SHARE_DIR}/*")
-INSTALL(FILES ${cyclus_shared} 
-  DESTINATION share
-  COMPONENT data
-  )
+# AMS: I don't believe that this is needed anymore.
+# This just copies the shared dir from cyclus to cycamore.
+# However, the 'share/' dir should now be the same.  So this 
+# was failing because you can't copy a file to itself.
+#FILE(GLOB cyclus_shared "${CYCLUS_CORE_SHARE_DIR}/*")
+#INSTALL(FILES ${cyclus_shared} 
+#  DESTINATION share
+#  COMPONENT data
+#  )
 
 # Here we set some components for installation with cpack
 SET(CPACK_COMPONENTS_ALL cycamore testing libraries data core)
