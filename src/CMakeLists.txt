@@ -32,16 +32,16 @@ SET(CMAKE_SKIP_BUILD_RPATH  FALSE)
 # (but later on when installing)
 SET(CMAKE_BUILD_WITH_INSTALL_RPATH FALSE) 
 
-SET(CMAKE_INSTALL_RPATH "${CMAKE_INSTALL_PREFIX}/cycamore/lib")
+SET(CMAKE_INSTALL_RPATH "${CMAKE_INSTALL_PREFIX}/lib")
 
 # add the automatically determined parts of the RPATH
 # which point to directories outside the build tree to the install RPATH
 SET(CMAKE_INSTALL_RPATH_USE_LINK_PATH TRUE)
 
 # the RPATH to be used when installing, but only if it's not a system directory
-LIST(FIND CMAKE_PLATFORM_IMPLICIT_LINK_DIRECTORIES "${CMAKE_INSTALL_PREFIX}/cycamore/lib" isSystemDir)
+LIST(FIND CMAKE_PLATFORM_IMPLICIT_LINK_DIRECTORIES "${CMAKE_INSTALL_PREFIX}/lib" isSystemDir)
 IF("${isSystemDir}" STREQUAL "-1")
-   SET(CMAKE_INSTALL_RPATH "${CMAKE_INSTALL_PREFIX}/cycamore/lib")
+   SET(CMAKE_INSTALL_RPATH "${CMAKE_INSTALL_PREFIX}/lib")
 ENDIF("${isSystemDir}" STREQUAL "-1")
 
 # Tell CMake where the modules are
@@ -133,15 +133,19 @@ add_google_tests( ${EXECUTABLE_OUTPUT_PATH}/bin/CycamoreUnitTestDriver
   ${TestSource}) 
 
 INSTALL(TARGETS CycamoreUnitTestDriver
-  RUNTIME DESTINATION cycamore/bin
+  RUNTIME DESTINATION bin
   COMPONENT testing
   )
 
-FILE(GLOB cyclus_shared "${CYCLUS_CORE_SHARE_DIR}/*")
-INSTALL(FILES ${cyclus_shared} 
-  DESTINATION cycamore/share
-  COMPONENT data
-  )
+# AMS: I don't believe that this is needed anymore.
+# This just copies the shared dir from cyclus to cycamore.
+# However, the 'share/' dir should now be the same.  So this 
+# was failing because you can't copy a file to itself.
+#FILE(GLOB cyclus_shared "${CYCLUS_CORE_SHARE_DIR}/*")
+#INSTALL(FILES ${cyclus_shared} 
+#  DESTINATION share
+#  COMPONENT data
+#  )
 
 # Here we set some components for installation with cpack
 SET(CPACK_COMPONENTS_ALL cycamore testing libraries data core)
@@ -187,3 +191,12 @@ IF (DOXYGEN_FOUND)
 ELSE (DOXYGEN_FOUND)
   MESSAGE(STATUS "WARNING: Doxygen not found - doc won't be created")
 ENDIF (DOXYGEN_FOUND)
+
+# uninstall target
+configure_file(
+    "${CMAKE_CURRENT_SOURCE_DIR}/Config/cmake_uninstall.cmake.in"
+    "${CMAKE_CURRENT_BINARY_DIR}/cmake_uninstall.cmake"
+    IMMEDIATE @ONLY)
+
+add_custom_target(uninstall
+    COMMAND ${CMAKE_COMMAND} -P ${CMAKE_CURRENT_BINARY_DIR}/cmake_uninstall.cmake)
