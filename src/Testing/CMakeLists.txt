@@ -16,7 +16,7 @@ CONFIGURE_FILE(${CMAKE_CURRENT_SOURCE_DIR}/run_inputs.py.in
   ${CMAKE_CURRENT_SOURCE_DIR}/run_inputs.py @ONLY)
 
 INSTALL(FILES run_inputs.py 
-  DESTINATION cycamore/bin
+  DESTINATION bin
   COMPONENT testing
   )
 
