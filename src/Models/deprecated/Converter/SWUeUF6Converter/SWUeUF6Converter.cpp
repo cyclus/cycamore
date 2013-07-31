@@ -5,7 +5,7 @@
 
 #include "SWUeUF6Converter.h"
 
-#include "CycException.h"
+#include "error.h"
 #include "InputXML.h"
 #include "GenericResource.h"
 #include "Material.h"

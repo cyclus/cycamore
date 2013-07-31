@@ -7,7 +7,7 @@
 #include "SymbolicFunctionFactories.h"
 #include "InstModel.h"
 #include "Prototype.h"
-#include "CycException.h"
+#include "error.h"
 
 #include <vector>
 
@@ -60,7 +60,7 @@ void GrowthRegion::addCommodityDemand(cyclus::QueryEngine* qe)
         {
           time = lexical_cast<int>(demand->getElementContent("start_time"));
         }
-      catch (cyclus::CycNullQueryException e) 
+      catch (cyclus::Error e) 
         {
           time = 0;
         }
@@ -117,7 +117,7 @@ void GrowthRegion::registerCommodity(cyclus::Commodity& commodity)
 {
   if (commodities_.find(commodity) != commodities_.end())
     {
-      throw cyclus::CycDoubleRegistrationException("A GrowthRegion ("
+      throw cyclus::KeyError("A GrowthRegion ("
                                            + name() + " is trying to register a commodity twice.");
     }
   else
@@ -176,7 +176,7 @@ void GrowthRegion::orderBuilds(cyclus::Commodity& commodity, double unmet_demand
         }
       else
         {
-          throw cyclus::CycOverrideException("cyclus::GrowthRegion has tried to incorrectly cast an already known entity.");
+          throw cyclus::CastError("GrowthRegion has tried to incorrectly cast an already known entity.");
         }
     }
 }

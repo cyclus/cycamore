@@ -2,7 +2,7 @@
 #include <gtest/gtest.h>
 
 #include "RecipeReactor.h"
-#include "CycException.h"
+#include "error.h"
 #include "Message.h"
 #include "FacilityModelTests.h"
 #include "ModelTests.h"

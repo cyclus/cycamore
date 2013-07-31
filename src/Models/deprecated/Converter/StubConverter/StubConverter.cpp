@@ -2,7 +2,7 @@
 // Implements the StubConverter class
 
 #include "Logger.h"
-#include "CycException.h"
+#include "error.h"
 #include "InputXML.h"
 #include "StubConverter.h"
 

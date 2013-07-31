@@ -2,7 +2,7 @@
 #include <gtest/gtest.h>
 
 #include "NullRegion.h"
-#include "CycException.h"
+#include "error.h"
 #include "Message.h"
 #include "RegionModelTests.h"
 #include "ModelTests.h"

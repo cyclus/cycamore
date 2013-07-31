@@ -5,7 +5,7 @@
 #include "MarketModel.h"
 #include "QueryEngine.h"
 #include "Logger.h"
-#include "CycException.h"
+#include "error.h"
 #include "CycLimits.h"
 #include "GenericResource.h"
 #include "Material.h"
@@ -52,7 +52,7 @@ void EnrichmentFacility::initModuleMembers(cyclus::QueryEngine* qe)
       data = input->getElementContent("inventorysize"); 
       setMaxInventorySize(lexical_cast<double>(data));
     }
-  catch (cyclus::CycNullQueryException e) 
+  catch (cyclus::Error e) 
     {
       setMaxInventorySize(numeric_limits<double>::max());
     }
@@ -107,7 +107,7 @@ std::vector<cyclus::rsrc_ptr> EnrichmentFacility::removeResource(cyclus::Transac
 {
   cyclus::rsrc_ptr prsrc = order.resource();
   if (!cyclus::Material::isMaterial(prsrc)) 
-    throw cyclus::CycOverrideException("Can't remove a resource as a non-material");
+    throw cyclus::CastError("Can't remove a resource as a non-material");
   
   cyclus::mat_rsrc_ptr rsrc = dynamic_pointer_cast<cyclus::Material>(prsrc);
 
@@ -145,7 +145,7 @@ void EnrichmentFacility::receiveMessage(cyclus::msg_ptr msg)
     } 
   else 
     {
-      throw cyclus::CycException("EnrFacility is not the supplier of this msg.");
+      throw cyclus::Error("EnrFacility is not the supplier of this msg.");
     }
 }
 
@@ -254,7 +254,7 @@ void EnrichmentFacility::processOutgoingMaterial()
 
       cyclus::rsrc_ptr prsrc = trans.resource();
       if (!cyclus::Material::isMaterial(prsrc)) 
-       throw cyclus::CycOverrideException("Can't process a resource as a non-material");
+       throw cyclus::CastError("Can't process a resource as a non-material");
 
       cyclus::mat_rsrc_ptr rsrc = dynamic_pointer_cast<cyclus::Material>(prsrc);
 

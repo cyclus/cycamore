@@ -2,7 +2,7 @@
 #include <gtest/gtest.h>
 
 #include "SWUeUF6Converter.h"
-#include "CycException.h"
+#include "error.h"
 #include "Message.h"
 #include "ConverterModelTests.h"
 #include "ModelTests.h"

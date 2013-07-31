@@ -12,6 +12,7 @@
 #include "RecipeLibrary.h"
 #include "MarketModel.h"
 #include "CycLimits.h"
+#include "error.h"
 
 using namespace std;
 using boost::lexical_cast;
@@ -63,7 +64,7 @@ void BatchReactor::initModuleMembers(cyclus::QueryEngine* qe)
       data = qe->getElementContent("refueldelay"); 
       set_refuel_delay(lexical_cast<double>(data));  
     }
-  catch (cyclus::CycNullQueryException e) {}
+  catch (cyclus::Error e) {}
 
   data = qe->getElementContent("incoreloading"); 
   set_in_core_loading(lexical_cast<double>(data));  
@@ -73,7 +74,7 @@ void BatchReactor::initModuleMembers(cyclus::QueryEngine* qe)
       data = qe->getElementContent("outcoreloading"); 
       set_out_core_loading(lexical_cast<double>(data));  
     }
-  catch (cyclus::CycNullQueryException e)
+  catch (cyclus::Error e)
     {
       set_out_core_loading(in_core_loading());
     }
@@ -188,7 +189,7 @@ void BatchReactor::handleTick(int time)
     default:
       msg = "BatchReactors have undefined behvaior during ticks for phase: " 
         + phase_names_[phase_];
-      throw CycBatchReactorPhaseBehaviorException(msg);
+      throw Error(msg);
       break;
     }
   
@@ -257,7 +258,7 @@ void BatchReactor::handleTock(int time)
     default:
       msg = "BatchReactors have undefined behvaior during tocks for phase: " 
         + phase_names_[phase_];
-      throw CycBatchReactorPhaseBehaviorException(msg);
+      throw Error(msg);
       break;
     }
 
@@ -280,7 +281,7 @@ void BatchReactor::receiveMessage(cyclus::msg_ptr msg)
     }
   else 
     {
-      throw cyclus::CycException("BatchReactor is not the supplier of this msg.");
+      throw cyclus::Error("BatchReactor is not the supplier of this msg.");
     }
 }
 
