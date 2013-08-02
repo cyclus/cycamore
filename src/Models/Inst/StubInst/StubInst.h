@@ -61,7 +61,7 @@ class StubInst : public InstModel {
   /**
      perform all necessary actions for the model to enter the simulation
    */
-  virtual void enterSimulation(Model* parent);
+  virtual void enterSimulation(cyclus::Model* parent);
 
 /* ------------------- */ 
 

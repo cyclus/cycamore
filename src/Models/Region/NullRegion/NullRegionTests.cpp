@@ -40,13 +40,13 @@ class NullRegionTest : public ::testing::Test {
 };
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-Model* NullRegionModelConstructor(){
-  return dynamic_cast<Model*>(new FakeNullRegion());
+cyclus::Model* NullRegionModelConstructor(){
+  return dynamic_cast<cyclus::Model*>(new FakeNullRegion());
 }
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-RegionModel* NullRegionConstructor(){
-  return dynamic_cast<RegionModel*>(new FakeNullRegion());
+cyclus::RegionModel* NullRegionConstructor(){
+  return dynamic_cast<cyclus::RegionModel*>(new FakeNullRegion());
 }
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - 

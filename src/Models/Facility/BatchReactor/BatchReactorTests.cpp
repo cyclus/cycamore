@@ -73,11 +73,11 @@ void BatchReactorTest::initSrcFacility()
 void BatchReactorTest::initWorld() 
 {
   incommod_market = new TestMarket();
-  incommod_market->setCommodity(in_commod);
+  incommod_market->setcyclus::Commodity(in_commod);
   MarketModel::registerMarket(incommod_market);
 
   outcommod_market = new TestMarket();
-  outcommod_market->setCommodity(out_commod);
+  outcommod_market->setcyclus::Commodity(out_commod);
   MarketModel::registerMarket(outcommod_market);
 }
 
@@ -94,8 +94,8 @@ TEST_F(BatchReactorTest,initialstate)
   EXPECT_EQ(in_recipe,src_facility->in_recipe());
   EXPECT_EQ(out_recipe,src_facility->out_recipe());
   
-  Commodity commod(commodity);
-  EXPECT_TRUE(src_facility->producesCommodity(commod)); 
+  cyclus::Commodity commod(commodity);
+  EXPECT_TRUE(src_facility->producescyclus::Commodity(commod)); 
   EXPECT_EQ(capacity,src_facility->productionCapacity(commod));
   EXPECT_EQ(cost,src_facility->productionCost(commod));
 }
@@ -117,8 +117,8 @@ TEST_F(BatchReactorTest,clone)
   EXPECT_EQ(in_recipe,cloned_fac->in_recipe());
   EXPECT_EQ(out_recipe,cloned_fac->out_recipe());
 
-  Commodity commod(commodity);
-  EXPECT_TRUE(cloned_fac->producesCommodity(commod)); 
+  cyclus::Commodity commod(commodity);
+  EXPECT_TRUE(cloned_fac->producescyclus::Commodity(commod)); 
   EXPECT_EQ(capacity,cloned_fac->productionCapacity(commod));
   EXPECT_EQ(cost,cloned_fac->productionCost(commod));
 

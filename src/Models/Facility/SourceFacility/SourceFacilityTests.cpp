@@ -24,14 +24,14 @@ void SourceFacilityTest::initParameters() {
   recipe_ = CompMapPtr(new CompMap(ATOM));
   RecipeLibrary::recordRecipe(recipe_name_,recipe_);
   commod_market = new TestMarket();
-  commod_market->setCommodity(commod_);
+  commod_market->setcyclus::Commodity(commod_);
   MarketModel::registerMarket(commod_market);
 }
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - 
 void SourceFacilityTest::setUpSourceFacility() {
   src_facility = new SourceFacility();
-  src_facility->setCommodity(commod_);
+  src_facility->setcyclus::Commodity(commod_);
   src_facility->setRecipe(recipe_name_);
 }
 

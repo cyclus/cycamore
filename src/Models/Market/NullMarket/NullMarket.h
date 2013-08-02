@@ -22,7 +22,7 @@
     
    @section modelParams Model Parameters 
    NullMarket behavior is comprehensively defined by the following 
-   parameters: - Commodity* commod: The type of commodity for which this 
+   parameters: - cyclus::Commodity* commod: The type of commodity for which this 
    market accepts offers and requests. 
     
    @section behavior Detailed Behavior 

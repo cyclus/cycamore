@@ -72,7 +72,7 @@ class StubConverter : public ConverterModel {
       
      @param src the pointer to the original (initialized ?) model to be 
    */
-  virtual void copyFreshModel(Model* src);
+  virtual void copyFreshModel(cyclus::Model* src);
 
   /**
      every model should be able to print a verbose description 

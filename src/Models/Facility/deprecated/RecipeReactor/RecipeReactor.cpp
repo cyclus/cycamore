@@ -125,7 +125,7 @@ void RecipeReactor::copy(RecipeReactor* src) {
 }
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -    
-void RecipeReactor::copyFreshModel(Model* src) {
+void RecipeReactor::copyFreshModel(cyclus::Model* src) {
   copy(dynamic_cast<RecipeReactor*>(src));
 }
 
@@ -149,12 +149,12 @@ void RecipeReactor::beginCycle() {
     stocks_.pop_front();
     Fuel inBatch;
     inBatch = make_pair(batchCommod, batchMat);
-    LOG(LEV_DEBUG2, "RReact") << "Adding a new batch to the core";
+    LOG(cyclus::LEV_DEBUG2, "RReact") << "Adding a new batch to the core";
     currCore_.push_back(inBatch);
     // reset month_in_cycle_ clock
     month_in_cycle_ = 1;
   } else {
-    LOG(LEV_DEBUG3, "RReact") << "Beginning a cycle with an empty core. Why??";
+    LOG(cyclus::LEV_DEBUG3, "RReact") << "Beginning a cycle with an empty core. Why??";
     // wait for a successful transaction to fill the stocks.
     // reset the cycle month to zero 
     month_in_cycle_=0;
@@ -163,10 +163,10 @@ void RecipeReactor::beginCycle() {
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -    
 void RecipeReactor::endCycle() {
-  LOG(LEV_DEBUG2, "RReact") << "Ending a cycle.";
+  LOG(cyclus::LEV_DEBUG2, "RReact") << "Ending a cycle.";
   month_in_cycle_ = 0;
   if (currCore_.size() == 0) {
-    LOG(LEV_DEBUG3, "RReact") << "Ended a cycle with an empty core. Why??";
+    LOG(cyclus::LEV_DEBUG3, "RReact") << "Ended a cycle with an empty core. Why??";
     return;
   }
 
@@ -204,7 +204,7 @@ void RecipeReactor::receiveMessage(msg_ptr msg) {
   if(msg->trans().supplier()==this){
     // file the order
     ordersWaiting_.push_front(msg);
-    LOG(LEV_INFO5, "RReact") << name() << " just received an order.";
+    LOG(cyclus::LEV_INFO5, "RReact") << name() << " just received an order.";
   }
   else {
     throw CycException("RecipeReactor is not the supplier of this msg.");
@@ -246,7 +246,7 @@ vector<rsrc_ptr> RecipeReactor::removeResource(Transaction order) {
           newMat->absorb(toAbsorb);
         }
         toSend.push_back(newMat);
-        LOG(LEV_DEBUG2, "RReact") <<"RecipeReactor "<< ID()
+        LOG(cyclus::LEV_DEBUG2, "RReact") <<"RecipeReactor "<< ID()
           <<"  is sending a mat with mass: "<< newMat->quantity();
       }
     }
@@ -261,7 +261,7 @@ void RecipeReactor::addResource(Transaction trans, std::vector<rsrc_ptr> manifes
   for (vector<rsrc_ptr>::iterator thisMat=manifest.begin();
        thisMat != manifest.end();
        thisMat++) {
-    LOG(LEV_DEBUG2, "RReact") <<"RecipeReactor " << ID() << " is receiving material with mass "
+    LOG(cyclus::LEV_DEBUG2, "RReact") <<"RecipeReactor " << ID() << " is receiving material with mass "
         << (*thisMat)->quantity();
     stocks_.push_front(make_pair(trans.commod(), boost::dynamic_pointer_cast<Material>(*thisMat)));
   }
@@ -269,7 +269,7 @@ void RecipeReactor::addResource(Transaction trans, std::vector<rsrc_ptr> manifes
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -    
 void RecipeReactor::handleTick(int time) {
-  LOG(LEV_INFO3, "RReact") << name() << " is ticking {";
+  LOG(cyclus::LEV_INFO3, "RReact") << name() << " is ticking {";
 
   // if at beginning of cycle, beginCycle()
   // if stocks are empty, ask for a batch
@@ -277,13 +277,13 @@ void RecipeReactor::handleTick(int time) {
   
   // BEGIN CYCLE
   if(month_in_cycle_ == 1){
-    LOG(LEV_INFO4, "RReact") << " Beginning a new cycle";
+    LOG(cyclus::LEV_INFO4, "RReact") << " Beginning a new cycle";
     this->beginCycle();
   };
 
   makeRequests();
   makeOffers();
-  LOG(LEV_INFO3, "RReact") << "}";
+  LOG(cyclus::LEV_INFO3, "RReact") << "}";
 }
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -    
@@ -328,9 +328,9 @@ void RecipeReactor::makeRequests(){
     requestAmt = capacity_ - sto;
   }
 
-  LOG(LEV_INFO4, "RReact") << " making requests {";
+  LOG(cyclus::LEV_INFO4, "RReact") << " making requests {";
 
-  MarketModel* market = MarketModel::marketForCommod(in_commod);
+  cyclus::MarketModel* market = MarketModel::marketForCommod(in_commod);
   Communicator* recipient = dynamic_cast<Communicator*>(market);
 
   // request a generic resource
@@ -343,10 +343,10 @@ void RecipeReactor::makeRequests(){
   trans.setPrice(commod_price);
   trans.setResource(request_res);
 
-  LOG(LEV_INFO5, "RReact") << name() << " has requested " << request_res->quantity()
+  LOG(cyclus::LEV_INFO5, "RReact") << name() << " has requested " << request_res->quantity()
                            << " kg of " << in_commod << ".";
   sendMessage(recipient, trans);
-  LOG(LEV_INFO4, "RReact") << "}";
+  LOG(cyclus::LEV_INFO4, "RReact") << "}";
 }
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -    
@@ -357,7 +357,7 @@ void RecipeReactor::sendMessage(Communicator* recipient, Transaction trans){
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -    
 void RecipeReactor::makeOffers(){
-  LOG(LEV_INFO4, "RReact") << " making offers {";
+  LOG(cyclus::LEV_INFO4, "RReact") << " making offers {";
   // MAKE OFFERS
   // decide how much to offer
 
@@ -377,7 +377,7 @@ void RecipeReactor::makeOffers(){
        iter ++){
     // get commod
     commod = iter->first;
-    MarketModel* market = MarketModel::marketForCommod(commod);
+    cyclus::MarketModel* market = MarketModel::marketForCommod(commod);
     // decide what market to offer to
     recipient = dynamic_cast<Communicator*>(market);
     // get amt
@@ -395,17 +395,17 @@ void RecipeReactor::makeOffers(){
     trans.setPrice(commod_price);
     trans.setResource(offer_mat);
 
-    LOG(LEV_INFO5, "RReact") << name() << " has offered " << offer_mat->quantity()
+    LOG(cyclus::LEV_INFO5, "RReact") << name() << " has offered " << offer_mat->quantity()
                              << " kg of " << commod << ".";
 
     sendMessage(recipient, trans);
   }
-  LOG(LEV_INFO4, "RReact") << "}";
+  LOG(cyclus::LEV_INFO4, "RReact") << "}";
 }
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -    
 void RecipeReactor::handleTock(int time) {
-  LOG(LEV_INFO3, "RReact") << name() << " is tocking {";
+  LOG(cyclus::LEV_INFO3, "RReact") << name() << " is tocking {";
   // at the end of the cycle
   if (month_in_cycle_ > cycle_length_){
     this->endCycle();
@@ -418,7 +418,7 @@ void RecipeReactor::handleTock(int time) {
     ordersWaiting_.pop_front();
   };
   month_in_cycle_++;
-  LOG(LEV_INFO3, "RReact") << "}";
+  LOG(cyclus::LEV_INFO3, "RReact") << "}";
 }
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -    
 
@@ -549,7 +549,7 @@ double RecipeReactor::stocksMass(){
  * --------------------
  */
 
-extern "C" Model* constructRecipeReactor() {
+extern "C" cyclus::Model* constructRecipeReactor() {
   return new RecipeReactor();
 }
 

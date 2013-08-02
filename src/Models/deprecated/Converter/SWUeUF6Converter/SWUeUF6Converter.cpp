@@ -36,7 +36,7 @@ void SWUeUF6Converter::copy(SWUeUF6Converter* src) {
 }
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - 
-void SWUeUF6Converter::copyFreshModel(Model* src)
+void SWUeUF6Converter::copyFreshModel(cyclus::Model* src)
 {
   copy((SWUeUF6Converter*)src);
 }
@@ -55,8 +55,8 @@ msg_ptr SWUeUF6Converter::convert(msg_ptr convMsg, msg_ptr refMsg)
   // Figure out what you're converting to and from
   in_commod_ = convMsg->trans().commod();
   out_commod_ = refMsg->trans().commod();
-  Model* enr;
-  Model* castEnr;
+  cyclus::Model* enr;
+  cyclus::Model* castEnr;
   msg_ptr toRet;
   mat_rsrc_ptr mat;
 
@@ -136,7 +136,7 @@ msg_ptr SWUeUF6Converter::convert(msg_ptr convMsg, msg_ptr refMsg)
   return toRet;
 }    
 
-extern "C" Model* constructSWUeUF6Converter() {
+extern "C" cyclus::Model* constructSWUeUF6Converter() {
     return new SWUeUF6Converter();
 }
 

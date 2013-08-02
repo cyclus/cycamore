@@ -50,7 +50,7 @@ class EnrichmentFacility : public FacilityModel
      Copy module members from a source model
      @param sourceModel the model to copy from
    */
-  virtual void cloneModuleMembersFrom(FacilityModel* sourceModel);
+  virtual void cloneModuleMembersFrom(cyclus::FacilityModel* sourceModel);
   /* --- */
 
   /* --- Agent Methods --- */

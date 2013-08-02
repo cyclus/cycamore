@@ -21,7 +21,7 @@ void SinkFacilityTest::TearDown() {
 void SinkFacilityTest::initParameters() {
   commod_ = "incommod";
   commod_market = new TestMarket();
-  commod_market->setCommodity(commod_);
+  commod_market->setcyclus::Commodity(commod_);
   MarketModel::registerMarket(commod_market);
 }
 

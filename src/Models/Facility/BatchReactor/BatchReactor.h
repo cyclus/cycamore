@@ -32,7 +32,7 @@ enum Phase {INIT, BEGIN, OPERATION, REFUEL, REFUEL_DELAY, WAITING, END};
    This class is identical to the RecipeReactor, except that it
    operates in a batch-like manner, i.e. it refuels in batches.
  */
-class BatchReactor : public FacilityModel, public SupplyDemand::CommodityProducer  
+class BatchReactor : public FacilityModel, public SupplyDemand::cyclus::CommodityProducer  
 {
  public:  
   /* --- Module Methods --- */
@@ -63,7 +63,7 @@ class BatchReactor : public FacilityModel, public SupplyDemand::CommodityProduce
      Copy module members from a source model
      @param sourceModel the model to copy from
    */
-  virtual void cloneModuleMembersFrom(FacilityModel* sourceModel);
+  virtual void cloneModuleMembersFrom(cyclus::FacilityModel* sourceModel);
 
   /**
      perform module-specific tasks when entering the simulation

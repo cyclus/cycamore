@@ -26,7 +26,7 @@ std::string StubInst::str() {
 void StubInst::initModuleMembers(QueryEngine* qe) {}
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-void StubInst::enterSimulation(Model* parent) {
+void StubInst::enterSimulation(cyclus::Model* parent) {
   InstModel::enterSimulation(parent);
 }
 
@@ -58,12 +58,12 @@ void StubInst::receiveMessage(msg_ptr msg) {};
  */
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-extern "C" Model* constructStubInst() {
+extern "C" cyclus::Model* constructStubInst() {
   return new StubInst();
 }
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-extern "C" void destructStubInst(Model* model) {
+extern "C" void destructStubInst(cyclus::Model* model) {
   delete model;
 }
 

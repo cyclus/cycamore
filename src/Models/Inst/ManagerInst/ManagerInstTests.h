@@ -8,13 +8,13 @@
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - 
 class TestProducer : 
   public FacilityModel, 
-  public SupplyDemand::CommodityProducer
+  public SupplyDemand::cyclus::CommodityProducer
 {
  public:
   TestProducer();
   virtual ~TestProducer();
 
-  void cloneModuleMembersFrom(FacilityModel* source) {};
+  void cloneModuleMembersFrom(cyclus::FacilityModel* source) {};
   void handleTock(int time){};
   void handleTick(int time){};
 
@@ -31,7 +31,7 @@ class ManagerInstTests : public ::testing::Test
   ManagerInst* src_inst;
   TestProducer* producer;
   
-  Commodity commodity;
+  cyclus::Commodity commodity;
   double capacity;
 
  public:  

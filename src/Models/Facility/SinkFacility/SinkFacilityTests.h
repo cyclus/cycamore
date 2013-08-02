@@ -8,13 +8,13 @@
 #include "TestMarket.h"
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-Model* SinkFacilityModelConstructor(){
-  return dynamic_cast<Model*>(new SinkFacility());
+cyclus::Model* SinkFacilityModelConstructor(){
+  return dynamic_cast<cyclus::Model*>(new SinkFacility());
 }
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-FacilityModel* SinkFacilityConstructor(){
-  return dynamic_cast<FacilityModel*>(new SinkFacility());
+cyclus::FacilityModel* SinkFacilityConstructor(){
+  return dynamic_cast<cyclus::FacilityModel*>(new SinkFacility());
 }
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -

@@ -84,7 +84,7 @@ Transaction StorageFacility::buildTransaction() {
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - 
 void StorageFacility::sendOffer(Transaction trans) {
-  MarketModel* market = MarketModel::marketForCommod(out_commod_);
+  cyclus::MarketModel* market = MarketModel::marketForCommod(out_commod_);
 
   Communicator* recipient = dynamic_cast<Communicator*>(market);
 
@@ -98,11 +98,11 @@ void StorageFacility::handleTick(int time)
 }
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - 
-extern "C" Model* constructStorageFacility() {
+extern "C" cyclus::Model* constructStorageFacility() {
   return new StorageFacility();
 }
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-extern "C" void destructStorageFacility(Model* model) {
+extern "C" void destructStorageFacility(cyclus::Model* model) {
       delete model;
 }

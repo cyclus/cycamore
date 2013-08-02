@@ -64,7 +64,7 @@ class StorageFacility : public FacilityModel
      Copy module members from a source model
      @param sourceModel the model to copy from
    */
-  virtual void cloneModuleMembersFrom(FacilityModel* sourceModel);
+  virtual void cloneModuleMembersFrom(cyclus::FacilityModel* sourceModel);
   /* --- */
 
   /* --- Agent Methods --- */  
@@ -128,10 +128,10 @@ class StorageFacility : public FacilityModel
      sets the inputput commodity name
      @param name the commodity name
    */
-  void setInCommodity(std::string name);
+  void setIncyclus::Commodity(std::string name);
 
   /// @return the input commodity
-  std::string inCommodity();
+  std::string incyclus::Commodity();
 
   /**
      sets the capacity of a able to enter at any given time step
@@ -146,10 +146,10 @@ class StorageFacility : public FacilityModel
      sets the outputput commodity name
      @param name the commodity name
    */
-  void setOutCommodity(std::string name);
+  void setOutcyclus::Commodity(std::string name);
 
   /// @return the output commodity
-  std::string outCommodity();
+  std::string outcyclus::Commodity();
 
   /**
      sets the capacity of a able to enter at any given time step

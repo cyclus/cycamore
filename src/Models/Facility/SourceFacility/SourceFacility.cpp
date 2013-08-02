@@ -39,9 +39,9 @@ void SourceFacility::initModuleMembers(QueryEngine* qe) {
   setRecipe(output->getElementContent("recipe"));
 
   string data = output->getElementContent("outcommodity");
-  setCommodity(data);
-  Commodity commod(data);
-  CommodityProducer::addCommodity(commod);
+  setcyclus::Commodity(data);
+  cyclus::Commodity commod(data);
+  cyclus::CommodityProducer::addCommodity(commod);
   
   double val = numeric_limits<double>::max();
   try
@@ -50,7 +50,7 @@ void SourceFacility::initModuleMembers(QueryEngine* qe) {
     val = lexical_cast<double>(data); // overwrite default if given a value
   }
   catch (CycNullQueryException e) {}
-  CommodityProducer::setCapacity(commod, val);
+  cyclus::CommodityProducer::setCapacity(commod, val);
   setCapacity(val);  
 
   try
@@ -77,9 +77,9 @@ std::string SourceFacility::str() {
 }
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - 
-void SourceFacility::cloneModuleMembersFrom(FacilityModel* sourceModel) {
+void SourceFacility::cloneModuleMembersFrom(cyclus::FacilityModel* sourceModel) {
   SourceFacility* source = dynamic_cast<SourceFacility*>(sourceModel);
-  setCommodity(source->commodity());
+  setcyclus::Commodity(source->commodity());
   setCapacity(source->capacity());
   setRecipe(source->recipe());
   setMaxInventorySize(source->maxInventorySize());
@@ -88,45 +88,45 @@ void SourceFacility::cloneModuleMembersFrom(FacilityModel* sourceModel) {
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - 
 void SourceFacility::handleTick(int time){
-  LOG(LEV_INFO3, "SrcFac") << facName() << " is ticking {";
+  LOG(cyclus::LEV_INFO3, "SrcFac") << facName() << " is ticking {";
 
   generateMaterial();
   Transaction trans = buildTransaction();
 
-  LOG(LEV_INFO4, "SrcFac") << "offers "<< trans.resource()->quantity() << " kg of "
+  LOG(cyclus::LEV_INFO4, "SrcFac") << "offers "<< trans.resource()->quantity() << " kg of "
                            << out_commod_ << ".";
 
   sendOffer(trans);
 
-  LOG(LEV_INFO3, "SrcFac") << "}";
+  LOG(cyclus::LEV_INFO3, "SrcFac") << "}";
 }
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - 
 void SourceFacility::handleTock(int time){
-  LOG(LEV_INFO3, "SrcFac") << facName() << " is tocking {";
+  LOG(cyclus::LEV_INFO3, "SrcFac") << facName() << " is tocking {";
 
   // check what orders are waiting,
   // send material if you have it now
   while (!ordersWaiting_.empty()) {
     Transaction order = ordersWaiting_.front()->trans();
-    LOG(LEV_INFO3, "SrcFac") << "Order is for: " << order.resource()->quantity();
-    LOG(LEV_INFO3, "SrcFac") << "Inventory is: " << inventory_.quantity();
+    LOG(cyclus::LEV_INFO3, "SrcFac") << "Order is for: " << order.resource()->quantity();
+    LOG(cyclus::LEV_INFO3, "SrcFac") << "Inventory is: " << inventory_.quantity();
     if (order.resource()->quantity() - inventory_.quantity() > cyclus::eps()) {
-      LOG(LEV_INFO3, "SrcFac") << "Not enough inventory. Waitlisting remaining orders.";
+      LOG(cyclus::LEV_INFO3, "SrcFac") << "Not enough inventory. Waitlisting remaining orders.";
       break;
     } else {
-      LOG(LEV_INFO3, "SrcFac") << "Satisfying order.";
+      LOG(cyclus::LEV_INFO3, "SrcFac") << "Satisfying order.";
       order.approveTransfer();
       ordersWaiting_.pop_front();
     }
   }
   // For now, lets just print out what we have at each timestep.
-  LOG(LEV_INFO4, "SrcFac") << "SourceFacility " << this->ID()
+  LOG(cyclus::LEV_INFO4, "SrcFac") << "SourceFacility " << this->ID()
                   << " is holding " << this->inventory_.quantity()
                   << " units of material at the close of month " << time
                   << ".";
 
-  LOG(LEV_INFO3, "SrcFac") << "}";
+  LOG(cyclus::LEV_INFO3, "SrcFac") << "}";
 }
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - 
@@ -135,8 +135,8 @@ void SourceFacility::receiveMessage(msg_ptr msg) {
   if(msg->trans().supplier() == this) {
     // file the order
     ordersWaiting_.push_front(msg);
-    LOG(LEV_INFO5, "SrcFac") << name() << " just received an order.";
-    LOG(LEV_INFO5, "SrcFac") << "for " << msg->trans().resource()->quantity() 
+    LOG(cyclus::LEV_INFO5, "SrcFac") << name() << " just received an order.";
+    LOG(cyclus::LEV_INFO5, "SrcFac") << "for " << msg->trans().resource()->quantity() 
                              << " of " << msg->trans().commod();
   } else {
     throw CycException("SourceFacility is not the supplier of this msg.");
@@ -149,7 +149,7 @@ vector<rsrc_ptr> SourceFacility::removeResource(Transaction order) {
 }
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - 
-void SourceFacility::setCommodity(std::string name) {
+void SourceFacility::setcyclus::Commodity(std::string name) {
   out_commod_ = name;
 }
 
@@ -232,7 +232,7 @@ Transaction SourceFacility::buildTransaction() {
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - 
 void SourceFacility::sendOffer(Transaction trans) {
-  MarketModel* market = MarketModel::marketForCommod(out_commod_);
+  cyclus::MarketModel* market = MarketModel::marketForCommod(out_commod_);
 
   Communicator* recipient = dynamic_cast<Communicator*>(market);
 
@@ -241,11 +241,11 @@ void SourceFacility::sendOffer(Transaction trans) {
 }
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - 
-extern "C" Model* constructSourceFacility() {
+extern "C" cyclus::Model* constructSourceFacility() {
   return new SourceFacility();
 }
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-extern "C" void destructSourceFacility(Model* model) {
+extern "C" void destructSourceFacility(cyclus::Model* model) {
   delete model;
 }

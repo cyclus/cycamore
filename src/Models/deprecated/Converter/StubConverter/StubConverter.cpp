@@ -22,7 +22,7 @@ void StubConverter::copy(StubConverter* src) {
 };
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-void StubConverter::copyFreshModel(Model* src) { 
+void StubConverter::copyFreshModel(cyclus::Model* src) { 
   copy(dynamic_cast<StubConverter*>(src)); 
 };
 
@@ -53,7 +53,7 @@ msg_ptr StubConverter::convert(msg_ptr convMsg, msg_ptr refMsg) {
  */
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-extern "C" Model* constructStubConverter() {
+extern "C" cyclus::Model* constructStubConverter() {
     return new StubConverter();
 }
 

@@ -76,13 +76,13 @@ std::string EnrichmentFacility::str()
      << " with enrichment facility parameters:"
      << " * Tails assay: " << tails_assay()
      << " * Feed assay: " << feed_assay()
-     << " * Input Commodity: " << in_commodity()
-     << " * Output Commodity: " << out_commodity();
+     << " * Input cyclus::Commodity: " << in_commodity()
+     << " * Output cyclus::Commodity: " << out_commodity();
   return ss.str();
 }
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - 
-void EnrichmentFacility::cloneModuleMembersFrom(FacilityModel* sourceModel) 
+void EnrichmentFacility::cloneModuleMembersFrom(cyclus::FacilityModel* sourceModel) 
 {
   EnrichmentFacility* source = dynamic_cast<EnrichmentFacility*>(sourceModel);
   set_tails_assay(source->tails_assay());
@@ -93,13 +93,13 @@ void EnrichmentFacility::cloneModuleMembersFrom(FacilityModel* sourceModel)
   setMaxInventorySize(source->maxInventorySize());
   set_commodity_price(source->commodity_price());
 
-  LOG(LEV_DEBUG1, "EnrFac") << "Cloned - " << str();
+  LOG(cyclus::LEV_DEBUG1, "EnrFac") << "Cloned - " << str();
 }
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - 
 void EnrichmentFacility::addResource(Transaction trans, std::vector<rsrc_ptr> manifest) 
 {
-  LOG(LEV_INFO5, "EnrFac") << name() << " adding material qty: " << manifest.at(0)->quantity();
+  LOG(cyclus::LEV_INFO5, "EnrFac") << name() << " adding material qty: " << manifest.at(0)->quantity();
   inventory_.pushAll(MatBuff::toMat(manifest));
 }
 
@@ -119,13 +119,13 @@ std::vector<rsrc_ptr> EnrichmentFacility::removeResource(Transaction order)
   inventory_.popQty(natural_u);
 
   
-  LOG(LEV_INFO5, "EnrFac") << name() << " has performed an enrichment: ";
-  LOG(LEV_INFO5, "EnrFac") << "   * Feed Qty: " << feed_qty(product_qty,assays); 
-  LOG(LEV_INFO5, "EnrFac") << "   * Feed Assay: " << assays.feed() * 100; 
-  LOG(LEV_INFO5, "EnrFac") << "   * Product Qty: " << product_qty;
-  LOG(LEV_INFO5, "EnrFac") << "   * Product Assay: " << assays.product() * 100;
-  LOG(LEV_INFO5, "EnrFac") << "   * Tails Qty: " << tails_qty(product_qty,assays); 
-  LOG(LEV_INFO5, "EnrFac") << "   * Tails Assay: " << assays.tails() * 100; 
+  LOG(cyclus::LEV_INFO5, "EnrFac") << name() << " has performed an enrichment: ";
+  LOG(cyclus::LEV_INFO5, "EnrFac") << "   * Feed Qty: " << feed_qty(product_qty,assays); 
+  LOG(cyclus::LEV_INFO5, "EnrFac") << "   * Feed Assay: " << assays.feed() * 100; 
+  LOG(cyclus::LEV_INFO5, "EnrFac") << "   * Product Qty: " << product_qty;
+  LOG(cyclus::LEV_INFO5, "EnrFac") << "   * Product Assay: " << assays.product() * 100;
+  LOG(cyclus::LEV_INFO5, "EnrFac") << "   * Tails Qty: " << tails_qty(product_qty,assays); 
+  LOG(cyclus::LEV_INFO5, "EnrFac") << "   * Tails Assay: " << assays.tails() * 100; 
   recordEnrichment(natural_u,swu);
 
   vector<rsrc_ptr> ret;
@@ -141,7 +141,7 @@ void EnrichmentFacility::receiveMessage(msg_ptr msg)
     {
       // file the order
       orders_.push_back(msg);
-      LOG(LEV_INFO5, "EnrFac") << name() << " just received an order for: ";
+      LOG(cyclus::LEV_INFO5, "EnrFac") << name() << " just received an order for: ";
       msg->trans().resource()->print();
     } 
   else 
@@ -153,22 +153,22 @@ void EnrichmentFacility::receiveMessage(msg_ptr msg)
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - 
 void EnrichmentFacility::handleTick(int time)
 {
-  LOG(LEV_INFO3, "EnrFac") << facName() << " is ticking {";
+  LOG(cyclus::LEV_INFO3, "EnrFac") << facName() << " is ticking {";
 
   makeRequest();
   makeOffer();
 
-  LOG(LEV_INFO3, "EnrFac") << "}";
+  LOG(cyclus::LEV_INFO3, "EnrFac") << "}";
 }
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - 
 void EnrichmentFacility::handleTock(int time)
 {
-  LOG(LEV_INFO3, "EnrFac") << facName() << " is tocking {";
+  LOG(cyclus::LEV_INFO3, "EnrFac") << facName() << " is tocking {";
 
   processOutgoingMaterial();
 
-  LOG(LEV_INFO3, "EnrFac") << "}";
+  LOG(cyclus::LEV_INFO3, "EnrFac") << "}";
 }
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - 
@@ -180,9 +180,9 @@ void EnrichmentFacility::makeRequest()
 
   if (amt > cyclus::eps())
     {
-      LOG(LEV_INFO4, "EnrFac") << " requests "<< amt << " kg of " << commodity << ".";
+      LOG(cyclus::LEV_INFO4, "EnrFac") << " requests "<< amt << " kg of " << commodity << ".";
 
-      MarketModel* market = MarketModel::marketForCommod(commodity);
+      cyclus::MarketModel* market = MarketModel::marketForCommod(commodity);
       Communicator* recipient = dynamic_cast<Communicator*>(market);
 
       // create a material resource
@@ -225,7 +225,7 @@ Transaction EnrichmentFacility::buildTransaction()
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - 
 void EnrichmentFacility::makeOffer() 
 {
-  MarketModel* market = MarketModel::marketForCommod(out_commodity());
+  cyclus::MarketModel* market = MarketModel::marketForCommod(out_commodity());
 
   Communicator* recipient = dynamic_cast<Communicator*>(market);
 
@@ -238,7 +238,7 @@ void EnrichmentFacility::makeOffer()
 
   if (trans.resource()->quantity() > 0) 
     {
-      LOG(LEV_INFO4, "EnrFac") << "offers "<< trans.resource()->quantity() << " kg of "
+      LOG(cyclus::LEV_INFO4, "EnrFac") << "offers "<< trans.resource()->quantity() << " kg of "
                                << out_commodity_ << ".";
 
       msg->sendOn();
@@ -259,7 +259,7 @@ void EnrichmentFacility::processOutgoingMaterial()
 
       mat_rsrc_ptr rsrc = dynamic_pointer_cast<Material>(prsrc);
 
-      LOG(LEV_DEBUG1, "EnrFac") << "Processing material: ";
+      LOG(cyclus::LEV_DEBUG1, "EnrFac") << "Processing material: ";
       rsrc->print();
 
       Assays assays = getAssays(rsrc);
@@ -289,9 +289,9 @@ enrichment::Assays EnrichmentFacility::getAssays(mat_rsrc_ptr rsrc)
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - 
 void EnrichmentFacility::recordEnrichment(double natural_u, double swu)
 {
-  LOG(LEV_DEBUG1, "EnrFac") << name() << " has enriched a material:";
-  LOG(LEV_DEBUG1, "EnrFac") << "  * Amount: " << natural_u;
-  LOG(LEV_DEBUG1, "EnrFac") << "  *    SWU: " << swu;
+  LOG(cyclus::LEV_DEBUG1, "EnrFac") << name() << " has enriched a material:";
+  LOG(cyclus::LEV_DEBUG1, "EnrFac") << "  * Amount: " << natural_u;
+  LOG(cyclus::LEV_DEBUG1, "EnrFac") << "  *    SWU: " << swu;
 
   EM->newEvent("Enrichments")
     ->addVal("ENTRY", ++entry_)
@@ -303,13 +303,13 @@ void EnrichmentFacility::recordEnrichment(double natural_u, double swu)
 }
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - 
-extern "C" Model* constructEnrichmentFacility() 
+extern "C" cyclus::Model* constructEnrichmentFacility() 
 {
   return new EnrichmentFacility();
 }
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-extern "C" void destructEnrichmentFacility(Model* model) 
+extern "C" void destructEnrichmentFacility(cyclus::Model* model) 
 {
       delete model;
 }

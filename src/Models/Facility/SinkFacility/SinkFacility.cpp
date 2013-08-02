@@ -70,7 +70,7 @@ std::string SinkFacility::str() {
 }
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - 
-void SinkFacility::cloneModuleMembersFrom(FacilityModel* sourceModel) {
+void SinkFacility::cloneModuleMembersFrom(cyclus::FacilityModel* sourceModel) {
   SinkFacility* source = dynamic_cast<SinkFacility*>(sourceModel);
   setCapacity(source->capacity());
   setMaxInventorySize(source->maxInventorySize());
@@ -79,10 +79,10 @@ void SinkFacility::cloneModuleMembersFrom(FacilityModel* sourceModel) {
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - 
 void SinkFacility::handleTick(int time){
-  LOG(LEV_INFO3, "SnkFac") << facName() << " is ticking {";
+  LOG(cyclus::LEV_INFO3, "SnkFac") << facName() << " is ticking {";
 
   double requestAmt = getRequestAmt(); 
-  CLOG(LEV_DEBUG3) << "SinkFacility " << name() << " on the tick has "
+  CLOG(cyclus::LEV_DEBUG3) << "SinkFacility " << name() << " on the tick has "
                    << "a request amount of: " << requestAmt;
   double minAmt = 0;
 
@@ -93,9 +93,9 @@ void SinkFacility::handleTick(int time){
     for (vector<string>::iterator commod = in_commods_.begin();
         commod != in_commods_.end();
         commod++) {
-      LOG(LEV_INFO4, "SnkFac") << " requests "<< requestAmt << " kg of " << *commod << ".";
+      LOG(cyclus::LEV_INFO4, "SnkFac") << " requests "<< requestAmt << " kg of " << *commod << ".";
 
-      MarketModel* market = MarketModel::marketForCommod(*commod);
+      cyclus::MarketModel* market = MarketModel::marketForCommod(*commod);
       Communicator* recipient = dynamic_cast<Communicator*>(market);
 
       // create a generic resource
@@ -113,21 +113,21 @@ void SinkFacility::handleTick(int time){
 
     }
   }
-  LOG(LEV_INFO3, "SnkFac") << "}";
+  LOG(cyclus::LEV_INFO3, "SnkFac") << "}";
 }
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - 
 void SinkFacility::handleTock(int time){
-  LOG(LEV_INFO3, "SnkFac") << facName() << " is tocking {";
+  LOG(cyclus::LEV_INFO3, "SnkFac") << facName() << " is tocking {";
 
   // On the tock, the sink facility doesn't really do much. 
   // Maybe someday it will record things.
   // For now, lets just print out what we have at each timestep.
-  LOG(LEV_INFO4, "SnkFac") << "SinkFacility " << this->ID()
+  LOG(cyclus::LEV_INFO4, "SnkFac") << "SinkFacility " << this->ID()
                   << " is holding " << inventory_.quantity()
                   << " units of material at the close of month " << time
                   << ".";
-  LOG(LEV_INFO3, "SnkFac") << "}";
+  LOG(cyclus::LEV_INFO3, "SnkFac") << "}";
 }
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - 
@@ -188,11 +188,11 @@ const double SinkFacility::getRequestAmt(){
 }
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-extern "C" Model* constructSinkFacility() {
+extern "C" cyclus::Model* constructSinkFacility() {
   return new SinkFacility();
 }
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-extern "C" void destructSinkFacility(Model* model) {
+extern "C" void destructSinkFacility(cyclus::Model* model) {
       delete model;
 }

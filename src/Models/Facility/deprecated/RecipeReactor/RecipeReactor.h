@@ -147,7 +147,7 @@ class RecipeReactor : public FacilityModel  {
       
      @param src the pointer to the original (initialized ?) model to be 
    */
-  virtual void copyFreshModel(Model* src);
+  virtual void copyFreshModel(cyclus::Model* src);
 
   /**
      Print information about this model 

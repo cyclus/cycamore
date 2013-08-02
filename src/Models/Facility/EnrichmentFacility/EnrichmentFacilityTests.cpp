@@ -35,12 +35,12 @@ void EnrichmentFacilityTest::initParameters()
 {
   in_commod = "incommod";
   in_commod_market = new TestMarket();
-  in_commod_market->setCommodity(in_commod);
+  in_commod_market->setcyclus::Commodity(in_commod);
   MarketModel::registerMarket(in_commod_market);
 
   out_commod = "outcommod";
   out_commod_market = new TestMarket();
-  out_commod_market->setCommodity(out_commod);
+  out_commod_market->setcyclus::Commodity(out_commod);
   MarketModel::registerMarket(out_commod_market);
 
   in_recipe = "recipe";
@@ -109,15 +109,15 @@ TEST_F(EnrichmentFacilityTest,clone)
 }
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - 
-Model* EnrichmentFacilityModelConstructor()
+cyclus::Model* EnrichmentFacilityModelConstructor()
 {
-  return dynamic_cast<Model*>(new EnrichmentFacility());
+  return dynamic_cast<cyclus::Model*>(new EnrichmentFacility());
 }
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - 
-FacilityModel* EnrichmentFacilityConstructor()
+cyclus::FacilityModel* EnrichmentFacilityConstructor()
 {
-  return dynamic_cast<FacilityModel*>(new EnrichmentFacility());
+  return dynamic_cast<cyclus::FacilityModel*>(new EnrichmentFacility());
 }
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - 

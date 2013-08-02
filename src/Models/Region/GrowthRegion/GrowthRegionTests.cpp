@@ -28,15 +28,15 @@ void GrowthRegionTests::TearDown()
 }  
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-Model* GrowthRegionModelConstructor()
+cyclus::Model* GrowthRegionModelConstructor()
 {
-  return dynamic_cast<Model*>(new GrowthRegion());
+  return dynamic_cast<cyclus::Model*>(new GrowthRegion());
 }
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-RegionModel* GrowthRegionConstructor()
+cyclus::RegionModel* GrowthRegionConstructor()
 {
-  return dynamic_cast<RegionModel*>(new GrowthRegion());
+  return dynamic_cast<cyclus::RegionModel*>(new GrowthRegion());
 }
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - 
@@ -62,7 +62,7 @@ void GrowthRegionTests::initRegion()
 }
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - 
-bool GrowthRegionTests::managesCommodity(Commodity& commodity)
+bool GrowthRegionTests::managesCommodity(cyclus::Commodity& commodity)
 {
   return region->sdmanager_.managesCommodity(commodity); 
 }
@@ -71,7 +71,7 @@ bool GrowthRegionTests::managesCommodity(Commodity& commodity)
 TEST_F(GrowthRegionTests,init) 
 {
   initRegion();
-  Commodity commodity(commodity_name);
+  cyclus::Commodity commodity(commodity_name);
   EXPECT_TRUE(managesCommodity(commodity));
 }
 

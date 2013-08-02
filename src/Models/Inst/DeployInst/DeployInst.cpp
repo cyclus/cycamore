@@ -84,12 +84,12 @@ void DeployInst::handleTick(int time) {
  */
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-extern "C" Model* constructDeployInst() {
+extern "C" cyclus::Model* constructDeployInst() {
   return new DeployInst();
 }
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-extern "C" void destructDeployInst(Model* model) {
+extern "C" void destructDeployInst(cyclus::Model* model) {
   delete model;
 }
 

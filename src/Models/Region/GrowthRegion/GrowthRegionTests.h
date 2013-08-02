@@ -15,7 +15,7 @@ class GrowthRegionTests : public ::testing::Test {
   virtual void SetUp();
   virtual void TearDown();
   void initRegion();
-  bool managesCommodity(Commodity& commodity);
+  bool managesCommodity(cyclus::Commodity& commodity);
 };
 
 #endif

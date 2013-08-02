@@ -23,13 +23,13 @@ protected:
 };
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-Model* NullInstModelConstructor(){
-  return dynamic_cast<Model*>(new NullInst());
+cyclus::Model* NullInstModelConstructor(){
+  return dynamic_cast<cyclus::Model*>(new NullInst());
 }
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-InstModel* NullInstConstructor(){
-  return dynamic_cast<InstModel*>(new NullInst());
+cyclus::InstModel* NullInstConstructor(){
+  return dynamic_cast<cyclus::InstModel*>(new NullInst());
 }
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - 

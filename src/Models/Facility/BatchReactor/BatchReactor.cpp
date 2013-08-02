@@ -83,12 +83,12 @@ void BatchReactor::initModuleMembers(QueryEngine* qe)
   set_batches_per_core(lexical_cast<int>(data));
 
   QueryEngine* commodity = qe->queryElement("commodity_production");
-  Commodity commod(commodity->getElementContent("commodity"));
+  cyclus::Commodity commod(commodity->getElementContent("commodity"));
   addCommodity(commod);
   data = commodity->getElementContent("capacity");
-  CommodityProducer::setCapacity(commod,lexical_cast<double>(data));
+  cyclus::CommodityProducer::setCapacity(commod,lexical_cast<double>(data));
   data = commodity->getElementContent("cost");
-  CommodityProducer::setCost(commod,lexical_cast<double>(data));
+  cyclus::CommodityProducer::setCost(commod,lexical_cast<double>(data));
 }
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - 
@@ -109,7 +109,7 @@ std::string BatchReactor::str()
 }
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - 
-void BatchReactor::cloneModuleMembersFrom(FacilityModel* sourceModel) 
+void BatchReactor::cloneModuleMembersFrom(cyclus::FacilityModel* sourceModel) 
 {
   BatchReactor* source = dynamic_cast<BatchReactor*>(sourceModel);
   set_cycle_length(source->cycle_length());
@@ -131,22 +131,22 @@ void BatchReactor::enterSimulationAsModule()
   inCore_.setCapacity(in_core_loading());  
   reset_cycle_timer();
   setPhase(BEGIN);
-  LOG(LEV_DEBUG2,"BReact") << "Batch Reactor " << name() 
+  LOG(cyclus::LEV_DEBUG2,"BReact") << "Batch Reactor " << name() 
                            << " is entering the simuluation with members:";
-  LOG(LEV_DEBUG2,"BReact") << "  * in core loading: " << in_core_loading();
-  LOG(LEV_DEBUG2,"BReact") << "  * out core loading: " << out_core_loading();
-  LOG(LEV_DEBUG2,"BReact") << "  * pre core capacity: " << preCore_.capacity();
-  LOG(LEV_DEBUG2,"BReact") << "  * in core capacity: " << inCore_.capacity();
-  LOG(LEV_DEBUG2,"BReact") << "  * cycle timer: " << cycle_timer_;
-  LOG(LEV_DEBUG2,"BReact") << "  * phase: " << phase_names_[phase_];
+  LOG(cyclus::LEV_DEBUG2,"BReact") << "  * in core loading: " << in_core_loading();
+  LOG(cyclus::LEV_DEBUG2,"BReact") << "  * out core loading: " << out_core_loading();
+  LOG(cyclus::LEV_DEBUG2,"BReact") << "  * pre core capacity: " << preCore_.capacity();
+  LOG(cyclus::LEV_DEBUG2,"BReact") << "  * in core capacity: " << inCore_.capacity();
+  LOG(cyclus::LEV_DEBUG2,"BReact") << "  * cycle timer: " << cycle_timer_;
+  LOG(cyclus::LEV_DEBUG2,"BReact") << "  * phase: " << phase_names_[phase_];
 }
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - 
 void BatchReactor::handleTick(int time) 
 {
-  LOG(LEV_INFO3, "BReact") << name() << " is ticking at time " 
+  LOG(cyclus::LEV_INFO3, "BReact") << name() << " is ticking at time " 
                            << time << " {";
-  LOG(LEV_DEBUG3, "BReact") << "The current phase is: " 
+  LOG(cyclus::LEV_DEBUG3, "BReact") << "The current phase is: " 
                             << phase_names_[phase_];
 
 
@@ -195,14 +195,14 @@ void BatchReactor::handleTick(int time)
   
   makeOffers();
   
-  LOG(LEV_INFO3, "BReact") << "}";
+  LOG(cyclus::LEV_INFO3, "BReact") << "}";
 }
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - 
 void BatchReactor::handleTock(int time) 
 { 
-  LOG(LEV_INFO3, "BReact") << name() << " is tocking {";
-  LOG(LEV_DEBUG3, "BReact") << "The current phase is: " 
+  LOG(cyclus::LEV_INFO3, "BReact") << name() << " is tocking {";
+  LOG(cyclus::LEV_DEBUG3, "BReact") << "The current phase is: " 
                             << phase_names_[phase_];
   
   handleOrders();
@@ -262,11 +262,11 @@ void BatchReactor::handleTock(int time)
       break;
     }
 
-  LOG(LEV_DEBUG3, "BReact") << "cycle timer: " 
+  LOG(cyclus::LEV_DEBUG3, "BReact") << "cycle timer: " 
                             << cycle_timer_;
-  LOG(LEV_DEBUG3, "BReact") << "delay: " 
+  LOG(cyclus::LEV_DEBUG3, "BReact") << "delay: " 
                             << time_delayed_;  
-  LOG(LEV_INFO3, "BReact") << "}";
+  LOG(cyclus::LEV_INFO3, "BReact") << "}";
 }
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - 
@@ -277,7 +277,7 @@ void BatchReactor::receiveMessage(msg_ptr msg)
     {
       // file the order
       ordersWaiting_.push_front(msg);
-      LOG(LEV_INFO5, "BReact") << name() << " just received an order.";
+      LOG(cyclus::LEV_INFO5, "BReact") << name() << " just received an order.";
     }
   else 
     {
@@ -298,7 +298,7 @@ vector<rsrc_ptr> BatchReactor::removeResource(Transaction order)
   Transaction trans = order;
   double amt = trans.resource()->quantity();
 
-  LOG(LEV_DEBUG2, "BReact") << "BatchReactor " << name() << " removed "
+  LOG(cyclus::LEV_DEBUG2, "BReact") << "BatchReactor " << name() << " removed "
                             << amt << " of " << postCore_.quantity() 
                             << " to its postcore buffer.";
   
@@ -312,7 +312,7 @@ void BatchReactor::addResource(Transaction trans,
   double preQuantity = preCore_.quantity();
   preCore_.pushAll(MatBuff::toMat(manifest));
   double added = preCore_.quantity() - preQuantity;
-  LOG(LEV_DEBUG2, "BReact") << "BatchReactor " << name() << " added "
+  LOG(cyclus::LEV_DEBUG2, "BReact") << "BatchReactor " << name() << " added "
                             << added << " to its precore buffer.";
 }
                   
@@ -451,10 +451,10 @@ bool BatchReactor::checkDecommissionCondition()
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - 
 void BatchReactor::setPhase(Phase p) 
 {
-  LOG(LEV_DEBUG2, "BReact") << "BatchReactor " << name() 
+  LOG(cyclus::LEV_DEBUG2, "BReact") << "BatchReactor " << name() 
                             << " is changing phases -";
-  LOG(LEV_DEBUG2, "BReact") << "  * from phase: " << phase_names_[phase_];
-  LOG(LEV_DEBUG2, "BReact") << "  * to phase: " << phase_names_[p];
+  LOG(cyclus::LEV_DEBUG2, "BReact") << "  * from phase: " << phase_names_[phase_];
+  LOG(cyclus::LEV_DEBUG2, "BReact") << "  * to phase: " << phase_names_[p];
   phase_ = p;
 }
 
@@ -485,9 +485,9 @@ bool BatchReactor::cycleComplete()
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - 
 bool BatchReactor::coreFilled() 
 {
-  LOG(LEV_DEBUG2,"BReact") << "Querying whether the core is filled -";
-  LOG(LEV_DEBUG2,"BReact") << "  * quantity in core: " << inCore_.quantity();
-  LOG(LEV_DEBUG2,"BReact") << "  * core capacity: " << inCore_.capacity();
+  LOG(cyclus::LEV_DEBUG2,"BReact") << "Querying whether the core is filled -";
+  LOG(cyclus::LEV_DEBUG2,"BReact") << "  * quantity in core: " << inCore_.quantity();
+  LOG(cyclus::LEV_DEBUG2,"BReact") << "  * core capacity: " << inCore_.capacity();
   // @MJGFlag need to assert that the in core capacity must be > 0
   // 9/29/12 error with a negative in core capacity
   return (abs(inCore_.quantity() - inCore_.capacity()) < cyclus::eps());
@@ -509,9 +509,9 @@ void BatchReactor::makeOffers()
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - 
 void BatchReactor::interactWithMarket(std::string commod, double amt, TransType type) 
 {
-  LOG(LEV_INFO4, "BReact") << " making requests {";  
+  LOG(cyclus::LEV_INFO4, "BReact") << " making requests {";  
   // get the market
-  MarketModel* market = MarketModel::marketForCommod(commod);
+  cyclus::MarketModel* market = MarketModel::marketForCommod(commod);
   Communicator* recipient = dynamic_cast<Communicator*>(market);
   // set the price
   double commodity_price = 0;
@@ -533,7 +533,7 @@ void BatchReactor::interactWithMarket(std::string commod, double amt, TransType 
       trade_res->setQuantity(amt);
       trans.setResource(trade_res);
 
-      LOG(LEV_DEBUG1, "BatR") << "Requesting material: ";
+      LOG(cyclus::LEV_DEBUG1, "BatR") << "Requesting material: ";
       trade_res->print();
     }
 
@@ -547,11 +547,11 @@ void BatchReactor::interactWithMarket(std::string commod, double amt, TransType 
     {
       text = " has requested ";
     }
-  LOG(LEV_INFO5, "BReact") << name() << text << amt
+  LOG(cyclus::LEV_INFO5, "BReact") << name() << text << amt
                            << " kg of " << commod << ".";
   // send the message
   sendMessage(recipient, trans);
-  LOG(LEV_INFO4, "BReact") << "}";
+  LOG(cyclus::LEV_INFO4, "BReact") << "}";
 }
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - 
@@ -592,10 +592,10 @@ void BatchReactor::loadCore()
   if (preCore_.quantity() > cyclus::eps())
     {
       moveFuel(preCore_,inCore_,preCore_.quantity());
-      LOG(LEV_DEBUG2, "BReact") << "BatchReactor " << name() 
+      LOG(cyclus::LEV_DEBUG2, "BReact") << "BatchReactor " << name() 
                                 << " moved fuel into the core:";
-      LOG(LEV_DEBUG2, "BReact") << "  precore level: " << preCore_.quantity();
-      LOG(LEV_DEBUG2, "BReact") << "  incore level: " << inCore_.quantity();
+      LOG(cyclus::LEV_DEBUG2, "BReact") << "  precore level: " << preCore_.quantity();
+      LOG(cyclus::LEV_DEBUG2, "BReact") << "  incore level: " << inCore_.quantity();
     }
 }
 
@@ -604,31 +604,31 @@ void BatchReactor::offloadBatch()
 {
   offLoadFuel(batchLoading());
   
-  LOG(LEV_DEBUG2, "BReact") << "BatchReactor " << name() 
+  LOG(cyclus::LEV_DEBUG2, "BReact") << "BatchReactor " << name() 
                             << " removed a batch of fuel from the core:";
-  LOG(LEV_DEBUG2, "BReact") << "  incore level: " << inCore_.quantity();
-  LOG(LEV_DEBUG2, "BReact") << "  postcore level: " << postCore_.quantity();
+  LOG(cyclus::LEV_DEBUG2, "BReact") << "  incore level: " << inCore_.quantity();
+  LOG(cyclus::LEV_DEBUG2, "BReact") << "  postcore level: " << postCore_.quantity();
 }
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - 
 void BatchReactor::offloadCore() 
 {
   offLoadFuel(inCore_.quantity());
-  LOG(LEV_DEBUG2, "BReact") << "BatchReactor " << name() 
+  LOG(cyclus::LEV_DEBUG2, "BReact") << "BatchReactor " << name() 
                             << " removed a core of fuel from the core:";
-  LOG(LEV_DEBUG2, "BReact") << "  precore level: " << preCore_.quantity();
-  LOG(LEV_DEBUG2, "BReact") << "  incore level: " << inCore_.quantity();
-  LOG(LEV_DEBUG2, "BReact") << "  postcore level: " << postCore_.quantity();
+  LOG(cyclus::LEV_DEBUG2, "BReact") << "  precore level: " << preCore_.quantity();
+  LOG(cyclus::LEV_DEBUG2, "BReact") << "  incore level: " << inCore_.quantity();
+  LOG(cyclus::LEV_DEBUG2, "BReact") << "  postcore level: " << postCore_.quantity();
 }
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-extern "C" Model* constructBatchReactor() 
+extern "C" cyclus::Model* constructBatchReactor() 
 {
   return new BatchReactor();
 }
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-extern "C" void destructBatchReactor(Model* model) 
+extern "C" void destructBatchReactor(cyclus::Model* model) 
 {
       delete model;
 }

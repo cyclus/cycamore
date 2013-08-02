@@ -34,13 +34,13 @@ class FakeNullMarket : public NullMarket {
 };
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-Model* NullMarketModelConstructor(){
-  return dynamic_cast<Model*>(new FakeNullMarket());
+cyclus::Model* NullMarketModelConstructor(){
+  return dynamic_cast<cyclus::Model*>(new FakeNullMarket());
 }
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-MarketModel* NullMarketConstructor(){
-  return dynamic_cast<MarketModel*>(new FakeNullMarket());
+cyclus::MarketModel* NullMarketConstructor(){
+  return dynamic_cast<cyclus::MarketModel*>(new FakeNullMarket());
 }
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
