@@ -32,7 +32,7 @@ enum Phase {INIT, BEGIN, OPERATION, REFUEL, REFUEL_DELAY, WAITING, END};
    This class is identical to the RecipeReactor, except that it
    operates in a batch-like manner, i.e. it refuels in batches.
  */
-class BatchReactor : public cyclus::FacilityModel, public SupplyDemand::cyclus::CommodityProducer  
+class BatchReactor : public cyclus::FacilityModel, public cyclus::SupplyDemand::CommodityProducer  
 {
  public:  
   /* --- Module Methods --- */
@@ -327,7 +327,7 @@ class BatchReactor : public cyclus::FacilityModel, public SupplyDemand::cyclus::
   /**
      sends a request of offer to the commodity's market
    */
-  void interactWithMarket(std::string commod, double amt, TransType type);
+  void interactWithMarket(std::string commod, double amt, cyclus::TransType type);
 
   /**
      Processes all orders in ordersWaiting_
@@ -374,18 +374,18 @@ class BatchReactor : public cyclus::FacilityModel, public SupplyDemand::cyclus::
    An exception class for BatchReactors that aren't empty when
    their destructor is called
 */
-class cyclus::CycBatchReactorDestructException : public cyclus::CycException {
+class CycBatchReactorDestructException : public cyclus::CycException {
  public: 
- cyclus::CycBatchReactorDestructException(std::string msg) : cyclus::CycException(msg) {};
+  CycBatchReactorDestructException(std::string msg) : cyclus::CycException(msg) {};
 };
 
 /**
    An exception class for BatchReactors that exhibit undefined behavior
    for a given phase
 */
-class cyclus::CycBatchReactorPhaseBehaviorException : public cyclus::CycException {
+class CycBatchReactorPhaseBehaviorException : public cyclus::CycException {
  public: 
- cyclus::CycBatchReactorPhaseBehaviorException(std::string msg) : cyclus::CycException(msg) {};
+  CycBatchReactorPhaseBehaviorException(std::string msg) : cyclus::CycException(msg) {};
 };
 
 #endif

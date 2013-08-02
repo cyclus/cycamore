@@ -15,7 +15,6 @@
 
 using namespace std;
 using boost::lexical_cast;
-using namespace SupplyDemand;
 
 // static members
 map<Phase,string> BatchReactor::phase_names_ = map<Phase,string>();
@@ -34,9 +33,9 @@ BatchReactor::BatchReactor() :
   cycle_timer_(0), 
   phase_(INIT)
 {
-  preCore_.setCapacity(kBuffInfinity);
-  inCore_.setCapacity(kBuffInfinity);
-  postCore_.setCapacity(kBuffInfinity);
+  preCore_.setCapacity(cyclus::kBuffInfinity);
+  inCore_.setCapacity(cyclus::kBuffInfinity);
+  postCore_.setCapacity(cyclus::kBuffInfinity);
   if (phase_names_.size() < 1)
     setUpPhaseNames();
 }
@@ -86,9 +85,9 @@ void BatchReactor::initModuleMembers(cyclus::QueryEngine* qe)
   cyclus::Commodity commod(commodity->getElementContent("commodity"));
   addCommodity(commod);
   data = commodity->getElementContent("capacity");
-  cyclus::CommodityProducer::setCapacity(commod,lexical_cast<double>(data));
+  cyclus::SupplyDemand::CommodityProducer::setCapacity(commod,lexical_cast<double>(data));
   data = commodity->getElementContent("cost");
-  cyclus::CommodityProducer::setCost(commod,lexical_cast<double>(data));
+  cyclus::SupplyDemand::CommodityProducer::setCost(commod,lexical_cast<double>(data));
 }
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - 
@@ -189,7 +188,7 @@ void BatchReactor::handleTick(int time)
     default:
       msg = "BatchReactors have undefined behvaior during ticks for phase: " 
         + phase_names_[phase_];
-      throw cyclus::CycBatchReactorPhaseBehaviorException(msg);
+      throw CycBatchReactorPhaseBehaviorException(msg);
       break;
     }
   
@@ -258,7 +257,7 @@ void BatchReactor::handleTock(int time)
     default:
       msg = "BatchReactors have undefined behvaior during tocks for phase: " 
         + phase_names_[phase_];
-      throw cyclus::CycBatchReactorPhaseBehaviorException(msg);
+      throw CycBatchReactorPhaseBehaviorException(msg);
       break;
     }
 
@@ -507,7 +506,7 @@ void BatchReactor::makeOffers()
 }
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - 
-void BatchReactor::interactWithMarket(std::string commod, double amt, TransType type) 
+void BatchReactor::interactWithMarket(std::string commod, double amt, cyclus::TransType type) 
 {
   LOG(cyclus::LEV_INFO4, "BReact") << " making requests {";  
   // get the market
@@ -524,7 +523,7 @@ void BatchReactor::interactWithMarket(std::string commod, double amt, TransType 
 
   if (type == cyclus::OFFER)
     {
-      gen_rsrc_ptr trade_res = gen_rsrc_ptr(new cyclus::GenericResource( "kg",commod, amt));
+      cyclus::gen_rsrc_ptr trade_res = cyclus::gen_rsrc_ptr(new cyclus::GenericResource( "kg",commod, amt));
       trans.setResource(trade_res);
     }
   else
