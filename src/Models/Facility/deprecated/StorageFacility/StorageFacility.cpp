@@ -70,8 +70,8 @@ Transaction StorageFacility::buildTransaction() {
   double min_amt = 0;
   double offer_amt = out_buffer_.quantity();
 
-  gen_rsrc_ptr offer_res = 
-    gen_rsrc_ptr(new cyclus::GenericResource(out_commod_,"kg",offer_amt));
+  cyclus::gen_rsrc_ptr offer_res = 
+    cyclus::gen_rsrc_ptr(new cyclus::GenericResource(out_commod_,"kg",offer_amt));
 
   cyclus::Transaction trans(this, cyclus::OFFER);
   trans.setCommod(out_commod_);

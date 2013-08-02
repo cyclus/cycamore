@@ -13,12 +13,12 @@
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 void StubConverter::init(xmlNodePtr cur) { 
-  ConverterModel::init(cur); 
+  cyclus::ConverterModel::init(cur); 
 };
   
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 void StubConverter::copy(StubConverter* src) { 
-  ConverterModel::copy(src); 
+  cyclus::ConverterModel::copy(src); 
 };
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -28,7 +28,7 @@ void StubConverter::copyFreshModel(cyclus::Model* src) {
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 std::string StubConverter::str() { 
-  return ConverterModel::str(); 
+  return cyclus::ConverterModel::str(); 
 };
 
 /* ------------------- */ 

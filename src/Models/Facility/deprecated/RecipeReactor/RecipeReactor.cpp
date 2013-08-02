@@ -334,7 +334,7 @@ void RecipeReactor::makeRequests(){
   Communicator* recipient = dynamic_cast<Communicator*>(market);
 
   // request a generic resource
-  gen_rsrc_ptr request_res = gen_rsrc_ptr(new cyclus::GenericResource(in_commod, "kg", requestAmt));
+  cyclus::gen_rsrc_ptr request_res = cyclus::gen_rsrc_ptr(new cyclus::GenericResource(in_commod, "kg", requestAmt));
 
   // build the transaction and message
   cyclus::Transaction trans(this, cyclus::REQUEST);

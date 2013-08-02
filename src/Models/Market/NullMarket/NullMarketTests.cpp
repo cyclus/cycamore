@@ -21,7 +21,7 @@ class FakeNullMarket : public NullMarket {
     FakeNullMarket() : NullMarket() {
       string kg = "kg";
       string qual = "qual";
-      gen_rsrc_ptr res = gen_rsrc_ptr(new cyclus::GenericResource(kg, qual, 1));
+      cyclus::gen_rsrc_ptr res = cyclus::gen_rsrc_ptr(new cyclus::GenericResource(kg, qual, 1));
       cyclus::Transaction trans(this, cyclus::OFFER);
       msg_ = cyclus::msg_ptr(new cyclus::Message(this, this, trans));
       msg_->trans().setResource(res);
@@ -70,6 +70,6 @@ TEST_F(NullMarketTest, ReceiveMessage) {
 }
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - 
-INSTANTIATE_TEST_CASE_P(NullMarket, cyclus::MarketModelTests, Values(&NullMarketConstructor));
+INSTANTIATE_TEST_CASE_P(NullMarket, MarketModelTests, Values(&NullMarketConstructor));
 INSTANTIATE_TEST_CASE_P(NullMarket, ModelTests, Values(&NullMarketModelConstructor));
 

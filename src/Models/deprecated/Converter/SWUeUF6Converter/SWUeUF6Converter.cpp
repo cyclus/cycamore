@@ -15,7 +15,7 @@ using namespace std;
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -    
 void SWUeUF6Converter::init(xmlNodePtr cur) {
-  ConverterModel::init(cur);
+  cyclus::ConverterModel::init(cur);
   
   // move XML pointer to current model
   cur = XMLinput->get_xpath_element(cur,"model/SWUeUF6Converter");
@@ -29,7 +29,7 @@ void SWUeUF6Converter::init(xmlNodePtr cur) {
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - 
 void SWUeUF6Converter::copy(SWUeUF6Converter* src) {
 
-  ConverterModel::copy(src);
+  cyclus::ConverterModel::copy(src);
 
   in_commod_ = src->in_commod_;
   out_commod_ = src->out_commod_;
@@ -43,7 +43,7 @@ void SWUeUF6Converter::copyFreshModel(cyclus::Model* src)
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -    
 std::string SWUeUF6Converter::str() { 
-  std::string s = ConverterModel::str(); 
+  std::string s = cyclus::ConverterModel::str(); 
   s += "converts commodity '" + in_commod_;
   s += "' into commodity '" + out_commod_ + "'.";
   return s;
@@ -127,7 +127,7 @@ cyclus::msg_ptr SWUeUF6Converter::convert(cyclus::msg_ptr convMsg, cyclus::msg_p
     toRet->trans().setResource(mat);
   } else if (out_commod_ == "SWUs") {
     toRet = convMsg->clone();
-    gen_rsrc_ptr conv_res = gen_rsrc_ptr(new cyclus::GenericResource(out_commod_, out_commod_, SWUs));
+    cyclus::gen_rsrc_ptr conv_res = cyclus::gen_rsrc_ptr(new cyclus::GenericResource(out_commod_, out_commod_, SWUs));
     toRet->trans().setResource(conv_res);
   }
   

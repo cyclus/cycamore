@@ -11,7 +11,6 @@
 #include <set>
 
 // forward declarations
-class cyclus::QueryEngine;
 class GrowthRegion;
 
 // forward includes
