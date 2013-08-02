@@ -91,7 +91,7 @@ class EnrichmentFacility : public cyclus::FacilityModel
   /* --- */
 
   /* --- EnrichmentFacility Methods --- */  
-  enrichment::Assays getAssays(cyclus::mat_rsrc_ptr mat);
+  cyclus::enrichment::Assays getAssays(cyclus::mat_rsrc_ptr mat);
 
   inline void set_in_commodity(std::string in_commod)
   {
@@ -210,7 +210,7 @@ class EnrichmentFacility : public cyclus::FacilityModel
   
   double tails_assay_;  
 
-  MatBuff inventory_;
+  cyclus::MatBuff inventory_;
 
   static int entry_;
   

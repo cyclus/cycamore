@@ -302,7 +302,7 @@ vector<cyclus::rsrc_ptr> BatchReactor::removeResource(cyclus::Transaction order)
                             << amt << " of " << postCore_.quantity() 
                             << " to its postcore buffer.";
   
-  return MatBuff::toRes(postCore_.popQty(amt));
+  return cyclus::MatBuff::toRes(postCore_.popQty(amt));
 }
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - 
@@ -310,7 +310,7 @@ void BatchReactor::addResource(cyclus::Transaction trans,
                                std::vector<cyclus::rsrc_ptr> manifest) 
 {
   double preQuantity = preCore_.quantity();
-  preCore_.pushAll(MatBuff::toMat(manifest));
+  preCore_.pushAll(cyclus::MatBuff::toMat(manifest));
   double added = preCore_.quantity() - preQuantity;
   LOG(cyclus::LEV_DEBUG2, "BReact") << "BatchReactor " << name() << " added "
                             << added << " to its precore buffer.";
@@ -566,7 +566,7 @@ void BatchReactor::handleOrders()
 }
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - 
-void BatchReactor::moveFuel(MatBuff& fromBuff, MatBuff& toBuff, double amt) 
+void BatchReactor::moveFuel(cyclus::MatBuff& fromBuff, cyclus::MatBuff& toBuff, double amt) 
 {
   vector<cyclus::mat_rsrc_ptr> to_move = fromBuff.popQty(amt);
   for (int i = 0; i < to_move.size(); i++) 

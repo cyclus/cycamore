@@ -21,7 +21,6 @@
 using namespace std;
 using namespace boost;
 using boost::lexical_cast;
-using namespace enrichment;
 
 int EnrichmentFacility::entry_ = 0;
 
@@ -100,7 +99,7 @@ void EnrichmentFacility::cloneModuleMembersFrom(cyclus::FacilityModel* sourceMod
 void EnrichmentFacility::addResource(cyclus::Transaction trans, std::vector<cyclus::rsrc_ptr> manifest) 
 {
   LOG(cyclus::LEV_INFO5, "EnrFac") << name() << " adding material qty: " << manifest.at(0)->quantity();
-  inventory_.pushAll(MatBuff::toMat(manifest));
+  inventory_.pushAll(cyclus::MatBuff::toMat(manifest));
 }
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - 
@@ -280,7 +279,7 @@ void EnrichmentFacility::processOutgoingMaterial()
 }
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - 
-enrichment::Assays EnrichmentFacility::getAssays(cyclus::mat_rsrc_ptr rsrc)
+cyclus::enrichment::Assays EnrichmentFacility::getAssays(cyclus::mat_rsrc_ptr rsrc)
 {
   double product_assay = uranium_assay(rsrc);
   return Assays(feed_assay(),product_assay,tails_assay());

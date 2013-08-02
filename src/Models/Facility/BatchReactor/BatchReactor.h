@@ -276,13 +276,13 @@ class BatchReactor : public FacilityModel, public SupplyDemand::cyclus::Commodit
   Phase phase_;
 
   /// a matbuff for material before they enter the core
-  MatBuff preCore_;
+  cyclus::MatBuff preCore_;
 
   /// a matbuff for material while they are inside the core
-  MatBuff inCore_;
+  cyclus::MatBuff inCore_;
 
   /// a matbuff for material after they exit the core
-  MatBuff postCore_;
+  cyclus::MatBuff postCore_;
 
   /// The list of orders to process on the Tock 
   std::deque<cyclus::msg_ptr> ordersWaiting_;
@@ -340,7 +340,7 @@ class BatchReactor : public FacilityModel, public SupplyDemand::cyclus::Commodit
      @param toBuff the buffer to move fuel to
      @param amt the amount of fuel to move
   */
-  void moveFuel(MatBuff& fromBuff, MatBuff& toBuff, double amt);
+  void moveFuel(cyclus::MatBuff& fromBuff, cyclus::MatBuff& toBuff, double amt);
 
   /**
      moves and amount of fuel out of the core. this action will remove

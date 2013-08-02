@@ -25,7 +25,7 @@ SourceFacility::SourceFacility() :
   commod_price_(0), 
   capacity_(numeric_limits<double>::max()) {
   ordersWaiting_ = deque<cyclus::msg_ptr>();
-  inventory_ = MatBuff();
+  inventory_ = cyclus::MatBuff();
   setMaxInventorySize(numeric_limits<double>::max());
 }
 
@@ -145,7 +145,7 @@ void SourceFacility::receiveMessage(cyclus::msg_ptr msg) {
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - 
 vector<cyclus::rsrc_ptr> SourceFacility::removeResource(cyclus::Transaction order) {
-  return MatBuff::toRes(inventory_.popQty(order.resource()->quantity()));
+  return cyclus::MatBuff::toRes(inventory_.popQty(order.resource()->quantity()));
 }
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - 
