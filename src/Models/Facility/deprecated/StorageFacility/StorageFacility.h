@@ -9,7 +9,7 @@
 #include <queue>
 
 // forward declarations
-class QueryEngine;
+class cyclus::QueryEngine;
 
 /**
    @class StorageFacility 
@@ -86,7 +86,7 @@ class StorageFacility : public FacilityModel
   virtual void handleTock(int time);
   /* --- */
 
-  /* --- Transaction Methods --- */  
+  /* --- cyclus::Transaction Methods --- */  
 
   /**
      Transacted resources are extracted through this method 
@@ -95,7 +95,7 @@ class StorageFacility : public FacilityModel
      @return list of resources to be sent for this order 
       
    */ 
-  virtual std::vector<cyclus::rsrc_ptr> removeResource(Transaction order);
+  virtual std::vector<cyclus::rsrc_ptr> removeResource(cyclus::Transaction order);
 
   /**
      Transacted resources are received through this method 
@@ -103,7 +103,7 @@ class StorageFacility : public FacilityModel
      @param trans the transaction to which these resource objects belong 
      @param manifest is the set of resources being received 
    */ 
-  virtual void addResource(Transaction trans,
+  virtual void addResource(cyclus::Transaction trans,
 			   std::vector<cyclus::rsrc_ptr> manifest);
 
   /**
@@ -115,12 +115,12 @@ class StorageFacility : public FacilityModel
   /**
      builds a transaction 
    */
-  Transaction buildTransaction();
+  cyclus::Transaction buildTransaction();
 
   /**
      sends a transaction as an offer 
    */
-  void sendOffer(Transaction trans);
+  void sendOffer(cyclus::Transaction trans);
   /* --- */
 
   /* --- StorageFacility Methods --- */

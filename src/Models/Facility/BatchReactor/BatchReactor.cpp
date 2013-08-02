@@ -45,13 +45,13 @@ BatchReactor::BatchReactor() :
 BatchReactor::~BatchReactor() {}
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - 
-void BatchReactor::initModuleMembers(QueryEngine* qe) 
+void BatchReactor::initModuleMembers(cyclus::QueryEngine* qe) 
 {
-  QueryEngine* input = qe->queryElement("fuel_input");
+  cyclus::QueryEngine* input = qe->queryElement("fuel_input");
   set_in_commodity(input->getElementContent("incommodity"));
   set_in_recipe(input->getElementContent("inrecipe"));
 
-  QueryEngine* output = qe->queryElement("fuel_output");
+  cyclus::QueryEngine* output = qe->queryElement("fuel_output");
   set_out_commodity(output->getElementContent("outcommodity"));
   set_out_recipe(output->getElementContent("outrecipe"));
   
@@ -82,7 +82,7 @@ void BatchReactor::initModuleMembers(QueryEngine* qe)
   data = qe->getElementContent("batchespercore"); 
   set_batches_per_core(lexical_cast<int>(data));
 
-  QueryEngine* commodity = qe->queryElement("commodity_production");
+  cyclus::QueryEngine* commodity = qe->queryElement("commodity_production");
   cyclus::Commodity commod(commodity->getElementContent("commodity"));
   addCommodity(commod);
   data = commodity->getElementContent("capacity");
@@ -286,16 +286,16 @@ void BatchReactor::receiveMessage(cyclus::msg_ptr msg)
 }
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - 
-void BatchReactor::sendMessage(Communicator* recipient, Transaction trans)
+void BatchReactor::sendMessage(Communicator* recipient, cyclus::Transaction trans)
 {
       cyclus::msg_ptr msg(new Message(this, recipient, trans)); 
       msg->sendOn();
 }
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - 
-vector<cyclus::rsrc_ptr> BatchReactor::removeResource(Transaction order) 
+vector<cyclus::rsrc_ptr> BatchReactor::removeResource(cyclus::Transaction order) 
 {
-  Transaction trans = order;
+  cyclus::Transaction trans = order;
   double amt = trans.resource()->quantity();
 
   LOG(cyclus::LEV_DEBUG2, "BReact") << "BatchReactor " << name() << " removed "
@@ -306,7 +306,7 @@ vector<cyclus::rsrc_ptr> BatchReactor::removeResource(Transaction order)
 }
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - 
-void BatchReactor::addResource(Transaction trans,
+void BatchReactor::addResource(cyclus::Transaction trans,
                                std::vector<cyclus::rsrc_ptr> manifest) 
 {
   double preQuantity = preCore_.quantity();
@@ -517,7 +517,7 @@ void BatchReactor::interactWithMarket(std::string commod, double amt, TransType 
   double commodity_price = 0;
   // request a generic resource
   // build the transaction and message
-  Transaction trans(this, type);
+  cyclus::Transaction trans(this, type);
   trans.setCommod(commod);
   trans.setMinFrac(1.0);
   trans.setPrice(commodity_price);

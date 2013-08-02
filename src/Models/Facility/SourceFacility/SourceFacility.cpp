@@ -33,8 +33,8 @@ SourceFacility::SourceFacility() :
 SourceFacility::~SourceFacility() {}
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - 
-void SourceFacility::initModuleMembers(QueryEngine* qe) {
-  QueryEngine* output = qe->queryElement("output");
+void SourceFacility::initModuleMembers(cyclus::QueryEngine* qe) {
+  cyclus::QueryEngine* output = qe->queryElement("output");
 
   setRecipe(output->getElementContent("recipe"));
 
@@ -91,7 +91,7 @@ void SourceFacility::handleTick(int time){
   LOG(cyclus::LEV_INFO3, "SrcFac") << facName() << " is ticking {";
 
   generateMaterial();
-  Transaction trans = buildTransaction();
+  cyclus::Transaction trans = buildTransaction();
 
   LOG(cyclus::LEV_INFO4, "SrcFac") << "offers "<< trans.resource()->quantity() << " kg of "
                            << out_commod_ << ".";
@@ -108,7 +108,7 @@ void SourceFacility::handleTock(int time){
   // check what orders are waiting,
   // send material if you have it now
   while (!ordersWaiting_.empty()) {
-    Transaction order = ordersWaiting_.front()->trans();
+    cyclus::Transaction order = ordersWaiting_.front()->trans();
     LOG(cyclus::LEV_INFO3, "SrcFac") << "Order is for: " << order.resource()->quantity();
     LOG(cyclus::LEV_INFO3, "SrcFac") << "Inventory is: " << inventory_.quantity();
     if (order.resource()->quantity() - inventory_.quantity() > cyclus::eps()) {
@@ -144,7 +144,7 @@ void SourceFacility::receiveMessage(cyclus::msg_ptr msg) {
 }
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - 
-vector<cyclus::rsrc_ptr> SourceFacility::removeResource(Transaction order) {
+vector<cyclus::rsrc_ptr> SourceFacility::removeResource(cyclus::Transaction order) {
   return MatBuff::toRes(inventory_.popQty(order.resource()->quantity()));
 }
 
@@ -221,7 +221,7 @@ Transaction SourceFacility::buildTransaction() {
   cyclus::mat_rsrc_ptr trade_res = cyclus::mat_rsrc_ptr(new Material(RecipeLibrary::Recipe(recipe())));
   trade_res->setQuantity(offer_amt);
 
-  Transaction trans(this, OFFER);
+  cyclus::Transaction trans(this, OFFER);
   trans.setCommod(out_commod_);
   trans.setMinFrac(min_amt/offer_amt);
   trans.setPrice(commod_price_);
@@ -231,7 +231,7 @@ Transaction SourceFacility::buildTransaction() {
 }
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - 
-void SourceFacility::sendOffer(Transaction trans) {
+void SourceFacility::sendOffer(cyclus::Transaction trans) {
   cyclus::MarketModel* market = MarketModel::marketForCommod(out_commod_);
 
   Communicator* recipient = dynamic_cast<Communicator*>(market);

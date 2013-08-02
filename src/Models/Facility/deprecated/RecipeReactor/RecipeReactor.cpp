@@ -212,7 +212,7 @@ void RecipeReactor::receiveMessage(cyclus::msg_ptr msg) {
 }
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -    
-vector<cyclus::rsrc_ptr> RecipeReactor::removeResource(Transaction order) {
+vector<cyclus::rsrc_ptr> RecipeReactor::removeResource(cyclus::Transaction order) {
   double newAmt = 0;
 
   cyclus::mat_rsrc_ptr m;
@@ -255,7 +255,7 @@ vector<cyclus::rsrc_ptr> RecipeReactor::removeResource(Transaction order) {
 }
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -    
-void RecipeReactor::addResource(Transaction trans, std::vector<cyclus::rsrc_ptr> manifest) {
+void RecipeReactor::addResource(cyclus::Transaction trans, std::vector<cyclus::rsrc_ptr> manifest) {
   // grab each material object off of the manifest
   // and move it into the stocks.
   for (vector<cyclus::rsrc_ptr>::iterator thisMat=manifest.begin();
@@ -337,7 +337,7 @@ void RecipeReactor::makeRequests(){
   gen_rsrc_ptr request_res = gen_rsrc_ptr(new GenericResource(in_commod, "kg", requestAmt));
 
   // build the transaction and message
-  Transaction trans(this, REQUEST);
+  cyclus::Transaction trans(this, REQUEST);
   trans.setCommod(in_commod);
   trans.setMinFrac( minAmt/requestAmt );
   trans.setPrice(commod_price);
@@ -350,7 +350,7 @@ void RecipeReactor::makeRequests(){
 }
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -    
-void RecipeReactor::sendMessage(Communicator* recipient, Transaction trans){
+void RecipeReactor::sendMessage(Communicator* recipient, cyclus::Transaction trans){
       cyclus::msg_ptr msg(new Message(this, recipient, trans)); 
       msg->sendOn();
 }
@@ -389,7 +389,7 @@ void RecipeReactor::makeOffers(){
     offer_mat->setQuantity(offer_amt);
 
     // build the transaction and message
-    Transaction trans(this, OFFER);
+    cyclus::Transaction trans(this, OFFER);
     trans.setCommod(commod);
     trans.setMinFrac(min_amt/offer_amt);
     trans.setPrice(commod_price);

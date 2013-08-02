@@ -11,7 +11,7 @@
 #include <set>
 
 // forward declarations
-class QueryEngine;
+class cyclus::QueryEngine;
 class GrowthRegion;
 
 // forward includes
@@ -46,7 +46,7 @@ class GrowthRegion : public cyclus::RegionModel
   /* --- Region Members --- */
   /**
      Initialize members related to derived module class
-     @param qe a pointer to a QueryEngine object containing initialization data
+     @param qe a pointer to a cyclus::QueryEngine object containing initialization data
    */
   virtual void initModuleMembers(cyclus::QueryEngine* qe);
 

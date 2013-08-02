@@ -73,7 +73,7 @@ Transaction StorageFacility::buildTransaction() {
   gen_rsrc_ptr offer_res = 
     gen_rsrc_ptr(new GenericResource(out_commod_,"kg",offer_amt));
 
-  Transaction trans(this, OFFER);
+  cyclus::Transaction trans(this, OFFER);
   trans.setCommod(out_commod_);
   trans.setMinFrac(min_amt/offer_amt);
   trans.setPrice(offer_price_);
@@ -83,7 +83,7 @@ Transaction StorageFacility::buildTransaction() {
 }
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - 
-void StorageFacility::sendOffer(Transaction trans) {
+void StorageFacility::sendOffer(cyclus::Transaction trans) {
   cyclus::MarketModel* market = MarketModel::marketForCommod(out_commod_);
 
   Communicator* recipient = dynamic_cast<Communicator*>(market);

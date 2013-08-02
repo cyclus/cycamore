@@ -48,9 +48,9 @@ class BatchReactor : public FacilityModel, public SupplyDemand::cyclus::Commodit
   
   /**
      Initialize members related to derived module class
-     @param qe a pointer to a QueryEngine object containing initialization data
+     @param qe a pointer to a cyclus::QueryEngine object containing initialization data
   */
-  virtual void initModuleMembers(QueryEngine* qe);
+  virtual void initModuleMembers(cyclus::QueryEngine* qe);
   
   /**
      Print information about this model 
@@ -85,7 +85,7 @@ class BatchReactor : public FacilityModel, public SupplyDemand::cyclus::Commodit
   virtual void handleTock(int time);
   /* --- */
 
-  /* --- Transaction Methods --- */
+  /* --- cyclus::Transaction Methods --- */
   /**
      When the facility receives a message, execute any transaction
    */
@@ -96,21 +96,21 @@ class BatchReactor : public FacilityModel, public SupplyDemand::cyclus::Commodit
      @param recipient the final recipient 
      @param trans the transaction to send 
    */
-  void sendMessage(Communicator* recipient, Transaction trans);
+  void sendMessage(Communicator* recipient, cyclus::Transaction trans);
 
   /**
      Transacted resources are extracted through this method
      @param order the msg/order for which resource(s) are to be prepared
      @return list of resources to be sent for this order
    */
-  virtual std::vector<cyclus::rsrc_ptr> removeResource(Transaction order);
+  virtual std::vector<cyclus::rsrc_ptr> removeResource(cyclus::Transaction order);
 
   /**
      Transacted resources are received through this method      
      @param trans the transaction to which these resource objects belong
      @param manifest is the set of resources being received
    */
-  virtual void addResource(Transaction trans,
+  virtual void addResource(cyclus::Transaction trans,
         		   std::vector<cyclus::rsrc_ptr> manifest);
   /* --- */
 

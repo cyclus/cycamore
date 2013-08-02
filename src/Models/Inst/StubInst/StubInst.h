@@ -54,7 +54,7 @@ class StubInst : public cyclus::InstModel {
   
   /**
      Initialize members related to derived module class
-     @param qe a pointer to a QueryEngine object containing initialization data
+     @param qe a pointer to a cyclus::QueryEngine object containing initialization data
    */
   virtual void initModuleMembers(cyclus::QueryEngine* qe);
 

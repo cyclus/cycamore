@@ -181,7 +181,7 @@ class RecipeReactor : public FacilityModel  {
      @return list of resources to be sent for this order 
       
    */ 
-  virtual std::vector<cyclus::rsrc_ptr> removeResource(Transaction order);
+  virtual std::vector<cyclus::rsrc_ptr> removeResource(cyclus::Transaction order);
 
   /**
      Transacted resources are received through this method 
@@ -189,7 +189,7 @@ class RecipeReactor : public FacilityModel  {
      @param trans the transaction to which these resource objects belong 
      @param manifest is the set of resources being received 
    */ 
-  virtual void addResource(Transaction trans,
+  virtual void addResource(cyclus::Transaction trans,
 			   std::vector<cyclus::rsrc_ptr> manifest);
 
   /**
@@ -394,7 +394,7 @@ class RecipeReactor : public FacilityModel  {
      @param recipient the final recipient 
      @param trans the transaction to send 
    */
-  void sendMessage(Communicator* recipient, Transaction trans);
+  void sendMessage(Communicator* recipient, cyclus::Transaction trans);
 
   /**
      The RecipeReactor has a limit to how material it can process. 

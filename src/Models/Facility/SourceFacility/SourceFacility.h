@@ -10,7 +10,7 @@
 #include <deque>
 
 // forward declarations
-class QueryEngine;
+class cyclus::QueryEngine;
 
 /**
    @class SourceFacility 
@@ -104,9 +104,9 @@ class SourceFacility : public FacilityModel,
 
   /**
      Initialize members related to derived module class
-     @param qe a pointer to a QueryEngine object containing initialization data
+     @param qe a pointer to a cyclus::QueryEngine object containing initialization data
    */
-  virtual void initModuleMembers(QueryEngine* qe);
+  virtual void initModuleMembers(cyclus::QueryEngine* qe);
 
   /**
      Print information about this model 
@@ -140,7 +140,7 @@ class SourceFacility : public FacilityModel,
   virtual void handleTock(int time);
   /* --- */
 
-  /* --- Transaction Methods --- */
+  /* --- cyclus::Transaction Methods --- */
   /**
      When this facility receives a message, execute the transaction 
    */
@@ -153,7 +153,7 @@ class SourceFacility : public FacilityModel,
      @return list of resources to be sent for this order 
       
    */ 
-  virtual std::vector<cyclus::rsrc_ptr> removeResource(Transaction order);
+  virtual std::vector<cyclus::rsrc_ptr> removeResource(cyclus::Transaction order);
   /* --- */
 
   /* --- SourceFacility Methods --- */
@@ -198,16 +198,16 @@ class SourceFacility : public FacilityModel,
   /* --- */
 
  protected:
-  /* --- Transaction Methods --- */     
+  /* --- cyclus::Transaction Methods --- */     
   /**
      builds a transaction 
    */
-  Transaction buildTransaction();
+  cyclus::Transaction buildTransaction();
 
   /**
      sends a transaction as an offer 
    */
-  void sendOffer(Transaction trans);
+  void sendOffer(cyclus::Transaction trans);
   /* --- */
 
   /* --- SourceFacility Members and Methods --- */

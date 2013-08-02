@@ -11,15 +11,12 @@
 #include <string>
 #include <deque>
 
-// forward declarations
-class QueryEngine;
-
 /**
    @class EnrichmentFacility 
     
    @section introduction Introduction 
  */
-class EnrichmentFacility : public FacilityModel
+class EnrichmentFacility : public cyclus::FacilityModel
 {
  public:
   /* --- Module Methods --- */
@@ -35,9 +32,9 @@ class EnrichmentFacility : public FacilityModel
  
   /**
      Initialize members related to derived module class
-     @param qe a pointer to a QueryEngine object containing initialization data
+     @param qe a pointer to a cyclus::QueryEngine object containing initialization data
    */
-  virtual void initModuleMembers(QueryEngine* qe);
+  virtual void initModuleMembers(cyclus::QueryEngine* qe);
 
   /**
      Print information about this model 
@@ -71,7 +68,7 @@ class EnrichmentFacility : public FacilityModel
   virtual void handleTock(int time);
   /* --- */
 
-  /* --- Transaction Methods --- */
+  /* --- cyclus::Transaction Methods --- */
   /**
      When this facility receives a message, execute the transaction 
    */
@@ -82,14 +79,14 @@ class EnrichmentFacility : public FacilityModel
      @param order the msg/order for which resource(s) are to be prepared 
      @return list of resources to be sent for this order       
    */ 
-  virtual std::vector<cyclus::rsrc_ptr> removeResource(Transaction order);
+  virtual std::vector<cyclus::rsrc_ptr> removeResource(cyclus::Transaction order);
 
   /**
      Transacted resources are received through this method 
      @param trans the transaction to which these resource objects belong 
      @param manifest is the set of resources being received 
    */ 
-  virtual void addResource(Transaction trans,
+  virtual void addResource(cyclus::Transaction trans,
                            std::vector<cyclus::rsrc_ptr> manifest);
   /* --- */
 
@@ -173,11 +170,11 @@ class EnrichmentFacility : public FacilityModel
   /* --- */
 
  protected:  
-  /* --- Transaction Methods --- */     
+  /* --- cyclus::Transaction Methods --- */     
   /**
      sends a transaction as an offer 
    */
-  void sendOffer(Transaction trans);
+  void sendOffer(cyclus::Transaction trans);
 
   /**
    */
@@ -189,7 +186,7 @@ class EnrichmentFacility : public FacilityModel
 
   /**
    */
-  Transaction buildTransaction();
+  cyclus::Transaction buildTransaction();
   /* --- */
 
   /* --- EnrichmentFacility Members and Methods --- */  

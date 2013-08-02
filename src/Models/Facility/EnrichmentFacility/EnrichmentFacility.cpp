@@ -40,11 +40,11 @@ EnrichmentFacility::~EnrichmentFacility()
 {}
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - 
-void EnrichmentFacility::initModuleMembers(QueryEngine* qe) 
+void EnrichmentFacility::initModuleMembers(cyclus::QueryEngine* qe) 
 {
   string data;
 
-  QueryEngine* input = qe->queryElement("input");
+  cyclus::QueryEngine* input = qe->queryElement("input");
   set_in_commodity(input->getElementContent("incommodity"));
   set_in_recipe(input->getElementContent("inrecipe"));
 
@@ -58,7 +58,7 @@ void EnrichmentFacility::initModuleMembers(QueryEngine* qe)
       setMaxInventorySize(numeric_limits<double>::max());
     }
 
-  QueryEngine* output = qe->queryElement("output");
+  cyclus::QueryEngine* output = qe->queryElement("output");
   set_out_commodity(output->getElementContent("outcommodity"));
 
   data = output->getElementContent("tails_assay");
@@ -97,14 +97,14 @@ void EnrichmentFacility::cloneModuleMembersFrom(cyclus::FacilityModel* sourceMod
 }
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - 
-void EnrichmentFacility::addResource(Transaction trans, std::vector<cyclus::rsrc_ptr> manifest) 
+void EnrichmentFacility::addResource(cyclus::Transaction trans, std::vector<cyclus::rsrc_ptr> manifest) 
 {
   LOG(cyclus::LEV_INFO5, "EnrFac") << name() << " adding material qty: " << manifest.at(0)->quantity();
   inventory_.pushAll(MatBuff::toMat(manifest));
 }
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - 
-std::vector<cyclus::rsrc_ptr> EnrichmentFacility::removeResource(Transaction order) 
+std::vector<cyclus::rsrc_ptr> EnrichmentFacility::removeResource(cyclus::Transaction order) 
 {
   cyclus::rsrc_ptr prsrc = order.resource();
   if (!Material::isMaterial(prsrc)) 
@@ -192,7 +192,7 @@ void EnrichmentFacility::makeRequest()
       request_res->setQuantity(amt);
       
       // build the transaction and message
-      Transaction trans(this, REQUEST);
+      cyclus::Transaction trans(this, REQUEST);
       trans.setCommod(commodity);
       trans.setMinFrac(min_amt/amt);
       trans.setPrice(commodity_price_);
@@ -212,7 +212,7 @@ Transaction EnrichmentFacility::buildTransaction()
 
   cyclus::mat_rsrc_ptr offer_res = cyclus::mat_rsrc_ptr(new Material());
   offer_res->setQuantity(offer_amt);
-  Transaction trans(this, OFFER);
+  cyclus::Transaction trans(this, OFFER);
 
   trans.setCommod(out_commodity());
   trans.setMinFrac(min_amt/offer_amt);
@@ -232,7 +232,7 @@ void EnrichmentFacility::makeOffer()
 
   // note that this is a hack. the amount of the resource being offered
   // is greater than the possible amount that can be serviced
-  Transaction trans = buildTransaction();
+  cyclus::Transaction trans = buildTransaction();
 
   cyclus::msg_ptr msg(new Message(this, recipient, trans)); 
 
@@ -251,7 +251,7 @@ void EnrichmentFacility::processOutgoingMaterial()
   double remove_total = 0;
   while (!orders_.empty())
     {
-      Transaction trans = orders_.front()->trans();
+      cyclus::Transaction trans = orders_.front()->trans();
 
       cyclus::rsrc_ptr prsrc = trans.resource();
       if (!Material::isMaterial(prsrc)) 

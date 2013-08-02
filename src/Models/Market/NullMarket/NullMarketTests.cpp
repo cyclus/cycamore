@@ -22,7 +22,7 @@ class FakeNullMarket : public NullMarket {
       string kg = "kg";
       string qual = "qual";
       gen_rsrc_ptr res = gen_rsrc_ptr(new GenericResource(kg, qual, 1));
-      Transaction trans(this, OFFER);
+      cyclus::Transaction trans(this, OFFER);
       msg_ = cyclus::msg_ptr(new Message(this, this, trans));
       msg_->trans().setResource(res);
     }
