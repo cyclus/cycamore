@@ -202,7 +202,7 @@ void SourceFacility::generateMaterial() {
   }
 
   cyclus::mat_rsrc_ptr newMat = 
-    cyclus::mat_rsrc_ptr(new Material(RecipeLibrary::Recipe(recipe_name_)));
+    cyclus::mat_rsrc_ptr(new cyclus::Material(cyclus::RecipeLibrary::Recipe(recipe_name_)));
   double amt = capacity_;
   if (amt <= empty_space) {
     newMat->setQuantity(amt); // plenty of room
@@ -218,10 +218,10 @@ Transaction SourceFacility::buildTransaction() {
   double min_amt = 0;
   double offer_amt = inventory_.quantity();
 
-  cyclus::mat_rsrc_ptr trade_res = cyclus::mat_rsrc_ptr(new Material(RecipeLibrary::Recipe(recipe())));
+  cyclus::mat_rsrc_ptr trade_res = cyclus::mat_rsrc_ptr(new cyclus::Material(cyclus::RecipeLibrary::Recipe(recipe())));
   trade_res->setQuantity(offer_amt);
 
-  cyclus::Transaction trans(this, OFFER);
+  cyclus::Transaction trans(this, cyclus::OFFER);
   trans.setCommod(out_commod_);
   trans.setMinFrac(min_amt/offer_amt);
   trans.setPrice(commod_price_);
@@ -232,11 +232,11 @@ Transaction SourceFacility::buildTransaction() {
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - 
 void SourceFacility::sendOffer(cyclus::Transaction trans) {
-  cyclus::MarketModel* market = MarketModel::marketForCommod(out_commod_);
+  cyclus::MarketModel* market = cyclus::MarketModel::marketForCommod(out_commod_);
 
   Communicator* recipient = dynamic_cast<Communicator*>(market);
 
-  cyclus::msg_ptr msg(new Message(this, recipient, trans)); 
+  cyclus::msg_ptr msg(new cyclus::Message(this, recipient, trans)); 
   msg->sendOn();
 }
 

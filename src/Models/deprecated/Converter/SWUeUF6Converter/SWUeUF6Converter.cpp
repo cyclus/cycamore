@@ -78,11 +78,11 @@ cyclus::msg_ptr SWUeUF6Converter::convert(cyclus::msg_ptr convMsg, cyclus::msg_p
     }
     SWUs = convMsg->trans().resource()->quantity();
     try {
-      mat = boost::dynamic_pointer_cast<Material>(refMsg->trans().resource());
+      mat = boost::dynamic_pointer_cast<cyclus::Material>(refMsg->trans().resource());
       iso_vector = mat->isoVector();
     } catch (exception& e) {
       string err = "The Resource sent to the SWUeUF6Converter must be a \
-                    Material type resource.";
+                    cyclus::Material type resource.";
       throw cyclus::CycException(err);
     }
   } else if (in_commod_ == "eUF6" && out_commod_ == "SWUs") {
@@ -92,11 +92,11 @@ cyclus::msg_ptr SWUeUF6Converter::convert(cyclus::msg_ptr convMsg, cyclus::msg_p
       throw cyclus::CycException("SWUs offered by non-Model");
     }
     try{
-      mat = boost::dynamic_pointer_cast<Material>(convMsg->trans().resource());
+      mat = boost::dynamic_pointer_cast<cyclus::Material>(convMsg->trans().resource());
       iso_vector = mat->isoVector();
     } catch (exception& e) {
       string err = "The Resource sent to the SWUeUF6Converter must be a \
-                    Material type resource.";
+                    cyclus::Material type resource.";
       throw cyclus::CycException(err);
     }
   }
@@ -121,13 +121,13 @@ cyclus::msg_ptr SWUeUF6Converter::convert(cyclus::msg_ptr convMsg, cyclus::msg_p
   SWUs = massProdU*(term1 + term2 - term3);
 
   if (out_commod_ == "eUF6"){
-    mat = cyclus::mat_rsrc_ptr(new Material(iso_vector));
+    mat = cyclus::mat_rsrc_ptr(new cyclus::Material(iso_vector));
     mat->setQuantity(massProdU);
     toRet = convMsg->clone();
     toRet->trans().setResource(mat);
   } else if (out_commod_ == "SWUs") {
     toRet = convMsg->clone();
-    gen_rsrc_ptr conv_res = gen_rsrc_ptr(new GenericResource(out_commod_, out_commod_, SWUs));
+    gen_rsrc_ptr conv_res = gen_rsrc_ptr(new cyclus::GenericResource(out_commod_, out_commod_, SWUs));
     toRet->trans().setResource(conv_res);
   }
   

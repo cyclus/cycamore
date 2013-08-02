@@ -74,11 +74,11 @@ void BatchReactorTest::initWorld()
 {
   incommod_market = new TestMarket();
   incommod_market->setcyclus::Commodity(in_commod);
-  MarketModel::registerMarket(incommod_market);
+  cyclus::MarketModel::registerMarket(incommod_market);
 
   outcommod_market = new TestMarket();
   outcommod_market->setcyclus::Commodity(out_commod);
-  MarketModel::registerMarket(outcommod_market);
+  cyclus::MarketModel::registerMarket(outcommod_market);
 }
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - 

@@ -36,19 +36,19 @@ void EnrichmentFacilityTest::initParameters()
   in_commod = "incommod";
   in_commod_market = new TestMarket();
   in_commod_market->setcyclus::Commodity(in_commod);
-  MarketModel::registerMarket(in_commod_market);
+  cyclus::MarketModel::registerMarket(in_commod_market);
 
   out_commod = "outcommod";
   out_commod_market = new TestMarket();
   out_commod_market->setcyclus::Commodity(out_commod);
-  MarketModel::registerMarket(out_commod_market);
+  cyclus::MarketModel::registerMarket(out_commod_market);
 
   in_recipe = "recipe";
   feed_assay = 0.0072;
   recipe = CompMapPtr(new CompMap(ATOM));
   (*recipe)[92235] = feed_assay;
   (*recipe)[92238] = 1-feed_assay;
-  RecipeLibrary::recordRecipe(in_recipe,recipe);
+  cyclus::RecipeLibrary::recordRecipe(in_recipe,recipe);
 
   tails_assay = 0.002;
   inv_size = 5;

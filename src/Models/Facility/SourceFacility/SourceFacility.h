@@ -235,7 +235,7 @@ class SourceFacility : public FacilityModel,
   double commod_price_;
 
   /**
-     A collection  that holds the "product" Material this Facility has 
+     A collection  that holds the "product" cyclus::Material this Facility has 
      on hand to send to others. 
    */ 
   cyclus::MatBuff inventory_; // @MJG couldnt this be a RsrcBuff?

@@ -79,11 +79,11 @@ void RecipeReactor::init(xmlNodePtr cur) {
 
     // get in_recipe
     recipe_name = XMLinput->get_xpath_content(pair_node,"inrecipe");
-    in_recipe_ = RecipeLibrary::Recipe(recipe_name);
+    in_recipe_ = cyclus::RecipeLibrary::Recipe(recipe_name);
 
     // get out_recipe
     recipe_name = XMLinput->get_xpath_content(pair_node,"outrecipe");
-    out_recipe_ = RecipeLibrary::Recipe(recipe_name);
+    out_recipe_ = cyclus::RecipeLibrary::Recipe(recipe_name);
 
     fuelPairs_.push_back(make_pair(make_pair(in_commod,in_recipe_),
           make_pair(out_commod, out_recipe_)));
@@ -190,7 +190,7 @@ void RecipeReactor::endCycle() {
   }
 
   // change the composition to the compositon of the spent fuel type
-  batchMat = cyclus::mat_rsrc_ptr(new Material(outComp));
+  batchMat = cyclus::mat_rsrc_ptr(new cyclus::Material(outComp));
 
   // move converted material into Inventory
   Fuel outBatch;
@@ -232,7 +232,7 @@ vector<cyclus::rsrc_ptr> RecipeReactor::removeResource(cyclus::Transaction order
         m = iter->second;
 
         // start with an empty material
-        newMat = cyclus::mat_rsrc_ptr(new Material());
+        newMat = cyclus::mat_rsrc_ptr(new cyclus::Material());
 
         // if the inventory obj isn't larger than the remaining need, send it as is.
         if (m->quantity() <= (order.resource()->quantity() - newAmt)) {
@@ -263,7 +263,7 @@ void RecipeReactor::addResource(cyclus::Transaction trans, std::vector<cyclus::r
        thisMat++) {
     LOG(cyclus::LEV_DEBUG2, "RReact") <<"RecipeReactor " << ID() << " is receiving material with mass "
         << (*thisMat)->quantity();
-    stocks_.push_front(make_pair(trans.commod(), boost::dynamic_pointer_cast<Material>(*thisMat)));
+    stocks_.push_front(make_pair(trans.commod(), boost::dynamic_pointer_cast<cyclus::Material>(*thisMat)));
   }
 }
 
@@ -288,7 +288,7 @@ void RecipeReactor::handleTick(int time) {
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -    
 void RecipeReactor::makeRequests(){
-  // MAKE A REQUEST
+  // MAKE A cyclus::REQUEST
   if(this->stocksMass() != 0) {
     return;
   }
@@ -330,14 +330,14 @@ void RecipeReactor::makeRequests(){
 
   LOG(cyclus::LEV_INFO4, "RReact") << " making requests {";
 
-  cyclus::MarketModel* market = MarketModel::marketForCommod(in_commod);
+  cyclus::MarketModel* market = cyclus::MarketModel::marketForCommod(in_commod);
   Communicator* recipient = dynamic_cast<Communicator*>(market);
 
   // request a generic resource
-  gen_rsrc_ptr request_res = gen_rsrc_ptr(new GenericResource(in_commod, "kg", requestAmt));
+  gen_rsrc_ptr request_res = gen_rsrc_ptr(new cyclus::GenericResource(in_commod, "kg", requestAmt));
 
   // build the transaction and message
-  cyclus::Transaction trans(this, REQUEST);
+  cyclus::Transaction trans(this, cyclus::REQUEST);
   trans.setCommod(in_commod);
   trans.setMinFrac( minAmt/requestAmt );
   trans.setPrice(commod_price);
@@ -351,14 +351,14 @@ void RecipeReactor::makeRequests(){
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -    
 void RecipeReactor::sendMessage(Communicator* recipient, cyclus::Transaction trans){
-      cyclus::msg_ptr msg(new Message(this, recipient, trans)); 
+      cyclus::msg_ptr msg(new cyclus::Message(this, recipient, trans)); 
       msg->sendOn();
 }
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -    
 void RecipeReactor::makeOffers(){
   LOG(cyclus::LEV_INFO4, "RReact") << " making offers {";
-  // MAKE OFFERS
+  // MAKE cyclus::OFFERS
   // decide how much to offer
 
   // there is no minimum amount a null facility may send
@@ -377,19 +377,19 @@ void RecipeReactor::makeOffers(){
        iter ++){
     // get commod
     commod = iter->first;
-    cyclus::MarketModel* market = MarketModel::marketForCommod(commod);
+    cyclus::MarketModel* market = cyclus::MarketModel::marketForCommod(commod);
     // decide what market to offer to
     recipient = dynamic_cast<Communicator*>(market);
     // get amt
     offer_amt = iter->second->quantity();
 
     // make a material to offer
-    cyclus::mat_rsrc_ptr offer_mat = cyclus::mat_rsrc_ptr(new Material(out_recipe_));
+    cyclus::mat_rsrc_ptr offer_mat = cyclus::mat_rsrc_ptr(new cyclus::Material(out_recipe_));
     offer_mat->print();
     offer_mat->setQuantity(offer_amt);
 
     // build the transaction and message
-    cyclus::Transaction trans(this, OFFER);
+    cyclus::Transaction trans(this, cyclus::OFFER);
     trans.setCommod(commod);
     trans.setMinFrac(min_amt/offer_amt);
     trans.setPrice(commod_price);

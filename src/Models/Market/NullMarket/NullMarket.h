@@ -8,7 +8,7 @@
 #include "MarketModel.h"
 
 /**
-   The NullMarket class inherits from the MarketModel class and is 
+   The NullMarket class inherits from the cyclus::MarketModel class and is 
    dynamically loaded by the Model class when requested. 
     
    This market will take a set of requests and match the biggest 
@@ -34,7 +34,7 @@
    smallest of the two. Once matches are made, the market dictates the 
    matches back down to the facilities. 
  */
-class NullMarket : public MarketModel  
+class NullMarket : public cyclus::MarketModel  
 {
 /* --------------------
  * all MODEL classes have these public members
@@ -63,7 +63,7 @@ class NullMarket : public MarketModel
      The market receives an offer or request that has been passed from 
      the facility to the institution to the region. 
       
-     @param msg is a pointer to the message, an Message object 
+     @param msg is a pointer to the message, an cyclus::Message object 
    */
   virtual void receiveMessage(cyclus::msg_ptr msg);
 
@@ -116,7 +116,7 @@ class NullMarket : public MarketModel
   std::set<cyclus::msg_ptr> matchedOffers_;
   
   /**
-     This function adds an Message object to the list of matchedOffers 
+     This function adds an cyclus::Message object to the list of matchedOffers 
       
      @param msg a pointer to the message to add 
    */

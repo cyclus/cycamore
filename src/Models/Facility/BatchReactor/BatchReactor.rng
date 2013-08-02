@@ -4,7 +4,7 @@ datatypeLibrary="http://www.w3.org/2001/XMLSchema-datatypes">
   <define name="BatchReactor">
      <element name="BatchReactor"> 
 
-       <!-- Material In/Out  -->
+       <!-- cyclus::Material In/Out  -->
        <element name="fuel_input">
          <ref name="incommodity"/>
          <ref name="inrecipe"/>

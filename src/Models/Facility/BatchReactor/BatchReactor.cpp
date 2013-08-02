@@ -288,7 +288,7 @@ void BatchReactor::receiveMessage(cyclus::msg_ptr msg)
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - 
 void BatchReactor::sendMessage(Communicator* recipient, cyclus::Transaction trans)
 {
-      cyclus::msg_ptr msg(new Message(this, recipient, trans)); 
+      cyclus::msg_ptr msg(new cyclus::Message(this, recipient, trans)); 
       msg->sendOn();
 }
 
@@ -496,14 +496,14 @@ bool BatchReactor::coreFilled()
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - 
 void BatchReactor::makeRequest(double amt) 
 {
-  interactWithMarket(in_commodity(),amt,REQUEST);
+  interactWithMarket(in_commodity(),amt,cyclus::REQUEST);
 }
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - 
 void BatchReactor::makeOffers() 
 {
   if (!postCore_.empty())
-    interactWithMarket(out_commodity(),postCore_.quantity(),OFFER);
+    interactWithMarket(out_commodity(),postCore_.quantity(),cyclus::OFFER);
 }
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - 
@@ -511,7 +511,7 @@ void BatchReactor::interactWithMarket(std::string commod, double amt, TransType 
 {
   LOG(cyclus::LEV_INFO4, "BReact") << " making requests {";  
   // get the market
-  cyclus::MarketModel* market = MarketModel::marketForCommod(commod);
+  cyclus::MarketModel* market = cyclus::MarketModel::marketForCommod(commod);
   Communicator* recipient = dynamic_cast<Communicator*>(market);
   // set the price
   double commodity_price = 0;
@@ -522,14 +522,14 @@ void BatchReactor::interactWithMarket(std::string commod, double amt, TransType 
   trans.setMinFrac(1.0);
   trans.setPrice(commodity_price);
 
-  if (type == OFFER)
+  if (type == cyclus::OFFER)
     {
-      gen_rsrc_ptr trade_res = gen_rsrc_ptr(new GenericResource( "kg",commod, amt));
+      gen_rsrc_ptr trade_res = gen_rsrc_ptr(new cyclus::GenericResource( "kg",commod, amt));
       trans.setResource(trade_res);
     }
   else
     {
-      cyclus::mat_rsrc_ptr trade_res = cyclus::mat_rsrc_ptr(new Material(RecipeLibrary::Recipe(in_recipe_)));
+      cyclus::mat_rsrc_ptr trade_res = cyclus::mat_rsrc_ptr(new cyclus::Material(cyclus::RecipeLibrary::Recipe(in_recipe_)));
       trade_res->setQuantity(amt);
       trans.setResource(trade_res);
 
@@ -539,7 +539,7 @@ void BatchReactor::interactWithMarket(std::string commod, double amt, TransType 
 
   // log the event
   string text;
-  if (type == OFFER) 
+  if (type == cyclus::OFFER) 
     {
       text = " has offered ";
     }
@@ -581,7 +581,7 @@ void BatchReactor::offLoadFuel(double amt)
   inCore_.popQty(amt);
   double factor = out_core_loading() / in_core_loading();
   double out_amount = amt * factor;
-  cyclus::mat_rsrc_ptr out_fuel = cyclus::mat_rsrc_ptr(new Material(RecipeLibrary::Recipe(out_recipe())));
+  cyclus::mat_rsrc_ptr out_fuel = cyclus::mat_rsrc_ptr(new cyclus::Material(cyclus::RecipeLibrary::Recipe(out_recipe())));
   out_fuel->setQuantity(out_amount);
   postCore_.pushOne(out_fuel);
 }

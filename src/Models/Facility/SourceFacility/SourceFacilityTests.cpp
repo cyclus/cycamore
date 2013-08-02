@@ -22,10 +22,10 @@ void SourceFacilityTest::initParameters() {
   commod_ = "commod";
   recipe_name_ = "recipe";
   recipe_ = CompMapPtr(new CompMap(ATOM));
-  RecipeLibrary::recordRecipe(recipe_name_,recipe_);
+  cyclus::RecipeLibrary::recordRecipe(recipe_name_,recipe_);
   commod_market = new TestMarket();
   commod_market->setcyclus::Commodity(commod_);
-  MarketModel::registerMarket(commod_market);
+  cyclus::MarketModel::registerMarket(commod_market);
 }
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - 
@@ -61,7 +61,7 @@ TEST_F(SourceFacilityTest, Print) {
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - 
 TEST_F(SourceFacilityTest, ReceiveMessage) {
-  cyclus::msg_ptr msg = cyclus::msg_ptr(new Message(src_facility));
+  cyclus::msg_ptr msg = cyclus::msg_ptr(new cyclus::Message(src_facility));
   EXPECT_THROW(src_facility->receiveMessage(msg), cyclus::CycException);
 }
 
