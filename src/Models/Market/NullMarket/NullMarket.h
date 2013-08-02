@@ -65,7 +65,7 @@ class NullMarket : public MarketModel
       
      @param msg is a pointer to the message, an Message object 
    */
-  virtual void receiveMessage(msg_ptr msg);
+  virtual void receiveMessage(cyclus::msg_ptr msg);
 
 /* -------------------- */
 
@@ -92,13 +92,13 @@ class NullMarket : public MarketModel
   /**
      The messages that have been indexed 
    */
-  typedef std::pair<double,msg_ptr> indexedMsg;
+  typedef std::pair<double,cyclus::msg_ptr> indexedMsg;
 
   /**
      The messages of both offer and request types that have been sorted 
      according to thie size. 
    */
-  typedef std::multimap<double,msg_ptr> sortedMsgList;
+  typedef std::multimap<double,cyclus::msg_ptr> sortedMsgList;
   
   /** 
      The requests that have been sorted according to their size. 
@@ -113,14 +113,14 @@ class NullMarket : public MarketModel
   /**
      The set of pointers to offers that have been matched. 
    */
-  std::set<msg_ptr> matchedOffers_;
+  std::set<cyclus::msg_ptr> matchedOffers_;
   
   /**
      This function adds an Message object to the list of matchedOffers 
       
      @param msg a pointer to the message to add 
    */
-  void add(msg_ptr msg);
+  void add(cyclus::msg_ptr msg);
 
   /**
      A boolean that keeps track of whether requests have been matched. 

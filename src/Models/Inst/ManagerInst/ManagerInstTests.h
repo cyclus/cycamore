@@ -19,7 +19,7 @@ class TestProducer :
   void handleTick(int time){};
 
   void receiveMessage(cyclus::msg_ptr msg) {
-    msg->setDir(DOWN_MSG);
+    msg->setDir(cyclus::DOWN_MSG);
   }
 
 };

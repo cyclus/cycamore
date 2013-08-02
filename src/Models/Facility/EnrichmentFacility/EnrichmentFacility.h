@@ -75,14 +75,14 @@ class EnrichmentFacility : public FacilityModel
   /**
      When this facility receives a message, execute the transaction 
    */
-  virtual void receiveMessage(msg_ptr msg);
+  virtual void receiveMessage(cyclus::msg_ptr msg);
 
   /**
      Transacted resources are extracted through this method       
      @param order the msg/order for which resource(s) are to be prepared 
      @return list of resources to be sent for this order       
    */ 
-  virtual std::vector<rsrc_ptr> removeResource(Transaction order);
+  virtual std::vector<cyclus::rsrc_ptr> removeResource(Transaction order);
 
   /**
      Transacted resources are received through this method 
@@ -90,11 +90,11 @@ class EnrichmentFacility : public FacilityModel
      @param manifest is the set of resources being received 
    */ 
   virtual void addResource(Transaction trans,
-                           std::vector<rsrc_ptr> manifest);
+                           std::vector<cyclus::rsrc_ptr> manifest);
   /* --- */
 
   /* --- EnrichmentFacility Methods --- */  
-  enrichment::Assays getAssays(mat_rsrc_ptr mat);
+  enrichment::Assays getAssays(cyclus::mat_rsrc_ptr mat);
 
   inline void set_in_commodity(std::string in_commod)
   {
@@ -218,7 +218,7 @@ class EnrichmentFacility : public FacilityModel
   static int entry_;
   
   ///   A list of orders to be processed on the Tock 
-  std::deque<msg_ptr> orders_;
+  std::deque<cyclus::msg_ptr> orders_;
   /* --- */
 };
 #endif

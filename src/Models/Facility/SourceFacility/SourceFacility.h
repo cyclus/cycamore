@@ -144,7 +144,7 @@ class SourceFacility : public FacilityModel,
   /**
      When this facility receives a message, execute the transaction 
    */
-  virtual void receiveMessage(msg_ptr msg);
+  virtual void receiveMessage(cyclus::msg_ptr msg);
 
   /**
      Transacted resources are extracted through this method 
@@ -153,7 +153,7 @@ class SourceFacility : public FacilityModel,
      @return list of resources to be sent for this order 
       
    */ 
-  virtual std::vector<rsrc_ptr> removeResource(Transaction order);
+  virtual std::vector<cyclus::rsrc_ptr> removeResource(Transaction order);
   /* --- */
 
   /* --- SourceFacility Methods --- */
@@ -243,7 +243,7 @@ class SourceFacility : public FacilityModel,
   /**
      A list of orders to be processed on the Tock 
    */
-  std::deque<msg_ptr> ordersWaiting_;
+  std::deque<cyclus::msg_ptr> ordersWaiting_;
 
   /**
      generates a material

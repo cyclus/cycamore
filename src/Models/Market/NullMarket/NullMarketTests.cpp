@@ -16,21 +16,21 @@ using namespace std;
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 class FakeNullMarket : public NullMarket {
   protected:
-    msg_ptr msg_;
+    cyclus::msg_ptr msg_;
   public:
     FakeNullMarket() : NullMarket() {
       string kg = "kg";
       string qual = "qual";
       gen_rsrc_ptr res = gen_rsrc_ptr(new GenericResource(kg, qual, 1));
       Transaction trans(this, OFFER);
-      msg_ = msg_ptr(new Message(this, this, trans));
+      msg_ = cyclus::msg_ptr(new Message(this, this, trans));
       msg_->trans().setResource(res);
     }
 
     virtual ~FakeNullMarket() {
     }
 
-    msg_ptr getMessage(){return msg_;}
+    cyclus::msg_ptr getMessage(){return msg_;}
 };
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -

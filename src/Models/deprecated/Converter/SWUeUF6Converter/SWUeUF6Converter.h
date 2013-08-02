@@ -105,7 +105,7 @@ class SWUeUF6Converter : public ConverterModel
      @return the converted message 
    */
 
-  virtual msg_ptr convert(msg_ptr convMsg, msg_ptr refMsg); 
+  virtual cyclus::msg_ptr convert(cyclus::msg_ptr convMsg, cyclus::msg_ptr refMsg); 
 
  /* ------------------- */ 
 

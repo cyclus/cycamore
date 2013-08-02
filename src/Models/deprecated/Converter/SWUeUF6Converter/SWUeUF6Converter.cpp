@@ -50,15 +50,15 @@ std::string SWUeUF6Converter::str() {
 }
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -    
-msg_ptr SWUeUF6Converter::convert(msg_ptr convMsg, msg_ptr refMsg)
+cyclus::msg_ptr SWUeUF6Converter::convert(cyclus::msg_ptr convMsg, cyclus::msg_ptr refMsg)
 {
   // Figure out what you're converting to and from
   in_commod_ = convMsg->trans().commod();
   out_commod_ = refMsg->trans().commod();
   cyclus::Model* enr;
   cyclus::Model* castEnr;
-  msg_ptr toRet;
-  mat_rsrc_ptr mat;
+  cyclus::msg_ptr toRet;
+  cyclus::mat_rsrc_ptr mat;
 
   double P;
   double xp;
@@ -121,7 +121,7 @@ msg_ptr SWUeUF6Converter::convert(msg_ptr convMsg, msg_ptr refMsg)
   SWUs = massProdU*(term1 + term2 - term3);
 
   if (out_commod_ == "eUF6"){
-    mat = mat_rsrc_ptr(new Material(iso_vector));
+    mat = cyclus::mat_rsrc_ptr(new Material(iso_vector));
     mat->setQuantity(massProdU);
     toRet = convMsg->clone();
     toRet->trans().setResource(mat);

@@ -11,7 +11,7 @@
 #include "GenericResource.h"
 #include "RecipeLibrary.h"
 #include "MarketModel.h"
-#include "cyclus::CycLimits.h"
+#include "CycLimits.h"
 
 using namespace std;
 using boost::lexical_cast;
@@ -270,7 +270,7 @@ void BatchReactor::handleTock(int time)
 }
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - 
-void BatchReactor::receiveMessage(msg_ptr msg) 
+void BatchReactor::receiveMessage(cyclus::msg_ptr msg) 
 {
   // is this a message from on high? 
   if(msg->trans().supplier()==this)
@@ -288,12 +288,12 @@ void BatchReactor::receiveMessage(msg_ptr msg)
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - 
 void BatchReactor::sendMessage(Communicator* recipient, Transaction trans)
 {
-      msg_ptr msg(new Message(this, recipient, trans)); 
+      cyclus::msg_ptr msg(new Message(this, recipient, trans)); 
       msg->sendOn();
 }
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - 
-vector<rsrc_ptr> BatchReactor::removeResource(Transaction order) 
+vector<cyclus::rsrc_ptr> BatchReactor::removeResource(Transaction order) 
 {
   Transaction trans = order;
   double amt = trans.resource()->quantity();
@@ -307,7 +307,7 @@ vector<rsrc_ptr> BatchReactor::removeResource(Transaction order)
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - 
 void BatchReactor::addResource(Transaction trans,
-                               std::vector<rsrc_ptr> manifest) 
+                               std::vector<cyclus::rsrc_ptr> manifest) 
 {
   double preQuantity = preCore_.quantity();
   preCore_.pushAll(MatBuff::toMat(manifest));
@@ -529,7 +529,7 @@ void BatchReactor::interactWithMarket(std::string commod, double amt, TransType 
     }
   else
     {
-      mat_rsrc_ptr trade_res = mat_rsrc_ptr(new Material(RecipeLibrary::Recipe(in_recipe_)));
+      cyclus::mat_rsrc_ptr trade_res = cyclus::mat_rsrc_ptr(new Material(RecipeLibrary::Recipe(in_recipe_)));
       trade_res->setQuantity(amt);
       trans.setResource(trade_res);
 
@@ -559,7 +559,7 @@ void BatchReactor::handleOrders()
 {
   while(!ordersWaiting_.empty())
     {
-    msg_ptr order = ordersWaiting_.front();
+    cyclus::msg_ptr order = ordersWaiting_.front();
     order->trans().approveTransfer();
     ordersWaiting_.pop_front();
     }
@@ -568,7 +568,7 @@ void BatchReactor::handleOrders()
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - 
 void BatchReactor::moveFuel(MatBuff& fromBuff, MatBuff& toBuff, double amt) 
 {
-  vector<mat_rsrc_ptr> to_move = fromBuff.popQty(amt);
+  vector<cyclus::mat_rsrc_ptr> to_move = fromBuff.popQty(amt);
   for (int i = 0; i < to_move.size(); i++) 
     {
       toBuff.pushOne(to_move.at(i));
@@ -581,7 +581,7 @@ void BatchReactor::offLoadFuel(double amt)
   inCore_.popQty(amt);
   double factor = out_core_loading() / in_core_loading();
   double out_amount = amt * factor;
-  mat_rsrc_ptr out_fuel = mat_rsrc_ptr(new Material(RecipeLibrary::Recipe(out_recipe())));
+  cyclus::mat_rsrc_ptr out_fuel = cyclus::mat_rsrc_ptr(new Material(RecipeLibrary::Recipe(out_recipe())));
   out_fuel->setQuantity(out_amount);
   postCore_.pushOne(out_fuel);
 }

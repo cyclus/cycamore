@@ -122,7 +122,7 @@ TEST_F(RecipeReactorTest, Print) {
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - 
 TEST_F(RecipeReactorTest, ReceiveMessage) {
-  msg_ptr msg;
+  cyclus::msg_ptr msg;
   // Test RecipeReactor specific behaviors of the receiveMessage function here
 }
 

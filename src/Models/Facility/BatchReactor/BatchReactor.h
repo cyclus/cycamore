@@ -22,7 +22,7 @@ enum Phase {INIT, BEGIN, OPERATION, REFUEL, REFUEL_DELAY, WAITING, END};
 /* struct PoolEntry */
 /* { */
 /*   int exit_time; */
-/*   mat_rsrc_ptr mat; */
+/*   cyclus::mat_rsrc_ptr mat; */
   
 /* PoolEntry(int time, mat_rsr_ptr mat) : exit_time(time), mat(mat_ptr) {}; */
 /* }; */
@@ -89,7 +89,7 @@ class BatchReactor : public FacilityModel, public SupplyDemand::cyclus::Commodit
   /**
      When the facility receives a message, execute any transaction
    */
-  virtual void receiveMessage(msg_ptr msg);
+  virtual void receiveMessage(cyclus::msg_ptr msg);
 
   /**
      send messages up through the institution 
@@ -103,7 +103,7 @@ class BatchReactor : public FacilityModel, public SupplyDemand::cyclus::Commodit
      @param order the msg/order for which resource(s) are to be prepared
      @return list of resources to be sent for this order
    */
-  virtual std::vector<rsrc_ptr> removeResource(Transaction order);
+  virtual std::vector<cyclus::rsrc_ptr> removeResource(Transaction order);
 
   /**
      Transacted resources are received through this method      
@@ -111,7 +111,7 @@ class BatchReactor : public FacilityModel, public SupplyDemand::cyclus::Commodit
      @param manifest is the set of resources being received
    */
   virtual void addResource(Transaction trans,
-        		   std::vector<rsrc_ptr> manifest);
+        		   std::vector<cyclus::rsrc_ptr> manifest);
   /* --- */
 
   /* --- BatchReactor Methods --- */
@@ -285,7 +285,7 @@ class BatchReactor : public FacilityModel, public SupplyDemand::cyclus::Commodit
   MatBuff postCore_;
 
   /// The list of orders to process on the Tock 
-  std::deque<msg_ptr> ordersWaiting_;
+  std::deque<cyclus::msg_ptr> ordersWaiting_;
 
   /**
      populate the phase name map

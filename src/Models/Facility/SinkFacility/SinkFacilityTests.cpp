@@ -21,8 +21,8 @@ void SinkFacilityTest::TearDown() {
 void SinkFacilityTest::initParameters() {
   commod_ = "incommod";
   commod_market = new TestMarket();
-  commod_market->setcyclus::Commodity(commod_);
-  MarketModel::registerMarket(commod_market);
+  commod_market->setCommodity(commod_);
+  cyclus::MarketModel::registerMarket(commod_market);
 }
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - 
@@ -55,7 +55,7 @@ TEST_F(SinkFacilityTest, Print) {
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - 
 TEST_F(SinkFacilityTest, ReceiveMessage) {
-  msg_ptr msg = msg_ptr(new Message(src_facility));
+  cyclus::msg_ptr msg = cyclus::msg_ptr(new cyclus::Message(src_facility));
   EXPECT_NO_THROW(src_facility->receiveMessage(msg));
 }
 

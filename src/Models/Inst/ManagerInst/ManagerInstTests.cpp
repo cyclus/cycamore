@@ -55,7 +55,7 @@ cyclus::InstModel* ManagerInstConstructor()
 TEST_F(ManagerInstTests,producerexists) 
 {
   src_inst->registerAvailablePrototype(producer);
-  set<cyclus::CommodityProducer*>::iterator it;
+  set<cyclus::SupplyDemand::CommodityProducer*>::iterator it;
   for (it = src_inst->beginningProducer(); it != src_inst->endingProducer(); it++) 
     {
       EXPECT_EQ((*it),producer);

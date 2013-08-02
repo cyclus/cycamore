@@ -40,7 +40,7 @@ std::string StubConverter::str() {
  */
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -    
-msg_ptr StubConverter::convert(msg_ptr convMsg, msg_ptr refMsg) {
+cyclus::msg_ptr StubConverter::convert(cyclus::msg_ptr convMsg, cyclus::msg_ptr refMsg) {
   throw cyclus::CycException("The StubConverter should not be used to convert things.");
 }
 

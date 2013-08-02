@@ -48,7 +48,7 @@ TEST_F(StubInstTest, Print) {
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - 
 TEST_F(StubInstTest, ReceiveMessage) {
-  msg_ptr msg;
+  cyclus::msg_ptr msg;
   // Test StubInst specific behaviors of the receiveMessage function here
 }
 

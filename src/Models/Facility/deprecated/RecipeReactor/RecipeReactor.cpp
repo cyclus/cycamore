@@ -92,7 +92,7 @@ void RecipeReactor::init(xmlNodePtr cur) {
   stocks_ = deque<Fuel>();
   currCore_ = deque<Fuel>();
   inventory_ = deque<Fuel>();
-  ordersWaiting_ = deque<msg_ptr>();
+  ordersWaiting_ = deque<cyclus::msg_ptr>();
 }
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - 
@@ -116,9 +116,9 @@ void RecipeReactor::copy(RecipeReactor* src) {
 
 
   stocks_ = deque<Fuel>();
-  currCore_ = deque< pair<string, mat_rsrc_ptr > >();
+  currCore_ = deque< pair<string, cyclus::mat_rsrc_ptr > >();
   inventory_ = deque<Fuel >();
-  ordersWaiting_ = deque<msg_ptr>();
+  ordersWaiting_ = deque<cyclus::msg_ptr>();
 
   in_recipe_ = src->in_recipe_;
   out_recipe_ = src->out_recipe_;
@@ -145,7 +145,7 @@ void RecipeReactor::beginCycle() {
   if ( !stocks_.empty() ) {
     // move stocks batch to currCore
     string batchCommod = stocks_.front().first;
-    mat_rsrc_ptr batchMat = stocks_.front().second;
+    cyclus::mat_rsrc_ptr batchMat = stocks_.front().second;
     stocks_.pop_front();
     Fuel inBatch;
     inBatch = make_pair(batchCommod, batchMat);
@@ -172,7 +172,7 @@ void RecipeReactor::endCycle() {
 
   // move a batch out of the core 
   string batchCommod = currCore_.front().first;
-  mat_rsrc_ptr batchMat = currCore_.front().second;
+  cyclus::mat_rsrc_ptr batchMat = currCore_.front().second;
   currCore_.pop_front();
 
   // figure out the spent fuel commodity and material
@@ -190,7 +190,7 @@ void RecipeReactor::endCycle() {
   }
 
   // change the composition to the compositon of the spent fuel type
-  batchMat = mat_rsrc_ptr(new Material(outComp));
+  batchMat = cyclus::mat_rsrc_ptr(new Material(outComp));
 
   // move converted material into Inventory
   Fuel outBatch;
@@ -199,7 +199,7 @@ void RecipeReactor::endCycle() {
 };
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -    
-void RecipeReactor::receiveMessage(msg_ptr msg) {
+void RecipeReactor::receiveMessage(cyclus::msg_ptr msg) {
   // is this a message from on high? 
   if(msg->trans().supplier()==this){
     // file the order
@@ -212,15 +212,15 @@ void RecipeReactor::receiveMessage(msg_ptr msg) {
 }
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -    
-vector<rsrc_ptr> RecipeReactor::removeResource(Transaction order) {
+vector<cyclus::rsrc_ptr> RecipeReactor::removeResource(Transaction order) {
   double newAmt = 0;
 
-  mat_rsrc_ptr m;
-  mat_rsrc_ptr newMat;
-  mat_rsrc_ptr toAbsorb;
+  cyclus::mat_rsrc_ptr m;
+  cyclus::mat_rsrc_ptr newMat;
+  cyclus::mat_rsrc_ptr toAbsorb;
 
   // start with an empty manifest
-  vector<rsrc_ptr> toSend;
+  vector<cyclus::rsrc_ptr> toSend;
 
   // pull materials off of the inventory stack until you get the trans amount
   while (order.resource()->quantity() > newAmt && !inventory_.empty() ) {
@@ -232,7 +232,7 @@ vector<rsrc_ptr> RecipeReactor::removeResource(Transaction order) {
         m = iter->second;
 
         // start with an empty material
-        newMat = mat_rsrc_ptr(new Material());
+        newMat = cyclus::mat_rsrc_ptr(new Material());
 
         // if the inventory obj isn't larger than the remaining need, send it as is.
         if (m->quantity() <= (order.resource()->quantity() - newAmt)) {
@@ -255,10 +255,10 @@ vector<rsrc_ptr> RecipeReactor::removeResource(Transaction order) {
 }
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -    
-void RecipeReactor::addResource(Transaction trans, std::vector<rsrc_ptr> manifest) {
+void RecipeReactor::addResource(Transaction trans, std::vector<cyclus::rsrc_ptr> manifest) {
   // grab each material object off of the manifest
   // and move it into the stocks.
-  for (vector<rsrc_ptr>::iterator thisMat=manifest.begin();
+  for (vector<cyclus::rsrc_ptr>::iterator thisMat=manifest.begin();
        thisMat != manifest.end();
        thisMat++) {
     LOG(cyclus::LEV_DEBUG2, "RReact") <<"RecipeReactor " << ID() << " is receiving material with mass "
@@ -351,7 +351,7 @@ void RecipeReactor::makeRequests(){
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -    
 void RecipeReactor::sendMessage(Communicator* recipient, Transaction trans){
-      msg_ptr msg(new Message(this, recipient, trans)); 
+      cyclus::msg_ptr msg(new Message(this, recipient, trans)); 
       msg->sendOn();
 }
 
@@ -372,7 +372,7 @@ void RecipeReactor::makeOffers(){
   string commod;
   Communicator* recipient;
   double offer_amt;
-  for (deque<pair<string, mat_rsrc_ptr > >::iterator iter = inventory_.begin(); 
+  for (deque<pair<string, cyclus::mat_rsrc_ptr > >::iterator iter = inventory_.begin(); 
        iter != inventory_.end(); 
        iter ++){
     // get commod
@@ -384,7 +384,7 @@ void RecipeReactor::makeOffers(){
     offer_amt = iter->second->quantity();
 
     // make a material to offer
-    mat_rsrc_ptr offer_mat = mat_rsrc_ptr(new Material(out_recipe_));
+    cyclus::mat_rsrc_ptr offer_mat = cyclus::mat_rsrc_ptr(new Material(out_recipe_));
     offer_mat->print();
     offer_mat->setQuantity(offer_amt);
 
@@ -413,7 +413,7 @@ void RecipeReactor::handleTock(int time) {
 
   // check what orders are waiting, 
   while(!ordersWaiting_.empty()){
-    msg_ptr order = ordersWaiting_.front();
+    cyclus::msg_ptr order = ordersWaiting_.front();
     order->trans().approveTransfer();
     ordersWaiting_.pop_front();
   };
@@ -515,7 +515,7 @@ double RecipeReactor::inventoryMass(){
   // Iterate through the inventory and sum the amount of whatever
   // material unit is in each object.
 
-  for (deque< pair<string, mat_rsrc_ptr> >::iterator iter = inventory_.begin(); 
+  for (deque< pair<string, cyclus::mat_rsrc_ptr> >::iterator iter = inventory_.begin(); 
        iter != inventory_.end(); 
        iter ++){
     total += iter->second->quantity();
@@ -532,7 +532,7 @@ double RecipeReactor::stocksMass(){
   // material unit is in each object.
 
   if(!stocks_.empty()){
-    for (deque< pair<string, mat_rsrc_ptr> >::iterator iter = stocks_.begin(); 
+    for (deque< pair<string, cyclus::mat_rsrc_ptr> >::iterator iter = stocks_.begin(); 
          iter != stocks_.end(); 
          iter ++){
         total += iter->second->quantity();

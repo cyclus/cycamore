@@ -52,7 +52,7 @@ std::string StorageFacility::str()
 }
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - 
-void StorageFacility::receiveMessage(msg_ptr msg)
+void StorageFacility::receiveMessage(cyclus::msg_ptr msg)
 {
   // is this a message from on high? 
   if(msg->trans().supplier()==this){
@@ -88,7 +88,7 @@ void StorageFacility::sendOffer(Transaction trans) {
 
   Communicator* recipient = dynamic_cast<Communicator*>(market);
 
-  msg_ptr msg(new Message(this, recipient, trans)); 
+  cyclus::msg_ptr msg(new Message(this, recipient, trans)); 
   msg->sendOn();
 }
 

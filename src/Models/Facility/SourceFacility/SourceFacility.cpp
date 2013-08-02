@@ -7,7 +7,7 @@
 #include "RecipeLibrary.h"
 #include "GenericResource.h"
 #include "CycException.h"
-#include "cyclus::CycLimits.h"
+#include "CycLimits.h"
 #include "MarketModel.h"
 
 #include <sstream>
@@ -24,7 +24,7 @@ SourceFacility::SourceFacility() :
   recipe_name_(""), 
   commod_price_(0), 
   capacity_(numeric_limits<double>::max()) {
-  ordersWaiting_ = deque<msg_ptr>();
+  ordersWaiting_ = deque<cyclus::msg_ptr>();
   inventory_ = MatBuff();
   setMaxInventorySize(numeric_limits<double>::max());
 }
@@ -130,7 +130,7 @@ void SourceFacility::handleTock(int time){
 }
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - 
-void SourceFacility::receiveMessage(msg_ptr msg) {
+void SourceFacility::receiveMessage(cyclus::msg_ptr msg) {
   // is this a message from on high? 
   if(msg->trans().supplier() == this) {
     // file the order
@@ -144,7 +144,7 @@ void SourceFacility::receiveMessage(msg_ptr msg) {
 }
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - 
-vector<rsrc_ptr> SourceFacility::removeResource(Transaction order) {
+vector<cyclus::rsrc_ptr> SourceFacility::removeResource(Transaction order) {
   return MatBuff::toRes(inventory_.popQty(order.resource()->quantity()));
 }
 
@@ -201,8 +201,8 @@ void SourceFacility::generateMaterial() {
     return; // no room
   }
 
-  mat_rsrc_ptr newMat = 
-    mat_rsrc_ptr(new Material(RecipeLibrary::Recipe(recipe_name_)));
+  cyclus::mat_rsrc_ptr newMat = 
+    cyclus::mat_rsrc_ptr(new Material(RecipeLibrary::Recipe(recipe_name_)));
   double amt = capacity_;
   if (amt <= empty_space) {
     newMat->setQuantity(amt); // plenty of room
@@ -218,7 +218,7 @@ Transaction SourceFacility::buildTransaction() {
   double min_amt = 0;
   double offer_amt = inventory_.quantity();
 
-  mat_rsrc_ptr trade_res = mat_rsrc_ptr(new Material(RecipeLibrary::Recipe(recipe())));
+  cyclus::mat_rsrc_ptr trade_res = cyclus::mat_rsrc_ptr(new Material(RecipeLibrary::Recipe(recipe())));
   trade_res->setQuantity(offer_amt);
 
   Transaction trans(this, OFFER);
@@ -236,7 +236,7 @@ void SourceFacility::sendOffer(Transaction trans) {
 
   Communicator* recipient = dynamic_cast<Communicator*>(market);
 
-  msg_ptr msg(new Message(this, recipient, trans)); 
+  cyclus::msg_ptr msg(new Message(this, recipient, trans)); 
   msg->sendOn();
 }
 

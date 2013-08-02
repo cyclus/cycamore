@@ -10,7 +10,7 @@
 #include "Logger.h"
 #include "GenericResource.h"
 #include "CycException.h"
-#include "cyclus::CycLimits.h"
+#include "CycLimits.h"
 #include "MarketModel.h"
 
 using namespace std;
@@ -25,10 +25,10 @@ SinkFacility::SinkFacility() :
 SinkFacility::~SinkFacility() {}
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - 
-void SinkFacility::initModuleMembers(QueryEngine* qe) {
-  QueryEngine* input = qe->queryElement("input");
+void SinkFacility::initModuleMembers(cyclus::QueryEngine* qe) {
+  cyclus::QueryEngine* input = qe->queryElement("input");
 
-  QueryEngine* commodities = input->queryElement("commodities");
+  cyclus::QueryEngine* commodities = input->queryElement("commodities");
   string query = "incommodity";
   int nCommodities = commodities->nElementsMatchingQuery(query);
   for (int i = 0; i < nCommodities; i++) {
@@ -54,7 +54,7 @@ void SinkFacility::initModuleMembers(QueryEngine* qe) {
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - 
 std::string SinkFacility::str() {
   std::stringstream ss;
-  ss << FacilityModel::str();
+  ss << cyclus::FacilityModel::str();
 
   string msg = "";
   msg += "accepts commodities ";
@@ -95,20 +95,20 @@ void SinkFacility::handleTick(int time){
         commod++) {
       LOG(cyclus::LEV_INFO4, "SnkFac") << " requests "<< requestAmt << " kg of " << *commod << ".";
 
-      cyclus::MarketModel* market = MarketModel::marketForCommod(*commod);
-      Communicator* recipient = dynamic_cast<Communicator*>(market);
+      cyclus::MarketModel* market = cyclus::MarketModel::marketForCommod(*commod);
+      cyclus::Communicator* recipient = dynamic_cast<cyclus::Communicator*>(market);
 
       // create a generic resource
-      gen_rsrc_ptr request_res = gen_rsrc_ptr(new GenericResource("kg",*commod,requestAmt));
+      cyclus::gen_rsrc_ptr request_res = cyclus::gen_rsrc_ptr(new cyclus::GenericResource("kg",*commod,requestAmt));
 
       // build the transaction and message
-      Transaction trans(this, REQUEST);
+      cyclus::Transaction trans(this, cyclus::REQUEST);
       trans.setCommod(*commod);
       trans.setMinFrac(minAmt/requestAmt);
       trans.setPrice(commod_price_);
       trans.setResource(request_res);
 
-      msg_ptr request(new Message(this, recipient, trans)); 
+      cyclus::msg_ptr request(new cyclus::Message(this, recipient, trans)); 
       request->sendOn();
 
     }
@@ -166,8 +166,8 @@ std::vector<std::string> SinkFacility::inputCommodities() {
 }
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - 
-void SinkFacility::addResource(Transaction trans, std::vector<rsrc_ptr> manifest) {
-  inventory_.pushAll(MatBuff::toMat(manifest));
+void SinkFacility::addResource(cyclus::Transaction trans, std::vector<cyclus::rsrc_ptr> manifest) {
+  inventory_.pushAll(cyclus::MatBuff::toMat(manifest));
 }
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - 

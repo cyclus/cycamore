@@ -95,7 +95,7 @@ class StorageFacility : public FacilityModel
      @return list of resources to be sent for this order 
       
    */ 
-  virtual std::vector<rsrc_ptr> removeResource(Transaction order);
+  virtual std::vector<cyclus::rsrc_ptr> removeResource(Transaction order);
 
   /**
      Transacted resources are received through this method 
@@ -104,12 +104,12 @@ class StorageFacility : public FacilityModel
      @param manifest is the set of resources being received 
    */ 
   virtual void addResource(Transaction trans,
-			   std::vector<rsrc_ptr> manifest);
+			   std::vector<cyclus::rsrc_ptr> manifest);
 
   /**
      When the facility receives a message, execute any transaction 
    */
-  virtual void receiveMessage(msg_ptr msg);
+  virtual void receiveMessage(cyclus::msg_ptr msg);
 
  protected:
   /**
@@ -193,7 +193,7 @@ class StorageFacility : public FacilityModel
   /**
      The list of orders to process on the Tock 
    */
-  std::deque<msg_ptr> ordersWaiting_;
+  std::deque<cyclus::msg_ptr> ordersWaiting_;
 
   /**
    */
