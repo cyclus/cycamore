@@ -35,17 +35,17 @@ void EnrichmentFacilityTest::initParameters()
 {
   in_commod = "incommod";
   in_commod_market = new TestMarket();
-  in_commod_market->setcyclus::Commodity(in_commod);
+  in_commod_market->setCommodity(in_commod);
   cyclus::MarketModel::registerMarket(in_commod_market);
 
   out_commod = "outcommod";
   out_commod_market = new TestMarket();
-  out_commod_market->setcyclus::Commodity(out_commod);
+  out_commod_market->setCommodity(out_commod);
   cyclus::MarketModel::registerMarket(out_commod_market);
 
   in_recipe = "recipe";
   feed_assay = 0.0072;
-  recipe = CompMapPtr(new CompMap(ATOM));
+  recipe = cyclus::CompMapPtr(new cyclus::CompMap(cyclus::ATOM));
   (*recipe)[92235] = feed_assay;
   (*recipe)[92238] = 1-feed_assay;
   cyclus::RecipeLibrary::recordRecipe(in_recipe,recipe);
@@ -71,9 +71,9 @@ void EnrichmentFacilityTest::initFacility()
      << "  </output>"
      << "</start>";
 
-  XMLParser parser;
+  cyclus::XMLParser parser;
   parser.init(ss);
-  XMLQueryEngine* engine = new XMLQueryEngine(parser);
+  cyclus::XMLQueryEngine* engine = new cyclus::XMLQueryEngine(parser);
 
   EXPECT_NO_THROW(src_facility->initModuleMembers(engine));
   delete engine;

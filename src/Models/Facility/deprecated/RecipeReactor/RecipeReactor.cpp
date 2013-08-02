@@ -14,7 +14,7 @@
 using namespace std;
 
 /**
-  TICK
+  cyclus::TICK
   if stocks are empty, ask for a batch
   offer anything in the inventory
   if we're at the end of a cycle

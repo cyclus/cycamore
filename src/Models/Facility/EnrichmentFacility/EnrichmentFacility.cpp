@@ -203,7 +203,7 @@ void EnrichmentFacility::makeRequest()
 }
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - 
-Transaction EnrichmentFacility::buildTransaction() 
+cyclus::Transaction EnrichmentFacility::buildTransaction() 
 {
   // there is no minimum amount a source facility may send
   double min_amt = 0;
@@ -292,10 +292,10 @@ void EnrichmentFacility::recordEnrichment(double natural_u, double swu)
   LOG(cyclus::LEV_DEBUG1, "EnrFac") << "  * Amount: " << natural_u;
   LOG(cyclus::LEV_DEBUG1, "EnrFac") << "  *    SWU: " << swu;
 
-  EM->newEvent("Enrichments")
+  cyclus::EM->newEvent("Enrichments")
     ->addVal("ENTRY", ++entry_)
     ->addVal("ID", ID())
-    ->addVal("Time", TI->time())
+    ->addVal("Time", cyclus::TI->time())
     ->addVal("Natural_Uranium", natural_u)
     ->addVal("SWU", swu)
     ->record();

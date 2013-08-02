@@ -61,9 +61,9 @@ void BatchReactorTest::initSrcFacility()
      << "  </commodity_production>"
      << "</start>";
 
-  XMLParser parser;
+  cyclus::XMLParser parser;
   parser.init(ss);
-  XMLQueryEngine* engine = new XMLQueryEngine(parser);
+  cyclus::XMLQueryEngine* engine = new cyclus::XMLQueryEngine(parser);
   src_facility = new BatchReactor();
   src_facility->initModuleMembers(engine);
   delete engine;

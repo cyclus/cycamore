@@ -23,7 +23,7 @@ protected:
   SourceFacility* src_facility;
   TestMarket* commod_market;
   std::string commod_, recipe_name_;
-  CompMapPtr recipe_;
+  cyclus::CompMapPtr recipe_;
     
   virtual void SetUp();
   virtual void TearDown();

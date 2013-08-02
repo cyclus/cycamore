@@ -12,7 +12,7 @@ using namespace std;
 using boost::lexical_cast;
 
 /**
-  TICK
+  cyclus::TICK
   send a request for your capacity minus your stocks.
   offer materials that have exceeded their residence times
   offer them

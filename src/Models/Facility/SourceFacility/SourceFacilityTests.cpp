@@ -21,7 +21,7 @@ void SourceFacilityTest::TearDown() {
 void SourceFacilityTest::initParameters() {
   commod_ = "commod";
   recipe_name_ = "recipe";
-  recipe_ = CompMapPtr(new CompMap(ATOM));
+  recipe_ = cyclus::CompMapPtr(new CompMap(ATOM));
   cyclus::RecipeLibrary::recordRecipe(recipe_name_,recipe_);
   commod_market = new TestMarket();
   commod_market->setcyclus::Commodity(commod_);
