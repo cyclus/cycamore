@@ -19,15 +19,15 @@ StubInst::~StubInst() {};
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 std::string StubInst::str() { 
-  return InstModel::str(); 
+  return cyclus::InstModel::str(); 
 }
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-void StubInst::initModuleMembers(QueryEngine* qe) {}
+void StubInst::initModuleMembers(cyclus::QueryEngine* qe) {}
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 void StubInst::enterSimulation(cyclus::Model* parent) {
-  InstModel::enterSimulation(parent);
+  cyclus::InstModel::enterSimulation(parent);
 }
 
 /* ------------------- */ 
@@ -39,7 +39,7 @@ void StubInst::enterSimulation(cyclus::Model* parent) {
  */
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-void StubInst::receiveMessage(msg_ptr msg) {};
+void StubInst::receiveMessage(cyclus::msg_ptr msg) {};
 
 /* ------------------- */ 
 

@@ -117,7 +117,7 @@ void GrowthRegion::registerCommodity(cyclus::Commodity& commodity)
 {
   if (commodities_.find(commodity) != commodities_.end())
     {
-      throw CycDoubleRegistrationException("A GrowthRegion ("
+      throw cyclus::CycDoubleRegistrationException("A GrowthRegion ("
                                            + name() + " is trying to register a commodity twice.");
     }
   else
@@ -139,7 +139,7 @@ void GrowthRegion::registerCommodityProducerManager(cyclus::Model* child)
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - 
 void GrowthRegion::registerBuilder(cyclus::Model* child)
 {
-  cyclus::Builder* cast = dynamic_cast<cyclus::Builder*>(child);
+  cyclus::ActionBuilding::Builder* cast = dynamic_cast<cyclus::ActionBuilding::Builder*>(child);
   if (cast)
     {
       buildmanager_.registerBuilder(cast);
@@ -149,7 +149,7 @@ void GrowthRegion::registerBuilder(cyclus::Model* child)
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 void GrowthRegion::orderBuilds(cyclus::Commodity& commodity, double unmet_demand)
 {
-  vector<cyclus::BuildOrder> orders = buildmanager_.makeBuildDecision(commodity,unmet_demand);
+  vector<cyclus::ActionBuilding::BuildOrder> orders = buildmanager_.makeBuildDecision(commodity,unmet_demand);
   
   LOG(cyclus::LEV_INFO3,"greg") << "The build orders have been determined. " 
                         << orders.size() 
@@ -157,7 +157,7 @@ void GrowthRegion::orderBuilds(cyclus::Commodity& commodity, double unmet_demand
 
   for (int i = 0; i < orders.size(); i++)
     {
-      cyclus::BuildOrder order = orders.at(i);
+      cyclus::ActionBuilding::BuildOrder order = orders.at(i);
       cyclus::InstModel* instcast = dynamic_cast<cyclus::InstModel*>(order.builder);
       cyclus::Prototype* protocast = dynamic_cast<cyclus::Prototype*>(order.producer);
       if(instcast && protocast)

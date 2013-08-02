@@ -60,7 +60,7 @@ void StorageFacility::receiveMessage(msg_ptr msg)
     ordersWaiting_.push_front(msg);
   }
   else {
-    throw CycException("StorageFacility is not the supplier of this msg.");
+    throw cyclus::CycException("StorageFacility is not the supplier of this msg.");
   }
 }
 

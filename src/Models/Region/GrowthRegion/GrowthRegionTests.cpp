@@ -54,9 +54,9 @@ void GrowthRegionTests::initRegion()
      << "  </commodity>"
      << "</start>";
 
-  XMLParser parser;
+  cyclus::XMLParser parser;
   parser.init(ss);
-  XMLQueryEngine* engine = new XMLQueryEngine(parser);
+  cyclus::XMLQueryEngine* engine = new cyclus::XMLQueryEngine(parser);
   region->initModuleMembers(engine);
   delete engine;
 }

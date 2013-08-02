@@ -22,7 +22,7 @@
    any changes. 
  */
 
-class NullInst : public InstModel {
+class NullInst : public cyclus::InstModel {
 /* --------------------
  * all MODEL classes have these members
  * --------------------

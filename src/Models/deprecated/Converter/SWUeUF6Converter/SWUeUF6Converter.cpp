@@ -74,7 +74,7 @@ msg_ptr SWUeUF6Converter::convert(msg_ptr convMsg, msg_ptr refMsg)
     // the enricher is the supplier in the convMsg
     enr = convMsg->trans().supplier();
     if (0 == enr){
-      throw CycException("SWUs offered by non-Model");
+      throw cyclus::CycException("SWUs offered by non-Model");
     }
     SWUs = convMsg->trans().resource()->quantity();
     try {
@@ -83,13 +83,13 @@ msg_ptr SWUeUF6Converter::convert(msg_ptr convMsg, msg_ptr refMsg)
     } catch (exception& e) {
       string err = "The Resource sent to the SWUeUF6Converter must be a \
                     Material type resource.";
-      throw CycException(err);
+      throw cyclus::CycException(err);
     }
   } else if (in_commod_ == "eUF6" && out_commod_ == "SWUs") {
     // the enricher is the supplier in the refMsg
     enr = refMsg->trans().supplier();
     if (0 == enr) {
-      throw CycException("SWUs offered by non-Model");
+      throw cyclus::CycException("SWUs offered by non-Model");
     }
     try{
       mat = boost::dynamic_pointer_cast<Material>(convMsg->trans().resource());
@@ -97,7 +97,7 @@ msg_ptr SWUeUF6Converter::convert(msg_ptr convMsg, msg_ptr refMsg)
     } catch (exception& e) {
       string err = "The Resource sent to the SWUeUF6Converter must be a \
                     Material type resource.";
-      throw CycException(err);
+      throw cyclus::CycException(err);
     }
   }
   

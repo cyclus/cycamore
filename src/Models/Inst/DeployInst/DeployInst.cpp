@@ -8,7 +8,7 @@
 using namespace std;
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - 
-void BuildOrderList::addBuildOrder(Prototype* p, int number, 
+void BuildOrderList::addBuildOrder(cyclus::Prototype* p, int number, 
                                    int time) {
   map<int, set<BuildOrder> >::iterator it;
   it = all_orders_.find(time);
@@ -42,16 +42,16 @@ DeployInst::DeployInst() {}
 DeployInst::~DeployInst() {}
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - 
-void DeployInst::initModuleMembers(QueryEngine* qe) {
+void DeployInst::initModuleMembers(cyclus::QueryEngine* qe) {
   string query = "buildorder";
   int nOrders = qe->nElementsMatchingQuery(query);
   
   for (int i = 0; i < nOrders; i++) {
-    QueryEngine* order = qe->queryElement(query,i);
+    cyclus::QueryEngine* order = qe->queryElement(query,i);
     string name = order->getElementContent("prototype");
     int number = atoi(order->getElementContent("number").c_str());
     int time = atoi(order->getElementContent("date").c_str());
-    build_orders_.addBuildOrder(Prototype::getRegisteredPrototype(name),
+    build_orders_.addBuildOrder(cyclus::Prototype::getRegisteredPrototype(name),
                                 number,time);
   }
 
@@ -63,7 +63,7 @@ void DeployInst::handleTick(int time) {
   for (set<BuildOrder>::iterator it = orders.begin(); 
        it != orders.end(); it++) {
     
-    Prototype* p = it->first;
+    cyclus::Prototype* p = it->first;
     int number = it->second;
     
     for (int i = 0; i < number; i++) {

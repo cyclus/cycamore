@@ -7,7 +7,7 @@
 #include "RecipeLibrary.h"
 #include "GenericResource.h"
 #include "CycException.h"
-#include "CycLimits.h"
+#include "cyclus::CycLimits.h"
 #include "MarketModel.h"
 
 #include <sstream>
@@ -49,7 +49,7 @@ void SourceFacility::initModuleMembers(QueryEngine* qe) {
     data = output->getElementContent("output_capacity"); 
     val = lexical_cast<double>(data); // overwrite default if given a value
   }
-  catch (CycNullQueryException e) {}
+  catch (cyclus::CycNullQueryException e) {}
   cyclus::CommodityProducer::setCapacity(commod, val);
   setCapacity(val);  
 
@@ -58,7 +58,7 @@ void SourceFacility::initModuleMembers(QueryEngine* qe) {
       data = output->getElementContent("inventorysize"); 
       setMaxInventorySize(lexical_cast<double>(data));
     } 
-  catch (CycNullQueryException e) 
+  catch (cyclus::CycNullQueryException e) 
     {
       setMaxInventorySize(numeric_limits<double>::max());
     }
@@ -139,7 +139,7 @@ void SourceFacility::receiveMessage(msg_ptr msg) {
     LOG(cyclus::LEV_INFO5, "SrcFac") << "for " << msg->trans().resource()->quantity() 
                              << " of " << msg->trans().commod();
   } else {
-    throw CycException("SourceFacility is not the supplier of this msg.");
+    throw cyclus::CycException("SourceFacility is not the supplier of this msg.");
   }
 }
 

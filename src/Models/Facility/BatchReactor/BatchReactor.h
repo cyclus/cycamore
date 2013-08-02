@@ -374,18 +374,18 @@ class BatchReactor : public FacilityModel, public SupplyDemand::cyclus::Commodit
    An exception class for BatchReactors that aren't empty when
    their destructor is called
 */
-class CycBatchReactorDestructException : public CycException {
+class cyclus::CycBatchReactorDestructException : public cyclus::CycException {
  public: 
- CycBatchReactorDestructException(std::string msg) : CycException(msg) {};
+ cyclus::CycBatchReactorDestructException(std::string msg) : cyclus::CycException(msg) {};
 };
 
 /**
    An exception class for BatchReactors that exhibit undefined behavior
    for a given phase
 */
-class CycBatchReactorPhaseBehaviorException : public CycException {
+class cyclus::CycBatchReactorPhaseBehaviorException : public cyclus::CycException {
  public: 
- CycBatchReactorPhaseBehaviorException(std::string msg) : CycException(msg) {};
+ cyclus::CycBatchReactorPhaseBehaviorException(std::string msg) : cyclus::CycException(msg) {};
 };
 
 #endif

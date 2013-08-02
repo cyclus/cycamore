@@ -10,7 +10,7 @@
 #include <set>
 #include <map>
 
-typedef std::pair<Prototype*,int> BuildOrder;
+typedef std::pair<cyclus::Prototype*,int> BuildOrder;
 
 /**
    a helper class for storing and extracting build orders
@@ -18,7 +18,7 @@ typedef std::pair<Prototype*,int> BuildOrder;
 class BuildOrderList {
  public:
   /// add a build order
-  void addBuildOrder(Prototype* p, int number, int time);
+  void addBuildOrder(cyclus::Prototype* p, int number, int time);
 
   /// extract a set of build orders
   std::set<BuildOrder> extractOrders(int time);
@@ -35,7 +35,7 @@ class BuildOrderList {
    This model implements a simple institution model that deploys 
    specific facilities as defined explicitly in the input file. 
  */
-class DeployInst : public InstModel {
+class DeployInst : public cyclus::InstModel {
 /* --------------------
  * all MODEL classes have these members
  * --------------------
@@ -55,7 +55,7 @@ class DeployInst : public InstModel {
      Initialize members related to derived module class
      @param qe a pointer to a QueryEngine object containing initialization data
    */
-  virtual void initModuleMembers(QueryEngine* qe);
+  virtual void initModuleMembers(cyclus::QueryEngine* qe);
 
 /* ------------------- */ 
 

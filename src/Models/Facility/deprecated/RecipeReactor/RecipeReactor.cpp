@@ -207,7 +207,7 @@ void RecipeReactor::receiveMessage(msg_ptr msg) {
     LOG(cyclus::LEV_INFO5, "RReact") << name() << " just received an order.";
   }
   else {
-    throw CycException("RecipeReactor is not the supplier of this msg.");
+    throw cyclus::CycException("RecipeReactor is not the supplier of this msg.");
   }
 }
 

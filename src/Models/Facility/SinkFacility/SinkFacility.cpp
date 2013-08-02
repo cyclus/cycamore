@@ -10,7 +10,7 @@
 #include "Logger.h"
 #include "GenericResource.h"
 #include "CycException.h"
-#include "CycLimits.h"
+#include "cyclus::CycLimits.h"
 #include "MarketModel.h"
 
 using namespace std;
@@ -39,14 +39,14 @@ void SinkFacility::initModuleMembers(QueryEngine* qe) {
   try {
     data = input->getElementContent("input_capacity");   
     setCapacity(lexical_cast<double>(data));
-  } catch (CycNullQueryException e) {
+  } catch (cyclus::CycNullQueryException e) {
     setCapacity(numeric_limits<double>::max());
   }
 
   try {
     data = input->getElementContent("inventorysize"); 
     setMaxInventorySize(lexical_cast<double>(data));
-  } catch (CycNullQueryException e) {
+  } catch (cyclus::CycNullQueryException e) {
     setMaxInventorySize(numeric_limits<double>::max());
   }
 }

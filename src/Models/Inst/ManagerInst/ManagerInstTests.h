@@ -7,8 +7,8 @@
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - 
 class TestProducer : 
-  public FacilityModel, 
-  public SupplyDemand::cyclus::CommodityProducer
+  public cyclus::FacilityModel, 
+  public cyclus::SupplyDemand::CommodityProducer
 {
  public:
   TestProducer();
@@ -18,7 +18,7 @@ class TestProducer :
   void handleTock(int time){};
   void handleTick(int time){};
 
-  void receiveMessage(msg_ptr msg) {
+  void receiveMessage(cyclus::msg_ptr msg) {
     msg->setDir(DOWN_MSG);
   }
 

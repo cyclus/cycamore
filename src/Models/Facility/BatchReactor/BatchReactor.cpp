@@ -11,7 +11,7 @@
 #include "GenericResource.h"
 #include "RecipeLibrary.h"
 #include "MarketModel.h"
-#include "CycLimits.h"
+#include "cyclus::CycLimits.h"
 
 using namespace std;
 using boost::lexical_cast;
@@ -64,7 +64,7 @@ void BatchReactor::initModuleMembers(QueryEngine* qe)
       data = qe->getElementContent("refueldelay"); 
       set_refuel_delay(lexical_cast<double>(data));  
     }
-  catch (CycNullQueryException e) {}
+  catch (cyclus::CycNullQueryException e) {}
 
   data = qe->getElementContent("incoreloading"); 
   set_in_core_loading(lexical_cast<double>(data));  
@@ -74,7 +74,7 @@ void BatchReactor::initModuleMembers(QueryEngine* qe)
       data = qe->getElementContent("outcoreloading"); 
       set_out_core_loading(lexical_cast<double>(data));  
     }
-  catch (CycNullQueryException e)
+  catch (cyclus::CycNullQueryException e)
     {
       set_out_core_loading(in_core_loading());
     }
@@ -189,7 +189,7 @@ void BatchReactor::handleTick(int time)
     default:
       msg = "BatchReactors have undefined behvaior during ticks for phase: " 
         + phase_names_[phase_];
-      throw CycBatchReactorPhaseBehaviorException(msg);
+      throw cyclus::CycBatchReactorPhaseBehaviorException(msg);
       break;
     }
   
@@ -258,7 +258,7 @@ void BatchReactor::handleTock(int time)
     default:
       msg = "BatchReactors have undefined behvaior during tocks for phase: " 
         + phase_names_[phase_];
-      throw CycBatchReactorPhaseBehaviorException(msg);
+      throw cyclus::CycBatchReactorPhaseBehaviorException(msg);
       break;
     }
 
@@ -281,7 +281,7 @@ void BatchReactor::receiveMessage(msg_ptr msg)
     }
   else 
     {
-      throw CycException("BatchReactor is not the supplier of this msg.");
+      throw cyclus::CycException("BatchReactor is not the supplier of this msg.");
     }
 }
 
@@ -443,7 +443,7 @@ bool BatchReactor::checkDecommissionCondition()
                 postCore_.empty());
   // if (!empty) {
   //   string msg = "Can't delete a BatchReactor with material still in its inventory.";
-  //   throw CycBatchReactorDestructException(msg);
+  //   throw cyclus::CycBatchReactorDestructException(msg);
   // }
   return empty;
 }

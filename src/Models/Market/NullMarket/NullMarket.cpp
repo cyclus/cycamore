@@ -4,7 +4,7 @@
 
 #include "NullMarket.h"
 
-#include "CycLimits.h"
+#include "cyclus::CycLimits.h"
 #include "Resource.h"
 
 using namespace std;

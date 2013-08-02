@@ -14,7 +14,6 @@
 // ManagerInstTests.cpp:(.text+0x344): undefined reference to `cyclus::CommodityTestHelper::~cyclus::CommodityTestHelper()'
 
 using namespace std;
-using namespace SupplyDemand;
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - 
 TestProducer::TestProducer() {}

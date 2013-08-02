@@ -19,7 +19,7 @@ void ManagerInst::registerAvailablePrototype(cyclus::Prototype* prototype)
   cyclus::SupplyDemand::CommodityProducer* cast = dynamic_cast<cyclus::SupplyDemand::CommodityProducer*>(prototype);
   if (cast) 
     {
-      cyclus::ActionBuilder::Builder::registerProducer(cast);
+      cyclus::ActionBuilding::Builder::registerProducer(cast);
       LOG(cyclus::LEV_DEBUG3,"maninst") << "ManagerInst " << name() 
                                 << " has registered a producer prototype: "
                                 << dynamic_cast<cyclus::Model*>(prototype)->name()
