@@ -12,10 +12,10 @@
 
 /**
    @class SinkFacility 
-   This FacilityModel requests a finite amount of its input commodity. 
+   This cyclus::FacilityModel requests a finite amount of its input commodity. 
    It offers nothing. 
     
-   The SinkFacility class inherits from the FacilityModel class and is 
+   The SinkFacility class inherits from the cyclus::FacilityModel class and is 
    dynamically loaded by the Model class when requested. 
     
    @section intro Introduction 

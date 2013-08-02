@@ -44,7 +44,7 @@ RecipeReactor::RecipeReactor() {
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -    
 void RecipeReactor::init(xmlNodePtr cur) { 
-  FacilityModel::init(cur);
+  cyclus::FacilityModel::init(cur);
   
   // move XML pointer to current model
   cur = XMLinput->get_xpath_element(cur,"model/RecipeReactor");
@@ -98,7 +98,7 @@ void RecipeReactor::init(xmlNodePtr cur) {
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - 
 void RecipeReactor::copy(RecipeReactor* src) {
 
-  FacilityModel::copy(src);
+  cyclus::FacilityModel::copy(src);
 
   fuelPairs_ = src->fuelPairs_;
   capacity_ = src->capacity_;
@@ -131,7 +131,7 @@ void RecipeReactor::copyFreshModel(cyclus::Model* src) {
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -    
 std::string RecipeReactor::str() { 
-  std::string s = FacilityModel::str(); 
+  std::string s = cyclus::FacilityModel::str(); 
   s += "    converts commodity '"
     + fuelPairs_.front().first.first
     + "' into commodity '"

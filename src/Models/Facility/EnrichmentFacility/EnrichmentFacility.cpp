@@ -71,7 +71,7 @@ void EnrichmentFacility::initModuleMembers(cyclus::QueryEngine* qe)
 std::string EnrichmentFacility::str() 
 {
   std::stringstream ss;
-  ss << FacilityModel::str()
+  ss << cyclus::FacilityModel::str()
      << " with enrichment facility parameters:"
      << " * Tails assay: " << tails_assay()
      << " * Feed assay: " << feed_assay()

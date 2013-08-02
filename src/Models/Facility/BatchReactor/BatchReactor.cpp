@@ -95,7 +95,7 @@ void BatchReactor::initModuleMembers(cyclus::QueryEngine* qe)
 std::string BatchReactor::str() 
 { 
   std::stringstream ss;
-  ss << FacilityModel::str();
+  ss << cyclus::FacilityModel::str();
   ss << " has facility parameters {"
      << ", Cycle Length = " << cycle_length()
      << ", Refuel Delay = " << refuel_delay()

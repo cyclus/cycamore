@@ -13,9 +13,9 @@ class cyclus::QueryEngine;
 
 /**
    @class StorageFacility 
-   This FacilityModel stores material. 
+   This cyclus::FacilityModel stores material. 
     
-   The StorageFacility class inherits from the FacilityModel class and 
+   The StorageFacility class inherits from the cyclus::FacilityModel class and 
    is dynamically loaded by the Model class when requested. 
     
    @section intro Introduction 
@@ -39,7 +39,7 @@ class cyclus::QueryEngine;
    upon sending and receiving materials and messages. 
     
  */
-class StorageFacility : public FacilityModel  
+class StorageFacility : public cyclus::FacilityModel  
 {
  public:
   /* --- Module Methods --- */

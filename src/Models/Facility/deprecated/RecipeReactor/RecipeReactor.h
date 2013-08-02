@@ -10,10 +10,10 @@
 
 /**
    @class RecipeReactor 
-   This FacilityModel represents a reactor using predefined fresh and 
+   This cyclus::FacilityModel represents a reactor using predefined fresh and 
    spent fuel recipes. 
     
-   The RecipeReactor class inherits from the FacilityModel class and is 
+   The RecipeReactor class inherits from the cyclus::FacilityModel class and is 
    dynamically loaded by the Model class when requested. 
     
    This facility model does very little.  New material is added to queue 
@@ -111,7 +111,7 @@
 typedef std::pair< std::string, cyclus::mat_rsrc_ptr> Fuel; 
 typedef std::pair< std::string, IsoVector> Recipe; 
 
-class RecipeReactor : public FacilityModel  {
+class RecipeReactor : public cyclus::FacilityModel  {
 /* --------------------
  * all MODEL classes have these members
  * --------------------

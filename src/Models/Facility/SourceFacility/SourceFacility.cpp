@@ -39,9 +39,9 @@ void SourceFacility::initModuleMembers(cyclus::QueryEngine* qe) {
   setRecipe(output->getElementContent("recipe"));
 
   string data = output->getElementContent("outcommodity");
-  setcyclus::Commodity(data);
+  setCommodity(data);
   cyclus::Commodity commod(data);
-  cyclus::CommodityProducer::addCommodity(commod);
+  cyclus::SupplyDemand::CommodityProducer::addCommodity(commod);
   
   double val = numeric_limits<double>::max();
   try
@@ -50,7 +50,7 @@ void SourceFacility::initModuleMembers(cyclus::QueryEngine* qe) {
     val = lexical_cast<double>(data); // overwrite default if given a value
   }
   catch (cyclus::CycNullQueryException e) {}
-  cyclus::CommodityProducer::setCapacity(commod, val);
+  cyclus::SupplyDemand::CommodityProducer::setCapacity(commod, val);
   setCapacity(val);  
 
   try
@@ -67,7 +67,7 @@ void SourceFacility::initModuleMembers(cyclus::QueryEngine* qe) {
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - 
 std::string SourceFacility::str() {
   std::stringstream ss;
-  ss << FacilityModel::str()
+  ss << cyclus::FacilityModel::str()
      << " supplies commodity '"
      << out_commod_ << "' with recipe '" 
      << recipe_name_ << "' at a capacity of "
@@ -79,7 +79,7 @@ std::string SourceFacility::str() {
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - 
 void SourceFacility::cloneModuleMembersFrom(cyclus::FacilityModel* sourceModel) {
   SourceFacility* source = dynamic_cast<SourceFacility*>(sourceModel);
-  setcyclus::Commodity(source->commodity());
+  setCommodity(source->commodity());
   setCapacity(source->capacity());
   setRecipe(source->recipe());
   setMaxInventorySize(source->maxInventorySize());
@@ -149,7 +149,7 @@ vector<cyclus::rsrc_ptr> SourceFacility::removeResource(cyclus::Transaction orde
 }
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - 
-void SourceFacility::setcyclus::Commodity(std::string name) {
+void SourceFacility::setCommodity(std::string name) {
   out_commod_ = name;
 }
 
@@ -213,7 +213,7 @@ void SourceFacility::generateMaterial() {
 }
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - 
-Transaction SourceFacility::buildTransaction() {
+cyclus::Transaction SourceFacility::buildTransaction() {
   // there is no minimum amount a source facility may send
   double min_amt = 0;
   double offer_amt = inventory_.quantity();

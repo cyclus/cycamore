@@ -3,21 +3,19 @@
 #define _SOURCEFACILITY_H
 
 #include "FacilityModel.h"
+#include "QueryEngine.h"
 #include "CommodityProducer.h"
 
 #include "MatBuff.h"
 
 #include <deque>
 
-// forward declarations
-class cyclus::QueryEngine;
-
 /**
    @class SourceFacility 
-   This FacilityModel provides a simple source of some capacity 
+   This cyclus::FacilityModel provides a simple source of some capacity 
    (possibly infinite) of some commodity/Recipe. 
     
-   The SourceFacility class inherits from the FacilityModel class and is 
+   The SourceFacility class inherits from the cyclus::FacilityModel class and is 
    dynamically loaded by the Model class when requested. 
     
     
@@ -87,8 +85,8 @@ class cyclus::QueryEngine;
    material on a market? 
  */
 
-class SourceFacility : public FacilityModel, 
-  public SupplyDemand::cyclus::CommodityProducer  
+class SourceFacility : public cyclus::FacilityModel, 
+  public cyclus::SupplyDemand::CommodityProducer  
 {
  public:
   /* --- Module Methods --- */
@@ -161,7 +159,7 @@ class SourceFacility : public FacilityModel,
      sets the output commodity name
      @param name the commodity name
    */
-  void setcyclus::Commodity(std::string name);
+  void setCommodity(std::string name);
 
   /// @return the output commodity
   std::string commodity();

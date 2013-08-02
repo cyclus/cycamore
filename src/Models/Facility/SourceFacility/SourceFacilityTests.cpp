@@ -21,17 +21,17 @@ void SourceFacilityTest::TearDown() {
 void SourceFacilityTest::initParameters() {
   commod_ = "commod";
   recipe_name_ = "recipe";
-  recipe_ = cyclus::CompMapPtr(new CompMap(ATOM));
+  recipe_ = cyclus::CompMapPtr(new cyclus::CompMap(cyclus::ATOM));
   cyclus::RecipeLibrary::recordRecipe(recipe_name_,recipe_);
   commod_market = new TestMarket();
-  commod_market->setcyclus::Commodity(commod_);
+  commod_market->setCommodity(commod_);
   cyclus::MarketModel::registerMarket(commod_market);
 }
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - 
 void SourceFacilityTest::setUpSourceFacility() {
   src_facility = new SourceFacility();
-  src_facility->setcyclus::Commodity(commod_);
+  src_facility->setCommodity(commod_);
   src_facility->setRecipe(recipe_name_);
 }
 

@@ -32,7 +32,7 @@ enum Phase {INIT, BEGIN, OPERATION, REFUEL, REFUEL_DELAY, WAITING, END};
    This class is identical to the RecipeReactor, except that it
    operates in a batch-like manner, i.e. it refuels in batches.
  */
-class BatchReactor : public FacilityModel, public SupplyDemand::cyclus::CommodityProducer  
+class BatchReactor : public cyclus::FacilityModel, public SupplyDemand::cyclus::CommodityProducer  
 {
  public:  
   /* --- Module Methods --- */
