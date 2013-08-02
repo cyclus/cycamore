@@ -12,10 +12,10 @@
 
 /**
    @class SinkFacility 
-   This FacilityModel requests a finite amount of its input commodity. 
+   This cyclus::FacilityModel requests a finite amount of its input commodity. 
    It offers nothing. 
     
-   The SinkFacility class inherits from the FacilityModel class and is 
+   The SinkFacility class inherits from the cyclus::FacilityModel class and is 
    dynamically loaded by the Model class when requested. 
     
    @section intro Introduction 
@@ -76,7 +76,7 @@
    What is the best way to allow requests of an infinite amount of 
    material on a market? 
  */
-class SinkFacility : public FacilityModel  {
+class SinkFacility : public cyclus::FacilityModel  {
  public: 
   /* --- Module Methods --- */
   /**
@@ -91,9 +91,9 @@ class SinkFacility : public FacilityModel  {
 
   /**
      Initialize members related to derived module class
-     @param qe a pointer to a QueryEngine object containing initialization data
+     @param qe a pointer to a cyclus::QueryEngine object containing initialization data
    */
-  virtual void initModuleMembers(QueryEngine* qe);
+  virtual void initModuleMembers(cyclus::QueryEngine* qe);
   
   /**
      A verbose printer for the Sink Facility. 
@@ -106,7 +106,7 @@ class SinkFacility : public FacilityModel  {
      Copy module members from a source model
      @param sourceModel the model to copy from
    */
-  virtual void cloneModuleMembersFrom(FacilityModel* sourceModel);
+  virtual void cloneModuleMembersFrom(cyclus::FacilityModel* sourceModel);
   /* --- */
 
   /* --- Agent Methods --- */
@@ -125,21 +125,21 @@ class SinkFacility : public FacilityModel  {
   virtual void handleTock(int time);
   /* --- */
 
-  /* --- Transaction Methods --- */
+  /* --- cyclus::Transaction Methods --- */
   /**
      Transacted resources are received through this method 
       
      @param trans the transaction to which these resource objects belong 
      @param manifest is the set of resources being received 
    */ 
-  virtual void addResource(Transaction trans,
-                              std::vector<rsrc_ptr> manifest);
+  virtual void addResource(cyclus::Transaction trans,
+                              std::vector<cyclus::rsrc_ptr> manifest);
 
   /**
      The sink Facility doesn't need to do anything if it gets a message. 
      It never sends any matieral to anyone. 
    */
-  virtual void receiveMessage(msg_ptr msg) {};
+  virtual void receiveMessage(cyclus::msg_ptr msg) {};
   /* --- */
 
   /* --- SinkFacility Methods --- */
@@ -194,7 +194,7 @@ class SinkFacility : public FacilityModel  {
   /**
      this facility holds material in storage. 
    */
-  MatBuff inventory_;
+  cyclus::MatBuff inventory_;
 
   /**
      determines the amount to request 

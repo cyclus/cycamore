@@ -11,7 +11,6 @@
 #include <set>
 
 // forward declarations
-class QueryEngine;
 class GrowthRegion;
 
 // forward includes
@@ -27,7 +26,7 @@ class GrowthRegion;
    type are required and then determine, facility by facility, which 
    of its institutions are available to build each facility. 
  */
-class GrowthRegion : public RegionModel  
+class GrowthRegion : public cyclus::RegionModel  
 {  
   friend class GrowthRegionTests;
  public:
@@ -46,15 +45,15 @@ class GrowthRegion : public RegionModel
   /* --- Region Members --- */
   /**
      Initialize members related to derived module class
-     @param qe a pointer to a QueryEngine object containing initialization data
+     @param qe a pointer to a cyclus::QueryEngine object containing initialization data
    */
-  virtual void initModuleMembers(QueryEngine* qe);
+  virtual void initModuleMembers(cyclus::QueryEngine* qe);
 
   /**
      add a demand for a commodity on which this region request that
      facilities be built
    */
-  void addCommodityDemand(QueryEngine* qe);
+  void addCommodityDemand(cyclus::QueryEngine* qe);
 
   /**
      perform module-specific tasks when entering the simulation
@@ -74,32 +73,32 @@ class GrowthRegion : public RegionModel
  protected:
   /* --- GrowthRegion Members --- */
   /// a container of all commodities managed by region
-  std::set<Commodity,CommodityCompare> commodities_;
+  std::set<cyclus::Commodity,cyclus::CommodityCompare> commodities_;
 
   /// manager for supply and demand
-  SupplyDemandManager sdmanager_;
+  cyclus::SupplyDemand::SupplyDemandManager sdmanager_;
 
   /// manager for building things
-  ActionBuilding::BuildingManager buildmanager_;
+  cyclus::ActionBuilding::BuildingManager buildmanager_;
 
   /**
      register a commodity for which production capacity is being 
      demanded region
      @param commodity a reference to the commodity
    */
-  void registerCommodity(Commodity& commodity);
+  void registerCommodity(cyclus::Commodity& commodity);
 
   /**
      register a child as a commodity producer manager if it is one
      @param model the child to register
    */
-  void registerCommodityProducerManager(Model* model);
+  void registerCommodityProducerManager(cyclus::Model* model);
 
   /**
      register a child as a builder if it is one
      @param model the child to register
    */
-  void registerBuilder(Model* model);
+  void registerBuilder(cyclus::Model* model);
 
   /**
      orders builds given a commodity and an unmet demand for production
@@ -107,14 +106,14 @@ class GrowthRegion : public RegionModel
      @param commodity the commodity being demanded
      @param unmet_demand the unmet demand
    */
-  void orderBuilds(Commodity& commodity, double unmet_demand);
+  void orderBuilds(cyclus::Commodity& commodity, double unmet_demand);
 
   /**
      orders builder to build a prototype
      @param builder the model that can build buildee
      @param prototype the model to be built
    */
-  void orderBuild(Model* builder, Model* prototype);
+  void orderBuild(cyclus::Model* builder, cyclus::Model* prototype);
   /* --- */
 };
 

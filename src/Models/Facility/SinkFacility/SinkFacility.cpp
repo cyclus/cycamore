@@ -25,10 +25,10 @@ SinkFacility::SinkFacility() :
 SinkFacility::~SinkFacility() {}
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - 
-void SinkFacility::initModuleMembers(QueryEngine* qe) {
-  QueryEngine* input = qe->queryElement("input");
+void SinkFacility::initModuleMembers(cyclus::QueryEngine* qe) {
+  cyclus::QueryEngine* input = qe->queryElement("input");
 
-  QueryEngine* commodities = input->queryElement("commodities");
+  cyclus::QueryEngine* commodities = input->queryElement("commodities");
   string query = "incommodity";
   int nCommodities = commodities->nElementsMatchingQuery(query);
   for (int i = 0; i < nCommodities; i++) {
@@ -39,14 +39,14 @@ void SinkFacility::initModuleMembers(QueryEngine* qe) {
   try {
     data = input->getElementContent("input_capacity");   
     setCapacity(lexical_cast<double>(data));
-  } catch (CycNullQueryException e) {
+  } catch (cyclus::CycNullQueryException e) {
     setCapacity(numeric_limits<double>::max());
   }
 
   try {
     data = input->getElementContent("inventorysize"); 
     setMaxInventorySize(lexical_cast<double>(data));
-  } catch (CycNullQueryException e) {
+  } catch (cyclus::CycNullQueryException e) {
     setMaxInventorySize(numeric_limits<double>::max());
   }
 }
@@ -54,7 +54,7 @@ void SinkFacility::initModuleMembers(QueryEngine* qe) {
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - 
 std::string SinkFacility::str() {
   std::stringstream ss;
-  ss << FacilityModel::str();
+  ss << cyclus::FacilityModel::str();
 
   string msg = "";
   msg += "accepts commodities ";
@@ -70,7 +70,7 @@ std::string SinkFacility::str() {
 }
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - 
-void SinkFacility::cloneModuleMembersFrom(FacilityModel* sourceModel) {
+void SinkFacility::cloneModuleMembersFrom(cyclus::FacilityModel* sourceModel) {
   SinkFacility* source = dynamic_cast<SinkFacility*>(sourceModel);
   setCapacity(source->capacity());
   setMaxInventorySize(source->maxInventorySize());
@@ -79,10 +79,10 @@ void SinkFacility::cloneModuleMembersFrom(FacilityModel* sourceModel) {
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - 
 void SinkFacility::handleTick(int time){
-  LOG(LEV_INFO3, "SnkFac") << facName() << " is ticking {";
+  LOG(cyclus::LEV_INFO3, "SnkFac") << facName() << " is ticking {";
 
   double requestAmt = getRequestAmt(); 
-  CLOG(LEV_DEBUG3) << "SinkFacility " << name() << " on the tick has "
+  CLOG(cyclus::LEV_DEBUG3) << "SinkFacility " << name() << " on the tick has "
                    << "a request amount of: " << requestAmt;
   double minAmt = 0;
 
@@ -93,41 +93,41 @@ void SinkFacility::handleTick(int time){
     for (vector<string>::iterator commod = in_commods_.begin();
         commod != in_commods_.end();
         commod++) {
-      LOG(LEV_INFO4, "SnkFac") << " requests "<< requestAmt << " kg of " << *commod << ".";
+      LOG(cyclus::LEV_INFO4, "SnkFac") << " requests "<< requestAmt << " kg of " << *commod << ".";
 
-      MarketModel* market = MarketModel::marketForCommod(*commod);
-      Communicator* recipient = dynamic_cast<Communicator*>(market);
+      cyclus::MarketModel* market = cyclus::MarketModel::marketForCommod(*commod);
+      cyclus::Communicator* recipient = dynamic_cast<cyclus::Communicator*>(market);
 
       // create a generic resource
-      gen_rsrc_ptr request_res = gen_rsrc_ptr(new GenericResource("kg",*commod,requestAmt));
+      cyclus::gen_rsrc_ptr request_res = cyclus::gen_rsrc_ptr(new cyclus::GenericResource("kg",*commod,requestAmt));
 
       // build the transaction and message
-      Transaction trans(this, REQUEST);
+      cyclus::Transaction trans(this, cyclus::REQUEST);
       trans.setCommod(*commod);
       trans.setMinFrac(minAmt/requestAmt);
       trans.setPrice(commod_price_);
       trans.setResource(request_res);
 
-      msg_ptr request(new Message(this, recipient, trans)); 
+      cyclus::msg_ptr request(new cyclus::Message(this, recipient, trans)); 
       request->sendOn();
 
     }
   }
-  LOG(LEV_INFO3, "SnkFac") << "}";
+  LOG(cyclus::LEV_INFO3, "SnkFac") << "}";
 }
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - 
 void SinkFacility::handleTock(int time){
-  LOG(LEV_INFO3, "SnkFac") << facName() << " is tocking {";
+  LOG(cyclus::LEV_INFO3, "SnkFac") << facName() << " is tocking {";
 
   // On the tock, the sink facility doesn't really do much. 
   // Maybe someday it will record things.
   // For now, lets just print out what we have at each timestep.
-  LOG(LEV_INFO4, "SnkFac") << "SinkFacility " << this->ID()
+  LOG(cyclus::LEV_INFO4, "SnkFac") << "SinkFacility " << this->ID()
                   << " is holding " << inventory_.quantity()
                   << " units of material at the close of month " << time
                   << ".";
-  LOG(LEV_INFO3, "SnkFac") << "}";
+  LOG(cyclus::LEV_INFO3, "SnkFac") << "}";
 }
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - 
@@ -166,8 +166,8 @@ std::vector<std::string> SinkFacility::inputCommodities() {
 }
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - 
-void SinkFacility::addResource(Transaction trans, std::vector<rsrc_ptr> manifest) {
-  inventory_.pushAll(MatBuff::toMat(manifest));
+void SinkFacility::addResource(cyclus::Transaction trans, std::vector<cyclus::rsrc_ptr> manifest) {
+  inventory_.pushAll(cyclus::MatBuff::toMat(manifest));
 }
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - 
@@ -188,11 +188,11 @@ const double SinkFacility::getRequestAmt(){
 }
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-extern "C" Model* constructSinkFacility() {
+extern "C" cyclus::Model* constructSinkFacility() {
   return new SinkFacility();
 }
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-extern "C" void destructSinkFacility(Model* model) {
+extern "C" void destructSinkFacility(cyclus::Model* model) {
       delete model;
 }

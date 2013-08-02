@@ -24,13 +24,13 @@ class FakeSWUeUF6Converter : public SWUeUF6Converter {
 };
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-Model* SWUeUF6ConverterModelConstructor(){
-  return dynamic_cast<Model*>(new FakeSWUeUF6Converter());
+cyclus::Model* SWUeUF6ConverterModelConstructor(){
+  return dynamic_cast<cyclus::Model*>(new FakeSWUeUF6Converter());
 }
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-ConverterModel* SWUeUF6ConverterConstructor(){
-  return dynamic_cast<ConverterModel*>(new FakeSWUeUF6Converter());
+cyclus::ConverterModel* SWUeUF6ConverterConstructor(){
+  return dynamic_cast<cyclus::ConverterModel*>(new FakeSWUeUF6Converter());
 }
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -61,7 +61,7 @@ TEST_F(SWUeUF6ConverterTest, InitialState) {
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - 
 TEST_F(SWUeUF6ConverterTest, CopyFreshModel) {
-  new_facility->copyFreshModel(dynamic_cast<Model*>(src_facility)); // deep copy
+  new_facility->copyFreshModel(dynamic_cast<cyclus::Model*>(src_facility)); // deep copy
   EXPECT_NO_THROW(dynamic_cast<SWUeUF6Converter*>(new_facility)); // still a stub facility
   EXPECT_NO_THROW(dynamic_cast<FakeSWUeUF6Converter*>(new_facility)); // still a fake stub facility
   // Test that SWUeUF6Converter specific parameters are initialized in the deep copy method here
@@ -76,7 +76,7 @@ TEST_F(SWUeUF6ConverterTest, Print) {
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - 
 TEST_F(SWUeUF6ConverterTest, ReceiveMessage) {
-  msg_ptr msg;
+  cyclus::msg_ptr msg;
   // Test SWUeUF6Converter specific behaviors of the receiveMessage function here
 }
 

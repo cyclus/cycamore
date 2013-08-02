@@ -8,7 +8,7 @@
 #include "MarketModel.h"
 
 /**
-   The NullMarket class inherits from the MarketModel class and is 
+   The NullMarket class inherits from the cyclus::MarketModel class and is 
    dynamically loaded by the Model class when requested. 
     
    This market will take a set of requests and match the biggest 
@@ -22,7 +22,7 @@
     
    @section modelParams Model Parameters 
    NullMarket behavior is comprehensively defined by the following 
-   parameters: - Commodity* commod: The type of commodity for which this 
+   parameters: - cyclus::Commodity* commod: The type of commodity for which this 
    market accepts offers and requests. 
     
    @section behavior Detailed Behavior 
@@ -34,7 +34,7 @@
    smallest of the two. Once matches are made, the market dictates the 
    matches back down to the facilities. 
  */
-class NullMarket : public MarketModel  
+class NullMarket : public cyclus::MarketModel  
 {
 /* --------------------
  * all MODEL classes have these public members
@@ -63,9 +63,9 @@ class NullMarket : public MarketModel
      The market receives an offer or request that has been passed from 
      the facility to the institution to the region. 
       
-     @param msg is a pointer to the message, an Message object 
+     @param msg is a pointer to the message, an cyclus::Message object 
    */
-  virtual void receiveMessage(msg_ptr msg);
+  virtual void receiveMessage(cyclus::msg_ptr msg);
 
 /* -------------------- */
 
@@ -92,13 +92,13 @@ class NullMarket : public MarketModel
   /**
      The messages that have been indexed 
    */
-  typedef std::pair<double,msg_ptr> indexedMsg;
+  typedef std::pair<double,cyclus::msg_ptr> indexedMsg;
 
   /**
      The messages of both offer and request types that have been sorted 
      according to thie size. 
    */
-  typedef std::multimap<double,msg_ptr> sortedMsgList;
+  typedef std::multimap<double,cyclus::msg_ptr> sortedMsgList;
   
   /** 
      The requests that have been sorted according to their size. 
@@ -113,14 +113,14 @@ class NullMarket : public MarketModel
   /**
      The set of pointers to offers that have been matched. 
    */
-  std::set<msg_ptr> matchedOffers_;
+  std::set<cyclus::msg_ptr> matchedOffers_;
   
   /**
-     This function adds an Message object to the list of matchedOffers 
+     This function adds an cyclus::Message object to the list of matchedOffers 
       
      @param msg a pointer to the message to add 
    */
-  void add(msg_ptr msg);
+  void add(cyclus::msg_ptr msg);
 
   /**
      A boolean that keeps track of whether requests have been matched. 

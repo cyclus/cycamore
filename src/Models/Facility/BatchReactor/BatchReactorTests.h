@@ -7,13 +7,13 @@
 #include <string>
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-Model* BatchReactorModelConstructor(){
-  return dynamic_cast<Model*>(new BatchReactor());
+cyclus::Model* BatchReactorModelConstructor(){
+  return dynamic_cast<cyclus::Model*>(new BatchReactor());
 }
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-FacilityModel* BatchReactorConstructor(){
-  return dynamic_cast<FacilityModel*>(new BatchReactor());
+cyclus::FacilityModel* BatchReactorConstructor(){
+  return dynamic_cast<cyclus::FacilityModel*>(new BatchReactor());
 }
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -

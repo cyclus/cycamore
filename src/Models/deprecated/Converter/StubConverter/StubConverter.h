@@ -11,10 +11,10 @@
 /**
    @class StubConverter 
     
-   This ConverterModel is intended 
-   as a skeleton to guide the implementation of new ConverterModel 
+   This cyclus::ConverterModel is intended 
+   as a skeleton to guide the implementation of new cyclus::ConverterModel 
    models.  
-   The StubConverter class inherits from the ConverterModel class and is 
+   The StubConverter class inherits from the cyclus::ConverterModel class and is 
    dynamically loaded by the Model class when requested. 
     
    @section intro Introduction 
@@ -34,7 +34,7 @@
    upon sending and receiving materials and messages. 
  */
 
-class StubConverter : public ConverterModel {
+class StubConverter : public cyclus::ConverterModel {
 /* --------------------
  * all MODEL classes have these public members
  * --------------------
@@ -72,7 +72,7 @@ class StubConverter : public ConverterModel {
       
      @param src the pointer to the original (initialized ?) model to be 
    */
-  virtual void copyFreshModel(Model* src);
+  virtual void copyFreshModel(cyclus::Model* src);
 
   /**
      every model should be able to print a verbose description 
@@ -96,7 +96,7 @@ class StubConverter : public ConverterModel {
      convert it to  
      @return the converted message 
    */
-  virtual msg_ptr convert(msg_ptr convMsg, msg_ptr refMsg); 
+  virtual cyclus::msg_ptr convert(cyclus::msg_ptr convMsg, cyclus::msg_ptr refMsg); 
 
 /* ------------------- */ 
 

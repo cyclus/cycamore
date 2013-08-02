@@ -3,21 +3,19 @@
 #define _SOURCEFACILITY_H
 
 #include "FacilityModel.h"
+#include "QueryEngine.h"
 #include "CommodityProducer.h"
 
 #include "MatBuff.h"
 
 #include <deque>
 
-// forward declarations
-class QueryEngine;
-
 /**
    @class SourceFacility 
-   This FacilityModel provides a simple source of some capacity 
+   This cyclus::FacilityModel provides a simple source of some capacity 
    (possibly infinite) of some commodity/Recipe. 
     
-   The SourceFacility class inherits from the FacilityModel class and is 
+   The SourceFacility class inherits from the cyclus::FacilityModel class and is 
    dynamically loaded by the Model class when requested. 
     
     
@@ -87,8 +85,8 @@ class QueryEngine;
    material on a market? 
  */
 
-class SourceFacility : public FacilityModel, 
-  public SupplyDemand::CommodityProducer  
+class SourceFacility : public cyclus::FacilityModel, 
+  public cyclus::SupplyDemand::CommodityProducer  
 {
  public:
   /* --- Module Methods --- */
@@ -104,9 +102,9 @@ class SourceFacility : public FacilityModel,
 
   /**
      Initialize members related to derived module class
-     @param qe a pointer to a QueryEngine object containing initialization data
+     @param qe a pointer to a cyclus::QueryEngine object containing initialization data
    */
-  virtual void initModuleMembers(QueryEngine* qe);
+  virtual void initModuleMembers(cyclus::QueryEngine* qe);
 
   /**
      Print information about this model 
@@ -119,7 +117,7 @@ class SourceFacility : public FacilityModel,
      Copy module members from a source model
      @param sourceModel the model to copy from
    */
-  virtual void cloneModuleMembersFrom(FacilityModel* sourceModel);
+  virtual void cloneModuleMembersFrom(cyclus::FacilityModel* sourceModel);
   /* --- */
 
   /* --- Agent Methods --- */
@@ -140,11 +138,11 @@ class SourceFacility : public FacilityModel,
   virtual void handleTock(int time);
   /* --- */
 
-  /* --- Transaction Methods --- */
+  /* --- cyclus::Transaction Methods --- */
   /**
      When this facility receives a message, execute the transaction 
    */
-  virtual void receiveMessage(msg_ptr msg);
+  virtual void receiveMessage(cyclus::msg_ptr msg);
 
   /**
      Transacted resources are extracted through this method 
@@ -153,7 +151,7 @@ class SourceFacility : public FacilityModel,
      @return list of resources to be sent for this order 
       
    */ 
-  virtual std::vector<rsrc_ptr> removeResource(Transaction order);
+  virtual std::vector<cyclus::rsrc_ptr> removeResource(cyclus::Transaction order);
   /* --- */
 
   /* --- SourceFacility Methods --- */
@@ -198,16 +196,16 @@ class SourceFacility : public FacilityModel,
   /* --- */
 
  protected:
-  /* --- Transaction Methods --- */     
+  /* --- cyclus::Transaction Methods --- */     
   /**
      builds a transaction 
    */
-  Transaction buildTransaction();
+  cyclus::Transaction buildTransaction();
 
   /**
      sends a transaction as an offer 
    */
-  void sendOffer(Transaction trans);
+  void sendOffer(cyclus::Transaction trans);
   /* --- */
 
   /* --- SourceFacility Members and Methods --- */
@@ -235,15 +233,15 @@ class SourceFacility : public FacilityModel,
   double commod_price_;
 
   /**
-     A collection  that holds the "product" Material this Facility has 
+     A collection  that holds the "product" cyclus::Material this Facility has 
      on hand to send to others. 
    */ 
-  MatBuff inventory_; // @MJG couldnt this be a RsrcBuff?
+  cyclus::MatBuff inventory_; // @MJG couldnt this be a RsrcBuff?
 
   /**
      A list of orders to be processed on the Tock 
    */
-  std::deque<msg_ptr> ordersWaiting_;
+  std::deque<cyclus::msg_ptr> ordersWaiting_;
 
   /**
      generates a material

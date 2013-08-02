@@ -24,8 +24,8 @@ SourceFacility::SourceFacility() :
   recipe_name_(""), 
   commod_price_(0), 
   capacity_(numeric_limits<double>::max()) {
-  ordersWaiting_ = deque<msg_ptr>();
-  inventory_ = MatBuff();
+  ordersWaiting_ = deque<cyclus::msg_ptr>();
+  inventory_ = cyclus::MatBuff();
   setMaxInventorySize(numeric_limits<double>::max());
 }
 
@@ -33,15 +33,15 @@ SourceFacility::SourceFacility() :
 SourceFacility::~SourceFacility() {}
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - 
-void SourceFacility::initModuleMembers(QueryEngine* qe) {
-  QueryEngine* output = qe->queryElement("output");
+void SourceFacility::initModuleMembers(cyclus::QueryEngine* qe) {
+  cyclus::QueryEngine* output = qe->queryElement("output");
 
   setRecipe(output->getElementContent("recipe"));
 
   string data = output->getElementContent("outcommodity");
   setCommodity(data);
-  Commodity commod(data);
-  CommodityProducer::addCommodity(commod);
+  cyclus::Commodity commod(data);
+  cyclus::SupplyDemand::CommodityProducer::addCommodity(commod);
   
   double val = numeric_limits<double>::max();
   try
@@ -49,8 +49,8 @@ void SourceFacility::initModuleMembers(QueryEngine* qe) {
     data = output->getElementContent("output_capacity"); 
     val = lexical_cast<double>(data); // overwrite default if given a value
   }
-  catch (CycNullQueryException e) {}
-  CommodityProducer::setCapacity(commod, val);
+  catch (cyclus::CycNullQueryException e) {}
+  cyclus::SupplyDemand::CommodityProducer::setCapacity(commod, val);
   setCapacity(val);  
 
   try
@@ -58,7 +58,7 @@ void SourceFacility::initModuleMembers(QueryEngine* qe) {
       data = output->getElementContent("inventorysize"); 
       setMaxInventorySize(lexical_cast<double>(data));
     } 
-  catch (CycNullQueryException e) 
+  catch (cyclus::CycNullQueryException e) 
     {
       setMaxInventorySize(numeric_limits<double>::max());
     }
@@ -67,7 +67,7 @@ void SourceFacility::initModuleMembers(QueryEngine* qe) {
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - 
 std::string SourceFacility::str() {
   std::stringstream ss;
-  ss << FacilityModel::str()
+  ss << cyclus::FacilityModel::str()
      << " supplies commodity '"
      << out_commod_ << "' with recipe '" 
      << recipe_name_ << "' at a capacity of "
@@ -77,7 +77,7 @@ std::string SourceFacility::str() {
 }
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - 
-void SourceFacility::cloneModuleMembersFrom(FacilityModel* sourceModel) {
+void SourceFacility::cloneModuleMembersFrom(cyclus::FacilityModel* sourceModel) {
   SourceFacility* source = dynamic_cast<SourceFacility*>(sourceModel);
   setCommodity(source->commodity());
   setCapacity(source->capacity());
@@ -88,64 +88,64 @@ void SourceFacility::cloneModuleMembersFrom(FacilityModel* sourceModel) {
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - 
 void SourceFacility::handleTick(int time){
-  LOG(LEV_INFO3, "SrcFac") << facName() << " is ticking {";
+  LOG(cyclus::LEV_INFO3, "SrcFac") << facName() << " is ticking {";
 
   generateMaterial();
-  Transaction trans = buildTransaction();
+  cyclus::Transaction trans = buildTransaction();
 
-  LOG(LEV_INFO4, "SrcFac") << "offers "<< trans.resource()->quantity() << " kg of "
+  LOG(cyclus::LEV_INFO4, "SrcFac") << "offers "<< trans.resource()->quantity() << " kg of "
                            << out_commod_ << ".";
 
   sendOffer(trans);
 
-  LOG(LEV_INFO3, "SrcFac") << "}";
+  LOG(cyclus::LEV_INFO3, "SrcFac") << "}";
 }
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - 
 void SourceFacility::handleTock(int time){
-  LOG(LEV_INFO3, "SrcFac") << facName() << " is tocking {";
+  LOG(cyclus::LEV_INFO3, "SrcFac") << facName() << " is tocking {";
 
   // check what orders are waiting,
   // send material if you have it now
   while (!ordersWaiting_.empty()) {
-    Transaction order = ordersWaiting_.front()->trans();
-    LOG(LEV_INFO3, "SrcFac") << "Order is for: " << order.resource()->quantity();
-    LOG(LEV_INFO3, "SrcFac") << "Inventory is: " << inventory_.quantity();
+    cyclus::Transaction order = ordersWaiting_.front()->trans();
+    LOG(cyclus::LEV_INFO3, "SrcFac") << "Order is for: " << order.resource()->quantity();
+    LOG(cyclus::LEV_INFO3, "SrcFac") << "Inventory is: " << inventory_.quantity();
     if (order.resource()->quantity() - inventory_.quantity() > cyclus::eps()) {
-      LOG(LEV_INFO3, "SrcFac") << "Not enough inventory. Waitlisting remaining orders.";
+      LOG(cyclus::LEV_INFO3, "SrcFac") << "Not enough inventory. Waitlisting remaining orders.";
       break;
     } else {
-      LOG(LEV_INFO3, "SrcFac") << "Satisfying order.";
+      LOG(cyclus::LEV_INFO3, "SrcFac") << "Satisfying order.";
       order.approveTransfer();
       ordersWaiting_.pop_front();
     }
   }
   // For now, lets just print out what we have at each timestep.
-  LOG(LEV_INFO4, "SrcFac") << "SourceFacility " << this->ID()
+  LOG(cyclus::LEV_INFO4, "SrcFac") << "SourceFacility " << this->ID()
                   << " is holding " << this->inventory_.quantity()
                   << " units of material at the close of month " << time
                   << ".";
 
-  LOG(LEV_INFO3, "SrcFac") << "}";
+  LOG(cyclus::LEV_INFO3, "SrcFac") << "}";
 }
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - 
-void SourceFacility::receiveMessage(msg_ptr msg) {
+void SourceFacility::receiveMessage(cyclus::msg_ptr msg) {
   // is this a message from on high? 
   if(msg->trans().supplier() == this) {
     // file the order
     ordersWaiting_.push_front(msg);
-    LOG(LEV_INFO5, "SrcFac") << name() << " just received an order.";
-    LOG(LEV_INFO5, "SrcFac") << "for " << msg->trans().resource()->quantity() 
+    LOG(cyclus::LEV_INFO5, "SrcFac") << name() << " just received an order.";
+    LOG(cyclus::LEV_INFO5, "SrcFac") << "for " << msg->trans().resource()->quantity() 
                              << " of " << msg->trans().commod();
   } else {
-    throw CycException("SourceFacility is not the supplier of this msg.");
+    throw cyclus::CycException("SourceFacility is not the supplier of this msg.");
   }
 }
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - 
-vector<rsrc_ptr> SourceFacility::removeResource(Transaction order) {
-  return MatBuff::toRes(inventory_.popQty(order.resource()->quantity()));
+vector<cyclus::rsrc_ptr> SourceFacility::removeResource(cyclus::Transaction order) {
+  return cyclus::MatBuff::toRes(inventory_.popQty(order.resource()->quantity()));
 }
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - 
@@ -201,8 +201,8 @@ void SourceFacility::generateMaterial() {
     return; // no room
   }
 
-  mat_rsrc_ptr newMat = 
-    mat_rsrc_ptr(new Material(RecipeLibrary::Recipe(recipe_name_)));
+  cyclus::mat_rsrc_ptr newMat = 
+    cyclus::mat_rsrc_ptr(new cyclus::Material(cyclus::RecipeLibrary::Recipe(recipe_name_)));
   double amt = capacity_;
   if (amt <= empty_space) {
     newMat->setQuantity(amt); // plenty of room
@@ -213,15 +213,15 @@ void SourceFacility::generateMaterial() {
 }
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - 
-Transaction SourceFacility::buildTransaction() {
+cyclus::Transaction SourceFacility::buildTransaction() {
   // there is no minimum amount a source facility may send
   double min_amt = 0;
   double offer_amt = inventory_.quantity();
 
-  mat_rsrc_ptr trade_res = mat_rsrc_ptr(new Material(RecipeLibrary::Recipe(recipe())));
+  cyclus::mat_rsrc_ptr trade_res = cyclus::mat_rsrc_ptr(new cyclus::Material(cyclus::RecipeLibrary::Recipe(recipe())));
   trade_res->setQuantity(offer_amt);
 
-  Transaction trans(this, OFFER);
+  cyclus::Transaction trans(this, cyclus::OFFER);
   trans.setCommod(out_commod_);
   trans.setMinFrac(min_amt/offer_amt);
   trans.setPrice(commod_price_);
@@ -231,21 +231,21 @@ Transaction SourceFacility::buildTransaction() {
 }
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - 
-void SourceFacility::sendOffer(Transaction trans) {
-  MarketModel* market = MarketModel::marketForCommod(out_commod_);
+void SourceFacility::sendOffer(cyclus::Transaction trans) {
+  cyclus::MarketModel* market = cyclus::MarketModel::marketForCommod(out_commod_);
 
   Communicator* recipient = dynamic_cast<Communicator*>(market);
 
-  msg_ptr msg(new Message(this, recipient, trans)); 
+  cyclus::msg_ptr msg(new cyclus::Message(this, recipient, trans)); 
   msg->sendOn();
 }
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - 
-extern "C" Model* constructSourceFacility() {
+extern "C" cyclus::Model* constructSourceFacility() {
   return new SourceFacility();
 }
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-extern "C" void destructSourceFacility(Model* model) {
+extern "C" void destructSourceFacility(cyclus::Model* model) {
   delete model;
 }

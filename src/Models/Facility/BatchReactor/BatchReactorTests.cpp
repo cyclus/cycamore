@@ -61,9 +61,9 @@ void BatchReactorTest::initSrcFacility()
      << "  </commodity_production>"
      << "</start>";
 
-  XMLParser parser;
+  cyclus::XMLParser parser;
   parser.init(ss);
-  XMLQueryEngine* engine = new XMLQueryEngine(parser);
+  cyclus::XMLQueryEngine* engine = new cyclus::XMLQueryEngine(parser);
   src_facility = new BatchReactor();
   src_facility->initModuleMembers(engine);
   delete engine;
@@ -74,11 +74,11 @@ void BatchReactorTest::initWorld()
 {
   incommod_market = new TestMarket();
   incommod_market->setCommodity(in_commod);
-  MarketModel::registerMarket(incommod_market);
+  cyclus::MarketModel::registerMarket(incommod_market);
 
   outcommod_market = new TestMarket();
   outcommod_market->setCommodity(out_commod);
-  MarketModel::registerMarket(outcommod_market);
+  cyclus::MarketModel::registerMarket(outcommod_market);
 }
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - 
@@ -94,7 +94,7 @@ TEST_F(BatchReactorTest,initialstate)
   EXPECT_EQ(in_recipe,src_facility->in_recipe());
   EXPECT_EQ(out_recipe,src_facility->out_recipe());
   
-  Commodity commod(commodity);
+  cyclus::Commodity commod(commodity);
   EXPECT_TRUE(src_facility->producesCommodity(commod)); 
   EXPECT_EQ(capacity,src_facility->productionCapacity(commod));
   EXPECT_EQ(cost,src_facility->productionCost(commod));
@@ -117,7 +117,7 @@ TEST_F(BatchReactorTest,clone)
   EXPECT_EQ(in_recipe,cloned_fac->in_recipe());
   EXPECT_EQ(out_recipe,cloned_fac->out_recipe());
 
-  Commodity commod(commodity);
+  cyclus::Commodity commod(commodity);
   EXPECT_TRUE(cloned_fac->producesCommodity(commod)); 
   EXPECT_EQ(capacity,cloned_fac->productionCapacity(commod));
   EXPECT_EQ(cost,cloned_fac->productionCost(commod));

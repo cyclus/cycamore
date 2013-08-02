@@ -27,13 +27,13 @@ class StubRegionTest : public ::testing::Test {
 };
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-Model* StubRegionModelConstructor(){
-  return dynamic_cast<Model*>(new StubRegion());
+cyclus::Model* StubRegionModelConstructor(){
+  return dynamic_cast<cyclus::Model*>(new StubRegion());
 }
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-RegionModel* StubRegionConstructor(){
-  return dynamic_cast<RegionModel*>(new StubRegion());
+cyclus::RegionModel* StubRegionConstructor(){
+  return dynamic_cast<cyclus::RegionModel*>(new StubRegion());
 }
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - 

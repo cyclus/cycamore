@@ -5,7 +5,7 @@
   <define name="GrowthRegion">
     <element name="GrowthRegion">
       
-      <!-- Commodity Requirements -->
+      <!-- cyclus::Commodity Requirements -->
       <oneOrMore>
         <element name = "commodity">
           
@@ -31,7 +31,7 @@
 
         </element>
       </oneOrMore>
-      <!-- end Commodity Requirements -->
+      <!-- end cyclus::Commodity Requirements -->
 
     </element>
   </define>

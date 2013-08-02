@@ -10,10 +10,10 @@
 
 /**
    @class RecipeReactor 
-   This FacilityModel represents a reactor using predefined fresh and 
+   This cyclus::FacilityModel represents a reactor using predefined fresh and 
    spent fuel recipes. 
     
-   The RecipeReactor class inherits from the FacilityModel class and is 
+   The RecipeReactor class inherits from the cyclus::FacilityModel class and is 
    dynamically loaded by the Model class when requested. 
     
    This facility model does very little.  New material is added to queue 
@@ -108,10 +108,10 @@
    material on a market? 
  */
 
-typedef std::pair< std::string, mat_rsrc_ptr> Fuel; 
+typedef std::pair< std::string, cyclus::mat_rsrc_ptr> Fuel; 
 typedef std::pair< std::string, IsoVector> Recipe; 
 
-class RecipeReactor : public FacilityModel  {
+class RecipeReactor : public cyclus::FacilityModel  {
 /* --------------------
  * all MODEL classes have these members
  * --------------------
@@ -147,7 +147,7 @@ class RecipeReactor : public FacilityModel  {
       
      @param src the pointer to the original (initialized ?) model to be 
    */
-  virtual void copyFreshModel(Model* src);
+  virtual void copyFreshModel(cyclus::Model* src);
 
   /**
      Print information about this model 
@@ -165,7 +165,7 @@ class RecipeReactor : public FacilityModel  {
   /**
      When the facility receives a message, execute any transaction 
    */
-  virtual void receiveMessage(msg_ptr msg);
+  virtual void receiveMessage(cyclus::msg_ptr msg);
 
 /* ------------------- */ 
 
@@ -181,7 +181,7 @@ class RecipeReactor : public FacilityModel  {
      @return list of resources to be sent for this order 
       
    */ 
-  virtual std::vector<rsrc_ptr> removeResource(Transaction order);
+  virtual std::vector<cyclus::rsrc_ptr> removeResource(cyclus::Transaction order);
 
   /**
      Transacted resources are received through this method 
@@ -189,8 +189,8 @@ class RecipeReactor : public FacilityModel  {
      @param trans the transaction to which these resource objects belong 
      @param manifest is the set of resources being received 
    */ 
-  virtual void addResource(Transaction trans,
-			   std::vector<rsrc_ptr> manifest);
+  virtual void addResource(cyclus::Transaction trans,
+			   std::vector<cyclus::rsrc_ptr> manifest);
 
   /**
      The handleTick function specific to the RecipeReactor. 
@@ -366,7 +366,7 @@ class RecipeReactor : public FacilityModel  {
   /**
      The list of orders to process on the Tock 
    */
-  std::deque<msg_ptr> ordersWaiting_;
+  std::deque<cyclus::msg_ptr> ordersWaiting_;
 
   /**
      The time between batch reloadings. 
@@ -394,7 +394,7 @@ class RecipeReactor : public FacilityModel  {
      @param recipient the final recipient 
      @param trans the transaction to send 
    */
-  void sendMessage(Communicator* recipient, Transaction trans);
+  void sendMessage(Communicator* recipient, cyclus::Transaction trans);
 
   /**
      The RecipeReactor has a limit to how material it can process. 

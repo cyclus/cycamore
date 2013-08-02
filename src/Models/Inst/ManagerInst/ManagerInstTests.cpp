@@ -5,16 +5,15 @@
 // class here... constructor and destructor were undefined
 // for posterity -
 // CMakeFiles/CycamoreUnitTestDriver.dir/Models/Inst/ManagerInst/ManagerInstTests.cpp.o: In function `TestProducer::TestProducer()':
-// ManagerInstTests.cpp:(.text+0x80): undefined reference to `CommodityTestHelper::CommodityTestHelper()'
-//   ManagerInstTests.cpp:(.text+0xd1): undefined reference to `CommodityTestHelper::~CommodityTestHelper()'
-// ManagerInstTests.cpp:(.text+0xe2): undefined reference to `CommodityTestHelper::~CommodityTestHelper()'
+// ManagerInstTests.cpp:(.text+0x80): undefined reference to `cyclus::CommodityTestHelper::cyclus::CommodityTestHelper()'
+//   ManagerInstTests.cpp:(.text+0xd1): undefined reference to `cyclus::CommodityTestHelper::~cyclus::CommodityTestHelper()'
+// ManagerInstTests.cpp:(.text+0xe2): undefined reference to `cyclus::CommodityTestHelper::~cyclus::CommodityTestHelper()'
 //                                      CMakeFiles/CycamoreUnitTestDriver.dir/Models/Inst/ManagerInst/ManagerInstTests.cpp.o: In function `ManagerInstTests::SetUp()':
-// ManagerInstTests.cpp:(.text+0x259): undefined reference to `CommodityTestHelper::CommodityTestHelper()'
+// ManagerInstTests.cpp:(.text+0x259): undefined reference to `cyclus::CommodityTestHelper::cyclus::CommodityTestHelper()'
 //                                        CMakeFiles/CycamoreUnitTestDriver.dir/Models/Inst/ManagerInst/ManagerInstTests.cpp.o: In function `ManagerInstTests::TearDown()':
-// ManagerInstTests.cpp:(.text+0x344): undefined reference to `CommodityTestHelper::~CommodityTestHelper()'
+// ManagerInstTests.cpp:(.text+0x344): undefined reference to `cyclus::CommodityTestHelper::~cyclus::CommodityTestHelper()'
 
 using namespace std;
-using namespace SupplyDemand;
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - 
 TestProducer::TestProducer() {}
@@ -27,7 +26,7 @@ void ManagerInstTests::SetUp()
 {
   src_inst = new ManagerInst();
   producer = new TestProducer();
-  commodity = Commodity("commod");
+  commodity = cyclus::Commodity("commod");
   capacity = 5;
   producer->addCommodity(commodity);
   producer->setCapacity(commodity,capacity);
@@ -41,22 +40,22 @@ void ManagerInstTests::TearDown()
 }
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - 
-Model* ManagerInstModelConstructor()
+cyclus::Model* ManagerInstModelConstructor()
 {
-  return dynamic_cast<Model*>(new ManagerInst());
+  return dynamic_cast<cyclus::Model*>(new ManagerInst());
 }
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - 
-InstModel* ManagerInstConstructor()
+cyclus::InstModel* ManagerInstConstructor()
 {
-  return dynamic_cast<InstModel*>(new ManagerInst());
+  return dynamic_cast<cyclus::InstModel*>(new ManagerInst());
 }
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - 
 TEST_F(ManagerInstTests,producerexists) 
 {
   src_inst->registerAvailablePrototype(producer);
-  set<CommodityProducer*>::iterator it;
+  set<cyclus::SupplyDemand::CommodityProducer*>::iterator it;
   for (it = src_inst->beginningProducer(); it != src_inst->endingProducer(); it++) 
     {
       EXPECT_EQ((*it),producer);

@@ -31,7 +31,7 @@
    upon sending and receiving materials and messages. 
  */
 
-class StubInst : public InstModel {
+class StubInst : public cyclus::InstModel {
 /* --------------------
  * all MODEL classes have these members
  * --------------------
@@ -54,14 +54,14 @@ class StubInst : public InstModel {
   
   /**
      Initialize members related to derived module class
-     @param qe a pointer to a QueryEngine object containing initialization data
+     @param qe a pointer to a cyclus::QueryEngine object containing initialization data
    */
-  virtual void initModuleMembers(QueryEngine* qe);
+  virtual void initModuleMembers(cyclus::QueryEngine* qe);
 
   /**
      perform all necessary actions for the model to enter the simulation
    */
-  virtual void enterSimulation(Model* parent);
+  virtual void enterSimulation(cyclus::Model* parent);
 
 /* ------------------- */ 
 
@@ -74,7 +74,7 @@ class StubInst : public InstModel {
    /**
       The StubInst should ignore incoming messages 
     */
-   virtual void receiveMessage(msg_ptr msg);
+   virtual void receiveMessage(cyclus::msg_ptr msg);
    
 /* -------------------- */
 

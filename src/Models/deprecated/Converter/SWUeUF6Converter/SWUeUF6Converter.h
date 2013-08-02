@@ -10,7 +10,7 @@
 #include "Logger.h"
 
 /**
-   The SWUeUF6Converter class inherits from the ConverterModel class 
+   The SWUeUF6Converter class inherits from the cyclus::ConverterModel class 
    and is dynamically loaded by the Model class when requested. 
     
    This converter model changes SWUs into amounts of material (and 
@@ -44,7 +44,7 @@
    for conversion including the new amount. 
  */
 
-class SWUeUF6Converter : public ConverterModel  
+class SWUeUF6Converter : public cyclus::ConverterModel  
 {
  /* --------------------
   * all MODEL classes have these members
@@ -80,7 +80,7 @@ class SWUeUF6Converter : public ConverterModel
       
      @param src the pointer to the original (initialized ?) model to be 
    */
-  virtual void copyFreshModel(Model* src);
+  virtual void copyFreshModel(cyclus::Model* src);
 
   /**
      Print information about this model 
@@ -105,7 +105,7 @@ class SWUeUF6Converter : public ConverterModel
      @return the converted message 
    */
 
-  virtual msg_ptr convert(msg_ptr convMsg, msg_ptr refMsg); 
+  virtual cyclus::msg_ptr convert(cyclus::msg_ptr convMsg, cyclus::msg_ptr refMsg); 
 
  /* ------------------- */ 
 

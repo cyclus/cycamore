@@ -12,7 +12,7 @@ using namespace std;
 using boost::lexical_cast;
 
 /**
-  TICK
+  cyclus::TICK
   send a request for your capacity minus your stocks.
   offer materials that have exceeded their residence times
   offer them
@@ -52,7 +52,7 @@ std::string StorageFacility::str()
 }
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - 
-void StorageFacility::receiveMessage(msg_ptr msg)
+void StorageFacility::receiveMessage(cyclus::msg_ptr msg)
 {
   // is this a message from on high? 
   if(msg->trans().supplier()==this){
@@ -60,7 +60,7 @@ void StorageFacility::receiveMessage(msg_ptr msg)
     ordersWaiting_.push_front(msg);
   }
   else {
-    throw CycException("StorageFacility is not the supplier of this msg.");
+    throw cyclus::CycException("StorageFacility is not the supplier of this msg.");
   }
 }
 
@@ -70,10 +70,10 @@ Transaction StorageFacility::buildTransaction() {
   double min_amt = 0;
   double offer_amt = out_buffer_.quantity();
 
-  gen_rsrc_ptr offer_res = 
-    gen_rsrc_ptr(new GenericResource(out_commod_,"kg",offer_amt));
+  cyclus::gen_rsrc_ptr offer_res = 
+    cyclus::gen_rsrc_ptr(new cyclus::GenericResource(out_commod_,"kg",offer_amt));
 
-  Transaction trans(this, OFFER);
+  cyclus::Transaction trans(this, cyclus::OFFER);
   trans.setCommod(out_commod_);
   trans.setMinFrac(min_amt/offer_amt);
   trans.setPrice(offer_price_);
@@ -83,12 +83,12 @@ Transaction StorageFacility::buildTransaction() {
 }
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - 
-void StorageFacility::sendOffer(Transaction trans) {
-  MarketModel* market = MarketModel::marketForCommod(out_commod_);
+void StorageFacility::sendOffer(cyclus::Transaction trans) {
+  cyclus::MarketModel* market = cyclus::MarketModel::marketForCommod(out_commod_);
 
   Communicator* recipient = dynamic_cast<Communicator*>(market);
 
-  msg_ptr msg(new Message(this, recipient, trans)); 
+  cyclus::msg_ptr msg(new cyclus::Message(this, recipient, trans)); 
   msg->sendOn();
 }
 
@@ -98,11 +98,11 @@ void StorageFacility::handleTick(int time)
 }
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - 
-extern "C" Model* constructStorageFacility() {
+extern "C" cyclus::Model* constructStorageFacility() {
   return new StorageFacility();
 }
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-extern "C" void destructStorageFacility(Model* model) {
+extern "C" void destructStorageFacility(cyclus::Model* model) {
       delete model;
 }

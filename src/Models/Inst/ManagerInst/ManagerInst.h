@@ -14,9 +14,9 @@
    
    @section detailedBehavior Detailed Behavior 
 */
-class ManagerInst : public InstModel, 
-  public SupplyDemand::CommodityProducerManager,
-  public ActionBuilding::Builder
+class ManagerInst : public cyclus::InstModel, 
+  public cyclus::SupplyDemand::CommodityProducerManager,
+  public cyclus::ActionBuilding::Builder
 {
  public:
   /**
@@ -34,27 +34,27 @@ class ManagerInst : public InstModel,
      the list of available prototypes
      @param prototype the prototype to register
    */
-  virtual void registerAvailablePrototype(Prototype* prototype);
+  virtual void registerAvailablePrototype(cyclus::Prototype* prototype);
   
   /**
      perform any registration functionality after a clone has been 
      built
      @param clone the built (cloned) prototype
    */
-  virtual void registerCloneAsBuilt(Prototype* clone);
+  virtual void registerCloneAsBuilt(cyclus::Prototype* clone);
 
   /**
      perform any registration functionality before a clone is 
      decommissioned(deleted)
      @param clone the to-be-decommissioned prototype
    */
-  virtual void registerCloneAsDecommissioned(Prototype* clone);
+  virtual void registerCloneAsDecommissioned(cyclus::Prototype* clone);
 
   /**
      write information about a commodity producer to a stream
      @param producer the producer
    */
-  void writeProducerInformation(SupplyDemand::CommodityProducer* producer);
+  void writeProducerInformation(cyclus::SupplyDemand::CommodityProducer* producer);
 };
 
 #endif

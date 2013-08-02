@@ -8,13 +8,13 @@
 using namespace std;
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-Model* DeployInstModelConstructor(){
-  return dynamic_cast<Model*>(new DeployInst());
+cyclus::Model* DeployInstModelConstructor(){
+  return dynamic_cast<cyclus::Model*>(new DeployInst());
 }
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-InstModel* DeployInstConstructor(){
-  return dynamic_cast<InstModel*>(new DeployInst());
+cyclus::InstModel* DeployInstConstructor(){
+  return dynamic_cast<cyclus::InstModel*>(new DeployInst());
 }
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -

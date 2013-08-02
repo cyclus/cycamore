@@ -66,13 +66,13 @@ class FakeRecipeReactor : public RecipeReactor {
 };
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-Model* RecipeReactorModelConstructor(){
-  return dynamic_cast<Model*>(new FakeRecipeReactor());
+cyclus::Model* RecipeReactorModelConstructor(){
+  return dynamic_cast<cyclus::Model*>(new FakeRecipeReactor());
 }
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-FacilityModel* RecipeReactorConstructor(){
-  return dynamic_cast<FacilityModel*>(new FakeRecipeReactor());
+cyclus::FacilityModel* RecipeReactorConstructor(){
+  return dynamic_cast<cyclus::FacilityModel*>(new FakeRecipeReactor());
 }
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -107,7 +107,7 @@ TEST_F(RecipeReactorTest, InitialState) {
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - 
 TEST_F(RecipeReactorTest, CopyFreshModel) {
-  new_facility->copyFreshModel(dynamic_cast<Model*>(src_facility)); // deep copy
+  new_facility->copyFreshModel(dynamic_cast<cyclus::Model*>(src_facility)); // deep copy
   EXPECT_NO_THROW(dynamic_cast<RecipeReactor*>(new_facility)); // still a recipe reactor
   EXPECT_NO_THROW(dynamic_cast<FakeRecipeReactor*>(new_facility)); // still a fake recipe reactor
   // Test that RecipeReactor specific parameters are initialized in the deep copy method here
@@ -122,7 +122,7 @@ TEST_F(RecipeReactorTest, Print) {
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - 
 TEST_F(RecipeReactorTest, ReceiveMessage) {
-  msg_ptr msg;
+  cyclus::msg_ptr msg;
   // Test RecipeReactor specific behaviors of the receiveMessage function here
 }
 

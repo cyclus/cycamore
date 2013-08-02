@@ -24,13 +24,13 @@ class FakeStubConverter : public StubConverter {
 };
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-Model* StubConverterModelConstructor(){
-  return dynamic_cast<Model*>(new FakeStubConverter());
+cyclus::Model* StubConverterModelConstructor(){
+  return dynamic_cast<cyclus::Model*>(new FakeStubConverter());
 }
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-ConverterModel* StubConverterConstructor(){
-  return dynamic_cast<ConverterModel*>(new FakeStubConverter());
+cyclus::ConverterModel* StubConverterConstructor(){
+  return dynamic_cast<cyclus::ConverterModel*>(new FakeStubConverter());
 }
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -61,7 +61,7 @@ TEST_F(StubConverterTest, InitialState) {
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - 
 TEST_F(StubConverterTest, CopyFreshModel) {
-  new_facility->copyFreshModel(dynamic_cast<Model*>(src_facility)); // deep copy
+  new_facility->copyFreshModel(dynamic_cast<cyclus::Model*>(src_facility)); // deep copy
   EXPECT_NO_THROW(dynamic_cast<StubConverter*>(new_facility)); // still a stub facility
   EXPECT_NO_THROW(dynamic_cast<FakeStubConverter*>(new_facility)); // still a fake stub facility
   // Test that StubConverter specific parameters are initialized in the deep copy method here
@@ -76,7 +76,7 @@ TEST_F(StubConverterTest, Print) {
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - 
 TEST_F(StubConverterTest, ReceiveMessage) {
-  msg_ptr msg;
+  cyclus::msg_ptr msg;
   // Test StubConverter specific behaviors of the receiveMessage function here
 }
 

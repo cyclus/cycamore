@@ -9,13 +9,13 @@
 #include <queue>
 
 // forward declarations
-class QueryEngine;
+class cyclus::QueryEngine;
 
 /**
    @class StorageFacility 
-   This FacilityModel stores material. 
+   This cyclus::FacilityModel stores material. 
     
-   The StorageFacility class inherits from the FacilityModel class and 
+   The StorageFacility class inherits from the cyclus::FacilityModel class and 
    is dynamically loaded by the Model class when requested. 
     
    @section intro Introduction 
@@ -39,7 +39,7 @@ class QueryEngine;
    upon sending and receiving materials and messages. 
     
  */
-class StorageFacility : public FacilityModel  
+class StorageFacility : public cyclus::FacilityModel  
 {
  public:
   /* --- Module Methods --- */
@@ -64,7 +64,7 @@ class StorageFacility : public FacilityModel
      Copy module members from a source model
      @param sourceModel the model to copy from
    */
-  virtual void cloneModuleMembersFrom(FacilityModel* sourceModel);
+  virtual void cloneModuleMembersFrom(cyclus::FacilityModel* sourceModel);
   /* --- */
 
   /* --- Agent Methods --- */  
@@ -86,7 +86,7 @@ class StorageFacility : public FacilityModel
   virtual void handleTock(int time);
   /* --- */
 
-  /* --- Transaction Methods --- */  
+  /* --- cyclus::Transaction Methods --- */  
 
   /**
      Transacted resources are extracted through this method 
@@ -95,7 +95,7 @@ class StorageFacility : public FacilityModel
      @return list of resources to be sent for this order 
       
    */ 
-  virtual std::vector<rsrc_ptr> removeResource(Transaction order);
+  virtual std::vector<cyclus::rsrc_ptr> removeResource(cyclus::Transaction order);
 
   /**
      Transacted resources are received through this method 
@@ -103,24 +103,24 @@ class StorageFacility : public FacilityModel
      @param trans the transaction to which these resource objects belong 
      @param manifest is the set of resources being received 
    */ 
-  virtual void addResource(Transaction trans,
-			   std::vector<rsrc_ptr> manifest);
+  virtual void addResource(cyclus::Transaction trans,
+			   std::vector<cyclus::rsrc_ptr> manifest);
 
   /**
      When the facility receives a message, execute any transaction 
    */
-  virtual void receiveMessage(msg_ptr msg);
+  virtual void receiveMessage(cyclus::msg_ptr msg);
 
  protected:
   /**
      builds a transaction 
    */
-  Transaction buildTransaction();
+  cyclus::Transaction buildTransaction();
 
   /**
      sends a transaction as an offer 
    */
-  void sendOffer(Transaction trans);
+  void sendOffer(cyclus::Transaction trans);
   /* --- */
 
   /* --- StorageFacility Methods --- */
@@ -128,10 +128,10 @@ class StorageFacility : public FacilityModel
      sets the inputput commodity name
      @param name the commodity name
    */
-  void setInCommodity(std::string name);
+  void setIncyclus::Commodity(std::string name);
 
   /// @return the input commodity
-  std::string inCommodity();
+  std::string incyclus::Commodity();
 
   /**
      sets the capacity of a able to enter at any given time step
@@ -146,10 +146,10 @@ class StorageFacility : public FacilityModel
      sets the outputput commodity name
      @param name the commodity name
    */
-  void setOutCommodity(std::string name);
+  void setOutcyclus::Commodity(std::string name);
 
   /// @return the output commodity
-  std::string outCommodity();
+  std::string outcyclus::Commodity();
 
   /**
      sets the capacity of a able to enter at any given time step
@@ -193,7 +193,7 @@ class StorageFacility : public FacilityModel
   /**
      The list of orders to process on the Tock 
    */
-  std::deque<msg_ptr> ordersWaiting_;
+  std::deque<cyclus::msg_ptr> ordersWaiting_;
 
   /**
    */

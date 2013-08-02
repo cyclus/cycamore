@@ -15,8 +15,6 @@
 
 using namespace std;
 using boost::lexical_cast;
-using namespace SupplyDemand;
-using namespace ActionBuilding;
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - 
 GrowthRegion::GrowthRegion() {}
@@ -25,8 +23,8 @@ GrowthRegion::GrowthRegion() {}
 GrowthRegion::~GrowthRegion() {}
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - 
-void GrowthRegion::initModuleMembers(QueryEngine* qe) {
-  LOG(LEV_DEBUG2, "greg") << "A Growth Region is being initialized";
+void GrowthRegion::initModuleMembers(cyclus::QueryEngine* qe) {
+  LOG(cyclus::LEV_DEBUG2, "greg") << "A Growth Region is being initialized";
   
   string query = "commodity";
 
@@ -39,21 +37,21 @@ void GrowthRegion::initModuleMembers(QueryEngine* qe) {
 }
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - 
-void GrowthRegion::addCommodityDemand(QueryEngine* qe) 
+void GrowthRegion::addCommodityDemand(cyclus::QueryEngine* qe) 
 {
   // instantiate product
   string name = qe->getElementContent("name");
-  Commodity commodity(name);
+  cyclus::Commodity commodity(name);
   registerCommodity(commodity);
 
   // instantiate demand
   string query = "demand";
   int n = qe->nElementsMatchingQuery(query);
-  PiecewiseFunctionFactory pff;
+  cyclus::PiecewiseFunctionFactory pff;
 
   for (int i = 0; i < n; i++)
     {
-      QueryEngine* demand = qe->queryElement(query,i);
+      cyclus::QueryEngine* demand = qe->queryElement(query,i);
 
       string type = demand->getElementContent("type");
       string params = demand->getElementContent("parameters");
@@ -62,12 +60,12 @@ void GrowthRegion::addCommodityDemand(QueryEngine* qe)
         {
           time = lexical_cast<int>(demand->getElementContent("start_time"));
         }
-      catch (CycNullQueryException e) 
+      catch (cyclus::CycNullQueryException e) 
         {
           time = 0;
         }
 
-      BasicFunctionFactory bff;
+      cyclus::BasicFunctionFactory bff;
       bool continuous = (i != 0); // the first entry is not continuous
       pff.addFunction(bff.getFunctionPtr(type,params),time,continuous);
     }
@@ -81,7 +79,7 @@ void GrowthRegion::enterSimulationAsModule()
 {
   for (int i = 0; i != nChildren(); i++) 
     {
-      Model* child = children(i);  
+      cyclus::Model* child = children(i);  
       registerCommodityProducerManager(child);
       registerBuilder(child);
     }
@@ -90,36 +88,36 @@ void GrowthRegion::enterSimulationAsModule()
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - 
 void GrowthRegion::handleTick(int time) 
 {
-  set<Commodity>::iterator it;
+  set<cyclus::Commodity>::iterator it;
   for (it = commodities_.begin(); it != commodities_.end(); it++)
     {
-      Commodity commodity = *it;
+      cyclus::Commodity commodity = *it;
       double demand = sdmanager_.demand(commodity,time);
       double supply = sdmanager_.supply(commodity);
       double unmet_demand = demand - supply;
 
-      LOG(LEV_INFO3,"greg") << "GrowthRegion: " << name() 
+      LOG(cyclus::LEV_INFO3,"greg") << "GrowthRegion: " << name() 
                             << " at time: " << time 
                             << " has the following values regaring "
                             << " commodity: " << commodity.name();
-      LOG(LEV_INFO3,"greg") << "  * demand = " << demand;
-      LOG(LEV_INFO3,"greg") << "  * supply = " << supply;
-      LOG(LEV_INFO3,"greg") << "  * unmet demand = " << unmet_demand;
+      LOG(cyclus::LEV_INFO3,"greg") << "  * demand = " << demand;
+      LOG(cyclus::LEV_INFO3,"greg") << "  * supply = " << supply;
+      LOG(cyclus::LEV_INFO3,"greg") << "  * unmet demand = " << unmet_demand;
       
       if (unmet_demand > 0)
         {
           orderBuilds(commodity,unmet_demand);
         }
     }
-  RegionModel::handleTick(time);
+  cyclus::RegionModel::handleTick(time);
 }
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - 
-void GrowthRegion::registerCommodity(Commodity& commodity) 
+void GrowthRegion::registerCommodity(cyclus::Commodity& commodity) 
 {
   if (commodities_.find(commodity) != commodities_.end())
     {
-      throw CycDoubleRegistrationException("A GrowthRegion ("
+      throw cyclus::CycDoubleRegistrationException("A GrowthRegion ("
                                            + name() + " is trying to register a commodity twice.");
     }
   else
@@ -129,9 +127,9 @@ void GrowthRegion::registerCommodity(Commodity& commodity)
 }
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - 
-void GrowthRegion::registerCommodityProducerManager(Model* child)
+void GrowthRegion::registerCommodityProducerManager(cyclus::Model* child)
 {
-  CommodityProducerManager* cast = dynamic_cast<CommodityProducerManager*>(child);
+  cyclus::SupplyDemand::CommodityProducerManager* cast = dynamic_cast<cyclus::SupplyDemand::CommodityProducerManager*>(child);
   if (cast)
     {
       sdmanager_.registerProducerManager(cast);
@@ -139,9 +137,9 @@ void GrowthRegion::registerCommodityProducerManager(Model* child)
 } 
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - 
-void GrowthRegion::registerBuilder(Model* child)
+void GrowthRegion::registerBuilder(cyclus::Model* child)
 {
-  Builder* cast = dynamic_cast<Builder*>(child);
+  cyclus::ActionBuilding::Builder* cast = dynamic_cast<cyclus::ActionBuilding::Builder*>(child);
   if (cast)
     {
       buildmanager_.registerBuilder(cast);
@@ -149,48 +147,48 @@ void GrowthRegion::registerBuilder(Model* child)
 } 
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-void GrowthRegion::orderBuilds(Commodity& commodity, double unmet_demand)
+void GrowthRegion::orderBuilds(cyclus::Commodity& commodity, double unmet_demand)
 {
-  vector<BuildOrder> orders = buildmanager_.makeBuildDecision(commodity,unmet_demand);
+  vector<cyclus::ActionBuilding::BuildOrder> orders = buildmanager_.makeBuildDecision(commodity,unmet_demand);
   
-  LOG(LEV_INFO3,"greg") << "The build orders have been determined. " 
+  LOG(cyclus::LEV_INFO3,"greg") << "The build orders have been determined. " 
                         << orders.size() 
                         << " different type(s) of prototypes will be built.";
 
   for (int i = 0; i < orders.size(); i++)
     {
-      BuildOrder order = orders.at(i);
-      InstModel* instcast = dynamic_cast<InstModel*>(order.builder);
-      Prototype* protocast = dynamic_cast<Prototype*>(order.producer);
+      cyclus::ActionBuilding::BuildOrder order = orders.at(i);
+      cyclus::InstModel* instcast = dynamic_cast<cyclus::InstModel*>(order.builder);
+      cyclus::Prototype* protocast = dynamic_cast<cyclus::Prototype*>(order.producer);
       if(instcast && protocast)
         {
-          LOG(LEV_INFO3,"greg") << "A build order for " << order.number
+          LOG(cyclus::LEV_INFO3,"greg") << "A build order for " << order.number
                                 << " prototype(s) of type " 
-                                << dynamic_cast<Model*>(protocast)->name()
+                                << dynamic_cast<cyclus::Model*>(protocast)->name()
                                 << " from builder " << instcast->name()
                                 << " is being placed.";
 
           for (int j = 0; j < order.number; j++)
             {
-              LOG(LEV_DEBUG2,"greg") << "Ordering build number: " << j+1; 
+              LOG(cyclus::LEV_DEBUG2,"greg") << "Ordering build number: " << j+1; 
               instcast->build(protocast);
             }
         }
       else
         {
-          throw CycOverrideException("GrowthRegion has tried to incorrectly cast an already known entity.");
+          throw cyclus::CycOverrideException("cyclus::GrowthRegion has tried to incorrectly cast an already known entity.");
         }
     }
 }
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-extern "C" Model* constructGrowthRegion() 
+extern "C" cyclus::Model* constructGrowthRegion() 
 {
   return new GrowthRegion();
 }
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-extern "C" void destructGrowthRegion(Model* model) 
+extern "C" void destructGrowthRegion(cyclus::Model* model) 
 {
       delete model;
 }

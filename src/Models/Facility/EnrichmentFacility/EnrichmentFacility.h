@@ -11,15 +11,12 @@
 #include <string>
 #include <deque>
 
-// forward declarations
-class QueryEngine;
-
 /**
    @class EnrichmentFacility 
     
    @section introduction Introduction 
  */
-class EnrichmentFacility : public FacilityModel
+class EnrichmentFacility : public cyclus::FacilityModel
 {
  public:
   /* --- Module Methods --- */
@@ -35,9 +32,9 @@ class EnrichmentFacility : public FacilityModel
  
   /**
      Initialize members related to derived module class
-     @param qe a pointer to a QueryEngine object containing initialization data
+     @param qe a pointer to a cyclus::QueryEngine object containing initialization data
    */
-  virtual void initModuleMembers(QueryEngine* qe);
+  virtual void initModuleMembers(cyclus::QueryEngine* qe);
 
   /**
      Print information about this model 
@@ -50,7 +47,7 @@ class EnrichmentFacility : public FacilityModel
      Copy module members from a source model
      @param sourceModel the model to copy from
    */
-  virtual void cloneModuleMembersFrom(FacilityModel* sourceModel);
+  virtual void cloneModuleMembersFrom(cyclus::FacilityModel* sourceModel);
   /* --- */
 
   /* --- Agent Methods --- */
@@ -71,30 +68,30 @@ class EnrichmentFacility : public FacilityModel
   virtual void handleTock(int time);
   /* --- */
 
-  /* --- Transaction Methods --- */
+  /* --- cyclus::Transaction Methods --- */
   /**
      When this facility receives a message, execute the transaction 
    */
-  virtual void receiveMessage(msg_ptr msg);
+  virtual void receiveMessage(cyclus::msg_ptr msg);
 
   /**
      Transacted resources are extracted through this method       
      @param order the msg/order for which resource(s) are to be prepared 
      @return list of resources to be sent for this order       
    */ 
-  virtual std::vector<rsrc_ptr> removeResource(Transaction order);
+  virtual std::vector<cyclus::rsrc_ptr> removeResource(cyclus::Transaction order);
 
   /**
      Transacted resources are received through this method 
      @param trans the transaction to which these resource objects belong 
      @param manifest is the set of resources being received 
    */ 
-  virtual void addResource(Transaction trans,
-                           std::vector<rsrc_ptr> manifest);
+  virtual void addResource(cyclus::Transaction trans,
+                           std::vector<cyclus::rsrc_ptr> manifest);
   /* --- */
 
   /* --- EnrichmentFacility Methods --- */  
-  enrichment::Assays getAssays(mat_rsrc_ptr mat);
+  cyclus::enrichment::Assays getAssays(cyclus::mat_rsrc_ptr mat);
 
   inline void set_in_commodity(std::string in_commod)
   {
@@ -173,11 +170,11 @@ class EnrichmentFacility : public FacilityModel
   /* --- */
 
  protected:  
-  /* --- Transaction Methods --- */     
+  /* --- cyclus::Transaction Methods --- */     
   /**
      sends a transaction as an offer 
    */
-  void sendOffer(Transaction trans);
+  void sendOffer(cyclus::Transaction trans);
 
   /**
    */
@@ -189,7 +186,7 @@ class EnrichmentFacility : public FacilityModel
 
   /**
    */
-  Transaction buildTransaction();
+  cyclus::Transaction buildTransaction();
   /* --- */
 
   /* --- EnrichmentFacility Members and Methods --- */  
@@ -213,12 +210,12 @@ class EnrichmentFacility : public FacilityModel
   
   double tails_assay_;  
 
-  MatBuff inventory_;
+  cyclus::MatBuff inventory_;
 
   static int entry_;
   
   ///   A list of orders to be processed on the Tock 
-  std::deque<msg_ptr> orders_;
+  std::deque<cyclus::msg_ptr> orders_;
   /* --- */
 };
 #endif

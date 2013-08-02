@@ -34,7 +34,7 @@
    the market for which it was intended or down to the appropriate 
    institution on the path to the recipient. 
  */
-class NullRegion : public RegionModel  {
+class NullRegion : public cyclus::RegionModel  {
 /* --------------------
  * all MODEL classes have these members
  * --------------------

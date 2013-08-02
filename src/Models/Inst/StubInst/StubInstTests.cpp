@@ -25,13 +25,13 @@ class StubInstTest : public ::testing::Test {
 };
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-Model* StubInstModelConstructor(){
-  return dynamic_cast<Model*>(new StubInst());
+cyclus::Model* StubInstModelConstructor(){
+  return dynamic_cast<cyclus::Model*>(new StubInst());
 }
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-InstModel* StubInstConstructor(){
-  return dynamic_cast<InstModel*>(new StubInst());
+cyclus::InstModel* StubInstConstructor(){
+  return dynamic_cast<cyclus::InstModel*>(new StubInst());
 }
 
 
@@ -48,7 +48,7 @@ TEST_F(StubInstTest, Print) {
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - 
 TEST_F(StubInstTest, ReceiveMessage) {
-  msg_ptr msg;
+  cyclus::msg_ptr msg;
   // Test StubInst specific behaviors of the receiveMessage function here
 }
 

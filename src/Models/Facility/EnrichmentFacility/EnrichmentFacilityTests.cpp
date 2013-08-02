@@ -36,19 +36,19 @@ void EnrichmentFacilityTest::initParameters()
   in_commod = "incommod";
   in_commod_market = new TestMarket();
   in_commod_market->setCommodity(in_commod);
-  MarketModel::registerMarket(in_commod_market);
+  cyclus::MarketModel::registerMarket(in_commod_market);
 
   out_commod = "outcommod";
   out_commod_market = new TestMarket();
   out_commod_market->setCommodity(out_commod);
-  MarketModel::registerMarket(out_commod_market);
+  cyclus::MarketModel::registerMarket(out_commod_market);
 
   in_recipe = "recipe";
   feed_assay = 0.0072;
-  recipe = CompMapPtr(new CompMap(ATOM));
+  recipe = cyclus::CompMapPtr(new cyclus::CompMap(cyclus::ATOM));
   (*recipe)[92235] = feed_assay;
   (*recipe)[92238] = 1-feed_assay;
-  RecipeLibrary::recordRecipe(in_recipe,recipe);
+  cyclus::RecipeLibrary::recordRecipe(in_recipe,recipe);
 
   tails_assay = 0.002;
   inv_size = 5;
@@ -71,9 +71,9 @@ void EnrichmentFacilityTest::initFacility()
      << "  </output>"
      << "</start>";
 
-  XMLParser parser;
+  cyclus::XMLParser parser;
   parser.init(ss);
-  XMLQueryEngine* engine = new XMLQueryEngine(parser);
+  cyclus::XMLQueryEngine* engine = new cyclus::XMLQueryEngine(parser);
 
   EXPECT_NO_THROW(src_facility->initModuleMembers(engine));
   delete engine;
@@ -109,15 +109,15 @@ TEST_F(EnrichmentFacilityTest,clone)
 }
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - 
-Model* EnrichmentFacilityModelConstructor()
+cyclus::Model* EnrichmentFacilityModelConstructor()
 {
-  return dynamic_cast<Model*>(new EnrichmentFacility());
+  return dynamic_cast<cyclus::Model*>(new EnrichmentFacility());
 }
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - 
-FacilityModel* EnrichmentFacilityConstructor()
+cyclus::FacilityModel* EnrichmentFacilityConstructor()
 {
-  return dynamic_cast<FacilityModel*>(new EnrichmentFacility());
+  return dynamic_cast<cyclus::FacilityModel*>(new EnrichmentFacility());
 }
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - 

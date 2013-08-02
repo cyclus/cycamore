@@ -22,7 +22,7 @@ enum Phase {INIT, BEGIN, OPERATION, REFUEL, REFUEL_DELAY, WAITING, END};
 /* struct PoolEntry */
 /* { */
 /*   int exit_time; */
-/*   mat_rsrc_ptr mat; */
+/*   cyclus::mat_rsrc_ptr mat; */
   
 /* PoolEntry(int time, mat_rsr_ptr mat) : exit_time(time), mat(mat_ptr) {}; */
 /* }; */
@@ -32,7 +32,7 @@ enum Phase {INIT, BEGIN, OPERATION, REFUEL, REFUEL_DELAY, WAITING, END};
    This class is identical to the RecipeReactor, except that it
    operates in a batch-like manner, i.e. it refuels in batches.
  */
-class BatchReactor : public FacilityModel, public SupplyDemand::CommodityProducer  
+class BatchReactor : public cyclus::FacilityModel, public cyclus::SupplyDemand::CommodityProducer  
 {
  public:  
   /* --- Module Methods --- */
@@ -48,9 +48,9 @@ class BatchReactor : public FacilityModel, public SupplyDemand::CommodityProduce
   
   /**
      Initialize members related to derived module class
-     @param qe a pointer to a QueryEngine object containing initialization data
+     @param qe a pointer to a cyclus::QueryEngine object containing initialization data
   */
-  virtual void initModuleMembers(QueryEngine* qe);
+  virtual void initModuleMembers(cyclus::QueryEngine* qe);
   
   /**
      Print information about this model 
@@ -63,7 +63,7 @@ class BatchReactor : public FacilityModel, public SupplyDemand::CommodityProduce
      Copy module members from a source model
      @param sourceModel the model to copy from
    */
-  virtual void cloneModuleMembersFrom(FacilityModel* sourceModel);
+  virtual void cloneModuleMembersFrom(cyclus::FacilityModel* sourceModel);
 
   /**
      perform module-specific tasks when entering the simulation
@@ -85,33 +85,33 @@ class BatchReactor : public FacilityModel, public SupplyDemand::CommodityProduce
   virtual void handleTock(int time);
   /* --- */
 
-  /* --- Transaction Methods --- */
+  /* --- cyclus::Transaction Methods --- */
   /**
      When the facility receives a message, execute any transaction
    */
-  virtual void receiveMessage(msg_ptr msg);
+  virtual void receiveMessage(cyclus::msg_ptr msg);
 
   /**
      send messages up through the institution 
      @param recipient the final recipient 
      @param trans the transaction to send 
    */
-  void sendMessage(Communicator* recipient, Transaction trans);
+  void sendMessage(Communicator* recipient, cyclus::Transaction trans);
 
   /**
      Transacted resources are extracted through this method
      @param order the msg/order for which resource(s) are to be prepared
      @return list of resources to be sent for this order
    */
-  virtual std::vector<rsrc_ptr> removeResource(Transaction order);
+  virtual std::vector<cyclus::rsrc_ptr> removeResource(cyclus::Transaction order);
 
   /**
      Transacted resources are received through this method      
      @param trans the transaction to which these resource objects belong
      @param manifest is the set of resources being received
    */
-  virtual void addResource(Transaction trans,
-        		   std::vector<rsrc_ptr> manifest);
+  virtual void addResource(cyclus::Transaction trans,
+        		   std::vector<cyclus::rsrc_ptr> manifest);
   /* --- */
 
   /* --- BatchReactor Methods --- */
@@ -276,16 +276,16 @@ class BatchReactor : public FacilityModel, public SupplyDemand::CommodityProduce
   Phase phase_;
 
   /// a matbuff for material before they enter the core
-  MatBuff preCore_;
+  cyclus::MatBuff preCore_;
 
   /// a matbuff for material while they are inside the core
-  MatBuff inCore_;
+  cyclus::MatBuff inCore_;
 
   /// a matbuff for material after they exit the core
-  MatBuff postCore_;
+  cyclus::MatBuff postCore_;
 
   /// The list of orders to process on the Tock 
-  std::deque<msg_ptr> ordersWaiting_;
+  std::deque<cyclus::msg_ptr> ordersWaiting_;
 
   /**
      populate the phase name map
@@ -327,7 +327,7 @@ class BatchReactor : public FacilityModel, public SupplyDemand::CommodityProduce
   /**
      sends a request of offer to the commodity's market
    */
-  void interactWithMarket(std::string commod, double amt, TransType type);
+  void interactWithMarket(std::string commod, double amt, cyclus::TransType type);
 
   /**
      Processes all orders in ordersWaiting_
@@ -340,7 +340,7 @@ class BatchReactor : public FacilityModel, public SupplyDemand::CommodityProduce
      @param toBuff the buffer to move fuel to
      @param amt the amount of fuel to move
   */
-  void moveFuel(MatBuff& fromBuff, MatBuff& toBuff, double amt);
+  void moveFuel(cyclus::MatBuff& fromBuff, cyclus::MatBuff& toBuff, double amt);
 
   /**
      moves and amount of fuel out of the core. this action will remove
@@ -374,18 +374,18 @@ class BatchReactor : public FacilityModel, public SupplyDemand::CommodityProduce
    An exception class for BatchReactors that aren't empty when
    their destructor is called
 */
-class CycBatchReactorDestructException : public CycException {
+class CycBatchReactorDestructException : public cyclus::CycException {
  public: 
- CycBatchReactorDestructException(std::string msg) : CycException(msg) {};
+  CycBatchReactorDestructException(std::string msg) : cyclus::CycException(msg) {};
 };
 
 /**
    An exception class for BatchReactors that exhibit undefined behavior
    for a given phase
 */
-class CycBatchReactorPhaseBehaviorException : public CycException {
+class CycBatchReactorPhaseBehaviorException : public cyclus::CycException {
  public: 
- CycBatchReactorPhaseBehaviorException(std::string msg) : CycException(msg) {};
+  CycBatchReactorPhaseBehaviorException(std::string msg) : cyclus::CycException(msg) {};
 };
 
 #endif

@@ -16,31 +16,31 @@ using namespace std;
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 class FakeNullMarket : public NullMarket {
   protected:
-    msg_ptr msg_;
+    cyclus::msg_ptr msg_;
   public:
     FakeNullMarket() : NullMarket() {
       string kg = "kg";
       string qual = "qual";
-      gen_rsrc_ptr res = gen_rsrc_ptr(new GenericResource(kg, qual, 1));
-      Transaction trans(this, OFFER);
-      msg_ = msg_ptr(new Message(this, this, trans));
+      cyclus::gen_rsrc_ptr res = cyclus::gen_rsrc_ptr(new cyclus::GenericResource(kg, qual, 1));
+      cyclus::Transaction trans(this, cyclus::OFFER);
+      msg_ = cyclus::msg_ptr(new cyclus::Message(this, this, trans));
       msg_->trans().setResource(res);
     }
 
     virtual ~FakeNullMarket() {
     }
 
-    msg_ptr getMessage(){return msg_;}
+    cyclus::msg_ptr getMessage(){return msg_;}
 };
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-Model* NullMarketModelConstructor(){
-  return dynamic_cast<Model*>(new FakeNullMarket());
+cyclus::Model* NullMarketModelConstructor(){
+  return dynamic_cast<cyclus::Model*>(new FakeNullMarket());
 }
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-MarketModel* NullMarketConstructor(){
-  return dynamic_cast<MarketModel*>(new FakeNullMarket());
+cyclus::MarketModel* NullMarketConstructor(){
+  return dynamic_cast<cyclus::MarketModel*>(new FakeNullMarket());
 }
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
