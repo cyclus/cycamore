@@ -3,7 +3,7 @@
 
 #include "DeployInst.h"
 
-#include "CycException.h"
+#include "error.h"
 
 using namespace std;
 

@@ -6,7 +6,7 @@
 #include "Logger.h"
 #include "RecipeLibrary.h"
 #include "GenericResource.h"
-#include "CycException.h"
+#include "error.h"
 #include "CycLimits.h"
 #include "MarketModel.h"
 
@@ -49,7 +49,7 @@ void SourceFacility::initModuleMembers(cyclus::QueryEngine* qe) {
     data = output->getElementContent("output_capacity"); 
     val = lexical_cast<double>(data); // overwrite default if given a value
   }
-  catch (cyclus::CycNullQueryException e) {}
+  catch (cyclus::Error e) {}
   cyclus::SupplyDemand::CommodityProducer::setCapacity(commod, val);
   setCapacity(val);  
 
@@ -58,7 +58,7 @@ void SourceFacility::initModuleMembers(cyclus::QueryEngine* qe) {
       data = output->getElementContent("inventorysize"); 
       setMaxInventorySize(lexical_cast<double>(data));
     } 
-  catch (cyclus::CycNullQueryException e) 
+  catch (cyclus::Error e) 
     {
       setMaxInventorySize(numeric_limits<double>::max());
     }
@@ -131,15 +131,14 @@ void SourceFacility::handleTock(int time){
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - 
 void SourceFacility::receiveMessage(cyclus::msg_ptr msg) {
-  // is this a message from on high? 
-  if(msg->trans().supplier() == this) {
+  if (msg->trans().supplier() == this) {
     // file the order
     ordersWaiting_.push_front(msg);
     LOG(cyclus::LEV_INFO5, "SrcFac") << name() << " just received an order.";
     LOG(cyclus::LEV_INFO5, "SrcFac") << "for " << msg->trans().resource()->quantity() 
                              << " of " << msg->trans().commod();
   } else {
-    throw cyclus::CycException("SourceFacility is not the supplier of this msg.");
+    throw cyclus::Error("SourceFacility is not the supplier of this msg.");
   }
 }
 

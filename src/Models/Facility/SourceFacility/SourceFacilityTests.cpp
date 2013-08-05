@@ -62,7 +62,7 @@ TEST_F(SourceFacilityTest, Print) {
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - 
 TEST_F(SourceFacilityTest, ReceiveMessage) {
   cyclus::msg_ptr msg = cyclus::msg_ptr(new cyclus::Message(src_facility));
-  EXPECT_THROW(src_facility->receiveMessage(msg), cyclus::CycException);
+  EXPECT_THROW(src_facility->receiveMessage(msg), cyclus::Error);
 }
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - 

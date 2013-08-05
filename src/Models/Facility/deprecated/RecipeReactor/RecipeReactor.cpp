@@ -7,7 +7,7 @@
 #include "Logger.h"
 #include "RecipeLibrary.h"
 #include "GenericResource.h"
-#include "CycException.h"
+#include "error.h"
 #include "InputXML.h"
 #include "Timer.h"
 

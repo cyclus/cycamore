@@ -2,7 +2,7 @@
 #include <gtest/gtest.h>
 
 #include "NullMarket.h"
-#include "CycException.h"
+#include "error.h"
 #include "Message.h"
 #include "MarketModelTests.h"
 #include "GenericResource.h"
