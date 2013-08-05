@@ -189,7 +189,7 @@ void BatchReactor::handleTick(int time)
     default:
       msg = "BatchReactors have undefined behvaior during ticks for phase: " 
         + phase_names_[phase_];
-      throw Error(msg);
+      throw cyclus::Error(msg);
       break;
     }
   
@@ -258,7 +258,7 @@ void BatchReactor::handleTock(int time)
     default:
       msg = "BatchReactors have undefined behvaior during tocks for phase: " 
         + phase_names_[phase_];
-      throw Error(msg);
+      throw cyclus::Error(msg);
       break;
     }
 
