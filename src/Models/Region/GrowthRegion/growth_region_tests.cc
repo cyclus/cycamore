@@ -1,18 +1,18 @@
 // growth_region_tests.cc
 #include "growth_region_tests.h"
-#include "RegionModelTests.h"
-#include "ModelTests.h"
+#include "region_model_tests.h"
+#include "model_tests.h"
 
-#include "Commodity.h"
-#include "XMLQueryEngine.h"
-#include "XMLParser.h"
+#include "commodity.h"
+#include "xml_query_engine.h"
+#include "xml_parser.h"
 
 #include <sstream>
 
 using namespace std;
 
-//- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - 
-void GrowthRegionTests::SetUp() 
+//- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+void GrowthRegionTests::SetUp()
 {
   region = new GrowthRegion();
   commodity_name = "commod";
@@ -20,12 +20,12 @@ void GrowthRegionTests::SetUp()
   demand_params = "5 5";
   demand_start = "0";
 }
-  
-//- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - 
-void GrowthRegionTests::TearDown() 
+
+//- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+void GrowthRegionTests::TearDown()
 {
   delete region;
-}  
+}
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 cyclus::Model* GrowthRegionModelConstructor()
@@ -39,8 +39,8 @@ cyclus::RegionModel* GrowthRegionConstructor()
   return dynamic_cast<cyclus::RegionModel*>(new GrowthRegion());
 }
 
-//- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - 
-void GrowthRegionTests::initRegion() 
+//- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+void GrowthRegionTests::initRegion()
 {
   stringstream ss("");
   ss << "<start>"
@@ -55,20 +55,20 @@ void GrowthRegionTests::initRegion()
      << "</start>";
 
   cyclus::XMLParser parser;
-  parser.init(ss);
+  parser.Init(ss);
   cyclus::XMLQueryEngine* engine = new cyclus::XMLQueryEngine(parser);
-  region->initModuleMembers(engine);
+  region->InitModuleMembers(engine);
   delete engine;
 }
 
-//- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - 
+//- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 bool GrowthRegionTests::managesCommodity(cyclus::Commodity& commodity)
 {
-  return region->sdmanager_.managesCommodity(commodity); 
+  return region->sdmanager_.ManagesCommodity(commodity);
 }
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-TEST_F(GrowthRegionTests,init) 
+TEST_F(GrowthRegionTests,init)
 {
   initRegion();
   cyclus::Commodity commodity(commodity_name);
@@ -76,8 +76,8 @@ TEST_F(GrowthRegionTests,init)
 }
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-INSTANTIATE_TEST_CASE_P(GrowthRegion, RegionModelTests, 
+INSTANTIATE_TEST_CASE_P(GrowthRegion, RegionModelTests,
                         Values(&GrowthRegionConstructor));
-INSTANTIATE_TEST_CASE_P(GrowthRegion, ModelTests, 
+INSTANTIATE_TEST_CASE_P(GrowthRegion, ModelTests,
                         Values(&GrowthRegionModelConstructor));
 

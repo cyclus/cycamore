@@ -4,30 +4,30 @@
 
 #include "null_market.h"
 
-#include "CycLimits.h"
-#include "Resource.h"
+#include "cyc_limits.h"
+#include "resource.h"
 
 using namespace std;
 
-//- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - 
+//- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 NullMarket::NullMarket() {}
 
-//- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - 
+//- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 NullMarket::~NullMarket() {}
 
-//- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -  
-void NullMarket::receiveMessage(cyclus::msg_ptr msg) {
+//- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+void NullMarket::ReceiveMessage(cyclus::Message::Ptr msg) {
   messages_.insert(msg);
 
-  if (msg->trans().isOffer()){
+  if (msg->trans().IsOffer()){
     offers_.insert(indexedMsg(msg->trans().resource()->quantity(),msg));
   }
-  else if (!msg->trans().isOffer()){
+  else if (!msg->trans().IsOffer()){
     requests_.insert(indexedMsg(msg->trans().resource()->quantity(),msg));
   }
 }
 
-//- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -  
+//- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 void NullMarket::reject_request(sortedMsgList::iterator request)
 {
   // delete the tentative orders
@@ -37,13 +37,13 @@ void NullMarket::reject_request(sortedMsgList::iterator request)
 
   // put all matched offers_ back in the sorted list
   while (matchedOffers_.size() > 0) {
-    cyclus::msg_ptr msg = *(matchedOffers_.begin());
+    cyclus::Message::Ptr msg = *(matchedOffers_.begin());
     offers_.insert(indexedMsg(msg->trans().resource()->quantity(),msg));
     matchedOffers_.erase(msg);
   }
 }
 
-//- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -  
+//- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 void NullMarket::process_request()
 {
   // update pointer to firm orders
@@ -51,23 +51,23 @@ void NullMarket::process_request()
 
   while (matchedOffers_.size() > 0)
   {
-    cyclus::msg_ptr msg = *(matchedOffers_.begin());
+    cyclus::Message::Ptr msg = *(matchedOffers_.begin());
     messages_.erase(msg);
     matchedOffers_.erase(msg);
   }
 }
- 
-//- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -  
+
+//- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 bool NullMarket::match_request(sortedMsgList::iterator request)
 {
   sortedMsgList::iterator offer;
   double requestAmt, offerAmt, toRet;
-  cyclus::msg_ptr offerMsg;
-  cyclus::msg_ptr requestMsg;
+  cyclus::Message::Ptr offerMsg;
+  cyclus::Message::Ptr requestMsg;
 
   requestAmt = request->first;
   requestMsg = request->second;
-  
+
   // if this request is not yet satisfied &&
   // there are more offers_ left
   while ( requestAmt > 0 && offers_.size() > 0)
@@ -80,45 +80,45 @@ bool NullMarket::match_request(sortedMsgList::iterator request)
 
     // pop off this offer
     offers_.erase(offer);
-  
-    if (requestMsg->trans().resource()->checkQuality(offerMsg->trans().resource())){
-      
-      LOG(cyclus::LEV_DEBUG1,"NulMkt") << "Comparing " << requestAmt << " >= " 
+
+    if (requestMsg->trans().resource()->CheckQuality(offerMsg->trans().resource())){
+
+      LOG(cyclus::LEV_DEBUG1,"NulMkt") << "Comparing " << requestAmt << " >= "
                                << offerAmt
                                << ": " << (requestAmt>=offerAmt);
-      
-      if (requestAmt >= offerAmt) { 
+
+      if (requestAmt >= offerAmt) {
         // put a new message in the order stack
         // it goes down to supplier
-        offerMsg->trans().matchWith(requestMsg->trans());
+        offerMsg->trans().MatchWith(requestMsg->trans());
 
         // Queue an order
         matchedOffers_.insert(offerMsg);
-        // Zero out the boolean. 
+        // Zero out the boolean.
         // At least some of the request will be met.
         toRet = 0;
 
         orders_.push_back(offerMsg);
 
-        LOG(cyclus::LEV_DEBUG2, "none!") 
+        LOG(cyclus::LEV_DEBUG2, "none!")
 	  << "null_market.has resolved a transaction "
 	  << " which is a match from "
           << offerMsg->trans().supplier()->ID()
           << " to "
           << offerMsg->trans().requester()->ID()
-          << " for the amount:  " 
+          << " for the amount:  "
           << offerMsg->trans().resource()->quantity();
 
         requestAmt -= offerAmt;
-      } 
+      }
       else {
         // split offer
 
         // queue a new order
-        cyclus::msg_ptr maybe_offer = offerMsg->clone(); 
-        maybe_offer->trans().resource()->setQuantity(requestAmt);
-        maybe_offer->trans().matchWith(requestMsg->trans());
-        maybe_offer->trans().setResource(requestMsg->trans().resource());
+        cyclus::Message::Ptr maybe_offer = offerMsg->clone();
+        maybe_offer->trans().resource()->SetQuantity(requestAmt);
+        maybe_offer->trans().MatchWith(requestMsg->trans());
+        maybe_offer->trans().SetResource(requestMsg->trans().resource());
         matchedOffers_.insert(offerMsg);
 
         orders_.push_back(maybe_offer);
@@ -129,7 +129,7 @@ bool NullMarket::match_request(sortedMsgList::iterator request)
                                  << maybe_offer->trans().requester()->ID()
                                  << " for " << maybe_offer->trans().resource()->quantity()
                                  << " of ";
-        maybe_offer->trans().resource()->print();
+        maybe_offer->trans().resource()->Print();
 
         // reduce the offer amount
         offerAmt -= requestAmt;
@@ -138,15 +138,15 @@ bool NullMarket::match_request(sortedMsgList::iterator request)
         // make a new offer with reduced amount
 
         if(offerAmt > cyclus::eps()){
-          cyclus::msg_ptr new_offer = offerMsg->clone();
-          new_offer->trans().resource()->setQuantity(offerAmt);
-          receiveMessage(new_offer);
+          cyclus::Message::Ptr new_offer = offerMsg->clone();
+          new_offer->trans().resource()->SetQuantity(offerAmt);
+          ReceiveMessage(new_offer);
         }
 
         // zero out request
         requestAmt = 0;
 
-        // Zero out the boolean. 
+        // Zero out the boolean.
         // All of the request will be met.
         toRet = 0;
       }
@@ -157,8 +157,8 @@ bool NullMarket::match_request(sortedMsgList::iterator request)
   return (0 == toRet);
 }
 
-//- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -  
-void NullMarket::resolve()
+//- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+void NullMarket::Resolve()
 {
   sortedMsgList::iterator request;
 
@@ -169,13 +169,13 @@ void NullMarket::resolve()
   {
     request = requests_.end();
     request--;
-    
+
     if(match_request(request)) {
       process_request();
-    } 
+    }
     else {
       LOG(cyclus::LEV_DEBUG2, "none!") << "The request from Requester "<< (*request).second->trans().requester()->ID()
-          << " for the amount " << (*request).first 
+          << " for the amount " << (*request).first
           << " rejected. ";
       reject_request(request);
     }
@@ -185,9 +185,9 @@ void NullMarket::resolve()
   }
 
   for (int i = 0; i < orders_.size(); i++) {
-    cyclus::msg_ptr msg = orders_.at(i);
-    msg->setDir(cyclus::DOWN_MSG);
-    msg->sendOn();
+    cyclus::Message::Ptr msg = orders_.at(i);
+    msg->SetDir(cyclus::DOWN_MSG);
+    msg->SendOn();
   }
   orders_.clear();
 }

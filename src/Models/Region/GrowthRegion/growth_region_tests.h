@@ -6,7 +6,7 @@
 
 #include "growth_region.h"
 
-//- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - 
+//- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 class GrowthRegionTests : public ::testing::Test {
  protected:
   GrowthRegion* region;

@@ -3,9 +3,9 @@
 
 #include "enrichment_facility.h"
 
-#include "TestMarket.h"
+#include "test_market.h"
 
-//- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - 
+//- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 class EnrichmentFacilityTest : public ::testing::Test {
 protected:
   EnrichmentFacility* src_facility;
@@ -13,9 +13,9 @@ protected:
   TestMarket* out_commod_market;
   std::string in_commod, out_commod, in_recipe;
   cyclus::CompMapPtr recipe;
-  
+
   double tails_assay, feed_assay, inv_size, commodity_price;
-    
+
   virtual void SetUp();
   virtual void TearDown();
   void initParameters();

@@ -1,9 +1,9 @@
 // stub_converter.cc
 // Implements the StubConverter class
 
-#include "Logger.h"
+#include "logger.h"
 #include "error.h"
-#include "InputXML.h"
+#include "input_xml.h"
 #include "stub_converter.h"
 
 /* --------------------
@@ -12,26 +12,26 @@
  */
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-void StubConverter::init(xmlNodePtr cur) { 
-  cyclus::ConverterModel::init(cur); 
-};
-  
-//- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-void StubConverter::copy(StubConverter* src) { 
-  cyclus::ConverterModel::copy(src); 
+void StubConverter::init(xmlNodePtr cur) {
+  cyclus::ConverterModel::init(cur);
 };
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-void StubConverter::copyFreshModel(cyclus::Model* src) { 
-  copy(dynamic_cast<StubConverter*>(src)); 
+void StubConverter::copy(StubConverter* src) {
+  cyclus::ConverterModel::copy(src);
 };
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-std::string StubConverter::str() { 
-  return cyclus::ConverterModel::str(); 
+void StubConverter::copyFreshModel(cyclus::Model* src) {
+  copy(dynamic_cast<StubConverter*>(src));
 };
 
-/* ------------------- */ 
+//- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+std::string StubConverter::str() {
+  return cyclus::ConverterModel::str();
+};
+
+/* ------------------- */
 
 
 /* --------------------
@@ -39,14 +39,14 @@ std::string StubConverter::str() {
  * --------------------
  */
 
-//- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -    
-cyclus::msg_ptr StubConverter::convert(cyclus::msg_ptr convMsg, cyclus::msg_ptr refMsg) {
+//- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+cyclus::Message::Ptr StubConverter::convert(cyclus::Message::Ptr convMsg, cyclus::Message::Ptr refMsg) {
   throw cyclus::CycException("The StubConverter should not be used to convert things.");
 }
 
-/* ------------------- */ 
+/* ------------------- */
 
-    
+
 /* --------------------
  * all MODEL classes have these members
  * --------------------
@@ -57,6 +57,6 @@ extern "C" cyclus::Model* constructStubConverter() {
     return new StubConverter();
 }
 
-/* ------------------- */ 
+/* ------------------- */
 
 

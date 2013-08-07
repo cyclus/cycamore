@@ -7,8 +7,8 @@
 
 using namespace std;
 
-//- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - 
-void BuildOrderList::addBuildOrder(cyclus::Prototype* p, int number, 
+//- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+void BuildOrderList::addBuildOrder(cyclus::Prototype* p, int number,
                                    int time) {
   map<int, set<BuildOrder> >::iterator it;
   it = all_orders_.find(time);
@@ -19,11 +19,11 @@ void BuildOrderList::addBuildOrder(cyclus::Prototype* p, int number,
     all_orders_.insert(make_pair(time,orders));
   } else {
     it->second.insert(make_pair(p,number));
-  }  
+  }
 
 }
 
-//- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - 
+//- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 std::set<BuildOrder> BuildOrderList::extractOrders(int time) {
   map<int, set<BuildOrder> >::iterator it;
   set<BuildOrder> orders;
@@ -35,47 +35,47 @@ std::set<BuildOrder> BuildOrderList::extractOrders(int time) {
   return orders;
 }
 
-//- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - 
+//- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 DeployInst::DeployInst() {}
 
-//- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - 
+//- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 DeployInst::~DeployInst() {}
 
-//- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - 
-void DeployInst::initModuleMembers(cyclus::QueryEngine* qe) {
+//- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+void DeployInst::InitModuleMembers(cyclus::QueryEngine* qe) {
   string query = "buildorder";
-  int nOrders = qe->nElementsMatchingQuery(query);
-  
+  int nOrders = qe->NElementsMatchingQuery(query);
+
   for (int i = 0; i < nOrders; i++) {
-    cyclus::QueryEngine* order = qe->queryElement(query,i);
-    string name = order->getElementContent("prototype");
-    int number = atoi(order->getElementContent("number").c_str());
-    int time = atoi(order->getElementContent("date").c_str());
-    build_orders_.addBuildOrder(cyclus::Prototype::getRegisteredPrototype(name),
+    cyclus::QueryEngine* order = qe->QueryElement(query,i);
+    string name = order->GetElementContent("prototype");
+    int number = atoi(order->GetElementContent("number").c_str());
+    int time = atoi(order->GetElementContent("date").c_str());
+    build_orders_.addBuildOrder(cyclus::Prototype::GetRegisteredPrototype(name),
                                 number,time);
   }
 
 }
 
-//- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -  
-void DeployInst::handleTick(int time) {
+//- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+void DeployInst::HandleTick(int time) {
   set<BuildOrder> orders = build_orders_.extractOrders(time);
-  for (set<BuildOrder>::iterator it = orders.begin(); 
+  for (set<BuildOrder>::iterator it = orders.begin();
        it != orders.end(); it++) {
-    
+
     cyclus::Prototype* p = it->first;
     int number = it->second;
-    
+
     for (int i = 0; i < number; i++) {
       // build as many as required
-      build(p);
+      Build(p);
     }
 
   }
-  InstModel::handleTick(time);
+  InstModel::HandleTick(time);
 }
 
-/* ------------------- */ 
+/* ------------------- */
 
 
 /* --------------------
@@ -93,5 +93,5 @@ extern "C" void destructDeployInst(cyclus::Model* model) {
   delete model;
 }
 
-/* ------------------- */ 
+/* ------------------- */
 

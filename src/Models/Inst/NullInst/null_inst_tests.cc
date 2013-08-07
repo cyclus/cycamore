@@ -3,8 +3,8 @@
 
 #include "null_inst.h"
 
-#include "InstModelTests.h"
-#include "ModelTests.h"
+#include "inst_model_tests.h"
+#include "model_tests.h"
 
 using namespace std;
 
@@ -12,11 +12,11 @@ using namespace std;
 class NullInstTest : public ::testing::Test {
 protected:
   NullInst* src_inst;
-  
+
   virtual void SetUp(){
     src_inst = new NullInst();
   }
-  
+
   virtual void TearDown() {
     delete src_inst;
   }
@@ -32,7 +32,7 @@ cyclus::InstModel* NullInstConstructor(){
   return dynamic_cast<cyclus::InstModel*>(new NullInst());
 }
 
-//- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - 
+//- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 INSTANTIATE_TEST_CASE_P(NullInst, InstModelTests, Values(&NullInstConstructor));
 INSTANTIATE_TEST_CASE_P(NullInst, ModelTests, Values(&NullInstModelConstructor));
 

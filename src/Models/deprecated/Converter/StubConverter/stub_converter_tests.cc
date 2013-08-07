@@ -3,10 +3,10 @@
 
 #include "stub_converter.h"
 #include "error.h"
-#include "Message.h"
-#include "ConverterModelTests.h"
-#include "ModelTests.h"
-#include "TestInst.h"
+#include "message.h"
+#include "converter_model_tests.h"
+#include "model_tests.h"
+#include "test_inst.h"
 
 #include <string>
 #include <queue>
@@ -37,7 +37,7 @@ cyclus::ConverterModel* StubConverterConstructor(){
 class StubConverterTest : public ::testing::Test {
   protected:
     FakeStubConverter* src_facility;
-    FakeStubConverter* new_facility; 
+    FakeStubConverter* new_facility;
 
     virtual void SetUp(){
       src_facility = new FakeStubConverter();
@@ -54,12 +54,12 @@ class StubConverterTest : public ::testing::Test {
 };
 
 
-//- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - 
+//- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 TEST_F(StubConverterTest, InitialState) {
   // Test things about the initial state of the facility here
 }
 
-//- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - 
+//- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 TEST_F(StubConverterTest, CopyFreshModel) {
   new_facility->copyFreshModel(dynamic_cast<cyclus::Model*>(src_facility)); // deep copy
   EXPECT_NO_THROW(dynamic_cast<StubConverter*>(new_facility)); // still a stub facility
@@ -67,20 +67,20 @@ TEST_F(StubConverterTest, CopyFreshModel) {
   // Test that StubConverter specific parameters are initialized in the deep copy method here
 }
 
-//- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - 
+//- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 TEST_F(StubConverterTest, Print) {
   EXPECT_NO_THROW(std::string s = src_facility->str());
   // Test StubConverter specific aspects of the print method here
 }
 
 
-//- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - 
+//- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 TEST_F(StubConverterTest, ReceiveMessage) {
-  cyclus::msg_ptr msg;
-  // Test StubConverter specific behaviors of the receiveMessage function here
+  cyclus::Message::Ptr msg;
+  // Test StubConverter specific behaviors of the ReceiveMessage function here
 }
 
-//- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - 
+//- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 INSTANTIATE_TEST_CASE_P(StubConv, ConverterModelTests, Values(&StubConverterConstructor));
 INSTANTIATE_TEST_CASE_P(StubConv, ModelTests, Values(&StubConverterModelConstructor));
 

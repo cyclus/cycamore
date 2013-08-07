@@ -3,9 +3,9 @@
 
 #include "sink_facility.h"
 
-#include "FacilityModelTests.h"
-#include "ModelTests.h"
-#include "TestMarket.h"
+#include "facility_model_tests.h"
+#include "model_tests.h"
+#include "test_market.h"
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 cyclus::Model* SinkFacilityModelConstructor(){
@@ -23,7 +23,7 @@ protected:
   SinkFacility* src_facility;
   TestMarket* commod_market;
   std::string commod_;
-    
+
   virtual void SetUp();
   virtual void TearDown();
   void initParameters();

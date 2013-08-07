@@ -2,8 +2,8 @@
 #include <gtest/gtest.h>
 
 #include "batch_reactor.h"
-#include "FacilityModelTests.h"
-#include "ModelTests.h"
+#include "facility_model_tests.h"
+#include "model_tests.h"
 #include <string>
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -19,7 +19,7 @@ cyclus::FacilityModel* BatchReactorConstructor(){
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 class BatchReactorTest : public ::testing::Test {
 protected:
-  
+
   BatchReactor* src_facility;
   int lencycle, nbatch;
   double in_loadcore, out_loadcore;
@@ -28,7 +28,7 @@ protected:
   TestMarket* outcommod_market;
   std::string commodity;
   double capacity, cost;
-  
+
   virtual void SetUp();
   virtual void TearDown();
   void initSrcFacility();

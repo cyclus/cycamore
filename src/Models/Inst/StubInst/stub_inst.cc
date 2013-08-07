@@ -4,7 +4,7 @@
 
 #include "stub_inst.h"
 
-#include "Logger.h"
+#include "logger.h"
 
 /* --------------------
  * all MODEL classes have these members
@@ -18,19 +18,19 @@ StubInst::StubInst() {};
 StubInst::~StubInst() {};
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-std::string StubInst::str() { 
-  return cyclus::InstModel::str(); 
+std::string StubInst::str() {
+  return cyclus::InstModel::str();
 }
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-void StubInst::initModuleMembers(cyclus::QueryEngine* qe) {}
+void StubInst::InitModuleMembers(cyclus::QueryEngine* qe) {}
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-void StubInst::enterSimulation(cyclus::Model* parent) {
-  cyclus::InstModel::enterSimulation(parent);
+void StubInst::EnterSimulation(cyclus::Model* parent) {
+  cyclus::InstModel::EnterSimulation(parent);
 }
 
-/* ------------------- */ 
+/* ------------------- */
 
 
 /* --------------------
@@ -39,9 +39,9 @@ void StubInst::enterSimulation(cyclus::Model* parent) {
  */
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-void StubInst::receiveMessage(cyclus::msg_ptr msg) {};
+void StubInst::ReceiveMessage(cyclus::Message::Ptr msg) {};
 
-/* ------------------- */ 
+/* ------------------- */
 
 
 /* --------------------
@@ -49,7 +49,7 @@ void StubInst::receiveMessage(cyclus::msg_ptr msg) {};
  * --------------------
  */
 
-/* ------------------- */ 
+/* ------------------- */
 
 
 /* --------------------
@@ -67,7 +67,7 @@ extern "C" void destructStubInst(cyclus::Model* model) {
   delete model;
 }
 
-/* ------------------- */ 
+/* ------------------- */
 
 
 

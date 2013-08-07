@@ -3,10 +3,10 @@
 
 #include "sw_ue_uf6_converter.h"
 #include "error.h"
-#include "Message.h"
-#include "ConverterModelTests.h"
-#include "ModelTests.h"
-#include "TestInst.h"
+#include "message.h"
+#include "converter_model_tests.h"
+#include "model_tests.h"
+#include "test_inst.h"
 
 #include <string>
 #include <queue>
@@ -37,7 +37,7 @@ cyclus::ConverterModel* SWUeUF6ConverterConstructor(){
 class SWUeUF6ConverterTest : public ::testing::Test {
   protected:
     FakeSWUeUF6Converter* src_facility;
-    FakeSWUeUF6Converter* new_facility; 
+    FakeSWUeUF6Converter* new_facility;
 
     virtual void SetUp(){
       src_facility = new FakeSWUeUF6Converter();
@@ -54,12 +54,12 @@ class SWUeUF6ConverterTest : public ::testing::Test {
 };
 
 
-//- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - 
+//- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 TEST_F(SWUeUF6ConverterTest, InitialState) {
   // Test things about the initial state of the facility here
 }
 
-//- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - 
+//- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 TEST_F(SWUeUF6ConverterTest, CopyFreshModel) {
   new_facility->copyFreshModel(dynamic_cast<cyclus::Model*>(src_facility)); // deep copy
   EXPECT_NO_THROW(dynamic_cast<SWUeUF6Converter*>(new_facility)); // still a stub facility
@@ -67,20 +67,20 @@ TEST_F(SWUeUF6ConverterTest, CopyFreshModel) {
   // Test that SWUeUF6Converter specific parameters are initialized in the deep copy method here
 }
 
-//- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - 
+//- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 TEST_F(SWUeUF6ConverterTest, Print) {
   EXPECT_NO_THROW(std::string s = src_facility->str());
   // Test SWUeUF6Converter specific aspects of the print method here
 }
 
 
-//- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - 
+//- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 TEST_F(SWUeUF6ConverterTest, ReceiveMessage) {
-  cyclus::msg_ptr msg;
-  // Test SWUeUF6Converter specific behaviors of the receiveMessage function here
+  cyclus::Message::Ptr msg;
+  // Test SWUeUF6Converter specific behaviors of the ReceiveMessage function here
 }
 
-//- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - 
+//- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 INSTANTIATE_TEST_CASE_P(SWUeUF6Conv, ConverterModelTests, Values(&SWUeUF6ConverterConstructor));
 INSTANTIATE_TEST_CASE_P(SWUeUF6Conv, ModelTests, Values(&SWUeUF6ConverterModelConstructor));
 

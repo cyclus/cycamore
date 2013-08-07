@@ -2,8 +2,8 @@
 // Implements the ManagerInst class
 
 #include "manager_inst.h"
-#include "Prototype.h"
-#include "Logger.h"
+#include "prototype.h"
+#include "logger.h"
 
 using namespace std;
 
@@ -13,18 +13,18 @@ ManagerInst::ManagerInst() {}
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 ManagerInst::~ManagerInst() {}
 
-//- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -    
-void ManagerInst::registerAvailablePrototype(cyclus::Prototype* prototype) 
+//- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+void ManagerInst::registerAvailablePrototype(cyclus::Prototype* prototype)
 {
-  cyclus::SupplyDemand::CommodityProducer* cast = dynamic_cast<cyclus::SupplyDemand::CommodityProducer*>(prototype);
-  if (cast) 
+  cyclus::supply_demand::CommodityProducer* cast = dynamic_cast<cyclus::supply_demand::CommodityProducer*>(prototype);
+  if (cast)
     {
-      cyclus::ActionBuilding::Builder::registerProducer(cast);
-      LOG(cyclus::LEV_DEBUG3,"maninst") << "ManagerInst " << name() 
+      cyclus::action_building::Builder::RegisterProducer(cast);
+      LOG(cyclus::LEV_DEBUG3,"maninst") << "ManagerInst " << name()
                                 << " has registered a producer prototype: "
                                 << dynamic_cast<cyclus::Model*>(prototype)->name()
                                 << " and "
-                                <<" now has " << nBuildingPrototypes()
+                                <<" now has " << NBuildingPrototypes()
                                 << " registered total.";
     }
 }
@@ -32,13 +32,13 @@ void ManagerInst::registerAvailablePrototype(cyclus::Prototype* prototype)
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 void ManagerInst::registerCloneAsBuilt(cyclus::Prototype* clone)
 {
-  cyclus::SupplyDemand::CommodityProducer* cast = dynamic_cast<cyclus::SupplyDemand::CommodityProducer*>(clone);
-  if (cast) 
+  cyclus::supply_demand::CommodityProducer* cast = dynamic_cast<cyclus::supply_demand::CommodityProducer*>(clone);
+  if (cast)
     {
-      cyclus::SupplyDemand::CommodityProducerManager::registerProducer(cast);
+      cyclus::supply_demand::CommodityProducerManager::RegisterProducer(cast);
       if (cyclus::LEV_DEBUG3 >= cyclus::Logger::ReportLevel())
         {
-          LOG(cyclus::LEV_DEBUG3,"maninst") << "ManagerInst " << name() 
+          LOG(cyclus::LEV_DEBUG3,"maninst") << "ManagerInst " << name()
                                     << " has registered a producer clone:";
           writeProducerInformation(cast);
         }
@@ -48,36 +48,36 @@ void ManagerInst::registerCloneAsBuilt(cyclus::Prototype* clone)
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 void ManagerInst::registerCloneAsDecommissioned(cyclus::Prototype* clone)
 {
-  cyclus::SupplyDemand::CommodityProducer* cast = dynamic_cast<cyclus::SupplyDemand::CommodityProducer*>(clone);
-  if (cast) 
+  cyclus::supply_demand::CommodityProducer* cast = dynamic_cast<cyclus::supply_demand::CommodityProducer*>(clone);
+  if (cast)
     {
-      cyclus::SupplyDemand::CommodityProducerManager::unRegisterProducer(cast);
+      cyclus::supply_demand::CommodityProducerManager::UnRegisterProducer(cast);
     }
 }
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-void ManagerInst::writeProducerInformation(cyclus::SupplyDemand::CommodityProducer* producer)
+void ManagerInst::writeProducerInformation(cyclus::supply_demand::CommodityProducer* producer)
 {
-  set<cyclus::Commodity,cyclus::CommodityCompare> commodities = producer->producedCommodities();
+  set<cyclus::Commodity,cyclus::CommodityCompare> commodities = producer->ProducedCommodities();
   set<cyclus::Commodity,cyclus::CommodityCompare>::iterator it;
 
   LOG(cyclus::LEV_DEBUG3,"maninst") << " Clone produces " << commodities.size() << " commodities.";
   for (it = commodities.begin(); it != commodities.end(); it++)
     {
       LOG(cyclus::LEV_DEBUG3,"maninst") << " Commodity produced: " << it->name();
-      LOG(cyclus::LEV_DEBUG3,"maninst") << "           capacity: " << producer->productionCapacity(*it);
-      LOG(cyclus::LEV_DEBUG3,"maninst") << "               cost: " << producer->productionCost(*it);
+      LOG(cyclus::LEV_DEBUG3,"maninst") << "           capacity: " << producer->ProductionCapacity(*it);
+      LOG(cyclus::LEV_DEBUG3,"maninst") << "               cost: " << producer->ProductionCost(*it);
     }
 }
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-extern "C" cyclus::Model* constructManagerInst() 
+extern "C" cyclus::Model* constructManagerInst()
 {
   return new ManagerInst();
 }
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-extern "C" void destructManagerInst(cyclus::Model* model) 
+extern "C" void destructManagerInst(cyclus::Model* model)
 {
   delete model;
 }

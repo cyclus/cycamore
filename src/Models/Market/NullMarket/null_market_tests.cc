@@ -3,10 +3,10 @@
 
 #include "null_market.h"
 #include "error.h"
-#include "Message.h"
-#include "MarketModelTests.h"
-#include "GenericResource.h"
-#include "ModelTests.h"
+#include "message.h"
+#include "market_model_tests.h"
+#include "generic_resource.h"
+#include "model_tests.h"
 
 #include <string>
 #include <queue>
@@ -16,21 +16,21 @@ using namespace std;
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 class FakeNullMarket : public NullMarket {
   protected:
-    cyclus::msg_ptr msg_;
+    cyclus::Message::Ptr msg_;
   public:
     FakeNullMarket() : NullMarket() {
       string kg = "kg";
       string qual = "qual";
-      cyclus::gen_rsrc_ptr res = cyclus::gen_rsrc_ptr(new cyclus::GenericResource(kg, qual, 1));
+      cyclus::GenericResource::Ptr res = cyclus::GenericResource::Ptr(new cyclus::GenericResource(kg, qual, 1));
       cyclus::Transaction trans(this, cyclus::OFFER);
-      msg_ = cyclus::msg_ptr(new cyclus::Message(this, this, trans));
-      msg_->trans().setResource(res);
+      msg_ = cyclus::Message::Ptr(new cyclus::Message(this, this, trans));
+      msg_->trans().SetResource(res);
     }
 
     virtual ~FakeNullMarket() {
     }
 
-    cyclus::msg_ptr getMessage(){return msg_;}
+    cyclus::Message::Ptr getMessage(){return msg_;}
 };
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -58,18 +58,18 @@ class NullMarketTest : public ::testing::Test {
 };
 
 
-//- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - 
+//- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 TEST_F(NullMarketTest, Print) {
   EXPECT_NO_THROW(std::string s = src_market->str());
 }
 
 
-//- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - 
+//- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 TEST_F(NullMarketTest, ReceiveMessage) {
-  EXPECT_NO_THROW(src_market->receiveMessage(src_market->getMessage()));
+  EXPECT_NO_THROW(src_market->ReceiveMessage(src_market->getMessage()));
 }
 
-//- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - 
+//- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 INSTANTIATE_TEST_CASE_P(NullMarket, MarketModelTests, Values(&NullMarketConstructor));
 INSTANTIATE_TEST_CASE_P(NullMarket, ModelTests, Values(&NullMarketModelConstructor));
 

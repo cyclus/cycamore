@@ -2,8 +2,8 @@
 #include <gtest/gtest.h>
 
 #include "deploy_inst.h"
-#include "InstModelTests.h"
-#include "ModelTests.h"
+#include "inst_model_tests.h"
+#include "model_tests.h"
 
 using namespace std;
 
@@ -32,7 +32,7 @@ class DeployInstTest : public ::testing::Test {
 };
 
 
-//- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - 
+//- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 INSTANTIATE_TEST_CASE_P(DeployInst, InstModelTests, Values(&DeployInstConstructor));
 INSTANTIATE_TEST_CASE_P(DeployInst, ModelTests, Values(&DeployInstModelConstructor));
 

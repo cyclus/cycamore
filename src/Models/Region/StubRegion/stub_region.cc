@@ -15,19 +15,19 @@ StubRegion::StubRegion() {}
 StubRegion::~StubRegion() {}
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-std::string StubRegion::str() { 
-  return cyclus::RegionModel::str(); 
+std::string StubRegion::str() {
+  return cyclus::RegionModel::str();
 }
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-void StubRegion::initModuleMembers(cyclus::QueryEngine* qe) {}
+void StubRegion::InitModuleMembers(cyclus::QueryEngine* qe) {}
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-void StubRegion::enterSimulation(cyclus::Model* parent) {
-  cyclus::RegionModel::enterSimulation(parent);
+void StubRegion::EnterSimulation(cyclus::Model* parent) {
+  cyclus::RegionModel::EnterSimulation(parent);
 }
 
-/* ------------------- */ 
+/* ------------------- */
 
 
 /* --------------------
@@ -36,9 +36,9 @@ void StubRegion::enterSimulation(cyclus::Model* parent) {
  */
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-void StubRegion::receiveMessage(cyclus::msg_ptr msg) {}
+void StubRegion::ReceiveMessage(cyclus::Message::Ptr msg) {}
 
-/* ------------------- */ 
+/* ------------------- */
 
 
 /* --------------------
@@ -46,7 +46,7 @@ void StubRegion::receiveMessage(cyclus::msg_ptr msg) {}
  * --------------------
  */
 
-/* ------------------- */ 
+/* ------------------- */
 
 
 /* --------------------
@@ -64,4 +64,4 @@ extern "C" void destructStubRegion(cyclus::Model* model) {
       delete model;
 }
 
-/* ------------------- */ 
+/* ------------------- */

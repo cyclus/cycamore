@@ -2,10 +2,10 @@
 #ifndef _BATCHREACTOR_H
 #define _BATCHREACTOR_H
 
-#include "FacilityModel.h"
-#include "CommodityProducer.h"
+#include "facility_model.h"
+#include "commodity_producer.h"
 
-#include "MatBuff.h"
+#include "mat_buff.h"
 
 #include <string>
 #include <queue>
@@ -22,38 +22,38 @@ enum Phase {INIT, BEGIN, OPERATION, REFUEL, REFUEL_DELAY, WAITING, END};
 /* struct PoolEntry */
 /* { */
 /*   int exit_time; */
-/*   cyclus::mat_rsrc_ptr mat; */
-  
+/*   cyclus::Material::Ptr mat; */
+
 /* PoolEntry(int time, mat_rsr_ptr mat) : exit_time(time), mat(mat_ptr) {}; */
 /* }; */
 
 /**
-   @class BatchReactor 
+   @class BatchReactor
    This class is identical to the RecipeReactor, except that it
    operates in a batch-like manner, i.e. it refuels in batches.
  */
-class BatchReactor : public cyclus::FacilityModel, public cyclus::SupplyDemand::CommodityProducer  
+class BatchReactor : public cyclus::FacilityModel, public cyclus::supply_demand::CommodityProducer
 {
- public:  
+ public:
   /* --- Module Methods --- */
   /**
-     Constructor for the BatchReactor class. 
+     Constructor for the BatchReactor class.
   */
   BatchReactor();
-  
+
   /**
-     Destructor for the BatchReactor class. 
+     Destructor for the BatchReactor class.
   */
   virtual ~BatchReactor();
-  
+
   /**
      Initialize members related to derived module class
      @param qe a pointer to a cyclus::QueryEngine object containing initialization data
   */
-  virtual void initModuleMembers(cyclus::QueryEngine* qe);
-  
+  virtual void InitModuleMembers(cyclus::QueryEngine* qe);
+
   /**
-     Print information about this model 
+     Print information about this model
   */
   virtual std::string str();
   /* --- */
@@ -63,38 +63,38 @@ class BatchReactor : public cyclus::FacilityModel, public cyclus::SupplyDemand::
      Copy module members from a source model
      @param sourceModel the model to copy from
    */
-  virtual void cloneModuleMembersFrom(cyclus::FacilityModel* sourceModel);
+  virtual void CloneModuleMembersFrom(cyclus::FacilityModel* sourceModel);
 
   /**
      perform module-specific tasks when entering the simulation
    */
-  virtual void enterSimulationAsModule();
+  virtual void EnterSimulationAsModule();
   /* --- */
 
   /* --- Agent Methods --- */
   /**
-     The handleTick function specific to the BatchReactor.
+     The HandleTick function specific to the BatchReactor.
      @param time the time of the tick
    */
-  virtual void handleTick(int time);
+  virtual void HandleTick(int time);
 
   /**
-     The handleTick function specific to the BatchReactor.
+     The HandleTick function specific to the BatchReactor.
      @param time the time of the tock
    */
-  virtual void handleTock(int time);
+  virtual void HandleTock(int time);
   /* --- */
 
   /* --- cyclus::Transaction Methods --- */
   /**
      When the facility receives a message, execute any transaction
    */
-  virtual void receiveMessage(cyclus::msg_ptr msg);
+  virtual void ReceiveMessage(cyclus::Message::Ptr msg);
 
   /**
-     send messages up through the institution 
-     @param recipient the final recipient 
-     @param trans the transaction to send 
+     send messages up through the institution
+     @param recipient the final recipient
+     @param trans the transaction to send
    */
   void sendMessage(Communicator* recipient, cyclus::Transaction trans);
 
@@ -103,20 +103,20 @@ class BatchReactor : public cyclus::FacilityModel, public cyclus::SupplyDemand::
      @param order the msg/order for which resource(s) are to be prepared
      @return list of resources to be sent for this order
    */
-  virtual std::vector<cyclus::rsrc_ptr> removeResource(cyclus::Transaction order);
+  virtual std::vector<cyclus::Resource::Ptr> removeResource(cyclus::Transaction order);
 
   /**
-     Transacted resources are received through this method      
+     Transacted resources are received through this method
      @param trans the transaction to which these resource objects belong
      @param manifest is the set of resources being received
    */
   virtual void addResource(cyclus::Transaction trans,
-        		   std::vector<cyclus::rsrc_ptr> manifest);
+        		   std::vector<cyclus::Resource::Ptr> manifest);
   /* --- */
 
   /* --- BatchReactor Methods --- */
   /**
-     set the cycle length 
+     set the cycle length
      @param time the cycle length time
    */
   void set_cycle_length(int time);
@@ -127,7 +127,7 @@ class BatchReactor : public cyclus::FacilityModel, public cyclus::SupplyDemand::
   int cycle_length();
 
   /**
-     set the time required to refuel the reactor 
+     set the time required to refuel the reactor
      @param time the refuel delay time
    */
   void set_refuel_delay(int time);
@@ -176,29 +176,29 @@ class BatchReactor : public cyclus::FacilityModel, public cyclus::SupplyDemand::
   double batchLoading();
 
   /**
-     set the input commodity 
+     set the input commodity
      @param name the commodity name
    */
   void set_in_commodity(std::string name);
 
   /**
-     @return the input commodity 
+     @return the input commodity
   */
   std::string in_commodity();
 
   /**
-     set the input recipe 
+     set the input recipe
      @param name the recipe name
    */
   void set_in_recipe(std::string name);
 
   /**
-     @return the input recipe 
+     @return the input recipe
   */
   std::string in_recipe();
 
   /**
-     set the output commodity 
+     set the output commodity
      @param name the commodity name
    */
   void set_out_commodity(std::string name);
@@ -209,7 +209,7 @@ class BatchReactor : public cyclus::FacilityModel, public cyclus::SupplyDemand::
   std::string out_commodity();
 
   /**
-     set the output recipe 
+     set the output recipe
      @param name the recipe name
    */
   void set_out_recipe(std::string name);
@@ -239,7 +239,7 @@ class BatchReactor : public cyclus::FacilityModel, public cyclus::SupplyDemand::
   /// a map of phase names
   static std::map<Phase,std::string> phase_names_;
 
-  /// The time between batch reloadings. 
+  /// The time between batch reloadings.
   int cycle_length_;
 
   /// The time required to refuel the reactor
@@ -250,7 +250,7 @@ class BatchReactor : public cyclus::FacilityModel, public cyclus::SupplyDemand::
 
   /// batches per core
   int batches_per_core_;
-  
+
   /// The total mass per core upon entry
   double in_core_loading_;
 
@@ -284,8 +284,8 @@ class BatchReactor : public cyclus::FacilityModel, public cyclus::SupplyDemand::
   /// a matbuff for material after they exit the core
   cyclus::MatBuff postCore_;
 
-  /// The list of orders to process on the Tock 
-  std::deque<cyclus::msg_ptr> ordersWaiting_;
+  /// The list of orders to process on the Tock
+  std::deque<cyclus::Message::Ptr> ordersWaiting_;
 
   /**
      populate the phase name map
@@ -298,7 +298,7 @@ class BatchReactor : public cyclus::FacilityModel, public cyclus::SupplyDemand::
   void reset_cycle_timer();
 
   /**
-     return true if the cycle timer is >= the 
+     return true if the cycle timer is >= the
      cycle length
    */
   bool cycleComplete();
@@ -345,8 +345,8 @@ class BatchReactor : public cyclus::FacilityModel, public cyclus::SupplyDemand::
   /**
      moves and amount of fuel out of the core. this action will remove
      the amount of fuel from the core and add a different amount to
-     the recieving buffer by a factor of 
-     out_core_loading()/in_core_loading(). The recipe will also be 
+     the recieving buffer by a factor of
+     out_core_loading()/in_core_loading(). The recipe will also be
      changed to out_recipe();
      @param amt the amount of fuel to offload
   */

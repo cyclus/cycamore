@@ -2,39 +2,39 @@
 #include <gtest/gtest.h>
 
 #include "manager_inst.h"
-#include "FacilityModel.h"
-#include "CommodityProducer.h"
+#include "facility_model.h"
+#include "commodity_producer.h"
 
-//- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - 
-class TestProducer : 
-  public cyclus::FacilityModel, 
-  public cyclus::SupplyDemand::CommodityProducer
+//- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+class TestProducer :
+  public cyclus::FacilityModel,
+  public cyclus::supply_demand::CommodityProducer
 {
  public:
   TestProducer();
   virtual ~TestProducer();
 
-  void cloneModuleMembersFrom(cyclus::FacilityModel* source) {};
-  void handleTock(int time){};
-  void handleTick(int time){};
+  void CloneModuleMembersFrom(cyclus::FacilityModel* source) {};
+  void HandleTock(int time){};
+  void HandleTick(int time){};
 
-  void receiveMessage(cyclus::msg_ptr msg) {
-    msg->setDir(cyclus::DOWN_MSG);
+  void ReceiveMessage(cyclus::Message::Ptr msg) {
+    msg->SetDir(cyclus::DOWN_MSG);
   }
 
 };
 
-//- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - 
-class ManagerInstTests : public ::testing::Test 
+//- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+class ManagerInstTests : public ::testing::Test
 {
  protected:
   ManagerInst* src_inst;
   TestProducer* producer;
-  
+
   cyclus::Commodity commodity;
   double capacity;
 
- public:  
+ public:
   virtual void SetUp();
   virtual void TearDown();
 };

@@ -5,76 +5,76 @@
 
 using namespace std;
 
-//- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - 
+//- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 void SinkFacilityTest::SetUp() {
   initParameters();
   setUpSinkFacility();
 }
 
-//- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - 
+//- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 void SinkFacilityTest::TearDown() {
   delete src_facility;
   delete commod_market;
 }
 
-//- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - 
+//- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 void SinkFacilityTest::initParameters() {
   commod_ = "incommod";
   commod_market = new TestMarket();
-  commod_market->setCommodity(commod_);
-  cyclus::MarketModel::registerMarket(commod_market);
+  commod_market->SetCommodity(commod_);
+  cyclus::MarketModel::RegisterMarket(commod_market);
 }
 
-//- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - 
+//- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 void SinkFacilityTest::setUpSinkFacility() {
   src_facility = new SinkFacility();
-  src_facility->addCommodity(commod_);
+  src_facility->AddCommodity(commod_);
 }
 
-//- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - 
+//- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 TEST_F(SinkFacilityTest, InitialState) {
   int time = 1;
   EXPECT_DOUBLE_EQ(0.0, src_facility->inventorySize());
 }
 
-//- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - 
+//- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 TEST_F(SinkFacilityTest,clone) {
   SinkFacility* cloned_fac = new SinkFacility();
-  cloned_fac->cloneModuleMembersFrom(src_facility);
-  
+  cloned_fac->CloneModuleMembersFrom(src_facility);
+
   EXPECT_EQ(src_facility->capacity(),cloned_fac->capacity());
   EXPECT_EQ(src_facility->maxInventorySize(),cloned_fac->maxInventorySize());
 
   delete cloned_fac;
 }
 
-//- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - 
+//- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 TEST_F(SinkFacilityTest, Print) {
   EXPECT_NO_THROW(std::string s = src_facility->str());
 }
 
-//- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - 
+//- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 TEST_F(SinkFacilityTest, ReceiveMessage) {
-  cyclus::msg_ptr msg = cyclus::msg_ptr(new cyclus::Message(src_facility));
-  EXPECT_NO_THROW(src_facility->receiveMessage(msg));
+  cyclus::Message::Ptr msg = cyclus::Message::Ptr(new cyclus::Message(src_facility));
+  EXPECT_NO_THROW(src_facility->ReceiveMessage(msg));
 }
 
-//- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - 
+//- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 TEST_F(SinkFacilityTest, Tick) {
   int time = 1;
   EXPECT_DOUBLE_EQ(0.0, src_facility->inventorySize());
-  EXPECT_NO_THROW(src_facility->handleTick(time));
+  EXPECT_NO_THROW(src_facility->HandleTick(time));
   EXPECT_DOUBLE_EQ(0.0,src_facility->inventorySize());
 }
 
-//- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - 
+//- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 TEST_F(SinkFacilityTest, Tock) {
   int time = 1;
   EXPECT_DOUBLE_EQ(0.0,src_facility->inventorySize());
-  EXPECT_NO_THROW(src_facility->handleTock(time));
+  EXPECT_NO_THROW(src_facility->HandleTock(time));
 }
 
-//- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - 
+//- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 INSTANTIATE_TEST_CASE_P(SinkFac, FacilityModelTests, Values(&SinkFacilityConstructor));
 INSTANTIATE_TEST_CASE_P(SinkFac, ModelTests, Values(&SinkFacilityModelConstructor));
 

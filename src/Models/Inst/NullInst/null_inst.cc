@@ -21,7 +21,7 @@ extern "C" void destructNullInst(cyclus::Model* model) {
   delete model;
 }
 
-/* ------------------- */ 
+/* ------------------- */
 
 
 

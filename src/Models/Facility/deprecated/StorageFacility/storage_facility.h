@@ -2,9 +2,9 @@
 #ifndef _STORAGEFACILITY_H
 #define _STORAGEFACILITY_H
 
-#include "FacilityModel.h"
+#include "facility_model.h"
 
-#include "ResourceBuff.h"
+#include "resource_buff.h"
 
 #include <queue>
 
@@ -12,49 +12,49 @@
 class cyclus::QueryEngine;
 
 /**
-   @class StorageFacility 
-   This cyclus::FacilityModel stores material. 
-    
-   The StorageFacility class inherits from the cyclus::FacilityModel class and 
-   is dynamically loaded by the Model class when requested. 
-    
-   @section intro Introduction 
-    
-   Place an introduction to the model here. 
-    
-   @section modelparams Model Parameters 
-    
-   Place a description of the required input parameters which define the 
-   model implementation. 
-    
-   @section optionalparams Optional Parameters 
-    
-   Place a description of the optional input parameters to define the 
-   model implementation. 
-    
-   @section detailed Detailed Behavior 
-    
-   Place a description of the detailed behavior of the model. Consider 
-   describing the behavior at the tick and tock as well as the behavior 
-   upon sending and receiving materials and messages. 
-    
+   @class StorageFacility
+   This cyclus::FacilityModel stores material.
+
+   The StorageFacility class inherits from the cyclus::FacilityModel class and
+   is dynamically loaded by the Model class when requested.
+
+   @section intro Introduction
+
+   Place an introduction to the model here.
+
+   @section modelparams Model Parameters
+
+   Place a description of the required input parameters which define the
+   model implementation.
+
+   @section optionalparams Optional Parameters
+
+   Place a description of the optional input parameters to define the
+   model implementation.
+
+   @section detailed Detailed Behavior
+
+   Place a description of the detailed behavior of the model. Consider
+   describing the behavior at the tick and tock as well as the behavior
+   upon sending and receiving materials and messages.
+
  */
-class StorageFacility : public cyclus::FacilityModel  
+class StorageFacility : public cyclus::FacilityModel
 {
  public:
   /* --- Module Methods --- */
-  /** 
-     Default constructor for the StorageFacility class. 
+  /**
+     Default constructor for the StorageFacility class.
    */
   StorageFacility() {};
-  
-  /**
-     Destructor for the StorageFacility class. 
-   */
-  virtual ~StorageFacility() {};  
 
   /**
-     Print information about this model 
+     Destructor for the StorageFacility class.
+   */
+  virtual ~StorageFacility() {};
+
+  /**
+     Print information about this model
    */
   virtual std::string str();
   /* --- */
@@ -64,61 +64,61 @@ class StorageFacility : public cyclus::FacilityModel
      Copy module members from a source model
      @param sourceModel the model to copy from
    */
-  virtual void cloneModuleMembersFrom(cyclus::FacilityModel* sourceModel);
+  virtual void CloneModuleMembersFrom(cyclus::FacilityModel* sourceModel);
   /* --- */
 
-  /* --- Agent Methods --- */  
+  /* --- Agent Methods --- */
   /**
-     The handleTick function specific to the StorageFacility. 
-     At each tick, it requests as much raw inCommod as it can process 
-     this month and offers as much outCommod as it will have in its 
-     inventory by the end of the month.       
-     @param time the time of the tick 
+     The HandleTick function specific to the StorageFacility.
+     At each tick, it requests as much raw inCommod as it can process
+     this month and offers as much outCommod as it will have in its
+     inventory by the end of the month.
+     @param time the time of the tick
    */
-  virtual void handleTick(int time);
+  virtual void HandleTick(int time);
 
   /**
-     The handleTick function specific to the StorageFacility. 
-     At each tock, it processes material and handles orders, and records 
-     this month's actions.       
-     @param time the time of the tock 
+     The HandleTick function specific to the StorageFacility.
+     At each tock, it processes material and handles orders, and records
+     this month's actions.
+     @param time the time of the tock
    */
-  virtual void handleTock(int time);
+  virtual void HandleTock(int time);
   /* --- */
 
-  /* --- cyclus::Transaction Methods --- */  
+  /* --- cyclus::Transaction Methods --- */
 
   /**
-     Transacted resources are extracted through this method 
-      
-     @param order the msg/order for which resource(s) are to be prepared 
-     @return list of resources to be sent for this order 
-      
-   */ 
-  virtual std::vector<cyclus::rsrc_ptr> removeResource(cyclus::Transaction order);
+     Transacted resources are extracted through this method
+
+     @param order the msg/order for which resource(s) are to be prepared
+     @return list of resources to be sent for this order
+
+   */
+  virtual std::vector<cyclus::Resource::Ptr> removeResource(cyclus::Transaction order);
 
   /**
-     Transacted resources are received through this method 
-      
-     @param trans the transaction to which these resource objects belong 
-     @param manifest is the set of resources being received 
-   */ 
+     Transacted resources are received through this method
+
+     @param trans the transaction to which these resource objects belong
+     @param manifest is the set of resources being received
+   */
   virtual void addResource(cyclus::Transaction trans,
-			   std::vector<cyclus::rsrc_ptr> manifest);
+			   std::vector<cyclus::Resource::Ptr> manifest);
 
   /**
-     When the facility receives a message, execute any transaction 
+     When the facility receives a message, execute any transaction
    */
-  virtual void receiveMessage(cyclus::msg_ptr msg);
+  virtual void ReceiveMessage(cyclus::Message::Ptr msg);
 
  protected:
   /**
-     builds a transaction 
+     builds a transaction
    */
   cyclus::Transaction buildTransaction();
 
   /**
-     sends a transaction as an offer 
+     sends a transaction as an offer
    */
   void sendOffer(cyclus::Transaction trans);
   /* --- */
@@ -170,7 +170,7 @@ class StorageFacility : public cyclus::FacilityModel
   std::string out_commod_;
 
   /**
-     The minimum time that the stock material spends in the facility. 
+     The minimum time that the stock material spends in the facility.
    */
   int residence_time_;
 
@@ -179,26 +179,26 @@ class StorageFacility : public cyclus::FacilityModel
   double offer_price_;
 
   /**
-     The stocks of entering material 
-     These are not yet old enough to leave 
+     The stocks of entering material
+     These are not yet old enough to leave
    */
   ResourceBuff in_buffer_;
 
   /**
-     The stocks of entering material 
-     These are not yet old enough to leave 
+     The stocks of entering material
+     These are not yet old enough to leave
    */
   ResourceBuff out_buffer_;
-    
+
   /**
-     The list of orders to process on the Tock 
+     The list of orders to process on the Tock
    */
-  std::deque<cyclus::msg_ptr> ordersWaiting_;
+  std::deque<cyclus::Message::Ptr> ordersWaiting_;
 
   /**
    */
   std::queue<double> enter_times_;
-/* ------------------- */ 
+/* ------------------- */
 
 };
 

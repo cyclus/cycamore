@@ -3,9 +3,9 @@
 
 #include "recipe_reactor.h"
 #include "error.h"
-#include "Message.h"
-#include "FacilityModelTests.h"
-#include "ModelTests.h"
+#include "message.h"
+#include "facility_model_tests.h"
+#include "model_tests.h"
 
 #include <string>
 #include <queue>
@@ -31,12 +31,12 @@ class FakeRecipeReactor : public RecipeReactor {
       IsoVector recipe(test_comp);
       recipe.setMass(test_size);
 
-      setCapacity(2);
+      SetCapacity(2);
       setInventorySize(50);
 
       // initialize ordinary objects
       setFacLife(10);
-      setCapacityFactor(.9);
+      SetCapacityFactor(.9);
 
       // all facilities require commodities - possibly many
       string recipe_name;
@@ -56,7 +56,7 @@ class FakeRecipeReactor : public RecipeReactor {
         in_recipe = recipe;
 
         // get out_recipe
-        out_recipe = recipe; 
+        out_recipe = recipe;
 
         addFuelPair(in_commod, in_recipe, out_commod, out_recipe);
       }
@@ -79,7 +79,7 @@ cyclus::FacilityModel* RecipeReactorConstructor(){
 class RecipeReactorTest : public ::testing::Test {
   protected:
     FakeRecipeReactor* src_facility;
-    FakeRecipeReactor* new_facility; 
+    FakeRecipeReactor* new_facility;
     TestMarket* out_market_;
     TestMarket* in_market_;
 
@@ -100,12 +100,12 @@ class RecipeReactorTest : public ::testing::Test {
 };
 
 
-//- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - 
+//- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 TEST_F(RecipeReactorTest, InitialState) {
   // Test things about the initial state of the facility here
 }
 
-//- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - 
+//- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 TEST_F(RecipeReactorTest, CopyFreshModel) {
   new_facility->copyFreshModel(dynamic_cast<cyclus::Model*>(src_facility)); // deep copy
   EXPECT_NO_THROW(dynamic_cast<RecipeReactor*>(new_facility)); // still a recipe reactor
@@ -113,34 +113,34 @@ TEST_F(RecipeReactorTest, CopyFreshModel) {
   // Test that RecipeReactor specific parameters are initialized in the deep copy method here
 }
 
-//- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - 
+//- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 TEST_F(RecipeReactorTest, Print) {
   EXPECT_NO_THROW(std::string s = src_facility->str());
   // Test RecipeReactor specific aspects of the print method here
 }
 
 
-//- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - 
+//- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 TEST_F(RecipeReactorTest, ReceiveMessage) {
-  cyclus::msg_ptr msg;
-  // Test RecipeReactor specific behaviors of the receiveMessage function here
+  cyclus::Message::Ptr msg;
+  // Test RecipeReactor specific behaviors of the ReceiveMessage function here
 }
 
-//- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - 
+//- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 TEST_F(RecipeReactorTest, Tick) {
   int time = 1;
-  EXPECT_NO_THROW(src_facility->handleTick(time));
-  // Test RecipeReactor specific behaviors of the handleTick function here
+  EXPECT_NO_THROW(src_facility->HandleTick(time));
+  // Test RecipeReactor specific behaviors of the HandleTick function here
 }
 
-//- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - 
+//- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 TEST_F(RecipeReactorTest, Tock) {
   int time = 1;
-  EXPECT_NO_THROW(src_facility->handleTick(time));
-  // Test RecipeReactor specific behaviors of the handleTock function here
+  EXPECT_NO_THROW(src_facility->HandleTick(time));
+  // Test RecipeReactor specific behaviors of the HandleTock function here
 }
 
-//- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - 
+//- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 INSTANTIATE_TEST_CASE_P(RecipeReactor, FacilityModelTests, Values(&RecipeReactorConstructor));
 INSTANTIATE_TEST_CASE_P(RecipeReactor, ModelTests, Values(&RecipeReactorModelConstructor));
 

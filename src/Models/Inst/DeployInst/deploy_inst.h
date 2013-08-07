@@ -2,9 +2,9 @@
 #ifndef _DEPLOYINST_H
 #define _DEPLOYINST_H
 
-#include "InstModel.h"
+#include "inst_model.h"
 
-#include "Prototype.h"
+#include "prototype.h"
 
 #include <utility>
 #include <set>
@@ -28,12 +28,12 @@ class BuildOrderList {
 };
 
 /**
-   @class DeployInst 
-   The DeployInst class inherits from the InstModel 
-   class and is dynamically loaded by the Model class when requested. 
-    
-   This model implements a simple institution model that deploys 
-   specific facilities as defined explicitly in the input file. 
+   @class DeployInst
+   The DeployInst class inherits from the InstModel
+   class and is dynamically loaded by the Model class when requested.
+
+   This model implements a simple institution model that deploys
+   specific facilities as defined explicitly in the input file.
  */
 class DeployInst : public cyclus::InstModel {
 /* --------------------
@@ -42,12 +42,12 @@ class DeployInst : public cyclus::InstModel {
  */
  public:
   /**
-     Default constructor 
+     Default constructor
    */
   DeployInst();
 
   /**
-     Destructor 
+     Destructor
    */
   virtual ~DeployInst();
 
@@ -55,9 +55,9 @@ class DeployInst : public cyclus::InstModel {
      Initialize members related to derived module class
      @param qe a pointer to a cyclus::QueryEngine object containing initialization data
    */
-  virtual void initModuleMembers(cyclus::QueryEngine* qe);
+  virtual void InitModuleMembers(cyclus::QueryEngine* qe);
 
-/* ------------------- */ 
+/* ------------------- */
 
 /* --------------------
  * all INSTMODEL classes have these members
@@ -65,11 +65,11 @@ class DeployInst : public cyclus::InstModel {
  */
  public:
   /**
-     tick handling function for this inst 
+     tick handling function for this inst
    */
-  virtual void handleTick(int time);
-  
-/* ------------------- */ 
+  virtual void HandleTick(int time);
+
+/* ------------------- */
 
 
 /* --------------------
@@ -81,8 +81,8 @@ class DeployInst : public cyclus::InstModel {
      a collection of orders to build
    */
   BuildOrderList build_orders_;
-  
-/* ------------------- */ 
+
+/* ------------------- */
 
 };
 

@@ -1,32 +1,32 @@
 // sw_ue_uf6_converter.cc
 // Implements the SWUeUF6Converter class
 #include <iostream>
-#include "Logger.h"
+#include "logger.h"
 
 #include "sw_ue_uf6_converter.h"
 
 #include "error.h"
-#include "InputXML.h"
-#include "GenericResource.h"
-#include "Material.h"
-#include "IsoVector.h"
+#include "input_xml.h"
+#include "generic_resource.h"
+#include "material.h"
+#include "iso_vector.h"
 
 using namespace std;
 
-//- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -    
+//- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 void SWUeUF6Converter::init(xmlNodePtr cur) {
   cyclus::ConverterModel::init(cur);
-  
+
   // move XML pointer to current model
   cur = XMLinput->get_xpath_element(cur,"model/SWUeUF6Converter");
 
   // all converters require commodities - possibly many
   in_commod_ = XMLinput->get_xpath_content(cur,"incommodity");
-  
+
   out_commod_ = XMLinput->get_xpath_content(cur,"outcommodity");
 }
 
-//- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - 
+//- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 void SWUeUF6Converter::copy(SWUeUF6Converter* src) {
 
   cyclus::ConverterModel::copy(src);
@@ -35,30 +35,30 @@ void SWUeUF6Converter::copy(SWUeUF6Converter* src) {
   out_commod_ = src->out_commod_;
 }
 
-//- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - 
+//- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 void SWUeUF6Converter::copyFreshModel(cyclus::Model* src)
 {
   copy((SWUeUF6Converter*)src);
 }
 
-//- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -    
-std::string SWUeUF6Converter::str() { 
-  std::string s = cyclus::ConverterModel::str(); 
+//- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+std::string SWUeUF6Converter::str() {
+  std::string s = cyclus::ConverterModel::str();
   s += "converts commodity '" + in_commod_;
   s += "' into commodity '" + out_commod_ + "'.";
   return s;
 }
 
-//- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -    
-cyclus::msg_ptr SWUeUF6Converter::convert(cyclus::msg_ptr convMsg, cyclus::msg_ptr refMsg)
+//- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+cyclus::Message::Ptr SWUeUF6Converter::convert(cyclus::Message::Ptr convMsg, cyclus::Message::Ptr refMsg)
 {
   // Figure out what you're converting to and from
   in_commod_ = convMsg->trans().commod();
   out_commod_ = refMsg->trans().commod();
   cyclus::Model* enr;
   cyclus::Model* castEnr;
-  cyclus::msg_ptr toRet;
-  cyclus::mat_rsrc_ptr mat;
+  cyclus::Message::Ptr toRet;
+  cyclus::Material::Ptr mat;
 
   double P;
   double xp;
@@ -100,9 +100,9 @@ cyclus::msg_ptr SWUeUF6Converter::convert(cyclus::msg_ptr convMsg, cyclus::msg_p
       throw cyclus::CycException(err);
     }
   }
-  
+
   // Figure out xp the enrichment of the UF6 object
-  xp = iso_vector.massFraction(922350); 
+  xp = iso_vector.massFraction(922350);
 
   // Figure out xf, the enrichment of the feed material
   // xf = castEnr->getFeedFrac();
@@ -116,30 +116,30 @@ cyclus::msg_ptr SWUeUF6Converter::convert(cyclus::msg_ptr convMsg, cyclus::msg_p
   double term1 = (2 * xp - 1) * log(xp / (1 - xp));
   double term2 = (2 * xw - 1) * log(xw / (1 - xw)) * (xp - xf) / (xf - xw);
   double term3 = (2 * xf - 1) * log(xf / (1 - xf)) * (xp - xw) / (xf - xw);
-    
+
   massProdU = SWUs/(term1 + term2 - term3);
   SWUs = massProdU*(term1 + term2 - term3);
 
   if (out_commod_ == "eUF6"){
-    mat = cyclus::mat_rsrc_ptr(new cyclus::Material(iso_vector));
-    mat->setQuantity(massProdU);
+    mat = cyclus::Material::Ptr(new cyclus::Material(iso_vector));
+    mat->SetQuantity(massProdU);
     toRet = convMsg->clone();
-    toRet->trans().setResource(mat);
+    toRet->trans().SetResource(mat);
   } else if (out_commod_ == "SWUs") {
     toRet = convMsg->clone();
-    cyclus::gen_rsrc_ptr conv_res = cyclus::gen_rsrc_ptr(new cyclus::GenericResource(out_commod_, out_commod_, SWUs));
-    toRet->trans().setResource(conv_res);
+    cyclus::GenericResource::Ptr conv_res = cyclus::GenericResource::Ptr(new cyclus::GenericResource(out_commod_, out_commod_, SWUs));
+    toRet->trans().SetResource(conv_res);
   }
-  
-  toRet->trans().setCommod(out_commod_);
+
+  toRet->trans().SetCommod(out_commod_);
 
   return toRet;
-}    
+}
 
 extern "C" cyclus::Model* constructSWUeUF6Converter() {
     return new SWUeUF6Converter();
 }
 
 
-/* ------------------- */ 
+/* ------------------- */
 
