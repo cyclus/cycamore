@@ -1,1 +1,1 @@
-cyclus_init_model("Inst" "ManagerInst")
+cyclus_init_model("Inst" "ManagerInst" "manager_inst")

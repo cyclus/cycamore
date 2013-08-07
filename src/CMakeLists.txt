@@ -122,7 +122,7 @@ ENDIF()
 
 # Build CycamoreUnitTestDriver
 ADD_EXECUTABLE( CycamoreUnitTestDriver
-  Testing/CycamoreUnitTestDriver.cpp ${TestSource}
+  Testing/cycamore_unit_test_driver.cc ${TestSource}
   ${GENERATED_TEST_SOURCE}
 )
 TARGET_LINK_LIBRARIES( CycamoreUnitTestDriver dl ${CYCAMORE_LIBRARIES} 
