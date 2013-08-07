@@ -3,8 +3,6 @@
 
 #include "sink_facility_tests.h"
 
-using namespace std;
-
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 void SinkFacilityTest::SetUp() {
   initParameters();

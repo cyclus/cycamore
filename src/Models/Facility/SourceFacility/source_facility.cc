@@ -15,8 +15,9 @@
 
 #include <boost/lexical_cast.hpp>
 
-using namespace std;
-using boost::lexical_cast;
+//using boost::lexical_cast;
+
+namespace cycamore {
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 SourceFacility::SourceFacility() :
@@ -251,3 +252,5 @@ extern "C" cyclus::Model* constructSourceFacility() {
 extern "C" void destructSourceFacility(cyclus::Model* model) {
   delete model;
 }
+
+} // namespace cycamore

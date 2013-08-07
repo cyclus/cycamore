@@ -10,6 +10,8 @@
 
 #include <deque>
 
+namespace cycamore {
+
 /**
    @class SourceFacility
    This cyclus::FacilityModel provides a simple source of some capacity
@@ -249,6 +251,6 @@ class SourceFacility : public cyclus::FacilityModel,
   void generateMaterial();
   /* --- */
 };
-
+} // namespace cycamore
 #endif
 

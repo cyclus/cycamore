@@ -3,7 +3,6 @@
 
 #include "source_facility_tests.h"
 
-using namespace std;
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 void SourceFacilityTest::SetUp() {

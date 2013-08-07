@@ -18,9 +18,10 @@
 
 #include <boost/lexical_cast.hpp>
 
-using namespace std;
-using namespace boost;
-using boost::lexical_cast;
+//using namespace boost;
+//using boost::lexical_cast;
+
+namespace cycamore {
 
 int EnrichmentFacility::entry_ = 0;
 
@@ -300,3 +301,4 @@ extern "C" cyclus::Model* constructEnrichmentFacility() {
 extern "C" void destructEnrichmentFacility(cyclus::Model* model) {
   delete model;
 }
+} // namespace cycamore

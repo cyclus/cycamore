@@ -7,8 +7,6 @@
 #include "model.h"
 #include <sstream>
 
-using namespace std;
-
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 void BatchReactorTest::SetUp() {
   // set up model parameters

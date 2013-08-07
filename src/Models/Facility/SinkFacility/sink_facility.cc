@@ -13,8 +13,9 @@
 #include "cyc_limits.h"
 #include "market_model.h"
 
-using namespace std;
-using boost::lexical_cast;
+//using boost::lexical_cast;
+
+namespace cycamore {
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 SinkFacility::SinkFacility() :
@@ -199,3 +200,5 @@ extern "C" cyclus::Model* constructSinkFacility() {
 extern "C" void destructSinkFacility(cyclus::Model* model) {
   delete model;
 }
+
+} // namespace cycamore

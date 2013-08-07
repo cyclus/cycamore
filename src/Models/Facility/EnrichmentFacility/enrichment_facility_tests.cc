@@ -11,8 +11,6 @@
 
 #include <sstream>
 
-using namespace std;
-
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 void EnrichmentFacilityTest::SetUp() {
   src_facility = new EnrichmentFacility();

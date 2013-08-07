@@ -14,8 +14,9 @@
 #include "cyc_limits.h"
 #include "error.h"
 
-using namespace std;
-using boost::lexical_cast;
+//using boost::lexical_cast;
+
+namespace cycamore {
 
 // static members
 map<Phase, string> BatchReactor::phase_names_ = map<Phase, string>();
@@ -581,3 +582,5 @@ extern "C" cyclus::Model* constructBatchReactor() {
 extern "C" void destructBatchReactor(cyclus::Model* model) {
   delete model;
 }
+
+} // namespace cycamore
