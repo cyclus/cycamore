@@ -1,1 +1,1 @@
-cyclus_init_model("Region" "NullRegion")
+cyclus_init_model("Region" "NullRegion" "null_region")
