@@ -243,7 +243,7 @@ class RecipeReactor : public cyclus::FacilityModel  {
   /**
      return the inventory size
    */
-  double inventorySize();
+  double InventorySize();
 
   /**
      set the inventory size
@@ -389,7 +389,7 @@ class RecipeReactor : public cyclus::FacilityModel  {
   /**
      make offers
    */
-  void makeOffers();
+  void MakeOffers();
 
   /**
      send messages up through the institution
@@ -397,7 +397,7 @@ class RecipeReactor : public cyclus::FacilityModel  {
      @param recipient the final recipient
      @param trans the transaction to send
    */
-  void sendMessage(Communicator* recipient, cyclus::Transaction trans);
+  void SendMessage(Communicator* recipient, cyclus::Transaction trans);
 
   /**
      The recipe_reactor.has a limit to how material it can process.

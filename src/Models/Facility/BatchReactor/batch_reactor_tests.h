@@ -31,6 +31,6 @@ class BatchReactorTest : public ::testing::Test {
 
   virtual void SetUp();
   virtual void TearDown();
-  void initSrcFacility();
-  void initWorld();
+  void InitSrcFacility();
+  void InitWorld();
 };

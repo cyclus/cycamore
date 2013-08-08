@@ -27,6 +27,6 @@ class SourceFacilityTest : public ::testing::Test {
 
   virtual void SetUp();
   virtual void TearDown();
-  void initParameters();
-  void setUpSourceFacility();
+  void InitParameters();
+  void SetUpSourceFacility();
 };

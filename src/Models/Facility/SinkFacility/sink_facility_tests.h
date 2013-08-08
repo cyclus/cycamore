@@ -28,6 +28,6 @@ class SinkFacilityTest : public ::testing::Test {
 
   virtual void SetUp();
   virtual void TearDown();
-  void initParameters();
-  void setUpSinkFacility();
+  void InitParameters();
+  void SetUpSinkFacility();
 };

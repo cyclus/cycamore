@@ -6,8 +6,8 @@
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 void SourceFacilityTest::SetUp() {
-  initParameters();
-  setUpSourceFacility();
+  InitParameters();
+  SetUpSourceFacility();
 }
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -17,7 +17,7 @@ void SourceFacilityTest::TearDown() {
 }
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-void SourceFacilityTest::initParameters() {
+void SourceFacilityTest::InitParameters() {
   commod_ = "commod";
   recipe_name_ = "recipe";
   recipe_ = cyclus::CompMapPtr(new cyclus::CompMap(cyclus::ATOM));
@@ -28,16 +28,16 @@ void SourceFacilityTest::initParameters() {
 }
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-void SourceFacilityTest::setUpSourceFacility() {
+void SourceFacilityTest::SetUpSourceFacility() {
   src_facility = new cycamore::SourceFacility();
   src_facility->SetCommodity(commod_);
-  src_facility->setRecipe(recipe_name_);
+  src_facility->SetRecipe(recipe_name_);
 }
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 TEST_F(SourceFacilityTest, InitialState) {
   int time = 1;
-  EXPECT_DOUBLE_EQ(0.0, src_facility->inventorySize());
+  EXPECT_DOUBLE_EQ(0.0, src_facility->InventorySize());
 }
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -47,7 +47,7 @@ TEST_F(SourceFacilityTest, clone) {
 
   EXPECT_EQ(src_facility->commodity(), cloned_fac->commodity());
   EXPECT_EQ(src_facility->capacity(), cloned_fac->capacity());
-  EXPECT_EQ(src_facility->maxInventorySize(), cloned_fac->maxInventorySize());
+  EXPECT_EQ(src_facility->MaxInventorySize(), cloned_fac->MaxInventorySize());
   EXPECT_EQ(src_facility->recipe(), cloned_fac->recipe());
 
   delete cloned_fac;
@@ -68,16 +68,16 @@ TEST_F(SourceFacilityTest, ReceiveMessage) {
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 TEST_F(SourceFacilityTest, Tick) {
   int time = 1;
-  ASSERT_DOUBLE_EQ(0.0, src_facility->inventorySize());
+  ASSERT_DOUBLE_EQ(0.0, src_facility->InventorySize());
   ASSERT_NO_THROW(src_facility->HandleTick(time));
-  EXPECT_LT(0.0, src_facility->inventorySize());
-  EXPECT_LE(src_facility->capacity(), src_facility->inventorySize());
+  EXPECT_LT(0.0, src_facility->InventorySize());
+  EXPECT_LE(src_facility->capacity(), src_facility->InventorySize());
 }
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 TEST_F(SourceFacilityTest, Tock) {
   int time = 1;
-  EXPECT_DOUBLE_EQ(0.0, src_facility->inventorySize());
+  EXPECT_DOUBLE_EQ(0.0, src_facility->InventorySize());
   EXPECT_NO_THROW(src_facility->HandleTock(time));
 }
 

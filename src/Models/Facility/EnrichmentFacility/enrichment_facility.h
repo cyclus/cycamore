@@ -93,7 +93,7 @@ class EnrichmentFacility : public cyclus::FacilityModel {
   /* --- */
 
   /* --- EnrichmentFacility Methods --- */
-  cyclus::enrichment::Assays getAssays(cyclus::Material::Ptr mat);
+  cyclus::enrichment::Assays GetAssays(cyclus::Material::Ptr mat);
 
   inline void set_in_commodity(std::string in_commod) {
     in_commodity_ = in_commod;
@@ -119,11 +119,11 @@ class EnrichmentFacility : public cyclus::FacilityModel {
     return in_recipe_;
   }
 
-  inline void setMaxInventorySize(double size) {
+  inline void SetMaxInventorySize(double size) {
     inventory_.SetCapacity(size);
   }
 
-  inline double maxInventorySize() {
+  inline double MaxInventorySize() {
     return inventory_.capacity();
   }
 
@@ -161,29 +161,29 @@ class EnrichmentFacility : public cyclus::FacilityModel {
   /**
      sends a transaction as an offer
    */
-  void sendOffer(cyclus::Transaction trans);
+  void SendOffer(cyclus::Transaction trans);
 
   /**
    */
-  void makeRequest();
+  void MakeRequest();
 
   /**
    */
-  void makeOffer();
+  void MakeOffer();
 
   /**
    */
-  cyclus::Transaction buildTransaction();
+  cyclus::Transaction BuildTransaction();
   /* --- */
 
   /* --- EnrichmentFacility Members and Methods --- */
   /**
    */
-  void processOutgoingMaterial();
+  void ProcessOutgoingMaterial();
 
   /**
    */
-  void recordEnrichment(double natural_u, double swu);
+  void RecordEnrichment(double natural_u, double swu);
 
   std::string in_commodity_;
 

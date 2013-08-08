@@ -60,7 +60,7 @@ void StorageFacility::ReceiveMessage(cyclus::Message::Ptr msg) {
 }
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-Transaction StorageFacility::buildTransaction() {
+Transaction StorageFacility::BuildTransaction() {
   // there is no minimum amount a source facility may send
   double min_amt = 0;
   double offer_amt = out_buffer_.quantity();
@@ -79,7 +79,7 @@ Transaction StorageFacility::buildTransaction() {
 }
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-void StorageFacility::sendOffer(cyclus::Transaction trans) {
+void StorageFacility::SendOffer(cyclus::Transaction trans) {
   cyclus::MarketModel* market = cyclus::MarketModel::MarketForCommod(out_commod_);
 
   Communicator* recipient = dynamic_cast<Communicator*>(market);

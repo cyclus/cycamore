@@ -115,12 +115,12 @@ class StorageFacility : public cyclus::FacilityModel {
   /**
      builds a transaction
    */
-  cyclus::Transaction buildTransaction();
+  cyclus::Transaction BuildTransaction();
 
   /**
      sends a transaction as an offer
    */
-  void sendOffer(cyclus::Transaction trans);
+  void SendOffer(cyclus::Transaction trans);
   /* --- */
 
   /* --- StorageFacility Methods --- */

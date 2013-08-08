@@ -179,7 +179,7 @@ class SourceFacility : public cyclus::FacilityModel,
      sets the name of the recipe to be produced
      @param name the recipe name
    */
-  void setRecipe(std::string name);
+  void SetRecipe(std::string name);
 
   /// @return the name of the output recipe
   std::string recipe();
@@ -188,13 +188,13 @@ class SourceFacility : public cyclus::FacilityModel,
      sets the size of the storage inventory for produced material
      @param size the storage size
    */
-  void setMaxInventorySize(double size);
+  void SetMaxInventorySize(double size);
 
   /// @return the maximum inventory storage size
-  double maxInventorySize();
+  double MaxInventorySize();
 
   /// @return the current inventory storage size
-  double inventorySize();
+  double InventorySize();
   /* --- */
 
  protected:
@@ -202,12 +202,12 @@ class SourceFacility : public cyclus::FacilityModel,
   /**
      builds a transaction
    */
-  cyclus::Transaction buildTransaction();
+  cyclus::Transaction BuildTransaction();
 
   /**
      sends a transaction as an offer
    */
-  void sendOffer(cyclus::Transaction trans);
+  void SendOffer(cyclus::Transaction trans);
   /* --- */
 
   /* --- SourceFacility Members and Methods --- */
@@ -248,7 +248,7 @@ class SourceFacility : public cyclus::FacilityModel,
   /**
      generates a material
    */
-  void generateMaterial();
+  void GenerateMaterial();
   /* --- */
 };
 } // namespace cycamore

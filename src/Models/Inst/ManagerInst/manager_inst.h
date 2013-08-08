@@ -55,7 +55,7 @@ class ManagerInst : public cyclus::InstModel,
      write information about a commodity producer to a stream
      @param producer the producer
    */
-  void writeProducerInformation(cyclus::supply_demand::CommodityProducer*
+  void WriteProducerInformation(cyclus::supply_demand::CommodityProducer*
                                 producer);
 };
 } // namespace cycamore 
