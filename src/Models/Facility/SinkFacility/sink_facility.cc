@@ -13,8 +13,6 @@
 #include "cyc_limits.h"
 #include "market_model.h"
 
-//using boost::lexical_cast;
-
 namespace cycamore {
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -

@@ -14,8 +14,6 @@
 #include "cyc_limits.h"
 #include "error.h"
 
-//using boost::lexical_cast;
-
 namespace cycamore {
 
 // static members
