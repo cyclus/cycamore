@@ -15,10 +15,10 @@ void BuildOrderList::addBuildOrder(cyclus::Prototype* p, int number,
 
   if (it == all_orders_.end()) {
     set<BuildOrder> orders;
-    orders.insert(make_pair(p,number));
-    all_orders_.insert(make_pair(time,orders));
+    orders.insert(make_pair(p, number));
+    all_orders_.insert(make_pair(time, orders));
   } else {
-    it->second.insert(make_pair(p,number));
+    it->second.insert(make_pair(p, number));
   }
 
 }
@@ -47,12 +47,12 @@ void DeployInst::InitModuleMembers(cyclus::QueryEngine* qe) {
   int nOrders = qe->NElementsMatchingQuery(query);
 
   for (int i = 0; i < nOrders; i++) {
-    cyclus::QueryEngine* order = qe->QueryElement(query,i);
+    cyclus::QueryEngine* order = qe->QueryElement(query, i);
     string name = order->GetElementContent("prototype");
     int number = atoi(order->GetElementContent("number").c_str());
     int time = atoi(order->GetElementContent("date").c_str());
     build_orders_.addBuildOrder(cyclus::Prototype::GetRegisteredPrototype(name),
-                                number,time);
+                                number, time);
   }
 
 }

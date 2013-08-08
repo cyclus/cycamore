@@ -10,10 +10,10 @@ using namespace std;
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 class NullInstTest : public ::testing::Test {
-protected:
+ protected:
   NullInst* src_inst;
 
-  virtual void SetUp(){
+  virtual void SetUp() {
     src_inst = new NullInst();
   }
 
@@ -23,16 +23,17 @@ protected:
 };
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-cyclus::Model* NullInstModelConstructor(){
+cyclus::Model* NullInstModelConstructor() {
   return dynamic_cast<cyclus::Model*>(new NullInst());
 }
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-cyclus::InstModel* NullInstConstructor(){
+cyclus::InstModel* NullInstConstructor() {
   return dynamic_cast<cyclus::InstModel*>(new NullInst());
 }
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 INSTANTIATE_TEST_CASE_P(NullInst, InstModelTests, Values(&NullInstConstructor));
-INSTANTIATE_TEST_CASE_P(NullInst, ModelTests, Values(&NullInstModelConstructor));
+INSTANTIATE_TEST_CASE_P(NullInst, ModelTests,
+                        Values(&NullInstModelConstructor));
 

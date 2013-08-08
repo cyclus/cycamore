@@ -14,8 +14,7 @@
 using namespace std;
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-void EnrichmentFacilityTest::SetUp()
-{
+void EnrichmentFacilityTest::SetUp() {
   src_facility = new EnrichmentFacility();
 
   initParameters();
@@ -23,16 +22,14 @@ void EnrichmentFacilityTest::SetUp()
 }
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-void EnrichmentFacilityTest::TearDown()
-{
+void EnrichmentFacilityTest::TearDown() {
   delete src_facility;
   delete out_commod_market;
   delete in_commod_market;
 }
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-void EnrichmentFacilityTest::initParameters()
-{
+void EnrichmentFacilityTest::initParameters() {
   in_commod = "incommod";
   in_commod_market = new TestMarket();
   in_commod_market->SetCommodity(in_commod);
@@ -47,8 +44,8 @@ void EnrichmentFacilityTest::initParameters()
   feed_assay = 0.0072;
   recipe = cyclus::CompMapPtr(new cyclus::CompMap(cyclus::ATOM));
   (*recipe)[92235] = feed_assay;
-  (*recipe)[92238] = 1-feed_assay;
-  cyclus::RecipeLibrary::RecordRecipe(in_recipe,recipe);
+  (*recipe)[92238] = 1 - feed_assay;
+  cyclus::RecipeLibrary::RecordRecipe(in_recipe, recipe);
 
   tails_assay = 0.002;
   inv_size = 5;
@@ -56,12 +53,11 @@ void EnrichmentFacilityTest::initParameters()
 }
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-void EnrichmentFacilityTest::initFacility()
-{
+void EnrichmentFacilityTest::initFacility() {
   stringstream ss("");
   ss << "<start>"
      << "  <input>"
-     <<	"    <incommodity>" << in_commod << "</incommodity>"
+     << "    <incommodity>" << in_commod << "</incommodity>"
      << "    <inrecipe>" << in_recipe << "</inrecipe>"
      << "    <inventorysize>" << inv_size << "</inventorysize>"
      << "  </input>"
@@ -80,46 +76,44 @@ void EnrichmentFacilityTest::initFacility()
 }
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-TEST_F(EnrichmentFacilityTest,init)
-{
-  EXPECT_EQ(in_recipe,src_facility->in_recipe());
-  EXPECT_EQ(in_commod,src_facility->in_commodity());
-  EXPECT_EQ(out_commod,src_facility->out_commodity());
-  EXPECT_DOUBLE_EQ(tails_assay,src_facility->tails_assay());
-  EXPECT_DOUBLE_EQ(feed_assay,src_facility->feed_assay());
-  EXPECT_DOUBLE_EQ(inv_size,src_facility->maxInventorySize());
-  EXPECT_DOUBLE_EQ(commodity_price,src_facility->commodity_price());
+TEST_F(EnrichmentFacilityTest, init) {
+  EXPECT_EQ(in_recipe, src_facility->in_recipe());
+  EXPECT_EQ(in_commod, src_facility->in_commodity());
+  EXPECT_EQ(out_commod, src_facility->out_commodity());
+  EXPECT_DOUBLE_EQ(tails_assay, src_facility->tails_assay());
+  EXPECT_DOUBLE_EQ(feed_assay, src_facility->feed_assay());
+  EXPECT_DOUBLE_EQ(inv_size, src_facility->maxInventorySize());
+  EXPECT_DOUBLE_EQ(commodity_price, src_facility->commodity_price());
 }
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-TEST_F(EnrichmentFacilityTest,clone)
-{
+TEST_F(EnrichmentFacilityTest, clone) {
   EnrichmentFacility* cloned_fac = new EnrichmentFacility();
   cloned_fac->CloneModuleMembersFrom(src_facility);
 
-  EXPECT_EQ(in_recipe,cloned_fac->in_recipe());
-  EXPECT_EQ(in_commod,cloned_fac->in_commodity());
-  EXPECT_EQ(out_commod,cloned_fac->out_commodity());
-  EXPECT_DOUBLE_EQ(tails_assay,cloned_fac->tails_assay());
-  EXPECT_DOUBLE_EQ(feed_assay,cloned_fac->feed_assay());
-  EXPECT_DOUBLE_EQ(inv_size,cloned_fac->maxInventorySize());
-  EXPECT_DOUBLE_EQ(commodity_price,cloned_fac->commodity_price());
+  EXPECT_EQ(in_recipe, cloned_fac->in_recipe());
+  EXPECT_EQ(in_commod, cloned_fac->in_commodity());
+  EXPECT_EQ(out_commod, cloned_fac->out_commodity());
+  EXPECT_DOUBLE_EQ(tails_assay, cloned_fac->tails_assay());
+  EXPECT_DOUBLE_EQ(feed_assay, cloned_fac->feed_assay());
+  EXPECT_DOUBLE_EQ(inv_size, cloned_fac->maxInventorySize());
+  EXPECT_DOUBLE_EQ(commodity_price, cloned_fac->commodity_price());
 
   delete cloned_fac;
 }
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-cyclus::Model* EnrichmentFacilityModelConstructor()
-{
+cyclus::Model* EnrichmentFacilityModelConstructor() {
   return dynamic_cast<cyclus::Model*>(new EnrichmentFacility());
 }
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-cyclus::FacilityModel* EnrichmentFacilityConstructor()
-{
+cyclus::FacilityModel* EnrichmentFacilityConstructor() {
   return dynamic_cast<cyclus::FacilityModel*>(new EnrichmentFacility());
 }
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-INSTANTIATE_TEST_CASE_P(EnrichmentFac, FacilityModelTests, Values(&EnrichmentFacilityConstructor));
-INSTANTIATE_TEST_CASE_P(EnrichmentFac, ModelTests, Values(&EnrichmentFacilityModelConstructor));
+INSTANTIATE_TEST_CASE_P(EnrichmentFac, FacilityModelTests,
+                        Values(&EnrichmentFacilityConstructor));
+INSTANTIATE_TEST_CASE_P(EnrichmentFac, ModelTests,
+                        Values(&EnrichmentFacilityModelConstructor));

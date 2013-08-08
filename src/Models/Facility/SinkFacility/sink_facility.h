@@ -133,7 +133,7 @@ class SinkFacility : public cyclus::FacilityModel  {
      @param manifest is the set of resources being received
    */
   virtual void AddResource(cyclus::Transaction trans,
-                              std::vector<cyclus::Resource::Ptr> manifest);
+                           std::vector<cyclus::Resource::Ptr> manifest);
 
   /**
      The sink Facility doesn't need to do anything if it gets a message.

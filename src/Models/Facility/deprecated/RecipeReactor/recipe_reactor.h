@@ -112,10 +112,10 @@ typedef std::pair< std::string, cyclus::Material::Ptr> Fuel;
 typedef std::pair< std::string, IsoVector> Recipe;
 
 class RecipeReactor : public cyclus::FacilityModel  {
-/* --------------------
- * all MODEL classes have these members
- * --------------------
- */
+  /* --------------------
+   * all MODEL classes have these members
+   * --------------------
+   */
  public:
   /**
      Constructor for the RecipeReactor class.
@@ -154,26 +154,26 @@ class RecipeReactor : public cyclus::FacilityModel  {
    */
   virtual std::string str();
 
-/* ------------------- */
+  /* ------------------- */
 
 
-/* --------------------
- * all COMMUNICATOR classes have these members
- * --------------------
- */
+  /* --------------------
+   * all COMMUNICATOR classes have these members
+   * --------------------
+   */
  public:
   /**
      When the facility receives a message, execute any transaction
    */
   virtual void ReceiveMessage(cyclus::Message::Ptr msg);
 
-/* ------------------- */
+  /* ------------------- */
 
 
-/* --------------------
- * _THIS_ MODEL class has these members
- * --------------------
- */
+  /* --------------------
+   * _THIS_ MODEL class has these members
+   * --------------------
+   */
   /**
      Transacted resources are extracted through this method
 
@@ -181,7 +181,8 @@ class RecipeReactor : public cyclus::FacilityModel  {
      @return list of resources to be sent for this order
 
    */
-  virtual std::vector<cyclus::Resource::Ptr> RemoveResource(cyclus::Transaction order);
+  virtual std::vector<cyclus::Resource::Ptr> RemoveResource(
+    cyclus::Transaction order);
 
   /**
      Transacted resources are received through this method
@@ -190,7 +191,7 @@ class RecipeReactor : public cyclus::FacilityModel  {
      @param manifest is the set of resources being received
    */
   virtual void AddResource(cyclus::Transaction trans,
-			   std::vector<cyclus::Resource::Ptr> manifest);
+                           std::vector<cyclus::Resource::Ptr> manifest);
 
   /**
      The HandleTick function specific to the RecipeReactor.
@@ -215,7 +216,9 @@ class RecipeReactor : public cyclus::FacilityModel  {
   /**
      The RecipeReactor reports a power capacity of its capacity factor
    */
-  double powerCapacity(){ return CF_*capacity_;};
+  double powerCapacity() {
+    return CF_ * capacity_;
+  };
 
   /**
      return the cycle length
@@ -296,7 +299,7 @@ class RecipeReactor : public cyclus::FacilityModel  {
      @param outFuel the isotopics of the output fuel
    */
   void addFuelPair(std::string incommod, IsoVector inFuel,
-		   std::string outcommod, IsoVector outFuel);
+                   std::string outcommod, IsoVector outFuel);
 
   /**
      return the input commodity
@@ -467,7 +470,7 @@ class RecipeReactor : public cyclus::FacilityModel  {
    */
   double CF_;
 
-/* ------------------- */
+  /* ------------------- */
 
 };
 

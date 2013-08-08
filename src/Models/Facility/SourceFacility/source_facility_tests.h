@@ -8,18 +8,18 @@
 #include "test_market.h"
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-cyclus::Model* SourceFacilityModelConstructor(){
+cyclus::Model* SourceFacilityModelConstructor() {
   return dynamic_cast<cyclus::Model*>(new SourceFacility());
 }
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-cyclus::FacilityModel* SourceFacilityConstructor(){
+cyclus::FacilityModel* SourceFacilityConstructor() {
   return dynamic_cast<cyclus::FacilityModel*>(new SourceFacility());
 }
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 class SourceFacilityTest : public ::testing::Test {
-protected:
+ protected:
   SourceFacility* src_facility;
   TestMarket* commod_market;
   std::string commod_, recipe_name_;

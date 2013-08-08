@@ -33,33 +33,28 @@ StorageFacility::StorageFacility() :
   out_commod_(""),
   in_commod_(""),
   residence_time_(0),
-  offer_price_(0.0)
-{
+  offer_price_(0.0) {
   out_buffer_.SetCapacity(kBuffInfinity);
   in_buffer_.SetCapacity(kBuffInfinity);
 }
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-StorageFacility::~StorageFacility()
-{
+StorageFacility::~StorageFacility() {
 }
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-std::string StorageFacility::str()
-{
+std::string StorageFacility::str() {
   std::stringstream ss("");
   return ss.str();
 }
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-void StorageFacility::ReceiveMessage(cyclus::Message::Ptr msg)
-{
+void StorageFacility::ReceiveMessage(cyclus::Message::Ptr msg) {
   // is this a message from on high?
-  if(msg->trans().supplier()==this){
+  if (msg->trans().supplier() == this) {
     // file the order
     ordersWaiting_.push_front(msg);
-  }
-  else {
+  } else {
     throw cyclus::CycException("StorageFacility is not the supplier of this msg.");
   }
 }
@@ -71,11 +66,12 @@ Transaction StorageFacility::buildTransaction() {
   double offer_amt = out_buffer_.quantity();
 
   cyclus::GenericResource::Ptr offer_res =
-    cyclus::GenericResource::Ptr(new cyclus::GenericResource(out_commod_,"kg",offer_amt));
+    cyclus::GenericResource::Ptr(new cyclus::GenericResource(out_commod_, "kg",
+                                                             offer_amt));
 
   cyclus::Transaction trans(this, cyclus::OFFER);
   trans.SetCommod(out_commod_);
-  trans.SetMinFrac(min_amt/offer_amt);
+  trans.SetMinFrac(min_amt / offer_amt);
   trans.SetPrice(offer_price_);
   trans.SetResource(offer_res);
 
@@ -93,8 +89,7 @@ void StorageFacility::sendOffer(cyclus::Transaction trans) {
 }
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-void StorageFacility::HandleTick(int time)
-{
+void StorageFacility::HandleTick(int time) {
 }
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -104,5 +99,5 @@ extern "C" cyclus::Model* constructStorageFacility() {
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 extern "C" void destructStorageFacility(cyclus::Model* model) {
-      delete model;
+  delete model;
 }

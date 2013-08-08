@@ -12,25 +12,25 @@ using namespace std;
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 class StubInstTest : public ::testing::Test {
-  protected:
-    StubInst* src_inst;
+ protected:
+  StubInst* src_inst;
 
-    virtual void SetUp(){
-      src_inst = new StubInst();
-    };
+  virtual void SetUp() {
+    src_inst = new StubInst();
+  };
 
-    virtual void TearDown() {
-      delete src_inst;
-    }
+  virtual void TearDown() {
+    delete src_inst;
+  }
 };
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-cyclus::Model* StubInstModelConstructor(){
+cyclus::Model* StubInstModelConstructor() {
   return dynamic_cast<cyclus::Model*>(new StubInst());
 }
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-cyclus::InstModel* StubInstConstructor(){
+cyclus::InstModel* StubInstConstructor() {
   return dynamic_cast<cyclus::InstModel*>(new StubInst());
 }
 
@@ -68,5 +68,6 @@ TEST_F(StubInstTest, Tock) {
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 INSTANTIATE_TEST_CASE_P(StubInst, InstModelTests, Values(&StubInstConstructor));
-INSTANTIATE_TEST_CASE_P(StubInst, ModelTests, Values(&StubInstModelConstructor));
+INSTANTIATE_TEST_CASE_P(StubInst, ModelTests,
+                        Values(&StubInstModelConstructor));
 

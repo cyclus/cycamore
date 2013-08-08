@@ -10,7 +10,7 @@
 #include <set>
 #include <map>
 
-typedef std::pair<cyclus::Prototype*,int> BuildOrder;
+typedef std::pair<cyclus::Prototype*, int> BuildOrder;
 
 /**
    a helper class for storing and extracting build orders
@@ -36,10 +36,10 @@ class BuildOrderList {
    specific facilities as defined explicitly in the input file.
  */
 class DeployInst : public cyclus::InstModel {
-/* --------------------
- * all MODEL classes have these members
- * --------------------
- */
+  /* --------------------
+   * all MODEL classes have these members
+   * --------------------
+   */
  public:
   /**
      Default constructor
@@ -57,32 +57,32 @@ class DeployInst : public cyclus::InstModel {
    */
   virtual void InitModuleMembers(cyclus::QueryEngine* qe);
 
-/* ------------------- */
+  /* ------------------- */
 
-/* --------------------
- * all INSTMODEL classes have these members
- * --------------------
- */
+  /* --------------------
+   * all INSTMODEL classes have these members
+   * --------------------
+   */
  public:
   /**
      tick handling function for this inst
    */
   virtual void HandleTick(int time);
 
-/* ------------------- */
+  /* ------------------- */
 
 
-/* --------------------
- * This INSTMODEL classes have these members
- * --------------------
- */
+  /* --------------------
+   * This INSTMODEL classes have these members
+   * --------------------
+   */
  protected:
   /**
      a collection of orders to build
    */
   BuildOrderList build_orders_;
 
-/* ------------------- */
+  /* ------------------- */
 
 };
 

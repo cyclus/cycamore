@@ -39,8 +39,7 @@ class cyclus::QueryEngine;
    upon sending and receiving materials and messages.
 
  */
-class StorageFacility : public cyclus::FacilityModel
-{
+class StorageFacility : public cyclus::FacilityModel {
  public:
   /* --- Module Methods --- */
   /**
@@ -95,7 +94,8 @@ class StorageFacility : public cyclus::FacilityModel
      @return list of resources to be sent for this order
 
    */
-  virtual std::vector<cyclus::Resource::Ptr> RemoveResource(cyclus::Transaction order);
+  virtual std::vector<cyclus::Resource::Ptr> RemoveResource(
+    cyclus::Transaction order);
 
   /**
      Transacted resources are received through this method
@@ -104,7 +104,7 @@ class StorageFacility : public cyclus::FacilityModel
      @param manifest is the set of resources being received
    */
   virtual void AddResource(cyclus::Transaction trans,
-			   std::vector<cyclus::Resource::Ptr> manifest);
+                           std::vector<cyclus::Resource::Ptr> manifest);
 
   /**
      When the facility receives a message, execute any transaction
@@ -198,7 +198,7 @@ class StorageFacility : public cyclus::FacilityModel
   /**
    */
   std::queue<double> enter_times_;
-/* ------------------- */
+  /* ------------------- */
 
 };
 

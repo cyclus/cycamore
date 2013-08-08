@@ -16,8 +16,7 @@
 */
 class ManagerInst : public cyclus::InstModel,
   public cyclus::supply_demand::CommodityProducerManager,
-  public cyclus::action_building::Builder
-{
+  public cyclus::action_building::Builder {
  public:
   /**
      Default constructor
@@ -54,7 +53,8 @@ class ManagerInst : public cyclus::InstModel,
      write information about a commodity producer to a stream
      @param producer the producer
    */
-  void writeProducerInformation(cyclus::supply_demand::CommodityProducer* producer);
+  void writeProducerInformation(cyclus::supply_demand::CommodityProducer*
+                                producer);
 };
 
 #endif

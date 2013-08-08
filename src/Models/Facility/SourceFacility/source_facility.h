@@ -86,8 +86,7 @@
  */
 
 class SourceFacility : public cyclus::FacilityModel,
-  public cyclus::supply_demand::CommodityProducer
-{
+  public cyclus::supply_demand::CommodityProducer {
  public:
   /* --- Module Methods --- */
   /**
@@ -151,7 +150,8 @@ class SourceFacility : public cyclus::FacilityModel,
      @return list of resources to be sent for this order
 
    */
-  virtual std::vector<cyclus::Resource::Ptr> RemoveResource(cyclus::Transaction order);
+  virtual std::vector<cyclus::Resource::Ptr> RemoveResource(
+    cyclus::Transaction order);
   /* --- */
 
   /* --- SourceFacility Methods --- */

@@ -16,8 +16,7 @@
 
    @section introduction Introduction
  */
-class EnrichmentFacility : public cyclus::FacilityModel
-{
+class EnrichmentFacility : public cyclus::FacilityModel {
  public:
   /* --- Module Methods --- */
   /**
@@ -79,7 +78,8 @@ class EnrichmentFacility : public cyclus::FacilityModel
      @param order the msg/order for which resource(s) are to be prepared
      @return list of resources to be sent for this order
    */
-  virtual std::vector<cyclus::Resource::Ptr> RemoveResource(cyclus::Transaction order);
+  virtual std::vector<cyclus::Resource::Ptr> RemoveResource(
+    cyclus::Transaction order);
 
   /**
      Transacted resources are received through this method
@@ -93,78 +93,63 @@ class EnrichmentFacility : public cyclus::FacilityModel
   /* --- EnrichmentFacility Methods --- */
   cyclus::enrichment::Assays getAssays(cyclus::Material::Ptr mat);
 
-  inline void set_in_commodity(std::string in_commod)
-  {
+  inline void set_in_commodity(std::string in_commod) {
     in_commodity_ = in_commod;
   }
 
-  inline std::string in_commodity()
-  {
+  inline std::string in_commodity() {
     return in_commodity_;
   }
 
-  inline void set_out_commodity(std::string out_commod)
-  {
+  inline void set_out_commodity(std::string out_commod) {
     out_commodity_ = out_commod;
   }
 
-  inline std::string out_commodity()
-  {
+  inline std::string out_commodity() {
     return out_commodity_;
   }
 
-  inline void set_in_recipe(std::string in_recipe)
-  {
+  inline void set_in_recipe(std::string in_recipe) {
     in_recipe_ = in_recipe;
   }
 
-  inline std::string in_recipe()
-  {
+  inline std::string in_recipe() {
     return in_recipe_;
   }
 
-  inline void setMaxInventorySize(double size)
-  {
+  inline void setMaxInventorySize(double size) {
     inventory_.SetCapacity(size);
   }
 
-  inline double maxInventorySize()
-  {
+  inline double maxInventorySize() {
     return inventory_.capacity();
   }
 
-  inline double inventoryQty()
-  {
+  inline double inventoryQty() {
     return inventory_.quantity();
   }
 
-  inline void set_feed_assay(double assay)
-  {
+  inline void set_feed_assay(double assay) {
     feed_assay_ = assay;
   }
 
-  inline double feed_assay()
-  {
+  inline double feed_assay() {
     return feed_assay_;
   }
 
-  inline void set_tails_assay(double assay)
-  {
+  inline void set_tails_assay(double assay) {
     tails_assay_ = assay;
   }
 
-  inline double tails_assay()
-  {
+  inline double tails_assay() {
     return tails_assay_;
   }
 
-  inline void set_commodity_price(double price)
-  {
+  inline void set_commodity_price(double price) {
     commodity_price_ = price;
   }
 
-  inline double commodity_price()
-  {
+  inline double commodity_price() {
     return commodity_price_;
   }
   /* --- */

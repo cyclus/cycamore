@@ -44,24 +44,19 @@ void SourceFacility::InitModuleMembers(cyclus::QueryEngine* qe) {
   cyclus::supply_demand::CommodityProducer::AddCommodity(commod);
 
   double val = numeric_limits<double>::max();
-  try
-  {
+  try {
     data = output->GetElementContent("output_capacity");
     val = lexical_cast<double>(data); // overwrite default if given a value
-  }
-  catch (cyclus::Error e) {}
+  } catch (cyclus::Error e) {}
   cyclus::supply_demand::CommodityProducer::SetCapacity(commod, val);
   SetCapacity(val);
 
-  try
-    {
-      data = output->GetElementContent("inventorysize");
-      setMaxInventorySize(lexical_cast<double>(data));
-    }
-  catch (cyclus::Error e)
-    {
-      setMaxInventorySize(numeric_limits<double>::max());
-    }
+  try {
+    data = output->GetElementContent("inventorysize");
+    setMaxInventorySize(lexical_cast<double>(data));
+  } catch (cyclus::Error e) {
+    setMaxInventorySize(numeric_limits<double>::max());
+  }
 }
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -77,7 +72,8 @@ std::string SourceFacility::str() {
 }
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-void SourceFacility::CloneModuleMembersFrom(cyclus::FacilityModel* sourceModel) {
+void SourceFacility::CloneModuleMembersFrom(cyclus::FacilityModel*
+                                            sourceModel) {
   SourceFacility* source = dynamic_cast<SourceFacility*>(sourceModel);
   SetCommodity(source->commodity());
   SetCapacity(source->capacity());
@@ -87,14 +83,15 @@ void SourceFacility::CloneModuleMembersFrom(cyclus::FacilityModel* sourceModel) 
 }
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-void SourceFacility::HandleTick(int time){
+void SourceFacility::HandleTick(int time) {
   LOG(cyclus::LEV_INFO3, "SrcFac") << FacName() << " is ticking {";
 
   generateMaterial();
   cyclus::Transaction trans = buildTransaction();
 
-  LOG(cyclus::LEV_INFO4, "SrcFac") << "offers "<< trans.resource()->quantity() << " kg of "
-                           << out_commod_ << ".";
+  LOG(cyclus::LEV_INFO4, "SrcFac") << "offers " << trans.resource()->quantity() <<
+                                   " kg of "
+                                   << out_commod_ << ".";
 
   sendOffer(trans);
 
@@ -102,17 +99,19 @@ void SourceFacility::HandleTick(int time){
 }
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-void SourceFacility::HandleTock(int time){
+void SourceFacility::HandleTock(int time) {
   LOG(cyclus::LEV_INFO3, "SrcFac") << FacName() << " is tocking {";
 
   // check what orders are waiting,
   // send material if you have it now
   while (!ordersWaiting_.empty()) {
     cyclus::Transaction order = ordersWaiting_.front()->trans();
-    LOG(cyclus::LEV_INFO3, "SrcFac") << "Order is for: " << order.resource()->quantity();
+    LOG(cyclus::LEV_INFO3, "SrcFac") << "Order is for: " <<
+                                     order.resource()->quantity();
     LOG(cyclus::LEV_INFO3, "SrcFac") << "Inventory is: " << inventory_.quantity();
     if (order.resource()->quantity() - inventory_.quantity() > cyclus::eps()) {
-      LOG(cyclus::LEV_INFO3, "SrcFac") << "Not enough inventory. Waitlisting remaining orders.";
+      LOG(cyclus::LEV_INFO3, "SrcFac") <<
+                                       "Not enough inventory. Waitlisting remaining orders.";
       break;
     } else {
       LOG(cyclus::LEV_INFO3, "SrcFac") << "Satisfying order.";
@@ -122,9 +121,9 @@ void SourceFacility::HandleTock(int time){
   }
   // For now, lets just print out what we have at each timestep.
   LOG(cyclus::LEV_INFO4, "SrcFac") << "SourceFacility " << this->ID()
-                  << " is holding " << this->inventory_.quantity()
-                  << " units of material at the close of month " << time
-                  << ".";
+                                   << " is holding " << this->inventory_.quantity()
+                                   << " units of material at the close of month " << time
+                                   << ".";
 
   LOG(cyclus::LEV_INFO3, "SrcFac") << "}";
 }
@@ -135,15 +134,17 @@ void SourceFacility::ReceiveMessage(cyclus::Message::Ptr msg) {
     // file the order
     ordersWaiting_.push_front(msg);
     LOG(cyclus::LEV_INFO5, "SrcFac") << name() << " just received an order.";
-    LOG(cyclus::LEV_INFO5, "SrcFac") << "for " << msg->trans().resource()->quantity()
-                             << " of " << msg->trans().commod();
+    LOG(cyclus::LEV_INFO5, "SrcFac") << "for " <<
+                                     msg->trans().resource()->quantity()
+                                     << " of " << msg->trans().commod();
   } else {
     throw cyclus::Error("SourceFacility is not the supplier of this msg.");
   }
 }
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-vector<cyclus::Resource::Ptr> SourceFacility::RemoveResource(cyclus::Transaction order) {
+vector<cyclus::Resource::Ptr> SourceFacility::RemoveResource(
+  cyclus::Transaction order) {
   return cyclus::MatBuff::ToRes(inventory_.PopQty(order.resource()->quantity()));
 }
 
@@ -201,7 +202,8 @@ void SourceFacility::generateMaterial() {
   }
 
   cyclus::Material::Ptr newMat =
-    cyclus::Material::Ptr(new cyclus::Material(cyclus::RecipeLibrary::Recipe(recipe_name_)));
+    cyclus::Material::Ptr(new cyclus::Material(cyclus::RecipeLibrary::Recipe(
+                                                 recipe_name_)));
   double amt = capacity_;
   if (amt <= empty_space) {
     newMat->SetQuantity(amt); // plenty of room
@@ -217,12 +219,13 @@ cyclus::Transaction SourceFacility::buildTransaction() {
   double min_amt = 0;
   double offer_amt = inventory_.quantity();
 
-  cyclus::Material::Ptr trade_res = cyclus::Material::Ptr(new cyclus::Material(cyclus::RecipeLibrary::Recipe(recipe())));
+  cyclus::Material::Ptr trade_res = cyclus::Material::Ptr(new cyclus::Material(
+                                                            cyclus::RecipeLibrary::Recipe(recipe())));
   trade_res->SetQuantity(offer_amt);
 
   cyclus::Transaction trans(this, cyclus::OFFER);
   trans.SetCommod(out_commod_);
-  trans.SetMinFrac(min_amt/offer_amt);
+  trans.SetMinFrac(min_amt / offer_amt);
   trans.SetPrice(commod_price_);
   trans.SetResource(trade_res);
 

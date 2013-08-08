@@ -15,46 +15,48 @@ using namespace std;
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 class FakeNullMarket : public NullMarket {
-  protected:
-    cyclus::Message::Ptr msg_;
-  public:
-    FakeNullMarket() : NullMarket() {
-      string kg = "kg";
-      string qual = "qual";
-      cyclus::GenericResource::Ptr res = cyclus::GenericResource::Ptr(new cyclus::GenericResource(kg, qual, 1));
-      cyclus::Transaction trans(this, cyclus::OFFER);
-      msg_ = cyclus::Message::Ptr(new cyclus::Message(this, this, trans));
-      msg_->trans().SetResource(res);
-    }
+ protected:
+  cyclus::Message::Ptr msg_;
+ public:
+  FakeNullMarket() : NullMarket() {
+    string kg = "kg";
+    string qual = "qual";
+    cyclus::GenericResource::Ptr res = cyclus::GenericResource::Ptr(
+                                         new cyclus::GenericResource(kg, qual, 1));
+    cyclus::Transaction trans(this, cyclus::OFFER);
+    msg_ = cyclus::Message::Ptr(new cyclus::Message(this, this, trans));
+    msg_->trans().SetResource(res);
+  }
 
-    virtual ~FakeNullMarket() {
-    }
+  virtual ~FakeNullMarket() { }
 
-    cyclus::Message::Ptr getMessage(){return msg_;}
+  cyclus::Message::Ptr getMessage() {
+    return msg_;
+  }
 };
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-cyclus::Model* NullMarketModelConstructor(){
+cyclus::Model* NullMarketModelConstructor() {
   return dynamic_cast<cyclus::Model*>(new FakeNullMarket());
 }
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-cyclus::MarketModel* NullMarketConstructor(){
+cyclus::MarketModel* NullMarketConstructor() {
   return dynamic_cast<cyclus::MarketModel*>(new FakeNullMarket());
 }
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 class NullMarketTest : public ::testing::Test {
-  protected:
-    FakeNullMarket* src_market;
+ protected:
+  FakeNullMarket* src_market;
 
-    virtual void SetUp(){
-      src_market = new FakeNullMarket();
-    };
+  virtual void SetUp() {
+    src_market = new FakeNullMarket();
+  };
 
-    virtual void TearDown() {
-      delete src_market;
-    }
+  virtual void TearDown() {
+    delete src_market;
+  }
 };
 
 
@@ -70,6 +72,8 @@ TEST_F(NullMarketTest, ReceiveMessage) {
 }
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-INSTANTIATE_TEST_CASE_P(NullMarket, MarketModelTests, Values(&NullMarketConstructor));
-INSTANTIATE_TEST_CASE_P(NullMarket, ModelTests, Values(&NullMarketModelConstructor));
+INSTANTIATE_TEST_CASE_P(NullMarket, MarketModelTests,
+                        Values(&NullMarketConstructor));
+INSTANTIATE_TEST_CASE_P(NullMarket, ModelTests,
+                        Values(&NullMarketModelConstructor));
 

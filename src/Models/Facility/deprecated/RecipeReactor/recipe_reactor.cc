@@ -47,21 +47,25 @@ void RecipeReactor::Init(xmlNodePtr cur) {
   cyclus::FacilityModel::Init(cur);
 
   // move XML pointer to current model
-  cur = XMLinput->get_xpath_element(cur,"model/RecipeReactor");
+  cur = XMLinput->get_xpath_element(cur, "model/RecipeReactor");
 
   // initialize ordinary objects
-  capacity_ = strtod(XMLinput->get_xpath_content(cur,"capacity"), NULL);
+  capacity_ = strtod(XMLinput->get_xpath_content(cur, "capacity"), NULL);
   //cycle_length_ = strtod(XMLinput->get_xpath_content(cur,"cycletime"), NULL);
-  lifetime_ = strtol(XMLinput->get_xpath_content(cur,"lifetime"), NULL, 10);
-  startConstrYr_ = strtol(XMLinput->get_xpath_content(cur,"startConstrYear"), NULL, 10);
-  startConstrMo_ = strtol(XMLinput->get_xpath_content(cur,"startConstrMonth"), NULL, 10);
-  startOpYr_ = strtol(XMLinput->get_xpath_content(cur,"startOperYear"), NULL, 10);
-  startOpMo_ = strtol(XMLinput->get_xpath_content(cur,"startOperMonth"), NULL, 10);
-  licExpYr_ = strtol(XMLinput->get_xpath_content(cur,"licExpYear"), NULL, 10);
-  licExpMo_ = strtol(XMLinput->get_xpath_content(cur,"licExpMonth"), NULL, 10);
-  state_ = XMLinput->get_xpath_content(cur,"state");
-  typeReac_ = XMLinput->get_xpath_content(cur,"typeReac");
-  CF_ = strtod(XMLinput->get_xpath_content(cur,"elecCF"), NULL);
+  lifetime_ = strtol(XMLinput->get_xpath_content(cur, "lifetime"), NULL, 10);
+  startConstrYr_ = strtol(XMLinput->get_xpath_content(cur, "startConstrYear"),
+                          NULL, 10);
+  startConstrMo_ = strtol(XMLinput->get_xpath_content(cur, "startConstrMonth"),
+                          NULL, 10);
+  startOpYr_ = strtol(XMLinput->get_xpath_content(cur, "startOperYear"), NULL,
+                      10);
+  startOpMo_ = strtol(XMLinput->get_xpath_content(cur, "startOperMonth"), NULL,
+                      10);
+  licExpYr_ = strtol(XMLinput->get_xpath_content(cur, "licExpYear"), NULL, 10);
+  licExpMo_ = strtol(XMLinput->get_xpath_content(cur, "licExpMonth"), NULL, 10);
+  state_ = XMLinput->get_xpath_content(cur, "state");
+  typeReac_ = XMLinput->get_xpath_content(cur, "typeReac");
+  CF_ = strtod(XMLinput->get_xpath_content(cur, "elecCF"), NULL);
 
   // all facilities require commodities - possibly many
   string recipe_name;
@@ -70,23 +74,23 @@ void RecipeReactor::Init(xmlNodePtr cur) {
   xmlNodeSetPtr nodes = XMLinput->get_xpath_elements(cur, "fuelpair");
 
   // for each fuel pair, there is an in and an out commodity
-  for (int i = 0; i < nodes->nodeNr; i++){
+  for (int i = 0; i < nodes->nodeNr; i++) {
     xmlNodePtr pair_node = nodes->nodeTab[i];
 
     // get commods
-    in_commod = XMLinput->get_xpath_content(pair_node,"incommodity");
-    out_commod = XMLinput->get_xpath_content(pair_node,"outcommodity");
+    in_commod = XMLinput->get_xpath_content(pair_node, "incommodity");
+    out_commod = XMLinput->get_xpath_content(pair_node, "outcommodity");
 
     // get in_recipe
-    recipe_name = XMLinput->get_xpath_content(pair_node,"inrecipe");
+    recipe_name = XMLinput->get_xpath_content(pair_node, "inrecipe");
     in_recipe_ = cyclus::RecipeLibrary::Recipe(recipe_name);
 
     // get out_recipe
-    recipe_name = XMLinput->get_xpath_content(pair_node,"outrecipe");
+    recipe_name = XMLinput->get_xpath_content(pair_node, "outrecipe");
     out_recipe_ = cyclus::RecipeLibrary::Recipe(recipe_name);
 
-    fuelPairs_.push_back(make_pair(make_pair(in_commod,in_recipe_),
-          make_pair(out_commod, out_recipe_)));
+    fuelPairs_.push_back(make_pair(make_pair(in_commod, in_recipe_),
+                                   make_pair(out_commod, out_recipe_)));
   };
 
   stocks_ = deque<Fuel>();
@@ -133,16 +137,16 @@ void RecipeReactor::copyFreshModel(cyclus::Model* src) {
 std::string RecipeReactor::str() {
   std::string s = cyclus::FacilityModel::str();
   s += "    converts commodity '"
-    + fuelPairs_.front().first.first
-    + "' into commodity '"
-    + this->fuelPairs_.front().second.first
-    + "'.";
+       + fuelPairs_.front().first.first
+       + "' into commodity '"
+       + this->fuelPairs_.front().second.first
+       + "'.";
   return s;
 };
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 void RecipeReactor::beginCycle() {
-  if ( !stocks_.empty() ) {
+  if (!stocks_.empty()) {
     // move stocks batch to currCore
     string batchCommod = stocks_.front().first;
     cyclus::Material::Ptr batchMat = stocks_.front().second;
@@ -154,10 +158,11 @@ void RecipeReactor::beginCycle() {
     // reset month_in_cycle_ clock
     month_in_cycle_ = 1;
   } else {
-    LOG(cyclus::LEV_DEBUG3, "RReact") << "Beginning a cycle with an empty core. Why??";
+    LOG(cyclus::LEV_DEBUG3, "RReact") <<
+                                      "Beginning a cycle with an empty core. Why??";
     // wait for a successful transaction to fill the stocks.
     // reset the cycle month to zero
-    month_in_cycle_=0;
+    month_in_cycle_ = 0;
   }
 }
 
@@ -180,8 +185,8 @@ void RecipeReactor::endCycle() {
   IsoVector outComp;
 
   for (deque< pair< Recipe , Recipe> >::iterator iter = fuelPairs_.begin();
-      iter != fuelPairs_.end();
-      iter++) {
+       iter != fuelPairs_.end();
+       iter++) {
     if (iter->first.first == batchCommod) {
       outCommod = iter->second.first;
       outComp = iter->second.second;
@@ -201,18 +206,18 @@ void RecipeReactor::endCycle() {
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 void RecipeReactor::ReceiveMessage(cyclus::Message::Ptr msg) {
   // is this a message from on high?
-  if(msg->trans().supplier()==this){
+  if (msg->trans().supplier() == this) {
     // file the order
     ordersWaiting_.push_front(msg);
     LOG(cyclus::LEV_INFO5, "RReact") << name() << " just received an order.";
-  }
-  else {
+  } else {
     throw cyclus::CycException("RecipeReactor is not the supplier of this msg.");
   }
 }
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-vector<cyclus::Resource::Ptr> RecipeReactor::RemoveResource(cyclus::Transaction order) {
+vector<cyclus::Resource::Ptr> RecipeReactor::RemoveResource(
+  cyclus::Transaction order) {
   double newAmt = 0;
 
   cyclus::Material::Ptr m;
@@ -223,10 +228,10 @@ vector<cyclus::Resource::Ptr> RecipeReactor::RemoveResource(cyclus::Transaction 
   vector<cyclus::Resource::Ptr> toSend;
 
   // pull materials off of the inventory stack until you get the trans amount
-  while (order.resource()->quantity() > newAmt && !inventory_.empty() ) {
+  while (order.resource()->quantity() > newAmt && !inventory_.empty()) {
     for (deque<Fuel>::iterator iter = inventory_.begin();
-        iter != inventory_.end();
-        iter ++){
+         iter != inventory_.end();
+         iter ++) {
       // be sure to get the right commodity
       if (iter->first == order.commod()) {
         m = iter->second;
@@ -246,8 +251,8 @@ vector<cyclus::Resource::Ptr> RecipeReactor::RemoveResource(cyclus::Transaction 
           newMat->Absorb(toAbsorb);
         }
         toSend.push_back(newMat);
-        LOG(cyclus::LEV_DEBUG2, "RReact") <<"RecipeReactor "<< ID()
-          <<"  is sending a mat with mass: "<< newMat->quantity();
+        LOG(cyclus::LEV_DEBUG2, "RReact") << "RecipeReactor " << ID()
+                                          << "  is sending a mat with mass: " << newMat->quantity();
       }
     }
   }
@@ -255,15 +260,18 @@ vector<cyclus::Resource::Ptr> RecipeReactor::RemoveResource(cyclus::Transaction 
 }
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-void RecipeReactor::AddResource(cyclus::Transaction trans, std::vector<cyclus::Resource::Ptr> manifest) {
+void RecipeReactor::AddResource(cyclus::Transaction trans,
+                                std::vector<cyclus::Resource::Ptr> manifest) {
   // grab each material object off of the manifest
   // and move it into the stocks.
-  for (vector<cyclus::Resource::Ptr>::iterator thisMat=manifest.begin();
+  for (vector<cyclus::Resource::Ptr>::iterator thisMat = manifest.begin();
        thisMat != manifest.end();
        thisMat++) {
-    LOG(cyclus::LEV_DEBUG2, "RReact") <<"RecipeReactor " << ID() << " is receiving material with mass "
-        << (*thisMat)->quantity();
-    stocks_.push_front(make_pair(trans.commod(), boost::dynamic_pointer_cast<cyclus::Material>(*thisMat)));
+    LOG(cyclus::LEV_DEBUG2, "RReact") << "RecipeReactor " << ID() <<
+                                      " is receiving material with mass "
+                                      << (*thisMat)->quantity();
+    stocks_.push_front(make_pair(trans.commod(),
+                                 boost::dynamic_pointer_cast<cyclus::Material>(*thisMat)));
   }
 }
 
@@ -276,7 +284,7 @@ void RecipeReactor::HandleTick(int time) {
   // offer anything in the inventory
 
   // BEGIN CYCLE
-  if(month_in_cycle_ == 1){
+  if (month_in_cycle_ == 1) {
     LOG(cyclus::LEV_INFO4, "RReact") << " Beginning a new cycle";
     this->beginCycle();
   };
@@ -287,9 +295,9 @@ void RecipeReactor::HandleTick(int time) {
 }
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-void RecipeReactor::makeRequests(){
+void RecipeReactor::makeRequests() {
   // MAKE A cyclus::REQUEST
-  if(this->stocksMass() != 0) {
+  if (this->stocksMass() != 0) {
     return;
   }
 
@@ -334,29 +342,32 @@ void RecipeReactor::makeRequests(){
   Communicator* recipient = dynamic_cast<Communicator*>(market);
 
   // request a generic resource
-  cyclus::GenericResource::Ptr request_res = cyclus::GenericResource::Ptr(new cyclus::GenericResource(in_commod, "kg", requestAmt));
+  cyclus::GenericResource::Ptr request_res = cyclus::GenericResource::Ptr(
+                                               new cyclus::GenericResource(in_commod, "kg", requestAmt));
 
   // build the transaction and message
   cyclus::Transaction trans(this, cyclus::REQUEST);
   trans.SetCommod(in_commod);
-  trans.SetMinFrac( minAmt/requestAmt );
+  trans.SetMinFrac(minAmt / requestAmt);
   trans.SetPrice(commod_price);
   trans.SetResource(request_res);
 
-  LOG(cyclus::LEV_INFO5, "RReact") << name() << " has requested " << request_res->quantity()
-                           << " kg of " << in_commod << ".";
+  LOG(cyclus::LEV_INFO5, "RReact") << name() << " has requested " <<
+                                   request_res->quantity()
+                                   << " kg of " << in_commod << ".";
   sendMessage(recipient, trans);
   LOG(cyclus::LEV_INFO4, "RReact") << "}";
 }
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-void RecipeReactor::sendMessage(Communicator* recipient, cyclus::Transaction trans){
-      cyclus::Message::Ptr msg(new cyclus::Message(this, recipient, trans));
-      msg->SendOn();
+void RecipeReactor::sendMessage(Communicator* recipient,
+                                cyclus::Transaction trans) {
+  cyclus::Message::Ptr msg(new cyclus::Message(this, recipient, trans));
+  msg->SendOn();
 }
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-void RecipeReactor::makeOffers(){
+void RecipeReactor::makeOffers() {
   LOG(cyclus::LEV_INFO4, "RReact") << " making offers {";
   // MAKE cyclus::OFFERS
   // decide how much to offer
@@ -372,9 +383,10 @@ void RecipeReactor::makeOffers(){
   string commod;
   Communicator* recipient;
   double offer_amt;
-  for (deque<pair<string, cyclus::Material::Ptr > >::iterator iter = inventory_.begin();
+  for (deque<pair<string, cyclus::Material::Ptr > >::iterator iter =
+         inventory_.begin();
        iter != inventory_.end();
-       iter ++){
+       iter ++) {
     // get commod
     commod = iter->first;
     cyclus::MarketModel* market = cyclus::MarketModel::MarketForCommod(commod);
@@ -384,19 +396,21 @@ void RecipeReactor::makeOffers(){
     offer_amt = iter->second->quantity();
 
     // make a material to offer
-    cyclus::Material::Ptr offer_mat = cyclus::Material::Ptr(new cyclus::Material(out_recipe_));
+    cyclus::Material::Ptr offer_mat = cyclus::Material::Ptr(new cyclus::Material(
+                                                              out_recipe_));
     offer_mat->Print();
     offer_mat->SetQuantity(offer_amt);
 
     // build the transaction and message
     cyclus::Transaction trans(this, cyclus::OFFER);
     trans.SetCommod(commod);
-    trans.SetMinFrac(min_amt/offer_amt);
+    trans.SetMinFrac(min_amt / offer_amt);
     trans.SetPrice(commod_price);
     trans.SetResource(offer_mat);
 
-    LOG(cyclus::LEV_INFO5, "RReact") << name() << " has offered " << offer_mat->quantity()
-                             << " kg of " << commod << ".";
+    LOG(cyclus::LEV_INFO5, "RReact") << name() << " has offered " <<
+                                     offer_mat->quantity()
+                                     << " kg of " << commod << ".";
 
     sendMessage(recipient, trans);
   }
@@ -407,12 +421,12 @@ void RecipeReactor::makeOffers(){
 void RecipeReactor::HandleTock(int time) {
   LOG(cyclus::LEV_INFO3, "RReact") << name() << " is tocking {";
   // at the end of the cycle
-  if (month_in_cycle_ > cycle_length_){
+  if (month_in_cycle_ > cycle_length_) {
     this->endCycle();
   };
 
   // check what orders are waiting,
-  while(!ordersWaiting_.empty()){
+  while (!ordersWaiting_.empty()) {
     cyclus::Message::Ptr order = ordersWaiting_.front();
     order->trans().ApproveTransfer();
     ordersWaiting_.pop_front();
@@ -509,15 +523,16 @@ string RecipeReactor::outCommod() {
 }
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-double RecipeReactor::inventoryMass(){
+double RecipeReactor::inventoryMass() {
   double total = 0;
 
   // Iterate through the inventory and sum the amount of whatever
   // material unit is in each object.
 
-  for (deque< pair<string, cyclus::Material::Ptr> >::iterator iter = inventory_.begin();
+  for (deque< pair<string, cyclus::Material::Ptr> >::iterator iter =
+         inventory_.begin();
        iter != inventory_.end();
-       iter ++){
+       iter ++) {
     total += iter->second->quantity();
   }
 
@@ -525,17 +540,18 @@ double RecipeReactor::inventoryMass(){
 }
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-double RecipeReactor::stocksMass(){
+double RecipeReactor::stocksMass() {
   double total = 0;
 
   // Iterate through the stocks and sum the amount of whatever
   // material unit is in each object.
 
-  if(!stocks_.empty()){
-    for (deque< pair<string, cyclus::Material::Ptr> >::iterator iter = stocks_.begin();
+  if (!stocks_.empty()) {
+    for (deque< pair<string, cyclus::Material::Ptr> >::iterator iter =
+           stocks_.begin();
          iter != stocks_.end();
-         iter ++){
-        total += iter->second->quantity();
+         iter ++) {
+      total += iter->second->quantity();
     };
   };
   return total;

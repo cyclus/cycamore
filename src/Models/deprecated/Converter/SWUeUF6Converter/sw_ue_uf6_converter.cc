@@ -18,12 +18,12 @@ void SWUeUF6Converter::Init(xmlNodePtr cur) {
   cyclus::ConverterModel::Init(cur);
 
   // move XML pointer to current model
-  cur = XMLinput->get_xpath_element(cur,"model/SWUeUF6Converter");
+  cur = XMLinput->get_xpath_element(cur, "model/SWUeUF6Converter");
 
   // all converters require commodities - possibly many
-  in_commod_ = XMLinput->get_xpath_content(cur,"incommodity");
+  in_commod_ = XMLinput->get_xpath_content(cur, "incommodity");
 
-  out_commod_ = XMLinput->get_xpath_content(cur,"outcommodity");
+  out_commod_ = XMLinput->get_xpath_content(cur, "outcommodity");
 }
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -36,8 +36,7 @@ void SWUeUF6Converter::Copy(SWUeUF6Converter* src) {
 }
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-void SWUeUF6Converter::copyFreshModel(cyclus::Model* src)
-{
+void SWUeUF6Converter::copyFreshModel(cyclus::Model* src) {
   Copy((SWUeUF6Converter*)src);
 }
 
@@ -50,8 +49,8 @@ std::string SWUeUF6Converter::str() {
 }
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-cyclus::Message::Ptr SWUeUF6Converter::Convert(cyclus::Message::Ptr convMsg, cyclus::Message::Ptr refMsg)
-{
+cyclus::Message::Ptr SWUeUF6Converter::Convert(cyclus::Message::Ptr convMsg,
+                                               cyclus::Message::Ptr refMsg) {
   // Figure out what you're converting to and from
   in_commod_ = convMsg->trans().commod();
   out_commod_ = refMsg->trans().commod();
@@ -70,10 +69,10 @@ cyclus::Message::Ptr SWUeUF6Converter::Convert(cyclus::Message::Ptr convMsg, cyc
 
 
   // determine which direction we're converting
-  if (in_commod_ == "SWUs" && out_commod_ == "eUF6"){
+  if (in_commod_ == "SWUs" && out_commod_ == "eUF6") {
     // the enricher is the supplier in the convMsg
     enr = convMsg->trans().supplier();
-    if (0 == enr){
+    if (0 == enr) {
       throw cyclus::CycException("SWUs offered by non-Model");
     }
     SWUs = convMsg->trans().resource()->quantity();
@@ -91,8 +90,9 @@ cyclus::Message::Ptr SWUeUF6Converter::Convert(cyclus::Message::Ptr convMsg, cyc
     if (0 == enr) {
       throw cyclus::CycException("SWUs offered by non-Model");
     }
-    try{
-      mat = boost::dynamic_pointer_cast<cyclus::Material>(convMsg->trans().resource());
+    try {
+      mat = boost::dynamic_pointer_cast<cyclus::Material>
+            (convMsg->trans().resource());
       iso_vector = mat->isoVector();
     } catch (exception& e) {
       string err = "The Resource sent to the SWUeUF6Converter must be a \
@@ -117,17 +117,18 @@ cyclus::Message::Ptr SWUeUF6Converter::Convert(cyclus::Message::Ptr convMsg, cyc
   double term2 = (2 * xw - 1) * log(xw / (1 - xw)) * (xp - xf) / (xf - xw);
   double term3 = (2 * xf - 1) * log(xf / (1 - xf)) * (xp - xw) / (xf - xw);
 
-  massProdU = SWUs/(term1 + term2 - term3);
-  SWUs = massProdU*(term1 + term2 - term3);
+  massProdU = SWUs / (term1 + term2 - term3);
+  SWUs = massProdU * (term1 + term2 - term3);
 
-  if (out_commod_ == "eUF6"){
+  if (out_commod_ == "eUF6") {
     mat = cyclus::Material::Ptr(new cyclus::Material(iso_vector));
     mat->SetQuantity(massProdU);
     toRet = convMsg->clone();
     toRet->trans().SetResource(mat);
   } else if (out_commod_ == "SWUs") {
     toRet = convMsg->clone();
-    cyclus::GenericResource::Ptr conv_res = cyclus::GenericResource::Ptr(new cyclus::GenericResource(out_commod_, out_commod_, SWUs));
+    cyclus::GenericResource::Ptr conv_res = cyclus::GenericResource::Ptr(
+                                              new cyclus::GenericResource(out_commod_, out_commod_, SWUs));
     toRet->trans().SetResource(conv_res);
   }
 
@@ -137,7 +138,7 @@ cyclus::Message::Ptr SWUeUF6Converter::Convert(cyclus::Message::Ptr convMsg, cyc
 }
 
 extern "C" cyclus::Model* constructSWUeUF6Converter() {
-    return new SWUeUF6Converter();
+  return new SWUeUF6Converter();
 }
 
 

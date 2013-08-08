@@ -35,10 +35,10 @@
  */
 
 class StubConverter : public cyclus::ConverterModel {
-/* --------------------
- * all MODEL classes have these public members
- * --------------------
- */
+  /* --------------------
+   * all MODEL classes have these public members
+   * --------------------
+   */
  public:
   /**
      Default constructor for StubConverter Class
@@ -79,13 +79,13 @@ class StubConverter : public cyclus::ConverterModel {
    */
   virtual std::string str();
 
-/* ------------------- */
+  /* ------------------- */
 
 
-/* --------------------
- * all CONVERTERMODEL classes have these members
- * --------------------
- */
+  /* --------------------
+   * all CONVERTERMODEL classes have these members
+   * --------------------
+   */
  public:
   /**
      The convert function specific to the StubConverter
@@ -96,17 +96,18 @@ class StubConverter : public cyclus::ConverterModel {
      convert it to
      @return the converted message
    */
-  virtual cyclus::Message::Ptr Convert(cyclus::Message::Ptr convMsg, cyclus::Message::Ptr refMsg);
+  virtual cyclus::Message::Ptr Convert(cyclus::Message::Ptr convMsg,
+                                       cyclus::Message::Ptr refMsg);
 
-/* ------------------- */
+  /* ------------------- */
 
 
-/* --------------------
- * _THIS_ CONVERTERMODEL class has these members
- * --------------------
- */
+  /* --------------------
+   * _THIS_ CONVERTERMODEL class has these members
+   * --------------------
+   */
 
-/* ------------------- */
+  /* ------------------- */
 
 };
 

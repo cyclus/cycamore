@@ -8,15 +8,14 @@
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 class TestProducer :
   public cyclus::FacilityModel,
-  public cyclus::supply_demand::CommodityProducer
-{
+  public cyclus::supply_demand::CommodityProducer {
  public:
   TestProducer();
   virtual ~TestProducer();
 
   void CloneModuleMembersFrom(cyclus::FacilityModel* source) {};
-  void HandleTock(int time){};
-  void HandleTick(int time){};
+  void HandleTock(int time) {};
+  void HandleTick(int time) {};
 
   void ReceiveMessage(cyclus::Message::Ptr msg) {
     msg->SetDir(cyclus::DOWN_MSG);
@@ -25,8 +24,7 @@ class TestProducer :
 };
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-class ManagerInstTests : public ::testing::Test
-{
+class ManagerInstTests : public ::testing::Test {
  protected:
   ManagerInst* src_inst;
   TestProducer* producer;

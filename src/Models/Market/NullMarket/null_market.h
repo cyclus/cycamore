@@ -34,12 +34,11 @@
    smallest of the two. Once matches are made, the market dictates the
    matches back down to the facilities.
  */
-class NullMarket : public cyclus::MarketModel
-{
-/* --------------------
- * all MODEL classes have these public members
- * --------------------
- */
+class NullMarket : public cyclus::MarketModel {
+  /* --------------------
+   * all MODEL classes have these public members
+   * --------------------
+   */
  public:
   /**
      Default constructor
@@ -51,13 +50,13 @@ class NullMarket : public cyclus::MarketModel
    */
   virtual ~NullMarket();
 
-/* -------------------- */
+  /* -------------------- */
 
 
-/* --------------------
- * all COMMUNICATOR classes have these members
- * --------------------
- */
+  /* --------------------
+   * all COMMUNICATOR classes have these members
+   * --------------------
+   */
  public:
   /**
      The market receives an offer or request that has been passed from
@@ -67,13 +66,13 @@ class NullMarket : public cyclus::MarketModel
    */
   virtual void ReceiveMessage(cyclus::Message::Ptr msg);
 
-/* -------------------- */
+  /* -------------------- */
 
 
-/* --------------------
- * all MARKETMODEL classes have these members
- * --------------------
- */
+  /* --------------------
+   * all MARKETMODEL classes have these members
+   * --------------------
+   */
  public:
   /**
      This instructs the market to make matches with the offers and
@@ -81,24 +80,24 @@ class NullMarket : public cyclus::MarketModel
    */
   virtual void Resolve();
 
-/* -------------------- */
+  /* -------------------- */
 
 
-/* --------------------
- * _THIS_ MARKETMODEL class has these members
- * --------------------
- */
+  /* --------------------
+   * _THIS_ MARKETMODEL class has these members
+   * --------------------
+   */
  private:
   /**
      The messages that have been indexed
    */
-  typedef std::pair<double,cyclus::Message::Ptr> IndexedMsg;
+  typedef std::pair<double, cyclus::Message::Ptr> IndexedMsg;
 
   /**
      The messages of both offer and request types that have been sorted
      according to thie size.
    */
-  typedef std::multimap<double,cyclus::Message::Ptr> SortedMsgList;
+  typedef std::multimap<double, cyclus::Message::Ptr> SortedMsgList;
 
   /**
      The requests that have been sorted according to their size.

@@ -8,31 +8,33 @@
 using namespace std;
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-cyclus::Model* DeployInstModelConstructor(){
+cyclus::Model* DeployInstModelConstructor() {
   return dynamic_cast<cyclus::Model*>(new DeployInst());
 }
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-cyclus::InstModel* DeployInstConstructor(){
+cyclus::InstModel* DeployInstConstructor() {
   return dynamic_cast<cyclus::InstModel*>(new DeployInst());
 }
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 class DeployInstTest : public ::testing::Test {
-  protected:
-    DeployInst* src_inst;
+ protected:
+  DeployInst* src_inst;
 
-    virtual void SetUp(){
-      src_inst = new DeployInst();
-     }
+  virtual void SetUp() {
+    src_inst = new DeployInst();
+  }
 
-    virtual void TearDown() {
-      delete src_inst;
-    }
+  virtual void TearDown() {
+    delete src_inst;
+  }
 };
 
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-INSTANTIATE_TEST_CASE_P(DeployInst, InstModelTests, Values(&DeployInstConstructor));
-INSTANTIATE_TEST_CASE_P(DeployInst, ModelTests, Values(&DeployInstModelConstructor));
+INSTANTIATE_TEST_CASE_P(DeployInst, InstModelTests,
+                        Values(&DeployInstConstructor));
+INSTANTIATE_TEST_CASE_P(DeployInst, ModelTests,
+                        Values(&DeployInstModelConstructor));
 

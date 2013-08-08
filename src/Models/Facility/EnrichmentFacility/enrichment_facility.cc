@@ -31,31 +31,25 @@ EnrichmentFacility::EnrichmentFacility() :
   feed_assay_(0),
   in_commodity_(""),
   in_recipe_(""),
-  out_commodity_("")
-{}
+  out_commodity_("") { }
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-EnrichmentFacility::~EnrichmentFacility()
-{}
+EnrichmentFacility::~EnrichmentFacility() { }
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-void EnrichmentFacility::InitModuleMembers(cyclus::QueryEngine* qe)
-{
+void EnrichmentFacility::InitModuleMembers(cyclus::QueryEngine* qe) {
   string data;
 
   cyclus::QueryEngine* input = qe->QueryElement("input");
   set_in_commodity(input->GetElementContent("incommodity"));
   set_in_recipe(input->GetElementContent("inrecipe"));
 
-  try
-    {
-      data = input->GetElementContent("inventorysize");
-      setMaxInventorySize(lexical_cast<double>(data));
-    }
-  catch (cyclus::Error e)
-    {
-      setMaxInventorySize(numeric_limits<double>::max());
-    }
+  try {
+    data = input->GetElementContent("inventorysize");
+    setMaxInventorySize(lexical_cast<double>(data));
+  } catch (cyclus::Error e) {
+    setMaxInventorySize(numeric_limits<double>::max());
+  }
 
   cyclus::QueryEngine* output = qe->QueryElement("output");
   set_out_commodity(output->GetElementContent("outcommodity"));
@@ -63,13 +57,13 @@ void EnrichmentFacility::InitModuleMembers(cyclus::QueryEngine* qe)
   data = output->GetElementContent("tails_assay");
   set_tails_assay(lexical_cast<double>(data));
 
-  cyclus::Material::Ptr feed = cyclus::Material::Ptr(new cyclus::Material(cyclus::RecipeLibrary::Recipe(in_recipe())));
+  cyclus::Material::Ptr feed = cyclus::Material::Ptr(new cyclus::Material(
+                                                       cyclus::RecipeLibrary::Recipe(in_recipe())));
   set_feed_assay(cyclus::enrichment::UraniumAssay(feed));
 }
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-std::string EnrichmentFacility::str()
-{
+std::string EnrichmentFacility::str() {
   std::stringstream ss;
   ss << cyclus::FacilityModel::str()
      << " with enrichment facility parameters:"
@@ -81,8 +75,8 @@ std::string EnrichmentFacility::str()
 }
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-void EnrichmentFacility::CloneModuleMembersFrom(cyclus::FacilityModel* sourceModel)
-{
+void EnrichmentFacility::CloneModuleMembersFrom(cyclus::FacilityModel*
+                                                sourceModel) {
   EnrichmentFacility* source = dynamic_cast<EnrichmentFacility*>(sourceModel);
   set_tails_assay(source->tails_assay());
   set_feed_assay(source->feed_assay());
@@ -96,36 +90,42 @@ void EnrichmentFacility::CloneModuleMembersFrom(cyclus::FacilityModel* sourceMod
 }
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-void EnrichmentFacility::AddResource(cyclus::Transaction trans, std::vector<cyclus::Resource::Ptr> manifest)
-{
-  LOG(cyclus::LEV_INFO5, "EnrFac") << name() << " adding material qty: " << manifest.at(0)->quantity();
+void EnrichmentFacility::AddResource(cyclus::Transaction trans,
+                                     std::vector<cyclus::Resource::Ptr> manifest) {
+  LOG(cyclus::LEV_INFO5, "EnrFac") << name() << " adding material qty: " <<
+                                   manifest.at(0)->quantity();
   inventory_.PushAll(cyclus::MatBuff::ToMat(manifest));
 }
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-std::vector<cyclus::Resource::Ptr> EnrichmentFacility::RemoveResource(cyclus::Transaction order)
-{
+std::vector<cyclus::Resource::Ptr> EnrichmentFacility::RemoveResource(
+  cyclus::Transaction order) {
   cyclus::Resource::Ptr prsrc = order.resource();
-  if (!cyclus::Material::IsMaterial(prsrc))
+  if (!cyclus::Material::IsMaterial(prsrc)) {
     throw cyclus::CastError("Can't remove a resource as a non-material");
+  }
 
   cyclus::Material::Ptr rsrc = dynamic_pointer_cast<cyclus::Material>(prsrc);
 
   cyclus::enrichment::Assays assays = getAssays(rsrc);
   double product_qty = cyclus::enrichment::UraniumQty(rsrc);
-  double swu = cyclus::enrichment::SwuRequired(product_qty,assays);
-  double natural_u = cyclus::enrichment::FeedQty(product_qty,assays);
+  double swu = cyclus::enrichment::SwuRequired(product_qty, assays);
+  double natural_u = cyclus::enrichment::FeedQty(product_qty, assays);
   inventory_.PopQty(natural_u);
 
 
   LOG(cyclus::LEV_INFO5, "EnrFac") << name() << " has performed an enrichment: ";
-  LOG(cyclus::LEV_INFO5, "EnrFac") << "   * Feed Qty: " << cyclus::enrichment::FeedQty(product_qty,assays);
+  LOG(cyclus::LEV_INFO5, "EnrFac") << "   * Feed Qty: " <<
+                                   cyclus::enrichment::FeedQty(product_qty, assays);
   LOG(cyclus::LEV_INFO5, "EnrFac") << "   * Feed Assay: " << assays.Feed() * 100;
   LOG(cyclus::LEV_INFO5, "EnrFac") << "   * Product Qty: " << product_qty;
-  LOG(cyclus::LEV_INFO5, "EnrFac") << "   * Product Assay: " << assays.Product() * 100;
-  LOG(cyclus::LEV_INFO5, "EnrFac") << "   * Tails Qty: " << cyclus::enrichment::TailsQty(product_qty,assays);
-  LOG(cyclus::LEV_INFO5, "EnrFac") << "   * Tails Assay: " << assays.Tails() * 100;
-  recordEnrichment(natural_u,swu);
+  LOG(cyclus::LEV_INFO5, "EnrFac") << "   * Product Assay: " << assays.Product() *
+                                   100;
+  LOG(cyclus::LEV_INFO5, "EnrFac") << "   * Tails Qty: " <<
+                                   cyclus::enrichment::TailsQty(product_qty, assays);
+  LOG(cyclus::LEV_INFO5, "EnrFac") << "   * Tails Assay: " << assays.Tails() *
+                                   100;
+  recordEnrichment(natural_u, swu);
 
   vector<cyclus::Resource::Ptr> ret;
   ret.push_back(order.resource());
@@ -133,25 +133,20 @@ std::vector<cyclus::Resource::Ptr> EnrichmentFacility::RemoveResource(cyclus::Tr
 }
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-void EnrichmentFacility::ReceiveMessage(cyclus::Message::Ptr msg)
-{
+void EnrichmentFacility::ReceiveMessage(cyclus::Message::Ptr msg) {
   // is this a message from on high?
-  if(msg->trans().supplier() == this)
-    {
-      // file the order
-      orders_.push_back(msg);
-      LOG(cyclus::LEV_INFO5, "EnrFac") << name() << " just received an order for: ";
-      msg->trans().resource()->Print();
-    }
-  else
-    {
-      throw cyclus::Error("EnrFacility is not the supplier of this msg.");
-    }
+  if (msg->trans().supplier() == this) {
+    // file the order
+    orders_.push_back(msg);
+    LOG(cyclus::LEV_INFO5, "EnrFac") << name() << " just received an order for: ";
+    msg->trans().resource()->Print();
+  } else {
+    throw cyclus::Error("EnrFacility is not the supplier of this msg.");
+  }
 }
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-void EnrichmentFacility::HandleTick(int time)
-{
+void EnrichmentFacility::HandleTick(int time) {
   LOG(cyclus::LEV_INFO3, "EnrFac") << FacName() << " is ticking {";
 
   makeRequest();
@@ -161,8 +156,7 @@ void EnrichmentFacility::HandleTick(int time)
 }
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-void EnrichmentFacility::HandleTock(int time)
-{
+void EnrichmentFacility::HandleTock(int time) {
   LOG(cyclus::LEV_INFO3, "EnrFac") << FacName() << " is tocking {";
 
   processOutgoingMaterial();
@@ -171,40 +165,39 @@ void EnrichmentFacility::HandleTock(int time)
 }
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-void EnrichmentFacility::makeRequest()
-{
+void EnrichmentFacility::makeRequest() {
   double amt = inventory_.space();
   double min_amt = 0;
   string commodity = in_commodity();
 
-  if (amt > cyclus::eps())
-    {
-      LOG(cyclus::LEV_INFO4, "EnrFac") << " requests "<< amt << " kg of " << commodity << ".";
+  if (amt > cyclus::eps()) {
+    LOG(cyclus::LEV_INFO4, "EnrFac") << " requests " << amt << " kg of " <<
+                                     commodity << ".";
 
-      cyclus::MarketModel* market = cyclus::MarketModel::MarketForCommod(commodity);
-      Communicator* recipient = dynamic_cast<Communicator*>(market);
+    cyclus::MarketModel* market = cyclus::MarketModel::MarketForCommod(commodity);
+    Communicator* recipient = dynamic_cast<Communicator*>(market);
 
-      // create a material resource
-      // @MJGFlag note that this doesn't matter in the current state
-      cyclus::Material::Ptr request_res =
-        cyclus::Material::Ptr(new cyclus::Material(cyclus::RecipeLibrary::Recipe(in_recipe_)));
-      request_res->SetQuantity(amt);
+    // create a material resource
+    // @MJGFlag note that this doesn't matter in the current state
+    cyclus::Material::Ptr request_res =
+      cyclus::Material::Ptr(new cyclus::Material(cyclus::RecipeLibrary::Recipe(
+                                                   in_recipe_)));
+    request_res->SetQuantity(amt);
 
-      // build the transaction and message
-      cyclus::Transaction trans(this, cyclus::REQUEST);
-      trans.SetCommod(commodity);
-      trans.SetMinFrac(min_amt/amt);
-      trans.SetPrice(commodity_price_);
-      trans.SetResource(request_res);
+    // build the transaction and message
+    cyclus::Transaction trans(this, cyclus::REQUEST);
+    trans.SetCommod(commodity);
+    trans.SetMinFrac(min_amt / amt);
+    trans.SetPrice(commodity_price_);
+    trans.SetResource(request_res);
 
-      cyclus::Message::Ptr request(new cyclus::Message(this, recipient, trans));
-      request->SendOn();
-    }
+    cyclus::Message::Ptr request(new cyclus::Message(this, recipient, trans));
+    request->SendOn();
+  }
 }
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-cyclus::Transaction EnrichmentFacility::buildTransaction()
-{
+cyclus::Transaction EnrichmentFacility::buildTransaction() {
   // there is no minimum amount a source facility may send
   double min_amt = 0;
   double offer_amt = inventory_.quantity();
@@ -214,7 +207,7 @@ cyclus::Transaction EnrichmentFacility::buildTransaction()
   cyclus::Transaction trans(this, cyclus::OFFER);
 
   trans.SetCommod(out_commodity());
-  trans.SetMinFrac(min_amt/offer_amt);
+  trans.SetMinFrac(min_amt / offer_amt);
   trans.SetPrice(commodity_price());
   trans.SetResource(offer_res);
 
@@ -222,9 +215,9 @@ cyclus::Transaction EnrichmentFacility::buildTransaction()
 }
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-void EnrichmentFacility::makeOffer()
-{
-  cyclus::MarketModel* market = cyclus::MarketModel::MarketForCommod(out_commodity());
+void EnrichmentFacility::makeOffer() {
+  cyclus::MarketModel* market = cyclus::MarketModel::MarketForCommod(
+                                  out_commodity());
 
   Communicator* recipient = dynamic_cast<Communicator*>(market);
 
@@ -235,80 +228,75 @@ void EnrichmentFacility::makeOffer()
 
   cyclus::Message::Ptr msg(new cyclus::Message(this, recipient, trans));
 
-  if (trans.resource()->quantity() > 0)
-    {
-      LOG(cyclus::LEV_INFO4, "EnrFac") << "offers "<< trans.resource()->quantity() << " kg of "
-                               << out_commodity_ << ".";
+  if (trans.resource()->quantity() > 0) {
+    LOG(cyclus::LEV_INFO4, "EnrFac") << "offers " << trans.resource()->quantity() <<
+                                     " kg of "
+                                     << out_commodity_ << ".";
 
-      msg->SendOn();
-    }
+    msg->SendOn();
+  }
 }
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-void EnrichmentFacility::processOutgoingMaterial()
-{
+void EnrichmentFacility::processOutgoingMaterial() {
   double remove_total = 0;
-  while (!orders_.empty())
-    {
-      cyclus::Transaction trans = orders_.front()->trans();
+  while (!orders_.empty()) {
+    cyclus::Transaction trans = orders_.front()->trans();
 
-      cyclus::Resource::Ptr prsrc = trans.resource();
-      if (!cyclus::Material::IsMaterial(prsrc))
-       throw cyclus::CastError("Can't process a resource as a non-material");
-
-      cyclus::Material::Ptr rsrc = dynamic_pointer_cast<cyclus::Material>(prsrc);
-
-      LOG(cyclus::LEV_DEBUG1, "EnrFac") << "Processing material: ";
-      rsrc->Print();
-
-      cyclus::enrichment::Assays assays = getAssays(rsrc);
-      double product_qty = cyclus::enrichment::UraniumQty(rsrc);
-      remove_total += cyclus::enrichment::FeedQty(product_qty,assays);
-
-      if (remove_total < inventory_.quantity())
-        {
-          trans.ApproveTransfer();
-        }
-      // else
-      //   {
-      //     throw cyclus::CycOverrideException("Can't process more than an EnrFac's inventory size");
-      //   }
-
-      orders_.pop_front();
+    cyclus::Resource::Ptr prsrc = trans.resource();
+    if (!cyclus::Material::IsMaterial(prsrc)) {
+      throw cyclus::CastError("Can't process a resource as a non-material");
     }
+
+    cyclus::Material::Ptr rsrc = dynamic_pointer_cast<cyclus::Material>(prsrc);
+
+    LOG(cyclus::LEV_DEBUG1, "EnrFac") << "Processing material: ";
+    rsrc->Print();
+
+    cyclus::enrichment::Assays assays = getAssays(rsrc);
+    double product_qty = cyclus::enrichment::UraniumQty(rsrc);
+    remove_total += cyclus::enrichment::FeedQty(product_qty, assays);
+
+    if (remove_total < inventory_.quantity()) {
+      trans.ApproveTransfer();
+    }
+    // else
+    //   {
+    //     throw cyclus::CycOverrideException("Can't process more than an EnrFac's inventory size");
+    //   }
+
+    orders_.pop_front();
+  }
 }
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-cyclus::enrichment::Assays EnrichmentFacility::getAssays(cyclus::Material::Ptr rsrc)
-{
+cyclus::enrichment::Assays EnrichmentFacility::getAssays(
+  cyclus::Material::Ptr rsrc) {
   double product_assay = cyclus::enrichment::UraniumAssay(rsrc);
-  return cyclus::enrichment::Assays(feed_assay(),product_assay,tails_assay());
+  return cyclus::enrichment::Assays(feed_assay(), product_assay, tails_assay());
 }
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-void EnrichmentFacility::recordEnrichment(double natural_u, double swu)
-{
+void EnrichmentFacility::recordEnrichment(double natural_u, double swu) {
   LOG(cyclus::LEV_DEBUG1, "EnrFac") << name() << " has enriched a material:";
   LOG(cyclus::LEV_DEBUG1, "EnrFac") << "  * Amount: " << natural_u;
   LOG(cyclus::LEV_DEBUG1, "EnrFac") << "  *    SWU: " << swu;
 
   cyclus::EM->NewEvent("Enrichments")
-    ->AddVal("ENTRY", ++entry_)
-    ->AddVal("ID", ID())
-    ->AddVal("Time", cyclus::TI->time())
-    ->AddVal("Natural_Uranium", natural_u)
-    ->AddVal("SWU", swu)
-    ->Record();
+  ->AddVal("ENTRY", ++entry_)
+  ->AddVal("ID", ID())
+  ->AddVal("Time", cyclus::TI->time())
+  ->AddVal("Natural_Uranium", natural_u)
+  ->AddVal("SWU", swu)
+  ->Record();
 }
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-extern "C" cyclus::Model* constructEnrichmentFacility()
-{
+extern "C" cyclus::Model* constructEnrichmentFacility() {
   return new EnrichmentFacility();
 }
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-extern "C" void destructEnrichmentFacility(cyclus::Model* model)
-{
-      delete model;
+extern "C" void destructEnrichmentFacility(cyclus::Model* model) {
+  delete model;
 }

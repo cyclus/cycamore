@@ -35,10 +35,10 @@
    institution on the path to the recipient.
  */
 class NullRegion : public cyclus::RegionModel  {
-/* --------------------
- * all MODEL classes have these members
- * --------------------
- */
+  /* --------------------
+   * all MODEL classes have these members
+   * --------------------
+   */
  public:
   /**
      The default constructor for the NullRegion
@@ -50,7 +50,7 @@ class NullRegion : public cyclus::RegionModel  {
    */
   virtual ~NullRegion();
 
-/* ------------------- */
+  /* ------------------- */
 
 };
 

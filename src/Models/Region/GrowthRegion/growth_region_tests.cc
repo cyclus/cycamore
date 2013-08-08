@@ -12,8 +12,7 @@
 using namespace std;
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-void GrowthRegionTests::SetUp()
-{
+void GrowthRegionTests::SetUp() {
   region = new GrowthRegion();
   commodity_name = "commod";
   demand_type = "linear";
@@ -22,26 +21,22 @@ void GrowthRegionTests::SetUp()
 }
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-void GrowthRegionTests::TearDown()
-{
+void GrowthRegionTests::TearDown() {
   delete region;
 }
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-cyclus::Model* GrowthRegionModelConstructor()
-{
+cyclus::Model* GrowthRegionModelConstructor() {
   return dynamic_cast<cyclus::Model*>(new GrowthRegion());
 }
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-cyclus::RegionModel* GrowthRegionConstructor()
-{
+cyclus::RegionModel* GrowthRegionConstructor() {
   return dynamic_cast<cyclus::RegionModel*>(new GrowthRegion());
 }
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-void GrowthRegionTests::initRegion()
-{
+void GrowthRegionTests::initRegion() {
   stringstream ss("");
   ss << "<start>"
      << "  <commodity>"
@@ -62,14 +57,12 @@ void GrowthRegionTests::initRegion()
 }
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-bool GrowthRegionTests::ManagesCommodity(cyclus::Commodity& commodity)
-{
+bool GrowthRegionTests::ManagesCommodity(cyclus::Commodity& commodity) {
   return region->sdmanager_.ManagesCommodity(commodity);
 }
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-TEST_F(GrowthRegionTests,init)
-{
+TEST_F(GrowthRegionTests, init) {
   initRegion();
   cyclus::Commodity commodity(commodity_name);
   EXPECT_TRUE(ManagesCommodity(commodity));

@@ -16,12 +16,12 @@ NullRegion::~NullRegion() {}
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 extern "C" cyclus::Model* constructNullRegion() {
-      return new NullRegion();
+  return new NullRegion();
 }
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 extern "C" void destructNullRegion(cyclus::Model* model) {
-      delete model;
+  delete model;
 }
 
 /* -------------------- */

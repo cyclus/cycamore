@@ -7,18 +7,18 @@
 #include <string>
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-cyclus::Model* BatchReactorModelConstructor(){
+cyclus::Model* BatchReactorModelConstructor() {
   return dynamic_cast<cyclus::Model*>(new BatchReactor());
 }
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-cyclus::FacilityModel* BatchReactorConstructor(){
+cyclus::FacilityModel* BatchReactorConstructor() {
   return dynamic_cast<cyclus::FacilityModel*>(new BatchReactor());
 }
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 class BatchReactorTest : public ::testing::Test {
-protected:
+ protected:
 
   BatchReactor* src_facility;
   int lencycle, nbatch;

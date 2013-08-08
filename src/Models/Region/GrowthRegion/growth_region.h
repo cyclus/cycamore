@@ -26,8 +26,7 @@ class GrowthRegion;
    type are required and then determine, facility by facility, which
    of its institutions are available to build each facility.
  */
-class GrowthRegion : public cyclus::RegionModel
-{
+class GrowthRegion : public cyclus::RegionModel {
   friend class GrowthRegionTests;
  public:
   /* --- Module Members --- */
@@ -73,7 +72,7 @@ class GrowthRegion : public cyclus::RegionModel
  protected:
   /* --- GrowthRegion Members --- */
   /// a container of all commodities managed by region
-  std::set<cyclus::Commodity,cyclus::CommodityCompare> commodities_;
+  std::set<cyclus::Commodity, cyclus::CommodityCompare> commodities_;
 
   /// manager for Supply and emand
   cyclus::supply_demand::SupplyDemandManager sdmanager_;
