@@ -15,18 +15,20 @@
 
 #include <boost/lexical_cast.hpp>
 
-using namespace std;
-using boost::lexical_cast;
+
+namespace cycamore {
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 SourceFacility::SourceFacility() :
   out_commod_(""),
   recipe_name_(""),
   commod_price_(0),
-  capacity_(numeric_limits<double>::max()) {
+  capacity_(std::numeric_limits<double>::max()) {
+  using std::deque;
+  using std::numeric_limits;
   ordersWaiting_ = deque<cyclus::Message::Ptr>();
   inventory_ = cyclus::MatBuff();
-  setMaxInventorySize(numeric_limits<double>::max());
+  SetMaxInventorySize(numeric_limits<double>::max());
 }
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -34,9 +36,12 @@ SourceFacility::~SourceFacility() {}
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 void SourceFacility::InitModuleMembers(cyclus::QueryEngine* qe) {
+  using std::string;
+  using std::numeric_limits;
+  using boost::lexical_cast;
   cyclus::QueryEngine* output = qe->QueryElement("output");
 
-  setRecipe(output->GetElementContent("recipe"));
+  SetRecipe(output->GetElementContent("recipe"));
 
   string data = output->GetElementContent("outcommodity");
   SetCommodity(data);
@@ -53,9 +58,9 @@ void SourceFacility::InitModuleMembers(cyclus::QueryEngine* qe) {
 
   try {
     data = output->GetElementContent("inventorysize");
-    setMaxInventorySize(lexical_cast<double>(data));
+    SetMaxInventorySize(lexical_cast<double>(data));
   } catch (cyclus::Error e) {
-    setMaxInventorySize(numeric_limits<double>::max());
+    SetMaxInventorySize(numeric_limits<double>::max());
   }
 }
 
@@ -77,8 +82,8 @@ void SourceFacility::CloneModuleMembersFrom(cyclus::FacilityModel*
   SourceFacility* source = dynamic_cast<SourceFacility*>(sourceModel);
   SetCommodity(source->commodity());
   SetCapacity(source->capacity());
-  setRecipe(source->recipe());
-  setMaxInventorySize(source->maxInventorySize());
+  SetRecipe(source->recipe());
+  SetMaxInventorySize(source->MaxInventorySize());
   CopyProducedCommoditiesFrom(source);
 }
 
@@ -86,14 +91,14 @@ void SourceFacility::CloneModuleMembersFrom(cyclus::FacilityModel*
 void SourceFacility::HandleTick(int time) {
   LOG(cyclus::LEV_INFO3, "SrcFac") << FacName() << " is ticking {";
 
-  generateMaterial();
-  cyclus::Transaction trans = buildTransaction();
+  GenerateMaterial();
+  cyclus::Transaction trans = BuildTransaction();
 
   LOG(cyclus::LEV_INFO4, "SrcFac") << "offers " << trans.resource()->quantity() <<
                                    " kg of "
                                    << out_commod_ << ".";
 
-  sendOffer(trans);
+  SendOffer(trans);
 
   LOG(cyclus::LEV_INFO3, "SrcFac") << "}";
 }
@@ -143,7 +148,7 @@ void SourceFacility::ReceiveMessage(cyclus::Message::Ptr msg) {
 }
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-vector<cyclus::Resource::Ptr> SourceFacility::RemoveResource(
+std::vector<cyclus::Resource::Ptr> SourceFacility::RemoveResource(
   cyclus::Transaction order) {
   return cyclus::MatBuff::ToRes(inventory_.PopQty(order.resource()->quantity()));
 }
@@ -169,7 +174,7 @@ double SourceFacility::capacity() {
 }
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-void SourceFacility::setRecipe(std::string name) {
+void SourceFacility::SetRecipe(std::string name) {
   recipe_name_ = name;
 }
 
@@ -179,22 +184,22 @@ std::string SourceFacility::recipe() {
 }
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-void SourceFacility::setMaxInventorySize(double size) {
+void SourceFacility::SetMaxInventorySize(double size) {
   inventory_.SetCapacity(size);
 }
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-double SourceFacility::maxInventorySize() {
+double SourceFacility::MaxInventorySize() {
   return inventory_.capacity();
 }
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-double SourceFacility::inventorySize() {
+double SourceFacility::InventorySize() {
   return inventory_.quantity();
 }
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-void SourceFacility::generateMaterial() {
+void SourceFacility::GenerateMaterial() {
 
   double empty_space = inventory_.space();
   if (empty_space < cyclus::eps()) {
@@ -214,7 +219,7 @@ void SourceFacility::generateMaterial() {
 }
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-cyclus::Transaction SourceFacility::buildTransaction() {
+cyclus::Transaction SourceFacility::BuildTransaction() {
   // there is no minimum amount a source facility may send
   double min_amt = 0;
   double offer_amt = inventory_.quantity();
@@ -233,7 +238,7 @@ cyclus::Transaction SourceFacility::buildTransaction() {
 }
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-void SourceFacility::sendOffer(cyclus::Transaction trans) {
+void SourceFacility::SendOffer(cyclus::Transaction trans) {
   cyclus::MarketModel* market = cyclus::MarketModel::MarketForCommod(out_commod_);
 
   Communicator* recipient = dynamic_cast<Communicator*>(market);
@@ -251,3 +256,5 @@ extern "C" cyclus::Model* constructSourceFacility() {
 extern "C" void destructSourceFacility(cyclus::Model* model) {
   delete model;
 }
+
+} // namespace cycamore

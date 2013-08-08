@@ -10,12 +10,10 @@
 #include <string>
 #include <queue>
 
-using namespace std;
-
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-class FakeNullRegion : public NullRegion {
+class FakeNullRegion : public cycamore::NullRegion {
  public:
-  FakeNullRegion() : NullRegion() { }
+  FakeNullRegion() : cycamore::NullRegion() { }
 
   virtual ~FakeNullRegion() { }
 };

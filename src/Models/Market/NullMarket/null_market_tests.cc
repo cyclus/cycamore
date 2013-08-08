@@ -11,14 +11,13 @@
 #include <string>
 #include <queue>
 
-using namespace std;
-
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-class FakeNullMarket : public NullMarket {
+class FakeNullMarket : public cycamore::NullMarket {
  protected:
   cyclus::Message::Ptr msg_;
  public:
-  FakeNullMarket() : NullMarket() {
+  FakeNullMarket() : cycamore::NullMarket() {
+    using std::string;
     string kg = "kg";
     string qual = "qual";
     cyclus::GenericResource::Ptr res = cyclus::GenericResource::Ptr(

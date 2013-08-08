@@ -26,7 +26,7 @@ class TestProducer :
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 class ManagerInstTests : public ::testing::Test {
  protected:
-  ManagerInst* src_inst;
+  cycamore::ManagerInst* src_inst;
   TestProducer* producer;
 
   cyclus::Commodity commodity;

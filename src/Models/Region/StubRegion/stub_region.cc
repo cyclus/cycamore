@@ -3,6 +3,8 @@
 
 #include "stub_region.h"
 
+namespace cycamore {
+
 /* --------------------
  * all MODEL classes have these members
  * --------------------
@@ -65,3 +67,4 @@ extern "C" void destructStubRegion(cyclus::Model* model) {
 }
 
 /* ------------------- */
+} // namespace cycamore

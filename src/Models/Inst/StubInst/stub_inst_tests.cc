@@ -8,15 +8,13 @@
 
 #include <string>
 
-using namespace std;
-
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 class StubInstTest : public ::testing::Test {
  protected:
-  StubInst* src_inst;
+  cycamore::StubInst* src_inst;
 
   virtual void SetUp() {
-    src_inst = new StubInst();
+    src_inst = new cycamore::StubInst();
   };
 
   virtual void TearDown() {
@@ -26,12 +24,12 @@ class StubInstTest : public ::testing::Test {
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 cyclus::Model* StubInstModelConstructor() {
-  return dynamic_cast<cyclus::Model*>(new StubInst());
+  return dynamic_cast<cyclus::Model*>(new cycamore::StubInst());
 }
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 cyclus::InstModel* StubInstConstructor() {
-  return dynamic_cast<cyclus::InstModel*>(new StubInst());
+  return dynamic_cast<cyclus::InstModel*>(new cycamore::StubInst());
 }
 
 
@@ -42,7 +40,7 @@ TEST_F(StubInstTest, InitialState) {
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 TEST_F(StubInstTest, Print) {
-  EXPECT_NO_THROW(string s = src_inst->str());
+  EXPECT_NO_THROW(std::string s = src_inst->str());
   // Test StubInst specific aspects of the print method here
 }
 

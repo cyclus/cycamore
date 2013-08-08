@@ -11,6 +11,8 @@
 #include <queue>
 #include <map>
 
+namespace cycamore {
+
 /**
    Defines all possible phases this facility can be in
  */
@@ -96,7 +98,7 @@ class BatchReactor : public cyclus::FacilityModel,
      @param recipient the final recipient
      @param trans the transaction to send
    */
-  void sendMessage(Communicator* recipient, cyclus::Transaction trans);
+  void SendMessage(Communicator* recipient, cyclus::Transaction trans);
 
   /**
      Transacted resources are extracted through this method
@@ -174,7 +176,7 @@ class BatchReactor : public cyclus::FacilityModel,
   /**
      return the batch loading
    */
-  double batchLoading();
+  double BatchLoading();
 
   /**
      set the input commodity
@@ -291,7 +293,7 @@ class BatchReactor : public cyclus::FacilityModel,
   /**
      populate the phase name map
    */
-  void setUpPhaseNames();
+  void SetUpPhaseNames();
 
   /**
      resets the cycle timer
@@ -302,28 +304,28 @@ class BatchReactor : public cyclus::FacilityModel,
      return true if the cycle timer is >= the
      cycle length
    */
-  bool cycleComplete();
+  bool CycleComplete();
 
   /**
      return true if the core is filled
    */
-  bool coreFilled();
+  bool CoreFilled();
 
   /**
      set the next phase
      @param p the next phase
    */
-  void setPhase(Phase p);
+  void SetPhase(Phase p);
 
   /**
      make reqest for a specific amount of fuel
    */
-  void makeRequest(double amt);
+  void MakeRequest(double amt);
 
   /**
      offer all off-loaded fuel
    */
-  void makeOffers();
+  void MakeOffers();
 
   /**
      sends a request of offer to the commodity's market
@@ -333,7 +335,7 @@ class BatchReactor : public cyclus::FacilityModel,
   /**
      Processes all orders in ordersWaiting_
    */
-  void handleOrders();
+  void HandleOrders();
 
   /**
      move a certain amount of fuel from one buffer to another
@@ -351,23 +353,23 @@ class BatchReactor : public cyclus::FacilityModel,
      changed to out_recipe();
      @param amt the amount of fuel to offload
   */
-  void offLoadFuel(double amt);
+  void OffLoadFuel(double amt);
 
   /**
      load fuel from preCore_ into inCore_
    */
-  void loadCore();
+  void LoadCore();
 
   /**
      move a batch from inCore_ to postCore_
    */
-  void offloadBatch();
+  void OffloadBatch();
 
   /**
      move all material from inCore_ to postCore_
    */
-  void offloadCore();
+  void OffloadCore();
   /* --- */
 };
-
+} // namespace cycamore
 #endif

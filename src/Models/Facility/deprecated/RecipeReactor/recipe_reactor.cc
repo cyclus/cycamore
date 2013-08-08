@@ -290,7 +290,7 @@ void RecipeReactor::HandleTick(int time) {
   };
 
   makeRequests();
-  makeOffers();
+  MakeOffers();
   LOG(cyclus::LEV_INFO3, "RReact") << "}";
 }
 
@@ -355,19 +355,19 @@ void RecipeReactor::makeRequests() {
   LOG(cyclus::LEV_INFO5, "RReact") << name() << " has requested " <<
                                    request_res->quantity()
                                    << " kg of " << in_commod << ".";
-  sendMessage(recipient, trans);
+  SendMessage(recipient, trans);
   LOG(cyclus::LEV_INFO4, "RReact") << "}";
 }
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-void RecipeReactor::sendMessage(Communicator* recipient,
+void RecipeReactor::SendMessage(Communicator* recipient,
                                 cyclus::Transaction trans) {
   cyclus::Message::Ptr msg(new cyclus::Message(this, recipient, trans));
   msg->SendOn();
 }
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-void RecipeReactor::makeOffers() {
+void RecipeReactor::MakeOffers() {
   LOG(cyclus::LEV_INFO4, "RReact") << " making offers {";
   // MAKE cyclus::OFFERS
   // decide how much to offer
@@ -412,7 +412,7 @@ void RecipeReactor::makeOffers() {
                                      offer_mat->quantity()
                                      << " kg of " << commod << ".";
 
-    sendMessage(recipient, trans);
+    SendMessage(recipient, trans);
   }
   LOG(cyclus::LEV_INFO4, "RReact") << "}";
 }
@@ -456,7 +456,7 @@ void RecipeReactor::SetCapacity(double cap) {
 }
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-double RecipeReactor::inventorySize() {
+double RecipeReactor::InventorySize() {
   return inventory_size_;
 }
 

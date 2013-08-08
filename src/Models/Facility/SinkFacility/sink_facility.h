@@ -10,6 +10,8 @@
 #include "mat_buff.h"
 #include "logger.h"
 
+namespace cycamore {
+
 /**
    @class SinkFacility
    This cyclus::FacilityModel requests a finite amount of its input commodity.
@@ -162,13 +164,13 @@ class SinkFacility : public cyclus::FacilityModel  {
      sets the size of the storage inventory for received material
      @param size the storage size
    */
-  void setMaxInventorySize(double size);
+  void SetMaxInventorySize(double size);
 
   /// @return the maximum inventory storage size
-  double maxInventorySize();
+  double MaxInventorySize();
 
   /// @return the current inventory storage size
-  double inventorySize();
+  double InventorySize();
 
   /// @return the input commodities
   std::vector<std::string> InputCommodities();
@@ -202,5 +204,6 @@ class SinkFacility : public cyclus::FacilityModel  {
   const double getRequestAmt();
 };
 
+} // namespace cycamore
 #endif
 

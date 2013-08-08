@@ -18,9 +18,7 @@
 
 #include <boost/lexical_cast.hpp>
 
-using namespace std;
-using namespace boost;
-using boost::lexical_cast;
+namespace cycamore {
 
 int EnrichmentFacility::entry_ = 0;
 
@@ -38,6 +36,9 @@ EnrichmentFacility::~EnrichmentFacility() { }
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 void EnrichmentFacility::InitModuleMembers(cyclus::QueryEngine* qe) {
+  using std::string;
+  using std::numeric_limits;
+  using boost::lexical_cast;
   string data;
 
   cyclus::QueryEngine* input = qe->QueryElement("input");
@@ -46,9 +47,9 @@ void EnrichmentFacility::InitModuleMembers(cyclus::QueryEngine* qe) {
 
   try {
     data = input->GetElementContent("inventorysize");
-    setMaxInventorySize(lexical_cast<double>(data));
+    SetMaxInventorySize(lexical_cast<double>(data));
   } catch (cyclus::Error e) {
-    setMaxInventorySize(numeric_limits<double>::max());
+    SetMaxInventorySize(numeric_limits<double>::max());
   }
 
   cyclus::QueryEngine* output = qe->QueryElement("output");
@@ -83,7 +84,7 @@ void EnrichmentFacility::CloneModuleMembersFrom(cyclus::FacilityModel*
   set_in_commodity(source->in_commodity());
   set_in_recipe(source->in_recipe());
   set_out_commodity(source->out_commodity());
-  setMaxInventorySize(source->maxInventorySize());
+  SetMaxInventorySize(source->MaxInventorySize());
   set_commodity_price(source->commodity_price());
 
   LOG(cyclus::LEV_DEBUG1, "EnrFac") << "Cloned - " << str();
@@ -100,6 +101,8 @@ void EnrichmentFacility::AddResource(cyclus::Transaction trans,
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 std::vector<cyclus::Resource::Ptr> EnrichmentFacility::RemoveResource(
   cyclus::Transaction order) {
+  using std::vector;
+  using boost::dynamic_pointer_cast;
   cyclus::Resource::Ptr prsrc = order.resource();
   if (!cyclus::Material::IsMaterial(prsrc)) {
     throw cyclus::CastError("Can't remove a resource as a non-material");
@@ -107,7 +110,7 @@ std::vector<cyclus::Resource::Ptr> EnrichmentFacility::RemoveResource(
 
   cyclus::Material::Ptr rsrc = dynamic_pointer_cast<cyclus::Material>(prsrc);
 
-  cyclus::enrichment::Assays assays = getAssays(rsrc);
+  cyclus::enrichment::Assays assays = GetAssays(rsrc);
   double product_qty = cyclus::enrichment::UraniumQty(rsrc);
   double swu = cyclus::enrichment::SwuRequired(product_qty, assays);
   double natural_u = cyclus::enrichment::FeedQty(product_qty, assays);
@@ -125,7 +128,7 @@ std::vector<cyclus::Resource::Ptr> EnrichmentFacility::RemoveResource(
                                    cyclus::enrichment::TailsQty(product_qty, assays);
   LOG(cyclus::LEV_INFO5, "EnrFac") << "   * Tails Assay: " << assays.Tails() *
                                    100;
-  recordEnrichment(natural_u, swu);
+  RecordEnrichment(natural_u, swu);
 
   vector<cyclus::Resource::Ptr> ret;
   ret.push_back(order.resource());
@@ -149,8 +152,8 @@ void EnrichmentFacility::ReceiveMessage(cyclus::Message::Ptr msg) {
 void EnrichmentFacility::HandleTick(int time) {
   LOG(cyclus::LEV_INFO3, "EnrFac") << FacName() << " is ticking {";
 
-  makeRequest();
-  makeOffer();
+  MakeRequest();
+  MakeOffer();
 
   LOG(cyclus::LEV_INFO3, "EnrFac") << "}";
 }
@@ -159,13 +162,14 @@ void EnrichmentFacility::HandleTick(int time) {
 void EnrichmentFacility::HandleTock(int time) {
   LOG(cyclus::LEV_INFO3, "EnrFac") << FacName() << " is tocking {";
 
-  processOutgoingMaterial();
+  ProcessOutgoingMaterial();
 
   LOG(cyclus::LEV_INFO3, "EnrFac") << "}";
 }
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-void EnrichmentFacility::makeRequest() {
+void EnrichmentFacility::MakeRequest() {
+  using std::string;
   double amt = inventory_.space();
   double min_amt = 0;
   string commodity = in_commodity();
@@ -197,7 +201,7 @@ void EnrichmentFacility::makeRequest() {
 }
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-cyclus::Transaction EnrichmentFacility::buildTransaction() {
+cyclus::Transaction EnrichmentFacility::BuildTransaction() {
   // there is no minimum amount a source facility may send
   double min_amt = 0;
   double offer_amt = inventory_.quantity();
@@ -215,7 +219,7 @@ cyclus::Transaction EnrichmentFacility::buildTransaction() {
 }
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-void EnrichmentFacility::makeOffer() {
+void EnrichmentFacility::MakeOffer() {
   cyclus::MarketModel* market = cyclus::MarketModel::MarketForCommod(
                                   out_commodity());
 
@@ -224,7 +228,7 @@ void EnrichmentFacility::makeOffer() {
 
   // note that this is a hack. the amount of the resource being offered
   // is greater than the possible amount that can be serviced
-  cyclus::Transaction trans = buildTransaction();
+  cyclus::Transaction trans = BuildTransaction();
 
   cyclus::Message::Ptr msg(new cyclus::Message(this, recipient, trans));
 
@@ -238,7 +242,8 @@ void EnrichmentFacility::makeOffer() {
 }
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-void EnrichmentFacility::processOutgoingMaterial() {
+void EnrichmentFacility::ProcessOutgoingMaterial() {
+  using boost::dynamic_pointer_cast;
   double remove_total = 0;
   while (!orders_.empty()) {
     cyclus::Transaction trans = orders_.front()->trans();
@@ -253,7 +258,7 @@ void EnrichmentFacility::processOutgoingMaterial() {
     LOG(cyclus::LEV_DEBUG1, "EnrFac") << "Processing material: ";
     rsrc->Print();
 
-    cyclus::enrichment::Assays assays = getAssays(rsrc);
+    cyclus::enrichment::Assays assays = GetAssays(rsrc);
     double product_qty = cyclus::enrichment::UraniumQty(rsrc);
     remove_total += cyclus::enrichment::FeedQty(product_qty, assays);
 
@@ -270,14 +275,14 @@ void EnrichmentFacility::processOutgoingMaterial() {
 }
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-cyclus::enrichment::Assays EnrichmentFacility::getAssays(
+cyclus::enrichment::Assays EnrichmentFacility::GetAssays(
   cyclus::Material::Ptr rsrc) {
   double product_assay = cyclus::enrichment::UraniumAssay(rsrc);
   return cyclus::enrichment::Assays(feed_assay(), product_assay, tails_assay());
 }
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-void EnrichmentFacility::recordEnrichment(double natural_u, double swu) {
+void EnrichmentFacility::RecordEnrichment(double natural_u, double swu) {
   LOG(cyclus::LEV_DEBUG1, "EnrFac") << name() << " has enriched a material:";
   LOG(cyclus::LEV_DEBUG1, "EnrFac") << "  * Amount: " << natural_u;
   LOG(cyclus::LEV_DEBUG1, "EnrFac") << "  *    SWU: " << swu;
@@ -300,3 +305,4 @@ extern "C" cyclus::Model* constructEnrichmentFacility() {
 extern "C" void destructEnrichmentFacility(cyclus::Model* model) {
   delete model;
 }
+} // namespace cycamore

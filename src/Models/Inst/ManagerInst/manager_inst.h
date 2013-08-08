@@ -7,6 +7,8 @@
 #include "commodity_producer_manager.h"
 #include "commodity_producer.h"
 
+namespace cycamore {
+
 /**
    @class ManagerInst
 
@@ -56,5 +58,5 @@ class ManagerInst : public cyclus::InstModel,
   void WriteProducerInformation(cyclus::supply_demand::CommodityProducer*
                                 producer);
 };
-
+} // namespace cycamore 
 #endif

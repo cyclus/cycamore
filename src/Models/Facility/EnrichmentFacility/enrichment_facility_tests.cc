@@ -11,14 +11,12 @@
 
 #include <sstream>
 
-using namespace std;
-
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 void EnrichmentFacilityTest::SetUp() {
-  src_facility = new EnrichmentFacility();
+  src_facility = new cycamore::EnrichmentFacility();
 
-  initParameters();
-  initFacility();
+  InitParameters();
+  InitFacility();
 }
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -29,7 +27,7 @@ void EnrichmentFacilityTest::TearDown() {
 }
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-void EnrichmentFacilityTest::initParameters() {
+void EnrichmentFacilityTest::InitParameters() {
   in_commod = "incommod";
   in_commod_market = new TestMarket();
   in_commod_market->SetCommodity(in_commod);
@@ -53,8 +51,8 @@ void EnrichmentFacilityTest::initParameters() {
 }
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-void EnrichmentFacilityTest::initFacility() {
-  stringstream ss("");
+void EnrichmentFacilityTest::InitFacility() {
+  std::stringstream ss("");
   ss << "<start>"
      << "  <input>"
      << "    <incommodity>" << in_commod << "</incommodity>"
@@ -82,13 +80,13 @@ TEST_F(EnrichmentFacilityTest, init) {
   EXPECT_EQ(out_commod, src_facility->out_commodity());
   EXPECT_DOUBLE_EQ(tails_assay, src_facility->tails_assay());
   EXPECT_DOUBLE_EQ(feed_assay, src_facility->feed_assay());
-  EXPECT_DOUBLE_EQ(inv_size, src_facility->maxInventorySize());
+  EXPECT_DOUBLE_EQ(inv_size, src_facility->MaxInventorySize());
   EXPECT_DOUBLE_EQ(commodity_price, src_facility->commodity_price());
 }
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 TEST_F(EnrichmentFacilityTest, clone) {
-  EnrichmentFacility* cloned_fac = new EnrichmentFacility();
+  cycamore::EnrichmentFacility* cloned_fac = new cycamore::EnrichmentFacility();
   cloned_fac->CloneModuleMembersFrom(src_facility);
 
   EXPECT_EQ(in_recipe, cloned_fac->in_recipe());
@@ -96,7 +94,7 @@ TEST_F(EnrichmentFacilityTest, clone) {
   EXPECT_EQ(out_commod, cloned_fac->out_commodity());
   EXPECT_DOUBLE_EQ(tails_assay, cloned_fac->tails_assay());
   EXPECT_DOUBLE_EQ(feed_assay, cloned_fac->feed_assay());
-  EXPECT_DOUBLE_EQ(inv_size, cloned_fac->maxInventorySize());
+  EXPECT_DOUBLE_EQ(inv_size, cloned_fac->MaxInventorySize());
   EXPECT_DOUBLE_EQ(commodity_price, cloned_fac->commodity_price());
 
   delete cloned_fac;
@@ -104,12 +102,12 @@ TEST_F(EnrichmentFacilityTest, clone) {
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 cyclus::Model* EnrichmentFacilityModelConstructor() {
-  return dynamic_cast<cyclus::Model*>(new EnrichmentFacility());
+  return dynamic_cast<cyclus::Model*>(new cycamore::EnrichmentFacility());
 }
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 cyclus::FacilityModel* EnrichmentFacilityConstructor() {
-  return dynamic_cast<cyclus::FacilityModel*>(new EnrichmentFacility());
+  return dynamic_cast<cyclus::FacilityModel*>(new cycamore::EnrichmentFacility());
 }
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -

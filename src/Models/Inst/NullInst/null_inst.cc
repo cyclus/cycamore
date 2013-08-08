@@ -3,7 +3,7 @@
 
 #include "null_inst.h"
 
-using namespace std;
+namespace cycamore {
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 NullInst::NullInst() {}
@@ -23,5 +23,4 @@ extern "C" void destructNullInst(cyclus::Model* model) {
 
 /* ------------------- */
 
-
-
+} // namespace cycamore

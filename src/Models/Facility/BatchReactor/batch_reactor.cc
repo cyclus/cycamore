@@ -14,11 +14,11 @@
 #include "cyc_limits.h"
 #include "error.h"
 
-using namespace std;
-using boost::lexical_cast;
+namespace cycamore {
 
 // static members
-map<Phase, string> BatchReactor::phase_names_ = map<Phase, string>();
+std::map<Phase, std::string> BatchReactor::phase_names_ = \
+  std::map<Phase, std::string>();
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 BatchReactor::BatchReactor() :
@@ -37,7 +37,7 @@ BatchReactor::BatchReactor() :
   inCore_.SetCapacity(cyclus::kBuffInfinity);
   postCore_.SetCapacity(cyclus::kBuffInfinity);
   if (phase_names_.size() < 1) {
-    setUpPhaseNames();
+    SetUpPhaseNames();
   }
 }
 
@@ -46,6 +46,8 @@ BatchReactor::~BatchReactor() {}
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 void BatchReactor::InitModuleMembers(cyclus::QueryEngine* qe) {
+  using std::string;
+  using boost::lexical_cast;
   cyclus::QueryEngine* input = qe->QueryElement("fuel_input");
   set_in_commodity(input->GetElementContent("incommodity"));
   set_in_recipe(input->GetElementContent("inrecipe"));
@@ -123,7 +125,7 @@ void BatchReactor::EnterSimulationAsModule() {
   preCore_.SetCapacity(in_core_loading());
   inCore_.SetCapacity(in_core_loading());
   reset_cycle_timer();
-  setPhase(BEGIN);
+  SetPhase(BEGIN);
   LOG(cyclus::LEV_DEBUG2, "BReact") << "Batch Reactor " << name()
                                     << " is entering the simuluation with members:";
   LOG(cyclus::LEV_DEBUG2, "BReact") << "  * in core loading: " <<
@@ -140,6 +142,8 @@ void BatchReactor::EnterSimulationAsModule() {
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 void BatchReactor::HandleTick(int time) {
+  using std::string;
+  using boost::lexical_cast;
   LOG(cyclus::LEV_INFO3, "BReact") << name() << " is ticking at time "
                                    << time << " {";
   LOG(cyclus::LEV_DEBUG3, "BReact") << "The current phase is: "
@@ -147,7 +151,7 @@ void BatchReactor::HandleTick(int time) {
 
 
   if (LifetimeReached(time)) {
-    setPhase(END);
+    SetPhase(END);
   }
 
   double fuel_quantity, request;
@@ -162,7 +166,7 @@ void BatchReactor::HandleTick(int time) {
       break;
 
     case REFUEL:
-      offloadBatch();
+      OffloadBatch();
 
     case REFUEL_DELAY:
       // intentional fall through
@@ -175,12 +179,12 @@ void BatchReactor::HandleTick(int time) {
       fuel_quantity = preCore_.quantity() + inCore_.quantity();
       request = in_core_loading() - fuel_quantity;
       if (request > cyclus::eps()) {
-        makeRequest(request);
+        MakeRequest(request);
       }
       break;
 
     case END:
-      offloadCore();
+      OffloadCore();
       break;
 
     default:
@@ -190,18 +194,20 @@ void BatchReactor::HandleTick(int time) {
       break;
   }
 
-  makeOffers();
+  MakeOffers();
 
   LOG(cyclus::LEV_INFO3, "BReact") << "}";
 }
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 void BatchReactor::HandleTock(int time) {
+  using std::string;
+  using boost::lexical_cast;
   LOG(cyclus::LEV_INFO3, "BReact") << name() << " is tocking {";
   LOG(cyclus::LEV_DEBUG3, "BReact") << "The current phase is: "
                                     << phase_names_[phase_];
 
-  handleOrders();
+  HandleOrders();
 
   string msg;
 
@@ -216,23 +222,23 @@ void BatchReactor::HandleTock(int time) {
       // intentional fall through
 
     case WAITING:
-      loadCore();
-      if (coreFilled()) {
+      LoadCore();
+      if (CoreFilled()) {
 
-        setPhase(OPERATION);
+        SetPhase(OPERATION);
         reset_cycle_timer();
       } else {
-        setPhase(WAITING);
+        SetPhase(WAITING);
       }
       break;
 
     case REFUEL:
-      setPhase(REFUEL_DELAY);
+      SetPhase(REFUEL_DELAY);
       time_delayed_ = 0;
     case REFUEL_DELAY:
-      loadCore();
-      if (time_delayed_ > refuel_delay() && coreFilled()) {
-        setPhase(OPERATION);
+      LoadCore();
+      if (time_delayed_ > refuel_delay() && CoreFilled()) {
+        SetPhase(OPERATION);
         reset_cycle_timer();
       } else {
         ++time_delayed_;
@@ -240,8 +246,8 @@ void BatchReactor::HandleTock(int time) {
       break;
 
     case OPERATION:
-      if (cycleComplete()) {
-        setPhase(REFUEL);
+      if (CycleComplete()) {
+        SetPhase(REFUEL);
       }
       break;
 
@@ -272,14 +278,14 @@ void BatchReactor::ReceiveMessage(cyclus::Message::Ptr msg) {
 }
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-void BatchReactor::sendMessage(Communicator* recipient,
+void BatchReactor::SendMessage(Communicator* recipient,
                                cyclus::Transaction trans) {
   cyclus::Message::Ptr msg(new cyclus::Message(this, recipient, trans));
   msg->SendOn();
 }
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-vector<cyclus::Resource::Ptr> BatchReactor::RemoveResource(
+std::vector<cyclus::Resource::Ptr> BatchReactor::RemoveResource(
   cyclus::Transaction order) {
   cyclus::Transaction trans = order;
   double amt = trans.resource()->quantity();
@@ -352,7 +358,7 @@ int BatchReactor::batches_per_core() {
 }
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-double BatchReactor::batchLoading() {
+double BatchReactor::BatchLoading() {
   return in_core_loading_ / batches_per_core_;
 }
 
@@ -413,7 +419,7 @@ bool BatchReactor::CheckDecommissionCondition() {
 }
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-void BatchReactor::setPhase(Phase p) {
+void BatchReactor::SetPhase(Phase p) {
   LOG(cyclus::LEV_DEBUG2, "BReact") << "BatchReactor " << name()
                                     << " is changing phases -";
   LOG(cyclus::LEV_DEBUG2, "BReact") << "  * from phase: " << phase_names_[phase_];
@@ -422,7 +428,8 @@ void BatchReactor::setPhase(Phase p) {
 }
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-void BatchReactor::setUpPhaseNames() {
+void BatchReactor::SetUpPhaseNames() {
+  using std::make_pair;
   phase_names_.insert(make_pair(INIT, "initialization"));
   phase_names_.insert(make_pair(BEGIN, "beginning"));
   phase_names_.insert(make_pair(OPERATION, "operation"));
@@ -438,12 +445,12 @@ void BatchReactor::reset_cycle_timer() {
 }
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-bool BatchReactor::cycleComplete() {
+bool BatchReactor::CycleComplete() {
   return (cycle_timer_ >= cycle_length_ - 1);
 }
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-bool BatchReactor::coreFilled() {
+bool BatchReactor::CoreFilled() {
   LOG(cyclus::LEV_DEBUG2, "BReact") << "Querying whether the core is filled -";
   LOG(cyclus::LEV_DEBUG2, "BReact") << "  * quantity in core: " <<
                                     inCore_.quantity();
@@ -455,12 +462,12 @@ bool BatchReactor::coreFilled() {
 }
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-void BatchReactor::makeRequest(double amt) {
+void BatchReactor::MakeRequest(double amt) {
   interactWithMarket(in_commodity(), amt, cyclus::REQUEST);
 }
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-void BatchReactor::makeOffers() {
+void BatchReactor::MakeOffers() {
   if (!postCore_.empty()) {
     interactWithMarket(out_commodity(), postCore_.quantity(), cyclus::OFFER);
   }
@@ -469,6 +476,7 @@ void BatchReactor::makeOffers() {
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 void BatchReactor::interactWithMarket(std::string commod, double amt,
                                       cyclus::TransType type) {
+  using std::string;
   LOG(cyclus::LEV_INFO4, "BReact") << " making requests {";
   // get the market
   cyclus::MarketModel* market = cyclus::MarketModel::MarketForCommod(commod);
@@ -506,12 +514,12 @@ void BatchReactor::interactWithMarket(std::string commod, double amt,
   LOG(cyclus::LEV_INFO5, "BReact") << name() << text << amt
                                    << " kg of " << commod << ".";
   // send the message
-  sendMessage(recipient, trans);
+  SendMessage(recipient, trans);
   LOG(cyclus::LEV_INFO4, "BReact") << "}";
 }
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-void BatchReactor::handleOrders() {
+void BatchReactor::HandleOrders() {
   while (!ordersWaiting_.empty()) {
     cyclus::Message::Ptr order = ordersWaiting_.front();
     order->trans().ApproveTransfer();
@@ -522,14 +530,14 @@ void BatchReactor::handleOrders() {
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 void BatchReactor::moveFuel(cyclus::MatBuff& fromBuff, cyclus::MatBuff& toBuff,
                             double amt) {
-  vector<cyclus::Material::Ptr> to_move = fromBuff.PopQty(amt);
+  std::vector<cyclus::Material::Ptr> to_move = fromBuff.PopQty(amt);
   for (int i = 0; i < to_move.size(); i++) {
     toBuff.PushOne(to_move.at(i));
   }
 }
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-void BatchReactor::offLoadFuel(double amt) {
+void BatchReactor::OffLoadFuel(double amt) {
   inCore_.PopQty(amt);
   double factor = out_core_loading() / in_core_loading();
   double out_amount = amt * factor;
@@ -540,7 +548,7 @@ void BatchReactor::offLoadFuel(double amt) {
 }
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-void BatchReactor::loadCore() {
+void BatchReactor::LoadCore() {
   if (preCore_.quantity() > cyclus::eps()) {
     moveFuel(preCore_, inCore_, preCore_.quantity());
     LOG(cyclus::LEV_DEBUG2, "BReact") << "BatchReactor " << name()
@@ -551,8 +559,8 @@ void BatchReactor::loadCore() {
 }
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-void BatchReactor::offloadBatch() {
-  offLoadFuel(batchLoading());
+void BatchReactor::OffloadBatch() {
+  OffLoadFuel(BatchLoading());
 
   LOG(cyclus::LEV_DEBUG2, "BReact") << "BatchReactor " << name()
                                     << " removed a batch of fuel from the core:";
@@ -562,8 +570,8 @@ void BatchReactor::offloadBatch() {
 }
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-void BatchReactor::offloadCore() {
-  offLoadFuel(inCore_.quantity());
+void BatchReactor::OffloadCore() {
+  OffLoadFuel(inCore_.quantity());
   LOG(cyclus::LEV_DEBUG2, "BReact") << "BatchReactor " << name()
                                     << " removed a core of fuel from the core:";
   LOG(cyclus::LEV_DEBUG2, "BReact") << "  precore level: " << preCore_.quantity();
@@ -581,3 +589,5 @@ extern "C" cyclus::Model* constructBatchReactor() {
 extern "C" void destructBatchReactor(cyclus::Model* model) {
   delete model;
 }
+
+} // namespace cycamore
