@@ -8,7 +8,7 @@
 namespace cycamore {
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-void BuildOrderList::addBuildOrder(cyclus::Prototype* p, int number,
+void BuildOrderList::AddBuildOrder(cyclus::Prototype* p, int number,
                                    int time) {
   using std::map;
   using std::set;
@@ -27,7 +27,7 @@ void BuildOrderList::addBuildOrder(cyclus::Prototype* p, int number,
 }
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-std::set<BuildOrder> BuildOrderList::extractOrders(int time) {
+std::set<BuildOrder> BuildOrderList::ExtractOrders(int time) {
   using std::map;
   using std::set;
   using std::make_pair;
@@ -60,7 +60,7 @@ void DeployInst::InitModuleMembers(cyclus::QueryEngine* qe) {
     string name = order->GetElementContent("prototype");
     int number = atoi(order->GetElementContent("number").c_str());
     int time = atoi(order->GetElementContent("date").c_str());
-    build_orders_.addBuildOrder(cyclus::Prototype::GetRegisteredPrototype(name),
+    build_orders_.AddBuildOrder(cyclus::Prototype::GetRegisteredPrototype(name),
                                 number, time);
   }
 
@@ -71,7 +71,7 @@ void DeployInst::HandleTick(int time) {
   using std::map;
   using std::set;
   using std::make_pair;
-  set<BuildOrder> orders = build_orders_.extractOrders(time);
+  set<BuildOrder> orders = build_orders_.ExtractOrders(time);
   for (set<BuildOrder>::iterator it = orders.begin();
        it != orders.end(); it++) {
 
