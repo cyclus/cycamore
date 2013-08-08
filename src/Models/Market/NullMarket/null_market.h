@@ -98,7 +98,7 @@ class NullMarket : public cyclus::MarketModel
      The messages of both offer and request types that have been sorted
      according to thie size.
    */
-  typedef std::multimap<double,cyclus::Message::Ptr> SortedMstList;
+  typedef std::multimap<double,cyclus::Message::Ptr> SortedMsgList;
 
   /**
      The requests that have been sorted according to their size.
