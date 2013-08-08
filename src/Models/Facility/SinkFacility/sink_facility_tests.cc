@@ -5,8 +5,8 @@
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 void SinkFacilityTest::SetUp() {
-  initParameters();
-  setUpSinkFacility();
+  InitParameters();
+  SetUpSinkFacility();
 }
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -16,7 +16,7 @@ void SinkFacilityTest::TearDown() {
 }
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-void SinkFacilityTest::initParameters() {
+void SinkFacilityTest::InitParameters() {
   commod_ = "incommod";
   commod_market = new TestMarket();
   commod_market->SetCommodity(commod_);
@@ -24,7 +24,7 @@ void SinkFacilityTest::initParameters() {
 }
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-void SinkFacilityTest::setUpSinkFacility() {
+void SinkFacilityTest::SetUpSinkFacility() {
   using cycamore::SinkFacility;
   src_facility = new SinkFacility();
   src_facility->AddCommodity(commod_);
@@ -33,7 +33,7 @@ void SinkFacilityTest::setUpSinkFacility() {
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 TEST_F(SinkFacilityTest, InitialState) {
   int time = 1;
-  EXPECT_DOUBLE_EQ(0.0, src_facility->inventorySize());
+  EXPECT_DOUBLE_EQ(0.0, src_facility->InventorySize());
 }
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -43,7 +43,7 @@ TEST_F(SinkFacilityTest, clone) {
   cloned_fac->CloneModuleMembersFrom(src_facility);
 
   EXPECT_EQ(src_facility->capacity(), cloned_fac->capacity());
-  EXPECT_EQ(src_facility->maxInventorySize(), cloned_fac->maxInventorySize());
+  EXPECT_EQ(src_facility->MaxInventorySize(), cloned_fac->MaxInventorySize());
 
   delete cloned_fac;
 }
@@ -63,15 +63,15 @@ TEST_F(SinkFacilityTest, ReceiveMessage) {
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 TEST_F(SinkFacilityTest, Tick) {
   int time = 1;
-  EXPECT_DOUBLE_EQ(0.0, src_facility->inventorySize());
+  EXPECT_DOUBLE_EQ(0.0, src_facility->InventorySize());
   EXPECT_NO_THROW(src_facility->HandleTick(time));
-  EXPECT_DOUBLE_EQ(0.0, src_facility->inventorySize());
+  EXPECT_DOUBLE_EQ(0.0, src_facility->InventorySize());
 }
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 TEST_F(SinkFacilityTest, Tock) {
   int time = 1;
-  EXPECT_DOUBLE_EQ(0.0, src_facility->inventorySize());
+  EXPECT_DOUBLE_EQ(0.0, src_facility->InventorySize());
   EXPECT_NO_THROW(src_facility->HandleTock(time));
 }
 

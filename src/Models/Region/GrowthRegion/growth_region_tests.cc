@@ -35,7 +35,7 @@ cyclus::RegionModel* GrowthRegionConstructor() {
 }
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-void GrowthRegionTests::initRegion() {
+void GrowthRegionTests::InitRegion() {
   using std::stringstream;
   stringstream ss("");
   ss << "<start>"
@@ -63,7 +63,7 @@ bool GrowthRegionTests::ManagesCommodity(cyclus::Commodity& commodity) {
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 TEST_F(GrowthRegionTests, init) {
-  initRegion();
+  InitRegion();
   cyclus::Commodity commodity(commodity_name);
   EXPECT_TRUE(ManagesCommodity(commodity));
 }

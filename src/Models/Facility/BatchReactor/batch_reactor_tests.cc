@@ -21,8 +21,8 @@ void BatchReactorTest::SetUp() {
   commodity = "power";
   capacity = 200;
   cost = capacity;
-  initSrcFacility();
-  initWorld();
+  InitSrcFacility();
+  InitWorld();
 }
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -33,7 +33,7 @@ void BatchReactorTest::TearDown() {
 }
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-void BatchReactorTest::initSrcFacility() {
+void BatchReactorTest::InitSrcFacility() {
   std::stringstream ss("");
   ss << "<start>"
      << "  <fuel_input>"
@@ -65,7 +65,7 @@ void BatchReactorTest::initSrcFacility() {
 }
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-void BatchReactorTest::initWorld() {
+void BatchReactorTest::InitWorld() {
   incommod_market = new TestMarket();
   incommod_market->SetCommodity(in_commod);
   cyclus::MarketModel::RegisterMarket(incommod_market);

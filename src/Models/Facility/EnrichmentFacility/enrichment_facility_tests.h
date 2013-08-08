@@ -18,6 +18,6 @@ class EnrichmentFacilityTest : public ::testing::Test {
 
   virtual void SetUp();
   virtual void TearDown();
-  void initParameters();
-  void initFacility();
+  void InitParameters();
+  void InitFacility();
 };

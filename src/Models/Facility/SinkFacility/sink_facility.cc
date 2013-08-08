@@ -47,9 +47,9 @@ void SinkFacility::InitModuleMembers(cyclus::QueryEngine* qe) {
 
   try {
     data = input->GetElementContent("inventorysize");
-    setMaxInventorySize(lexical_cast<double>(data));
+    SetMaxInventorySize(lexical_cast<double>(data));
   } catch (cyclus::Error e) {
-    setMaxInventorySize(numeric_limits<double>::max());
+    SetMaxInventorySize(numeric_limits<double>::max());
   }
 }
 
@@ -78,7 +78,7 @@ void SinkFacility::CloneModuleMembersFrom(cyclus::FacilityModel* sourceModel) {
   using std::string;
   SinkFacility* source = dynamic_cast<SinkFacility*>(sourceModel);
   SetCapacity(source->capacity());
-  setMaxInventorySize(source->maxInventorySize());
+  SetMaxInventorySize(source->MaxInventorySize());
   in_commods_ = source->InputCommodities();
 }
 
@@ -155,17 +155,17 @@ double SinkFacility::capacity() {
 }
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-void SinkFacility::setMaxInventorySize(double size) {
+void SinkFacility::SetMaxInventorySize(double size) {
   inventory_.SetCapacity(size);
 }
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-double SinkFacility::maxInventorySize() {
+double SinkFacility::MaxInventorySize() {
   return inventory_.capacity();
 }
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-double SinkFacility::inventorySize() {
+double SinkFacility::InventorySize() {
   return inventory_.quantity();
 }
 
