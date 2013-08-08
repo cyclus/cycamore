@@ -133,7 +133,7 @@ class TestFile():
             io_tuple = p.communicate()
             output = io_tuple[0]
         except subprocess.CalledProcessError, e:
-            Print(e)
+            print(e)
         return output
         
     def no_errors(self, output):
