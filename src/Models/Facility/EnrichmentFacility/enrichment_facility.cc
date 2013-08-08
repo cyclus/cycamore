@@ -96,14 +96,14 @@ void EnrichmentFacility::CloneModuleMembersFrom(cyclus::FacilityModel* sourceMod
 }
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-void EnrichmentFacility::addResource(cyclus::Transaction trans, std::vector<cyclus::Resource::Ptr> manifest)
+void EnrichmentFacility::AddResource(cyclus::Transaction trans, std::vector<cyclus::Resource::Ptr> manifest)
 {
   LOG(cyclus::LEV_INFO5, "EnrFac") << name() << " adding material qty: " << manifest.at(0)->quantity();
   inventory_.PushAll(cyclus::MatBuff::ToMat(manifest));
 }
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-std::vector<cyclus::Resource::Ptr> EnrichmentFacility::removeResource(cyclus::Transaction order)
+std::vector<cyclus::Resource::Ptr> EnrichmentFacility::RemoveResource(cyclus::Transaction order)
 {
   cyclus::Resource::Ptr prsrc = order.resource();
   if (!cyclus::Material::IsMaterial(prsrc))

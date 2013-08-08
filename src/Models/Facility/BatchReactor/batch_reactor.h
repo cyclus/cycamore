@@ -103,14 +103,14 @@ class BatchReactor : public cyclus::FacilityModel, public cyclus::supply_demand:
      @param order the msg/order for which resource(s) are to be prepared
      @return list of resources to be sent for this order
    */
-  virtual std::vector<cyclus::Resource::Ptr> removeResource(cyclus::Transaction order);
+  virtual std::vector<cyclus::Resource::Ptr> RemoveResource(cyclus::Transaction order);
 
   /**
      Transacted resources are received through this method
      @param trans the transaction to which these resource objects belong
      @param manifest is the set of resources being received
    */
-  virtual void addResource(cyclus::Transaction trans,
+  virtual void AddResource(cyclus::Transaction trans,
         		   std::vector<cyclus::Resource::Ptr> manifest);
   /* --- */
 
@@ -231,7 +231,7 @@ class BatchReactor : public cyclus::FacilityModel, public cyclus::supply_demand:
      facilities over write this method if a condition must be met
      before their destructors can be called
   */
-  virtual bool checkDecommissionCondition();
+  virtual bool CheckDecommissionCondition();
   /* --- */
 
  private:

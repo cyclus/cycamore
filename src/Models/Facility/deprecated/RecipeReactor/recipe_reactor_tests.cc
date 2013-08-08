@@ -85,7 +85,7 @@ class RecipeReactorTest : public ::testing::Test {
 
     virtual void SetUp(){
       src_facility = new FakeRecipeReactor();
-      src_facility->setParent(new TestInst());
+      src_facility->SetParent(new TestInst());
       new_facility = new FakeRecipeReactor();
       in_market_ = new TestMarket(src_facility->inCommod());
       out_market_ = new TestMarket(src_facility->outCommod());

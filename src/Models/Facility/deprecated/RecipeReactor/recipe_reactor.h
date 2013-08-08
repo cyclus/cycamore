@@ -88,10 +88,10 @@
    sends appropriate materials of the outgoing recipe in the inventory
    in order to fill the ordersWaiting.
 
-   @subsection addResource raddResource
+   @subsection AddResource rAddResource
    The RecipeReactor puts the material it receives in the stocks.
 
-   @subsection removeResource removeResource
+   @subsection RemoveResource RemoveResource
    Spent fuel of the output recipe is pulled from inventory to fulfill
    orders.
    @subsection infinite If Infinite Capacity:
@@ -131,12 +131,12 @@ class RecipeReactor : public cyclus::FacilityModel  {
   /**
      initialize an object from XML input
    */
-  virtual void init(xmlNodePtr cur);
+  virtual void Init(xmlNodePtr cur);
 
   /**
      initialize an object by copying another
    */
-  virtual void copy(RecipeReactor* src);
+  virtual void Copy(RecipeReactor* src);
 
   /**
      This drills down the dependency tree to initialize all relevant
@@ -181,7 +181,7 @@ class RecipeReactor : public cyclus::FacilityModel  {
      @return list of resources to be sent for this order
 
    */
-  virtual std::vector<cyclus::Resource::Ptr> removeResource(cyclus::Transaction order);
+  virtual std::vector<cyclus::Resource::Ptr> RemoveResource(cyclus::Transaction order);
 
   /**
      Transacted resources are received through this method
@@ -189,7 +189,7 @@ class RecipeReactor : public cyclus::FacilityModel  {
      @param trans the transaction to which these resource objects belong
      @param manifest is the set of resources being received
    */
-  virtual void addResource(cyclus::Transaction trans,
+  virtual void AddResource(cyclus::Transaction trans,
 			   std::vector<cyclus::Resource::Ptr> manifest);
 
   /**
