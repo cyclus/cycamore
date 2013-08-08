@@ -20,10 +20,10 @@ typedef std::pair<cyclus::Prototype*, int> BuildOrder;
 class BuildOrderList {
  public:
   /// add a build order
-  void addBuildOrder(cyclus::Prototype* p, int number, int time);
+  void AddBuildOrder(cyclus::Prototype* p, int number, int time);
 
   /// extract a set of build orders
-  std::set<BuildOrder> extractOrders(int time);
+  std::set<BuildOrder> ExtractOrders(int time);
 
  private:
   std::map<int, std::set<BuildOrder> > all_orders_;
