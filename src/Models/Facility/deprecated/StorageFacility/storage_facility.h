@@ -95,7 +95,7 @@ class StorageFacility : public cyclus::FacilityModel
      @return list of resources to be sent for this order
 
    */
-  virtual std::vector<cyclus::Resource::Ptr> removeResource(cyclus::Transaction order);
+  virtual std::vector<cyclus::Resource::Ptr> RemoveResource(cyclus::Transaction order);
 
   /**
      Transacted resources are received through this method
@@ -103,7 +103,7 @@ class StorageFacility : public cyclus::FacilityModel
      @param trans the transaction to which these resource objects belong
      @param manifest is the set of resources being received
    */
-  virtual void addResource(cyclus::Transaction trans,
+  virtual void AddResource(cyclus::Transaction trans,
 			   std::vector<cyclus::Resource::Ptr> manifest);
 
   /**

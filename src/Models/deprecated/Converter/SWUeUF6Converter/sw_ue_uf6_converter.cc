@@ -14,8 +14,8 @@
 using namespace std;
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-void SWUeUF6Converter::init(xmlNodePtr cur) {
-  cyclus::ConverterModel::init(cur);
+void SWUeUF6Converter::Init(xmlNodePtr cur) {
+  cyclus::ConverterModel::Init(cur);
 
   // move XML pointer to current model
   cur = XMLinput->get_xpath_element(cur,"model/SWUeUF6Converter");
@@ -27,9 +27,9 @@ void SWUeUF6Converter::init(xmlNodePtr cur) {
 }
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-void SWUeUF6Converter::copy(SWUeUF6Converter* src) {
+void SWUeUF6Converter::Copy(SWUeUF6Converter* src) {
 
-  cyclus::ConverterModel::copy(src);
+  cyclus::ConverterModel::Copy(src);
 
   in_commod_ = src->in_commod_;
   out_commod_ = src->out_commod_;
@@ -38,7 +38,7 @@ void SWUeUF6Converter::copy(SWUeUF6Converter* src) {
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 void SWUeUF6Converter::copyFreshModel(cyclus::Model* src)
 {
-  copy((SWUeUF6Converter*)src);
+  Copy((SWUeUF6Converter*)src);
 }
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -50,7 +50,7 @@ std::string SWUeUF6Converter::str() {
 }
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-cyclus::Message::Ptr SWUeUF6Converter::convert(cyclus::Message::Ptr convMsg, cyclus::Message::Ptr refMsg)
+cyclus::Message::Ptr SWUeUF6Converter::Convert(cyclus::Message::Ptr convMsg, cyclus::Message::Ptr refMsg)
 {
   // Figure out what you're converting to and from
   in_commod_ = convMsg->trans().commod();
@@ -102,7 +102,7 @@ cyclus::Message::Ptr SWUeUF6Converter::convert(cyclus::Message::Ptr convMsg, cyc
   }
 
   // Figure out xp the enrichment of the UF6 object
-  xp = iso_vector.massFraction(922350);
+  xp = iso_vector.MassFraction(922350);
 
   // Figure out xf, the enrichment of the feed material
   // xf = castEnr->getFeedFrac();

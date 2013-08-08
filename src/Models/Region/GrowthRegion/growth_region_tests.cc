@@ -62,7 +62,7 @@ void GrowthRegionTests::initRegion()
 }
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-bool GrowthRegionTests::managesCommodity(cyclus::Commodity& commodity)
+bool GrowthRegionTests::ManagesCommodity(cyclus::Commodity& commodity)
 {
   return region->sdmanager_.ManagesCommodity(commodity);
 }
@@ -72,7 +72,7 @@ TEST_F(GrowthRegionTests,init)
 {
   initRegion();
   cyclus::Commodity commodity(commodity_name);
-  EXPECT_TRUE(managesCommodity(commodity));
+  EXPECT_TRUE(ManagesCommodity(commodity));
 }
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -

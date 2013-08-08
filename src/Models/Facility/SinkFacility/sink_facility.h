@@ -132,7 +132,7 @@ class SinkFacility : public cyclus::FacilityModel  {
      @param trans the transaction to which these resource objects belong
      @param manifest is the set of resources being received
    */
-  virtual void addResource(cyclus::Transaction trans,
+  virtual void AddResource(cyclus::Transaction trans,
                               std::vector<cyclus::Resource::Ptr> manifest);
 
   /**
@@ -171,7 +171,7 @@ class SinkFacility : public cyclus::FacilityModel  {
   double inventorySize();
 
   /// @return the input commodities
-  std::vector<std::string> inputCommodities();
+  std::vector<std::string> InputCommodities();
   /* --- */
 
  protected:

@@ -14,7 +14,7 @@ ManagerInst::ManagerInst() {}
 ManagerInst::~ManagerInst() {}
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-void ManagerInst::registerAvailablePrototype(cyclus::Prototype* prototype)
+void ManagerInst::RegisterAvailablePrototype(cyclus::Prototype* prototype)
 {
   cyclus::supply_demand::CommodityProducer* cast = dynamic_cast<cyclus::supply_demand::CommodityProducer*>(prototype);
   if (cast)
@@ -30,7 +30,7 @@ void ManagerInst::registerAvailablePrototype(cyclus::Prototype* prototype)
 }
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-void ManagerInst::registerCloneAsBuilt(cyclus::Prototype* clone)
+void ManagerInst::RegisterCloneAsBuilt(cyclus::Prototype* clone)
 {
   cyclus::supply_demand::CommodityProducer* cast = dynamic_cast<cyclus::supply_demand::CommodityProducer*>(clone);
   if (cast)
@@ -46,7 +46,7 @@ void ManagerInst::registerCloneAsBuilt(cyclus::Prototype* clone)
 }
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-void ManagerInst::registerCloneAsDecommissioned(cyclus::Prototype* clone)
+void ManagerInst::RegisterCloneAsDecommissioned(cyclus::Prototype* clone)
 {
   cyclus::supply_demand::CommodityProducer* cast = dynamic_cast<cyclus::supply_demand::CommodityProducer*>(clone);
   if (cast)

@@ -41,7 +41,7 @@ class SWUeUF6ConverterTest : public ::testing::Test {
 
     virtual void SetUp(){
       src_facility = new FakeSWUeUF6Converter();
-      src_facility->setParent(new TestInst());
+      src_facility->SetParent(new TestInst());
       new_facility = new FakeSWUeUF6Converter();
       // for facilities that trade commodities, create appropriate markets here
     };

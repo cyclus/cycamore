@@ -143,7 +143,7 @@ void SourceFacility::ReceiveMessage(cyclus::Message::Ptr msg) {
 }
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-vector<cyclus::Resource::Ptr> SourceFacility::removeResource(cyclus::Transaction order) {
+vector<cyclus::Resource::Ptr> SourceFacility::RemoveResource(cyclus::Transaction order) {
   return cyclus::MatBuff::ToRes(inventory_.PopQty(order.resource()->quantity()));
 }
 

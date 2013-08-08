@@ -54,7 +54,7 @@ cyclus::InstModel* ManagerInstConstructor()
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 TEST_F(ManagerInstTests,producerexists)
 {
-  src_inst->registerAvailablePrototype(producer);
+  src_inst->RegisterAvailablePrototype(producer);
   set<cyclus::supply_demand::CommodityProducer*>::iterator it;
   for (it = src_inst->BeginningProducer(); it != src_inst->EndingProducer(); it++)
     {
@@ -66,9 +66,9 @@ TEST_F(ManagerInstTests,producerexists)
 TEST_F(ManagerInstTests,productioncapacity)
 {
   EXPECT_EQ(src_inst->TotalProductionCapacity(commodity),0);
-  src_inst->registerCloneAsBuilt(producer);
+  src_inst->RegisterCloneAsBuilt(producer);
   EXPECT_EQ(src_inst->TotalProductionCapacity(commodity),capacity);
-  src_inst->registerCloneAsDecommissioned(producer);
+  src_inst->RegisterCloneAsDecommissioned(producer);
   EXPECT_EQ(src_inst->TotalProductionCapacity(commodity),0);
 }
 

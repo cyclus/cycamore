@@ -55,14 +55,14 @@ class StubConverter : public cyclus::ConverterModel {
 
      @param cur is the pointer to the model's xml node
    */
-  virtual void init(xmlNodePtr cur);
+  virtual void Init(xmlNodePtr cur);
 
   /**
      every model needs a method to copy one object to another
 
      @param src is the StubConverter to copy
    */
-  virtual void copy(StubConverter* src) ;
+  virtual void Copy(StubConverter* src) ;
 
   /**
      This drills down the dependency tree to initialize all relevant
@@ -96,7 +96,7 @@ class StubConverter : public cyclus::ConverterModel {
      convert it to
      @return the converted message
    */
-  virtual cyclus::Message::Ptr convert(cyclus::Message::Ptr convMsg, cyclus::Message::Ptr refMsg);
+  virtual cyclus::Message::Ptr Convert(cyclus::Message::Ptr convMsg, cyclus::Message::Ptr refMsg);
 
 /* ------------------- */
 
