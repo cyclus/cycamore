@@ -20,15 +20,15 @@ void NullMarket::ReceiveMessage(cyclus::Message::Ptr msg) {
   messages_.insert(msg);
 
   if (msg->trans().IsOffer()){
-    offers_.insert(indexedMsg(msg->trans().resource()->quantity(),msg));
+    offers_.insert(IndexedMsg(msg->trans().resource()->quantity(),msg));
   }
   else if (!msg->trans().IsOffer()){
-    requests_.insert(indexedMsg(msg->trans().resource()->quantity(),msg));
+    requests_.insert(IndexedMsg(msg->trans().resource()->quantity(),msg));
   }
 }
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-void NullMarket::reject_request(sortedMsgList::iterator request)
+void NullMarket::reject_request(SortedMsgList::iterator request)
 {
   // delete the tentative orders
   while ( orders_.size() > firmOrders_) {
@@ -38,7 +38,7 @@ void NullMarket::reject_request(sortedMsgList::iterator request)
   // put all matched offers_ back in the sorted list
   while (matchedOffers_.size() > 0) {
     cyclus::Message::Ptr msg = *(matchedOffers_.begin());
-    offers_.insert(indexedMsg(msg->trans().resource()->quantity(),msg));
+    offers_.insert(IndexedMsg(msg->trans().resource()->quantity(),msg));
     matchedOffers_.erase(msg);
   }
 }
@@ -58,9 +58,9 @@ void NullMarket::process_request()
 }
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-bool NullMarket::match_request(sortedMsgList::iterator request)
+bool NullMarket::match_request(SortedMsgList::iterator request)
 {
-  sortedMsgList::iterator offer;
+  SortedMsgList::iterator offer;
   double requestAmt, offerAmt, toRet;
   cyclus::Message::Ptr offerMsg;
   cyclus::Message::Ptr requestMsg;
@@ -160,7 +160,7 @@ bool NullMarket::match_request(sortedMsgList::iterator request)
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 void NullMarket::Resolve()
 {
-  sortedMsgList::iterator request;
+  SortedMsgList::iterator request;
 
   firmOrders_ = 0;
 
