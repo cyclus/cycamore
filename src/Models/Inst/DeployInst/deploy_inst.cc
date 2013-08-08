@@ -5,11 +5,14 @@
 
 #include "error.h"
 
-using namespace std;
+namespace cycamore {
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 void BuildOrderList::addBuildOrder(cyclus::Prototype* p, int number,
                                    int time) {
+  using std::map;
+  using std::set;
+  using std::make_pair;
   map<int, set<BuildOrder> >::iterator it;
   it = all_orders_.find(time);
 
@@ -25,6 +28,9 @@ void BuildOrderList::addBuildOrder(cyclus::Prototype* p, int number,
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 std::set<BuildOrder> BuildOrderList::extractOrders(int time) {
+  using std::map;
+  using std::set;
+  using std::make_pair;
   map<int, set<BuildOrder> >::iterator it;
   set<BuildOrder> orders;
   it = all_orders_.find(time);
@@ -43,6 +49,9 @@ DeployInst::~DeployInst() {}
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 void DeployInst::InitModuleMembers(cyclus::QueryEngine* qe) {
+  using std::map;
+  using std::string;
+  using std::make_pair;
   string query = "buildorder";
   int nOrders = qe->NElementsMatchingQuery(query);
 
@@ -59,6 +68,9 @@ void DeployInst::InitModuleMembers(cyclus::QueryEngine* qe) {
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 void DeployInst::HandleTick(int time) {
+  using std::map;
+  using std::set;
+  using std::make_pair;
   set<BuildOrder> orders = build_orders_.extractOrders(time);
   for (set<BuildOrder>::iterator it = orders.begin();
        it != orders.end(); it++) {
@@ -95,3 +107,4 @@ extern "C" void destructDeployInst(cyclus::Model* model) {
 
 /* ------------------- */
 
+} // namespace cycamore

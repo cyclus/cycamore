@@ -5,6 +5,8 @@
 #include "inst_model.h"
 #include "query_engine.h"
 
+namespace cycamore {
+
 /**
    @class StubInst
 
@@ -95,5 +97,5 @@ class StubInst : public cyclus::InstModel {
   /* ------------------- */
 
 };
-
+} // namespace cycamore 
 #endif

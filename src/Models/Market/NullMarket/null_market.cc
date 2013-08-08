@@ -7,7 +7,7 @@
 #include "cyc_limits.h"
 #include "resource.h"
 
-using namespace std;
+namespace cycamore {
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 NullMarket::NullMarket() {}
@@ -193,3 +193,4 @@ extern "C" cyclus::Model* constructNullMarket() {
 extern "C" void destructNullMarket(cyclus::Model* model) {
   delete model;
 }
+} // namespace cycamore

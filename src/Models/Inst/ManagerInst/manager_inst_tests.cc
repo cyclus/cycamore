@@ -13,7 +13,6 @@
 //                                        CMakeFiles/CycamoreUnitTestDriver.dir/Models/Inst/ManagerInst/manager_inst_tests.cc.o: In function `ManagerInstTests::TearDown()':
 // manager_inst_tests.cc:(.text+0x344): undefined reference to `cyclus::CommodityTestHelper::~cyclus::CommodityTestHelper()'
 
-using namespace std;
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 TestProducer::TestProducer() {}
@@ -23,7 +22,7 @@ TestProducer::~TestProducer() {}
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 void ManagerInstTests::SetUp() {
-  src_inst = new ManagerInst();
+  src_inst = new cycamore::ManagerInst();
   producer = new TestProducer();
   commodity = cyclus::Commodity("commod");
   capacity = 5;
@@ -39,16 +38,17 @@ void ManagerInstTests::TearDown() {
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 cyclus::Model* ManagerInstModelConstructor() {
-  return dynamic_cast<cyclus::Model*>(new ManagerInst());
+  return dynamic_cast<cyclus::Model*>(new cycamore::ManagerInst());
 }
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 cyclus::InstModel* ManagerInstConstructor() {
-  return dynamic_cast<cyclus::InstModel*>(new ManagerInst());
+  return dynamic_cast<cyclus::InstModel*>(new cycamore::ManagerInst());
 }
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 TEST_F(ManagerInstTests, producerexists) {
+  using std::set;
   src_inst->RegisterAvailablePrototype(producer);
   set<cyclus::supply_demand::CommodityProducer*>::iterator it;
   for (it = src_inst->BeginningProducer(); it != src_inst->EndingProducer();

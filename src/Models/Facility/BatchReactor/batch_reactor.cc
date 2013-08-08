@@ -14,11 +14,11 @@
 #include "cyc_limits.h"
 #include "error.h"
 
-using namespace std;
-using boost::lexical_cast;
+namespace cycamore {
 
 // static members
-map<Phase, string> BatchReactor::phase_names_ = map<Phase, string>();
+std::map<Phase, std::string> BatchReactor::phase_names_ = \
+  std::map<Phase, std::string>();
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 BatchReactor::BatchReactor() :
@@ -46,6 +46,8 @@ BatchReactor::~BatchReactor() {}
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 void BatchReactor::InitModuleMembers(cyclus::QueryEngine* qe) {
+  using std::string;
+  using boost::lexical_cast;
   cyclus::QueryEngine* input = qe->QueryElement("fuel_input");
   set_in_commodity(input->GetElementContent("incommodity"));
   set_in_recipe(input->GetElementContent("inrecipe"));
@@ -140,6 +142,8 @@ void BatchReactor::EnterSimulationAsModule() {
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 void BatchReactor::HandleTick(int time) {
+  using std::string;
+  using boost::lexical_cast;
   LOG(cyclus::LEV_INFO3, "BReact") << name() << " is ticking at time "
                                    << time << " {";
   LOG(cyclus::LEV_DEBUG3, "BReact") << "The current phase is: "
@@ -197,6 +201,8 @@ void BatchReactor::HandleTick(int time) {
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 void BatchReactor::HandleTock(int time) {
+  using std::string;
+  using boost::lexical_cast;
   LOG(cyclus::LEV_INFO3, "BReact") << name() << " is tocking {";
   LOG(cyclus::LEV_DEBUG3, "BReact") << "The current phase is: "
                                     << phase_names_[phase_];
@@ -279,7 +285,7 @@ void BatchReactor::sendMessage(Communicator* recipient,
 }
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-vector<cyclus::Resource::Ptr> BatchReactor::RemoveResource(
+std::vector<cyclus::Resource::Ptr> BatchReactor::RemoveResource(
   cyclus::Transaction order) {
   cyclus::Transaction trans = order;
   double amt = trans.resource()->quantity();
@@ -423,6 +429,7 @@ void BatchReactor::setPhase(Phase p) {
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 void BatchReactor::setUpPhaseNames() {
+  using std::make_pair;
   phase_names_.insert(make_pair(INIT, "initialization"));
   phase_names_.insert(make_pair(BEGIN, "beginning"));
   phase_names_.insert(make_pair(OPERATION, "operation"));
@@ -469,6 +476,7 @@ void BatchReactor::makeOffers() {
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 void BatchReactor::interactWithMarket(std::string commod, double amt,
                                       cyclus::TransType type) {
+  using std::string;
   LOG(cyclus::LEV_INFO4, "BReact") << " making requests {";
   // get the market
   cyclus::MarketModel* market = cyclus::MarketModel::MarketForCommod(commod);
@@ -522,7 +530,7 @@ void BatchReactor::handleOrders() {
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 void BatchReactor::moveFuel(cyclus::MatBuff& fromBuff, cyclus::MatBuff& toBuff,
                             double amt) {
-  vector<cyclus::Material::Ptr> to_move = fromBuff.PopQty(amt);
+  std::vector<cyclus::Material::Ptr> to_move = fromBuff.PopQty(amt);
   for (int i = 0; i < to_move.size(); i++) {
     toBuff.PushOne(to_move.at(i));
   }
@@ -581,3 +589,5 @@ extern "C" cyclus::Model* constructBatchReactor() {
 extern "C" void destructBatchReactor(cyclus::Model* model) {
   delete model;
 }
+
+} // namespace cycamore

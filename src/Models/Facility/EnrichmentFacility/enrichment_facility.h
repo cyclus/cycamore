@@ -11,6 +11,8 @@
 #include <string>
 #include <deque>
 
+namespace cycamore {
+
 /**
    @class EnrichmentFacility
 
@@ -203,5 +205,6 @@ class EnrichmentFacility : public cyclus::FacilityModel {
   std::deque<cyclus::Message::Ptr> orders_;
   /* --- */
 };
+} // namespace cycamore
 #endif
 

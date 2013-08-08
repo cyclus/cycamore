@@ -7,6 +7,8 @@
 
 #include "market_model.h"
 
+namespace cycamore {
+
 /**
    The NullMarket class inherits from the cyclus::MarketModel class and is
    dynamically loaded by the Model class when requested.
@@ -139,5 +141,5 @@ class NullMarket : public cyclus::MarketModel {
   void process_request();
 
 };
-
+} // namespace cycamore
 #endif

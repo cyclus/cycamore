@@ -15,15 +15,17 @@
 
 #include <boost/lexical_cast.hpp>
 
-using namespace std;
-using boost::lexical_cast;
+
+namespace cycamore {
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 SourceFacility::SourceFacility() :
   out_commod_(""),
   recipe_name_(""),
   commod_price_(0),
-  capacity_(numeric_limits<double>::max()) {
+  capacity_(std::numeric_limits<double>::max()) {
+  using std::deque;
+  using std::numeric_limits;
   ordersWaiting_ = deque<cyclus::Message::Ptr>();
   inventory_ = cyclus::MatBuff();
   setMaxInventorySize(numeric_limits<double>::max());
@@ -34,6 +36,9 @@ SourceFacility::~SourceFacility() {}
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 void SourceFacility::InitModuleMembers(cyclus::QueryEngine* qe) {
+  using std::string;
+  using std::numeric_limits;
+  using boost::lexical_cast;
   cyclus::QueryEngine* output = qe->QueryElement("output");
 
   setRecipe(output->GetElementContent("recipe"));
@@ -143,7 +148,7 @@ void SourceFacility::ReceiveMessage(cyclus::Message::Ptr msg) {
 }
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-vector<cyclus::Resource::Ptr> SourceFacility::RemoveResource(
+std::vector<cyclus::Resource::Ptr> SourceFacility::RemoveResource(
   cyclus::Transaction order) {
   return cyclus::MatBuff::ToRes(inventory_.PopQty(order.resource()->quantity()));
 }
@@ -251,3 +256,5 @@ extern "C" cyclus::Model* constructSourceFacility() {
 extern "C" void destructSourceFacility(cyclus::Model* model) {
   delete model;
 }
+
+} // namespace cycamore

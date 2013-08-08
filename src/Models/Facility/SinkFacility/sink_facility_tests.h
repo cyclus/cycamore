@@ -9,18 +9,20 @@
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 cyclus::Model* SinkFacilityModelConstructor() {
+  using cycamore::SinkFacility;
   return dynamic_cast<cyclus::Model*>(new SinkFacility());
 }
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 cyclus::FacilityModel* SinkFacilityConstructor() {
+  using cycamore::SinkFacility;
   return dynamic_cast<cyclus::FacilityModel*>(new SinkFacility());
 }
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 class SinkFacilityTest : public ::testing::Test {
  protected:
-  SinkFacility* src_facility;
+  cycamore::SinkFacility* src_facility;
   TestMarket* commod_market;
   std::string commod_;
 

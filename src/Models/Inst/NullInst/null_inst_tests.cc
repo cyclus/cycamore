@@ -6,15 +6,13 @@
 #include "inst_model_tests.h"
 #include "model_tests.h"
 
-using namespace std;
-
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 class NullInstTest : public ::testing::Test {
  protected:
-  NullInst* src_inst;
+  cycamore::NullInst* src_inst;
 
   virtual void SetUp() {
-    src_inst = new NullInst();
+    src_inst = new cycamore::NullInst();
   }
 
   virtual void TearDown() {
@@ -24,12 +22,12 @@ class NullInstTest : public ::testing::Test {
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 cyclus::Model* NullInstModelConstructor() {
-  return dynamic_cast<cyclus::Model*>(new NullInst());
+  return dynamic_cast<cyclus::Model*>(new cycamore::NullInst());
 }
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 cyclus::InstModel* NullInstConstructor() {
-  return dynamic_cast<cyclus::InstModel*>(new NullInst());
+  return dynamic_cast<cyclus::InstModel*>(new cycamore::NullInst());
 }
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -

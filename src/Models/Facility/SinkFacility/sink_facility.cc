@@ -13,19 +13,21 @@
 #include "cyc_limits.h"
 #include "market_model.h"
 
-using namespace std;
-using boost::lexical_cast;
+namespace cycamore {
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 SinkFacility::SinkFacility() :
   commod_price_(0),
-  capacity_(numeric_limits<double>::max()) {}
+  capacity_(std::numeric_limits<double>::max()) {}
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 SinkFacility::~SinkFacility() {}
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 void SinkFacility::InitModuleMembers(cyclus::QueryEngine* qe) {
+  using std::string;
+  using std::numeric_limits;
+  using boost::lexical_cast;
   cyclus::QueryEngine* input = qe->QueryElement("input");
 
   cyclus::QueryEngine* commodities = input->QueryElement("commodities");
@@ -53,6 +55,8 @@ void SinkFacility::InitModuleMembers(cyclus::QueryEngine* qe) {
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 std::string SinkFacility::str() {
+  using std::string;
+  using std::vector;
   std::stringstream ss;
   ss << cyclus::FacilityModel::str();
 
@@ -71,6 +75,7 @@ std::string SinkFacility::str() {
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 void SinkFacility::CloneModuleMembersFrom(cyclus::FacilityModel* sourceModel) {
+  using std::string;
   SinkFacility* source = dynamic_cast<SinkFacility*>(sourceModel);
   SetCapacity(source->capacity());
   setMaxInventorySize(source->maxInventorySize());
@@ -79,6 +84,8 @@ void SinkFacility::CloneModuleMembersFrom(cyclus::FacilityModel* sourceModel) {
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 void SinkFacility::HandleTick(int time) {
+  using std::string;
+  using std::vector;
   LOG(cyclus::LEV_INFO3, "SnkFac") << FacName() << " is ticking {";
 
   double requestAmt = getRequestAmt();
@@ -199,3 +206,5 @@ extern "C" cyclus::Model* constructSinkFacility() {
 extern "C" void destructSinkFacility(cyclus::Model* model) {
   delete model;
 }
+
+} // namespace cycamore

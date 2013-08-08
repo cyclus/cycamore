@@ -10,6 +10,8 @@
 #include "mat_buff.h"
 #include "logger.h"
 
+namespace cycamore {
+
 /**
    @class SinkFacility
    This cyclus::FacilityModel requests a finite amount of its input commodity.
@@ -202,5 +204,6 @@ class SinkFacility : public cyclus::FacilityModel  {
   const double getRequestAmt();
 };
 
+} // namespace cycamore
 #endif
 
