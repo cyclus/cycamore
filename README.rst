@@ -22,8 +22,7 @@ Package                Minimum Version
 ====================   ==================
 `CMake`                2.8            
 `boost`                1.34.1
-`libxml2`              2   
-`Cyclopts`             0.1               
+`libxml2`              2                 
 `Cyclus`               0.1            
 ====================   ==================
 
@@ -43,11 +42,10 @@ was tested using a fresh install of Ubuntu 12.10.
 Cyclus
 ------
 
-The Cyclus Library is the simulation-engine core of the more general 
-Cyclus package, of which Cycamore is a part. Detailed build/install
-instructions are provided in the `Cyclus readme`_. We assume that the 
-user has successfully built and installed Cyclus (as well as Cyclopts 
-and CMake) for the following discussion. 
+The Cyclus Library is the simulation-engine core of the more general Cyclus
+package, of which Cycamore is a part. Detailed build/install instructions are
+provided in the `Cyclus readme`_. We assume that the user has successfully built
+and installed Cyclus (as well as CMake) for the following discussion.
 
 All Others
 ----------
@@ -99,7 +97,6 @@ in this guide:
   #. you have acquired the Cycamore source code from the 
      `Cycamore repo`_
   #. you have placed the Cycamore repository in .../cyclus/cycamore
-  #. you have installed Cyclopts in .../cyclus/install (see the `Cyclopts readme`_)
   #. you have installed Cyclus  in .../cyclus/install (see the `Cyclus readme`_)
 
 Under these assumptions **and** if you used a package manager to 
@@ -108,7 +105,7 @@ Cyclus building and installation process will look like:
 
 .. code-block:: bash
 
-    .../cyclus/cycamore$ python setup.py --prefix=../install --cyclus_root=../install --cyclopts_root=../install
+    .../cyclus/cycamore$ python setup.py --prefix=../install --cyclus_root=../install
 
 If you have installed coin-Cbc from source or otherwise have it 
 installed in a non-standard location, you should make use of the
@@ -117,7 +114,7 @@ like:
 
 .. code-block:: bash
 
-    .../cyclus/cycamore$ python setup.py --prefix=../install --coin_root=/path/to/coin --cyclus_root=../install --cyclopts_root=../install
+    .../cyclus/cycamore$ python setup.py --prefix=../install --coin_root=/path/to/coin --cyclus_root=../install
 
 Additionally, if you have installed Boost from source or otherwise have it
 installed in a non-standard location, you should make use of the
@@ -126,7 +123,7 @@ like:
 
 .. code-block:: bash
 
-    .../cyclus/cycamore$ python setup.py --prefix=../install --coin_root=/path/to/coin --cyclus_root=../install --cyclopts_root=../install --boost_root=/path/to/boost
+    .../cyclus/cycamore$ python setup.py --prefix=../install --coin_root=/path/to/coin --cyclus_root=../install --boost_root=/path/to/boost
 
 
 .. _`CMake`: http://www.cmake.org
@@ -137,9 +134,6 @@ like:
 .. _`Cycamore Homepage`: http://cycamore.github.com
 .. _`Cycamore repo`: https://github.com/cyclus/cycamore
 .. _`Cycamore readme`: https://github.com/cyclus/cycamore
-.. _`Cyclopts Homepage`: http://cyclopts.github.com
-.. _`Cyclopts repo`: https://github.com/cyclus/cyclopts
-.. _`Cyclopts readme`: https://github.com/cyclus/cyclopts
 
 **********************
 The Developer Workflow

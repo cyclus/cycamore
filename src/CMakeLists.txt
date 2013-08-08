@@ -56,14 +56,6 @@ FIND_PACKAGE( cycluscore REQUIRED )
 SET(CYCAMORE_INCLUDE_DIR ${CYCAMORE_INCLUDE_DIR} ${CYCLUS_CORE_INCLUDE_DIR})
 SET(LIBS ${LIBS} ${CYCLUS_CORE_LIBRARIES})
 
-# find cyclopts and link to it
-FIND_PACKAGE( CYCLOPTS REQUIRED )
-MESSAGE(STATUS "Cyclopts-related build info:")
-SET(CYCAMORE_INCLUDE_DIR ${CYCAMORE_INCLUDE_DIR} ${CYCLOPTS_INCLUDE_DIR})
-set(LIBS ${LIBS} ${CYCLOPTS_LIBRARY})
-MESSAGE("\tCyclopts include: ${CYCLOPTS_INCLUDE_DIR}")
-MESSAGE("\tCyclopts lib: ${CYCLOPTS_LIBRARY}")
-
 # Find LibXML++ and dependencies
 FIND_PACKAGE( LibXML++ REQUIRED )
 SET(CYCAMORE_INCLUDE_DIR ${CYCAMORE_INCLUDE_DIR} ${LibXML++_INCLUDE_DIR} ${Glibmm_INCLUDE_DIRS} ${LibXML++Config_INCLUDE_DIR})
@@ -77,6 +69,11 @@ FIND_PACKAGE( Boost COMPONENTS filesystem system REQUIRED)
 SET(CYCAMORE_INCLUDE_DIR ${CYCAMORE_INCLUDE_DIR} ${Boost_INCLUDE_DIR})
 SET(LIBS ${LIBS} ${Boost_FILESYSTEM_LIBRARY})
 SET(LIBS ${LIBS} ${Boost_SYSTEM_LIBRARY})
+
+# find lapack and link to it
+FIND_PACKAGE( LAPACK REQUIRED )
+set(LIBS ${LIBS} ${LAPACK_LIBRARIES})
+MESSAGE("\tFound LAPACK Libraries: ${LAPACK_LIBRARIES}")
 
 # include the model directories
 SET(CYCAMORE_INCLUDE_DIR ${CYCAMORE_INCLUDE_DIR} Testing )
@@ -122,7 +119,7 @@ ENDIF()
 
 # Build CycamoreUnitTestDriver
 ADD_EXECUTABLE( CycamoreUnitTestDriver
-  Testing/CycamoreUnitTestDriver.cpp ${TestSource}
+  Testing/cycamore_unit_test_driver.cc ${TestSource}
   ${GENERATED_TEST_SOURCE}
 )
 TARGET_LINK_LIBRARIES( CycamoreUnitTestDriver dl ${CYCAMORE_LIBRARIES} 
