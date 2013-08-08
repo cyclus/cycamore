@@ -25,6 +25,7 @@ void SinkFacilityTest::initParameters() {
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 void SinkFacilityTest::setUpSinkFacility() {
+  using cycamore::SinkFacility;
   src_facility = new SinkFacility();
   src_facility->AddCommodity(commod_);
 }
@@ -37,6 +38,7 @@ TEST_F(SinkFacilityTest, InitialState) {
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 TEST_F(SinkFacilityTest, clone) {
+  using cycamore::SinkFacility;
   SinkFacility* cloned_fac = new SinkFacility();
   cloned_fac->CloneModuleMembersFrom(src_facility);
 

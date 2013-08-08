@@ -8,19 +8,19 @@
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 cyclus::Model* BatchReactorModelConstructor() {
-  return dynamic_cast<cyclus::Model*>(new BatchReactor());
+  return dynamic_cast<cyclus::Model*>(new cycamore::BatchReactor());
 }
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 cyclus::FacilityModel* BatchReactorConstructor() {
-  return dynamic_cast<cyclus::FacilityModel*>(new BatchReactor());
+  return dynamic_cast<cyclus::FacilityModel*>(new cycamore::BatchReactor());
 }
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 class BatchReactorTest : public ::testing::Test {
  protected:
 
-  BatchReactor* src_facility;
+  cycamore::BatchReactor* src_facility;
   int lencycle, nbatch;
   double in_loadcore, out_loadcore;
   std::string in_commod, in_recipe, out_commod, out_recipe;

@@ -8,7 +8,7 @@
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 class EnrichmentFacilityTest : public ::testing::Test {
  protected:
-  EnrichmentFacility* src_facility;
+  cycamore::EnrichmentFacility* src_facility;
   TestMarket* in_commod_market;
   TestMarket* out_commod_market;
   std::string in_commod, out_commod, in_recipe;

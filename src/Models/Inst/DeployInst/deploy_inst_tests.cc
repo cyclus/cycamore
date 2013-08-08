@@ -9,21 +9,21 @@
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 cyclus::Model* DeployInstModelConstructor() {
-  return dynamic_cast<cyclus::Model*>(new DeployInst());
+  return dynamic_cast<cyclus::Model*>(new cycamore::DeployInst());
 }
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 cyclus::InstModel* DeployInstConstructor() {
-  return dynamic_cast<cyclus::InstModel*>(new DeployInst());
+  return dynamic_cast<cyclus::InstModel*>(new cycamore::DeployInst());
 }
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 class DeployInstTest : public ::testing::Test {
  protected:
-  DeployInst* src_inst;
+  cycamore::DeployInst* src_inst;
 
   virtual void SetUp() {
-    src_inst = new DeployInst();
+    src_inst = new cycamore::DeployInst();
   }
 
   virtual void TearDown() {

@@ -12,11 +12,11 @@
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 class StubRegionTest : public ::testing::Test {
  protected:
-  StubRegion* src_region_;
-  StubRegion* new_region_;
+  cycamore::StubRegion* src_region_;
+  cycamore::StubRegion* new_region_;
 
   virtual void SetUp() {
-    src_region_ = new StubRegion();
+    src_region_ = new cycamore::StubRegion();
   };
 
   virtual void TearDown() {
@@ -26,12 +26,12 @@ class StubRegionTest : public ::testing::Test {
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 cyclus::Model* StubRegionModelConstructor() {
-  return dynamic_cast<cyclus::Model*>(new StubRegion());
+  return dynamic_cast<cyclus::Model*>(new cycamore::StubRegion());
 }
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 cyclus::RegionModel* StubRegionConstructor() {
-  return dynamic_cast<cyclus::RegionModel*>(new StubRegion());
+  return dynamic_cast<cyclus::RegionModel*>(new cycamore::StubRegion());
 }
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -

@@ -11,9 +11,9 @@
 #include <queue>
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-class FakeNullRegion : public NullRegion {
+class FakeNullRegion : public cycamore::NullRegion {
  public:
-  FakeNullRegion() : NullRegion() { }
+  FakeNullRegion() : cycamore::NullRegion() { }
 
   virtual ~FakeNullRegion() { }
 };

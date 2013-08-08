@@ -9,7 +9,7 @@
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 class GrowthRegionTests : public ::testing::Test {
  protected:
-  GrowthRegion* region;
+  cycamore::GrowthRegion* region;
   std::string commodity_name, demand_type, demand_params, demand_start;
 
   virtual void SetUp();

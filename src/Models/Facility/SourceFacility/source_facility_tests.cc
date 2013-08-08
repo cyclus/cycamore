@@ -29,7 +29,7 @@ void SourceFacilityTest::initParameters() {
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 void SourceFacilityTest::setUpSourceFacility() {
-  src_facility = new SourceFacility();
+  src_facility = new cycamore::SourceFacility();
   src_facility->SetCommodity(commod_);
   src_facility->setRecipe(recipe_name_);
 }
@@ -42,7 +42,7 @@ TEST_F(SourceFacilityTest, InitialState) {
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 TEST_F(SourceFacilityTest, clone) {
-  SourceFacility* cloned_fac = new SourceFacility();
+  cycamore::SourceFacility* cloned_fac = new cycamore::SourceFacility();
   cloned_fac->CloneModuleMembersFrom(src_facility);
 
   EXPECT_EQ(src_facility->commodity(), cloned_fac->commodity());

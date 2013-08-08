@@ -18,9 +18,6 @@
 
 #include <boost/lexical_cast.hpp>
 
-//using namespace boost;
-//using boost::lexical_cast;
-
 namespace cycamore {
 
 int EnrichmentFacility::entry_ = 0;
@@ -39,6 +36,9 @@ EnrichmentFacility::~EnrichmentFacility() { }
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 void EnrichmentFacility::InitModuleMembers(cyclus::QueryEngine* qe) {
+  using std::string;
+  using std::numeric_limits;
+  using boost::lexical_cast;
   string data;
 
   cyclus::QueryEngine* input = qe->QueryElement("input");
@@ -101,6 +101,8 @@ void EnrichmentFacility::AddResource(cyclus::Transaction trans,
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 std::vector<cyclus::Resource::Ptr> EnrichmentFacility::RemoveResource(
   cyclus::Transaction order) {
+  using std::vector;
+  using boost::dynamic_pointer_cast;
   cyclus::Resource::Ptr prsrc = order.resource();
   if (!cyclus::Material::IsMaterial(prsrc)) {
     throw cyclus::CastError("Can't remove a resource as a non-material");
@@ -167,6 +169,7 @@ void EnrichmentFacility::HandleTock(int time) {
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 void EnrichmentFacility::makeRequest() {
+  using std::string;
   double amt = inventory_.space();
   double min_amt = 0;
   string commodity = in_commodity();
@@ -240,6 +243,7 @@ void EnrichmentFacility::makeOffer() {
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 void EnrichmentFacility::processOutgoingMaterial() {
+  using boost::dynamic_pointer_cast;
   double remove_total = 0;
   while (!orders_.empty()) {
     cyclus::Transaction trans = orders_.front()->trans();

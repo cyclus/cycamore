@@ -25,6 +25,7 @@ GrowthRegion::~GrowthRegion() {}
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 void GrowthRegion::InitModuleMembers(cyclus::QueryEngine* qe) {
+  using std::string;
   LOG(cyclus::LEV_DEBUG2, "greg") << "A Growth Region is being initialized";
 
   string query = "commodity";
@@ -40,6 +41,8 @@ void GrowthRegion::InitModuleMembers(cyclus::QueryEngine* qe) {
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 void GrowthRegion::AddCommodityDemand(cyclus::QueryEngine* qe) {
   // instantiate product
+  using std::string;
+  using boost::lexical_cast;
   string name = qe->GetElementContent("name");
   cyclus::Commodity commodity(name);
   RegisterCommodity(commodity);
@@ -81,6 +84,7 @@ void GrowthRegion::EnterSimulationAsModule() {
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 void GrowthRegion::HandleTick(int time) {
+  using std::set;
   set<cyclus::Commodity>::iterator it;
   for (it = commodities_.begin(); it != commodities_.end(); it++) {
     cyclus::Commodity commodity = *it;
@@ -134,6 +138,7 @@ void GrowthRegion::RegisterBuilder(cyclus::Model* child) {
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 void GrowthRegion::orderBuilds(cyclus::Commodity& commodity,
                                double unmetdemand) {
+  using std::vector;
   vector<cyclus::action_building::BuildOrder> orders =
     buildmanager_.MakeBuildDecision(commodity, unmetdemand);
 

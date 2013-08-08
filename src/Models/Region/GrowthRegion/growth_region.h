@@ -72,13 +72,14 @@ class GrowthRegion : public cyclus::RegionModel {
   virtual void HandleTick(int time);
   /* --- */
 
+  /// manager for Supply and emand
+  cyclus::supply_demand::SupplyDemandManager sdmanager_;
+
+
  protected:
   /* --- GrowthRegion Members --- */
   /// a container of all commodities managed by region
   std::set<cyclus::Commodity, cyclus::CommodityCompare> commodities_;
-
-  /// manager for Supply and emand
-  cyclus::supply_demand::SupplyDemandManager sdmanager_;
 
   /// manager for building things
   cyclus::action_building::BuildingManager buildmanager_;

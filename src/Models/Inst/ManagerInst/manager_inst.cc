@@ -54,6 +54,7 @@ void ManagerInst::RegisterCloneAsDecommissioned(cyclus::Prototype* clone) {
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 void ManagerInst::writeProducerInformation(
   cyclus::supply_demand::CommodityProducer* producer) {
+  using std::set;
   set<cyclus::Commodity, cyclus::CommodityCompare> commodities =
     producer->ProducedCommodities();
   set<cyclus::Commodity, cyclus::CommodityCompare>::iterator it;
