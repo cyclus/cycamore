@@ -214,7 +214,7 @@ void BatchReactor::HandleTock(int time)
 
     case END:
       // if ( postCore_.empty() )
-      //   decommission();
+      //   Decommission();
       break;
 
     case BEGIN:
@@ -293,7 +293,7 @@ void BatchReactor::sendMessage(Communicator* recipient, cyclus::Transaction tran
 }
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-vector<cyclus::Resource::Ptr> BatchReactor::removeResource(cyclus::Transaction order)
+vector<cyclus::Resource::Ptr> BatchReactor::RemoveResource(cyclus::Transaction order)
 {
   cyclus::Transaction trans = order;
   double amt = trans.resource()->quantity();
@@ -306,7 +306,7 @@ vector<cyclus::Resource::Ptr> BatchReactor::removeResource(cyclus::Transaction o
 }
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-void BatchReactor::addResource(cyclus::Transaction trans,
+void BatchReactor::AddResource(cyclus::Transaction trans,
                                std::vector<cyclus::Resource::Ptr> manifest)
 {
   double preQuantity = preCore_.quantity();
@@ -437,7 +437,7 @@ Phase BatchReactor::phase()
 }
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-bool BatchReactor::checkDecommissionCondition()
+bool BatchReactor::CheckDecommissionCondition()
 {
   bool empty = (preCore_.empty() && inCore_.empty() &&
                 postCore_.empty());

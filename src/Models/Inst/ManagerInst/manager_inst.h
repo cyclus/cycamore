@@ -34,21 +34,21 @@ class ManagerInst : public cyclus::InstModel,
      the list of available prototypes
      @param prototype the prototype to register
    */
-  virtual void registerAvailablePrototype(cyclus::Prototype* prototype);
+  virtual void RegisterAvailablePrototype(cyclus::Prototype* prototype);
 
   /**
      perform any registration functionality after a clone has been
      built
      @param clone the built (cloned) prototype
    */
-  virtual void registerCloneAsBuilt(cyclus::Prototype* clone);
+  virtual void RegisterCloneAsBuilt(cyclus::Prototype* clone);
 
   /**
      perform any registration functionality before a clone is
      decommissioned(deleted)
      @param clone the to-be-decommissioned prototype
    */
-  virtual void registerCloneAsDecommissioned(cyclus::Prototype* clone);
+  virtual void RegisterCloneAsDecommissioned(cyclus::Prototype* clone);
 
   /**
      write information about a commodity producer to a stream

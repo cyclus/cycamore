@@ -74,7 +74,7 @@ void SinkFacility::CloneModuleMembersFrom(cyclus::FacilityModel* sourceModel) {
   SinkFacility* source = dynamic_cast<SinkFacility*>(sourceModel);
   SetCapacity(source->capacity());
   setMaxInventorySize(source->maxInventorySize());
-  in_commods_ = source->inputCommodities();
+  in_commods_ = source->InputCommodities();
 }
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -161,12 +161,12 @@ double SinkFacility::inventorySize() {
 }
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-std::vector<std::string> SinkFacility::inputCommodities() {
+std::vector<std::string> SinkFacility::InputCommodities() {
   return in_commods_;
 }
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-void SinkFacility::addResource(cyclus::Transaction trans, std::vector<cyclus::Resource::Ptr> manifest) {
+void SinkFacility::AddResource(cyclus::Transaction trans, std::vector<cyclus::Resource::Ptr> manifest) {
   inventory_.PushAll(cyclus::MatBuff::ToMat(manifest));
 }
 

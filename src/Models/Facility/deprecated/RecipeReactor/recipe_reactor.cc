@@ -43,8 +43,8 @@ RecipeReactor::RecipeReactor() {
 }
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-void RecipeReactor::init(xmlNodePtr cur) {
-  cyclus::FacilityModel::init(cur);
+void RecipeReactor::Init(xmlNodePtr cur) {
+  cyclus::FacilityModel::Init(cur);
 
   // move XML pointer to current model
   cur = XMLinput->get_xpath_element(cur,"model/RecipeReactor");
@@ -96,9 +96,9 @@ void RecipeReactor::init(xmlNodePtr cur) {
 }
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-void RecipeReactor::copy(RecipeReactor* src) {
+void RecipeReactor::Copy(RecipeReactor* src) {
 
-  cyclus::FacilityModel::copy(src);
+  cyclus::FacilityModel::Copy(src);
 
   fuelPairs_ = src->fuelPairs_;
   capacity_ = src->capacity_;
@@ -126,7 +126,7 @@ void RecipeReactor::copy(RecipeReactor* src) {
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 void RecipeReactor::copyFreshModel(cyclus::Model* src) {
-  copy(dynamic_cast<RecipeReactor*>(src));
+  Copy(dynamic_cast<RecipeReactor*>(src));
 }
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -212,7 +212,7 @@ void RecipeReactor::ReceiveMessage(cyclus::Message::Ptr msg) {
 }
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-vector<cyclus::Resource::Ptr> RecipeReactor::removeResource(cyclus::Transaction order) {
+vector<cyclus::Resource::Ptr> RecipeReactor::RemoveResource(cyclus::Transaction order) {
   double newAmt = 0;
 
   cyclus::Material::Ptr m;
@@ -237,13 +237,13 @@ vector<cyclus::Resource::Ptr> RecipeReactor::removeResource(cyclus::Transaction 
         // if the inventory obj isn't larger than the remaining need, send it as is.
         if (m->quantity() <= (order.resource()->quantity() - newAmt)) {
           newAmt += m->quantity();
-          newMat->absorb(m);
+          newMat->Absorb(m);
           inventory_.pop_front();
         } else {
           // if the inventory obj is larger than the remaining need, split it.
-          toAbsorb = m->extract(order.resource()->quantity() - newAmt);
+          toAbsorb = m->Extract(order.resource()->quantity() - newAmt);
           newAmt += toAbsorb->quantity();
-          newMat->absorb(toAbsorb);
+          newMat->Absorb(toAbsorb);
         }
         toSend.push_back(newMat);
         LOG(cyclus::LEV_DEBUG2, "RReact") <<"RecipeReactor "<< ID()
@@ -255,7 +255,7 @@ vector<cyclus::Resource::Ptr> RecipeReactor::removeResource(cyclus::Transaction 
 }
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-void RecipeReactor::addResource(cyclus::Transaction trans, std::vector<cyclus::Resource::Ptr> manifest) {
+void RecipeReactor::AddResource(cyclus::Transaction trans, std::vector<cyclus::Resource::Ptr> manifest) {
   // grab each material object off of the manifest
   // and move it into the stocks.
   for (vector<cyclus::Resource::Ptr>::iterator thisMat=manifest.begin();

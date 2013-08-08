@@ -12,18 +12,18 @@
  */
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-void StubConverter::init(xmlNodePtr cur) {
-  cyclus::ConverterModel::init(cur);
+void StubConverter::Init(xmlNodePtr cur) {
+  cyclus::ConverterModel::Init(cur);
 };
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-void StubConverter::copy(StubConverter* src) {
-  cyclus::ConverterModel::copy(src);
+void StubConverter::Copy(StubConverter* src) {
+  cyclus::ConverterModel::Copy(src);
 };
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 void StubConverter::copyFreshModel(cyclus::Model* src) {
-  copy(dynamic_cast<StubConverter*>(src));
+  Copy(dynamic_cast<StubConverter*>(src));
 };
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -40,7 +40,7 @@ std::string StubConverter::str() {
  */
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-cyclus::Message::Ptr StubConverter::convert(cyclus::Message::Ptr convMsg, cyclus::Message::Ptr refMsg) {
+cyclus::Message::Ptr StubConverter::Convert(cyclus::Message::Ptr convMsg, cyclus::Message::Ptr refMsg) {
   throw cyclus::CycException("The StubConverter should not be used to convert things.");
 }
 

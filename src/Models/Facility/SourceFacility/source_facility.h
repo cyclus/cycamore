@@ -151,7 +151,7 @@ class SourceFacility : public cyclus::FacilityModel,
      @return list of resources to be sent for this order
 
    */
-  virtual std::vector<cyclus::Resource::Ptr> removeResource(cyclus::Transaction order);
+  virtual std::vector<cyclus::Resource::Ptr> RemoveResource(cyclus::Transaction order);
   /* --- */
 
   /* --- SourceFacility Methods --- */

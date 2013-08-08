@@ -65,12 +65,12 @@ class SWUeUF6Converter : public cyclus::ConverterModel
   /**
      initialize an object from XML input
    */
-  virtual void init(xmlNodePtr cur);
+  virtual void Init(xmlNodePtr cur);
 
   /**
      initialize an object by copying another
    */
-  virtual void copy(SWUeUF6Converter* src);
+  virtual void Copy(SWUeUF6Converter* src);
 
   /**
      This drills down the dependency tree to initialize all relevant
@@ -105,7 +105,7 @@ class SWUeUF6Converter : public cyclus::ConverterModel
      @return the converted message
    */
 
-  virtual cyclus::Message::Ptr convert(cyclus::Message::Ptr convMsg, cyclus::Message::Ptr refMsg);
+  virtual cyclus::Message::Ptr Convert(cyclus::Message::Ptr convMsg, cyclus::Message::Ptr refMsg);
 
  /* ------------------- */
 

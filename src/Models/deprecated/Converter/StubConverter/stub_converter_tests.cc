@@ -41,7 +41,7 @@ class StubConverterTest : public ::testing::Test {
 
     virtual void SetUp(){
       src_facility = new FakeStubConverter();
-      src_facility->setParent(new TestInst());
+      src_facility->SetParent(new TestInst());
       new_facility = new FakeStubConverter();
       // for facilities that trade commodities, create appropriate markets here
     };
