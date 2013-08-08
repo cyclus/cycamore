@@ -30,10 +30,10 @@
    upon sending and receiving materials and messages.
  */
 class StubRegion : public cyclus::RegionModel {
-/* --------------------
- * all MODEL classes have these members
- * --------------------
- */
+  /* --------------------
+   * all MODEL classes have these members
+   * --------------------
+   */
  public:
   /**
      Default constructor for StubStub Class
@@ -61,28 +61,28 @@ class StubRegion : public cyclus::RegionModel {
    */
   virtual void EnterSimulation(cyclus::Model* parent);
 
-/* ------------------- */
+  /* ------------------- */
 
 
-/* --------------------
- * all COMMUNICATOR classes have these members
- * --------------------
- */
+  /* --------------------
+   * all COMMUNICATOR classes have these members
+   * --------------------
+   */
  public:
   /**
      The StubRegion should ignore incoming messages
    */
   virtual void ReceiveMessage(cyclus::Message::Ptr msg);
 
-/* -------------------- */
+  /* -------------------- */
 
 
-/* --------------------
- * all REGIONMODEL classes have these members
- * --------------------
- */
+  /* --------------------
+   * all REGIONMODEL classes have these members
+   * --------------------
+   */
 
-/* ------------------- */
+  /* ------------------- */
 
 };
 

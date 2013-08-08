@@ -56,12 +56,12 @@ void StubRegion::ReceiveMessage(cyclus::Message::Ptr msg) {}
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 extern "C" cyclus::Model* constructStubRegion() {
-      return new StubRegion();
+  return new StubRegion();
 }
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 extern "C" void destructStubRegion(cyclus::Model* model) {
-      delete model;
+  delete model;
 }
 
 /* ------------------- */

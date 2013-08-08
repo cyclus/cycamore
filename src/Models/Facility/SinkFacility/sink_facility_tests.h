@@ -8,18 +8,18 @@
 #include "test_market.h"
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-cyclus::Model* SinkFacilityModelConstructor(){
+cyclus::Model* SinkFacilityModelConstructor() {
   return dynamic_cast<cyclus::Model*>(new SinkFacility());
 }
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-cyclus::FacilityModel* SinkFacilityConstructor(){
+cyclus::FacilityModel* SinkFacilityConstructor() {
   return dynamic_cast<cyclus::FacilityModel*>(new SinkFacility());
 }
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 class SinkFacilityTest : public ::testing::Test {
-protected:
+ protected:
   SinkFacility* src_facility;
   TestMarket* commod_market;
   std::string commod_;

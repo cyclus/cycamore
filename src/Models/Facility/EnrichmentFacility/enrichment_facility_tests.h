@@ -7,7 +7,7 @@
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 class EnrichmentFacilityTest : public ::testing::Test {
-protected:
+ protected:
   EnrichmentFacility* src_facility;
   TestMarket* in_commod_market;
   TestMarket* out_commod_market;

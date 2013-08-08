@@ -32,10 +32,10 @@
  */
 
 class StubInst : public cyclus::InstModel {
-/* --------------------
- * all MODEL classes have these members
- * --------------------
- */
+  /* --------------------
+   * all MODEL classes have these members
+   * --------------------
+   */
  public:
   /**
      Default constructor for StubInst Class
@@ -50,7 +50,7 @@ class StubInst : public cyclus::InstModel {
   /**
      every model should be able to print a verbose description
    */
-   virtual std::string str();
+  virtual std::string str();
 
   /**
      Initialize members related to derived module class
@@ -63,36 +63,36 @@ class StubInst : public cyclus::InstModel {
    */
   virtual void EnterSimulation(cyclus::Model* parent);
 
-/* ------------------- */
+  /* ------------------- */
 
 
-/* --------------------
- * all COMMUNICATOR classes have these members
- * --------------------
- */
+  /* --------------------
+   * all COMMUNICATOR classes have these members
+   * --------------------
+   */
  public:
-   /**
-      The StubInst should ignore incoming messages
-    */
-   virtual void ReceiveMessage(cyclus::Message::Ptr msg);
+  /**
+     The StubInst should ignore incoming messages
+   */
+  virtual void ReceiveMessage(cyclus::Message::Ptr msg);
 
-/* -------------------- */
-
-
-/* --------------------
- * all INSTMODEL classes have these members
- * --------------------
- */
-
-/* ------------------- */
+  /* -------------------- */
 
 
-/* --------------------
- * This INSTMODEL class has these members
- * --------------------
- */
+  /* --------------------
+   * all INSTMODEL classes have these members
+   * --------------------
+   */
 
-/* ------------------- */
+  /* ------------------- */
+
+
+  /* --------------------
+   * This INSTMODEL class has these members
+   * --------------------
+   */
+
+  /* ------------------- */
 
 };
 

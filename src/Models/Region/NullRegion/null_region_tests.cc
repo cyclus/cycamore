@@ -14,38 +14,36 @@ using namespace std;
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 class FakeNullRegion : public NullRegion {
-  public:
-    FakeNullRegion() : NullRegion() {
-    }
+ public:
+  FakeNullRegion() : NullRegion() { }
 
-    virtual ~FakeNullRegion() {
-    }
+  virtual ~FakeNullRegion() { }
 };
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 class NullRegionTest : public ::testing::Test {
-  protected:
-    FakeNullRegion* src_region_;
-    FakeNullRegion* new_region_;
+ protected:
+  FakeNullRegion* src_region_;
+  FakeNullRegion* new_region_;
 
-    virtual void SetUp(){
-      src_region_ = new FakeNullRegion();
-      new_region_ = new FakeNullRegion();
-    };
+  virtual void SetUp() {
+    src_region_ = new FakeNullRegion();
+    new_region_ = new FakeNullRegion();
+  };
 
-    virtual void TearDown() {
-      delete src_region_;
-      delete new_region_;
-    }
+  virtual void TearDown() {
+    delete src_region_;
+    delete new_region_;
+  }
 };
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-cyclus::Model* NullRegionModelConstructor(){
+cyclus::Model* NullRegionModelConstructor() {
   return dynamic_cast<cyclus::Model*>(new FakeNullRegion());
 }
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-cyclus::RegionModel* NullRegionConstructor(){
+cyclus::RegionModel* NullRegionConstructor() {
   return dynamic_cast<cyclus::RegionModel*>(new FakeNullRegion());
 }
 
@@ -67,7 +65,9 @@ TEST_F(NullRegionTest, ReceiveMessage) {
 }
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-INSTANTIATE_TEST_CASE_P(NullRegion, RegionModelTests, Values(&NullRegionConstructor));
-INSTANTIATE_TEST_CASE_P(NullRegion, ModelTests, Values(&NullRegionModelConstructor));
+INSTANTIATE_TEST_CASE_P(NullRegion, RegionModelTests,
+                        Values(&NullRegionConstructor));
+INSTANTIATE_TEST_CASE_P(NullRegion, ModelTests,
+                        Values(&NullRegionModelConstructor));
 
 

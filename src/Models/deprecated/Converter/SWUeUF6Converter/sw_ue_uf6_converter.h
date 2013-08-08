@@ -44,12 +44,11 @@
    for conversion including the new amount.
  */
 
-class SWUeUF6Converter : public cyclus::ConverterModel
-{
- /* --------------------
-  * all MODEL classes have these members
-  * --------------------
-  */
+class SWUeUF6Converter : public cyclus::ConverterModel {
+  /* --------------------
+   * all MODEL classes have these members
+   * --------------------
+   */
  public:
   /**
      Default constructor for the SWUeUF6Converter class.
@@ -87,13 +86,13 @@ class SWUeUF6Converter : public cyclus::ConverterModel
    */
   virtual std::string str();
 
- /* ------------------- */
+  /* ------------------- */
 
 
- /* --------------------
-  * all CONVERTERMODEL classes have these members
-  * --------------------
-  */
+  /* --------------------
+   * all CONVERTERMODEL classes have these members
+   * --------------------
+   */
  public:
   /**
      The convert function specific to the SWUeUF6Converter
@@ -105,14 +104,15 @@ class SWUeUF6Converter : public cyclus::ConverterModel
      @return the converted message
    */
 
-  virtual cyclus::Message::Ptr Convert(cyclus::Message::Ptr convMsg, cyclus::Message::Ptr refMsg);
+  virtual cyclus::Message::Ptr Convert(cyclus::Message::Ptr convMsg,
+                                       cyclus::Message::Ptr refMsg);
 
- /* ------------------- */
+  /* ------------------- */
 
- /* --------------------
-  * _THIS_ CONVERTERMODEL class has these members
-  * --------------------
-  */
+  /* --------------------
+   * _THIS_ CONVERTERMODEL class has these members
+   * --------------------
+   */
  protected:
   /**
      The sw_ue_uf6_converter.has one input commodity
@@ -124,7 +124,7 @@ class SWUeUF6Converter : public cyclus::ConverterModel
    */
   std::string out_commod_;
 
- /* ------------------- */
+  /* ------------------- */
 
 };
 

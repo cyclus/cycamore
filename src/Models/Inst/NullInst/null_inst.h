@@ -23,10 +23,10 @@
  */
 
 class NullInst : public cyclus::InstModel {
-/* --------------------
- * all MODEL classes have these members
- * --------------------
- */
+  /* --------------------
+   * all MODEL classes have these members
+   * --------------------
+   */
  public:
   /**
      Default constructor
@@ -38,7 +38,7 @@ class NullInst : public cyclus::InstModel {
    */
   virtual ~NullInst();
 
-/* ------------------- */
+  /* ------------------- */
 
 };
 

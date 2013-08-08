@@ -32,8 +32,8 @@ enum Phase {INIT, BEGIN, OPERATION, REFUEL, REFUEL_DELAY, WAITING, END};
    This class is identical to the RecipeReactor, except that it
    operates in a batch-like manner, i.e. it refuels in batches.
  */
-class BatchReactor : public cyclus::FacilityModel, public cyclus::supply_demand::CommodityProducer
-{
+class BatchReactor : public cyclus::FacilityModel,
+  public cyclus::supply_demand::CommodityProducer {
  public:
   /* --- Module Methods --- */
   /**
@@ -103,7 +103,8 @@ class BatchReactor : public cyclus::FacilityModel, public cyclus::supply_demand:
      @param order the msg/order for which resource(s) are to be prepared
      @return list of resources to be sent for this order
    */
-  virtual std::vector<cyclus::Resource::Ptr> RemoveResource(cyclus::Transaction order);
+  virtual std::vector<cyclus::Resource::Ptr> RemoveResource(
+    cyclus::Transaction order);
 
   /**
      Transacted resources are received through this method
@@ -111,7 +112,7 @@ class BatchReactor : public cyclus::FacilityModel, public cyclus::supply_demand:
      @param manifest is the set of resources being received
    */
   virtual void AddResource(cyclus::Transaction trans,
-        		   std::vector<cyclus::Resource::Ptr> manifest);
+                           std::vector<cyclus::Resource::Ptr> manifest);
   /* --- */
 
   /* --- BatchReactor Methods --- */
@@ -237,7 +238,7 @@ class BatchReactor : public cyclus::FacilityModel, public cyclus::supply_demand:
  private:
   /* --- BatchReactor Members and Methods --- */
   /// a map of phase names
-  static std::map<Phase,std::string> phase_names_;
+  static std::map<Phase, std::string> phase_names_;
 
   /// The time between batch reloadings.
   int cycle_length_;

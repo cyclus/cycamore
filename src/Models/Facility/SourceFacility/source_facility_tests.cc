@@ -22,7 +22,7 @@ void SourceFacilityTest::initParameters() {
   commod_ = "commod";
   recipe_name_ = "recipe";
   recipe_ = cyclus::CompMapPtr(new cyclus::CompMap(cyclus::ATOM));
-  cyclus::RecipeLibrary::RecordRecipe(recipe_name_,recipe_);
+  cyclus::RecipeLibrary::RecordRecipe(recipe_name_, recipe_);
   commod_market = new TestMarket();
   commod_market->SetCommodity(commod_);
   cyclus::MarketModel::RegisterMarket(commod_market);
@@ -42,14 +42,14 @@ TEST_F(SourceFacilityTest, InitialState) {
 }
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-TEST_F(SourceFacilityTest,clone) {
+TEST_F(SourceFacilityTest, clone) {
   SourceFacility* cloned_fac = new SourceFacility();
   cloned_fac->CloneModuleMembersFrom(src_facility);
 
-  EXPECT_EQ(src_facility->commodity(),cloned_fac->commodity());
-  EXPECT_EQ(src_facility->capacity(),cloned_fac->capacity());
-  EXPECT_EQ(src_facility->maxInventorySize(),cloned_fac->maxInventorySize());
-  EXPECT_EQ(src_facility->recipe(),cloned_fac->recipe());
+  EXPECT_EQ(src_facility->commodity(), cloned_fac->commodity());
+  EXPECT_EQ(src_facility->capacity(), cloned_fac->capacity());
+  EXPECT_EQ(src_facility->maxInventorySize(), cloned_fac->maxInventorySize());
+  EXPECT_EQ(src_facility->recipe(), cloned_fac->recipe());
 
   delete cloned_fac;
 }
@@ -61,7 +61,8 @@ TEST_F(SourceFacilityTest, Print) {
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 TEST_F(SourceFacilityTest, ReceiveMessage) {
-  cyclus::Message::Ptr msg = cyclus::Message::Ptr(new cyclus::Message(src_facility));
+  cyclus::Message::Ptr msg = cyclus::Message::Ptr(new cyclus::Message(
+                                                    src_facility));
   EXPECT_THROW(src_facility->ReceiveMessage(msg), cyclus::Error);
 }
 
@@ -77,10 +78,12 @@ TEST_F(SourceFacilityTest, Tick) {
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 TEST_F(SourceFacilityTest, Tock) {
   int time = 1;
-  EXPECT_DOUBLE_EQ(0.0,src_facility->inventorySize());
+  EXPECT_DOUBLE_EQ(0.0, src_facility->inventorySize());
   EXPECT_NO_THROW(src_facility->HandleTock(time));
 }
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-INSTANTIATE_TEST_CASE_P(SourceFac, FacilityModelTests, Values(&SourceFacilityConstructor));
-INSTANTIATE_TEST_CASE_P(SourceFac, ModelTests, Values(&SourceFacilityModelConstructor));
+INSTANTIATE_TEST_CASE_P(SourceFac, FacilityModelTests,
+                        Values(&SourceFacilityConstructor));
+INSTANTIATE_TEST_CASE_P(SourceFac, ModelTests,
+                        Values(&SourceFacilityModelConstructor));
