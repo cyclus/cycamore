@@ -103,12 +103,12 @@ class NullMarket : public cyclus::MarketModel
   /**
      The requests that have been sorted according to their size.
    */
-  SortedMstList requests_;
+  SortedMsgList requests_;
 
   /**
      The offers that have been sorted according to their size.
    */
-  SortedMstList offers_;
+  SortedMsgList offers_;
 
   /**
      The set of pointers to offers that have been matched.
@@ -126,13 +126,13 @@ class NullMarket : public cyclus::MarketModel
      A boolean that keeps track of whether requests have been matched.
      True if matched, false if umatched.
    */
-  bool match_request(SortedMstList::iterator request);
+  bool match_request(SortedMsgList::iterator request);
 
   /**
      A boolean that keeps track of whether requests have been rejected.
      True if rejected, false if not rejected.
    */
-  void reject_request(SortedMstList::iterator request);
+  void reject_request(SortedMsgList::iterator request);
 
   /**
      This function processes the information in a request.
