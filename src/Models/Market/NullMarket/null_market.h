@@ -92,23 +92,23 @@ class NullMarket : public cyclus::MarketModel
   /**
      The messages that have been indexed
    */
-  typedef std::pair<double,cyclus::Message::Ptr> indexedMsg;
+  typedef std::pair<double,cyclus::Message::Ptr> IndexedMsg;
 
   /**
      The messages of both offer and request types that have been sorted
      according to thie size.
    */
-  typedef std::multimap<double,cyclus::Message::Ptr> sortedMsgList;
+  typedef std::multimap<double,cyclus::Message::Ptr> SortedMsgList;
 
   /**
      The requests that have been sorted according to their size.
    */
-  sortedMsgList requests_;
+  SortedMsgList requests_;
 
   /**
      The offers that have been sorted according to their size.
    */
-  sortedMsgList offers_;
+  SortedMsgList offers_;
 
   /**
      The set of pointers to offers that have been matched.
@@ -126,13 +126,13 @@ class NullMarket : public cyclus::MarketModel
      A boolean that keeps track of whether requests have been matched.
      True if matched, false if umatched.
    */
-  bool match_request(sortedMsgList::iterator request);
+  bool match_request(SortedMsgList::iterator request);
 
   /**
      A boolean that keeps track of whether requests have been rejected.
      True if rejected, false if not rejected.
    */
-  void reject_request(sortedMsgList::iterator request);
+  void reject_request(SortedMsgList::iterator request);
 
   /**
      This function processes the information in a request.
