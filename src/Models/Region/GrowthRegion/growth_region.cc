@@ -13,8 +13,9 @@
 
 #include <boost/lexical_cast.hpp>
 
-using namespace std;
-using boost::lexical_cast;
+//using boost::lexical_cast;
+
+namespace cycamore {
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 GrowthRegion::GrowthRegion() {}
@@ -171,3 +172,4 @@ extern "C" void destructGrowthRegion(cyclus::Model* model) {
   delete model;
 }
 
+} // namespace cycamore

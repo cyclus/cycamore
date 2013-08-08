@@ -9,8 +9,6 @@
 
 #include <string>
 
-using namespace std;
-
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 class StubRegionTest : public ::testing::Test {
  protected:

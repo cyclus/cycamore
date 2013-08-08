@@ -5,7 +5,7 @@
 #include "prototype.h"
 #include "logger.h"
 
-using namespace std;
+namespace cycamore {
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 ManagerInst::ManagerInst() {}
@@ -79,5 +79,6 @@ extern "C" void destructManagerInst(cyclus::Model* model) {
   delete model;
 }
 
+} // namespace cycamore
 
 

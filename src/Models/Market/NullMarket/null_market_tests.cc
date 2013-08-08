@@ -11,8 +11,6 @@
 #include <string>
 #include <queue>
 
-using namespace std;
-
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 class FakeNullMarket : public NullMarket {
  protected:

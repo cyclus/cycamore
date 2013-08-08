@@ -10,6 +10,8 @@
 #include <set>
 #include <map>
 
+namespace cycamore {
+
 typedef std::pair<cyclus::Prototype*, int> BuildOrder;
 
 /**
@@ -85,5 +87,5 @@ class DeployInst : public cyclus::InstModel {
   /* ------------------- */
 
 };
-
+} // namespace cycamore
 #endif

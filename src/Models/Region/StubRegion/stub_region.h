@@ -4,6 +4,8 @@
 
 #include "region_model.h"
 
+namespace cycamore {
+
 /**
    @class StubRegion
 
@@ -85,5 +87,5 @@ class StubRegion : public cyclus::RegionModel {
   /* ------------------- */
 
 };
-
+} // namespace cycamore 
 #endif

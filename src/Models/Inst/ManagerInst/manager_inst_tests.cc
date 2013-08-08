@@ -13,7 +13,6 @@
 //                                        CMakeFiles/CycamoreUnitTestDriver.dir/Models/Inst/ManagerInst/manager_inst_tests.cc.o: In function `ManagerInstTests::TearDown()':
 // manager_inst_tests.cc:(.text+0x344): undefined reference to `cyclus::CommodityTestHelper::~cyclus::CommodityTestHelper()'
 
-using namespace std;
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 TestProducer::TestProducer() {}

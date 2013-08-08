@@ -5,7 +5,7 @@
 
 #include "error.h"
 
-using namespace std;
+namespace cycamore {
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 void BuildOrderList::addBuildOrder(cyclus::Prototype* p, int number,
@@ -95,3 +95,4 @@ extern "C" void destructDeployInst(cyclus::Model* model) {
 
 /* ------------------- */
 
+} // namespace cycamore

@@ -6,8 +6,6 @@
 #include "inst_model_tests.h"
 #include "model_tests.h"
 
-using namespace std;
-
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 class NullInstTest : public ::testing::Test {
  protected:

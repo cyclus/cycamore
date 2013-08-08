@@ -4,6 +4,8 @@
 
 #include "inst_model.h"
 
+namespace cycamore {
+
 /**
    @class NullInst
 
@@ -41,5 +43,5 @@ class NullInst : public cyclus::InstModel {
   /* ------------------- */
 
 };
-
+} // namespace cycamore 
 #endif

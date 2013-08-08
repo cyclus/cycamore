@@ -3,6 +3,7 @@
 
 #include "null_region.h"
 
+namespace cycamore {
 /* --------------------
  * all MODEL classes have these members
  * --------------------
@@ -25,3 +26,4 @@ extern "C" void destructNullRegion(cyclus::Model* model) {
 }
 
 /* -------------------- */
+} // namespace cycamore

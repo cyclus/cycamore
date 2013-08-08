@@ -6,6 +6,8 @@
 
 #include "logger.h"
 
+namespace cycamore {
+
 /* --------------------
  * all MODEL classes have these members
  * --------------------
@@ -69,5 +71,4 @@ extern "C" void destructStubInst(cyclus::Model* model) {
 
 /* ------------------- */
 
-
-
+} // namespace cycamore 

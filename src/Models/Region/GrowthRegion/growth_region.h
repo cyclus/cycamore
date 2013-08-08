@@ -11,11 +11,14 @@
 #include <set>
 
 // forward declarations
+namespace cycamore {
 class GrowthRegion;
+} // namespace cycamore
 
 // forward includes
 #include "growth_region_tests.h"
 
+namespace cycamore {
 /**
    The GrowthRegion class inherits from the RegionModel class and is
    dynamically loaded by the Model class when requested.
@@ -115,5 +118,5 @@ class GrowthRegion : public cyclus::RegionModel {
   void orderBuild(cyclus::Model* builder, cyclus::Model* prototype);
   /* --- */
 };
-
+} // namespace cycamore
 #endif

@@ -5,7 +5,7 @@
 #include "inst_model_tests.h"
 #include "model_tests.h"
 
-using namespace std;
+
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 cyclus::Model* DeployInstModelConstructor() {

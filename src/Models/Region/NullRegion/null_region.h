@@ -4,6 +4,8 @@
 
 #include "region_model.h"
 
+namespace cycamore {
+
 /**
    The NullRegion class inherits from the RegionModel class and is
    dynamically loaded by the Model class when requested.
@@ -53,6 +55,5 @@ class NullRegion : public cyclus::RegionModel  {
   /* ------------------- */
 
 };
-
-
+} // namespace cycamore 
 #endif
