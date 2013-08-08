@@ -5,11 +5,12 @@
 
 #include "error.h"
 
-using namespace std;
-
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-void BuildOrderList::addBuildOrder(cyclus::Prototype* p, int number,
+void BuildOrderList::AddBuildOrder(cyclus::Prototype* p, int number,
                                    int time) {
+  using std::map;
+  using std::set;
+  using std::make_pair;
   map<int, set<BuildOrder> >::iterator it;
   it = all_orders_.find(time);
 
@@ -24,7 +25,9 @@ void BuildOrderList::addBuildOrder(cyclus::Prototype* p, int number,
 }
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-std::set<BuildOrder> BuildOrderList::extractOrders(int time) {
+std::set<BuildOrder> BuildOrderList::ExtractOrders(int time) {
+  using std::map;
+  using std::set;
   map<int, set<BuildOrder> >::iterator it;
   set<BuildOrder> orders;
   it = all_orders_.find(time);
@@ -43,6 +46,7 @@ DeployInst::~DeployInst() {}
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 void DeployInst::InitModuleMembers(cyclus::QueryEngine* qe) {
+  using std::string;
   string query = "buildorder";
   int nOrders = qe->NElementsMatchingQuery(query);
 
@@ -51,7 +55,7 @@ void DeployInst::InitModuleMembers(cyclus::QueryEngine* qe) {
     string name = order->GetElementContent("prototype");
     int number = atoi(order->GetElementContent("number").c_str());
     int time = atoi(order->GetElementContent("date").c_str());
-    build_orders_.addBuildOrder(cyclus::Prototype::GetRegisteredPrototype(name),
+    build_orders_.AddBuildOrder(cyclus::Prototype::GetRegisteredPrototype(name),
                                 number, time);
   }
 
@@ -59,7 +63,8 @@ void DeployInst::InitModuleMembers(cyclus::QueryEngine* qe) {
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 void DeployInst::HandleTick(int time) {
-  set<BuildOrder> orders = build_orders_.extractOrders(time);
+  using std::set;
+  set<BuildOrder> orders = build_orders_.ExtractOrders(time);
   for (set<BuildOrder>::iterator it = orders.begin();
        it != orders.end(); it++) {
 

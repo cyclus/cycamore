@@ -37,7 +37,7 @@ void ManagerInst::RegisterCloneAsBuilt(cyclus::Prototype* clone) {
     if (cyclus::LEV_DEBUG3 >= cyclus::Logger::ReportLevel()) {
       LOG(cyclus::LEV_DEBUG3, "maninst") << "ManagerInst " << name()
                                          << " has registered a producer clone:";
-      writeProducerInformation(cast);
+      WriteProducerInformation(cast);
     }
   }
 }
@@ -52,7 +52,7 @@ void ManagerInst::RegisterCloneAsDecommissioned(cyclus::Prototype* clone) {
 }
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-void ManagerInst::writeProducerInformation(
+void ManagerInst::WriteProducerInformation(
   cyclus::supply_demand::CommodityProducer* producer) {
   set<cyclus::Commodity, cyclus::CommodityCompare> commodities =
     producer->ProducedCommodities();
