@@ -11,11 +11,14 @@
 #include <set>
 
 // forward declarations
+namespace cycamore {
 class GrowthRegion;
+} // namespace cycamore
 
 // forward includes
 #include "growth_region_tests.h"
 
+namespace cycamore {
 /**
    The GrowthRegion class inherits from the RegionModel class and is
    dynamically loaded by the Model class when requested.
@@ -69,13 +72,14 @@ class GrowthRegion : public cyclus::RegionModel {
   virtual void HandleTick(int time);
   /* --- */
 
+  /// manager for Supply and emand
+  cyclus::supply_demand::SupplyDemandManager sdmanager_;
+
+
  protected:
   /* --- GrowthRegion Members --- */
   /// a container of all commodities managed by region
   std::set<cyclus::Commodity, cyclus::CommodityCompare> commodities_;
-
-  /// manager for Supply and emand
-  cyclus::supply_demand::SupplyDemandManager sdmanager_;
 
   /// manager for building things
   cyclus::action_building::BuildingManager buildmanager_;
@@ -115,5 +119,5 @@ class GrowthRegion : public cyclus::RegionModel {
   void orderBuild(cyclus::Model* builder, cyclus::Model* prototype);
   /* --- */
 };
-
+} // namespace cycamore
 #endif

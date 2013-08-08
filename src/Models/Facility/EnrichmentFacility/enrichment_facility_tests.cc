@@ -11,11 +11,9 @@
 
 #include <sstream>
 
-using namespace std;
-
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 void EnrichmentFacilityTest::SetUp() {
-  src_facility = new EnrichmentFacility();
+  src_facility = new cycamore::EnrichmentFacility();
 
   initParameters();
   initFacility();
@@ -54,7 +52,7 @@ void EnrichmentFacilityTest::initParameters() {
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 void EnrichmentFacilityTest::initFacility() {
-  stringstream ss("");
+  std::stringstream ss("");
   ss << "<start>"
      << "  <input>"
      << "    <incommodity>" << in_commod << "</incommodity>"
@@ -88,7 +86,7 @@ TEST_F(EnrichmentFacilityTest, init) {
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 TEST_F(EnrichmentFacilityTest, clone) {
-  EnrichmentFacility* cloned_fac = new EnrichmentFacility();
+  cycamore::EnrichmentFacility* cloned_fac = new cycamore::EnrichmentFacility();
   cloned_fac->CloneModuleMembersFrom(src_facility);
 
   EXPECT_EQ(in_recipe, cloned_fac->in_recipe());
@@ -104,12 +102,12 @@ TEST_F(EnrichmentFacilityTest, clone) {
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 cyclus::Model* EnrichmentFacilityModelConstructor() {
-  return dynamic_cast<cyclus::Model*>(new EnrichmentFacility());
+  return dynamic_cast<cyclus::Model*>(new cycamore::EnrichmentFacility());
 }
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 cyclus::FacilityModel* EnrichmentFacilityConstructor() {
-  return dynamic_cast<cyclus::FacilityModel*>(new EnrichmentFacility());
+  return dynamic_cast<cyclus::FacilityModel*>(new cycamore::EnrichmentFacility());
 }
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -

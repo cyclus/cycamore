@@ -9,11 +9,10 @@
 
 #include <sstream>
 
-using namespace std;
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 void GrowthRegionTests::SetUp() {
-  region = new GrowthRegion();
+  region = new cycamore::GrowthRegion();
   commodity_name = "commod";
   demand_type = "linear";
   demand_params = "5 5";
@@ -27,16 +26,17 @@ void GrowthRegionTests::TearDown() {
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 cyclus::Model* GrowthRegionModelConstructor() {
-  return dynamic_cast<cyclus::Model*>(new GrowthRegion());
+  return dynamic_cast<cyclus::Model*>(new cycamore::GrowthRegion());
 }
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 cyclus::RegionModel* GrowthRegionConstructor() {
-  return dynamic_cast<cyclus::RegionModel*>(new GrowthRegion());
+  return dynamic_cast<cyclus::RegionModel*>(new cycamore::GrowthRegion());
 }
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 void GrowthRegionTests::initRegion() {
+  using std::stringstream;
   stringstream ss("");
   ss << "<start>"
      << "  <commodity>"

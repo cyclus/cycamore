@@ -7,8 +7,6 @@
 #include "model.h"
 #include <sstream>
 
-using namespace std;
-
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 void BatchReactorTest::SetUp() {
   // set up model parameters
@@ -36,7 +34,7 @@ void BatchReactorTest::TearDown() {
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 void BatchReactorTest::initSrcFacility() {
-  stringstream ss("");
+  std::stringstream ss("");
   ss << "<start>"
      << "  <fuel_input>"
      << "    <incommodity>" << in_commod << "</incommodity>"
@@ -61,7 +59,7 @@ void BatchReactorTest::initSrcFacility() {
   cyclus::XMLParser parser;
   parser.Init(ss);
   cyclus::XMLQueryEngine* engine = new cyclus::XMLQueryEngine(parser);
-  src_facility = new BatchReactor();
+  src_facility = new cycamore::BatchReactor();
   src_facility->InitModuleMembers(engine);
   delete engine;
 }
@@ -97,6 +95,7 @@ TEST_F(BatchReactorTest, initialstate) {
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 TEST_F(BatchReactorTest, clone) {
+  using cycamore::BatchReactor;
   BatchReactor* cloned_fac = new BatchReactor();
   cloned_fac->CloneModuleMembersFrom(src_facility);
 

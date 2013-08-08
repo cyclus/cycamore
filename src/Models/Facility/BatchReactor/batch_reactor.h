@@ -11,6 +11,8 @@
 #include <queue>
 #include <map>
 
+namespace cycamore {
+
 /**
    Defines all possible phases this facility can be in
  */
@@ -369,5 +371,5 @@ class BatchReactor : public cyclus::FacilityModel,
   void offloadCore();
   /* --- */
 };
-
+} // namespace cycamore
 #endif
