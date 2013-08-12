@@ -2,6 +2,7 @@
 #include <gtest/gtest.h>
 
 #include "source_facility_tests.h"
+#include "recipe_library.h"
 
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -20,8 +21,8 @@ void SourceFacilityTest::TearDown() {
 void SourceFacilityTest::InitParameters() {
   commod_ = "commod";
   recipe_name_ = "recipe";
-  recipe_ = cyclus::CompMapPtr(new cyclus::CompMap(cyclus::ATOM));
-  cyclus::RecipeLibrary::RecordRecipe(recipe_name_, recipe_);
+  recipe_ = cyclus::Composition::CreateFromAtom(cyclus::Composition::Vect());
+  cyclus::RL->AddRecipe(recipe_name_, recipe_);
   commod_market = new TestMarket();
   commod_market->SetCommodity(commod_);
   cyclus::MarketModel::RegisterMarket(commod_market);

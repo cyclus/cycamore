@@ -12,7 +12,7 @@ class EnrichmentFacilityTest : public ::testing::Test {
   TestMarket* in_commod_market;
   TestMarket* out_commod_market;
   std::string in_commod, out_commod, in_recipe;
-  cyclus::CompMapPtr recipe;
+  cyclus::Composition::Ptr recipe;
 
   double tails_assay, feed_assay, inv_size, commodity_price;
 

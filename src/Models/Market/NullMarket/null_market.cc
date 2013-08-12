@@ -75,75 +75,69 @@ bool NullMarket::match_request(SortedMsgList::iterator request) {
     // pop off this offer
     offers_.erase(offer);
 
-    if (requestMsg->trans().resource()->CheckQuality(
-          offerMsg->trans().resource())) {
+    LOG(cyclus::LEV_DEBUG1, "NulMkt") << "Comparing " << requestAmt << " >= "
+                                      << offerAmt
+                                      << ": " << (requestAmt >= offerAmt);
 
-      LOG(cyclus::LEV_DEBUG1, "NulMkt") << "Comparing " << requestAmt << " >= "
-                                        << offerAmt
-                                        << ": " << (requestAmt >= offerAmt);
+    if (requestAmt >= offerAmt) {
+      // put a new message in the order stack
+      // it goes down to supplier
+      offerMsg->trans().MatchWith(requestMsg->trans());
 
-      if (requestAmt >= offerAmt) {
-        // put a new message in the order stack
-        // it goes down to supplier
-        offerMsg->trans().MatchWith(requestMsg->trans());
+      // Queue an order
+      matchedOffers_.insert(offerMsg);
+      // Zero out the boolean.
+      // At least some of the request will be met.
+      toRet = 0;
 
-        // Queue an order
-        matchedOffers_.insert(offerMsg);
-        // Zero out the boolean.
-        // At least some of the request will be met.
-        toRet = 0;
+      orders_.push_back(offerMsg);
 
-        orders_.push_back(offerMsg);
+      LOG(cyclus::LEV_DEBUG2, "none!")
+          << "null_market.has resolved a transaction "
+          << " which is a match from "
+          << offerMsg->trans().supplier()->ID()
+          << " to "
+          << offerMsg->trans().requester()->ID()
+          << " for the amount:  "
+          << offerMsg->trans().resource()->quantity();
 
-        LOG(cyclus::LEV_DEBUG2, "none!")
-            << "null_market.has resolved a transaction "
-            << " which is a match from "
-            << offerMsg->trans().supplier()->ID()
-            << " to "
-            << offerMsg->trans().requester()->ID()
-            << " for the amount:  "
-            << offerMsg->trans().resource()->quantity();
+      requestAmt -= offerAmt;
+    } else {
+      // split offer
 
-        requestAmt -= offerAmt;
-      } else {
-        // split offer
+      // queue a new order
+      cyclus::Message::Ptr maybe_offer = offerMsg->clone(); 
+      cyclus::Resource::Ptr res = offerMsg->trans().resource()->ExtractRes(requestAmt);
+      maybe_offer->trans().SetResource(res);
+      maybe_offer->trans().MatchWith(requestMsg->trans());
+      maybe_offer->trans().SetResource(requestMsg->trans().resource());
+      matchedOffers_.insert(offerMsg);
 
-        // queue a new order
-        cyclus::Message::Ptr maybe_offer = offerMsg->clone();
-        maybe_offer->trans().resource()->SetQuantity(requestAmt);
-        maybe_offer->trans().MatchWith(requestMsg->trans());
-        maybe_offer->trans().SetResource(requestMsg->trans().resource());
-        matchedOffers_.insert(offerMsg);
+      orders_.push_back(maybe_offer);
 
-        orders_.push_back(maybe_offer);
+      LOG(cyclus::LEV_DEBUG2, "none!") << "null_market.has resolved a match from "
+                                       << maybe_offer->trans().supplier()->ID()
+                                       << " to "
+                                       << maybe_offer->trans().requester()->ID()
+                                       << " for " << maybe_offer->trans().resource()->quantity()
+                                       << " of ";
 
-        LOG(cyclus::LEV_DEBUG2, "none!") << "null_market.has resolved a match from "
-                                         << maybe_offer->trans().supplier()->ID()
-                                         << " to "
-                                         << maybe_offer->trans().requester()->ID()
-                                         << " for " << maybe_offer->trans().resource()->quantity()
-                                         << " of ";
-        maybe_offer->trans().resource()->Print();
+      // reduce the offer amount
+      offerAmt -= requestAmt;
 
-        // reduce the offer amount
-        offerAmt -= requestAmt;
+      // if the residual is above threshold,
+      // make a new offer with reduced amount
 
-        // if the residual is above threshold,
-        // make a new offer with reduced amount
-
-        if (offerAmt > cyclus::eps()) {
-          cyclus::Message::Ptr new_offer = offerMsg->clone();
-          new_offer->trans().resource()->SetQuantity(offerAmt);
-          ReceiveMessage(new_offer);
-        }
-
-        // zero out request
-        requestAmt = 0;
-
-        // Zero out the boolean.
-        // All of the request will be met.
-        toRet = 0;
+      if (offerAmt > cyclus::eps()) {
+        ReceiveMessage(offerMsg);
       }
+
+      // zero out request
+      requestAmt = 0;
+
+      // Zero out the boolean.
+      // All of the request will be met.
+      toRet = 0;
     }
   }
 

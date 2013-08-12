@@ -107,8 +107,8 @@ void SinkFacility::HandleTick(int time) {
       cyclus::Communicator* recipient = dynamic_cast<cyclus::Communicator*>(market);
 
       // create a generic resource
-      cyclus::GenericResource::Ptr request_res = cyclus::GenericResource::Ptr(
-                                                   new cyclus::GenericResource("kg", *commod, requestAmt));
+      cyclus::GenericResource::Ptr request_res = cyclus::GenericResource::Create(
+                                                 requestAmt, "kg", *commod);
 
       // build the transaction and message
       cyclus::Transaction trans(this, cyclus::REQUEST);
