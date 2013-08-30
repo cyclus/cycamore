@@ -21,7 +21,7 @@ void SourceFacilityTest::TearDown() {
 void SourceFacilityTest::InitParameters() {
   commod_ = "commod";
   recipe_name_ = "recipe";
-  recipe_ = cyclus::Composition::CreateFromAtom(cyclus::Composition::Vect());
+  recipe_ = cyclus::Composition::CreateFromAtom(cyclus::CompMap());
   cyclus::RL->AddRecipe(recipe_name_, recipe_);
   commod_market = new TestMarket();
   commod_market->SetCommodity(commod_);
