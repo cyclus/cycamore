@@ -491,17 +491,15 @@ void BatchReactor::interactWithMarket(std::string commod, double amt,
   trans.SetPrice(commodity_price);
 
   if (type == cyclus::OFFER) {
-    cyclus::GenericResource::Ptr trade_res = cyclus::GenericResource::Ptr(
-                                               new cyclus::GenericResource("kg", commod, amt));
+    cyclus::GenericResource::Ptr trade_res = cyclus::GenericResource::Create(
+                                             amt, "kg", commod);
     trans.SetResource(trade_res);
   } else {
-    cyclus::Material::Ptr trade_res = cyclus::Material::Ptr(new cyclus::Material(
-                                                              cyclus::RecipeLibrary::Recipe(in_recipe_)));
-    trade_res->SetQuantity(amt);
+    cyclus::Material::Ptr trade_res = cyclus::Material::Create(amt, 
+                                      cyclus::RL->GetRecipe(in_recipe_));
     trans.SetResource(trade_res);
 
     LOG(cyclus::LEV_DEBUG1, "BatR") << "Requesting material: ";
-    trade_res->Print();
   }
 
   // log the event
@@ -541,9 +539,8 @@ void BatchReactor::OffLoadFuel(double amt) {
   inCore_.PopQty(amt);
   double factor = out_core_loading() / in_core_loading();
   double out_amount = amt * factor;
-  cyclus::Material::Ptr out_fuel = cyclus::Material::Ptr(new cyclus::Material(
-                                                           cyclus::RecipeLibrary::Recipe(out_recipe())));
-  out_fuel->SetQuantity(out_amount);
+  cyclus::Material::Ptr out_fuel = cyclus::Material::Create(out_amount,
+                                   cyclus::RL->GetRecipe(out_recipe()));
   postCore_.PushOne(out_fuel);
 }
 

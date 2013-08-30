@@ -11,6 +11,7 @@
 #include "material.h"
 #include "timer.h"
 #include "event_manager.h"
+#include "recipe_library.h"
 
 #include <sstream>
 #include <limits>
@@ -58,8 +59,8 @@ void EnrichmentFacility::InitModuleMembers(cyclus::QueryEngine* qe) {
   data = output->GetElementContent("tails_assay");
   set_tails_assay(lexical_cast<double>(data));
 
-  cyclus::Material::Ptr feed = cyclus::Material::Ptr(new cyclus::Material(
-                                                       cyclus::RecipeLibrary::Recipe(in_recipe())));
+  cyclus::Material::Ptr feed = cyclus::Material::Create(0, 
+                               cyclus::RL->GetRecipe(in_recipe_));
   set_feed_assay(cyclus::enrichment::UraniumAssay(feed));
 }
 
@@ -104,11 +105,11 @@ std::vector<cyclus::Resource::Ptr> EnrichmentFacility::RemoveResource(
   using std::vector;
   using boost::dynamic_pointer_cast;
   cyclus::Resource::Ptr prsrc = order.resource();
-  if (!cyclus::Material::IsMaterial(prsrc)) {
-    throw cyclus::CastError("Can't remove a resource as a non-material");
-  }
 
   cyclus::Material::Ptr rsrc = dynamic_pointer_cast<cyclus::Material>(prsrc);
+  if (rsrc == 0) {
+    throw cyclus::CastError("Can't remove a resource as a non-material");
+  }
 
   cyclus::enrichment::Assays assays = GetAssays(rsrc);
   double product_qty = cyclus::enrichment::UraniumQty(rsrc);
@@ -142,7 +143,6 @@ void EnrichmentFacility::ReceiveMessage(cyclus::Message::Ptr msg) {
     // file the order
     orders_.push_back(msg);
     LOG(cyclus::LEV_INFO5, "EnrFac") << name() << " just received an order for: ";
-    msg->trans().resource()->Print();
   } else {
     throw cyclus::Error("EnrFacility is not the supplier of this msg.");
   }
@@ -183,10 +183,8 @@ void EnrichmentFacility::MakeRequest() {
 
     // create a material resource
     // @MJGFlag note that this doesn't matter in the current state
-    cyclus::Material::Ptr request_res =
-      cyclus::Material::Ptr(new cyclus::Material(cyclus::RecipeLibrary::Recipe(
-                                                   in_recipe_)));
-    request_res->SetQuantity(amt);
+    cyclus::Material::Ptr request_res = cyclus::Material::Create(amt,
+                                        cyclus::RL->GetRecipe(in_recipe_));
 
     // build the transaction and message
     cyclus::Transaction trans(this, cyclus::REQUEST);
@@ -206,8 +204,8 @@ cyclus::Transaction EnrichmentFacility::BuildTransaction() {
   double min_amt = 0;
   double offer_amt = inventory_.quantity();
 
-  cyclus::Material::Ptr offer_res = cyclus::Material::Ptr(new cyclus::Material());
-  offer_res->SetQuantity(offer_amt);
+  cyclus::Material::Ptr offer_res = cyclus::Material::Create(offer_amt,
+                                    cyclus::RL->GetRecipe(in_commodity_));
   cyclus::Transaction trans(this, cyclus::OFFER);
 
   trans.SetCommod(out_commodity());
@@ -249,14 +247,12 @@ void EnrichmentFacility::ProcessOutgoingMaterial() {
     cyclus::Transaction trans = orders_.front()->trans();
 
     cyclus::Resource::Ptr prsrc = trans.resource();
-    if (!cyclus::Material::IsMaterial(prsrc)) {
-      throw cyclus::CastError("Can't process a resource as a non-material");
+    cyclus::Material::Ptr rsrc = dynamic_pointer_cast<cyclus::Material>(prsrc);
+    if (rsrc == 0) {
+      throw cyclus::CastError("Can't remove a resource as a non-material");
     }
 
-    cyclus::Material::Ptr rsrc = dynamic_pointer_cast<cyclus::Material>(prsrc);
-
     LOG(cyclus::LEV_DEBUG1, "EnrFac") << "Processing material: ";
-    rsrc->Print();
 
     cyclus::enrichment::Assays assays = GetAssays(rsrc);
     double product_qty = cyclus::enrichment::UraniumQty(rsrc);

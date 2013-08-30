@@ -8,6 +8,7 @@
 
 #include "commodity.h"
 #include "xml_query_engine.h"
+#include "recipe_library.h"
 
 #include <sstream>
 
@@ -40,10 +41,12 @@ void EnrichmentFacilityTest::InitParameters() {
 
   in_recipe = "recipe";
   feed_assay = 0.0072;
-  recipe = cyclus::CompMapPtr(new cyclus::CompMap(cyclus::ATOM));
-  (*recipe)[92235] = feed_assay;
-  (*recipe)[92238] = 1 - feed_assay;
-  cyclus::RecipeLibrary::RecordRecipe(in_recipe, recipe);
+
+  cyclus::CompMap v;
+  v[92235] = feed_assay;
+  v[92238] = 1 - feed_assay;
+  recipe = cyclus::Composition::CreateFromAtom(v);
+  cyclus::RL->AddRecipe(in_recipe, recipe);
 
   tails_assay = 0.002;
   inv_size = 5;
