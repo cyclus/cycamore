@@ -2,8 +2,6 @@
 #include <gtest/gtest.h>
 
 #include "source_facility_tests.h"
-#include "recipe_library.h"
-
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 void SourceFacilityTest::SetUp() {
@@ -21,16 +19,19 @@ void SourceFacilityTest::TearDown() {
 void SourceFacilityTest::InitParameters() {
   commod_ = "commod";
   recipe_name_ = "recipe";
+  cyclus::Context* ctx = tc_.get();
+  
   recipe_ = cyclus::Composition::CreateFromAtom(cyclus::CompMap());
-  cyclus::RL->AddRecipe(recipe_name_, recipe_);
-  commod_market = new TestMarket();
+  ctx->RegisterRecipe(recipe_name_, recipe_);
+  commod_market = new TestMarket(ctx);
   commod_market->SetCommodity(commod_);
   cyclus::MarketModel::RegisterMarket(commod_market);
 }
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 void SourceFacilityTest::SetUpSourceFacility() {
-  src_facility = new cycamore::SourceFacility();
+  cyclus::Context* ctx = tc_.get();
+  src_facility = new cycamore::SourceFacility(ctx);
   src_facility->SetCommodity(commod_);
   src_facility->SetRecipe(recipe_name_);
 }
@@ -43,7 +44,8 @@ TEST_F(SourceFacilityTest, InitialState) {
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 TEST_F(SourceFacilityTest, clone) {
-  cycamore::SourceFacility* cloned_fac = new cycamore::SourceFacility();
+  cyclus::Context* ctx = tc_.get();
+  cycamore::SourceFacility* cloned_fac = new cycamore::SourceFacility(ctx);
   cloned_fac->CloneModuleMembersFrom(src_facility);
 
   EXPECT_EQ(src_facility->commodity(), cloned_fac->commodity());

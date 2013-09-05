@@ -12,6 +12,8 @@
 
 namespace cycamore {
 
+class Context;
+
 /**
    @class SourceFacility
    This cyclus::FacilityModel provides a simple source of some capacity
@@ -92,9 +94,10 @@ class SourceFacility : public cyclus::FacilityModel,
  public:
   /* --- Module Methods --- */
   /**
-     Default Constructor for the SourceFacility class
+     Constructor for the SourceFacility class
+     @param ctx the cyclus context for access to simulation-wide parameters
    */
-  SourceFacility();
+  SourceFacility(cyclus::Context* ctx);
 
   /**
      Destructor for the SourceFacility class
