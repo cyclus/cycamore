@@ -206,14 +206,13 @@ void SourceFacility::GenerateMaterial() {
     return; // no room
   }
 
-  cyclus::Material::Ptr newMat =
-    cyclus::Material::Ptr(new cyclus::Material(cyclus::RecipeLibrary::Recipe(
-                                                 recipe_name_)));
+  cyclus::Material::Ptr newMat;
   double amt = capacity_;
   if (amt <= empty_space) {
-    newMat->SetQuantity(amt); // plenty of room
+    newMat = cyclus::Material::Create(amt, cyclus::RL->GetRecipe(recipe_name_));
   } else {
-    newMat->SetQuantity(empty_space); // not enough room
+    newMat = cyclus::Material::Create(empty_space,
+                                      cyclus::RL->GetRecipe(recipe_name_));
   }
   inventory_.PushOne(newMat);
 }
@@ -224,9 +223,8 @@ cyclus::Transaction SourceFacility::BuildTransaction() {
   double min_amt = 0;
   double offer_amt = inventory_.quantity();
 
-  cyclus::Material::Ptr trade_res = cyclus::Material::Ptr(new cyclus::Material(
-                                                            cyclus::RecipeLibrary::Recipe(recipe())));
-  trade_res->SetQuantity(offer_amt);
+  cyclus::Material::Ptr trade_res = cyclus::Material::Create(offer_amt,
+                                    cyclus::RL->GetRecipe(recipe()));
 
   cyclus::Transaction trans(this, cyclus::OFFER);
   trans.SetCommod(out_commod_);

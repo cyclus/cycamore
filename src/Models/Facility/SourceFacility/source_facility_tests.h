@@ -23,7 +23,7 @@ class SourceFacilityTest : public ::testing::Test {
   cycamore::SourceFacility* src_facility;
   TestMarket* commod_market;
   std::string commod_, recipe_name_;
-  cyclus::CompMapPtr recipe_;
+  cyclus::Composition::Ptr recipe_;
 
   virtual void SetUp();
   virtual void TearDown();

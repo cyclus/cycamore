@@ -20,8 +20,7 @@ class FakeNullMarket : public cycamore::NullMarket {
     using std::string;
     string kg = "kg";
     string qual = "qual";
-    cyclus::GenericResource::Ptr res = cyclus::GenericResource::Ptr(
-                                         new cyclus::GenericResource(kg, qual, 1));
+    cyclus::GenericResource::Ptr res = cyclus::GenericResource::Create(1, kg, qual);
     cyclus::Transaction trans(this, cyclus::OFFER);
     msg_ = cyclus::Message::Ptr(new cyclus::Message(this, this, trans));
     msg_->trans().SetResource(res);
