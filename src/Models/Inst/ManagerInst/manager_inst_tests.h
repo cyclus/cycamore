@@ -1,16 +1,19 @@
 // manager_inst_tests.h
 #include <gtest/gtest.h>
 
-#include "manager_inst.h"
-#include "facility_model.h"
+#include "context.h"
 #include "commodity_producer.h"
+#include "event_manager.h"
+#include "facility_model.h"
+#include "manager_inst.h"
+#include "timer.h"
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 class TestProducer :
   public cyclus::FacilityModel,
   public cyclus::supply_demand::CommodityProducer {
  public:
-  TestProducer();
+  TestProducer(cyclus::Context* ctx);
   virtual ~TestProducer();
 
   void CloneModuleMembersFrom(cyclus::FacilityModel* source) {};
@@ -31,6 +34,9 @@ class ManagerInstTests : public ::testing::Test {
 
   cyclus::Commodity commodity;
   double capacity;
+  cyclus::Context* ctx_;
+  cyclus::Timer ti_;
+  cyclus::EventManager em_;
 
  public:
   virtual void SetUp();

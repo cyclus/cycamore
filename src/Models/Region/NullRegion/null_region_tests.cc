@@ -6,6 +6,8 @@
 #include "message.h"
 #include "region_model_tests.h"
 #include "model_tests.h"
+#include "timer.h"
+#include "event_manager.h"
 
 #include <string>
 #include <queue>
@@ -13,7 +15,7 @@
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 class FakeNullRegion : public cycamore::NullRegion {
  public:
-  FakeNullRegion() : cycamore::NullRegion() { }
+  FakeNullRegion(cyclus::Context* ctx) : cycamore::NullRegion(ctx) { }
 
   virtual ~FakeNullRegion() { }
 };
@@ -21,28 +23,20 @@ class FakeNullRegion : public cycamore::NullRegion {
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 class NullRegionTest : public ::testing::Test {
  protected:
-  FakeNullRegion* src_region_;
-  FakeNullRegion* new_region_;
 
-  virtual void SetUp() {
-    src_region_ = new FakeNullRegion();
-    new_region_ = new FakeNullRegion();
-  };
+  virtual void SetUp() { };
 
-  virtual void TearDown() {
-    delete src_region_;
-    delete new_region_;
-  }
+  virtual void TearDown() { };
 };
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-cyclus::Model* NullRegionModelConstructor() {
-  return dynamic_cast<cyclus::Model*>(new FakeNullRegion());
+cyclus::Model* NullRegionModelConstructor(cyclus::Context* ctx) {
+  return dynamic_cast<cyclus::Model*>(new FakeNullRegion(ctx));
 }
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-cyclus::RegionModel* NullRegionConstructor() {
-  return dynamic_cast<cyclus::RegionModel*>(new FakeNullRegion());
+cyclus::RegionModel* NullRegionConstructor(cyclus::Context* ctx) {
+  return dynamic_cast<cyclus::RegionModel*>(new FakeNullRegion(ctx));
 }
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -52,7 +46,11 @@ TEST_F(NullRegionTest, InitialState) {
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 TEST_F(NullRegionTest, Print) {
-  EXPECT_NO_THROW(std::string s = src_region_->str());
+  cyclus::Timer ti;
+  cyclus::EventManager em;
+  cyclus::Context ctx(&ti, &em);
+  FakeNullRegion reg(&ctx);
+  EXPECT_NO_THROW(std::string s = reg.str());
   // Test NullRegion specific aspects of the print method here
 }
 

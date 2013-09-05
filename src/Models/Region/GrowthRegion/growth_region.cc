@@ -16,7 +16,7 @@
 namespace cycamore {
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-GrowthRegion::GrowthRegion() {}
+GrowthRegion::GrowthRegion(cyclus::Context* ctx) : cyclus::RegionModel(ctx) {}
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 GrowthRegion::~GrowthRegion() {}
@@ -147,17 +147,17 @@ void GrowthRegion::orderBuilds(cyclus::Commodity& commodity,
   for (int i = 0; i < orders.size(); i++) {
     cyclus::action_building::BuildOrder order = orders.at(i);
     cyclus::InstModel* instcast = dynamic_cast<cyclus::InstModel*>(order.builder);
-    cyclus::Prototype* protocast = dynamic_cast<cyclus::Prototype*>(order.producer);
-    if (instcast && protocast) {
+    cyclus::Model* modelcast = dynamic_cast<cyclus::Model*>(order.producer);
+    if (instcast && modelcast) {
       LOG(cyclus::LEV_INFO3, "greg") << "A build order for " << order.number
                                      << " prototype(s) of type "
-                                     << dynamic_cast<cyclus::Model*>(protocast)->name()
+                                     << dynamic_cast<cyclus::Model*>(modelcast)->name()
                                      << " from builder " << instcast->name()
                                      << " is being placed.";
 
       for (int j = 0; j < order.number; j++) {
         LOG(cyclus::LEV_DEBUG2, "greg") << "Ordering build number: " << j + 1;
-        instcast->Build(protocast);
+        instcast->Build(modelcast->name());
       }
     } else {
       throw cyclus::CastError("growth_region.has tried to incorrectly cast an already known entity.");
@@ -166,8 +166,8 @@ void GrowthRegion::orderBuilds(cyclus::Commodity& commodity,
 }
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-extern "C" cyclus::Model* constructGrowthRegion() {
-  return new GrowthRegion();
+extern "C" cyclus::Model* constructGrowthRegion(cyclus::Context* ctx) {
+  return new GrowthRegion(ctx);
 }
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -

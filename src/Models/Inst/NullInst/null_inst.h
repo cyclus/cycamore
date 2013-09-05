@@ -33,7 +33,7 @@ class NullInst : public cyclus::InstModel {
   /**
      Default constructor
    */
-  NullInst();
+  NullInst(cyclus::Context* ctx);
 
   /**
      Default destructor

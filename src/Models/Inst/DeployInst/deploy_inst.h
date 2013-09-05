@@ -46,7 +46,7 @@ class DeployInst : public cyclus::InstModel {
   /**
      Default constructor
    */
-  DeployInst();
+  DeployInst(cyclus::Context* ctx);
 
   /**
      Destructor

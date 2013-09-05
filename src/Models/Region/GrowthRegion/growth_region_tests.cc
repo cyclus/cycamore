@@ -1,18 +1,18 @@
 // growth_region_tests.cc
 #include "growth_region_tests.h"
+
+#include <sstream>
+
 #include "region_model_tests.h"
 #include "model_tests.h"
-
 #include "commodity.h"
 #include "xml_query_engine.h"
 #include "xml_parser.h"
 
-#include <sstream>
-
-
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 void GrowthRegionTests::SetUp() {
-  region = new cycamore::GrowthRegion();
+  ctx = new cyclus::Context(&ti, &em);
+  region = new cycamore::GrowthRegion(ctx);
   commodity_name = "commod";
   demand_type = "linear";
   demand_params = "5 5";
@@ -22,16 +22,17 @@ void GrowthRegionTests::SetUp() {
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 void GrowthRegionTests::TearDown() {
   delete region;
+  delete ctx;
 }
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-cyclus::Model* GrowthRegionModelConstructor() {
-  return dynamic_cast<cyclus::Model*>(new cycamore::GrowthRegion());
+cyclus::Model* GrowthRegionModelConstructor(cyclus::Context* ctx) {
+  return dynamic_cast<cyclus::Model*>(new cycamore::GrowthRegion(ctx));
 }
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-cyclus::RegionModel* GrowthRegionConstructor() {
-  return dynamic_cast<cyclus::RegionModel*>(new cycamore::GrowthRegion());
+cyclus::RegionModel* GrowthRegionConstructor(cyclus::Context* ctx) {
+  return dynamic_cast<cyclus::RegionModel*>(new cycamore::GrowthRegion(ctx));
 }
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -

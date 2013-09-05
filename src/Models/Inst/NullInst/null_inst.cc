@@ -6,14 +6,14 @@
 namespace cycamore {
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-NullInst::NullInst() {}
+NullInst::NullInst(cyclus::Context* ctx) : cyclus::InstModel(ctx) {}
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 NullInst::~NullInst() {}
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-extern "C" cyclus::Model* constructNullInst() {
-  return new NullInst();
+extern "C" cyclus::Model* constructNullInst(cyclus::Context* ctx) {
+  return new NullInst(ctx);
 }
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -

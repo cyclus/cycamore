@@ -3,31 +3,26 @@
 
 #include "null_inst.h"
 
+#include "context.h"
 #include "inst_model_tests.h"
 #include "model_tests.h"
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 class NullInstTest : public ::testing::Test {
  protected:
-  cycamore::NullInst* src_inst;
+  virtual void SetUp() { }
 
-  virtual void SetUp() {
-    src_inst = new cycamore::NullInst();
-  }
-
-  virtual void TearDown() {
-    delete src_inst;
-  }
+  virtual void TearDown() { }
 };
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-cyclus::Model* NullInstModelConstructor() {
-  return dynamic_cast<cyclus::Model*>(new cycamore::NullInst());
+cyclus::Model* NullInstModelConstructor(cyclus::Context* ctx) {
+  return dynamic_cast<cyclus::Model*>(new cycamore::NullInst(ctx));
 }
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-cyclus::InstModel* NullInstConstructor() {
-  return dynamic_cast<cyclus::InstModel*>(new cycamore::NullInst());
+cyclus::InstModel* NullInstConstructor(cyclus::Context* ctx) {
+  return dynamic_cast<cyclus::InstModel*>(new cycamore::NullInst(ctx));
 }
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -

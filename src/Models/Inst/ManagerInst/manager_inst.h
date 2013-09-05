@@ -23,7 +23,7 @@ class ManagerInst : public cyclus::InstModel,
   /**
      Default constructor
    */
-  ManagerInst();
+  ManagerInst(cyclus::Context* ctx);
 
   /**
      Default destructor

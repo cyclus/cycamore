@@ -10,14 +10,14 @@ namespace cycamore {
  */
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-NullRegion::NullRegion() {}
+NullRegion::NullRegion(cyclus::Context* ctx) : cyclus::RegionModel(ctx) {}
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 NullRegion::~NullRegion() {}
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-extern "C" cyclus::Model* constructNullRegion() {
-  return new NullRegion();
+extern "C" cyclus::Model* constructNullRegion(cyclus::Context* ctx) {
+  return new NullRegion(ctx);
 }
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
