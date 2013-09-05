@@ -85,6 +85,7 @@ class SinkFacility : public cyclus::FacilityModel  {
   /* --- Module Methods --- */
   /**
      Constructor for the SinkFacility class.
+     @param ctx the cyclus context for access to simulation-wide parameters
   */
   SinkFacility(cyclus::Context* ctx);
 
