@@ -76,6 +76,18 @@ TEST_F(SinkFacilityTest, Tock) {
 }
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+cyclus::Model* SinkFacilityModelConstructor(cyclus::Context* ctx) {
+  using cycamore::SinkFacility;
+  return dynamic_cast<cyclus::Model*>(new SinkFacility(ctx));
+}
+
+//- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+cyclus::FacilityModel* SinkFacilityConstructor(cyclus::Context* ctx) {
+  using cycamore::SinkFacility;
+  return dynamic_cast<cyclus::FacilityModel*>(new SinkFacility(ctx));
+}
+
+//- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 INSTANTIATE_TEST_CASE_P(SinkFac, FacilityModelTests,
                         Values(&SinkFacilityConstructor));
 INSTANTIATE_TEST_CASE_P(SinkFac, ModelTests,
