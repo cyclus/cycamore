@@ -7,6 +7,7 @@
 
 #include "sink_facility.h"
 
+#include "context.h"
 #include "logger.h"
 #include "generic_resource.h"
 #include "error.h"
@@ -16,9 +17,10 @@
 namespace cycamore {
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-SinkFacility::SinkFacility() :
-  commod_price_(0),
-  capacity_(std::numeric_limits<double>::max()) {}
+SinkFacility::SinkFacility(cyclus::Context* ctx)
+    : cyclus::FacilityModel(ctx),
+      commod_price_(0),
+      capacity_(std::numeric_limits<double>::max()) {}
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 SinkFacility::~SinkFacility() {}
@@ -107,8 +109,11 @@ void SinkFacility::HandleTick(int time) {
       cyclus::Communicator* recipient = dynamic_cast<cyclus::Communicator*>(market);
 
       // create a generic resource
-      cyclus::GenericResource::Ptr request_res = cyclus::GenericResource::Create(
-                                                 requestAmt, "kg", *commod);
+      cyclus::GenericResource::Ptr request_res =
+          cyclus::GenericResource::Create(Model::context(),
+                                          requestAmt,
+                                          "kg",
+                                          *commod);
 
       // build the transaction and message
       cyclus::Transaction trans(this, cyclus::REQUEST);
@@ -198,8 +203,8 @@ const double SinkFacility::getRequestAmt() {
 }
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-extern "C" cyclus::Model* constructSinkFacility() {
-  return new SinkFacility();
+extern "C" cyclus::Model* constructSinkFacility(cyclus::Context* ctx) {
+  return new SinkFacility(ctx);
 }
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -

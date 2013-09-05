@@ -12,6 +12,8 @@
 
 namespace cycamore {
 
+class Context;
+  
 /**
    @class SinkFacility
    This cyclus::FacilityModel requests a finite amount of its input commodity.
@@ -84,7 +86,7 @@ class SinkFacility : public cyclus::FacilityModel  {
   /**
      Constructor for the SinkFacility class.
   */
-  SinkFacility();
+  SinkFacility(cyclus::Context* ctx);
 
   /**
      Destructor for the SinkFacility class.

@@ -18,7 +18,7 @@ void SinkFacilityTest::TearDown() {
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 void SinkFacilityTest::InitParameters() {
   commod_ = "incommod";
-  commod_market = new TestMarket();
+  commod_market = new TestMarket(tc_.get());
   commod_market->SetCommodity(commod_);
   cyclus::MarketModel::RegisterMarket(commod_market);
 }
@@ -26,7 +26,7 @@ void SinkFacilityTest::InitParameters() {
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 void SinkFacilityTest::SetUpSinkFacility() {
   using cycamore::SinkFacility;
-  src_facility = new SinkFacility();
+  src_facility = new SinkFacility(tc_.get());
   src_facility->AddCommodity(commod_);
 }
 
@@ -39,7 +39,7 @@ TEST_F(SinkFacilityTest, InitialState) {
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 TEST_F(SinkFacilityTest, clone) {
   using cycamore::SinkFacility;
-  SinkFacility* cloned_fac = new SinkFacility();
+  SinkFacility* cloned_fac = new SinkFacility(tc_.get());
   cloned_fac->CloneModuleMembersFrom(src_facility);
 
   EXPECT_EQ(src_facility->capacity(), cloned_fac->capacity());
