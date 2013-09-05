@@ -8,18 +8,6 @@
 #include "model_tests.h"
 #include "test_market.h"
 
-//- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-cyclus::Model* SourceFacilityModelConstructor(cyclus::Context* ctx) {
-  using cycamore::SourceFacility;
-  return dynamic_cast<cyclus::Model*>(new SourceFacility(ctx));
-}
-
-//- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-cyclus::FacilityModel* SourceFacilityConstructor(cyclus::Context* ctx) {
-  using cycamore::SourceFacility;
-  return dynamic_cast<cyclus::FacilityModel*>(new SourceFacility(ctx));
-}
-
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 class SourceFacilityTest : public ::testing::Test {
  protected:

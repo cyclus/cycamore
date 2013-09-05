@@ -84,6 +84,18 @@ TEST_F(SourceFacilityTest, Tock) {
   EXPECT_NO_THROW(src_facility->HandleTock(time));
 }
 
+//- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+cyclus::Model* SourceFacilityModelConstructor(cyclus::Context* ctx) {
+  using cycamore::SourceFacility;
+  return dynamic_cast<cyclus::Model*>(new SourceFacility(ctx));
+}
+
+//- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+cyclus::FacilityModel* SourceFacilityConstructor(cyclus::Context* ctx) {
+  using cycamore::SourceFacility;
+  return dynamic_cast<cyclus::FacilityModel*>(new SourceFacility(ctx));
+}
+
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 INSTANTIATE_TEST_CASE_P(SourceFac, FacilityModelTests,
                         Values(&SourceFacilityConstructor));
