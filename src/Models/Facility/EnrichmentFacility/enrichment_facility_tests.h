@@ -3,11 +3,13 @@
 
 #include "enrichment_facility.h"
 
+#include "test_context.h"
 #include "test_market.h"
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 class EnrichmentFacilityTest : public ::testing::Test {
  protected:
+  cyclus::TestContext tc_;
   cycamore::EnrichmentFacility* src_facility;
   TestMarket* in_commod_market;
   TestMarket* out_commod_market;
