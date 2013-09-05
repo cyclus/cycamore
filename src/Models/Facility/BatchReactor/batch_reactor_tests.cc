@@ -1,11 +1,17 @@
 // batch_reactor_tests.cc
-#include <gtest/gtest.h>
 
 #include "batch_reactor_tests.h"
-#include "commodity.h"
-#include "xml_query_engine.h"
-#include "model.h"
+
 #include <sstream>
+
+#include <gtest/gtest.h>
+
+#include "commodity.h"
+#include "facility_model_tests.h"
+#include "model_tests.h"
+#include "model.h"
+#include "test_market.h"
+#include "xml_query_engine.h"
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 void BatchReactorTest::SetUp() {
@@ -59,18 +65,18 @@ void BatchReactorTest::InitSrcFacility() {
   cyclus::XMLParser parser;
   parser.Init(ss);
   cyclus::XMLQueryEngine* engine = new cyclus::XMLQueryEngine(parser);
-  src_facility = new cycamore::BatchReactor();
+  src_facility = new cycamore::BatchReactor(tc_.get());
   src_facility->InitModuleMembers(engine);
   delete engine;
 }
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 void BatchReactorTest::InitWorld() {
-  incommod_market = new TestMarket();
+  incommod_market = new TestMarket(tc_.get());
   incommod_market->SetCommodity(in_commod);
   cyclus::MarketModel::RegisterMarket(incommod_market);
 
-  outcommod_market = new TestMarket();
+  outcommod_market = new TestMarket(tc_.get());
   outcommod_market->SetCommodity(out_commod);
   cyclus::MarketModel::RegisterMarket(outcommod_market);
 }
@@ -96,7 +102,7 @@ TEST_F(BatchReactorTest, initialstate) {
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 TEST_F(BatchReactorTest, clone) {
   using cycamore::BatchReactor;
-  BatchReactor* cloned_fac = new BatchReactor();
+  BatchReactor* cloned_fac = new BatchReactor(tc_.get());
   cloned_fac->CloneModuleMembersFrom(src_facility);
 
 
@@ -134,6 +140,18 @@ TEST_F(BatchReactorTest, Tick) {
 TEST_F(BatchReactorTest, Tock) {
   int time = 1;
   EXPECT_ANY_THROW(src_facility->HandleTock(time));
+}
+
+//- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+cyclus::Model* BatchReactorModelConstructor(cyclus::Context* ctx) {
+  using cycamore::BatchReactor;
+  return dynamic_cast<cyclus::Model*>(new BatchReactor(ctx));
+}
+
+//- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+cyclus::FacilityModel* BatchReactorConstructor(cyclus::Context* ctx) {
+  using cycamore::BatchReactor;
+  return dynamic_cast<cyclus::FacilityModel*>(new BatchReactor(ctx));
 }
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -

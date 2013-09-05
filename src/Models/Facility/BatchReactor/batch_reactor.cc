@@ -7,12 +7,12 @@
 
 #include <boost/lexical_cast.hpp>
 
+#include "cyc_limits.h"
+#include "context.h"
+#include "error.h"
 #include "logger.h"
 #include "generic_resource.h"
-#include "recipe_library.h"
 #include "market_model.h"
-#include "cyc_limits.h"
-#include "error.h"
 
 namespace cycamore {
 
@@ -21,18 +21,19 @@ std::map<Phase, std::string> BatchReactor::phase_names_ = \
   std::map<Phase, std::string>();
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-BatchReactor::BatchReactor() :
-  cycle_length_(1),
-  refuel_delay_(0),
-  batches_per_core_(1),
-  in_core_loading_(1),
-  out_core_loading_(1),
-  in_commodity_(""),
-  in_recipe_(""),
-  out_commodity_(""),
-  out_recipe_(""),
-  cycle_timer_(0),
-  phase_(INIT) {
+BatchReactor::BatchReactor(cyclus::Context* ctx)
+    : cyclus::FacilityModel(ctx),
+      cycle_length_(1),
+      refuel_delay_(0),
+      batches_per_core_(1),
+      in_core_loading_(1),
+      out_core_loading_(1),
+      in_commodity_(""),
+      in_recipe_(""),
+      out_commodity_(""),
+      out_recipe_(""),
+      cycle_timer_(0),
+      phase_(INIT) {
   preCore_.SetCapacity(cyclus::kBuffInfinity);
   inCore_.SetCapacity(cyclus::kBuffInfinity);
   postCore_.SetCapacity(cyclus::kBuffInfinity);
@@ -477,6 +478,11 @@ void BatchReactor::MakeOffers() {
 void BatchReactor::interactWithMarket(std::string commod, double amt,
                                       cyclus::TransType type) {
   using std::string;
+  using cyclus::Context;
+  using cyclus::GenericResource;
+  using cyclus::Material;
+  using cyclus::Model;
+  
   LOG(cyclus::LEV_INFO4, "BReact") << " making requests {";
   // get the market
   cyclus::MarketModel* market = cyclus::MarketModel::MarketForCommod(commod);
@@ -490,13 +496,14 @@ void BatchReactor::interactWithMarket(std::string commod, double amt,
   trans.SetMinFrac(1.0);
   trans.SetPrice(commodity_price);
 
+  Context* ctx = Model::context();
   if (type == cyclus::OFFER) {
-    cyclus::GenericResource::Ptr trade_res = cyclus::GenericResource::Create(
-                                             amt, "kg", commod);
+    GenericResource::Ptr trade_res =
+        GenericResource::Create(ctx, amt, "kg", commod);
     trans.SetResource(trade_res);
   } else {
-    cyclus::Material::Ptr trade_res = cyclus::Material::Create(amt, 
-                                      cyclus::RL->GetRecipe(in_recipe_));
+    Material::Ptr trade_res =
+        Material::Create(ctx, amt, ctx->GetRecipe(in_recipe_));
     trans.SetResource(trade_res);
 
     LOG(cyclus::LEV_DEBUG1, "BatR") << "Requesting material: ";
@@ -536,11 +543,15 @@ void BatchReactor::moveFuel(cyclus::MatBuff& fromBuff, cyclus::MatBuff& toBuff,
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 void BatchReactor::OffLoadFuel(double amt) {
+  using cyclus::Context;
+  using cyclus::Material;
+  
   inCore_.PopQty(amt);
   double factor = out_core_loading() / in_core_loading();
   double out_amount = amt * factor;
-  cyclus::Material::Ptr out_fuel = cyclus::Material::Create(out_amount,
-                                   cyclus::RL->GetRecipe(out_recipe()));
+  Context* ctx = Model::context();
+  Material::Ptr out_fuel =
+      Material::Create(ctx, out_amount, ctx->GetRecipe(out_recipe()));
   postCore_.PushOne(out_fuel);
 }
 
@@ -578,8 +589,8 @@ void BatchReactor::OffloadCore() {
 }
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-extern "C" cyclus::Model* constructBatchReactor() {
-  return new BatchReactor();
+extern "C" cyclus::Model* constructBatchReactor(cyclus::Context* ctx) {
+  return new BatchReactor(ctx);
 }
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -

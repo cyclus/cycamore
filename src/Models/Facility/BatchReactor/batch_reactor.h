@@ -13,6 +13,8 @@
 
 namespace cycamore {
 
+class Context;
+  
 /**
    Defines all possible phases this facility can be in
  */
@@ -40,8 +42,9 @@ class BatchReactor : public cyclus::FacilityModel,
   /* --- Module Methods --- */
   /**
      Constructor for the BatchReactor class.
+     @param ctx the cyclus context for access to simulation-wide parameters
   */
-  BatchReactor();
+  BatchReactor(cyclus::Context* ctx);
 
   /**
      Destructor for the BatchReactor class.
