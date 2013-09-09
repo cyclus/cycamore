@@ -50,7 +50,9 @@ void EnrichmentFacility::InitModuleMembers(cyclus::QueryEngine* qe) {
   set_in_recipe(input->GetElementContent("inrecipe"));
 
   double limit = 
-      cyclus::GetOptionalQuery<double>(input, "inventorysize", numeric_limits<double>::max());
+      cyclus::GetOptionalQuery<double>(input,
+                                       "inventorysize",
+                                       numeric_limits<double>::max());
   SetMaxInventorySize(limit);
 
   cyclus::QueryEngine* output = qe->QueryElement("output");
