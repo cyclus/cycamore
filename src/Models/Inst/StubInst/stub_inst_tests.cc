@@ -1,10 +1,13 @@
 // stub_inst_tests.cc
 #include <gtest/gtest.h>
 
+#include "context.h"
+#include "event_manager.h"
 #include "stub_inst.h"
 #include "message.h"
 #include "inst_model_tests.h"
 #include "model_tests.h"
+#include "timer.h"
 
 #include <string>
 
@@ -12,24 +15,29 @@
 class StubInstTest : public ::testing::Test {
  protected:
   cycamore::StubInst* src_inst;
+  cyclus::Context* ctx_;
+  cyclus::Timer ti_;
+  cyclus::EventManager em_;
 
   virtual void SetUp() {
-    src_inst = new cycamore::StubInst();
+    ctx_ = new cyclus::Context(&ti_, &em_);
+    src_inst = new cycamore::StubInst(ctx_);
   };
 
   virtual void TearDown() {
     delete src_inst;
+    delete ctx_;
   }
 };
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-cyclus::Model* StubInstModelConstructor() {
-  return dynamic_cast<cyclus::Model*>(new cycamore::StubInst());
+cyclus::Model* StubInstModelConstructor(cyclus::Context* ctx) {
+  return dynamic_cast<cyclus::Model*>(new cycamore::StubInst(ctx));
 }
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-cyclus::InstModel* StubInstConstructor() {
-  return dynamic_cast<cyclus::InstModel*>(new cycamore::StubInst());
+cyclus::InstModel* StubInstConstructor(cyclus::Context* ctx) {
+  return dynamic_cast<cyclus::InstModel*>(new cycamore::StubInst(ctx));
 }
 
 

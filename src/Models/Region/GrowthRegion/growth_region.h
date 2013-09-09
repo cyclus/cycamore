@@ -36,7 +36,7 @@ class GrowthRegion : public cyclus::RegionModel {
   /**
      The default constructor for the GrowthRegion
    */
-  GrowthRegion();
+  GrowthRegion(cyclus::Context* ctx);
 
   /**
      The default destructor for the GrowthRegion

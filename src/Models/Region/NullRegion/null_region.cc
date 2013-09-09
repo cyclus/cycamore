@@ -10,18 +10,18 @@ namespace cycamore {
  */
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-NullRegion::NullRegion() {}
+NullRegion::NullRegion(cyclus::Context* ctx) : cyclus::RegionModel(ctx) {}
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 NullRegion::~NullRegion() {}
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-extern "C" cyclus::Model* constructNullRegion() {
-  return new NullRegion();
+extern "C" cyclus::Model* ConstructNullRegion(cyclus::Context* ctx) {
+  return new NullRegion(ctx);
 }
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-extern "C" void destructNullRegion(cyclus::Model* model) {
+extern "C" void DestructNullRegion(cyclus::Model* model) {
   delete model;
 }
 

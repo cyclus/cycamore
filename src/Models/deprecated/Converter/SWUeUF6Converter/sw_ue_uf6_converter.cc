@@ -137,7 +137,7 @@ cyclus::Message::Ptr SWUeUF6Converter::Convert(cyclus::Message::Ptr convMsg,
   return toRet;
 }
 
-extern "C" cyclus::Model* constructSWUeUF6Converter() {
+extern "C" cyclus::Model* ConstructSWUeUF6Converter() {
   return new SWUeUF6Converter();
 }
 

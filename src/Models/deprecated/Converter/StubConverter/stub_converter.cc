@@ -54,7 +54,7 @@ cyclus::Message::Ptr StubConverter::Convert(cyclus::Message::Ptr convMsg,
  */
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-extern "C" cyclus::Model* constructStubConverter() {
+extern "C" cyclus::Model* ConstructStubConverter() {
   return new StubConverter();
 }
 

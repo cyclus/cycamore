@@ -42,7 +42,7 @@ std::set<BuildOrder> BuildOrderList::ExtractOrders(int time) {
 }
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-DeployInst::DeployInst() {}
+DeployInst::DeployInst(cyclus::Context* ctx) : cyclus::InstModel(ctx) {}
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 DeployInst::~DeployInst() {}
@@ -60,7 +60,7 @@ void DeployInst::InitModuleMembers(cyclus::QueryEngine* qe) {
     string name = order->GetElementContent("prototype");
     int number = atoi(order->GetElementContent("number").c_str());
     int time = atoi(order->GetElementContent("date").c_str());
-    build_orders_.AddBuildOrder(cyclus::Prototype::GetRegisteredPrototype(name),
+    build_orders_.AddBuildOrder(context()->CreateModel<cyclus::Prototype>(name),
                                 number, time);
   }
 
@@ -75,12 +75,12 @@ void DeployInst::HandleTick(int time) {
   for (set<BuildOrder>::iterator it = orders.begin();
        it != orders.end(); it++) {
 
-    cyclus::Prototype* p = it->first;
+    cyclus::Model* m = dynamic_cast<cyclus::Model*>(it->first);
     int number = it->second;
 
     for (int i = 0; i < number; i++) {
       // build as many as required
-      Build(p);
+      Build(m->name());
     }
 
   }
@@ -96,12 +96,12 @@ void DeployInst::HandleTick(int time) {
  */
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-extern "C" cyclus::Model* constructDeployInst() {
-  return new DeployInst();
+extern "C" cyclus::Model* ConstructDeployInst(cyclus::Context* ctx) {
+  return new DeployInst(ctx);
 }
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-extern "C" void destructDeployInst(cyclus::Model* model) {
+extern "C" void DestructDeployInst(cyclus::Model* model) {
   delete model;
 }
 

@@ -2,28 +2,28 @@
 // Implements the SourceFacility class
 #include "source_facility.h"
 
-#include "query_engine.h"
-#include "logger.h"
-#include "recipe_library.h"
-#include "generic_resource.h"
-#include "error.h"
-#include "cyc_limits.h"
-#include "market_model.h"
-
 #include <sstream>
 #include <limits>
 
 #include <boost/lexical_cast.hpp>
 
+#include "cyc_limits.h"
+#include "context.h"
+#include "error.h"
+#include "generic_resource.h"
+#include "logger.h"
+#include "market_model.h"
+#include "query_engine.h"
 
 namespace cycamore {
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-SourceFacility::SourceFacility() :
-  out_commod_(""),
-  recipe_name_(""),
-  commod_price_(0),
-  capacity_(std::numeric_limits<double>::max()) {
+SourceFacility::SourceFacility(cyclus::Context* ctx)
+    : cyclus::FacilityModel(ctx),
+      out_commod_(""),
+      recipe_name_(""),
+      commod_price_(0),
+      capacity_(std::numeric_limits<double>::max()) {
   using std::deque;
   using std::numeric_limits;
   ordersWaiting_ = deque<cyclus::Message::Ptr>();
@@ -200,31 +200,38 @@ double SourceFacility::InventorySize() {
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 void SourceFacility::GenerateMaterial() {
-
+  using cyclus::Model;
+  using cyclus::Material;
+  
   double empty_space = inventory_.space();
   if (empty_space < cyclus::eps()) {
     return; // no room
   }
 
-  cyclus::Material::Ptr newMat;
+  Material::Ptr newMat;
   double amt = capacity_;
+  cyclus::Context* ctx = Model::context();
   if (amt <= empty_space) {
-    newMat = cyclus::Material::Create(amt, cyclus::RL->GetRecipe(recipe_name_));
+    newMat = Material::Create(ctx, amt, ctx->GetRecipe(recipe_name_));
   } else {
-    newMat = cyclus::Material::Create(empty_space,
-                                      cyclus::RL->GetRecipe(recipe_name_));
+    newMat = Material::Create(ctx, empty_space, ctx->GetRecipe(recipe_name_));
   }
   inventory_.PushOne(newMat);
 }
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 cyclus::Transaction SourceFacility::BuildTransaction() {
+  using cyclus::Model;
+  using cyclus::Material;
+  
   // there is no minimum amount a source facility may send
   double min_amt = 0;
   double offer_amt = inventory_.quantity();
 
-  cyclus::Material::Ptr trade_res = cyclus::Material::Create(offer_amt,
-                                    cyclus::RL->GetRecipe(recipe()));
+  cyclus::Context* ctx = Model::context();
+  Material::Ptr trade_res = Material::Create(ctx,
+                                             offer_amt,
+                                             ctx->GetRecipe(recipe()));
 
   cyclus::Transaction trans(this, cyclus::OFFER);
   trans.SetCommod(out_commod_);
@@ -246,12 +253,12 @@ void SourceFacility::SendOffer(cyclus::Transaction trans) {
 }
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-extern "C" cyclus::Model* constructSourceFacility() {
-  return new SourceFacility();
+extern "C" cyclus::Model* ConstructSourceFacility(cyclus::Context* ctx) {
+  return new SourceFacility(ctx);
 }
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-extern "C" void destructSourceFacility(cyclus::Model* model) {
+extern "C" void DestructSourceFacility(cyclus::Model* model) {
   delete model;
 }
 

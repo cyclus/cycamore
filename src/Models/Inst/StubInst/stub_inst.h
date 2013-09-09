@@ -42,7 +42,7 @@ class StubInst : public cyclus::InstModel {
   /**
      Default constructor for StubInst Class
    */
-  StubInst();
+  StubInst(cyclus::Context* ctx);
 
   /**
      every model should be destructable

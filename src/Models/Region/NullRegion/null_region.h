@@ -45,7 +45,7 @@ class NullRegion : public cyclus::RegionModel  {
   /**
      The default constructor for the NullRegion
    */
-  NullRegion();
+  NullRegion(cyclus::Context* ctx);
 
   /**
      The default destructor for the NullRegion

@@ -14,7 +14,7 @@ namespace cycamore {
  */
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-StubInst::StubInst() {};
+StubInst::StubInst(cyclus::Context* ctx) : cyclus::InstModel(ctx) {};
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 StubInst::~StubInst() {};
@@ -60,12 +60,12 @@ void StubInst::ReceiveMessage(cyclus::Message::Ptr msg) {};
  */
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-extern "C" cyclus::Model* constructStubInst() {
-  return new StubInst();
+extern "C" cyclus::Model* ConstructStubInst(cyclus::Context* ctx) {
+  return new StubInst(ctx);
 }
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-extern "C" void destructStubInst(cyclus::Model* model) {
+extern "C" void DestructStubInst(cyclus::Model* model) {
   delete model;
 }
 

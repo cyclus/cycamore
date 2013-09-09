@@ -40,7 +40,7 @@ class StubRegion : public cyclus::RegionModel {
   /**
      Default constructor for StubStub Class
    */
-  StubRegion();
+  StubRegion(cyclus::Context* ctx);
 
   /**
      every model should be destructable

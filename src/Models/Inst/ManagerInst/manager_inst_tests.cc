@@ -15,15 +15,16 @@
 
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-TestProducer::TestProducer() {}
+TestProducer::TestProducer(cyclus::Context* ctx) : cyclus::FacilityModel(ctx) {}
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 TestProducer::~TestProducer() {}
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 void ManagerInstTests::SetUp() {
-  src_inst = new cycamore::ManagerInst();
-  producer = new TestProducer();
+  ctx_ = new cyclus::Context(&ti_, &em_);
+  src_inst = new cycamore::ManagerInst(ctx_);
+  producer = new TestProducer(ctx_);
   commodity = cyclus::Commodity("commod");
   capacity = 5;
   producer->AddCommodity(commodity);
@@ -34,16 +35,17 @@ void ManagerInstTests::SetUp() {
 void ManagerInstTests::TearDown() {
   delete producer;
   delete src_inst;
+  delete ctx_;
 }
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-cyclus::Model* ManagerInstModelConstructor() {
-  return dynamic_cast<cyclus::Model*>(new cycamore::ManagerInst());
+cyclus::Model* ManagerInstModelConstructor(cyclus::Context* ctx) {
+  return dynamic_cast<cyclus::Model*>(new cycamore::ManagerInst(ctx));
 }
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-cyclus::InstModel* ManagerInstConstructor() {
-  return dynamic_cast<cyclus::InstModel*>(new cycamore::ManagerInst());
+cyclus::InstModel* ManagerInstConstructor(cyclus::Context* ctx) {
+  return dynamic_cast<cyclus::InstModel*>(new cycamore::ManagerInst(ctx));
 }
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -

@@ -8,7 +8,7 @@
 namespace cycamore {
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-ManagerInst::ManagerInst() {}
+ManagerInst::ManagerInst(cyclus::Context* ctx) : cyclus::InstModel(ctx) {}
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 ManagerInst::~ManagerInst() {}
@@ -71,12 +71,12 @@ void ManagerInst::WriteProducerInformation(
 }
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-extern "C" cyclus::Model* constructManagerInst() {
-  return new ManagerInst();
+extern "C" cyclus::Model* ConstructManagerInst(cyclus::Context* ctx) {
+  return new ManagerInst(ctx);
 }
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-extern "C" void destructManagerInst(cyclus::Model* model) {
+extern "C" void DestructManagerInst(cyclus::Model* model) {
   delete model;
 }
 
