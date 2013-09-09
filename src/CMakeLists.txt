@@ -76,7 +76,8 @@ set(LIBS ${LIBS} ${LAPACK_LIBRARIES})
 MESSAGE("\tFound LAPACK Libraries: ${LAPACK_LIBRARIES}")
 
 # include the model directories
-SET(CYCAMORE_INCLUDE_DIR ${CYCAMORE_INCLUDE_DIR} Testing )
+SET(CYCAMORE_INCLUDE_DIR ${CYCAMORE_INCLUDE_DIR} Testing 
+    ${CYCLUS_CORE_INCLUDE_DIR}/..)
 
 # include all the directories we just found
 INCLUDE_DIRECTORIES( ${CYCAMORE_INCLUDE_DIR} )
