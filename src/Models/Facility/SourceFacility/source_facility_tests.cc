@@ -22,7 +22,7 @@ void SourceFacilityTest::InitParameters() {
   cyclus::Context* ctx = tc_.get();
   
   recipe_ = cyclus::Composition::CreateFromAtom(cyclus::CompMap());
-  ctx->RegisterRecipe(recipe_name_, recipe_);
+  ctx->AddRecipe(recipe_name_, recipe_);
   commod_market = new TestMarket(ctx);
   commod_market->SetCommodity(commod_);
   cyclus::MarketModel::RegisterMarket(commod_market);

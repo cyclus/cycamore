@@ -48,7 +48,7 @@ void EnrichmentFacilityTest::InitParameters() {
   v[92235] = feed_assay;
   v[92238] = 1 - feed_assay;
   recipe = cyclus::Composition::CreateFromAtom(v);
-  ctx->RegisterRecipe(in_recipe, recipe);
+  ctx->AddRecipe(in_recipe, recipe);
 
   tails_assay = 0.002;
   inv_size = 5;
