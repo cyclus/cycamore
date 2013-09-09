@@ -28,7 +28,7 @@ FIND_PATH(CYCLUS_CORE_INCLUDE_DIR suffix.h
   "${CYCLUS_ROOT_DIR}/include" 
   "${CYCLUS_ROOT_DIR}/include/cyclus" 
   /usr/local/cyclus /opt/local/cyclus 
-  PATH_SUFFIXES cyclus/include include)
+  PATH_SUFFIXES cyclus/include include include/cyclus)
 
 # Add the root dir to the hints
 SET(CYCLUS_ROOT_DIR "${CYCLUS_CORE_INCLUDE_DIR}/..")
