@@ -5,6 +5,7 @@
 #include <map>
 #include <deque>
 
+#include "context.h"
 #include "market_model.h"
 
 namespace cycamore {
@@ -45,7 +46,7 @@ class NullMarket : public cyclus::MarketModel {
   /**
      Default constructor
    */
-  NullMarket();
+  NullMarket(cyclus::Context* ctx);
 
   /**
      Destructor

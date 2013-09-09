@@ -10,7 +10,7 @@
 namespace cycamore {
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-NullMarket::NullMarket() {}
+NullMarket::NullMarket(cyclus::Context* ctx) : cyclus::MarketModel(ctx) {}
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 NullMarket::~NullMarket() {}
@@ -179,12 +179,12 @@ void NullMarket::Resolve() {
 }
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-extern "C" cyclus::Model* constructNullMarket() {
-  return new NullMarket();
+extern "C" cyclus::Model* ConstructNullMarket(cyclus::Context* ctx) {
+  return new NullMarket(ctx);
 }
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-extern "C" void destructNullMarket(cyclus::Model* model) {
+extern "C" void DestructNullMarket(cyclus::Model* model) {
   delete model;
 }
 } // namespace cycamore

@@ -7,6 +7,7 @@
 #include "market_model_tests.h"
 #include "generic_resource.h"
 #include "model_tests.h"
+#include "test_context.h"
 
 #include <string>
 #include <queue>
@@ -15,12 +16,13 @@
 class FakeNullMarket : public cycamore::NullMarket {
  protected:
   cyclus::Message::Ptr msg_;
+
  public:
-  FakeNullMarket() : cycamore::NullMarket() {
+  FakeNullMarket(cyclus::Context* ctx) : cycamore::NullMarket(ctx) {
     using std::string;
     string kg = "kg";
     string qual = "qual";
-    cyclus::GenericResource::Ptr res = cyclus::GenericResource::Create(1, kg, qual);
+    cyclus::GenericResource::Ptr res = cyclus::GenericResource::CreateUntracked(1, kg, qual);
     cyclus::Transaction trans(this, cyclus::OFFER);
     msg_ = cyclus::Message::Ptr(new cyclus::Message(this, this, trans));
     msg_->trans().SetResource(res);
@@ -34,22 +36,23 @@ class FakeNullMarket : public cycamore::NullMarket {
 };
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-cyclus::Model* NullMarketModelConstructor() {
-  return dynamic_cast<cyclus::Model*>(new FakeNullMarket());
+cyclus::Model* NullMarketModelConstructor(cyclus::Context* ctx) {
+  return dynamic_cast<cyclus::Model*>(new FakeNullMarket(ctx));
 }
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-cyclus::MarketModel* NullMarketConstructor() {
-  return dynamic_cast<cyclus::MarketModel*>(new FakeNullMarket());
+cyclus::MarketModel* NullMarketConstructor(cyclus::Context* ctx) {
+  return dynamic_cast<cyclus::MarketModel*>(new FakeNullMarket(ctx));
 }
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 class NullMarketTest : public ::testing::Test {
  protected:
   FakeNullMarket* src_market;
+  cyclus::TestContext tc_;
 
   virtual void SetUp() {
-    src_market = new FakeNullMarket();
+    src_market = new FakeNullMarket(tc_.get());
   };
 
   virtual void TearDown() {
