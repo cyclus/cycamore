@@ -55,12 +55,7 @@ void GrowthRegion::AddCommodityDemand(cyclus::QueryEngine* qe) {
 
     string type = demand->GetElementContent("type");
     string params = demand->GetElementContent("parameters");
-    int time;
-    try {
-      time = lexical_cast<int>(demand->GetElementContent("start_time"));
-    } catch (cyclus::Error e) {
-      time = 0;
-    }
+    int time = cyclus::GetOptionalQuery<int>(qe, "start_time", 0);
 
     cyclus::BasicFunctionFactory bff;
     bool continuous = (i != 0); // the first entry is not continuous
