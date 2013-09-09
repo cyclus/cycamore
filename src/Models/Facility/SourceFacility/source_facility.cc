@@ -50,7 +50,7 @@ void SourceFacility::InitModuleMembers(cyclus::QueryEngine* qe) {
 
   double capacity =
       cyclus::GetOptionalQuery<double>(output,
-                                       "output_inventorysize",
+                                       "output_capacity",
                                        numeric_limits<double>::max());
   cyclus::supply_demand::CommodityProducer::SetCapacity(commod, capacity);
   SetCapacity(capacity);
