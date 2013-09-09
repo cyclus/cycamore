@@ -6,12 +6,11 @@
 #include "query_engine.h"
 #include "logger.h"
 #include "error.h"
+#include "context.h"
 #include "cyc_limits.h"
 #include "generic_resource.h"
 #include "material.h"
 #include "timer.h"
-#include "event_manager.h"
-#include "recipe_library.h"
 
 #include <sstream>
 #include <limits>
@@ -24,13 +23,14 @@ namespace cycamore {
 int EnrichmentFacility::entry_ = 0;
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-EnrichmentFacility::EnrichmentFacility() :
-  commodity_price_(0),
-  tails_assay_(0),
-  feed_assay_(0),
-  in_commodity_(""),
-  in_recipe_(""),
-  out_commodity_("") { }
+EnrichmentFacility::EnrichmentFacility(cyclus::Context* ctx)
+    : cyclus::FacilityModel(ctx),
+      commodity_price_(0),
+      tails_assay_(0),
+      feed_assay_(0),
+      in_commodity_(""),
+      in_recipe_(""),
+      out_commodity_("") { }
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 EnrichmentFacility::~EnrichmentFacility() { }
@@ -40,6 +40,9 @@ void EnrichmentFacility::InitModuleMembers(cyclus::QueryEngine* qe) {
   using std::string;
   using std::numeric_limits;
   using boost::lexical_cast;
+  using cyclus::Model;
+  using cyclus::Material;
+  
   string data;
 
   cyclus::QueryEngine* input = qe->QueryElement("input");
@@ -59,8 +62,8 @@ void EnrichmentFacility::InitModuleMembers(cyclus::QueryEngine* qe) {
   data = output->GetElementContent("tails_assay");
   set_tails_assay(lexical_cast<double>(data));
 
-  cyclus::Material::Ptr feed = cyclus::Material::Create(0, 
-                               cyclus::RL->GetRecipe(in_recipe_));
+  cyclus::Context* ctx = Model::context();
+  Material::Ptr feed = Material::Create(ctx, 0, ctx->GetRecipe(in_recipe_));
   set_feed_assay(cyclus::enrichment::UraniumAssay(feed));
 }
 
@@ -170,6 +173,9 @@ void EnrichmentFacility::HandleTock(int time) {
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 void EnrichmentFacility::MakeRequest() {
   using std::string;
+  using cyclus::Model;
+  using cyclus::Material;
+
   double amt = inventory_.space();
   double min_amt = 0;
   string commodity = in_commodity();
@@ -183,8 +189,9 @@ void EnrichmentFacility::MakeRequest() {
 
     // create a material resource
     // @MJGFlag note that this doesn't matter in the current state
-    cyclus::Material::Ptr request_res = cyclus::Material::Create(amt,
-                                        cyclus::RL->GetRecipe(in_recipe_));
+    cyclus::Context* ctx = Model::context();
+    Material::Ptr request_res =
+        Material::Create(ctx, amt, ctx->GetRecipe(in_recipe_));
 
     // build the transaction and message
     cyclus::Transaction trans(this, cyclus::REQUEST);
@@ -200,12 +207,16 @@ void EnrichmentFacility::MakeRequest() {
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 cyclus::Transaction EnrichmentFacility::BuildTransaction() {
+  using cyclus::Model;
+  using cyclus::Material;
+
   // there is no minimum amount a source facility may send
   double min_amt = 0;
   double offer_amt = inventory_.quantity();
 
-  cyclus::Material::Ptr offer_res = cyclus::Material::Create(offer_amt,
-                                    cyclus::RL->GetRecipe(in_commodity_));
+  cyclus::Context* ctx = Model::context();
+  cyclus::Material::Ptr offer_res =
+      cyclus::Material::Create(ctx, offer_amt, ctx->GetRecipe(in_commodity_));
   cyclus::Transaction trans(this, cyclus::OFFER);
 
   trans.SetCommod(out_commodity());
@@ -279,22 +290,26 @@ cyclus::enrichment::Assays EnrichmentFacility::GetAssays(
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 void EnrichmentFacility::RecordEnrichment(double natural_u, double swu) {
+  using cyclus::Context;
+  using cyclus::Model;
+  
   LOG(cyclus::LEV_DEBUG1, "EnrFac") << name() << " has enriched a material:";
   LOG(cyclus::LEV_DEBUG1, "EnrFac") << "  * Amount: " << natural_u;
   LOG(cyclus::LEV_DEBUG1, "EnrFac") << "  *    SWU: " << swu;
 
-  cyclus::EM->NewEvent("Enrichments")
-  ->AddVal("ENTRY", ++entry_)
-  ->AddVal("ID", ID())
-  ->AddVal("Time", cyclus::TI->time())
-  ->AddVal("Natural_Uranium", natural_u)
-  ->AddVal("SWU", swu)
-  ->Record();
+  Context* ctx = Model::context();
+  ctx->NewEvent("Enrichments")
+      ->AddVal("ENTRY", ++entry_)
+      ->AddVal("ID", ID())
+      ->AddVal("Time", ctx->time())
+      ->AddVal("Natural_Uranium", natural_u)
+      ->AddVal("SWU", swu)
+      ->Record();
 }
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-extern "C" cyclus::Model* constructEnrichmentFacility() {
-  return new EnrichmentFacility();
+extern "C" cyclus::Model* constructEnrichmentFacility(cyclus::Context* ctx) {
+  return new EnrichmentFacility(ctx);
 }
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -

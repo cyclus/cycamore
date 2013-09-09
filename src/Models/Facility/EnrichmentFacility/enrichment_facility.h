@@ -13,6 +13,8 @@
 
 namespace cycamore {
 
+class Context;
+
 /**
    @class EnrichmentFacility
 
@@ -22,9 +24,10 @@ class EnrichmentFacility : public cyclus::FacilityModel {
  public:
   /* --- Module Methods --- */
   /**
-     Default Constructor for the EnrichmentFacility class
+     Constructor for the EnrichmentFacility class
+     @param ctx the cyclus context for access to simulation-wide parameters
    */
-  EnrichmentFacility();
+  EnrichmentFacility(cyclus::Context* ctx);
 
   /**
      Destructor for the EnrichmentFacility class

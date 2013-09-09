@@ -2,24 +2,17 @@
 #include <gtest/gtest.h>
 
 #include "batch_reactor.h"
-#include "facility_model_tests.h"
-#include "model_tests.h"
+
+#include "test_context.h"
 #include <string>
 
-//- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-cyclus::Model* BatchReactorModelConstructor() {
-  return dynamic_cast<cyclus::Model*>(new cycamore::BatchReactor());
-}
-
-//- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-cyclus::FacilityModel* BatchReactorConstructor() {
-  return dynamic_cast<cyclus::FacilityModel*>(new cycamore::BatchReactor());
-}
+class TestMarket;
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 class BatchReactorTest : public ::testing::Test {
+  
  protected:
-
+  cyclus::TestContext tc_;
   cycamore::BatchReactor* src_facility;
   int lencycle, nbatch;
   double in_loadcore, out_loadcore;
