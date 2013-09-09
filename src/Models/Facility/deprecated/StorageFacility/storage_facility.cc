@@ -93,11 +93,11 @@ void StorageFacility::HandleTick(int time) {
 }
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-extern "C" cyclus::Model* constructStorageFacility() {
+extern "C" cyclus::Model* ConstructStorageFacility() {
   return new StorageFacility();
 }
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-extern "C" void destructStorageFacility(cyclus::Model* model) {
+extern "C" void DestructStorageFacility(cyclus::Model* model) {
   delete model;
 }

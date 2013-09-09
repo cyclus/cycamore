@@ -203,12 +203,12 @@ const double SinkFacility::getRequestAmt() {
 }
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-extern "C" cyclus::Model* constructSinkFacility(cyclus::Context* ctx) {
+extern "C" cyclus::Model* ConstructSinkFacility(cyclus::Context* ctx) {
   return new SinkFacility(ctx);
 }
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-extern "C" void destructSinkFacility(cyclus::Model* model) {
+extern "C" void DestructSinkFacility(cyclus::Model* model) {
   delete model;
 }
 

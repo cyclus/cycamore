@@ -589,12 +589,12 @@ void BatchReactor::OffloadCore() {
 }
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-extern "C" cyclus::Model* constructBatchReactor(cyclus::Context* ctx) {
+extern "C" cyclus::Model* ConstructBatchReactor(cyclus::Context* ctx) {
   return new BatchReactor(ctx);
 }
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-extern "C" void destructBatchReactor(cyclus::Model* model) {
+extern "C" void DestructBatchReactor(cyclus::Model* model) {
   delete model;
 }
 

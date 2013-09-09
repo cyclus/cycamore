@@ -308,12 +308,12 @@ void EnrichmentFacility::RecordEnrichment(double natural_u, double swu) {
 }
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-extern "C" cyclus::Model* constructEnrichmentFacility(cyclus::Context* ctx) {
+extern "C" cyclus::Model* ConstructEnrichmentFacility(cyclus::Context* ctx) {
   return new EnrichmentFacility(ctx);
 }
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-extern "C" void destructEnrichmentFacility(cyclus::Model* model) {
+extern "C" void DestructEnrichmentFacility(cyclus::Model* model) {
   delete model;
 }
 } // namespace cycamore

@@ -166,12 +166,12 @@ void GrowthRegion::orderBuilds(cyclus::Commodity& commodity,
 }
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-extern "C" cyclus::Model* constructGrowthRegion(cyclus::Context* ctx) {
+extern "C" cyclus::Model* ConstructGrowthRegion(cyclus::Context* ctx) {
   return new GrowthRegion(ctx);
 }
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-extern "C" void destructGrowthRegion(cyclus::Model* model) {
+extern "C" void DestructGrowthRegion(cyclus::Model* model) {
   delete model;
 }
 

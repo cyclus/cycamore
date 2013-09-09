@@ -253,12 +253,12 @@ void SourceFacility::SendOffer(cyclus::Transaction trans) {
 }
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-extern "C" cyclus::Model* constructSourceFacility(cyclus::Context* ctx) {
+extern "C" cyclus::Model* ConstructSourceFacility(cyclus::Context* ctx) {
   return new SourceFacility(ctx);
 }
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-extern "C" void destructSourceFacility(cyclus::Model* model) {
+extern "C" void DestructSourceFacility(cyclus::Model* model) {
   delete model;
 }
 

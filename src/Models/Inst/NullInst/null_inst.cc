@@ -12,12 +12,12 @@ NullInst::NullInst(cyclus::Context* ctx) : cyclus::InstModel(ctx) {}
 NullInst::~NullInst() {}
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-extern "C" cyclus::Model* constructNullInst(cyclus::Context* ctx) {
+extern "C" cyclus::Model* ConstructNullInst(cyclus::Context* ctx) {
   return new NullInst(ctx);
 }
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-extern "C" void destructNullInst(cyclus::Model* model) {
+extern "C" void DestructNullInst(cyclus::Model* model) {
   delete model;
 }
 

@@ -565,7 +565,7 @@ double RecipeReactor::stocksMass() {
  * --------------------
  */
 
-extern "C" cyclus::Model* constructRecipeReactor() {
+extern "C" cyclus::Model* ConstructRecipeReactor() {
   return new RecipeReactor();
 }
 

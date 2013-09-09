@@ -71,12 +71,12 @@ void ManagerInst::WriteProducerInformation(
 }
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-extern "C" cyclus::Model* constructManagerInst(cyclus::Context* ctx) {
+extern "C" cyclus::Model* ConstructManagerInst(cyclus::Context* ctx) {
   return new ManagerInst(ctx);
 }
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-extern "C" void destructManagerInst(cyclus::Model* model) {
+extern "C" void DestructManagerInst(cyclus::Model* model) {
   delete model;
 }
 

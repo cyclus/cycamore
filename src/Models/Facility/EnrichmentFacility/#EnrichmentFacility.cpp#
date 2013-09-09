@@ -320,13 +320,13 @@ void EnrichmentFacility::recordEnrichment(double natural_u, double swu)
 }
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - 
-extern "C" Model* constructEnrichmentFacility() 
+extern "C" Model* ConstructEnrichmentFacility() 
 {
   return new EnrichmentFacility();
 }
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-extern "C" void destructEnrichmentFacility(Model* model) 
+extern "C" void DestructEnrichmentFacility(Model* model) 
 {
       delete model;
 }
