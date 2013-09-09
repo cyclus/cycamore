@@ -33,6 +33,8 @@ set ( CYCAMORE_TEST_CORE
   ${CYCLUS_CORE_INCLUDE_DIR}/stub_comm_model_tests.cc 
   PARENT_SCOPE)
 
+#include_directories(${CYCLUS_CORE_INCLUDE_DIR}/../gtest)
+
 # Add all the tests by parsing the source code
 # This macro searches for GoogleTest macros and adds them as tests automatically
 macro(ADD_GOOGLE_TESTS executable)
