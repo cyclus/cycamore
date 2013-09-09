@@ -61,20 +61,16 @@ void BatchReactor::InitModuleMembers(cyclus::QueryEngine* qe) {
   data = qe->GetElementContent("cyclelength");
   set_cycle_length(lexical_cast<int>(data));
 
-  try {
-    data = qe->GetElementContent("refueldelay");
-    set_refuel_delay(lexical_cast<double>(data));
-  } catch (cyclus::Error e) {}
+  int delay =
+      cyclus::GetOptionalQuery<int>(qe, "refueldelay", refuel_delay());
+  set_refuel_delay(delay);
 
   data = qe->GetElementContent("incoreloading");
   set_in_core_loading(lexical_cast<double>(data));
 
-  try {
-    data = qe->GetElementContent("outcoreloading");
-    set_out_core_loading(lexical_cast<double>(data));
-  } catch (cyclus::Error e) {
-    set_out_core_loading(in_core_loading());
-  }
+  double loading = 
+      cyclus::GetOptionalQuery<double>(qe, "outcoreloading", in_core_loading());
+  set_out_core_loading(loading);
 
   data = qe->GetElementContent("batchespercore");
   set_batches_per_core(lexical_cast<int>(data));

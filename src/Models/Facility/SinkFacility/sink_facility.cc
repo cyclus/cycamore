@@ -38,21 +38,18 @@ void SinkFacility::InitModuleMembers(cyclus::QueryEngine* qe) {
   for (int i = 0; i < nCommodities; i++) {
     AddCommodity(commodities->GetElementContent(query, i));
   }
+  
+  double capacity =
+      cyclus::GetOptionalQuery<double>(input,
+                                       "input_capacity",
+                                       numeric_limits<double>::max());
+  SetCapacity(capacity);
 
-  string data;
-  try {
-    data = input->GetElementContent("input_capacity");
-    SetCapacity(lexical_cast<double>(data));
-  } catch (cyclus::Error e) {
-    SetCapacity(numeric_limits<double>::max());
-  }
-
-  try {
-    data = input->GetElementContent("inventorysize");
-    SetMaxInventorySize(lexical_cast<double>(data));
-  } catch (cyclus::Error e) {
-    SetMaxInventorySize(numeric_limits<double>::max());
-  }
+  double size =
+      cyclus::GetOptionalQuery<double>(input,
+                                       "inventorysize",
+                                       numeric_limits<double>::max());
+  SetMaxInventorySize(size);
 }
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -

@@ -48,20 +48,18 @@ void SourceFacility::InitModuleMembers(cyclus::QueryEngine* qe) {
   cyclus::Commodity commod(data);
   cyclus::supply_demand::CommodityProducer::AddCommodity(commod);
 
-  double val = numeric_limits<double>::max();
-  try {
-    data = output->GetElementContent("output_capacity");
-    val = lexical_cast<double>(data); // overwrite default if given a value
-  } catch (cyclus::Error e) {}
-  cyclus::supply_demand::CommodityProducer::SetCapacity(commod, val);
-  SetCapacity(val);
+  double capacity =
+      cyclus::GetOptionalQuery<double>(output,
+                                       "output_capacity",
+                                       numeric_limits<double>::max());
+  cyclus::supply_demand::CommodityProducer::SetCapacity(commod, capacity);
+  SetCapacity(capacity);
 
-  try {
-    data = output->GetElementContent("inventorysize");
-    SetMaxInventorySize(lexical_cast<double>(data));
-  } catch (cyclus::Error e) {
-    SetMaxInventorySize(numeric_limits<double>::max());
-  }
+  double size =
+      cyclus::GetOptionalQuery<double>(output,
+                                       "inventorysize",
+                                       numeric_limits<double>::max());
+  SetMaxInventorySize(size);
 }
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
