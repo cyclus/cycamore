@@ -4,13 +4,10 @@ Created on Sep 5, 2013
 @author: olzhas
 '''
 
-from nose import *
-from nose.tools import *
-
-from subprocess import call
+import subprocess
    
 def test_ls():
-    call(['ls','-alh'])
+    subprocess.call(['ls','-alh'], shell=True,stdout=False)
         
 def test_print():
-    call(['echo','On','Wisconsin'])
+    subprocess.call(['echo','On','Wisconsin'],shell=True, stdout=False)
