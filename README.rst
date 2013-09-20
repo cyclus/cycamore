@@ -105,7 +105,7 @@ Cyclus building and installation process will look like:
 
 .. code-block:: bash
 
-    .../cyclus/cycamore$ python setup.py --prefix=../install --cyclus_root=../install
+    .../cyclus/cycamore$ python install.py --prefix=../install --cyclus_root=../install
 
 If you have installed coin-Cbc from source or otherwise have it 
 installed in a non-standard location, you should make use of the
@@ -114,7 +114,7 @@ like:
 
 .. code-block:: bash
 
-    .../cyclus/cycamore$ python setup.py --prefix=../install --coin_root=/path/to/coin --cyclus_root=../install
+    .../cyclus/cycamore$ python install.py --prefix=../install --coin_root=/path/to/coin --cyclus_root=../install
 
 Additionally, if you have installed Boost from source or otherwise have it
 installed in a non-standard location, you should make use of the
@@ -123,7 +123,7 @@ like:
 
 .. code-block:: bash
 
-    .../cyclus/cycamore$ python setup.py --prefix=../install --coin_root=/path/to/coin --cyclus_root=../install --boost_root=/path/to/boost
+    .../cyclus/cycamore$ python install.py --prefix=../install --coin_root=/path/to/coin --cyclus_root=../install --boost_root=/path/to/boost
 
 
 .. _`CMake`: http://www.cmake.org
@@ -196,7 +196,7 @@ Workflow Notes
         test``` is insufficient). For example ::
       
           mkdir install
-          python setup.py --prefix=../install ...
+          python install.py --prefix=../install ...
           ../install/cycamore/bin/CycamoreUnitTestDriver
 
       - There are also a suite of sample input files 
