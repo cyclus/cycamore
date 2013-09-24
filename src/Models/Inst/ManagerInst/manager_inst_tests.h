@@ -16,6 +16,12 @@ class TestProducer :
   TestProducer(cyclus::Context* ctx);
   virtual ~TestProducer();
 
+  virtual cyclus::Model* clone() {
+    TestProducer* m = new TestProducer(*this);
+    m->initfrom(this);
+    return m;
+  }
+
   void CloneModuleMembersFrom(cyclus::FacilityModel* source) {};
   void HandleTock(int time) {};
   void HandleTick(int time) {};

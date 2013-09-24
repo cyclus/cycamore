@@ -182,9 +182,4 @@ void NullMarket::Resolve() {
 extern "C" cyclus::Model* ConstructNullMarket(cyclus::Context* ctx) {
   return new NullMarket(ctx);
 }
-
-//- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-extern "C" void DestructNullMarket(cyclus::Model* model) {
-  delete model;
-}
 } // namespace cycamore

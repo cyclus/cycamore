@@ -49,6 +49,12 @@ class StubInst : public cyclus::InstModel {
    */
   virtual ~StubInst();
 
+  virtual cyclus::Model* clone() {
+    StubInst* m = new StubInst(*this);
+    m->initfrom(this);
+    return m;
+  }
+
   /**
      every model should be able to print a verbose description
    */
@@ -59,11 +65,6 @@ class StubInst : public cyclus::InstModel {
      @param qe a pointer to a cyclus::QueryEngine object containing initialization data
    */
   virtual void InitModuleMembers(cyclus::QueryEngine* qe);
-
-  /**
-     perform all necessary actions for the model to enter the simulation
-   */
-  virtual void EnterSimulation(cyclus::Model* parent);
 
   /* ------------------- */
 

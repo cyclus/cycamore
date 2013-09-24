@@ -4,15 +4,13 @@
 
 #include "inst_model.h"
 
-#include "prototype.h"
-
 #include <utility>
 #include <set>
 #include <map>
 
 namespace cycamore {
 
-typedef std::pair<cyclus::Prototype*, int> BuildOrder;
+typedef std::pair<cyclus::Model*, int> BuildOrder;
 
 /**
    a helper class for storing and extracting build orders
@@ -20,7 +18,7 @@ typedef std::pair<cyclus::Prototype*, int> BuildOrder;
 class BuildOrderList {
  public:
   /// add a build order
-  void AddBuildOrder(cyclus::Prototype* p, int number, int time);
+  void AddBuildOrder(cyclus::Model* p, int number, int time);
 
   /// extract a set of build orders
   std::set<BuildOrder> ExtractOrders(int time);
@@ -52,6 +50,12 @@ class DeployInst : public cyclus::InstModel {
      Destructor
    */
   virtual ~DeployInst();
+
+  virtual cyclus::Model* clone() {
+    DeployInst* m = new DeployInst(*this);
+    m->initfrom(this);
+    return m;
+  }
 
   /**
      Initialize members related to derived module class

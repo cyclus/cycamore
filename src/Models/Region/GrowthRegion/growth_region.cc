@@ -66,7 +66,8 @@ void GrowthRegion::AddCommodityDemand(cyclus::QueryEngine* qe) {
 }
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-void GrowthRegion::Deploy() {
+void GrowthRegion::Deploy(cyclus::Model* parent) {
+  cyclus::RegionModel::Deploy(parent);
   for (int i = 0; i != NChildren(); i++) {
     cyclus::Model* child = children(i);
     RegisterCommodityProducerManager(child);
@@ -162,11 +163,6 @@ void GrowthRegion::orderBuilds(cyclus::Commodity& commodity,
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 extern "C" cyclus::Model* ConstructGrowthRegion(cyclus::Context* ctx) {
   return new GrowthRegion(ctx);
-}
-
-//- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-extern "C" void DestructGrowthRegion(cyclus::Model* model) {
-  delete model;
 }
 
 } // namespace cycamore

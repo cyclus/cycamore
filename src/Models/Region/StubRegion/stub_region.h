@@ -47,6 +47,12 @@ class StubRegion : public cyclus::RegionModel {
    */
   virtual ~StubRegion();
 
+  virtual cyclus::Model* clone() {
+    StubRegion* m = new StubRegion(*this);
+    m->initfrom(this);
+    return m;
+  }
+
   /**
      every model should be able to print a verbose description
    */

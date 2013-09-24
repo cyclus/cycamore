@@ -8,7 +8,7 @@
 namespace cycamore {
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-void BuildOrderList::AddBuildOrder(cyclus::Prototype* p, int number,
+void BuildOrderList::AddBuildOrder(cyclus::Model* p, int number,
                                    int time) {
   using std::map;
   using std::set;
@@ -60,7 +60,7 @@ void DeployInst::InitModuleMembers(cyclus::QueryEngine* qe) {
     string name = order->GetElementContent("prototype");
     int number = atoi(order->GetElementContent("number").c_str());
     int time = atoi(order->GetElementContent("date").c_str());
-    build_orders_.AddBuildOrder(context()->CreateModel<cyclus::Prototype>(name),
+    build_orders_.AddBuildOrder(context()->CreateModel<cyclus::Model>(name),
                                 number, time);
   }
 
@@ -99,12 +99,6 @@ void DeployInst::HandleTick(int time) {
 extern "C" cyclus::Model* ConstructDeployInst(cyclus::Context* ctx) {
   return new DeployInst(ctx);
 }
-
-//- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-extern "C" void DestructDeployInst(cyclus::Model* model) {
-  delete model;
-}
-
 /* ------------------- */
 
 } // namespace cycamore
