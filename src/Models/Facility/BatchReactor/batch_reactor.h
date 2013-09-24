@@ -51,6 +51,8 @@ class BatchReactor : public cyclus::FacilityModel,
   */
   virtual ~BatchReactor();
 
+  virtual cyclus::Model* clone();
+
   /**
      Initialize members related to derived module class
      @param qe a pointer to a cyclus::QueryEngine object containing initialization data
@@ -64,16 +66,11 @@ class BatchReactor : public cyclus::FacilityModel,
   /* --- */
 
   /* --- Facility Methods --- */
-  /**
-     Copy module members from a source model
-     @param sourceModel the model to copy from
-   */
-  virtual void CloneModuleMembersFrom(cyclus::FacilityModel* sourceModel);
 
   /**
      perform module-specific tasks when entering the simulation
    */
-  virtual void EnterSimulationAsModule();
+  virtual void Deploy(cyclus::Model* parent);
   /* --- */
 
   /* --- Agent Methods --- */
