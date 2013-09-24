@@ -6,7 +6,6 @@
 #include "query_engine.h"
 #include "symbolic_function_factories.h"
 #include "inst_model.h"
-#include "prototype.h"
 #include "error.h"
 
 #include <vector>
@@ -67,7 +66,7 @@ void GrowthRegion::AddCommodityDemand(cyclus::QueryEngine* qe) {
 }
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-void GrowthRegion::EnterSimulationAsModule() {
+void GrowthRegion::Deploy() {
   for (int i = 0; i != NChildren(); i++) {
     cyclus::Model* child = children(i);
     RegisterCommodityProducerManager(child);
