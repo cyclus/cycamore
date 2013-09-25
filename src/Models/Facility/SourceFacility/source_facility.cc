@@ -75,14 +75,17 @@ std::string SourceFacility::str() {
 }
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-void SourceFacility::CloneModuleMembersFrom(cyclus::FacilityModel*
-                                            sourceModel) {
-  SourceFacility* source = dynamic_cast<SourceFacility*>(sourceModel);
-  SetCommodity(source->commodity());
-  SetCapacity(source->capacity());
-  SetRecipe(source->recipe());
-  SetMaxInventorySize(source->MaxInventorySize());
-  CopyProducedCommoditiesFrom(source);
+cyclus::Model* SourceFacility::clone() {
+  SourceFacility* m = new SourceFacility(*this);
+  m->initfrom(this);
+
+  m->SetCommodity(commodity());
+  m->SetCapacity(capacity());
+  m->SetRecipe(recipe());
+  m->SetMaxInventorySize(MaxInventorySize());
+  m->CopyProducedCommoditiesFrom(this);
+
+  return m;
 }
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -254,10 +257,4 @@ void SourceFacility::SendOffer(cyclus::Transaction trans) {
 extern "C" cyclus::Model* ConstructSourceFacility(cyclus::Context* ctx) {
   return new SourceFacility(ctx);
 }
-
-//- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-extern "C" void DestructSourceFacility(cyclus::Model* model) {
-  delete model;
-}
-
 } // namespace cycamore

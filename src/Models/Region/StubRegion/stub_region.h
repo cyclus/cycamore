@@ -64,11 +64,6 @@ class StubRegion : public cyclus::RegionModel {
    */
   virtual void InitModuleMembers(cyclus::QueryEngine* qe);
 
-  /**
-     perform all necessary actions for the model to enter the simulation
-   */
-  virtual void EnterSimulation(cyclus::Model* parent);
-
   /* ------------------- */
 
 

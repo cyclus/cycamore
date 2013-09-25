@@ -73,12 +73,15 @@ std::string SinkFacility::str() {
 }
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-void SinkFacility::CloneModuleMembersFrom(cyclus::FacilityModel* sourceModel) {
-  using std::string;
-  SinkFacility* source = dynamic_cast<SinkFacility*>(sourceModel);
-  SetCapacity(source->capacity());
-  SetMaxInventorySize(source->MaxInventorySize());
-  in_commods_ = source->InputCommodities();
+cyclus::Model* SinkFacility::clone() {
+  SinkFacility* m = new SinkFacility(*this);
+  m->initfrom(this);
+
+  m->SetCapacity(capacity());
+  m->SetMaxInventorySize(MaxInventorySize());
+  m->in_commods_ = InputCommodities();
+
+  return m;
 }
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -203,10 +206,4 @@ const double SinkFacility::getRequestAmt() {
 extern "C" cyclus::Model* ConstructSinkFacility(cyclus::Context* ctx) {
   return new SinkFacility(ctx);
 }
-
-//- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-extern "C" void DestructSinkFacility(cyclus::Model* model) {
-  delete model;
-}
-
 } // namespace cycamore

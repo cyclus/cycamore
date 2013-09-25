@@ -104,7 +104,7 @@ std::string BatchReactor::str() {
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 cyclus::Model* BatchReactor::clone() {
-  BatchReactor* m = new BatchReactor(*this);
+  BatchReactor* m = new BatchReactor(context());
   m->initfrom(this);
 
   m->set_cycle_length(cycle_length());
