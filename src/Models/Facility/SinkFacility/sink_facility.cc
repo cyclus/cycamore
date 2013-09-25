@@ -137,7 +137,7 @@ void SinkFacility::HandleTock(int time) {
   // On the tock, the sink facility doesn't really do much.
   // Maybe someday it will record things.
   // For now, lets just print out what we have at each timestep.
-  LOG(cyclus::LEV_INFO4, "SnkFac") << "SinkFacility " << this->ID()
+  LOG(cyclus::LEV_INFO4, "SnkFac") << "SinkFacility " << this->id()
                                    << " is holding " << inventory_.quantity()
                                    << " units of material at the close of month " << time
                                    << ".";

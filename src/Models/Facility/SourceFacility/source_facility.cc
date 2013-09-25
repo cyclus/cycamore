@@ -126,7 +126,7 @@ void SourceFacility::HandleTock(int time) {
     }
   }
   // For now, lets just print out what we have at each timestep.
-  LOG(cyclus::LEV_INFO4, "SrcFac") << "SourceFacility " << this->ID()
+  LOG(cyclus::LEV_INFO4, "SrcFac") << "SourceFacility " << this->id()
                                    << " is holding " << this->inventory_.quantity()
                                    << " units of material at the close of month " << time
                                    << ".";

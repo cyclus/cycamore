@@ -301,7 +301,7 @@ void EnrichmentFacility::RecordEnrichment(double natural_u, double swu) {
   Context* ctx = Model::context();
   ctx->NewEvent("Enrichments")
       ->AddVal("ENTRY", ++entry_)
-      ->AddVal("ID", ID())
+      ->AddVal("ID", id())
       ->AddVal("Time", ctx->time())
       ->AddVal("Natural_Uranium", natural_u)
       ->AddVal("SWU", swu)

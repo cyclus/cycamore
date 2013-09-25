@@ -251,7 +251,7 @@ vector<cyclus::Resource::Ptr> RecipeReactor::RemoveResource(
           newMat->Absorb(toAbsorb);
         }
         toSend.push_back(newMat);
-        LOG(cyclus::LEV_DEBUG2, "RReact") << "RecipeReactor " << ID()
+        LOG(cyclus::LEV_DEBUG2, "RReact") << "RecipeReactor " << id()
                                           << "  is sending a mat with mass: " << newMat->quantity();
       }
     }
@@ -267,7 +267,7 @@ void RecipeReactor::AddResource(cyclus::Transaction trans,
   for (vector<cyclus::Resource::Ptr>::iterator thisMat = manifest.begin();
        thisMat != manifest.end();
        thisMat++) {
-    LOG(cyclus::LEV_DEBUG2, "RReact") << "RecipeReactor " << ID() <<
+    LOG(cyclus::LEV_DEBUG2, "RReact") << "RecipeReactor " << id() <<
                                       " is receiving material with mass "
                                       << (*thisMat)->quantity();
     stocks_.push_front(make_pair(trans.commod(),
