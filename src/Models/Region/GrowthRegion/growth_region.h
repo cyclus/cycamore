@@ -76,7 +76,7 @@ class GrowthRegion : public cyclus::RegionModel {
   cyclus::supply_demand::SupplyDemandManager sdmanager_;
 
   virtual cyclus::Model* clone() {
-    GrowthRegion* m = new GrowthRegion(*this);
+    GrowthRegion* m = new GrowthRegion(context());
     m->initfrom(this);
     return m;
   }

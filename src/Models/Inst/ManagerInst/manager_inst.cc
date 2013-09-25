@@ -13,17 +13,20 @@ ManagerInst::ManagerInst(cyclus::Context* ctx) : cyclus::InstModel(ctx) {}
 ManagerInst::~ManagerInst() {}
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-void ManagerInst::RegisterAvailablePrototype(cyclus::Model* prototype) {
-  cyclus::supply_demand::CommodityProducer* cast =
-    dynamic_cast<cyclus::supply_demand::CommodityProducer*>(prototype);
-  if (cast) {
+void ManagerInst::RegisterAvailablePrototype(std::string prototype) {
+  std::cout << name() << "is registering\n";
+  using cyclus::supply_demand::CommodityProducer;
+  try {
+    CommodityProducer* cast = context()->CreateModel<CommodityProducer>(prototype);
     cyclus::action_building::Builder::RegisterProducer(cast);
     LOG(cyclus::LEV_DEBUG3, "maninst") << "ManagerInst " << name()
                                        << " has registered a producer prototype: "
-                                       << dynamic_cast<cyclus::Model*>(prototype)->name()
+                                       << prototype
                                        << " and "
                                        << " now has " << NBuildingPrototypes()
                                        << " registered total.";
+  } catch (cyclus::Error err) {
+    std::cout << "registration failed: " << err.what() << "\n";
   }
 }
 

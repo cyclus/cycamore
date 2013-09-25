@@ -10,7 +10,7 @@
 
 namespace cycamore {
 
-typedef std::pair<cyclus::Model*, int> BuildOrder;
+typedef std::pair<std::string, int> BuildOrder;
 
 /**
    a helper class for storing and extracting build orders
@@ -18,7 +18,7 @@ typedef std::pair<cyclus::Model*, int> BuildOrder;
 class BuildOrderList {
  public:
   /// add a build order
-  void AddBuildOrder(cyclus::Model* p, int number, int time);
+  void AddBuildOrder(std::string prototype, int number, int time);
 
   /// extract a set of build orders
   std::set<BuildOrder> ExtractOrders(int time);
@@ -52,7 +52,7 @@ class DeployInst : public cyclus::InstModel {
   virtual ~DeployInst();
 
   virtual cyclus::Model* clone() {
-    DeployInst* m = new DeployInst(*this);
+    DeployInst* m = new DeployInst(context());
     m->initfrom(this);
     return m;
   }
@@ -76,7 +76,6 @@ class DeployInst : public cyclus::InstModel {
   virtual void HandleTick(int time);
 
   /* ------------------- */
-
 
   /* --------------------
    * This INSTMODEL classes have these members

@@ -8,7 +8,7 @@
 namespace cycamore {
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-void BuildOrderList::AddBuildOrder(cyclus::Model* p, int number,
+void BuildOrderList::AddBuildOrder(std::string prototype, int number,
                                    int time) {
   using std::map;
   using std::set;
@@ -18,10 +18,10 @@ void BuildOrderList::AddBuildOrder(cyclus::Model* p, int number,
 
   if (it == all_orders_.end()) {
     set<BuildOrder> orders;
-    orders.insert(make_pair(p, number));
+    orders.insert(make_pair(prototype, number));
     all_orders_.insert(make_pair(time, orders));
   } else {
-    it->second.insert(make_pair(p, number));
+    it->second.insert(make_pair(prototype, number));
   }
 
 }
@@ -60,10 +60,8 @@ void DeployInst::InitModuleMembers(cyclus::QueryEngine* qe) {
     string name = order->GetElementContent("prototype");
     int number = atoi(order->GetElementContent("number").c_str());
     int time = atoi(order->GetElementContent("date").c_str());
-    build_orders_.AddBuildOrder(context()->CreateModel<cyclus::Model>(name),
-                                number, time);
+    build_orders_.AddBuildOrder(name, number, time);
   }
-
 }
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -75,14 +73,12 @@ void DeployInst::HandleTick(int time) {
   for (set<BuildOrder>::iterator it = orders.begin();
        it != orders.end(); it++) {
 
-    cyclus::Model* m = dynamic_cast<cyclus::Model*>(it->first);
+    std::string prototype = it->first;
     int number = it->second;
-
     for (int i = 0; i < number; i++) {
       // build as many as required
-      Build(m->name());
+      Build(prototype);
     }
-
   }
   InstModel::HandleTick(time);
 }

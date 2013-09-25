@@ -31,7 +31,7 @@ class ManagerInst : public cyclus::InstModel,
   virtual ~ManagerInst();
 
   virtual cyclus::Model* clone() {
-    ManagerInst* m = new ManagerInst(*this);
+    ManagerInst* m = new ManagerInst(context());
     m->initfrom(this);
     return m;
   }
@@ -41,7 +41,7 @@ class ManagerInst : public cyclus::InstModel,
      the list of available prototypes
      @param prototype the prototype to register
    */
-  virtual void RegisterAvailablePrototype(cyclus::Model* prototype);
+  virtual void RegisterAvailablePrototype(std::string prototype);
 
   /**
      perform any registration functionality after a clone has been
