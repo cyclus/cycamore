@@ -14,7 +14,6 @@ ManagerInst::~ManagerInst() {}
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 void ManagerInst::RegisterAvailablePrototype(std::string prototype) {
-  std::cout << name() << "is registering\n";
   using cyclus::supply_demand::CommodityProducer;
   try {
     CommodityProducer* cast = context()->CreateModel<CommodityProducer>(prototype);
@@ -25,9 +24,7 @@ void ManagerInst::RegisterAvailablePrototype(std::string prototype) {
                                        << " and "
                                        << " now has " << NBuildingPrototypes()
                                        << " registered total.";
-  } catch (cyclus::Error err) {
-    std::cout << "registration failed: " << err.what() << "\n";
-  }
+  } catch (cyclus::CastError err) { }
 }
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -

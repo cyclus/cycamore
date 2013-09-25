@@ -51,7 +51,8 @@ cyclus::InstModel* ManagerInstConstructor(cyclus::Context* ctx) {
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 TEST_F(ManagerInstTests, producerexists) {
   using std::set;
-  src_inst->RegisterAvailablePrototype(producer->name());
+  ctx_->AddPrototype("foop", producer);
+  src_inst->RegisterAvailablePrototype("foop");
   set<cyclus::supply_demand::CommodityProducer*>::iterator it;
   for (it = src_inst->BeginningProducer(); it != src_inst->EndingProducer();
        it++) {
