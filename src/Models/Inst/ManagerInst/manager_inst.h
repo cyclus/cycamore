@@ -32,7 +32,7 @@ class ManagerInst : public cyclus::InstModel,
 
   virtual cyclus::Model* Clone() {
     ManagerInst* m = new ManagerInst(context());
-    m->initfrom(this);
+    m->InitFrom(this);
     return m;
   }
 

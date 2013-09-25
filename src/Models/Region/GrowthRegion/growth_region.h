@@ -77,7 +77,7 @@ class GrowthRegion : public cyclus::RegionModel {
 
   virtual cyclus::Model* Clone() {
     GrowthRegion* m = new GrowthRegion(context());
-    m->initfrom(this);
+    m->InitFrom(this);
     return m;
   }
 

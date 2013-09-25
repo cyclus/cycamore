@@ -51,7 +51,7 @@ class StubInst : public cyclus::InstModel {
 
   virtual cyclus::Model* Clone() {
     StubInst* m = new StubInst(*this);
-    m->initfrom(this);
+    m->InitFrom(this);
     return m;
   }
 

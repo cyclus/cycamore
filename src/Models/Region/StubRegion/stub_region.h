@@ -49,7 +49,7 @@ class StubRegion : public cyclus::RegionModel {
 
   virtual cyclus::Model* Clone() {
     StubRegion* m = new StubRegion(*this);
-    m->initfrom(this);
+    m->InitFrom(this);
     return m;
   }
 

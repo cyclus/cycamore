@@ -49,7 +49,7 @@ class NullRegion : public cyclus::RegionModel  {
 
   virtual cyclus::Model* Clone() {
     NullRegion* m = new NullRegion(context());
-    m->initfrom(this);
+    m->InitFrom(this);
     return m;
   }
 

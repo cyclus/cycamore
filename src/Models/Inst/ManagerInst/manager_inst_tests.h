@@ -18,7 +18,7 @@ class TestProducer :
 
   virtual cyclus::Model* Clone() {
     TestProducer* m = new TestProducer(*this);
-    m->initfrom(this);
+    m->InitFrom(this);
     return m;
   }
 

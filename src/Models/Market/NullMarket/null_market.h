@@ -57,7 +57,7 @@ class NullMarket : public cyclus::MarketModel {
 
   virtual cyclus::Model* Clone() {
     NullMarket* m = new NullMarket(*this);
-    m->initfrom(this);
+    m->InitFrom(this);
     return m;
   }
 

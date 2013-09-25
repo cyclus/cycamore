@@ -42,7 +42,7 @@ class NullInst : public cyclus::InstModel {
 
   virtual cyclus::Model* Clone() {
     NullInst* m = new NullInst(*this);
-    m->initfrom(this);
+    m->InitFrom(this);
     return m;
   }
 

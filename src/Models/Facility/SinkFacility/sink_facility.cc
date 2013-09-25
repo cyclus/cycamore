@@ -75,7 +75,7 @@ std::string SinkFacility::str() {
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 cyclus::Model* SinkFacility::Clone() {
   SinkFacility* m = new SinkFacility(*this);
-  m->initfrom(this);
+  m->InitFrom(this);
 
   m->SetCapacity(capacity());
   m->SetMaxInventorySize(MaxInventorySize());

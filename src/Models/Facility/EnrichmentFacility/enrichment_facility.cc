@@ -81,7 +81,7 @@ std::string EnrichmentFacility::str() {
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 cyclus::Model* EnrichmentFacility::Clone() {
   EnrichmentFacility* m = new EnrichmentFacility(*this);
-  m->initfrom(this);
+  m->InitFrom(this);
 
   m->set_tails_assay(tails_assay());
   m->set_feed_assay(feed_assay());
