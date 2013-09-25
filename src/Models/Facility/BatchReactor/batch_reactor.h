@@ -51,7 +51,7 @@ class BatchReactor : public cyclus::FacilityModel,
   */
   virtual ~BatchReactor();
 
-  virtual cyclus::Model* clone();
+  virtual cyclus::Model* Clone();
 
   /**
      Initialize members related to derived module class

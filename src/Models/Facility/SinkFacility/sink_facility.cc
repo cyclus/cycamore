@@ -73,7 +73,7 @@ std::string SinkFacility::str() {
 }
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-cyclus::Model* SinkFacility::clone() {
+cyclus::Model* SinkFacility::Clone() {
   SinkFacility* m = new SinkFacility(*this);
   m->initfrom(this);
 

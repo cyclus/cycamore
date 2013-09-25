@@ -94,7 +94,7 @@ TEST_F(EnrichmentFacilityTest, clone) {
   cyclus::Context* ctx = tc_.get();
 
   cycamore::EnrichmentFacility* cloned_fac =
-    dynamic_cast<cycamore::EnrichmentFacility*>(src_facility->clone());
+    dynamic_cast<cycamore::EnrichmentFacility*>(src_facility->Clone());
 
   EXPECT_EQ(in_recipe, cloned_fac->in_recipe());
   EXPECT_EQ(in_commod, cloned_fac->in_commodity());

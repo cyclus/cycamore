@@ -47,7 +47,7 @@ class StubRegion : public cyclus::RegionModel {
    */
   virtual ~StubRegion();
 
-  virtual cyclus::Model* clone() {
+  virtual cyclus::Model* Clone() {
     StubRegion* m = new StubRegion(*this);
     m->initfrom(this);
     return m;

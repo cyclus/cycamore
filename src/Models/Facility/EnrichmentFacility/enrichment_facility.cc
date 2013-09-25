@@ -79,7 +79,7 @@ std::string EnrichmentFacility::str() {
 }
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-cyclus::Model* EnrichmentFacility::clone() {
+cyclus::Model* EnrichmentFacility::Clone() {
   EnrichmentFacility* m = new EnrichmentFacility(*this);
   m->initfrom(this);
 

@@ -34,7 +34,7 @@ class EnrichmentFacility : public cyclus::FacilityModel {
    */
   virtual ~EnrichmentFacility();
 
-  virtual cyclus::Model* clone();
+  virtual cyclus::Model* Clone();
 
   /**
      Initialize members related to derived module class

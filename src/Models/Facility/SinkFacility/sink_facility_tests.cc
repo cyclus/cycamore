@@ -40,7 +40,7 @@ TEST_F(SinkFacilityTest, InitialState) {
 TEST_F(SinkFacilityTest, clone) {
   using cycamore::SinkFacility;
   SinkFacility* cloned_fac = dynamic_cast<cycamore::SinkFacility*>
-                             (src_facility->clone());
+                             (src_facility->Clone());
 
   EXPECT_EQ(src_facility->capacity(), cloned_fac->capacity());
   EXPECT_EQ(src_facility->MaxInventorySize(), cloned_fac->MaxInventorySize());

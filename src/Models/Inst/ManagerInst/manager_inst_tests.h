@@ -16,7 +16,7 @@ class TestProducer :
   TestProducer(cyclus::Context* ctx);
   virtual ~TestProducer();
 
-  virtual cyclus::Model* clone() {
+  virtual cyclus::Model* Clone() {
     TestProducer* m = new TestProducer(*this);
     m->initfrom(this);
     return m;

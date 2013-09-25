@@ -106,7 +106,7 @@ bool NullMarket::match_request(SortedMsgList::iterator request) {
       // split offer
 
       // queue a new order
-      cyclus::Message::Ptr maybe_offer = offerMsg->clone(); 
+      cyclus::Message::Ptr maybe_offer = offerMsg->Clone(); 
       cyclus::Resource::Ptr res = offerMsg->trans().resource()->ExtractRes(requestAmt);
       maybe_offer->trans().SetResource(res);
       maybe_offer->trans().MatchWith(requestMsg->trans());

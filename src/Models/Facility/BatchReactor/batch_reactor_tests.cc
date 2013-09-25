@@ -103,7 +103,7 @@ TEST_F(BatchReactorTest, initialstate) {
 TEST_F(BatchReactorTest, clone) {
   using cycamore::BatchReactor;
   BatchReactor* cloned_fac = dynamic_cast<cycamore::BatchReactor*>
-                             (src_facility->clone());
+                             (src_facility->Clone());
 
   EXPECT_EQ(lencycle, cloned_fac->cycle_length());
   EXPECT_EQ(lencycle, cloned_fac->refuel_delay());

@@ -51,7 +51,7 @@ class DeployInst : public cyclus::InstModel {
    */
   virtual ~DeployInst();
 
-  virtual cyclus::Model* clone() {
+  virtual cyclus::Model* Clone() {
     DeployInst* m = new DeployInst(context());
     m->initfrom(this);
     return m;

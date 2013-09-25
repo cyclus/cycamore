@@ -46,7 +46,7 @@ TEST_F(SourceFacilityTest, InitialState) {
 TEST_F(SourceFacilityTest, clone) {
   cyclus::Context* ctx = tc_.get();
   cycamore::SourceFacility* cloned_fac = dynamic_cast<cycamore::SourceFacility*>
-                                         (src_facility->clone());
+                                         (src_facility->Clone());
 
   EXPECT_EQ(src_facility->commodity(), cloned_fac->commodity());
   EXPECT_EQ(src_facility->capacity(), cloned_fac->capacity());

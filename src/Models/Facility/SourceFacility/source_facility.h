@@ -104,7 +104,7 @@ class SourceFacility : public cyclus::FacilityModel,
    */
   virtual ~SourceFacility();
 
-  virtual cyclus::Model* clone();
+  virtual cyclus::Model* Clone();
 
   /**
      Initialize members related to derived module class

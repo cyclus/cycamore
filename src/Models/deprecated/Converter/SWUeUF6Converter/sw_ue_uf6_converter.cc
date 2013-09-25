@@ -123,10 +123,10 @@ cyclus::Message::Ptr SWUeUF6Converter::Convert(cyclus::Message::Ptr convMsg,
   if (out_commod_ == "eUF6") {
     mat = cyclus::Material::Ptr(new cyclus::Material(iso_vector));
     mat->SetQuantity(massProdU);
-    toRet = convMsg->clone();
+    toRet = convMsg->Clone();
     toRet->trans().SetResource(mat);
   } else if (out_commod_ == "SWUs") {
-    toRet = convMsg->clone();
+    toRet = convMsg->Clone();
     cyclus::GenericResource::Ptr conv_res = cyclus::GenericResource::Ptr(
                                               new cyclus::GenericResource(out_commod_, out_commod_, SWUs));
     toRet->trans().SetResource(conv_res);

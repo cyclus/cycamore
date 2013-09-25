@@ -103,7 +103,7 @@ std::string BatchReactor::str() {
 }
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-cyclus::Model* BatchReactor::clone() {
+cyclus::Model* BatchReactor::Clone() {
   BatchReactor* m = new BatchReactor(context());
   m->initfrom(this);
 

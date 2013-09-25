@@ -75,7 +75,7 @@ std::string SourceFacility::str() {
 }
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-cyclus::Model* SourceFacility::clone() {
+cyclus::Model* SourceFacility::Clone() {
   SourceFacility* m = new SourceFacility(*this);
   m->initfrom(this);
 
