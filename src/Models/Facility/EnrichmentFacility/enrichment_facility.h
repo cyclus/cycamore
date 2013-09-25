@@ -34,6 +34,8 @@ class EnrichmentFacility : public cyclus::FacilityModel {
    */
   virtual ~EnrichmentFacility();
 
+  virtual cyclus::Model* Clone();
+
   /**
      Initialize members related to derived module class
      @param qe a pointer to a cyclus::QueryEngine object containing initialization data
@@ -44,14 +46,6 @@ class EnrichmentFacility : public cyclus::FacilityModel {
      Print information about this model
    */
   virtual std::string str();
-  /* --- */
-
-  /* --- Facility Methods --- */
-  /**
-     Copy module members from a source model
-     @param sourceModel the model to copy from
-   */
-  virtual void CloneModuleMembersFrom(cyclus::FacilityModel* sourceModel);
   /* --- */
 
   /* --- Agent Methods --- */

@@ -73,12 +73,15 @@ std::string SinkFacility::str() {
 }
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-void SinkFacility::CloneModuleMembersFrom(cyclus::FacilityModel* sourceModel) {
-  using std::string;
-  SinkFacility* source = dynamic_cast<SinkFacility*>(sourceModel);
-  SetCapacity(source->capacity());
-  SetMaxInventorySize(source->MaxInventorySize());
-  in_commods_ = source->InputCommodities();
+cyclus::Model* SinkFacility::Clone() {
+  SinkFacility* m = new SinkFacility(*this);
+  m->InitFrom(this);
+
+  m->SetCapacity(capacity());
+  m->SetMaxInventorySize(MaxInventorySize());
+  m->in_commods_ = InputCommodities();
+
+  return m;
 }
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -134,7 +137,7 @@ void SinkFacility::HandleTock(int time) {
   // On the tock, the sink facility doesn't really do much.
   // Maybe someday it will record things.
   // For now, lets just print out what we have at each timestep.
-  LOG(cyclus::LEV_INFO4, "SnkFac") << "SinkFacility " << this->ID()
+  LOG(cyclus::LEV_INFO4, "SnkFac") << "SinkFacility " << this->id()
                                    << " is holding " << inventory_.quantity()
                                    << " units of material at the close of month " << time
                                    << ".";
@@ -203,10 +206,4 @@ const double SinkFacility::getRequestAmt() {
 extern "C" cyclus::Model* ConstructSinkFacility(cyclus::Context* ctx) {
   return new SinkFacility(ctx);
 }
-
-//- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-extern "C" void DestructSinkFacility(cyclus::Model* model) {
-  delete model;
-}
-
 } // namespace cycamore

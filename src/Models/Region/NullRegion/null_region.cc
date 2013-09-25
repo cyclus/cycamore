@@ -20,10 +20,5 @@ extern "C" cyclus::Model* ConstructNullRegion(cyclus::Context* ctx) {
   return new NullRegion(ctx);
 }
 
-//- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-extern "C" void DestructNullRegion(cyclus::Model* model) {
-  delete model;
-}
-
 /* -------------------- */
 } // namespace cycamore

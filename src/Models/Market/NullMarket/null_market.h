@@ -55,6 +55,12 @@ class NullMarket : public cyclus::MarketModel {
 
   /* -------------------- */
 
+  virtual cyclus::Model* Clone() {
+    NullMarket* m = new NullMarket(*this);
+    m->InitFrom(this);
+    return m;
+  }
+
 
   /* --------------------
    * all COMMUNICATOR classes have these members

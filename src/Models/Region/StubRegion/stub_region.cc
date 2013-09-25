@@ -24,11 +24,6 @@ std::string StubRegion::str() {
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 void StubRegion::InitModuleMembers(cyclus::QueryEngine* qe) {}
 
-//- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-void StubRegion::EnterSimulation(cyclus::Model* parent) {
-  cyclus::RegionModel::EnterSimulation(parent);
-}
-
 /* ------------------- */
 
 
@@ -59,11 +54,6 @@ void StubRegion::ReceiveMessage(cyclus::Message::Ptr msg) {}
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 extern "C" cyclus::Model* ConstructStubRegion(cyclus::Context* ctx) {
   return new StubRegion(ctx);
-}
-
-//- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-extern "C" void DestructStubRegion(cyclus::Model* model) {
-  delete model;
 }
 
 /* ------------------- */

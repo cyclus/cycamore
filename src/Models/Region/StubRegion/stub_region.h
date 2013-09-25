@@ -47,6 +47,12 @@ class StubRegion : public cyclus::RegionModel {
    */
   virtual ~StubRegion();
 
+  virtual cyclus::Model* Clone() {
+    StubRegion* m = new StubRegion(*this);
+    m->InitFrom(this);
+    return m;
+  }
+
   /**
      every model should be able to print a verbose description
    */
@@ -57,11 +63,6 @@ class StubRegion : public cyclus::RegionModel {
      @param qe a pointer to a cyclus::QueryEngine object containing initialization data
    */
   virtual void InitModuleMembers(cyclus::QueryEngine* qe);
-
-  /**
-     perform all necessary actions for the model to enter the simulation
-   */
-  virtual void EnterSimulation(cyclus::Model* parent);
 
   /* ------------------- */
 

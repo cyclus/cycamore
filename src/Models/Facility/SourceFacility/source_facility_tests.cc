@@ -20,7 +20,7 @@ void SourceFacilityTest::InitParameters() {
   commod_ = "commod";
   recipe_name_ = "recipe";
   cyclus::Context* ctx = tc_.get();
-  
+
   recipe_ = cyclus::Composition::CreateFromAtom(cyclus::CompMap());
   ctx->AddRecipe(recipe_name_, recipe_);
   commod_market = new TestMarket(ctx);
@@ -45,8 +45,8 @@ TEST_F(SourceFacilityTest, InitialState) {
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 TEST_F(SourceFacilityTest, clone) {
   cyclus::Context* ctx = tc_.get();
-  cycamore::SourceFacility* cloned_fac = new cycamore::SourceFacility(ctx);
-  cloned_fac->CloneModuleMembersFrom(src_facility);
+  cycamore::SourceFacility* cloned_fac = dynamic_cast<cycamore::SourceFacility*>
+                                         (src_facility->Clone());
 
   EXPECT_EQ(src_facility->commodity(), cloned_fac->commodity());
   EXPECT_EQ(src_facility->capacity(), cloned_fac->capacity());

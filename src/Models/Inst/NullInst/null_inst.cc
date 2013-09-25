@@ -15,12 +15,6 @@ NullInst::~NullInst() {}
 extern "C" cyclus::Model* ConstructNullInst(cyclus::Context* ctx) {
   return new NullInst(ctx);
 }
-
-//- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-extern "C" void DestructNullInst(cyclus::Model* model) {
-  delete model;
-}
-
 /* ------------------- */
 
 } // namespace cycamore

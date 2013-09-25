@@ -47,6 +47,12 @@ class NullRegion : public cyclus::RegionModel  {
    */
   NullRegion(cyclus::Context* ctx);
 
+  virtual cyclus::Model* Clone() {
+    NullRegion* m = new NullRegion(context());
+    m->InitFrom(this);
+    return m;
+  }
+
   /**
      The default destructor for the NullRegion
    */

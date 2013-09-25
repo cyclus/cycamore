@@ -60,7 +60,7 @@ class GrowthRegion : public cyclus::RegionModel {
   /**
      perform module-specific tasks when entering the simulation
    */
-  virtual void EnterSimulationAsModule();
+  virtual void Deploy(cyclus::Model* parent);
 
   /**
      On each tick, the GrowthRegion queries its supply demand manager
@@ -75,6 +75,11 @@ class GrowthRegion : public cyclus::RegionModel {
   /// manager for Supply and emand
   cyclus::supply_demand::SupplyDemandManager sdmanager_;
 
+  virtual cyclus::Model* Clone() {
+    GrowthRegion* m = new GrowthRegion(context());
+    m->InitFrom(this);
+    return m;
+  }
 
  protected:
   /* --- GrowthRegion Members --- */

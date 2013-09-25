@@ -79,18 +79,20 @@ std::string EnrichmentFacility::str() {
 }
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-void EnrichmentFacility::CloneModuleMembersFrom(cyclus::FacilityModel*
-                                                sourceModel) {
-  EnrichmentFacility* source = dynamic_cast<EnrichmentFacility*>(sourceModel);
-  set_tails_assay(source->tails_assay());
-  set_feed_assay(source->feed_assay());
-  set_in_commodity(source->in_commodity());
-  set_in_recipe(source->in_recipe());
-  set_out_commodity(source->out_commodity());
-  SetMaxInventorySize(source->MaxInventorySize());
-  set_commodity_price(source->commodity_price());
+cyclus::Model* EnrichmentFacility::Clone() {
+  EnrichmentFacility* m = new EnrichmentFacility(*this);
+  m->InitFrom(this);
+
+  m->set_tails_assay(tails_assay());
+  m->set_feed_assay(feed_assay());
+  m->set_in_commodity(in_commodity());
+  m->set_in_recipe(in_recipe());
+  m->set_out_commodity(out_commodity());
+  m->SetMaxInventorySize(MaxInventorySize());
+  m->set_commodity_price(commodity_price());
 
   LOG(cyclus::LEV_DEBUG1, "EnrFac") << "Cloned - " << str();
+  return m;
 }
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -299,7 +301,7 @@ void EnrichmentFacility::RecordEnrichment(double natural_u, double swu) {
   Context* ctx = Model::context();
   ctx->NewEvent("Enrichments")
       ->AddVal("ENTRY", ++entry_)
-      ->AddVal("ID", ID())
+      ->AddVal("ID", id())
       ->AddVal("Time", ctx->time())
       ->AddVal("Natural_Uranium", natural_u)
       ->AddVal("SWU", swu)
@@ -309,10 +311,5 @@ void EnrichmentFacility::RecordEnrichment(double natural_u, double swu) {
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 extern "C" cyclus::Model* ConstructEnrichmentFacility(cyclus::Context* ctx) {
   return new EnrichmentFacility(ctx);
-}
-
-//- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-extern "C" void DestructEnrichmentFacility(cyclus::Model* model) {
-  delete model;
 }
 } // namespace cycamore

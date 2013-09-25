@@ -103,22 +103,27 @@ std::string BatchReactor::str() {
 }
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-void BatchReactor::CloneModuleMembersFrom(cyclus::FacilityModel* sourceModel) {
-  BatchReactor* source = dynamic_cast<BatchReactor*>(sourceModel);
-  set_cycle_length(source->cycle_length());
-  set_refuel_delay(source->refuel_delay());
-  set_in_core_loading(source->in_core_loading());
-  set_out_core_loading(source->out_core_loading());
-  set_batches_per_core(source->batches_per_core());
-  set_in_commodity(source->in_commodity());
-  set_out_commodity(source->out_commodity());
-  set_in_recipe(source->in_recipe());
-  set_out_recipe(source->out_recipe());
-  CopyProducedCommoditiesFrom(source);
+cyclus::Model* BatchReactor::Clone() {
+  BatchReactor* m = new BatchReactor(context());
+  m->InitFrom(this);
+
+  m->set_cycle_length(cycle_length());
+  m->set_refuel_delay(refuel_delay());
+  m->set_in_core_loading(in_core_loading());
+  m->set_out_core_loading(out_core_loading());
+  m->set_batches_per_core(batches_per_core());
+  m->set_in_commodity(in_commodity());
+  m->set_out_commodity(out_commodity());
+  m->set_in_recipe(in_recipe());
+  m->set_out_recipe(out_recipe());
+  m->CopyProducedCommoditiesFrom(this);
+
+  return m;
 }
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-void BatchReactor::EnterSimulationAsModule() {
+void BatchReactor::Deploy(cyclus::Model* parent) {
+  FacilityModel::Deploy(parent);
   preCore_.SetCapacity(in_core_loading());
   inCore_.SetCapacity(in_core_loading());
   reset_cycle_timer();
@@ -588,10 +593,4 @@ void BatchReactor::OffloadCore() {
 extern "C" cyclus::Model* ConstructBatchReactor(cyclus::Context* ctx) {
   return new BatchReactor(ctx);
 }
-
-//- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-extern "C" void DestructBatchReactor(cyclus::Model* model) {
-  delete model;
-}
-
 } // namespace cycamore

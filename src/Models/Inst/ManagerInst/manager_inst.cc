@@ -2,7 +2,6 @@
 // Implements the ManagerInst class
 
 #include "manager_inst.h"
-#include "prototype.h"
 #include "logger.h"
 
 namespace cycamore {
@@ -14,22 +13,22 @@ ManagerInst::ManagerInst(cyclus::Context* ctx) : cyclus::InstModel(ctx) {}
 ManagerInst::~ManagerInst() {}
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-void ManagerInst::RegisterAvailablePrototype(cyclus::Prototype* prototype) {
-  cyclus::supply_demand::CommodityProducer* cast =
-    dynamic_cast<cyclus::supply_demand::CommodityProducer*>(prototype);
-  if (cast) {
+void ManagerInst::RegisterAvailablePrototype(std::string prototype) {
+  using cyclus::supply_demand::CommodityProducer;
+  try {
+    CommodityProducer* cast = context()->CreateModel<CommodityProducer>(prototype);
     cyclus::action_building::Builder::RegisterProducer(cast);
     LOG(cyclus::LEV_DEBUG3, "maninst") << "ManagerInst " << name()
                                        << " has registered a producer prototype: "
-                                       << dynamic_cast<cyclus::Model*>(prototype)->name()
+                                       << prototype
                                        << " and "
                                        << " now has " << NBuildingPrototypes()
                                        << " registered total.";
-  }
+  } catch (cyclus::CastError err) { }
 }
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-void ManagerInst::RegisterCloneAsBuilt(cyclus::Prototype* clone) {
+void ManagerInst::RegisterCloneAsBuilt(cyclus::Model* clone) {
   cyclus::supply_demand::CommodityProducer* cast =
     dynamic_cast<cyclus::supply_demand::CommodityProducer*>(clone);
   if (cast) {
@@ -43,7 +42,7 @@ void ManagerInst::RegisterCloneAsBuilt(cyclus::Prototype* clone) {
 }
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-void ManagerInst::RegisterCloneAsDecommissioned(cyclus::Prototype* clone) {
+void ManagerInst::RegisterCloneAsDecommissioned(cyclus::Model* clone) {
   cyclus::supply_demand::CommodityProducer* cast =
     dynamic_cast<cyclus::supply_demand::CommodityProducer*>(clone);
   if (cast) {
@@ -74,12 +73,6 @@ void ManagerInst::WriteProducerInformation(
 extern "C" cyclus::Model* ConstructManagerInst(cyclus::Context* ctx) {
   return new ManagerInst(ctx);
 }
-
-//- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-extern "C" void DestructManagerInst(cyclus::Model* model) {
-  delete model;
-}
-
 } // namespace cycamore
 
 

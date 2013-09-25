@@ -27,11 +27,6 @@ std::string StubInst::str() {
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 void StubInst::InitModuleMembers(cyclus::QueryEngine* qe) {}
 
-//- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-void StubInst::EnterSimulation(cyclus::Model* parent) {
-  cyclus::InstModel::EnterSimulation(parent);
-}
-
 /* ------------------- */
 
 
@@ -63,12 +58,6 @@ void StubInst::ReceiveMessage(cyclus::Message::Ptr msg) {};
 extern "C" cyclus::Model* ConstructStubInst(cyclus::Context* ctx) {
   return new StubInst(ctx);
 }
-
-//- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-extern "C" void DestructStubInst(cyclus::Model* model) {
-  delete model;
-}
-
 /* ------------------- */
 
 } // namespace cycamore 

@@ -30,7 +30,7 @@ void EnrichmentFacilityTest::TearDown() {
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 void EnrichmentFacilityTest::InitParameters() {
   cyclus::Context* ctx = tc_.get();
-  
+
   in_commod = "incommod";
   in_commod_market = new TestMarket(ctx);
   in_commod_market->SetCommodity(in_commod);
@@ -92,10 +92,9 @@ TEST_F(EnrichmentFacilityTest, init) {
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 TEST_F(EnrichmentFacilityTest, clone) {
   cyclus::Context* ctx = tc_.get();
-  
+
   cycamore::EnrichmentFacility* cloned_fac =
-      new cycamore::EnrichmentFacility(ctx);
-  cloned_fac->CloneModuleMembersFrom(src_facility);
+    dynamic_cast<cycamore::EnrichmentFacility*>(src_facility->Clone());
 
   EXPECT_EQ(in_recipe, cloned_fac->in_recipe());
   EXPECT_EQ(in_commod, cloned_fac->in_commodity());

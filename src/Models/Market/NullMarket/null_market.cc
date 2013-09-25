@@ -95,9 +95,9 @@ bool NullMarket::match_request(SortedMsgList::iterator request) {
       LOG(cyclus::LEV_DEBUG2, "none!")
           << "null_market.has resolved a transaction "
           << " which is a match from "
-          << offerMsg->trans().supplier()->ID()
+          << offerMsg->trans().supplier()->id()
           << " to "
-          << offerMsg->trans().requester()->ID()
+          << offerMsg->trans().requester()->id()
           << " for the amount:  "
           << offerMsg->trans().resource()->quantity();
 
@@ -106,7 +106,7 @@ bool NullMarket::match_request(SortedMsgList::iterator request) {
       // split offer
 
       // queue a new order
-      cyclus::Message::Ptr maybe_offer = offerMsg->clone(); 
+      cyclus::Message::Ptr maybe_offer = offerMsg->Clone(); 
       cyclus::Resource::Ptr res = offerMsg->trans().resource()->ExtractRes(requestAmt);
       maybe_offer->trans().SetResource(res);
       maybe_offer->trans().MatchWith(requestMsg->trans());
@@ -116,9 +116,9 @@ bool NullMarket::match_request(SortedMsgList::iterator request) {
       orders_.push_back(maybe_offer);
 
       LOG(cyclus::LEV_DEBUG2, "none!") << "null_market.has resolved a match from "
-                                       << maybe_offer->trans().supplier()->ID()
+                                       << maybe_offer->trans().supplier()->id()
                                        << " to "
-                                       << maybe_offer->trans().requester()->ID()
+                                       << maybe_offer->trans().requester()->id()
                                        << " for " << maybe_offer->trans().resource()->quantity()
                                        << " of ";
 
@@ -160,7 +160,7 @@ void NullMarket::Resolve() {
       process_request();
     } else {
       LOG(cyclus::LEV_DEBUG2, "none!") << "The request from Requester " <<
-                                       (*request).second->trans().requester()->ID()
+                                       (*request).second->trans().requester()->id()
                                        << " for the amount " << (*request).first
                                        << " rejected. ";
       reject_request(request);
@@ -181,10 +181,5 @@ void NullMarket::Resolve() {
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 extern "C" cyclus::Model* ConstructNullMarket(cyclus::Context* ctx) {
   return new NullMarket(ctx);
-}
-
-//- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-extern "C" void DestructNullMarket(cyclus::Model* model) {
-  delete model;
 }
 } // namespace cycamore

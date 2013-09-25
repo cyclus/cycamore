@@ -6,7 +6,6 @@
 #include "query_engine.h"
 #include "symbolic_function_factories.h"
 #include "inst_model.h"
-#include "prototype.h"
 #include "error.h"
 
 #include <vector>
@@ -67,7 +66,8 @@ void GrowthRegion::AddCommodityDemand(cyclus::QueryEngine* qe) {
 }
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-void GrowthRegion::EnterSimulationAsModule() {
+void GrowthRegion::Deploy(cyclus::Model* parent) {
+  cyclus::RegionModel::Deploy(parent);
   for (int i = 0; i != NChildren(); i++) {
     cyclus::Model* child = children(i);
     RegisterCommodityProducerManager(child);
@@ -114,18 +114,20 @@ void GrowthRegion::RegisterCommodity(cyclus::Commodity& commodity) {
 void GrowthRegion::RegisterCommodityProducerManager(cyclus::Model* child) {
   cyclus::supply_demand::CommodityProducerManager* cast =
     dynamic_cast<cyclus::supply_demand::CommodityProducerManager*>(child);
-  if (cast) {
-    sdmanager_.RegisterProducerManager(cast);
+  if (!cast) {
+    throw cyclus::CastError("Failed to cast to CommodityProducerManager");
   }
+  sdmanager_.RegisterProducerManager(cast);
 }
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 void GrowthRegion::RegisterBuilder(cyclus::Model* child) {
   cyclus::action_building::Builder* cast =
     dynamic_cast<cyclus::action_building::Builder*>(child);
-  if (cast) {
-    buildmanager_.RegisterBuilder(cast);
+  if (!cast) {
+    throw cyclus::CastError("Failed to cast to Builder");
   }
+  buildmanager_.RegisterBuilder(cast);
 }
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -143,19 +145,19 @@ void GrowthRegion::orderBuilds(cyclus::Commodity& commodity,
     cyclus::action_building::BuildOrder order = orders.at(i);
     cyclus::InstModel* instcast = dynamic_cast<cyclus::InstModel*>(order.builder);
     cyclus::Model* modelcast = dynamic_cast<cyclus::Model*>(order.producer);
-    if (instcast && modelcast) {
-      LOG(cyclus::LEV_INFO3, "greg") << "A build order for " << order.number
-                                     << " prototype(s) of type "
-                                     << dynamic_cast<cyclus::Model*>(modelcast)->name()
-                                     << " from builder " << instcast->name()
-                                     << " is being placed.";
-
-      for (int j = 0; j < order.number; j++) {
-        LOG(cyclus::LEV_DEBUG2, "greg") << "Ordering build number: " << j + 1;
-        instcast->Build(modelcast->name());
-      }
-    } else {
+    if (!instcast || !modelcast) {
       throw cyclus::CastError("growth_region.has tried to incorrectly cast an already known entity.");
+    }
+
+    LOG(cyclus::LEV_INFO3, "greg") << "A build order for " << order.number
+                                   << " prototype(s) of type "
+                                   << dynamic_cast<cyclus::Model*>(modelcast)->name()
+                                   << " from builder " << instcast->name()
+                                   << " is being placed.";
+
+    for (int j = 0; j < order.number; j++) {
+      LOG(cyclus::LEV_DEBUG2, "greg") << "Ordering build number: " << j + 1;
+      instcast->Build(modelcast->name());
     }
   }
 }
@@ -163,11 +165,6 @@ void GrowthRegion::orderBuilds(cyclus::Commodity& commodity,
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 extern "C" cyclus::Model* ConstructGrowthRegion(cyclus::Context* ctx) {
   return new GrowthRegion(ctx);
-}
-
-//- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-extern "C" void DestructGrowthRegion(cyclus::Model* model) {
-  delete model;
 }
 
 } // namespace cycamore
