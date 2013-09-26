@@ -11,9 +11,6 @@ def test_cyclus_unit_tests():
     subprocess.call(['/home/olzhas/cyclus/install/bin/CyclusUnitTestDriver'])
     subprocess.call(['/home/olzhas/cyclus/install/bin/CycamoreUnitTestDriver'])
     subprocess.call(['python','home/olzhas/cyclus/install/bin/run_inputs.py'])
-
 def test_cyclus_call():
-    subprocess.call(['/home/olzhas/cyclus/install/bin/cyclus',
-        './null_sink.xml'])
-    subprocess.call(['/home/olzhas/cyclus/install/bin/cyclus',
-        './source_to_sink.xml'])
+    subprocess.call(['cyclus', './null_sink.xml'])
+    subprocess.call(['cyclus', './source_to_sink.xml'])
