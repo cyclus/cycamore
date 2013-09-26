@@ -126,13 +126,22 @@ ADD_EXECUTABLE( CycamoreUnitTestDriver
 TARGET_LINK_LIBRARIES( CycamoreUnitTestDriver dl ${CYCAMORE_LIBRARIES} 
   dl ${LIBS} ${CYCLUS_GTEST_LIBRARIES})
 
-# Here we add all the tests
-add_google_tests( ${EXECUTABLE_OUTPUT_PATH}/bin/CycamoreUnitTestDriver 
-  ${TestSource}) 
-
 INSTALL(TARGETS CycamoreUnitTestDriver
   RUNTIME DESTINATION bin
   COMPONENT testing
+  )
+
+# read tests after building the driver, and add them to ctest
+set( tgt "CycamoreUnitTestDriver")
+set( script "${CYCAMORE_SOURCE_DIR}/Config/generate_test_macros.py")
+set( exec "--executable=${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/${tgt}")
+set( out "--output=${CMAKE_BINARY_DIR}/CTestTestfile.cmake")
+add_custom_command(TARGET ${tgt}
+  POST_BUILD
+  COMMAND python ${script} ${exec} ${out}
+  COMMENT "adding tests from ${tgt}"
+  DEPENDS
+  VERBATIM
   )
 
 # AMS: I don't believe that this is needed anymore.
