@@ -104,6 +104,8 @@ class SourceFacility : public cyclus::FacilityModel,
    */
   virtual ~SourceFacility();
 
+  virtual std::string schema();
+
   virtual cyclus::Model* Clone();
 
   /**

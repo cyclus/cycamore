@@ -42,6 +42,9 @@ class GrowthRegion : public cyclus::RegionModel {
      The default destructor for the GrowthRegion
    */
   virtual ~GrowthRegion();
+
+  virtual std::string schema();
+
   /* --- */
 
   /* --- Region Members --- */

@@ -48,6 +48,24 @@ DeployInst::DeployInst(cyclus::Context* ctx) : cyclus::InstModel(ctx) {}
 DeployInst::~DeployInst() {}
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+std::string DeployInst::schema() {
+  return
+    "<oneOrMore>                               \n"
+    "	<element name=\"buildorder\">            \n"
+    "	  <element name=\"prototype\">           \n"
+    "	    <data type=\"string\"/>              \n"
+    "	  </element>                             \n"
+    "	  <element name=\"number\">              \n"
+    "	    <data type=\"nonNegativeInteger\"/>  \n"
+    "	  </element>                             \n"
+    "	  <element name=\"date\">                \n"
+    "	    <data type=\"nonNegativeInteger\"/>  \n"
+    "	  </element>                             \n"
+    "	</element>                               \n"
+    "</oneOrMore>                              \n";
+}
+
+//- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 void DeployInst::InitModuleMembers(cyclus::QueryEngine* qe) {
   using std::map;
   using std::string;

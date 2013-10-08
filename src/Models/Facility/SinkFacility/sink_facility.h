@@ -94,6 +94,8 @@ class SinkFacility : public cyclus::FacilityModel  {
   */
   virtual ~SinkFacility();
 
+  virtual std::string schema();
+
   virtual cyclus::Model* Clone();
 
   /**

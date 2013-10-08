@@ -20,6 +20,36 @@ GrowthRegion::GrowthRegion(cyclus::Context* ctx) : cyclus::RegionModel(ctx) {}
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 GrowthRegion::~GrowthRegion() {}
 
+//- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+std::string GrowthRegion::schema() {
+  return
+    "<oneOrMore>                                       \n"
+    "  <element name = \"commodity\">                  \n"
+    "                                                  \n"
+    "    <element name = \"name\">                     \n"
+    "      <text/>                                     \n"
+    "    </element>                                    \n"
+    "                                                  \n"
+    "    <oneOrMore>                                   \n"
+    "      <element name = \"demand\">                 \n"
+    "        <element name=\"type\">                   \n"
+    "          <text/>                                 \n"
+    "        </element>                                \n"
+    "        <element name=\"parameters\">             \n"
+    "          <text/>                                 \n"
+    "        </element>                                \n"
+    "        <optional>                                \n"
+    "          <element name=\"start_time\">           \n"
+    "            <data type=\"nonNegativeInteger\"/>   \n"
+    "          </element>                              \n"
+    "        </optional>                               \n"
+    "      </element>                                  \n"
+    "    </oneOrMore>                                  \n"
+    "                                                  \n"
+    "  </element>                                      \n"
+    "</oneOrMore>                                      \n";
+}
+
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 void GrowthRegion::InitModuleMembers(cyclus::QueryEngine* qe) {
   using std::string;

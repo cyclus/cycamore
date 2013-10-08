@@ -36,6 +36,24 @@ EnrichmentFacility::EnrichmentFacility(cyclus::Context* ctx)
 EnrichmentFacility::~EnrichmentFacility() { }
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+std::string EnrichmentFacility::schema() {
+  return
+    "  <element name =\"input\">           \n"
+    "    <ref name=\"incommodity\"/>       \n"
+    "    <ref name=\"inrecipe\"/>          \n"
+    "    <optional>                        \n"
+    "      <ref name=\"inventorysize\"/>   \n"
+    "    </optional>                       \n"
+    "  </element>                          \n"
+    "  <element name =\"output\">          \n"
+    "    <ref name=\"outcommodity\"/>      \n"
+    "     <element name =\"tails_assay\">  \n"
+    "       <data type=\"double\"/>        \n"
+    "     </element>                       \n"
+    "  </element>                          \n";
+}
+
+//- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 void EnrichmentFacility::InitModuleMembers(cyclus::QueryEngine* qe) {
   using std::string;
   using std::numeric_limits;
