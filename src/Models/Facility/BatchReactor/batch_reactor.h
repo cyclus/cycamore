@@ -53,6 +53,8 @@ class BatchReactor : public cyclus::FacilityModel,
 
   virtual cyclus::Model* Clone();
 
+  virtual std::string schema();
+
   /**
      Initialize members related to derived module class
      @param qe a pointer to a cyclus::QueryEngine object containing initialization data

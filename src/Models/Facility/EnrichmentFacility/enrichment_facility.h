@@ -34,6 +34,8 @@ class EnrichmentFacility : public cyclus::FacilityModel {
    */
   virtual ~EnrichmentFacility();
 
+  virtual std::string schema();
+
   virtual cyclus::Model* Clone();
 
   /**

@@ -26,6 +26,24 @@ SinkFacility::SinkFacility(cyclus::Context* ctx)
 SinkFacility::~SinkFacility() {}
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+std::string SinkFacility::schema() {
+  return
+    "  <element name =\"input\">          \n"
+    "    <element name = \"commodities\"> \n"
+    "      <oneOrMore>                    \n"
+    "        <ref name=\"incommodity\"/>  \n"
+    "      </oneOrMore>                   \n"
+    "    </element>                       \n"
+    "     <optional>                      \n"
+    "      <ref name=\"input_capacity\"/> \n"
+    "    </optional>                      \n"
+    "    <optional>                       \n"
+    "      <ref name=\"inventorysize\"/>  \n"
+    "    </optional>                      \n"
+    "  </element>                         \n";
+}
+
+//- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 void SinkFacility::InitModuleMembers(cyclus::QueryEngine* qe) {
   using std::string;
   using std::numeric_limits;
