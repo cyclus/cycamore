@@ -35,6 +35,23 @@ SourceFacility::SourceFacility(cyclus::Context* ctx)
 SourceFacility::~SourceFacility() {}
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+std::string SourceFacility::schema() {
+  return
+    "  <element name =\"output\">          \n"
+    "    <ref name=\"outcommodity\"/>      \n"
+    "    <optional>                        \n"
+    "      <ref name=\"output_capacity\"/> \n"
+    "    </optional>                       \n"
+    "    <optional>                        \n"
+    "      <ref name=\"inventorysize\"/>   \n"
+    "    </optional>                       \n"
+    "    <element name=\"recipe\">         \n"
+    "      <data type=\"string\"/>         \n"
+    "    </element>                        \n"
+    "  </element>                          \n";
+}
+
+//- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 void SourceFacility::InitModuleMembers(cyclus::QueryEngine* qe) {
   using std::string;
   using std::numeric_limits;

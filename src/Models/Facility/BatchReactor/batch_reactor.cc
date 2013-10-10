@@ -46,6 +46,54 @@ BatchReactor::BatchReactor(cyclus::Context* ctx)
 BatchReactor::~BatchReactor() {}
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+std::string BatchReactor::schema() {
+  return
+    "  <!-- cyclus::Material In/Out  -->         \n"
+    "  <element name=\"fuel_input\">             \n"
+    "   <ref name=\"incommodity\"/>              \n"
+    "   <ref name=\"inrecipe\"/>                 \n"
+    "  </element>                                \n"
+    "  <element name=\"fuel_output\">            \n"
+    "   <ref name=\"outcommodity\"/>             \n"
+    "   <ref name=\"outrecipe\"/>                \n"
+    "  </element>                                \n"
+    "                                            \n"
+    "  <!-- Facility Parameters -->              \n"
+    "  <element name=\"cyclelength\">            \n"
+    "    <data type=\"nonNegativeInteger\"/>     \n"
+    "  </element>                                \n"
+    "  <optional>                                \n"
+    "    <element name =\"refueldelay\">         \n"
+    "      <data type=\"nonNegativeInteger\"/>   \n"
+    "    </element>                              \n"
+    "  </optional>                               \n"
+    "  <element name =\"incoreloading\">         \n"
+    "    <data type=\"double\"/>                 \n"
+    "  </element>                                \n"
+    "  <optional>                                \n"
+    "    <element name =\"outcoreloading\">      \n"
+    "      <data type=\"double\"/>               \n"
+    "    </element>                              \n"
+    "  </optional>                               \n"
+    "  <element name=\"batchespercore\">         \n"
+    "    <data type=\"nonNegativeInteger\"/>     \n"
+    "  </element>                                \n"
+    "                                            \n"
+    "  <!-- Power Production  -->                \n"
+    "  <element name=\"commodity_production\">   \n"
+    "   <element name=\"commodity\">             \n"
+    "     <data type=\"string\"/>                \n"
+    "   </element>                               \n"
+    "   <element name=\"capacity\">              \n"
+    "     <data type=\"double\"/>                \n"
+    "   </element>                               \n"
+    "   <element name=\"cost\">                  \n"
+    "     <data type=\"double\"/>                \n"
+    "   </element>                               \n"
+    "  </element>                                \n";
+};
+
+//- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 void BatchReactor::InitModuleMembers(cyclus::QueryEngine* qe) {
   using std::string;
   using boost::lexical_cast;
