@@ -23,7 +23,7 @@ void SourceFacilityTest::InitParameters() {
 
   recipe_ = cyclus::Composition::CreateFromAtom(cyclus::CompMap());
   ctx->AddRecipe(recipe_name_, recipe_);
-  commod_market = new TestMarket(ctx);
+  commod_market = new MockMarket(ctx);
   commod_market->SetCommodity(commod_);
   cyclus::MarketModel::RegisterMarket(commod_market);
 }

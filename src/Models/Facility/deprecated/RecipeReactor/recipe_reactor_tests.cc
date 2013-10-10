@@ -80,15 +80,15 @@ class RecipeReactorTest : public ::testing::Test {
  protected:
   FakeRecipeReactor* src_facility;
   FakeRecipeReactor* new_facility;
-  TestMarket* out_market_;
-  TestMarket* in_market_;
+  MockMarket* out_market_;
+  MockMarket* in_market_;
 
   virtual void SetUp() {
     src_facility = new FakeRecipeReactor();
     src_facility->SetParent(new TestInst());
     new_facility = new FakeRecipeReactor();
-    in_market_ = new TestMarket(src_facility->inCommod());
-    out_market_ = new TestMarket(src_facility->outCommod());
+    in_market_ = new MockMarket(src_facility->inCommod());
+    out_market_ = new MockMarket(src_facility->outCommod());
   }
 
   virtual void TearDown() {

@@ -18,7 +18,7 @@ void SinkFacilityTest::TearDown() {
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 void SinkFacilityTest::InitParameters() {
   commod_ = "incommod";
-  commod_market = new TestMarket(tc_.get());
+  commod_market = new MockMarket(tc_.get());
   commod_market->SetCommodity(commod_);
   cyclus::MarketModel::RegisterMarket(commod_market);
 }

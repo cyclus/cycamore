@@ -10,7 +10,7 @@
 #include "facility_model_tests.h"
 #include "model_tests.h"
 #include "model.h"
-#include "test_market.h"
+#include "mock_market.h"
 #include "xml_query_engine.h"
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -72,11 +72,11 @@ void BatchReactorTest::InitSrcFacility() {
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 void BatchReactorTest::InitWorld() {
-  incommod_market = new TestMarket(tc_.get());
+  incommod_market = new MockMarket(tc_.get());
   incommod_market->SetCommodity(in_commod);
   cyclus::MarketModel::RegisterMarket(incommod_market);
 
-  outcommod_market = new TestMarket(tc_.get());
+  outcommod_market = new MockMarket(tc_.get());
   outcommod_market->SetCommodity(out_commod);
   cyclus::MarketModel::RegisterMarket(outcommod_market);
 }
