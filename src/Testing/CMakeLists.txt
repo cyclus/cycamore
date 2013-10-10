@@ -28,6 +28,4 @@ set ( CYCAMORE_TEST_CORE
   ${CYCLUS_CORE_INCLUDE_DIR}/market_model_tests.cc 
   ${CYCLUS_CORE_INCLUDE_DIR}/model_tests.cc
   ${CYCLUS_CORE_INCLUDE_DIR}/region_model_tests.cc 
-  ${CYCLUS_CORE_INCLUDE_DIR}/stub_model_tests.cc 
-  ${CYCLUS_CORE_INCLUDE_DIR}/stub_comm_model_tests.cc 
   PARENT_SCOPE)
