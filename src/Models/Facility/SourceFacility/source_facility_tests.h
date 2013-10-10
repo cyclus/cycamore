@@ -6,14 +6,14 @@
 #include "context.h"
 #include "facility_model_tests.h"
 #include "model_tests.h"
-#include "test_market.h"
+#include "mock_market.h"
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 class SourceFacilityTest : public ::testing::Test {
  protected:
   cyclus::TestContext tc_;
   cycamore::SourceFacility* src_facility;
-  TestMarket* commod_market;
+  MockMarket* commod_market;
   std::string commod_, recipe_name_;
   cyclus::Composition::Ptr recipe_;
 

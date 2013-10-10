@@ -6,7 +6,7 @@
 #include "test_context.h"
 #include <string>
 
-class TestMarket;
+class MockMarket;
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 class BatchReactorTest : public ::testing::Test {
@@ -17,8 +17,8 @@ class BatchReactorTest : public ::testing::Test {
   int lencycle, nbatch;
   double in_loadcore, out_loadcore;
   std::string in_commod, in_recipe, out_commod, out_recipe;
-  TestMarket* incommod_market;
-  TestMarket* outcommod_market;
+  MockMarket* incommod_market;
+  MockMarket* outcommod_market;
   std::string commodity;
   double capacity, cost;
 

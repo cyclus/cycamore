@@ -32,12 +32,12 @@ void EnrichmentFacilityTest::InitParameters() {
   cyclus::Context* ctx = tc_.get();
 
   in_commod = "incommod";
-  in_commod_market = new TestMarket(ctx);
+  in_commod_market = new MockMarket(ctx);
   in_commod_market->SetCommodity(in_commod);
   cyclus::MarketModel::RegisterMarket(in_commod_market);
 
   out_commod = "outcommod";
-  out_commod_market = new TestMarket(ctx);
+  out_commod_market = new MockMarket(ctx);
   out_commod_market->SetCommodity(out_commod);
   cyclus::MarketModel::RegisterMarket(out_commod_market);
 
