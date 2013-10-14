@@ -8,5 +8,5 @@ FOREACH(dir ${all_valid_subdirs})
   ENDIF()
 ENDFOREACH(dir)
 
-SET( TestSource ${ModelTestSource} PARENT_SCOPE)
+SET( TestSource ${TestSource} PARENT_SCOPE)
 
