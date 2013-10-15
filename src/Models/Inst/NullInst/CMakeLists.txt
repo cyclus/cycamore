@@ -1,1 +1,1 @@
-cyclus_init_model("Inst" "NullInst" "null_inst")
+cyclus_init_model("NullInst" "null_inst")

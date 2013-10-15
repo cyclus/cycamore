@@ -8,4 +8,4 @@ foreach(dir ${all_valid_subdirs})
     endif()
 endforeach(dir)
 
-SET(ModelTestSource ${ModelTestSource} ${InstTestSource} PARENT_SCOPE)
+SET(TestSource ${TestSource} PARENT_SCOPE)

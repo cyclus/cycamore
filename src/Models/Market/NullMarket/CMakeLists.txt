@@ -1,1 +1,1 @@
-cyclus_init_model("Market" "NullMarket" "null_market")
+cyclus_init_model("NullMarket" "null_market")
