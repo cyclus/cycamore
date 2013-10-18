@@ -10,7 +10,9 @@
 namespace cycamore {
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-NullMarket::NullMarket(cyclus::Context* ctx) : cyclus::MarketModel(ctx) {}
+NullMarket::NullMarket(cyclus::Context* ctx)
+    : cyclus::MarketModel(ctx),
+      cyclus::Model(ctx) {}
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 NullMarket::~NullMarket() {}

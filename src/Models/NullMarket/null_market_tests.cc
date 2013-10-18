@@ -18,7 +18,9 @@ class FakeNullMarket : public cycamore::NullMarket {
   cyclus::Message::Ptr msg_;
 
  public:
-  FakeNullMarket(cyclus::Context* ctx) : cycamore::NullMarket(ctx) {
+  FakeNullMarket(cyclus::Context* ctx)
+      : cycamore::NullMarket(ctx),
+      cyclus::Model(ctx) {
     using std::string;
     string kg = "kg";
     string qual = "qual";

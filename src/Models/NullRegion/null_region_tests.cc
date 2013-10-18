@@ -15,7 +15,9 @@
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 class FakeNullRegion : public cycamore::NullRegion {
  public:
-  FakeNullRegion(cyclus::Context* ctx) : cycamore::NullRegion(ctx) { }
+  FakeNullRegion(cyclus::Context* ctx)
+      : cycamore::NullRegion(ctx),
+        cyclus::Model(ctx) { }
 
   virtual ~FakeNullRegion() { }
 };

@@ -19,8 +19,9 @@ namespace cycamore {
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 SinkFacility::SinkFacility(cyclus::Context* ctx)
   : cyclus::FacilityModel(ctx),
+    cyclus::Model(ctx),
     commod_price_(0),
-    capacity_(std::numeric_limits<double>::max()) {}
+    capacity_(std::numeric_limits<double>::max()) { }
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 SinkFacility::~SinkFacility() {}
