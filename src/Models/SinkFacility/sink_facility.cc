@@ -179,7 +179,7 @@ double SinkFacility::capacity() {
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 void SinkFacility::SetMaxInventorySize(double size) {
-  inventory_.SetCapacity(size);
+  inventory_.set_capacity(size);
 }
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -200,7 +200,7 @@ std::vector<std::string> SinkFacility::InputCommodities() {
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 void SinkFacility::AddResource(cyclus::Transaction trans,
                                std::vector<cyclus::Resource::Ptr> manifest) {
-  inventory_.PushAll(cyclus::MatBuff::ToMat(manifest));
+  inventory_.PushAll(manifest);
 }
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
