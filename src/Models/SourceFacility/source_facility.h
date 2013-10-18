@@ -6,7 +6,7 @@
 #include "query_engine.h"
 #include "commodity_producer.h"
 
-#include "mat_buff.h"
+#include "resource_buff.h"
 
 #include <deque>
 
@@ -237,7 +237,7 @@ class SourceFacility : public cyclus::FacilityModel,
      A collection  that holds the "product" cyclus::Material this Facility has
      on hand to send to others.
    */
-  cyclus::MatBuff inventory_; // @MJG couldnt this be a RsrcBuff?
+  cyclus::ResourceBuff inventory_; // @MJG couldnt this be a RsrcBuff?
 
   /**
      A list of orders to be processed on the Tock

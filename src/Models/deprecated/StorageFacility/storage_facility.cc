@@ -34,8 +34,8 @@ StorageFacility::StorageFacility() :
   in_commod_(""),
   residence_time_(0),
   offer_price_(0.0) {
-  out_buffer_.SetCapacity(kBuffInfinity);
-  in_buffer_.SetCapacity(kBuffInfinity);
+  out_buffer_.set_capacity(kBuffInfinity);
+  in_buffer_.set_capacity(kBuffInfinity);
 }
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -

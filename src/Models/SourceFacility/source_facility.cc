@@ -27,7 +27,7 @@ SourceFacility::SourceFacility(cyclus::Context* ctx)
   using std::deque;
   using std::numeric_limits;
   ordersWaiting_ = deque<cyclus::Message::Ptr>();
-  inventory_ = cyclus::MatBuff();
+  inventory_ = cyclus::ResourceBuff();
   SetMaxInventorySize(numeric_limits<double>::max());
 }
 
@@ -168,7 +168,7 @@ void SourceFacility::ReceiveMessage(cyclus::Message::Ptr msg) {
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 std::vector<cyclus::Resource::Ptr> SourceFacility::RemoveResource(
   cyclus::Transaction order) {
-  return cyclus::MatBuff::ToRes(inventory_.PopQty(order.resource()->quantity()));
+  return inventory_.PopQty(order.resource()->quantity());
 }
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -203,7 +203,7 @@ std::string SourceFacility::recipe() {
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 void SourceFacility::SetMaxInventorySize(double size) {
-  inventory_.SetCapacity(size);
+  inventory_.set_capacity(size);
 }
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -234,7 +234,7 @@ void SourceFacility::GenerateMaterial() {
   } else {
     newMat = Material::Create(ctx, empty_space, ctx->GetRecipe(recipe_name_));
   }
-  inventory_.PushOne(newMat);
+  inventory_.Push(newMat);
 }
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -

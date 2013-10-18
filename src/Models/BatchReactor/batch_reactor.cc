@@ -34,9 +34,9 @@ BatchReactor::BatchReactor(cyclus::Context* ctx)
       out_recipe_(""),
       cycle_timer_(0),
       phase_(INIT) {
-  preCore_.SetCapacity(cyclus::kBuffInfinity);
-  inCore_.SetCapacity(cyclus::kBuffInfinity);
-  postCore_.SetCapacity(cyclus::kBuffInfinity);
+  preCore_.set_capacity(cyclus::kBuffInfinity);
+  inCore_.set_capacity(cyclus::kBuffInfinity);
+  postCore_.set_capacity(cyclus::kBuffInfinity);
   if (phase_names_.size() < 1) {
     SetUpPhaseNames();
   }
@@ -172,8 +172,8 @@ cyclus::Model* BatchReactor::Clone() {
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 void BatchReactor::Deploy(cyclus::Model* parent) {
   FacilityModel::Deploy(parent);
-  preCore_.SetCapacity(in_core_loading());
-  inCore_.SetCapacity(in_core_loading());
+  preCore_.set_capacity(in_core_loading());
+  inCore_.set_capacity(in_core_loading());
   reset_cycle_timer();
   SetPhase(BEGIN);
   LOG(cyclus::LEV_DEBUG2, "BReact") << "Batch Reactor " << name()
@@ -344,14 +344,14 @@ std::vector<cyclus::Resource::Ptr> BatchReactor::RemoveResource(
                                     << amt << " of " << postCore_.quantity()
                                     << " to its postcore buffer.";
 
-  return cyclus::MatBuff::ToRes(postCore_.PopQty(amt));
+  return postCore_.PopQty(amt);
 }
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 void BatchReactor::AddResource(cyclus::Transaction trans,
                                std::vector<cyclus::Resource::Ptr> manifest) {
   double preQuantity = preCore_.quantity();
-  preCore_.PushAll(cyclus::MatBuff::ToMat(manifest));
+  preCore_.PushAll(manifest);
   double added = preCore_.quantity() - preQuantity;
   LOG(cyclus::LEV_DEBUG2, "BReact") << "BatchReactor " << name() << " added "
                                     << added << " to its precore buffer.";
@@ -582,12 +582,9 @@ void BatchReactor::HandleOrders() {
 }
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-void BatchReactor::moveFuel(cyclus::MatBuff& fromBuff, cyclus::MatBuff& toBuff,
+void BatchReactor::moveFuel(cyclus::ResourceBuff& fromBuff, cyclus::ResourceBuff& toBuff,
                             double amt) {
-  std::vector<cyclus::Material::Ptr> to_move = fromBuff.PopQty(amt);
-  for (int i = 0; i < to_move.size(); i++) {
-    toBuff.PushOne(to_move.at(i));
-  }
+  toBuff.PushAll(fromBuff.PopQty(amt));
 }
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -601,7 +598,7 @@ void BatchReactor::OffLoadFuel(double amt) {
   Context* ctx = Model::context();
   Material::Ptr out_fuel =
       Material::Create(ctx, out_amount, ctx->GetRecipe(out_recipe()));
-  postCore_.PushOne(out_fuel);
+  postCore_.Push(out_fuel);
 }
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -

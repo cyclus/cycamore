@@ -118,7 +118,7 @@ void EnrichmentFacility::AddResource(cyclus::Transaction trans,
                                      std::vector<cyclus::Resource::Ptr> manifest) {
   LOG(cyclus::LEV_INFO5, "EnrFac") << name() << " adding material qty: " <<
                                    manifest.at(0)->quantity();
-  inventory_.PushAll(cyclus::MatBuff::ToMat(manifest));
+  inventory_.PushAll(manifest);
 }
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -

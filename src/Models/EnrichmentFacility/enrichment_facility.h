@@ -4,7 +4,7 @@
 
 #include "facility_model.h"
 
-#include "mat_buff.h"
+#include "resource_buff.h"
 #include "transaction.h"
 #include "enrichment.h"
 
@@ -119,7 +119,7 @@ class EnrichmentFacility : public cyclus::FacilityModel {
   }
 
   inline void SetMaxInventorySize(double size) {
-    inventory_.SetCapacity(size);
+    inventory_.set_capacity(size);
   }
 
   inline double MaxInventorySize() {
@@ -196,7 +196,7 @@ class EnrichmentFacility : public cyclus::FacilityModel {
 
   double tails_assay_;
 
-  cyclus::MatBuff inventory_;
+  cyclus::ResourceBuff inventory_;
 
   static int entry_;
 
