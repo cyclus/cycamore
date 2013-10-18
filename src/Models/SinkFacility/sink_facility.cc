@@ -18,9 +18,9 @@ namespace cycamore {
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 SinkFacility::SinkFacility(cyclus::Context* ctx)
-    : cyclus::FacilityModel(ctx),
-      commod_price_(0),
-      capacity_(std::numeric_limits<double>::max()) {}
+  : cyclus::FacilityModel(ctx),
+    commod_price_(0),
+    capacity_(std::numeric_limits<double>::max()) {}
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 SinkFacility::~SinkFacility() {}
@@ -56,17 +56,17 @@ void SinkFacility::InitModuleMembers(cyclus::QueryEngine* qe) {
   for (int i = 0; i < nCommodities; i++) {
     AddCommodity(commodities->GetElementContent(query, i));
   }
-  
+
   double capacity =
-      cyclus::GetOptionalQuery<double>(input,
-                                       "input_capacity",
-                                       numeric_limits<double>::max());
+    cyclus::GetOptionalQuery<double>(input,
+                                     "input_capacity",
+                                     numeric_limits<double>::max());
   SetCapacity(capacity);
 
   double size =
-      cyclus::GetOptionalQuery<double>(input,
-                                       "inventorysize",
-                                       numeric_limits<double>::max());
+    cyclus::GetOptionalQuery<double>(input,
+                                     "inventorysize",
+                                     numeric_limits<double>::max());
   SetMaxInventorySize(size);
 }
 
@@ -128,10 +128,10 @@ void SinkFacility::HandleTick(int time) {
 
       // create a generic resource
       cyclus::GenericResource::Ptr request_res =
-          cyclus::GenericResource::Create(this,
-                                          requestAmt,
-                                          "kg",
-                                          *commod);
+        cyclus::GenericResource::CreateUntracked(
+          requestAmt,
+          "kg",
+          *commod);
 
       // build the transaction and message
       cyclus::Transaction trans(this, cyclus::REQUEST);

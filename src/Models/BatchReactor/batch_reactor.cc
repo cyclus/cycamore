@@ -545,14 +545,13 @@ void BatchReactor::interactWithMarket(std::string commod, double amt,
   trans.SetMinFrac(1.0);
   trans.SetPrice(commodity_price);
 
-  Context* ctx = Model::context();
   if (type == cyclus::OFFER) {
     GenericResource::Ptr trade_res =
-        GenericResource::Create(this, amt, "kg", commod);
+        GenericResource::CreateUntracked(amt, "kg", commod);
     trans.SetResource(trade_res);
   } else {
     Material::Ptr trade_res =
-        Material::Create(this, amt, ctx->GetRecipe(in_recipe_));
+        Material::CreateUntracked(amt, context()->GetRecipe(in_recipe_));
     trans.SetResource(trade_res);
 
     LOG(cyclus::LEV_DEBUG1, "BatR") << "Requesting material: ";
@@ -592,13 +591,17 @@ void BatchReactor::OffLoadFuel(double amt) {
   using cyclus::Context;
   using cyclus::Material;
   
-  inCore_.PopQty(amt);
   double factor = out_core_loading() / in_core_loading();
   double out_amount = amt * factor;
-  Context* ctx = Model::context();
-  Material::Ptr out_fuel =
-      Material::Create(this, out_amount, ctx->GetRecipe(out_recipe()));
-  postCore_.Push(out_fuel);
+  cyclus::Composition::Ptr c = context()->GetRecipe(out_recipe());
+
+  inCore_.PopQty(amt - out_amount); // mass discrepancy
+  cyclus::Manifest manifest = inCore_.PopQty(out_amount);
+  for (int i = 0; i < manifest.size(); ++i) {
+    cyclus::ResCast<cyclus::Material>(manifest[i])->Transmute(c);
+  }
+
+  postCore_.PushAll(manifest);
 }
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
