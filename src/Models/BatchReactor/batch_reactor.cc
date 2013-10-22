@@ -548,11 +548,11 @@ void BatchReactor::interactWithMarket(std::string commod, double amt,
   Context* ctx = Model::context();
   if (type == cyclus::OFFER) {
     GenericResource::Ptr trade_res =
-        GenericResource::Create(ctx, amt, "kg", commod);
+        GenericResource::Create(this, amt, "kg", commod);
     trans.SetResource(trade_res);
   } else {
     Material::Ptr trade_res =
-        Material::Create(ctx, amt, ctx->GetRecipe(in_recipe_));
+        Material::Create(this, amt, ctx->GetRecipe(in_recipe_));
     trans.SetResource(trade_res);
 
     LOG(cyclus::LEV_DEBUG1, "BatR") << "Requesting material: ";
@@ -597,7 +597,7 @@ void BatchReactor::OffLoadFuel(double amt) {
   double out_amount = amt * factor;
   Context* ctx = Model::context();
   Material::Ptr out_fuel =
-      Material::Create(ctx, out_amount, ctx->GetRecipe(out_recipe()));
+      Material::Create(this, out_amount, ctx->GetRecipe(out_recipe()));
   postCore_.Push(out_fuel);
 }
 

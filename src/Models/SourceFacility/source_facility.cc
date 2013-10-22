@@ -230,9 +230,9 @@ void SourceFacility::GenerateMaterial() {
   double amt = capacity_;
   cyclus::Context* ctx = Model::context();
   if (amt <= empty_space) {
-    newMat = Material::Create(ctx, amt, ctx->GetRecipe(recipe_name_));
+    newMat = Material::Create(this, amt, ctx->GetRecipe(recipe_name_));
   } else {
-    newMat = Material::Create(ctx, empty_space, ctx->GetRecipe(recipe_name_));
+    newMat = Material::Create(this, empty_space, ctx->GetRecipe(recipe_name_));
   }
   inventory_.Push(newMat);
 }
@@ -247,7 +247,7 @@ cyclus::Transaction SourceFacility::BuildTransaction() {
   double offer_amt = inventory_.quantity();
 
   cyclus::Context* ctx = Model::context();
-  Material::Ptr trade_res = Material::Create(ctx,
+  Material::Ptr trade_res = Material::Create(this,
                                              offer_amt,
                                              ctx->GetRecipe(recipe()));
 

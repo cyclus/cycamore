@@ -128,7 +128,7 @@ void SinkFacility::HandleTick(int time) {
 
       // create a generic resource
       cyclus::GenericResource::Ptr request_res =
-          cyclus::GenericResource::Create(Model::context(),
+          cyclus::GenericResource::Create(this,
                                           requestAmt,
                                           "kg",
                                           *commod);
