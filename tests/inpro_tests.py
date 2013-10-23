@@ -3,6 +3,7 @@
 import sys
 import subprocess
 import tables
+import numpy as np
 
 
 def h5_comparator(file_one, file_two):
@@ -48,7 +49,7 @@ def h5_comparator(file_one, file_two):
                     for column in table_one_columns:
                         # Avoiding SimID comparison
                         if column != "SimID":
-                            if table_one.col(column)[0] == table_two.col(column)[0]:
+                            if np.all(table_one.col(column) == table_two.col(column)):
                                 continue
                             else:
                                 sys.exit("The Difference is in "+ column +" of "
