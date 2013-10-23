@@ -127,10 +127,10 @@ void BatchReactor::InitModuleMembers(cyclus::QueryEngine* qe) {
   cyclus::Commodity commod(commodity->GetElementContent("commodity"));
   AddCommodity(commod);
   data = commodity->GetElementContent("capacity");
-  cyclus::supply_demand::CommodityProducer::SetCapacity(commod,
+  cyclus::CommodityProducer::SetCapacity(commod,
                                                         lexical_cast<double>(data));
   data = commodity->GetElementContent("cost");
-  cyclus::supply_demand::CommodityProducer::SetCost(commod,
+  cyclus::CommodityProducer::SetCost(commod,
                                                     lexical_cast<double>(data));
 }
 

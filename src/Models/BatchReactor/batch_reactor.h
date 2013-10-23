@@ -37,7 +37,7 @@ enum Phase {INIT, BEGIN, OPERATION, REFUEL, REFUEL_DELAY, WAITING, END};
    operates in a batch-like manner, i.e. it refuels in batches.
  */
 class BatchReactor : public cyclus::FacilityModel,
-  public cyclus::supply_demand::CommodityProducer {
+  public cyclus::CommodityProducer {
  public:
   /* --- Module Methods --- */
   /**

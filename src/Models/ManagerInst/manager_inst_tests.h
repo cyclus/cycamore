@@ -11,7 +11,7 @@
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 class TestProducer :
   public cyclus::FacilityModel,
-  public cyclus::supply_demand::CommodityProducer {
+  public cyclus::CommodityProducer {
  public:
   TestProducer(cyclus::Context* ctx);
   virtual ~TestProducer();
