@@ -17,8 +17,8 @@ namespace cycamore {
    @section detailedBehavior Detailed Behavior
 */
 class ManagerInst : public cyclus::InstModel,
-  public cyclus::supply_demand::CommodityProducerManager,
-  public cyclus::action_building::Builder {
+  public cyclus::CommodityProducerManager,
+  public cyclus::Builder {
  public:
   /**
      Default constructor
@@ -61,7 +61,7 @@ class ManagerInst : public cyclus::InstModel,
      write information about a commodity producer to a stream
      @param producer the producer
    */
-  void WriteProducerInformation(cyclus::supply_demand::CommodityProducer*
+  void WriteProducerInformation(cyclus::CommodityProducer*
                                 producer);
 };
 } // namespace cycamore 

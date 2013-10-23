@@ -76,7 +76,7 @@ class GrowthRegion : public cyclus::RegionModel {
   /* --- */
 
   /// manager for Supply and emand
-  cyclus::supply_demand::SupplyDemandManager sdmanager_;
+  cyclus::SupplyDemandManager sdmanager_;
 
   virtual cyclus::Model* Clone() {
     GrowthRegion* m = new GrowthRegion(context());
@@ -90,7 +90,7 @@ class GrowthRegion : public cyclus::RegionModel {
   std::set<cyclus::Commodity, cyclus::CommodityCompare> commodities_;
 
   /// manager for building things
-  cyclus::action_building::BuildingManager buildmanager_;
+  cyclus::BuildingManager buildmanager_;
 
   /**
      register a commodity for which production capacity is being

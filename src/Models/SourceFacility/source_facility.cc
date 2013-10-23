@@ -63,13 +63,13 @@ void SourceFacility::InitModuleMembers(cyclus::QueryEngine* qe) {
   string data = output->GetElementContent("outcommodity");
   SetCommodity(data);
   cyclus::Commodity commod(data);
-  cyclus::supply_demand::CommodityProducer::AddCommodity(commod);
+  cyclus::CommodityProducer::AddCommodity(commod);
 
   double capacity =
       cyclus::GetOptionalQuery<double>(output,
                                        "output_capacity",
                                        numeric_limits<double>::max());
-  cyclus::supply_demand::CommodityProducer::SetCapacity(commod, capacity);
+  cyclus::CommodityProducer::SetCapacity(commod, capacity);
   SetCapacity(capacity);
 
   double size =
