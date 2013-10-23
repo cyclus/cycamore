@@ -66,10 +66,21 @@ def h5_comparator(file_one, file_two):
     return True
     
 
+def call_cyclus(input_file, output_file,timer = True):
+    """ Runs Cyclus with a given input file """
+
+    tm = "time" if timer else ""
+
+    subprocess.call([tm,"cyclus", "-o",output_file,
+       "--input-file", input_file])
+   
+
+
+
 """ Running the temporary checking code."""
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     try:
         if ( len(sys.argv) < 3 ):
             sys.exit("Provide a correct call with 2 files to compare.")
@@ -81,17 +92,15 @@ if __name__ == '__main__':
         print(err)
     
 """ Tests """
-#def test_inpro_low():
+def test_inpro_low():
     # Calling Cyclus with inpro_low input
-    #subprocess.call(['date'])
-#    subprocess.call(['cyclus', '-o','output_low.h5','--input-file',
-#    '/home/olzhas/cyclus/cycamore/input/inpro/inpro_low.xml'])
-#    subprocess.call(['date'])
+    call_cyclus("./inputs/inpro_low.xml","./outputs/output_inpro_low.h5")
+    h5_comparator("./benchmarks/output_inpro_low_bench.h5", 
+                "./outputs/output_inpro_low.h5")
 
 #def test_inpro_high():
     # Calling Cyclus with inpro_high input
-#    subprocess.call(['date'])
-#    subprocess.call(['cyclus','-o','output_high.h5','--input-file',
-#    '/home/olzhas/cyclus/cycamore/input/inpro/inpro_high.xml'])
-#    subprocess.call(['date'])
+#   call_cyclus("./inputs/inpro_low.xml","./outputs/output_inpro_low.h5")
+#    h5_comparator("./benchmarks/output_inpro_low_bench.h5", 
+#                "./outputs/output_inpro_low.h5")
 
