@@ -5,7 +5,7 @@
 #include "facility_model.h"
 #include "commodity_producer.h"
 
-#include "mat_buff.h"
+#include "resource_buff.h"
 
 #include <string>
 #include <queue>
@@ -281,13 +281,13 @@ class BatchReactor : public cyclus::FacilityModel,
   Phase phase_;
 
   /// a matbuff for material before they enter the core
-  cyclus::MatBuff preCore_;
+  cyclus::ResourceBuff preCore_;
 
   /// a matbuff for material while they are inside the core
-  cyclus::MatBuff inCore_;
+  cyclus::ResourceBuff inCore_;
 
   /// a matbuff for material after they exit the core
-  cyclus::MatBuff postCore_;
+  cyclus::ResourceBuff postCore_;
 
   /// The list of orders to process on the Tock
   std::deque<cyclus::Message::Ptr> ordersWaiting_;
@@ -345,7 +345,7 @@ class BatchReactor : public cyclus::FacilityModel,
      @param toBuff the buffer to move fuel to
      @param amt the amount of fuel to move
   */
-  void moveFuel(cyclus::MatBuff& fromBuff, cyclus::MatBuff& toBuff, double amt);
+  void moveFuel(cyclus::ResourceBuff& fromBuff, cyclus::ResourceBuff& toBuff, double amt);
 
   /**
      moves and amount of fuel out of the core. this action will remove

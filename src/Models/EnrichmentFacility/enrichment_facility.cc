@@ -80,7 +80,7 @@ void EnrichmentFacility::InitModuleMembers(cyclus::QueryEngine* qe) {
   set_tails_assay(lexical_cast<double>(data));
 
   cyclus::Context* ctx = Model::context();
-  Material::Ptr feed = Material::Create(ctx, 0, ctx->GetRecipe(in_recipe_));
+  Material::Ptr feed = Material::Create(this, 0, ctx->GetRecipe(in_recipe_));
   set_feed_assay(cyclus::enrichment::UraniumAssay(feed));
 }
 
@@ -118,7 +118,7 @@ void EnrichmentFacility::AddResource(cyclus::Transaction trans,
                                      std::vector<cyclus::Resource::Ptr> manifest) {
   LOG(cyclus::LEV_INFO5, "EnrFac") << name() << " adding material qty: " <<
                                    manifest.at(0)->quantity();
-  inventory_.PushAll(cyclus::MatBuff::ToMat(manifest));
+  inventory_.PushAll(manifest);
 }
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -210,7 +210,7 @@ void EnrichmentFacility::MakeRequest() {
     // @MJGFlag note that this doesn't matter in the current state
     cyclus::Context* ctx = Model::context();
     Material::Ptr request_res =
-        Material::Create(ctx, amt, ctx->GetRecipe(in_recipe_));
+        Material::Create(this, amt, ctx->GetRecipe(in_recipe_));
 
     // build the transaction and message
     cyclus::Transaction trans(this, cyclus::REQUEST);
@@ -235,7 +235,7 @@ cyclus::Transaction EnrichmentFacility::BuildTransaction() {
 
   cyclus::Context* ctx = Model::context();
   cyclus::Material::Ptr offer_res =
-      cyclus::Material::Create(ctx, offer_amt, ctx->GetRecipe(in_commodity_));
+      cyclus::Material::Create(this, offer_amt, ctx->GetRecipe(in_commodity_));
   cyclus::Transaction trans(this, cyclus::OFFER);
 
   trans.SetCommod(out_commodity());

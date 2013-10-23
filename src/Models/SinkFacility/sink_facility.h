@@ -7,7 +7,7 @@
 #include "facility_model.h"
 
 #include "query_engine.h"
-#include "mat_buff.h"
+#include "resource_buff.h"
 #include "logger.h"
 
 namespace cycamore {
@@ -195,7 +195,7 @@ class SinkFacility : public cyclus::FacilityModel  {
   /**
      this facility holds material in storage.
    */
-  cyclus::MatBuff inventory_;
+  cyclus::ResourceBuff inventory_;
 
   /**
      determines the amount to request
