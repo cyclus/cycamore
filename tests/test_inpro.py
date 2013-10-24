@@ -1,9 +1,13 @@
 #! /usr/bin/python
 
+from nose.tools import assert_equal
+from numpy.testing import assert_array_equal, assert_array_almost_equal
 import sys
 import subprocess
 import tables
 import numpy as np
+from tools import check_cmd
+
 
 
 def h5_comparator(file_one, file_two):
@@ -17,11 +21,11 @@ def h5_comparator(file_one, file_two):
         SystemExit: Carries messages for various errors and False results 
     """
     try:
-            if (tables.isHDF5File(file_one) is not True):
+            if not tables.isHDF5File(file_one) :
                 
                 sys.exit(file_one + " is not a hdf5 file.")
                 
-            if (tables.isHDF5File(file_two) is not True):
+            if not tables.isHDF5File(file_two) is not True):
                 
                 sys.exit(file_two + " is not a hdf5 file.")
         
@@ -67,37 +71,35 @@ def h5_comparator(file_one, file_two):
     return True
     
 
-def call_cyclus(input_file, output_file, log = True, timer = True):
-    """ Runs Cyclus with a given input file """
-
-    cycall=["cyclus", "-o",output_file,"--input-file", input_file]
-    if timer = True:
-        cycall.insert(0,'time')
-    subprocess.call( cycall )
-   
-
-
-
-""" Running the temporary checking code."""
-
-
-if __name__ == "__main__":
-    try:
-        if ( len(sys.argv) < 3 ):
-            sys.exit("Provide a correct call with 2 files to compare.")
-            
-        if h5_comparator(sys.argv[1],sys.argv[2]) is True:
-            print( sys.argv[1] + " has identical values as " + sys.argv[2])
-        
-    except SystemExit as err:
-        print(err)
-    
 """ Tests """
 def test_inpro_low():
     # Calling Cyclus with inpro_low input
-    call_cyclus("./inputs/inpro_low.xml","./outputs/output_inpro_low.h5")
-    h5_comparator("./benchmarks/output_inpro_low_bench.h5", 
-                "./outputs/output_inpro_low.h5")
+    holdsrtn = [1] # needed because nose does not send() to test generator
+    cmd = ["cyclus", "-o", "./outputs/output_inpro_low.h5", "--input-file", "./inputs/inpro_low.xml"]
+    yield check_cmd, cmd, '.', holdsrtn
+    rtn = holdsrtn[0]
+    if rtn != 0:
+        return # don't execute further commands
+# h5_comparator("./benchmarks/output_inpro_low_bench.h5", 
+#                "./outputs/output_inpro_low.h5")
+
+    bench = tables.open_file("./benchmarks/output_inpro_low_bench.h5", mode = "r")
+    output = tables.open_file("./outputs/output_inpro_low.h5", mode = "r")
+    paths = []
+    for node in bench.walkNodes(classname = "Table"):
+        paths.append(node._v_pathname)
+   
+    for path in paths:
+        bdata = bench.get_node(path)[:]
+        odata = output.get_node(path)[:]
+        names = []
+        for name in bdata.dtype.names:
+            if name != "SimID":
+                names.append(name)
+        bdata = bdata[names]
+        odata = odata[names]
+        yield assert_array_equal, bdata, odata
+
 
 #def test_inpro_high():
     # Calling Cyclus with inpro_high input
