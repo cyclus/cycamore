@@ -1,0 +1,17 @@
+inpro_low:
+    real 5m43s
+    1.8G
+
+inpro_high:
+    real 9m42s
+    2.7G
+
+inpro_low_no_dacay:
+    real 0m38s
+    94M
+
+inpro_high_no_decay:
+    real 1m10s
+    154M
+
+
