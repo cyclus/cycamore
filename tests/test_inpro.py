@@ -25,7 +25,7 @@ def h5_comparator(file_one, file_two):
                 
                 sys.exit(file_one + " is not a hdf5 file.")
                 
-            if not tables.isHDF5File(file_two) is not True):
+            if not tables.isHDF5File(file_two) is not True:
                 
                 sys.exit(file_two + " is not a hdf5 file.")
         
