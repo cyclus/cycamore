@@ -142,8 +142,8 @@ void GrowthRegion::RegisterCommodity(cyclus::Commodity& commodity) {
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 void GrowthRegion::RegisterCommodityProducerManager(cyclus::Model* child) {
-  cyclus::supply_demand::CommodityProducerManager* cast =
-    dynamic_cast<cyclus::supply_demand::CommodityProducerManager*>(child);
+  cyclus::CommodityProducerManager* cast =
+    dynamic_cast<cyclus::CommodityProducerManager*>(child);
   if (!cast) {
     throw cyclus::CastError("Failed to cast to CommodityProducerManager");
   }
@@ -152,8 +152,8 @@ void GrowthRegion::RegisterCommodityProducerManager(cyclus::Model* child) {
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 void GrowthRegion::RegisterBuilder(cyclus::Model* child) {
-  cyclus::action_building::Builder* cast =
-    dynamic_cast<cyclus::action_building::Builder*>(child);
+  cyclus::Builder* cast =
+    dynamic_cast<cyclus::Builder*>(child);
   if (!cast) {
     throw cyclus::CastError("Failed to cast to Builder");
   }
@@ -164,7 +164,7 @@ void GrowthRegion::RegisterBuilder(cyclus::Model* child) {
 void GrowthRegion::orderBuilds(cyclus::Commodity& commodity,
                                double unmetdemand) {
   using std::vector;
-  vector<cyclus::action_building::BuildOrder> orders =
+  vector<cyclus::BuildOrder> orders =
     buildmanager_.MakeBuildDecision(commodity, unmetdemand);
 
   LOG(cyclus::LEV_INFO3, "greg") << "The build orders have been determined. "
@@ -172,7 +172,7 @@ void GrowthRegion::orderBuilds(cyclus::Commodity& commodity,
                                  << " different type(s) of prototypes will be built.";
 
   for (int i = 0; i < orders.size(); i++) {
-    cyclus::action_building::BuildOrder order = orders.at(i);
+    cyclus::BuildOrder order = orders.at(i);
     cyclus::InstModel* instcast = dynamic_cast<cyclus::InstModel*>(order.builder);
     cyclus::Model* modelcast = dynamic_cast<cyclus::Model*>(order.producer);
     if (!instcast || !modelcast) {

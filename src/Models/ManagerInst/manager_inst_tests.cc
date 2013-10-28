@@ -53,7 +53,7 @@ TEST_F(ManagerInstTests, producerexists) {
   using std::set;
   ctx_->AddPrototype("foop", producer);
   src_inst->RegisterAvailablePrototype("foop");
-  set<cyclus::supply_demand::CommodityProducer*>::iterator it;
+  set<cyclus::CommodityProducer*>::iterator it;
   for (it = src_inst->BeginningProducer(); it != src_inst->EndingProducer();
        it++) {
     EXPECT_EQ(dynamic_cast<TestProducer*>(*it)->name(), producer->name());

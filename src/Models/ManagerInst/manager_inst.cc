@@ -14,10 +14,10 @@ ManagerInst::~ManagerInst() {}
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 void ManagerInst::RegisterAvailablePrototype(std::string prototype) {
-  using cyclus::supply_demand::CommodityProducer;
+  using cyclus::CommodityProducer;
   try {
     CommodityProducer* cast = context()->CreateModel<CommodityProducer>(prototype);
-    cyclus::action_building::Builder::RegisterProducer(cast);
+    cyclus::Builder::RegisterProducer(cast);
     LOG(cyclus::LEV_DEBUG3, "maninst") << "ManagerInst " << name()
                                        << " has registered a producer prototype: "
                                        << prototype
@@ -29,10 +29,10 @@ void ManagerInst::RegisterAvailablePrototype(std::string prototype) {
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 void ManagerInst::RegisterCloneAsBuilt(cyclus::Model* clone) {
-  cyclus::supply_demand::CommodityProducer* cast =
-    dynamic_cast<cyclus::supply_demand::CommodityProducer*>(clone);
+  cyclus::CommodityProducer* cast =
+    dynamic_cast<cyclus::CommodityProducer*>(clone);
   if (cast) {
-    cyclus::supply_demand::CommodityProducerManager::RegisterProducer(cast);
+    cyclus::CommodityProducerManager::RegisterProducer(cast);
     if (cyclus::LEV_DEBUG3 >= cyclus::Logger::ReportLevel()) {
       LOG(cyclus::LEV_DEBUG3, "maninst") << "ManagerInst " << name()
                                          << " has registered a producer clone:";
@@ -43,16 +43,16 @@ void ManagerInst::RegisterCloneAsBuilt(cyclus::Model* clone) {
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 void ManagerInst::RegisterCloneAsDecommissioned(cyclus::Model* clone) {
-  cyclus::supply_demand::CommodityProducer* cast =
-    dynamic_cast<cyclus::supply_demand::CommodityProducer*>(clone);
+  cyclus::CommodityProducer* cast =
+    dynamic_cast<cyclus::CommodityProducer*>(clone);
   if (cast) {
-    cyclus::supply_demand::CommodityProducerManager::UnRegisterProducer(cast);
+    cyclus::CommodityProducerManager::UnRegisterProducer(cast);
   }
 }
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 void ManagerInst::WriteProducerInformation(
-  cyclus::supply_demand::CommodityProducer* producer) {
+  cyclus::CommodityProducer* producer) {
   using std::set;
   set<cyclus::Commodity, cyclus::CommodityCompare> commodities =
     producer->ProducedCommodities();
