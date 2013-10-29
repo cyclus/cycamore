@@ -14,4 +14,7 @@ inpro_high_no_decay:
     real 1m10s
     154M
 
+inpro_low_short:
+    real 0m23s
+    76M
 
