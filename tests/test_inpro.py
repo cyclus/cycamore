@@ -83,7 +83,7 @@ def test_inpro_low():
 # h5_comparator("./benchmarks/output_inpro_low_bench.h5", 
 #                "./outputs/output_inpro_low.h5")
 
-    bench = tables.open_file("./benchmarks/output_inpro_low_bench.h5", mode = "r")
+    bench = tables.open_file("./benchmarks/bench_inpro_low.h5", mode = "r")
     output = tables.open_file("./outputs/output_inpro_low.h5", mode = "r")
     paths = []
     for node in bench.walkNodes(classname = "Table"):
