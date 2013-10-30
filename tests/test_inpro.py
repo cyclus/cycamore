@@ -10,7 +10,7 @@ from tools import check_cmd
 
 """ Tests """
 def test_inpro():
-        #Cyclus simulation inputs
+    #Cyclus simulation inputs
     sim_inputs = ["./inputs/inpro_low.xml",
                   "./inputs/inpro_high.xml", 
                   "./inputs/inpro_low_short.xml",
@@ -24,9 +24,8 @@ def test_inpro():
                  "./benchmarks/bench_inpro_high_no_decay.h5"]
 
     for sim_input,bench_db in zip(sim_inputs,bench_dbs):
-        # Calling Cyclus with inpro_low input
         holdsrtn = [1] # needed because nose does not send() to test generator
-        cmd = ["cyclus", "-o", "./outputs/output_temp.h5", "--input-file", sim_input]
+        cmd = ["cyclus", "-o", "./output_temp.h5", "--input-file", sim_input]
         yield check_cmd, cmd, '.', holdsrtn
         rtn = holdsrtn[0]
         if rtn != 0:
@@ -34,7 +33,7 @@ def test_inpro():
             return # don't execute further commands
 
         bench = tables.open_file(bench_db, mode = "r")
-        output = tables.open_file("./outputs/output_temp.h5", mode = "r")
+        output = tables.open_file("./output_temp.h5", mode = "r")
         paths = []
         for node in bench.walkNodes(classname = "Table"):
             paths.append(node._v_pathname)
