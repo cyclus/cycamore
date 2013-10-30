@@ -8,6 +8,19 @@ import tables
 import numpy as np
 from tools import check_cmd
 
+#Cyclus simulation inputs
+sim_inputs = ["./inputs/inpro_low.xml",
+              "./inputs/inpro_high.xml", 
+              "./inputs/inpro_low_short.xml",
+              "./inputs/inpro_low_no_decay.xml",
+              "./inputs/inpro_high_no_dacay.xml"]
+#Benchmark databases must match the order of input files
+bench_dbs = ["./benchmarks/bench_inpro_low.h5",
+             "./benchmarks/bench_inpro_high.h5",
+             "./benchmarks/bench_inpro_low_short.h5",
+             "./benchmarks/bench_inpro_low_no_decay.h5",
+             "./benchmarks/bench_inpro_high_no_decay.h5"]
+
 """ Tests """
 def test_inpro_low():
     # Calling Cyclus with inpro_low input
