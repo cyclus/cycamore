@@ -581,33 +581,30 @@ void BatchReactor::HandleOrders() {
 }
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-void BatchReactor::moveFuel(cyclus::ResourceBuff& fromBuff, cyclus::ResourceBuff& toBuff,
-                            double amt) {
-  toBuff.PushAll(fromBuff.PopQty(amt));
-}
-
-//- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-void BatchReactor::OffLoadFuel(double amt) {
+void BatchReactor::OffloadBatch() {
   using cyclus::Context;
   using cyclus::Material;
   
+  Material::Ptr m = cyclus::ResCast<Material>(inCore_.Pop());
   double factor = out_core_loading() / in_core_loading();
-  double out_amount = amt * factor;
-  cyclus::Composition::Ptr c = context()->GetRecipe(out_recipe());
+  double loss = m->quantity() * (1 - factor);
 
-  inCore_.PopQty(amt - out_amount); // mass discrepancy
-  cyclus::Manifest manifest = inCore_.PopQty(out_amount);
-  for (int i = 0; i < manifest.size(); ++i) {
-    cyclus::ResCast<cyclus::Material>(manifest[i])->Transmute(c);
-  }
-
-  postCore_.PushAll(manifest);
+  m->ExtractQty(loss); // mass discrepancy
+  m->Transmute(context()->GetRecipe(out_recipe()));
+  postCore_.Push(m);
 }
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 void BatchReactor::LoadCore() {
-  if (preCore_.quantity() > cyclus::eps()) {
-    moveFuel(preCore_, inCore_, preCore_.quantity());
+  using cyclus::Material;
+  if (preCore_.quantity() >= BatchLoading()) {
+    // combine materials into a single resource of batch size and move to inCore buf
+    std::vector<Material::Ptr> mats = cyclus::ResCast<Material>(preCore_.PopQty(BatchLoading()));
+    Material::Ptr m = mats[0];
+    for (int i = 1; i < mats.size(); ++i) {
+      m->Absorb(mats[i]);
+    }
+    inCore_.Push(m);
     LOG(cyclus::LEV_DEBUG2, "BReact") << "BatchReactor " << name()
                                       << " moved fuel into the core:";
     LOG(cyclus::LEV_DEBUG2, "BReact") << "  precore level: " << preCore_.quantity();
@@ -616,19 +613,10 @@ void BatchReactor::LoadCore() {
 }
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-void BatchReactor::OffloadBatch() {
-  OffLoadFuel(BatchLoading());
-
-  LOG(cyclus::LEV_DEBUG2, "BReact") << "BatchReactor " << name()
-                                    << " removed a batch of fuel from the core:";
-  LOG(cyclus::LEV_DEBUG2, "BReact") << "  incore level: " << inCore_.quantity();
-  LOG(cyclus::LEV_DEBUG2, "BReact") << "  postcore level: " <<
-                                    postCore_.quantity();
-}
-
-//- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 void BatchReactor::OffloadCore() {
-  OffLoadFuel(inCore_.quantity());
+  while (!inCore_.empty()) {
+    OffloadBatch();
+  }
   LOG(cyclus::LEV_DEBUG2, "BReact") << "BatchReactor " << name()
                                     << " removed a core of fuel from the core:";
   LOG(cyclus::LEV_DEBUG2, "BReact") << "  precore level: " << preCore_.quantity();

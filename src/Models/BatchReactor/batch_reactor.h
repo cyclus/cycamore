@@ -244,6 +244,8 @@ class BatchReactor : public cyclus::FacilityModel,
   /// a map of phase names
   static std::map<Phase, std::string> phase_names_;
 
+  cyclus::Material::Ptr staged_precore_;
+
   /// The time between batch reloadings.
   int cycle_length_;
 
@@ -338,24 +340,6 @@ class BatchReactor : public cyclus::FacilityModel,
      Processes all orders in ordersWaiting_
    */
   void HandleOrders();
-
-  /**
-     move a certain amount of fuel from one buffer to another
-     @param fromBuff the buffer to move fuel from
-     @param toBuff the buffer to move fuel to
-     @param amt the amount of fuel to move
-  */
-  void moveFuel(cyclus::ResourceBuff& fromBuff, cyclus::ResourceBuff& toBuff, double amt);
-
-  /**
-     moves and amount of fuel out of the core. this action will remove
-     the amount of fuel from the core and add a different amount to
-     the recieving buffer by a factor of
-     out_core_loading()/in_core_loading(). The recipe will also be
-     changed to out_recipe();
-     @param amt the amount of fuel to offload
-  */
-  void OffLoadFuel(double amt);
 
   /**
      load fuel from preCore_ into inCore_
