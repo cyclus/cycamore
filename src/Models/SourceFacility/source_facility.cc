@@ -19,11 +19,11 @@ namespace cycamore {
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 SourceFacility::SourceFacility(cyclus::Context* ctx)
-    : cyclus::FacilityModel(ctx),
-      out_commod_(""),
-      recipe_name_(""),
-      commod_price_(0),
-      capacity_(std::numeric_limits<double>::max()) {
+  : cyclus::FacilityModel(ctx),
+    out_commod_(""),
+    recipe_name_(""),
+    commod_price_(0),
+    capacity_(std::numeric_limits<double>::max()) {
   using std::deque;
   using std::numeric_limits;
   ordersWaiting_ = deque<cyclus::Message::Ptr>();
@@ -66,16 +66,16 @@ void SourceFacility::InitModuleMembers(cyclus::QueryEngine* qe) {
   cyclus::CommodityProducer::AddCommodity(commod);
 
   double capacity =
-      cyclus::GetOptionalQuery<double>(output,
-                                       "output_capacity",
-                                       numeric_limits<double>::max());
+    cyclus::GetOptionalQuery<double>(output,
+                                     "output_capacity",
+                                     numeric_limits<double>::max());
   cyclus::CommodityProducer::SetCapacity(commod, capacity);
   SetCapacity(capacity);
 
   double size =
-      cyclus::GetOptionalQuery<double>(output,
-                                       "inventorysize",
-                                       numeric_limits<double>::max());
+    cyclus::GetOptionalQuery<double>(output,
+                                     "inventorysize",
+                                     numeric_limits<double>::max());
   SetMaxInventorySize(size);
 }
 
@@ -220,7 +220,7 @@ double SourceFacility::InventorySize() {
 void SourceFacility::GenerateMaterial() {
   using cyclus::Model;
   using cyclus::Material;
-  
+
   double empty_space = inventory_.space();
   if (empty_space < cyclus::eps()) {
     return; // no room
@@ -241,15 +241,14 @@ void SourceFacility::GenerateMaterial() {
 cyclus::Transaction SourceFacility::BuildTransaction() {
   using cyclus::Model;
   using cyclus::Material;
-  
+
   // there is no minimum amount a source facility may send
   double min_amt = 0;
   double offer_amt = inventory_.quantity();
 
   cyclus::Context* ctx = Model::context();
-  Material::Ptr trade_res = Material::Create(this,
-                                             offer_amt,
-                                             ctx->GetRecipe(recipe()));
+  Material::Ptr trade_res = Material::CreateUntracked(offer_amt,
+                                                      ctx->GetRecipe(recipe()));
 
   cyclus::Transaction trans(this, cyclus::OFFER);
   trans.SetCommod(out_commod_);

@@ -10,6 +10,7 @@
 #include "cyc_limits.h"
 #include "generic_resource.h"
 #include "material.h"
+#include "mat_query.h"
 #include "timer.h"
 
 #include <sstream>
@@ -24,13 +25,13 @@ int EnrichmentFacility::entry_ = 0;
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 EnrichmentFacility::EnrichmentFacility(cyclus::Context* ctx)
-    : cyclus::FacilityModel(ctx),
-      commodity_price_(0),
-      tails_assay_(0),
-      feed_assay_(0),
-      in_commodity_(""),
-      in_recipe_(""),
-      out_commodity_("") { }
+  : cyclus::FacilityModel(ctx),
+    commodity_price_(0),
+    tails_assay_(0),
+    feed_assay_(0),
+    in_commodity_(""),
+    in_recipe_(""),
+    out_commodity_("") { }
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 EnrichmentFacility::~EnrichmentFacility() { }
@@ -60,17 +61,17 @@ void EnrichmentFacility::InitModuleMembers(cyclus::QueryEngine* qe) {
   using boost::lexical_cast;
   using cyclus::Model;
   using cyclus::Material;
-  
+
   string data;
 
   cyclus::QueryEngine* input = qe->QueryElement("input");
   set_in_commodity(input->GetElementContent("incommodity"));
   set_in_recipe(input->GetElementContent("inrecipe"));
 
-  double limit = 
-      cyclus::GetOptionalQuery<double>(input,
-                                       "inventorysize",
-                                       numeric_limits<double>::max());
+  double limit =
+    cyclus::GetOptionalQuery<double>(input,
+                                     "inventorysize",
+                                     numeric_limits<double>::max());
   SetMaxInventorySize(limit);
 
   cyclus::QueryEngine* output = qe->QueryElement("output");
@@ -79,8 +80,8 @@ void EnrichmentFacility::InitModuleMembers(cyclus::QueryEngine* qe) {
   data = output->GetElementContent("tails_assay");
   set_tails_assay(lexical_cast<double>(data));
 
-  cyclus::Context* ctx = Model::context();
-  Material::Ptr feed = Material::Create(this, 0, ctx->GetRecipe(in_recipe_));
+  Material::Ptr feed = Material::CreateUntracked(0,
+                                                 context()->GetRecipe(in_recipe_));
   set_feed_assay(cyclus::enrichment::UraniumAssay(feed));
 }
 
@@ -137,7 +138,6 @@ std::vector<cyclus::Resource::Ptr> EnrichmentFacility::RemoveResource(
   double product_qty = cyclus::enrichment::UraniumQty(rsrc);
   double swu = cyclus::enrichment::SwuRequired(product_qty, assays);
   double natural_u = cyclus::enrichment::FeedQty(product_qty, assays);
-  inventory_.PopQty(natural_u);
 
 
   LOG(cyclus::LEV_INFO5, "EnrFac") << name() << " has performed an enrichment: ";
@@ -153,8 +153,17 @@ std::vector<cyclus::Resource::Ptr> EnrichmentFacility::RemoveResource(
                                    100;
   RecordEnrichment(natural_u, swu);
 
+  double pop_amt = std::max(natural_u, rsrc->quantity());
+  std::vector<cyclus::Material::Ptr> manifest = cyclus::ResCast<cyclus::Material>
+                                                (inventory_.PopQty(pop_amt));
+
+  cyclus::Material::Ptr r = manifest[0];
+  for (int i = 1; i < manifest.size(); ++i) {
+    r->Absorb(manifest[i]);
+  }
+
   vector<cyclus::Resource::Ptr> ret;
-  ret.push_back(order.resource());
+  ret.push_back(r->ExtractComp(rsrc->quantity(), rsrc->comp()));
   return ret;
 }
 
@@ -208,9 +217,8 @@ void EnrichmentFacility::MakeRequest() {
 
     // create a material resource
     // @MJGFlag note that this doesn't matter in the current state
-    cyclus::Context* ctx = Model::context();
     Material::Ptr request_res =
-        Material::Create(this, amt, ctx->GetRecipe(in_recipe_));
+      Material::CreateUntracked(amt, context()->GetRecipe(in_recipe_));
 
     // build the transaction and message
     cyclus::Transaction trans(this, cyclus::REQUEST);
@@ -233,9 +241,9 @@ cyclus::Transaction EnrichmentFacility::BuildTransaction() {
   double min_amt = 0;
   double offer_amt = inventory_.quantity();
 
-  cyclus::Context* ctx = Model::context();
   cyclus::Material::Ptr offer_res =
-      cyclus::Material::Create(this, offer_amt, ctx->GetRecipe(in_commodity_));
+    cyclus::Material::CreateUntracked(offer_amt,
+                                      context()->GetRecipe(in_commodity_));
   cyclus::Transaction trans(this, cyclus::OFFER);
 
   trans.SetCommod(out_commodity());
@@ -311,19 +319,19 @@ cyclus::enrichment::Assays EnrichmentFacility::GetAssays(
 void EnrichmentFacility::RecordEnrichment(double natural_u, double swu) {
   using cyclus::Context;
   using cyclus::Model;
-  
+
   LOG(cyclus::LEV_DEBUG1, "EnrFac") << name() << " has enriched a material:";
   LOG(cyclus::LEV_DEBUG1, "EnrFac") << "  * Amount: " << natural_u;
   LOG(cyclus::LEV_DEBUG1, "EnrFac") << "  *    SWU: " << swu;
 
   Context* ctx = Model::context();
   ctx->NewEvent("Enrichments")
-      ->AddVal("ENTRY", ++entry_)
-      ->AddVal("ID", id())
-      ->AddVal("Time", ctx->time())
-      ->AddVal("Natural_Uranium", natural_u)
-      ->AddVal("SWU", swu)
-      ->Record();
+  ->AddVal("ENTRY", ++entry_)
+  ->AddVal("ID", id())
+  ->AddVal("Time", ctx->time())
+  ->AddVal("Natural_Uranium", natural_u)
+  ->AddVal("SWU", swu)
+  ->Record();
 }
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
