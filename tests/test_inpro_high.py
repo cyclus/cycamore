@@ -22,7 +22,6 @@ def test_inpro_high():
         yield check_cmd, cmd, '.', holdsrtn
         rtn = holdsrtn[0]
         if rtn != 0:
-            print ( "returning!")
             return # don't execute further commands
 
         bench = tables.open_file(bench_db, mode = "r")
