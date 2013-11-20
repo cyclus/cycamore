@@ -27,14 +27,6 @@ def run_inpros():
         if rtn != 0:
             return # don't execute further commands
 
-def checkout_cyclusV3():
-
-def checkout_cycamoreV3():
-
-def install_cyclus():
-
-def install_cycamore():
-
 if __name__ == "__main__":
     
     run_inpros()

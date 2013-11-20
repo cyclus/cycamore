@@ -1,24 +1,18 @@
 cwd=${PWD}
 
+# Create installation directory
+mkdir install
 #Creating cyclus copy
-git clone https://github.com/rakhimov/cyclus.git
+git clone https://github.com/cyclus/cyclus.git
 cd $cwd/cyclus
-git remote add upstream https://github.com/cyclus/cyclus.git
-git fetch upstream
-git branch master origin/master
-git checkout master 
+git checkout 0.3 
 
 #Creating cycamore copy
 cd $cwd
-git clone https://github.com/rakhimov/cycamore.git
+git clone https://github.com/cyclus/cycamore.git
 cd $cwd/cycamore
-git remote add upstream https://github.com/cyclus/cycamore.git
-git branch master origin/master
-git checkout master
+git checkout 0.3 
 
-#Creating installation folder
-cd $cwd 
-mkdir install
 #Installing cyclus
 cd $cwd/cyclus
 python install.py --prefix=../install
@@ -35,4 +29,14 @@ python run_inputs.py
 
 #Returning to the original directory
 cd $cwd
+alias cyclus=$cwd/install/bin/cyclus
 
+#Calling a python script to create references
+python ./create_inpro_references.py
+
+#Cleaning up
+rm -rf ./cyclus
+rm -rf ./install
+rm -rf ./cycamore
+unalias cyclus
+cwd=''
