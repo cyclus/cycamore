@@ -32,6 +32,7 @@ cd $cwd
 alias cyclus=$cwd/install/bin/cyclus
 
 #Calling a python script to create references
+mkdir ./benchmarks
 python ./create_inpro_references.py
 
 #Cleaning up
