@@ -1,5 +1,5 @@
 <?xml version="1.0"?>
-<!-- 1 SourceFacility Source, 1 SinkFacility Sink -->
+<!-- 0 SourceFacility Source, 1 SinkFacility Sink -->
 
 <simulation>
   <control>
@@ -30,7 +30,7 @@
           <commodities>
             <incommodity>commodity</incommodity>
           </commodities>
-          <input_capacity>1</input_capacity>
+          <input_capacity>100</input_capacity>
         </input>
       </SinkFacility>
     </model>
@@ -60,7 +60,7 @@
   </region>
 
   <recipe>
-    <name>commod_recipe</name>
+    <name>commodity</name>
     <basis>mass</basis>
     <isotope>
       <id>01001</id>
