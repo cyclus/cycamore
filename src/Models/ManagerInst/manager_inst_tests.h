@@ -25,11 +25,6 @@ class TestProducer :
   void CloneModuleMembersFrom(cyclus::FacilityModel* source) {};
   void HandleTock(int time) {};
   void HandleTick(int time) {};
-
-  void ReceiveMessage(cyclus::Message::Ptr msg) {
-    msg->SetDir(cyclus::DOWN_MSG);
-  }
-
 };
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
