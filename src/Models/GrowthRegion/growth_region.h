@@ -117,14 +117,14 @@ class GrowthRegion : public cyclus::RegionModel {
      @param commodity the commodity being demanded
      @param unmetdemand the unmet demand
    */
-  void orderBuilds(cyclus::Commodity& commodity, double unmetdemand);
+  void OrderBuilds(cyclus::Commodity& commodity, double unmetdemand);
 
   /**
      orders builder to build a prototype
      @param builder the model that can build buildee
      @param prototype the model to be built
    */
-  void orderBuild(cyclus::Model* builder, cyclus::Model* prototype);
+  void OrderBuild(cyclus::Model* builder, cyclus::Model* prototype);
   /* --- */
 };
 } // namespace cycamore

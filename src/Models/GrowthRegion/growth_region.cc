@@ -126,7 +126,7 @@ void GrowthRegion::HandleTick(int time) {
     LOG(cyclus::LEV_INFO3, "greg") << "  * unmetdemand = " << unmetdemand;
 
     if (unmetdemand > 0) {
-      orderBuilds(commodity, unmetdemand);
+      OrderBuilds(commodity, unmetdemand);
     }
   }
   cyclus::RegionModel::HandleTick(time);
@@ -163,7 +163,7 @@ void GrowthRegion::RegisterBuilder(cyclus::Model* child) {
 }
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-void GrowthRegion::orderBuilds(cyclus::Commodity& commodity,
+void GrowthRegion::OrderBuilds(cyclus::Commodity& commodity,
                                double unmetdemand) {
   using std::vector;
   vector<cyclus::BuildOrder> orders =
