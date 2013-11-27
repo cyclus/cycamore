@@ -138,7 +138,9 @@ class SourceFacility : public cyclus::FacilityModel,
    */
   virtual void HandleTock(int time);
   
-  /// @brief respond to each request for this source facility's commodity
+  /// @brief Responds to each request for this source facility's commodity.
+  /// If a given request is more than this facility's capacity, it will offer
+  /// its capacity.
   virtual std::set<cyclus::BidPortfolio<cyclus::Material>::Ptr>
       AddMatlBids(cyclus::ExchangeContext<cyclus::Material>* ec);
   
@@ -205,6 +207,12 @@ class SourceFacility : public cyclus::FacilityModel,
      Units vary and are in dollars per inventory unit.
    */
   double commod_price_;
+
+  /**
+     @brief creates a material object to offer to a requester
+     @param target the material target a request desires
+   */
+  cyclus::Material::Ptr __GetOffer(const cyclus::Material::Ptr target) const;
   /* --- */
 };
 } // namespace cycamore

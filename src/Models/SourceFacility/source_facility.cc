@@ -105,6 +105,14 @@ void SourceFacility::HandleTock(int time) {
 }
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+cyclus::Material::Ptr SourceFacility::__GetOffer(
+    const cyclus::Material::Ptr target) const {
+  using cyclus::Material;
+  double qty = std::min(target->quantity(), capacity_);
+  return Material::CreateUntracked(qty, context()->GetRecipe(recipe_name_));
+}
+
+//- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 std::set<cyclus::BidPortfolio<cyclus::Material>::Ptr>
 SourceFacility::AddMatlBids(cyclus::ExchangeContext<cyclus::Material>* ec) {
   using cyclus::Bid;
@@ -122,13 +130,9 @@ SourceFacility::AddMatlBids(cyclus::ExchangeContext<cyclus::Material>* ec) {
   std::vector<Request<Material>::Ptr>::const_iterator it;
   for (it = requests.begin(); it != requests.end(); ++it) {
     const Request<Material>::Ptr req = *it;
-    double qty = req->target()->quantity();
-    if (qty < capacity_) {
-      Material::Ptr offer =
-          Material::CreateUntracked(qty, context()->GetRecipe(recipe_name_));
-      Bid<Material>::Ptr bid(new Bid<Material>(req, offer, this));
-      port->AddBid(bid);
-    }
+    Material::Ptr offer = __GetOffer(req->target());
+    Bid<Material>::Ptr bid(new Bid<Material>(req, offer, this));
+    port->AddBid(bid);
   }
 
   CapacityConstraint<Material> cc(capacity_);
