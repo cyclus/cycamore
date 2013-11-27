@@ -7,11 +7,13 @@
 
 #include <boost/lexical_cast.hpp>
 
+#include "capacity_constraint.h"
 #include "cyc_limits.h"
 #include "context.h"
 #include "error.h"
 #include "exchange_context.h"
 #include "logger.h"
+#include "request.h"
 
 namespace cycamore {
 
@@ -105,8 +107,34 @@ void SourceFacility::HandleTock(int time) {
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 std::set<cyclus::BidPortfolio<cyclus::Material>::Ptr>
 SourceFacility::AddMatlBids(cyclus::ExchangeContext<cyclus::Material>* ec) {
-// Material::Ptr trade_res = Material::CreateUntracked(offer_amt,
-//                                                       ctx->GetRecipe(recipe()));  
+  using cyclus::Bid;
+  using cyclus::BidPortfolio;
+  using cyclus::CapacityConstraint;
+  using cyclus::Material;
+  using cyclus::Request;
+  
+  std::set<BidPortfolio<Material>::Ptr> ports;
+  BidPortfolio<Material>::Ptr port(new BidPortfolio<Material>());
+  
+  const std::vector<Request<Material>::Ptr>& requests =
+      ec->RequestsForCommod(out_commod_);
+
+  std::vector<Request<Material>::Ptr>::const_iterator it;
+  for (it = requests.begin(); it != requests.end(); ++it) {
+    Request<Material>::Ptr req = *it;
+    double qty = req->target()->quantity();
+    if (qty < capacity_) {
+      Material::Ptr offer =
+          Material::CreateUntracked(qty, context()->GetRecipe(recipe_name_));
+      Bid<Material>::Ptr bid(new Bid<Material>(req, offer, this));
+      port->AddBid(bid);
+    }
+  }
+
+  CapacityConstraint<Material> cc(capacity_);
+  port->AddConstraint(cc);
+  ports.insert(port);
+  return ports;
 }
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
