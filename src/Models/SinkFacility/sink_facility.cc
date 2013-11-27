@@ -7,10 +7,11 @@
 
 #include "sink_facility.h"
 
+#include "capacity_constraint.h"
 #include "context.h"
-#include "logger.h"
-#include "error.h"
 #include "cyc_limits.h"
+#include "error.h"
+#include "logger.h"
 
 namespace cycamore {
 
@@ -104,31 +105,88 @@ cyclus::Model* SinkFacility::Clone() {
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - 
 std::set<cyclus::RequestPortfolio<cyclus::Material>::Ptr>
 SinkFacility::AddMatlRequests() {
-  return std::set<cyclus::RequestPortfolio<cyclus::Material>::Ptr>();
+  using cyclus::CapacityConstraint;
+  using cyclus::Material;
+  using cyclus::RequestPortfolio;
+  using cyclus::Request;
+  
+  std::set<RequestPortfolio<Material>::Ptr> ports;
+  RequestPortfolio<Material>::Ptr port(new RequestPortfolio<Material>());
+  double amt = RequestAmt();
+  Material::Ptr mat = Material::CreateBlank(amt);
+
+  if (amt > cyclus::eps()) {
+    CapacityConstraint<Material> cc(amt);
+    port->AddConstraint(cc);
+    
+    std::vector<std::string>::const_iterator it;
+    for (it = in_commods_.begin(); it != in_commods_.end(); ++it) {
+      Request<Material>::Ptr req(new Request<Material>(mat, this, *it));
+      port->AddRequest(req);
+    }
+    
+    ports.insert(port);
+  } // if amt > eps
+
+  return ports;
 }
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - 
 std::set<cyclus::RequestPortfolio<cyclus::GenericResource>::Ptr>
 SinkFacility::AddGenRsrcRequests() {
-  return std::set<cyclus::RequestPortfolio<cyclus::GenericResource>::Ptr>();
+  using cyclus::CapacityConstraint;
+  using cyclus::GenericResource;
+  using cyclus::RequestPortfolio;
+  using cyclus::Request;
+  
+  std::set<RequestPortfolio<GenericResource>::Ptr> ports;
+  RequestPortfolio<GenericResource>::Ptr
+      port(new RequestPortfolio<GenericResource>());
+  double amt = RequestAmt();
+
+  if (amt > cyclus::eps()) {
+    CapacityConstraint<GenericResource> cc(amt);
+    port->AddConstraint(cc);
+    
+    std::vector<std::string>::const_iterator it;
+    for (it = in_commods_.begin(); it != in_commods_.end(); ++it) {
+      std::string quality = ""; // not clear what this should be..
+      std::string units = ""; // not clear what this should be..
+      GenericResource::Ptr rsrc =
+          GenericResource::CreateUntracked(amt, quality, units);
+      Request<GenericResource>::Ptr
+          req(new Request<GenericResource>(rsrc, this, *it));
+      port->AddRequest(req);
+    }
+    
+    ports.insert(port);
+  } // if amt > eps
+  
+  return ports;
 }
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - 
 void SinkFacility::AcceptMatlTrades(
     const std::vector< std::pair<cyclus::Trade<cyclus::Material>,
                                  cyclus::Material::Ptr> >& responses) {
-  
   // see
   // http://stackoverflow.com/questions/5181183/boostshared-ptr-and-inheritance
+  std::vector< std::pair<cyclus::Trade<cyclus::Material>,
+                         cyclus::Material::Ptr> >::const_iterator it;
+  for (it = responses.begin(); it != responses.end(); ++it) {
+    inventory_.Push(it->second);    
+  }
 }
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - 
 void SinkFacility::AcceptGenRsrcTrades(
     const std::vector< std::pair<cyclus::Trade<cyclus::GenericResource>,
                                  cyclus::GenericResource::Ptr> >& responses) {
-  
-  // see
-  // http://stackoverflow.com/questions/5181183/boostshared-ptr-and-inheritance
+  std::vector< std::pair<cyclus::Trade<cyclus::GenericResource>,
+                         cyclus::GenericResource::Ptr> >::const_iterator it;
+  for (it = responses.begin(); it != responses.end(); ++it) {
+    inventory_.Push(it->second);    
+  }
 }
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - 
@@ -137,41 +195,14 @@ void SinkFacility::HandleTick(int time) {
   using std::vector;
   LOG(cyclus::LEV_INFO3, "SnkFac") << FacName() << " is ticking {";
 
-  double requestAmt = getRequestAmt();
-  CLOG(cyclus::LEV_DEBUG3) << "SinkFacility " << name() << " on the tick has "
-                           << "a request amount of: " << requestAmt;
-  double minAmt = 0;
-
-
+  double requestAmt = RequestAmt();
+  // inform the simulation about what the sink facility will be requesting
   if (requestAmt > cyclus::eps()) {
-
-    // for each potential commodity, make a request
     for (vector<string>::iterator commod = in_commods_.begin();
          commod != in_commods_.end();
          commod++) {
-      LOG(cyclus::LEV_INFO4, "SnkFac") << " requests " << requestAmt << " kg of " <<
-                                       *commod << ".";
-
-      // cyclus::MarketModel* market = cyclus::MarketModel::MarketForCommod(*commod);
-      // cyclus::Communicator* recipient = dynamic_cast<cyclus::Communicator*>(market);
-
-      // // create a generic resource
-      // cyclus::GenericResource::Ptr request_res =
-      //   cyclus::GenericResource::CreateUntracked(
-      //     requestAmt,
-      //     "kg",
-      //     *commod);
-
-      // // build the transaction and message
-      // cyclus::Transaction trans(this, cyclus::REQUEST);
-      // trans.SetCommod(*commod);
-      // trans.SetMinFrac(minAmt / requestAmt);
-      // trans.SetPrice(commod_price_);
-      // trans.SetResource(request_res);
-
-      // cyclus::Message::Ptr request(new cyclus::Message(this, recipient, trans));
-      // request->SendOn();
-
+      LOG(cyclus::LEV_INFO4, "SnkFac") << " will request " << requestAmt
+                                       << " kg of " << *commod << ".";
     }
   }
   LOG(cyclus::LEV_INFO3, "SnkFac") << "}";
@@ -186,8 +217,8 @@ void SinkFacility::HandleTock(int time) {
   // For now, lets just print out what we have at each timestep.
   LOG(cyclus::LEV_INFO4, "SnkFac") << "SinkFacility " << this->id()
                                    << " is holding " << inventory_.quantity()
-                                   << " units of material at the close of month " << time
-                                   << ".";
+                                   << " units of material at the close of month "
+                                   << time << ".";
   LOG(cyclus::LEV_INFO3, "SnkFac") << "}";
 }
 
@@ -226,14 +257,8 @@ std::vector<std::string> SinkFacility::InputCommodities() {
   return in_commods_;
 }
 
-// //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-// void SinkFacility::AddResource(cyclus::Transaction trans,
-//                                std::vector<cyclus::Resource::Ptr> manifest) {
-//   inventory_.PushAll(manifest);
-// }
-
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-const double SinkFacility::getRequestAmt() {
+const double SinkFacility::RequestAmt() {
   // The sink facility should ask for as much stuff as it can reasonably receive.
   double requestAmt;
   // get current capacity

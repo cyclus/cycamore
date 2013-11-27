@@ -105,7 +105,9 @@ class SinkFacility : public cyclus::FacilityModel  {
 
   /**
      Initialize members related to derived module class
-     @param qe a pointer to a cyclus::QueryEngine object containing initialization data
+
+     @param qe a pointer to a cyclus::QueryEngine object containing
+     initialization data
    */
   virtual void InitModuleMembers(cyclus::QueryEngine* qe);
 
@@ -209,7 +211,7 @@ class SinkFacility : public cyclus::FacilityModel  {
   /**
      determines the amount to request
    */
-  const double getRequestAmt();
+  const double RequestAmt();
 };
 
 } // namespace cycamore
