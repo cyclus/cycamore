@@ -9,10 +9,8 @@
 
 #include "context.h"
 #include "logger.h"
-#include "generic_resource.h"
 #include "error.h"
 #include "cyc_limits.h"
-#include "market_model.h"
 
 namespace cycamore {
 
@@ -103,7 +101,37 @@ cyclus::Model* SinkFacility::Clone() {
   return m;
 }
 
-//- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+//- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - 
+std::set<cyclus::RequestPortfolio<cyclus::Material>::Ptr>
+SinkFacility::AddMatlRequests() {
+  return std::set<cyclus::RequestPortfolio<cyclus::Material>::Ptr>();
+}
+
+//- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - 
+std::set<cyclus::RequestPortfolio<cyclus::GenericResource>::Ptr>
+SinkFacility::AddGenRsrcRequests() {
+  return std::set<cyclus::RequestPortfolio<cyclus::GenericResource>::Ptr>();
+}
+
+//- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - 
+void SinkFacility::AcceptMatlTrades(
+    const std::vector< std::pair<cyclus::Trade<cyclus::Material>,
+                                 cyclus::Material::Ptr> >& responses) {
+  
+  // see
+  // http://stackoverflow.com/questions/5181183/boostshared-ptr-and-inheritance
+}
+
+//- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - 
+void SinkFacility::AcceptGenRsrcTrades(
+    const std::vector< std::pair<cyclus::Trade<cyclus::GenericResource>,
+                                 cyclus::GenericResource::Ptr> >& responses) {
+  
+  // see
+  // http://stackoverflow.com/questions/5181183/boostshared-ptr-and-inheritance
+}
+
+//- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - 
 void SinkFacility::HandleTick(int time) {
   using std::string;
   using std::vector;
@@ -124,25 +152,25 @@ void SinkFacility::HandleTick(int time) {
       LOG(cyclus::LEV_INFO4, "SnkFac") << " requests " << requestAmt << " kg of " <<
                                        *commod << ".";
 
-      cyclus::MarketModel* market = cyclus::MarketModel::MarketForCommod(*commod);
-      cyclus::Communicator* recipient = dynamic_cast<cyclus::Communicator*>(market);
+      // cyclus::MarketModel* market = cyclus::MarketModel::MarketForCommod(*commod);
+      // cyclus::Communicator* recipient = dynamic_cast<cyclus::Communicator*>(market);
 
-      // create a generic resource
-      cyclus::GenericResource::Ptr request_res =
-        cyclus::GenericResource::CreateUntracked(
-          requestAmt,
-          "kg",
-          *commod);
+      // // create a generic resource
+      // cyclus::GenericResource::Ptr request_res =
+      //   cyclus::GenericResource::CreateUntracked(
+      //     requestAmt,
+      //     "kg",
+      //     *commod);
 
-      // build the transaction and message
-      cyclus::Transaction trans(this, cyclus::REQUEST);
-      trans.SetCommod(*commod);
-      trans.SetMinFrac(minAmt / requestAmt);
-      trans.SetPrice(commod_price_);
-      trans.SetResource(request_res);
+      // // build the transaction and message
+      // cyclus::Transaction trans(this, cyclus::REQUEST);
+      // trans.SetCommod(*commod);
+      // trans.SetMinFrac(minAmt / requestAmt);
+      // trans.SetPrice(commod_price_);
+      // trans.SetResource(request_res);
 
-      cyclus::Message::Ptr request(new cyclus::Message(this, recipient, trans));
-      request->SendOn();
+      // cyclus::Message::Ptr request(new cyclus::Message(this, recipient, trans));
+      // request->SendOn();
 
     }
   }
@@ -198,11 +226,11 @@ std::vector<std::string> SinkFacility::InputCommodities() {
   return in_commods_;
 }
 
-//- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-void SinkFacility::AddResource(cyclus::Transaction trans,
-                               std::vector<cyclus::Resource::Ptr> manifest) {
-  inventory_.PushAll(manifest);
-}
+// //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+// void SinkFacility::AddResource(cyclus::Transaction trans,
+//                                std::vector<cyclus::Resource::Ptr> manifest) {
+//   inventory_.PushAll(manifest);
+// }
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 const double SinkFacility::getRequestAmt() {

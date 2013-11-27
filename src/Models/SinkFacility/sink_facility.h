@@ -1,14 +1,19 @@
 // sink_facility.h
-#ifndef _SINKFACILITY_H
-#define _SINKFACILITY_H
+#ifndef CYCAMORE_MODELS_SINK_FACILITY_H_
+#define CYCAMORE_MODELS_SINK_FACILITY_H_
 
 #include <string>
+#include <utility>
+#include <vector>
 
 #include "facility_model.h"
-
-#include "query_engine.h"
-#include "resource_buff.h"
+#include "generic_resource.h"
 #include "logger.h"
+#include "material.h"
+#include "query_engine.h"
+#include "request_portfolio.h"
+#include "resource_buff.h"
+#include "trade.h"
 
 namespace cycamore {
 
@@ -124,23 +129,27 @@ class SinkFacility : public cyclus::FacilityModel  {
      @param time the current simulation time.
    */
   virtual void HandleTock(int time);
-  /* --- */
 
-  /* --- cyclus::Transaction Methods --- */
-  /**
-     Transacted resources are received through this method
+  /// @brief SinkFacilities request Materials of their given commodity. Note
+  /// that it is assumed the SinkFacility operates on a single resource type!
+  virtual std::set<cyclus::RequestPortfolio<cyclus::Material>::Ptr>
+      AddMatlRequests();
+  
+  /// @brief SinkFacilities request GenericResources of their given
+  /// commodity. Note that it is assumed the SinkFacility operates on a single
+  /// resource type!
+  virtual std::set<cyclus::RequestPortfolio<cyclus::GenericResource>::Ptr>
+      AddGenRsrcRequests();
 
-     @param trans the transaction to which these resource objects belong
-     @param manifest is the set of resources being received
-   */
-  virtual void AddResource(cyclus::Transaction trans,
-                           std::vector<cyclus::Resource::Ptr> manifest);
+  /// @brief SinkFacilities place accepted trade Materials in their Inventory
+  virtual void AcceptMatlTrades(
+      const std::vector< std::pair<cyclus::Trade<cyclus::Material>,
+      cyclus::Material::Ptr> >& responses);
 
-  /**
-     The sink Facility doesn't need to do anything if it gets a message.
-     It never sends any matieral to anyone.
-   */
-  virtual void ReceiveMessage(cyclus::Message::Ptr msg) {};
+  /// @brief SinkFacilities place accepted trade Materials in their Inventory
+  virtual void AcceptGenRsrcTrades(
+      const std::vector< std::pair<cyclus::Trade<cyclus::GenericResource>,
+      cyclus::GenericResource::Ptr> >& responses);
   /* --- */
 
   /* --- SinkFacility Methods --- */
@@ -204,5 +213,6 @@ class SinkFacility : public cyclus::FacilityModel  {
 };
 
 } // namespace cycamore
-#endif
+
+#endif // CYCAMORE_MODELS_SINK_FACILITY_H_
 

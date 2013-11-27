@@ -12,15 +12,14 @@ void SinkFacilityTest::SetUp() {
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 void SinkFacilityTest::TearDown() {
   delete src_facility;
-  delete commod_market;
 }
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 void SinkFacilityTest::InitParameters() {
   commod_ = "incommod";
-  commod_market = new MockMarket(tc_.get());
-  commod_market->SetCommodity(commod_);
-  cyclus::MarketModel::RegisterMarket(commod_market);
+  // commod_market = new MockMarket(tc_.get());
+  // commod_market->SetCommodity(commod_);
+  // cyclus::MarketModel::RegisterMarket(commod_market);
 }
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -53,12 +52,12 @@ TEST_F(SinkFacilityTest, Print) {
   EXPECT_NO_THROW(std::string s = src_facility->str());
 }
 
-//- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-TEST_F(SinkFacilityTest, ReceiveMessage) {
-  cyclus::Message::Ptr msg = cyclus::Message::Ptr(new cyclus::Message(
-                                                    src_facility));
-  EXPECT_NO_THROW(src_facility->ReceiveMessage(msg));
-}
+// //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+// TEST_F(SinkFacilityTest, ReceiveMessage) {
+//   cyclus::Message::Ptr msg = cyclus::Message::Ptr(new cyclus::Message(
+//                                                     src_facility));
+//   EXPECT_NO_THROW(src_facility->ReceiveMessage(msg));
+// }
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 TEST_F(SinkFacilityTest, Tick) {

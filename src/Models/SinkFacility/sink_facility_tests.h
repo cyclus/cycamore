@@ -13,7 +13,6 @@ class SinkFacilityTest : public ::testing::Test {
  protected:
   cyclus::TestContext tc_;
   cycamore::SinkFacility* src_facility;
-  MockMarket* commod_market;
   std::string commod_;
 
   virtual void SetUp();
