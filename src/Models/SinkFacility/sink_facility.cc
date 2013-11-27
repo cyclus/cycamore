@@ -61,7 +61,7 @@ void SinkFacility::InitModuleMembers(cyclus::QueryEngine* qe) {
     cyclus::GetOptionalQuery<double>(input,
                                      "input_capacity",
                                      numeric_limits<double>::max());
-  SetCapacity(capacity);
+  set_capacity(capacity);
 
   double size =
     cyclus::GetOptionalQuery<double>(input,
@@ -95,9 +95,9 @@ cyclus::Model* SinkFacility::Clone() {
   SinkFacility* m = new SinkFacility(*this);
   m->InitFrom(this);
 
-  m->SetCapacity(capacity());
+  m->set_capacity(capacity());
   m->SetMaxInventorySize(MaxInventorySize());
-  m->in_commods_ = InputCommodities();
+  m->in_commods_ = in_commods_;
 
   return m;
 }
@@ -112,7 +112,7 @@ SinkFacility::AddMatlRequests() {
   
   std::set<RequestPortfolio<Material>::Ptr> ports;
   RequestPortfolio<Material>::Ptr port(new RequestPortfolio<Material>());
-  double amt = RequestAmt();
+  double amt = __RequestAmt();
   Material::Ptr mat = Material::CreateBlank(amt);
 
   if (amt > cyclus::eps()) {
@@ -142,7 +142,7 @@ SinkFacility::AddGenRsrcRequests() {
   std::set<RequestPortfolio<GenericResource>::Ptr> ports;
   RequestPortfolio<GenericResource>::Ptr
       port(new RequestPortfolio<GenericResource>());
-  double amt = RequestAmt();
+  double amt = __RequestAmt();
 
   if (amt > cyclus::eps()) {
     CapacityConstraint<GenericResource> cc(amt);
@@ -195,7 +195,7 @@ void SinkFacility::HandleTick(int time) {
   using std::vector;
   LOG(cyclus::LEV_INFO3, "SnkFac") << FacName() << " is ticking {";
 
-  double requestAmt = RequestAmt();
+  double requestAmt = __RequestAmt();
   // inform the simulation about what the sink facility will be requesting
   if (requestAmt > cyclus::eps()) {
     for (vector<string>::iterator commod = in_commods_.begin();
@@ -223,42 +223,7 @@ void SinkFacility::HandleTock(int time) {
 }
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-void SinkFacility::AddCommodity(std::string name) {
-  in_commods_.push_back(name);
-}
-
-//- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-void SinkFacility::SetCapacity(double capacity) {
-  capacity_ = capacity;
-}
-
-//- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-double SinkFacility::capacity() {
-  return capacity_;
-}
-
-//- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-void SinkFacility::SetMaxInventorySize(double size) {
-  inventory_.set_capacity(size);
-}
-
-//- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-double SinkFacility::MaxInventorySize() {
-  return inventory_.capacity();
-}
-
-//- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-double SinkFacility::InventorySize() {
-  return inventory_.quantity();
-}
-
-//- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-std::vector<std::string> SinkFacility::InputCommodities() {
-  return in_commods_;
-}
-
-//- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-const double SinkFacility::RequestAmt() {
+const double SinkFacility::__RequestAmt() {
   // The sink facility should ask for as much stuff as it can reasonably receive.
   double requestAmt;
   // get current capacity

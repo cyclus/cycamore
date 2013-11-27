@@ -156,37 +156,37 @@ class SinkFacility : public cyclus::FacilityModel  {
 
   /* --- SinkFacility Methods --- */
   /**
-     add a commodity to the set of input commodities
-     @param name the commodity name
-   */
-  void AddCommodity(std::string name);
-
-  /**
      sets the capacity of a material generated at any given time step
      @param capacity the reception capacity
    */
-  void SetCapacity(double capacity);
+  inline void set_capacity(double capacity) {capacity_ = capacity;}
 
   /// @return the reception capacity at any given time step
-  double capacity();
+  inline double capacity() const {return capacity_;}
+
+  /**
+     add a commodity to the set of input commodities
+     @param name the commodity name
+   */
+  inline void AddCommodity(std::string name) {in_commods_.push_back(name);}
+
+  /// @return the input commodities
+  inline const std::vector<std::string>&
+      input_commodities() const {return in_commods_;}
 
   /**
      sets the size of the storage inventory for received material
      @param size the storage size
    */
-  void SetMaxInventorySize(double size);
+  inline void SetMaxInventorySize(double size) {inventory_.set_capacity(size);}
 
   /// @return the maximum inventory storage size
-  double MaxInventorySize();
+  inline double MaxInventorySize() {return inventory_.capacity();}
 
   /// @return the current inventory storage size
-  double InventorySize();
-
-  /// @return the input commodities
-  std::vector<std::string> InputCommodities();
+  inline double InventorySize() {return inventory_.quantity();}
   /* --- */
 
- protected:
   /* --- SourceFacility Members and Methods --- */
   /**
      all facilities must have at least one input commodity
@@ -211,7 +211,7 @@ class SinkFacility : public cyclus::FacilityModel  {
   /**
      determines the amount to request
    */
-  const double RequestAmt();
+  const double __RequestAmt();
 };
 
 } // namespace cycamore
