@@ -2,17 +2,20 @@
 #ifndef _SOURCEFACILITY_H
 #define _SOURCEFACILITY_H
 
-#include "facility_model.h"
-#include "query_engine.h"
+#include <set>
+#include <vector>
+
+#include "bid_portfolio.h"
 #include "commodity_producer.h"
-
-#include "resource_buff.h"
-
-#include <deque>
+#include "facility_model.h"
+#include "material.h"
+#include "query_engine.h"
+#include "trade.h"
 
 namespace cycamore {
 
 class Context;
+class ExchangeContext;
 
 /**
    @class SourceFacility
@@ -88,7 +91,6 @@ class Context;
    What is the best way to allow offers of an infinite amount of
    material on a market?
  */
-
 class SourceFacility : public cyclus::FacilityModel,
   public cyclus::CommodityProducer {
  public:
@@ -99,9 +101,6 @@ class SourceFacility : public cyclus::FacilityModel,
    */
   SourceFacility(cyclus::Context* ctx);
 
-  /**
-     Destructor for the SourceFacility class
-   */
   virtual ~SourceFacility();
 
   virtual std::string schema();
@@ -110,7 +109,9 @@ class SourceFacility : public cyclus::FacilityModel,
 
   /**
      Initialize members related to derived module class
-     @param qe a pointer to a cyclus::QueryEngine object containing initialization data
+
+     @param qe a pointer to a cyclus::QueryEngine object containing
+     initialization data
    */
   virtual void InitModuleMembers(cyclus::QueryEngine* qe);
 
@@ -136,23 +137,20 @@ class SourceFacility : public cyclus::FacilityModel,
      @param time is the time to perform the tock
    */
   virtual void HandleTock(int time);
-  /* --- */
-
-  /* --- cyclus::Transaction Methods --- */
-  /**
-     When this facility receives a message, execute the transaction
-   */
-  virtual void ReceiveMessage(cyclus::Message::Ptr msg);
-
-  /**
-     Transacted resources are extracted through this method
-
-     @param order the msg/order for which resource(s) are to be prepared
-     @return list of resources to be sent for this order
-
-   */
-  virtual std::vector<cyclus::Resource::Ptr> RemoveResource(
-    cyclus::Transaction order);
+  
+  /// @brief respond to each request for this source facility's commodity
+  virtual std::set<cyclus::BidPortfolio<cyclus::Material>::Ptr>
+      AddMatlBids(cyclus::ExchangeContext<cyclus::Material>* ec);
+  
+  /// @brief respond to each trade with a material made from this facility's
+  /// recipe
+  ///
+  /// @param trades all trades in which this trader is the supplier
+  /// @param responses a container to populate with responses to each trade
+  virtual void PopulateMatlTradeResponses(
+    const std::vector< cyclus::Trade<cyclus::Material> >& trades,
+    std::vector<std::pair<cyclus::Trade<cyclus::Material>,
+    cyclus::Material::Ptr> >& responses);
   /* --- */
 
   /* --- SourceFacility Methods --- */
@@ -160,53 +158,28 @@ class SourceFacility : public cyclus::FacilityModel,
      sets the output commodity name
      @param name the commodity name
    */
-  void SetCommodity(std::string name);
+  inline void set_commodity(std::string name) {out_commod_ = name;}
 
   /// @return the output commodity
-  std::string commodity();
+  inline std::string commodity() const {return out_commod_;}
 
   /**
      sets the capacity of a material generated at any given time step
      @param capacity the production capacity
    */
-  void SetCapacity(double capacity);
+  inline void set_capacity(double capacity) {capacity_ = capacity;}
 
   /// @return the production capacity at any given time step
-  double capacity();
+  inline double capacity() const {return capacity_;}
 
   /**
      sets the name of the recipe to be produced
      @param name the recipe name
    */
-  void SetRecipe(std::string name);
+  inline void set_recipe(std::string name) {recipe_name_ = name;}
 
   /// @return the name of the output recipe
-  std::string recipe();
-
-  /**
-     sets the size of the storage inventory for produced material
-     @param size the storage size
-   */
-  void SetMaxInventorySize(double size);
-
-  /// @return the maximum inventory storage size
-  double MaxInventorySize();
-
-  /// @return the current inventory storage size
-  double InventorySize();
-  /* --- */
-
- protected:
-  /* --- cyclus::Transaction Methods --- */
-  /**
-     builds a transaction
-   */
-  cyclus::Transaction BuildTransaction();
-
-  /**
-     sends a transaction as an offer
-   */
-  void SendOffer(cyclus::Transaction trans);
+  inline std::string recipe() const {return recipe_name_;}
   /* --- */
 
   /* --- SourceFacility Members and Methods --- */
@@ -232,22 +205,6 @@ class SourceFacility : public cyclus::FacilityModel,
      Units vary and are in dollars per inventory unit.
    */
   double commod_price_;
-
-  /**
-     A collection  that holds the "product" cyclus::Material this Facility has
-     on hand to send to others.
-   */
-  cyclus::ResourceBuff inventory_; // @MJG couldnt this be a RsrcBuff?
-
-  /**
-     A list of orders to be processed on the Tock
-   */
-  std::deque<cyclus::Message::Ptr> ordersWaiting_;
-
-  /**
-     generates a material
-   */
-  void GenerateMaterial();
   /* --- */
 };
 } // namespace cycamore
