@@ -3,6 +3,7 @@
 
 #include <sstream>
 
+#include "cyc_limits.h"
 #include "resource_helpers.h"
 #include "xml_query_engine.h"
 #include "xml_parser.h"
@@ -36,6 +37,7 @@ void SourceFacilityTest::SetUpSourceFacility() {
   src_facility->set_commodity(commod);
   src_facility->set_recipe(recipe_name);
   src_facility->set_capacity(capacity);
+  src_facility->current_capacity_ = capacity;
 }
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -56,6 +58,7 @@ TEST_F(SourceFacilityTest, Init) {
   EXPECT_EQ(fac.capacity(), capacity);
   EXPECT_EQ(fac.commodity(), commod);
   EXPECT_EQ(fac.recipe(), recipe_name);
+  EXPECT_EQ(fac.current_capacity_, capacity);
 }
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -67,6 +70,7 @@ TEST_F(SourceFacilityTest, Clone) {
   EXPECT_EQ(src_facility->commodity(), cloned_fac->commodity());
   EXPECT_EQ(src_facility->capacity(), cloned_fac->capacity());
   EXPECT_EQ(src_facility->recipe(), cloned_fac->recipe());
+  EXPECT_EQ(src_facility->capacity(), cloned_fac->current_capacity_);
 
   delete cloned_fac;
 }
@@ -100,7 +104,6 @@ TEST_F(SourceFacilityTest, AddBids) {
   using cyclus::CapacityConstraint;
   using cyclus::ExchangeContext;
   using cyclus::Material;
-  using cyclus::ExchangeContext;
   
   int nreqs = 5;
   
@@ -124,6 +127,51 @@ TEST_F(SourceFacilityTest, AddBids) {
 }
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+TEST_F(SourceFacilityTest, Response) {
+  using cyclus::Bid;
+  using cyclus::Material;
+  using cyclus::Request;
+  using cyclus::Trade;
+  using test_helpers::trader;
+  using test_helpers::get_mat;
+
+  std::vector< cyclus::Trade<cyclus::Material> > trades;
+  std::vector<std::pair<cyclus::Trade<cyclus::Material>,
+                        cyclus::Material::Ptr> > responses;
+
+  // Null response
+  EXPECT_NO_THROW(src_facility->PopulateMatlTradeResponses(trades, responses));
+  EXPECT_EQ(responses.size(), 0);
+
+  double qty = capacity / 3;
+  Request<Material>::Ptr request(
+      new Request<Material>(get_mat(), &trader, commod));
+  Bid<Material>::Ptr bid(new Bid<Material>(request, get_mat(), src_facility));
+
+  Trade<Material> trade(request, bid, qty);
+  trades.push_back(trade);
+
+  // 1 trade
+  ASSERT_EQ(src_facility->current_capacity_, capacity);
+  src_facility->PopulateMatlTradeResponses(trades, responses);
+  EXPECT_EQ(responses.size(), 1);
+  EXPECT_EQ(responses[0].second->quantity(), qty);
+  EXPECT_EQ(responses[0].second->comp(), recipe);
+
+  // 2 trades, total qty = capacity
+  ASSERT_DOUBLE_EQ(src_facility->current_capacity_, capacity - qty);
+  ASSERT_GT(src_facility->current_capacity_ - 2 * qty, -1 * cyclus::eps());
+  trades.push_back(trade);
+  responses.clear();
+  EXPECT_NO_THROW(src_facility->PopulateMatlTradeResponses(trades, responses));
+  EXPECT_EQ(responses.size(), 2);
+
+  // too much qty, capn!
+  EXPECT_THROW(src_facility->PopulateMatlTradeResponses(trades, responses),
+               cyclus::StateError);  
+}
+
+//- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 boost::shared_ptr< cyclus::ExchangeContext<cyclus::Material> >
 SourceFacilityTest::GetContext(int nreqs, std::string commod) {
   double qty = 3;
@@ -139,13 +187,6 @@ SourceFacilityTest::GetContext(int nreqs, std::string commod) {
   }
   return ec;
 }
-
-// //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-// TEST_F(SourceFacilityTest, Tock) {
-//   int time = 1;
-//   EXPECT_DOUBLE_EQ(0.0, src_facility->InventorySize());
-//   EXPECT_NO_THROW(src_facility->HandleTock(time));
-// }
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 cyclus::Model* SourceFacilityModelConstructor(cyclus::Context* ctx) {

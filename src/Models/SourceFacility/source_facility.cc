@@ -63,6 +63,7 @@ void SourceFacility::InitModuleMembers(cyclus::QueryEngine* qe) {
                                      numeric_limits<double>::max());
   cyclus::CommodityProducer::SetCapacity(commod, capacity);
   set_capacity(capacity);
+  current_capacity_ = capacity_;
 }
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -85,7 +86,8 @@ cyclus::Model* SourceFacility::Clone() {
   m->set_capacity(capacity());
   m->set_recipe(recipe());
   m->CopyProducedCommoditiesFrom(this);
-
+  m->current_capacity_ = capacity();
+  
   return m;
 }
 
@@ -96,6 +98,7 @@ void SourceFacility::HandleTick(int time) {
                                    << " kg of "
                                    << out_commod_ << ".";
   LOG(cyclus::LEV_INFO3, "SrcFac") << "}";
+  current_capacity_ = capacity_; // reset capacity
 }
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -150,12 +153,12 @@ void SourceFacility::PopulateMatlTradeResponses(
   using cyclus::StateError;
   using cyclus::Trade;
 
-  double total = 0;
   std::vector< cyclus::Trade<cyclus::Material> >::const_iterator it;
   for (it = trades.begin(); it != trades.end(); ++it) {
-    double qty = it->request->target()->quantity();
-    total += qty;
-    if (total > capacity_) {
+    double qty = it->amt;
+    current_capacity_ -= qty;
+    // @TODO we need a policy on negatives..
+    if (current_capacity_ < -1 * cyclus::eps()) { 
       throw StateError("SourceFac " + name()
                        + " is being asked to provide more than its capacity.");
     }

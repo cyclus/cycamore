@@ -203,6 +203,11 @@ class SourceFacility : public cyclus::FacilityModel,
   double capacity_;
 
   /**
+     The capacity at the current time step
+   */
+  double current_capacity_;
+
+  /**
      The price that the facility will charge for its output commodity.
      Units vary and are in dollars per inventory unit.
    */
