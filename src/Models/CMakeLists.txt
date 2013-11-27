@@ -11,7 +11,7 @@ FILE(GLOB all_valid_subdirs RELATIVE ${CMAKE_CURRENT_SOURCE_DIR} "*/CMakeLists.t
 # ADD_SUBDIRECTORY(BatchReactor)
 # ADD_SUBDIRECTORY(EnrichmentFacility)
 ADD_SUBDIRECTORY(SinkFacility)
-# ADD_SUBDIRECTORY(SourceFacility)
+ADD_SUBDIRECTORY(SourceFacility)
 
 ADD_SUBDIRECTORY(DeployInst)
 ADD_SUBDIRECTORY(ManagerInst)

@@ -121,7 +121,7 @@ SourceFacility::AddMatlBids(cyclus::ExchangeContext<cyclus::Material>* ec) {
 
   std::vector<Request<Material>::Ptr>::const_iterator it;
   for (it = requests.begin(); it != requests.end(); ++it) {
-    Request<Material>::Ptr req = *it;
+    const Request<Material>::Ptr req = *it;
     double qty = req->target()->quantity();
     if (qty < capacity_) {
       Material::Ptr offer =
@@ -142,11 +142,26 @@ void SourceFacility::PopulateMatlTradeResponses(
     const std::vector< cyclus::Trade<cyclus::Material> >& trades,
     std::vector<std::pair<cyclus::Trade<cyclus::Material>,
                           cyclus::Material::Ptr> >& responses) {
-//     newMat = Material::Create(this, amt, ctx->GetRecipe(recipe_name_));
-//     LOG(cyclus::LEV_INFO5, "SrcFac") << name() << " just received an order.";
-//     LOG(cyclus::LEV_INFO5, "SrcFac") << "for " <<
-//                                      msg->trans().resource()->quantity()
-//                                      << " of " << msg->trans().commod();
+  using cyclus::Material;
+  using cyclus::StateError;
+  using cyclus::Trade;
+
+  double total = 0;
+  std::vector< cyclus::Trade<cyclus::Material> >::const_iterator it;
+  for (it = trades.begin(); it != trades.end(); ++it) {
+    double qty = it->request->target()->quantity();
+    total += qty;
+    if (total > capacity_) {
+      throw StateError("SourceFac " + name()
+                       + " is being asked to provide more than its capacity.");
+    }
+    Material::Ptr response =
+        Material::Create(this, qty, context()->GetRecipe(recipe_name_));
+    responses.push_back(std::make_pair(*it, response));
+    LOG(cyclus::LEV_INFO5, "SrcFac") << name() << " just received an order"
+                                     << " for " << qty
+                                     << " of " << out_commod_;
+  }
 }
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
