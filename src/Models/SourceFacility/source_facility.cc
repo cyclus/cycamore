@@ -158,7 +158,7 @@ void SourceFacility::PopulateMatlTradeResponses(
     double qty = it->amt;
     current_capacity_ -= qty;
     // @TODO we need a policy on negatives..
-    if (current_capacity_ < -1 * cyclus::eps()) { 
+    if (cyclus::DoubleNeg(current_capacity_)) { 
       throw StateError("SourceFac " + name()
                        + " is being asked to provide more than its capacity.");
     }
