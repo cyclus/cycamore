@@ -24,7 +24,7 @@ SourceFacility::SourceFacility(cyclus::Context* ctx)
     out_commod_(""),
     recipe_name_(""),
     commod_price_(0),
-    capacity_(std::numeric_limits<double>::max()) { }
+    capacity_(std::numeric_limits<double>::max()) {}
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 SourceFacility::~SourceFacility() {}
@@ -158,7 +158,7 @@ void SourceFacility::PopulateMatlTradeResponses(
     double qty = it->amt;
     current_capacity_ -= qty;
     // @TODO we need a policy on negatives..
-    if (cyclus::DoubleNeg(current_capacity_)) { 
+    if (cyclus::IsNegative(current_capacity_)) { 
       throw StateError("SourceFac " + name()
                        + " is being asked to provide more than its capacity.");
     }
