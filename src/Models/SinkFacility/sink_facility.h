@@ -159,10 +159,10 @@ class SinkFacility : public cyclus::FacilityModel  {
      sets the capacity of a material generated at any given time step
      @param capacity the reception capacity
    */
-  inline void set_capacity(double capacity) {capacity_ = capacity;}
+  inline void set_capacity(double capacity) { capacity_ = capacity; }
 
   /// @return the reception capacity at any given time step
-  inline double capacity() const {return capacity_;}
+  inline double capacity() const { return capacity_; }
 
   /**
      add a commodity to the set of input commodities
@@ -172,7 +172,7 @@ class SinkFacility : public cyclus::FacilityModel  {
 
   /// @return the input commodities
   inline const std::vector<std::string>&
-      input_commodities() const {return in_commods_;}
+      input_commodities() const { return in_commods_; }
 
   /**
      sets the size of the storage inventory for received material
