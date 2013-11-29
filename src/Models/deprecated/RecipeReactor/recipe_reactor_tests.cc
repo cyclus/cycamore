@@ -62,7 +62,7 @@ class FakeRecipeReactor : public RecipeReactor {
     }
   }
 
-  virtual ~FakeRecipeReactor() { }
+  virtual ~FakeRecipeReactor() {}
 };
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -

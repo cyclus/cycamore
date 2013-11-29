@@ -17,18 +17,18 @@ class FakeNullRegion : public cycamore::NullRegion {
  public:
   FakeNullRegion(cyclus::Context* ctx)
       : cycamore::NullRegion(ctx),
-        cyclus::Model(ctx) { }
+        cyclus::Model(ctx) {}
 
-  virtual ~FakeNullRegion() { }
+  virtual ~FakeNullRegion() {}
 };
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 class NullRegionTest : public ::testing::Test {
  protected:
 
-  virtual void SetUp() { };
+  virtual void SetUp() {};
 
-  virtual void TearDown() { };
+  virtual void TearDown() {};
 };
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -

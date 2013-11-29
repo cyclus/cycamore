@@ -26,7 +26,7 @@ void ManagerInst::RegisterAvailablePrototype(std::string prototype) {
                                        << " and "
                                        << " now has " << NBuildingPrototypes()
                                        << " registered total.";
-  } catch (cyclus::CastError err) { }
+  } catch (cyclus::CastError err) {}
 }
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -

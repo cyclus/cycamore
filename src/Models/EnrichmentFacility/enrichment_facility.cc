@@ -32,10 +32,10 @@ EnrichmentFacility::EnrichmentFacility(cyclus::Context* ctx)
     feed_assay_(0),
     in_commodity_(""),
     in_recipe_(""),
-    out_commodity_("") { }
+    out_commodity_("") {}
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-EnrichmentFacility::~EnrichmentFacility() { }
+EnrichmentFacility::~EnrichmentFacility() {}
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 std::string EnrichmentFacility::schema() {
