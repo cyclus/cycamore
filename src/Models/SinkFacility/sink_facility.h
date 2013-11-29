@@ -154,7 +154,30 @@ class SinkFacility : public cyclus::FacilityModel  {
       cyclus::GenericResource::Ptr> >& responses);
   /* --- */
 
-  /* --- SinkFacility Methods --- */
+  /* --- SinkFacility Members --- */
+  /**
+     add a commodity to the set of input commodities
+     @param name the commodity name
+   */
+  inline void AddCommodity(std::string name) { in_commods_.push_back(name); }
+
+  /**
+     sets the size of the storage inventory for received material
+     @param size the storage size
+   */
+  inline void SetMaxInventorySize(double size) { inventory_.set_capacity(size); }
+
+  /// @return the maximum inventory storage size
+  inline double MaxInventorySize() { return inventory_.capacity(); }
+
+  /// @return the current inventory storage size
+  inline double InventorySize() { return inventory_.quantity(); }
+
+  /**
+     determines the amount to request
+   */
+  const double RequestAmt_();
+
   /**
      sets the capacity of a material generated at any given time step
      @param capacity the reception capacity
@@ -164,30 +187,10 @@ class SinkFacility : public cyclus::FacilityModel  {
   /// @return the reception capacity at any given time step
   inline double capacity() const { return capacity_; }
 
-  /**
-     add a commodity to the set of input commodities
-     @param name the commodity name
-   */
-  inline void AddCommodity(std::string name) {in_commods_.push_back(name);}
-
   /// @return the input commodities
   inline const std::vector<std::string>&
       input_commodities() const { return in_commods_; }
 
-  /**
-     sets the size of the storage inventory for received material
-     @param size the storage size
-   */
-  inline void SetMaxInventorySize(double size) {inventory_.set_capacity(size);}
-
-  /// @return the maximum inventory storage size
-  inline double MaxInventorySize() {return inventory_.capacity();}
-
-  /// @return the current inventory storage size
-  inline double InventorySize() {return inventory_.quantity();}
-  /* --- */
-
-  /* --- SourceFacility Members and Methods --- */
   /**
      all facilities must have at least one input commodity
    */
@@ -207,11 +210,6 @@ class SinkFacility : public cyclus::FacilityModel  {
      this facility holds material in storage.
    */
   cyclus::ResourceBuff inventory_;
-
-  /**
-     determines the amount to request
-   */
-  const double RequestAmt_();
 };
 
 } // namespace cycamore

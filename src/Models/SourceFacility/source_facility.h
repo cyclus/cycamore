@@ -155,7 +155,13 @@ class SourceFacility : public cyclus::FacilityModel,
     cyclus::Material::Ptr> >& responses);
   /* --- */
 
-  /* --- SourceFacility Methods --- */
+  /* --- SourceFacility Members --- */
+  /**
+     @brief creates a material object to offer to a requester
+     @param target the material target a request desires
+   */
+  cyclus::Material::Ptr GetOffer_(const cyclus::Material::Ptr target) const;
+
   /**
      sets the output commodity name
      @param name the commodity name
@@ -182,9 +188,7 @@ class SourceFacility : public cyclus::FacilityModel,
 
   /// @return the name of the output recipe
   inline std::string recipe() const { return recipe_name_; }
-  /* --- */
 
-  /* --- SourceFacility Members and Methods --- */
   /**
      This facility has only one output commodity
    */
@@ -212,12 +216,6 @@ class SourceFacility : public cyclus::FacilityModel,
      Units vary and are in dollars per inventory unit.
    */
   double commod_price_;
-
-  /**
-     @brief creates a material object to offer to a requester
-     @param target the material target a request desires
-   */
-  cyclus::Material::Ptr GetOffer_(const cyclus::Material::Ptr target) const;
   /* --- */
 };
 } // namespace cycamore
