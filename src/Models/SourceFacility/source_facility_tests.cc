@@ -86,13 +86,13 @@ TEST_F(SourceFacilityTest, Offer) {
   
   double qty = capacity - 1;
   Material::Ptr mat = Material::CreateBlank(qty);
-  Material::Ptr obs_mat = src_facility->__GetOffer(mat);
+  Material::Ptr obs_mat = src_facility->GetOffer_(mat);
   EXPECT_EQ(obs_mat->quantity(), qty);
   EXPECT_EQ(obs_mat->comp(), recipe);
   
   qty = capacity + 1;
   mat = Material::CreateBlank(qty);
-  obs_mat = src_facility->__GetOffer(mat);
+  obs_mat = src_facility->GetOffer_(mat);
   EXPECT_EQ(obs_mat->quantity(), capacity);
   EXPECT_EQ(obs_mat->comp(), recipe);
 }
@@ -182,7 +182,7 @@ SourceFacilityTest::GetContext(int nreqs, std::string commod) {
     using cyclus::Request;
     using test_helpers::trader;
     using test_helpers::get_mat;
-    ec->__AddRequest(Request<Material>::Ptr(
+    ec->AddRequest_(Request<Material>::Ptr(
         new Request<Material>(get_mat(), &trader, commod)));
   }
   return ec;

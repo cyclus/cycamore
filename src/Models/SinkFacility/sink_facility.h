@@ -211,7 +211,7 @@ class SinkFacility : public cyclus::FacilityModel  {
   /**
      determines the amount to request
    */
-  const double __RequestAmt();
+  const double RequestAmt_();
 };
 
 } // namespace cycamore

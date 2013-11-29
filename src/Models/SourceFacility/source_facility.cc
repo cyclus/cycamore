@@ -108,7 +108,7 @@ void SourceFacility::HandleTock(int time) {
 }
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-cyclus::Material::Ptr SourceFacility::__GetOffer(
+cyclus::Material::Ptr SourceFacility::GetOffer_(
     const cyclus::Material::Ptr target) const {
   using cyclus::Material;
   double qty = std::min(target->quantity(), capacity_);
@@ -133,7 +133,7 @@ SourceFacility::AddMatlBids(cyclus::ExchangeContext<cyclus::Material>* ec) {
   std::vector<Request<Material>::Ptr>::const_iterator it;
   for (it = requests.begin(); it != requests.end(); ++it) {
     const Request<Material>::Ptr req = *it;
-    Material::Ptr offer = __GetOffer(req->target());
+    Material::Ptr offer = GetOffer_(req->target());
     Bid<Material>::Ptr bid(new Bid<Material>(req, offer, this));
     port->AddBid(bid);
   }

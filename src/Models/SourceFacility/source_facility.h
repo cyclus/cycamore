@@ -217,7 +217,7 @@ class SourceFacility : public cyclus::FacilityModel,
      @brief creates a material object to offer to a requester
      @param target the material target a request desires
    */
-  cyclus::Material::Ptr __GetOffer(const cyclus::Material::Ptr target) const;
+  cyclus::Material::Ptr GetOffer_(const cyclus::Material::Ptr target) const;
   /* --- */
 };
 } // namespace cycamore
