@@ -180,7 +180,7 @@ class SinkFacility : public cyclus::FacilityModel  {
   inline double RequestAmt() const {
     return std::min(capacity_, std::max(0.0, inventory_.space()));
   }
-
+    
   /**
      sets the capacity of a material generated at any given time step
      @param capacity the reception capacity

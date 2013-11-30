@@ -80,7 +80,7 @@ TEST_F(SourceFacilityTest, Print) {
 }
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-TEST_F(SourceFacilityTest, Offer) {
+TEST_F(SourceFacilityTest, GetOffer) {
   using cyclus::Material;
   
   double qty = capacity - 1;
@@ -90,6 +90,12 @@ TEST_F(SourceFacilityTest, Offer) {
   EXPECT_EQ(obs_mat->comp(), recipe);
   
   qty = capacity + 1;
+  mat = Material::CreateBlank(qty);
+  obs_mat = src_facility->GetOffer(mat);
+  EXPECT_EQ(obs_mat->quantity(), capacity);
+  EXPECT_EQ(obs_mat->comp(), recipe);
+
+  qty = capacity;
   mat = Material::CreateBlank(qty);
   obs_mat = src_facility->GetOffer(mat);
   EXPECT_EQ(obs_mat->quantity(), capacity);
