@@ -37,7 +37,6 @@ void SourceFacilityTest::SetUpSourceFacility() {
   src_facility->set_commodity(commod);
   src_facility->set_recipe(recipe_name);
   src_facility->set_capacity(capacity);
-  src_facility->current_capacity_ = capacity;
 }
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -58,7 +57,7 @@ TEST_F(SourceFacilityTest, Init) {
   EXPECT_EQ(fac.capacity(), capacity);
   EXPECT_EQ(fac.commodity(), commod);
   EXPECT_EQ(fac.recipe(), recipe_name);
-  EXPECT_EQ(fac.current_capacity_, capacity);
+  EXPECT_EQ(fac.current_capacity(), capacity);
 }
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -70,7 +69,7 @@ TEST_F(SourceFacilityTest, Clone) {
   EXPECT_EQ(src_facility->commodity(), cloned_fac->commodity());
   EXPECT_EQ(src_facility->capacity(), cloned_fac->capacity());
   EXPECT_EQ(src_facility->recipe(), cloned_fac->recipe());
-  EXPECT_EQ(src_facility->capacity(), cloned_fac->current_capacity_);
+  EXPECT_EQ(src_facility->capacity(), cloned_fac->current_capacity());
 
   delete cloned_fac;
 }
@@ -86,13 +85,13 @@ TEST_F(SourceFacilityTest, Offer) {
   
   double qty = capacity - 1;
   Material::Ptr mat = Material::CreateBlank(qty);
-  Material::Ptr obs_mat = src_facility->GetOffer_(mat);
+  Material::Ptr obs_mat = src_facility->GetOffer(mat);
   EXPECT_EQ(obs_mat->quantity(), qty);
   EXPECT_EQ(obs_mat->comp(), recipe);
   
   qty = capacity + 1;
   mat = Material::CreateBlank(qty);
-  obs_mat = src_facility->GetOffer_(mat);
+  obs_mat = src_facility->GetOffer(mat);
   EXPECT_EQ(obs_mat->quantity(), capacity);
   EXPECT_EQ(obs_mat->comp(), recipe);
 }
@@ -152,23 +151,28 @@ TEST_F(SourceFacilityTest, Response) {
   trades.push_back(trade);
 
   // 1 trade
-  ASSERT_EQ(src_facility->current_capacity_, capacity);
+  ASSERT_EQ(src_facility->current_capacity(), capacity);
   src_facility->PopulateMatlTradeResponses(trades, responses);
   EXPECT_EQ(responses.size(), 1);
   EXPECT_EQ(responses[0].second->quantity(), qty);
   EXPECT_EQ(responses[0].second->comp(), recipe);
 
   // 2 trades, total qty = capacity
-  ASSERT_DOUBLE_EQ(src_facility->current_capacity_, capacity - qty);
-  ASSERT_GT(src_facility->current_capacity_ - 2 * qty, -1 * cyclus::eps());
+  ASSERT_DOUBLE_EQ(src_facility->current_capacity(), capacity - qty);
+  ASSERT_GT(src_facility->current_capacity() - 2 * qty, -1 * cyclus::eps());
   trades.push_back(trade);
   responses.clear();
   EXPECT_NO_THROW(src_facility->PopulateMatlTradeResponses(trades, responses));
   EXPECT_EQ(responses.size(), 2);
+  ASSERT_TRUE(cyclus::AlmostEq(src_facility->current_capacity(), 0));
 
   // too much qty, capn!
   EXPECT_THROW(src_facility->PopulateMatlTradeResponses(trades, responses),
-               cyclus::StateError);  
+               cyclus::StateError);
+  
+  // reset!
+  src_facility->HandleTick(1);
+  ASSERT_DOUBLE_EQ(src_facility->current_capacity(), capacity);
 }
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -

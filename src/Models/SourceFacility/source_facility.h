@@ -1,6 +1,6 @@
 // source_facility.h
-#ifndef _SOURCEFACILITY_H
-#define _SOURCEFACILITY_H
+#ifndef CYCAMORE_MODELS__SOURCE_FACILITY_H_
+#define CYCAMORE_MODELS__SOURCE_FACILITY_H_
 
 #include <set>
 #include <vector>
@@ -160,7 +160,7 @@ class SourceFacility : public cyclus::FacilityModel,
      @brief creates a material object to offer to a requester
      @param target the material target a request desires
    */
-  cyclus::Material::Ptr GetOffer_(const cyclus::Material::Ptr target) const;
+  cyclus::Material::Ptr GetOffer(const cyclus::Material::Ptr target) const;
 
   /**
      sets the output commodity name
@@ -175,7 +175,10 @@ class SourceFacility : public cyclus::FacilityModel,
      sets the capacity of a material generated at any given time step
      @param capacity the production capacity
    */
-  inline void set_capacity(double capacity) { capacity_ = capacity; }
+  inline void set_capacity(double capacity) {
+    capacity_ = capacity;
+    current_capacity_ = capacity_;
+  }
 
   /// @return the production capacity at any given time step
   inline double capacity() const { return capacity_; }
@@ -189,6 +192,10 @@ class SourceFacility : public cyclus::FacilityModel,
   /// @return the name of the output recipe
   inline std::string recipe() const { return recipe_name_; }
 
+  /// @return the current timestep's capacity
+  inline double current_capacity() const { return current_capacity_; }
+
+ private:
   /**
      This facility has only one output commodity
    */
@@ -218,6 +225,8 @@ class SourceFacility : public cyclus::FacilityModel,
   double commod_price_;
   /* --- */
 };
+
 } // namespace cycamore
-#endif
+
+#endif // CYCAMORE_MODELS__SOURCE_FACILITY_H_
 

@@ -176,7 +176,7 @@ class SinkFacility : public cyclus::FacilityModel  {
   /**
      determines the amount to request
    */
-  const double RequestAmt_();
+  const double RequestAmt();
 
   /**
      sets the capacity of a material generated at any given time step
@@ -191,6 +191,7 @@ class SinkFacility : public cyclus::FacilityModel  {
   inline const std::vector<std::string>&
       input_commodities() const { return in_commods_; }
 
+ private: 
   /**
      all facilities must have at least one input commodity
    */

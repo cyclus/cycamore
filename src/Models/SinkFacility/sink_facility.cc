@@ -112,7 +112,7 @@ SinkFacility::AddMatlRequests() {
   
   std::set<RequestPortfolio<Material>::Ptr> ports;
   RequestPortfolio<Material>::Ptr port(new RequestPortfolio<Material>());
-  double amt = RequestAmt_();
+  double amt = RequestAmt();
   Material::Ptr mat = Material::CreateBlank(amt);
 
   if (amt > cyclus::eps()) {
@@ -142,7 +142,7 @@ SinkFacility::AddGenRsrcRequests() {
   std::set<RequestPortfolio<GenericResource>::Ptr> ports;
   RequestPortfolio<GenericResource>::Ptr
       port(new RequestPortfolio<GenericResource>());
-  double amt = RequestAmt_();
+  double amt = RequestAmt();
 
   if (amt > cyclus::eps()) {
     CapacityConstraint<GenericResource> cc(amt);
@@ -195,7 +195,7 @@ void SinkFacility::HandleTick(int time) {
   using std::vector;
   LOG(cyclus::LEV_INFO3, "SnkFac") << FacName() << " is ticking {";
 
-  double requestAmt = RequestAmt_();
+  double requestAmt = RequestAmt();
   // inform the simulation about what the sink facility will be requesting
   if (requestAmt > cyclus::eps()) {
     for (vector<string>::iterator commod = in_commods_.begin();
@@ -223,7 +223,7 @@ void SinkFacility::HandleTock(int time) {
 }
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-const double SinkFacility::RequestAmt_() {
+const double SinkFacility::RequestAmt() {
   // The sink facility should ask for as much stuff as it can reasonably receive.
   double requestAmt;
   // get current capacity
