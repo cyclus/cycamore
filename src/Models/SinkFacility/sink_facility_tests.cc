@@ -1,6 +1,10 @@
 // sink_facility_tests.cc
 #include <gtest/gtest.h>
 
+#include "resource_helpers.h"
+#include "xml_query_engine.h"
+#include "xml_parser.h"
+
 #include "sink_facility_tests.h"
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -54,7 +58,6 @@ TEST_F(SinkFacilityTest, clone) {
   EXPECT_DOUBLE_EQ(capacity_, cloned_fac->capacity());
   EXPECT_DOUBLE_EQ(inv_, cloned_fac->MaxInventorySize());
   EXPECT_DOUBLE_EQ(capacity_, cloned_fac->RequestAmt());
-  EXPECT_DOUBLE_EQ(0.0, cloned_fac->InventorySize());
   std::string arr[] = {commod1_};
   std::vector<std::string> vexp (arr, arr + sizeof(arr) / sizeof(arr[0]) );
   EXPECT_EQ(vexp, cloned_fac->input_commodities());
@@ -62,26 +65,31 @@ TEST_F(SinkFacilityTest, clone) {
   delete cloned_fac;
 }
 
-// //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-// TEST_F(SinkFacilityTest, Init) {
-//   std::stringstream ss;
-//   ss << "<root>" << "<output>"
-//      << "<outcommodity>" << commod << "</outcommodity>"
-//      << "<output_capacity>" << capacity << "</output_capacity>"
-//      << "<recipe>" << recipe_name << "</recipe>"
-//      << "</output>" << "</root>";
+//- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+TEST_F(SinkFacilityTest, Init) {
+  std::stringstream ss;
+  ss << "<root>" << "<input>"
+     << "<commodities>"
+     << "<incommodity>" << commod1_ << "</incommodity>"
+     << "</commodities>"
+     << "<input_capacity>" << capacity_ << "</input_capacity>"
+     << "<inventorysize>" << inv_ << "</inventorysize>"
+     << "</input>" << "</root>";
 
-//   cyclus::XMLParser p;
-//   p.Init(ss);
-//   cyclus::XMLQueryEngine engine(p);
-//   cycamore::SourceFacility fac(tc.get());
+  cyclus::XMLParser p;
+  p.Init(ss);
+  cyclus::XMLQueryEngine engine(p);
+  cycamore::SinkFacility fac(tc_.get());
 
-//   EXPECT_NO_THROW(fac.InitModuleMembers(&engine););
-//   EXPECT_EQ(fac.capacity(), capacity);
-//   EXPECT_EQ(fac.commodity(), commod);
-//   EXPECT_EQ(fac.recipe(), recipe_name);
-//   EXPECT_EQ(fac.current_capacity(), capacity);
-// }
+  EXPECT_NO_THROW(fac.InitModuleMembers(&engine););
+  std::string arr[] = {commod1_};
+  std::vector<std::string> vexp (arr, arr + sizeof(arr) / sizeof(arr[0]) );
+  EXPECT_EQ(vexp, fac.input_commodities());
+  EXPECT_DOUBLE_EQ(capacity_, fac.capacity());
+  EXPECT_DOUBLE_EQ(inv_, fac.MaxInventorySize());
+  EXPECT_DOUBLE_EQ(capacity_, fac.RequestAmt());
+  EXPECT_DOUBLE_EQ(0.0, fac.InventorySize());
+}
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 TEST_F(SinkFacilityTest, Requests) {
