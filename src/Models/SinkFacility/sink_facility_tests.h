@@ -13,7 +13,8 @@ class SinkFacilityTest : public ::testing::Test {
  protected:
   cyclus::TestContext tc_;
   cycamore::SinkFacility* src_facility;
-  std::string commod_;
+  std::string commod1_, commod2_;
+  double capacity_, inv_, qty_;
 
   virtual void SetUp();
   virtual void TearDown();

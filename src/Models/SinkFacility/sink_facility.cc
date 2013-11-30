@@ -1,7 +1,7 @@
 // sink_facility.cc
 // Implements the SinkFacility class
 #include <sstream>
-#include <limits>
+#include <algorithm>
 
 #include <boost/lexical_cast.hpp>
 
@@ -20,7 +20,9 @@ SinkFacility::SinkFacility(cyclus::Context* ctx)
   : cyclus::FacilityModel(ctx),
     cyclus::Model(ctx),
     commod_price_(0),
-    capacity_(std::numeric_limits<double>::max()) {}
+    capacity_(std::numeric_limits<double>::max()) {
+  SetMaxInventorySize(std::numeric_limits<double>::max());
+}
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 SinkFacility::~SinkFacility() {}
@@ -220,23 +222,6 @@ void SinkFacility::HandleTock(int time) {
                                    << " units of material at the close of month "
                                    << time << ".";
   LOG(cyclus::LEV_INFO3, "SnkFac") << "}";
-}
-
-//- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-const double SinkFacility::RequestAmt() {
-  // The sink facility should ask for as much stuff as it can reasonably receive.
-  double requestAmt;
-  // get current capacity
-  double space = inventory_.space();
-
-  if (space <= 0) {
-    requestAmt = 0;
-  } else if (space < capacity_) {
-    requestAmt = space / in_commods_.size();
-  } else if (space >= capacity_) {
-    requestAmt = capacity_ / in_commods_.size();
-  }
-  return requestAmt;
 }
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -

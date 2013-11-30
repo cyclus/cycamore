@@ -2,6 +2,7 @@
 #ifndef CYCAMORE_MODELS_SINK_FACILITY_H_
 #define CYCAMORE_MODELS_SINK_FACILITY_H_
 
+#include <algorithm>
 #include <string>
 #include <utility>
 #include <vector>
@@ -168,15 +169,17 @@ class SinkFacility : public cyclus::FacilityModel  {
   inline void SetMaxInventorySize(double size) { inventory_.set_capacity(size); }
 
   /// @return the maximum inventory storage size
-  inline double MaxInventorySize() { return inventory_.capacity(); }
+  inline double MaxInventorySize() const { return inventory_.capacity(); }
 
   /// @return the current inventory storage size
-  inline double InventorySize() { return inventory_.quantity(); }
+  inline double InventorySize() const { return inventory_.quantity(); }
 
   /**
      determines the amount to request
    */
-  const double RequestAmt();
+  inline double RequestAmt() const {
+    return std::min(capacity_, std::max(0.0, inventory_.space()));
+  }
 
   /**
      sets the capacity of a material generated at any given time step
