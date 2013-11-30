@@ -128,7 +128,7 @@ SourceFacility::AddMatlBids(cyclus::ExchangeContext<cyclus::Material>* ec) {
   BidPortfolio<Material>::Ptr port(new BidPortfolio<Material>());
   
   const std::vector<Request<Material>::Ptr>& requests =
-      ec->RequestsForCommod(out_commod_);
+      ec->requests_by_commod[out_commod_];
 
   std::vector<Request<Material>::Ptr>::const_iterator it;
   for (it = requests.begin(); it != requests.end(); ++it) {

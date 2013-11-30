@@ -182,7 +182,7 @@ SourceFacilityTest::GetContext(int nreqs, std::string commod) {
     using cyclus::Request;
     using test_helpers::trader;
     using test_helpers::get_mat;
-    ec->AddRequest_(Request<Material>::Ptr(
+    ec->AddRequest(Request<Material>::Ptr(
         new Request<Material>(get_mat(), &trader, commod)));
   }
   return ec;
