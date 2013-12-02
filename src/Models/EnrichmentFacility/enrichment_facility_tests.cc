@@ -44,6 +44,7 @@ void EnrichmentFacilityTest::InitParameters() {
   ctx->AddRecipe(in_recipe, recipe);
 
   tails_assay = 0.002;
+  swu_capacity = 100;
   inv_size = 5;
   commodity_price = 0;
 }
@@ -57,6 +58,7 @@ void EnrichmentFacilityTest::SetUpSourceFacility() {
   src_facility->feed_assay(feed_assay);
   src_facility->commodity_price(commodity_price);
   src_facility->SetMaxInventorySize(inv_size);
+  src_facility->swu_capacity(swu_capacity);
 }
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -80,6 +82,7 @@ TEST_F(EnrichmentFacilityTest, InitialState) {
   EXPECT_DOUBLE_EQ(inv_size, src_facility->MaxInventorySize());
   EXPECT_DOUBLE_EQ(commodity_price, src_facility->commodity_price());
   EXPECT_DOUBLE_EQ(0.0, src_facility->InventoryQty());
+  EXPECT_DOUBLE_EQ(swu_capacity, src_facility->swu_capacity());
 }
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -94,6 +97,7 @@ TEST_F(EnrichmentFacilityTest, XMLInit) {
      << "  <output>"
      << "    <outcommodity>" << out_commod << "</outcommodity>"
      << "    <tails_assay>" << tails_assay << "</tails_assay>"
+     << "    <swu_capacity>" << swu_capacity << "</swu_capacity>"
      << "  </output>"
      << "</start>";
 
@@ -111,6 +115,7 @@ TEST_F(EnrichmentFacilityTest, XMLInit) {
   EXPECT_DOUBLE_EQ(inv_size, fac.MaxInventorySize());
   EXPECT_DOUBLE_EQ(commodity_price, fac.commodity_price());
   EXPECT_DOUBLE_EQ(0.0, fac.InventoryQty());
+  EXPECT_DOUBLE_EQ(swu_capacity, fac.swu_capacity());
 }
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -128,7 +133,8 @@ TEST_F(EnrichmentFacilityTest, Clone) {
   EXPECT_DOUBLE_EQ(inv_size, cloned_fac->MaxInventorySize());
   EXPECT_DOUBLE_EQ(commodity_price, cloned_fac->commodity_price());
   EXPECT_DOUBLE_EQ(0.0, cloned_fac->InventoryQty());
-
+  EXPECT_DOUBLE_EQ(swu_capacity, cloned_fac->swu_capacity());
+  
   delete cloned_fac;
 }
 

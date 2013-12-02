@@ -39,19 +39,24 @@ EnrichmentFacility::~EnrichmentFacility() {}
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 std::string EnrichmentFacility::schema() {
   return
-    "  <element name =\"input\">           \n"
-    "    <ref name=\"incommodity\"/>       \n"
-    "    <ref name=\"inrecipe\"/>          \n"
-    "    <optional>                        \n"
-    "      <ref name=\"inventorysize\"/>   \n"
-    "    </optional>                       \n"
-    "  </element>                          \n"
-    "  <element name =\"output\">          \n"
-    "    <ref name=\"outcommodity\"/>      \n"
-    "     <element name =\"tails_assay\">  \n"
-    "       <data type=\"double\"/>        \n"
-    "     </element>                       \n"
-    "  </element>                          \n";
+    "  <element name =\"input\">            \n"
+    "    <ref name=\"incommodity\"/>        \n"
+    "    <ref name=\"inrecipe\"/>           \n"
+    "    <optional>                         \n"
+    "      <ref name=\"inventorysize\"/>    \n"
+    "    </optional>                        \n"
+    "  </element>                           \n"
+    "  <element name =\"output\">           \n"
+    "    <ref name=\"outcommodity\"/>       \n"
+    "     <element name =\"tails_assay\">   \n"
+    "       <data type=\"double\"/>         \n"
+    "     </element>                        \n"
+    "    <optional>                         \n"
+    "      <element name =\"swu_capacity\"> \n"
+    "        <data type=\"double\"/>        \n"
+    "      </element>                       \n"
+    "    </optional>                        \n"
+    "  </element>                           \n";
 }
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -80,9 +85,14 @@ void EnrichmentFacility::InitModuleMembers(cyclus::QueryEngine* qe) {
   data = output->GetElementContent("tails_assay");
   tails_assay(lexical_cast<double>(data));
 
-  Material::Ptr feed = Material::CreateUntracked(0,
-                                                 context()->GetRecipe(in_recipe_));
+  Material::Ptr feed =
+      Material::CreateUntracked(0, context()->GetRecipe(in_recipe_));
   feed_assay(cyclus::enrichment::UraniumAssay(feed));
+
+  double cap = cyclus::GetOptionalQuery<double>(output,
+                                                "swu_capacity",
+                                                numeric_limits<double>::max());
+  swu_capacity(cap);
 }
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -109,7 +119,8 @@ cyclus::Model* EnrichmentFacility::Clone() {
   m->out_commodity(out_commodity());
   m->SetMaxInventorySize(MaxInventorySize());
   m->commodity_price(commodity_price());
-
+  m->swu_capacity(swu_capacity());
+  
   LOG(cyclus::LEV_DEBUG1, "EnrFac") << "Cloned - " << str();
   return m;
 }
@@ -324,6 +335,64 @@ void EnrichmentFacility::HandleTock(int time) {
 //   return cyclus::enrichment::Assays(feed_assay(),
 //                                     cyclus::enrichment::UraniumAssay(rsrc);
 //                                     tails_assay());
+// }
+
+//- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+std::set<cyclus::BidPortfolio<cyclus::Material>::Ptr>
+EnrichmentFacility::AddMatlBids(cyclus::ExchangeContext<cyclus::Material>* ec) {
+  using cyclus::Bid;
+  using cyclus::BidPortfolio;
+  using cyclus::CapacityConstraint;
+  using cyclus::Material;
+  using cyclus::Request;
+  
+  std::set<BidPortfolio<Material>::Ptr> ports;
+  BidPortfolio<Material>::Ptr port(new BidPortfolio<Material>());
+  
+  const std::vector<Request<Material>::Ptr>& requests =
+      ec->requests_by_commod[out_commodity_];
+
+  // std::vector<Request<Material>::Ptr>::const_iterator it;
+  // for (it = requests.begin(); it != requests.end(); ++it) {
+  //   const Request<Material>::Ptr req = *it;
+  //   Material::Ptr offer = GetOffer(req->target());
+  //   Bid<Material>::Ptr bid(new Bid<Material>(req, offer, this));
+  //   port->AddBid(bid);
+  // }
+
+  // CapacityConstraint<Material> swu(swu_capacity_, swu_converter_);
+  // CapacityConstraint<Material> natu(inventory_.quantity(), nat_u_converter_);
+  // port->AddConstraint(swu);
+  // port->AddConstraint(natu);
+  ports.insert(port);
+  return ports;
+}
+
+// //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+// void SourceFacility::PopulateMatlTradeResponses(
+//     const std::vector< cyclus::Trade<cyclus::Material> >& trades,
+//     std::vector<std::pair<cyclus::Trade<cyclus::Material>,
+//                           cyclus::Material::Ptr> >& responses) {
+//   using cyclus::Material;
+//   using cyclus::StateError;
+//   using cyclus::Trade;
+
+//   std::vector< cyclus::Trade<cyclus::Material> >::const_iterator it;
+//   for (it = trades.begin(); it != trades.end(); ++it) {
+//     double qty = it->amt;
+//     current_capacity_ -= qty;
+//     // @TODO we need a policy on negatives..
+//     if (cyclus::IsNegative(current_capacity_)) { 
+//       throw StateError("SourceFac " + name()
+//                        + " is being asked to provide more than its capacity.");
+//     }
+//     Material::Ptr response =
+//         Material::Create(this, qty, context()->GetRecipe(recipe_name_));
+//     responses.push_back(std::make_pair(*it, response));
+//     LOG(cyclus::LEV_INFO5, "SrcFac") << name() << " just received an order"
+//                                      << " for " << qty
+//                                      << " of " << out_commod_;
+//   }
 // }
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -

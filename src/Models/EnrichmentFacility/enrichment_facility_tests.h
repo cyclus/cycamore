@@ -18,7 +18,7 @@ class EnrichmentFacilityTest : public ::testing::Test {
   std::string in_commod, out_commod, in_recipe;
   cyclus::Composition::Ptr recipe;
 
-  double tails_assay, feed_assay, inv_size, commodity_price;
+  double tails_assay, feed_assay, inv_size, commodity_price, swu_capacity;
 
   virtual void SetUp();
   virtual void TearDown();

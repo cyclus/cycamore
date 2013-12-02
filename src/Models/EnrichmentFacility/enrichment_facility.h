@@ -109,6 +109,22 @@ class EnrichmentFacility : public cyclus::FacilityModel {
      @param time is the time to perform the tock
    */
   virtual void HandleTock(int time);
+  
+  /// @brief Responds to each request for this facility's commodity.  If a given
+  /// request is more than this facility's inventory or SWU capacity, it will
+  /// offer its minimum of its capacities.
+  virtual std::set<cyclus::BidPortfolio<cyclus::Material>::Ptr>
+      AddMatlBids(cyclus::ExchangeContext<cyclus::Material>* ec);
+  
+  /// /// @brief respond to each trade with a material enriched to the appropriate
+  /// /// level given this facility's inventory
+  /// ///
+  /// /// @param trades all trades in which this trader is the supplier
+  /// /// @param responses a container to populate with responses to each trade
+  /// virtual void PopulateMatlTradeResponses(
+  ///   const std::vector< cyclus::Trade<cyclus::Material> >& trades,
+  ///   std::vector<std::pair<cyclus::Trade<cyclus::Material>,
+  ///   cyclus::Material::Ptr> >& responses);
   /* --- */
 
   /* --- EnrichmentFacility Members --- */
@@ -143,6 +159,10 @@ class EnrichmentFacility : public cyclus::FacilityModel {
   inline void tails_assay(double assay) { tails_assay_ = assay; }
 
   inline double tails_assay() const { return tails_assay_; }
+
+  inline void swu_capacity(double capacity) { swu_capacity_ = capacity; }
+
+  inline double swu_capacity() const { return swu_capacity_; }
 
   inline void commodity_price(double price) { commodity_price_ = price; }
 
@@ -184,10 +204,10 @@ class EnrichmentFacility : public cyclus::FacilityModel {
   double commodity_price_;
   double feed_assay_;
   double tails_assay_;
-  double capacity_;
+  double swu_capacity_;
   cyclus::ResourceBuff inventory_; // of natl u
   static int entry_;
-
+  /// cyclus::Converter converter_;
   friend class EnrichmentFacilityTest;
 /* --- */
 };
