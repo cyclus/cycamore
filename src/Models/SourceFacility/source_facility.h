@@ -94,7 +94,7 @@ class ExchangeContext;
 class SourceFacility : public cyclus::FacilityModel,
   public cyclus::CommodityProducer {
  public:
-  /* --- Module Methods --- */
+  /* --- Module Members --- */
   /**
      Constructor for the SourceFacility class
      @param ctx the cyclus context for access to simulation-wide parameters
@@ -121,7 +121,7 @@ class SourceFacility : public cyclus::FacilityModel,
   virtual std::string str();
   /* --- */
 
-  /* --- Agent Methods --- */
+  /* --- Agent Members --- */
   /**
      Each facility is prompted to do its beginning-of-time-step
      stuff at the tick of the timer.

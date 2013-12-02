@@ -88,7 +88,7 @@ class Context;
  */
 class SinkFacility : public cyclus::FacilityModel  {
  public:
-  /* --- Module Methods --- */
+  /* --- Module Members --- */
   /**
      Constructor for the SinkFacility class.
      @param ctx the cyclus context for access to simulation-wide parameters
@@ -118,7 +118,7 @@ class SinkFacility : public cyclus::FacilityModel  {
   virtual std::string str();
   /* --- */
 
-  /* --- Agent Methods --- */
+  /* --- Agent Members --- */
   /**
      The SinkFacility can handle the Tick.
 
