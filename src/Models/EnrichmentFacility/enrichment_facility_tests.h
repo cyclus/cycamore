@@ -1,9 +1,11 @@
 // enrichment_facility_tests.cc
+#ifndef CYCAMORE_MODELS_ENRICHMENTFACILITY_ENRICHMENT_FACILITY_TESTS_
+#define CYCAMORE_MODELS_ENRICHMENTFACILITY_ENRICHMENT_FACILITY_TESTS_
+
 #include <gtest/gtest.h>
 
-#include "enrichment_facility.h"
-
 #include "test_context.h"
+#include "enrichment_facility.h"
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 class EnrichmentFacilityTest : public ::testing::Test {
@@ -20,3 +22,5 @@ class EnrichmentFacilityTest : public ::testing::Test {
   void InitParameters();
   void SetUpSourceFacility();
 };
+
+#endif // CYCAMORE_MODELS_ENRICHMENTFACILITY_ENRICHMENT_FACILITY_TESTS_

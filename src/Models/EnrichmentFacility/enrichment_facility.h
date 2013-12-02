@@ -1,19 +1,26 @@
 // enrichment_facility.h
-#ifndef _ENRICHMENTFACILITY_H
-#define _ENRICHMENTFACILITY_H
-
-#include "facility_model.h"
-
-#include "resource_buff.h"
-#include "transaction.h"
-#include "enrichment.h"
+#ifndef CYCAMORE_MODELS_ENRICHMENTFACILITY_ENRICHMENT_FACILITY_H_
+#define CYCAMORE_MODELS_ENRICHMENTFACILITY_ENRICHMENT_FACILITY_H_
 
 #include <string>
-#include <deque>
+
+#include "enrichment.h"
+#include "facility_model.h"
+#include "resource_buff.h"
+#include "transaction.h"
+
+// forward declarations
+namespace cycamore {
+class EnrichmentFacility;
+} // namespace cycamore
+namespace cyclus {  
+class Context;
+} // namespace cyclus
+
+// forward includes
+#include "enrichment_facility_tests.h"
 
 namespace cycamore {
-
-class Context;
 
 /**
    @class EnrichmentFacility
@@ -21,6 +28,7 @@ class Context;
    @section introduction Introduction
  */
 class EnrichmentFacility : public cyclus::FacilityModel {
+  friend class EnrichmentFacilityTest;
  public:
   /* --- Module Members --- */
   /**
@@ -136,6 +144,8 @@ class EnrichmentFacility : public cyclus::FacilityModel {
   static int entry_;
   /* --- */
 };
+
 } // namespace cycamore
-#endif
+
+#endif // CYCAMORE_MODELS_ENRICHMENTFACILITY_ENRICHMENT_FACILITY_H_
 

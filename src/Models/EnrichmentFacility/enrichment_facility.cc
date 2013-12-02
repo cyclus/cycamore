@@ -2,7 +2,12 @@
 // Implements the EnrichmentFacility class
 #include "enrichment_facility.h"
 
-#include "market_model.h"
+#include <sstream>
+#include <limits>
+#include <cmath>
+
+#include <boost/lexical_cast.hpp>
+
 #include "query_engine.h"
 #include "logger.h"
 #include "error.h"
@@ -12,12 +17,6 @@
 #include "material.h"
 #include "mat_query.h"
 #include "timer.h"
-
-#include <sstream>
-#include <limits>
-#include <cmath>
-
-#include <boost/lexical_cast.hpp>
 
 namespace cycamore {
 
