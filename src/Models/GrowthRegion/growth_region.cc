@@ -100,8 +100,8 @@ void GrowthRegion::AddCommodityDemand(cyclus::QueryEngine* qe) {
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 void GrowthRegion::Deploy(cyclus::Model* parent) {
   cyclus::RegionModel::Deploy(parent);
-  for (int i = 0; i != NChildren(); i++) {
-    cyclus::Model* child = children(i);
+  for (int i = 0; i != children().size(); i++) {
+    cyclus::Model* child = children().at(i);
     RegisterCommodityProducerManager(child);
     RegisterBuilder(child);
   }
