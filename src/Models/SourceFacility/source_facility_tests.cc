@@ -37,10 +37,15 @@ void SourceFacilityTest::SetUpSourceFacility() {
   src_facility->commodity(commod);
   src_facility->recipe(recipe_name);
   src_facility->capacity(capacity);
+
+  EXPECT_EQ(src_facility->capacity(), capacity);
+  EXPECT_EQ(src_facility->commodity(), commod);
+  EXPECT_EQ(src_facility->recipe(), recipe_name);
+  EXPECT_EQ(src_facility->current_capacity(), capacity);
 }
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-TEST_F(SourceFacilityTest, Init) {
+TEST_F(SourceFacilityTest, XMLInit) {
   std::stringstream ss;
   ss << "<root>" << "<output>"
      << "<outcommodity>" << commod << "</outcommodity>"
