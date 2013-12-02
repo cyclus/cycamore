@@ -68,117 +68,72 @@ class EnrichmentFacility : public cyclus::FacilityModel {
   virtual void HandleTock(int time);
   /* --- */
 
-  /* --- EnrichmentFacility Methods --- */
+  /* --- EnrichmentFacility Members --- */
   cyclus::enrichment::Assays GetAssays(cyclus::Material::Ptr mat);
 
-  inline void in_commodity(std::string in_commod) {
-    in_commodity_ = in_commod;
-  }
+  inline void in_commodity(std::string in_commod) { in_commodity_ = in_commod; }
 
-  inline std::string in_commodity() {
-    return in_commodity_;
-  }
+  inline std::string in_commodity() const { return in_commodity_; }
 
-  inline void out_commodity(std::string out_commod) {
+  inline void out_commodity(std::string out_commod) { 
     out_commodity_ = out_commod;
   }
 
-  inline std::string out_commodity() {
-    return out_commodity_;
-  }
+  inline std::string out_commodity() const { return out_commodity_; }
 
-  inline void in_recipe(std::string in_recipe) {
-    in_recipe_ = in_recipe;
-  }
+  inline void in_recipe(std::string in_recipe) { in_recipe_ = in_recipe; }
 
-  inline std::string in_recipe() {
-    return in_recipe_;
-  }
+  inline std::string in_recipe() const { return in_recipe_; }
 
-  inline void SetMaxInventorySize(double size) {
-    inventory_.capacity(size);
-  }
+  inline void SetMaxInventorySize(double size) { inventory_.set_capacity(size); }
 
-  inline double MaxInventorySize() {
-    return inventory_.capacity();
-  }
+  inline double MaxInventorySize() const { return inventory_.capacity(); }
 
-  inline double inventoryQty() {
-    return inventory_.quantity();
-  }
+  inline double inventoryQty() const { return inventory_.quantity(); }
 
-  inline void feed_assay(double assay) {
-    feed_assay_ = assay;
-  }
+  inline void feed_assay(double assay) { feed_assay_ = assay; }
 
-  inline double feed_assay() {
-    return feed_assay_;
-  }
+  inline double feed_assay() const { return feed_assay_; }
 
-  inline void tails_assay(double assay) {
-    tails_assay_ = assay;
-  }
+  inline void tails_assay(double assay) { tails_assay_ = assay; }
 
-  inline double tails_assay() {
-    return tails_assay_;
-  }
+  inline double tails_assay() const { return tails_assay_; }
 
-  inline void commodity_price(double price) {
-    commodity_price_ = price;
-  }
+  inline void commodity_price(double price) { commodity_price_ = price; }
 
-  inline double commodity_price() {
-    return commodity_price_;
-  }
+  inline double commodity_price() const { return commodity_price_; }
+
+ private:
+  /// /**
+  ///    sends a transaction as an offer
+  ///  */
+  /// void SendOffer_(cyclus::Transaction trans);
+
+  /// /**
+  ///  */
+  /// void MakeRequest();
+
+  /// /**
+  ///  */
+  /// void MakeOffer();
   /* --- */
 
- protected:
-  /* --- cyclus::Transaction Methods --- */
-  /**
-     sends a transaction as an offer
-   */
-  void SendOffer(cyclus::Transaction trans);
+  /// /**
+  ///  */
+  /// void ProcessOutgoingMaterial_();
 
   /**
    */
-  void MakeRequest();
-
-  /**
-   */
-  void MakeOffer();
-
-  /**
-   */
-  cyclus::Transaction BuildTransaction();
-  /* --- */
-
-  /* --- EnrichmentFacility Members and Methods --- */
-  /**
-   */
-  void ProcessOutgoingMaterial();
-
-  /**
-   */
-  void RecordEnrichment(double natural_u, double swu);
+  void RecordEnrichment_(double natural_u, double swu);
 
   std::string in_commodity_;
-
   std::string out_commodity_;
-
   std::string in_recipe_;
-
   double commodity_price_;
-
   double feed_assay_;
-
   double tails_assay_;
-
   cyclus::ResourceBuff inventory_;
-
   static int entry_;
-
-  ///   A list of orders to be processed on the Tock
-  std::deque<cyclus::Message::Ptr> orders_;
   /* --- */
 };
 } // namespace cycamore

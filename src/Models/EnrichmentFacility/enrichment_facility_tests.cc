@@ -23,8 +23,6 @@ void EnrichmentFacilityTest::SetUp() {
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 void EnrichmentFacilityTest::TearDown() {
   delete src_facility;
-  delete out_commod_market;
-  delete in_commod_market;
 }
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -32,14 +30,7 @@ void EnrichmentFacilityTest::InitParameters() {
   cyclus::Context* ctx = tc_.get();
 
   in_commod = "incommod";
-  in_commod_market = new MockMarket(ctx);
-  in_commod_market->SetCommodity(in_commod);
-  cyclus::MarketModel::RegisterMarket(in_commod_market);
-
   out_commod = "outcommod";
-  out_commod_market = new MockMarket(ctx);
-  out_commod_market->SetCommodity(out_commod);
-  cyclus::MarketModel::RegisterMarket(out_commod_market);
 
   in_recipe = "recipe";
   feed_assay = 0.0072;
