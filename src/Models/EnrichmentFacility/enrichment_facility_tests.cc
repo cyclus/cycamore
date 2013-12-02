@@ -55,7 +55,10 @@ void EnrichmentFacilityTest::SetUpSourceFacility() {
   src_facility->feed_assay(feed_assay);
   src_facility->commodity_price(commodity_price);
   src_facility->SetMaxInventorySize(inv_size);
+}
 
+//- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+TEST_F(EnrichmentFacilityTest, InitialState) {
   EXPECT_EQ(in_recipe, src_facility->in_recipe());
   EXPECT_EQ(in_commod, src_facility->in_commodity());
   EXPECT_EQ(out_commod, src_facility->out_commodity());

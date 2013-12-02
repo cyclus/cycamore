@@ -52,7 +52,7 @@ TEST_F(SinkFacilityTest, InitialState) {
 }
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-TEST_F(SinkFacilityTest, clone) {
+TEST_F(SinkFacilityTest, Clone) {
   using cycamore::SinkFacility;
   SinkFacility* cloned_fac = dynamic_cast<cycamore::SinkFacility*>
                              (src_facility->Clone());
@@ -69,7 +69,7 @@ TEST_F(SinkFacilityTest, clone) {
 }
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-TEST_F(SinkFacilityTest, Init) {
+TEST_F(SinkFacilityTest, XMLInit) {
   std::stringstream ss;
   ss << "<root>" << "<input>"
      << "<commodities>"

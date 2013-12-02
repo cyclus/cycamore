@@ -37,7 +37,10 @@ void SourceFacilityTest::SetUpSourceFacility() {
   src_facility->commodity(commod);
   src_facility->recipe(recipe_name);
   src_facility->capacity(capacity);
+}
 
+//- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+TEST_F(SourceFacilityTest, InitialState) {
   EXPECT_EQ(src_facility->capacity(), capacity);
   EXPECT_EQ(src_facility->commodity(), commod);
   EXPECT_EQ(src_facility->recipe(), recipe_name);
