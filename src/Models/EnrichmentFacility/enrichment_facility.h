@@ -8,6 +8,7 @@
 #include "facility_model.h"
 #include "resource_buff.h"
 #include "transaction.h"
+#include "material.h"
 
 // forward declarations
 namespace cycamore {
@@ -26,9 +27,43 @@ namespace cycamore {
    @class EnrichmentFacility
 
    @section introduction Introduction
+   The EnrichmentFacility is a simple Agent to model the enriching of natural
+   Uranium in a Cyclus simulation. It requests its input recipe (nominally
+   natural Uranium), and produces any amount of enriched Uranium, given the its
+   natural uranium inventory constraint and its SWU capacity constraint.
+
+   @section requests Requests   
+   The EnrichmentFacility will request from the cyclus::ResourceExchange a
+   cyclus::Material whose quantity is its remaining inventory capacity and whose
+   composition is that of its input recipe.
+
+   @section acctrade Accepting Trades
+   The EnrichmentFacility adds any accepted trades to its inventory.
+   
+   @section bids Bids
+   The EnrichmentFacility will bid on any request for its output commodity. It
+   will bid either the request quantity, or the quanity associated with either
+   its SWU constraint or natural uranium constraint, whichever is lower.
+
+   @section extrades Executing Trades
+   The EnrichmentFacility will execute trades for its output commodity in the
+   following manner:
+     #. Determine the trade's quantity and product assay
+     #. Determine the natural Uranium and SWU requires to create that product
+     #. Remove the required quantity of natural Uranium from its inventory
+     #. Extract the appropriate composition of enriched Uranium
+     #. Send the enriched Uranium as the trade resource
+   
+   @section gotchas Gotchas
+   #. In its current form, the EnrichmentFacility can only accept
+   cyclus::Material having the composition of its input recipe. If a
+   cyclus::Material of a different composition is sent to it, an exception will
+   be thrown.
+
+   #. During the trading phase, an exception will be thrown if either the
+   EnrichmentFacility's SWU or inventory constraint is breached.
  */
 class EnrichmentFacility : public cyclus::FacilityModel {
-  friend class EnrichmentFacilityTest;
  public:
   /* --- Module Members --- */
   /**
@@ -93,7 +128,9 @@ class EnrichmentFacility : public cyclus::FacilityModel {
 
   inline std::string in_recipe() const { return in_recipe_; }
 
-  inline void SetMaxInventorySize(double size) { inventory_.set_capacity(size); }
+  inline void SetMaxInventorySize(double size) {
+    inventory_.set_capacity(size);
+  }
 
   inline double MaxInventorySize() const { return inventory_.capacity(); }
 
@@ -131,6 +168,13 @@ class EnrichmentFacility : public cyclus::FacilityModel {
   /// void ProcessOutgoingMaterial_();
 
   /**
+     @brief absorbs a material into the natural uranium inventory
+     @throws if the material is not the same composition as the in_recipe
+   */
+  void Absorb_(cyclus::Material::Ptr mat);
+
+  /**
+     @brief records and enrichment with the cyclus::EventManager
    */
   void RecordEnrichment_(double natural_u, double swu);
 
@@ -140,9 +184,12 @@ class EnrichmentFacility : public cyclus::FacilityModel {
   double commodity_price_;
   double feed_assay_;
   double tails_assay_;
-  cyclus::ResourceBuff inventory_;
+  double capacity_;
+  cyclus::ResourceBuff inventory_; // of natl u
   static int entry_;
-  /* --- */
+
+  friend class EnrichmentFacilityTest;
+/* --- */
 };
 
 } // namespace cycamore

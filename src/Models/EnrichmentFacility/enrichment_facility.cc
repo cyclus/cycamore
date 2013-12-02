@@ -327,6 +327,16 @@ void EnrichmentFacility::HandleTock(int time) {
 // }
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+void EnrichmentFacility::Absorb_(cyclus::Material::Ptr mat) {
+  if (mat->comp() != context()->GetRecipe(in_recipe_)) {
+    throw cyclus::StateError(
+        "EnrichmentFacility recipe and material composition not the same.");
+  } 
+
+  inventory_.Push(mat);    
+}
+
+//- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 void EnrichmentFacility::RecordEnrichment_(double natural_u, double swu) {
   using cyclus::Context;
   using cyclus::Model;
