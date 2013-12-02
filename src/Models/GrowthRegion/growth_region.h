@@ -75,9 +75,6 @@ class GrowthRegion : public cyclus::RegionModel {
   virtual void HandleTick(int time);
   /* --- */
 
-  /// manager for Supply and emand
-  cyclus::SupplyDemandManager sdmanager_;
-
   virtual cyclus::Model* Clone() {
     GrowthRegion* m = new GrowthRegion(context());
     m->InitFrom(this);
@@ -91,6 +88,9 @@ class GrowthRegion : public cyclus::RegionModel {
 
   /// manager for building things
   cyclus::BuildingManager buildmanager_;
+
+  /// manager for Supply and emand
+  cyclus::SupplyDemandManager sdmanager_;
 
   /**
      register a commodity for which production capacity is being
