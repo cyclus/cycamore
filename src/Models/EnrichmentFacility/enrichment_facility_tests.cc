@@ -17,7 +17,7 @@ void EnrichmentFacilityTest::SetUp() {
   src_facility = new cycamore::EnrichmentFacility(ctx);
 
   InitParameters();
-  InitFacility();
+  SetUpSourceFacility();
 }
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -47,8 +47,28 @@ void EnrichmentFacilityTest::InitParameters() {
 }
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-void EnrichmentFacilityTest::InitFacility() {
-  std::stringstream ss("");
+void EnrichmentFacilityTest::SetUpSourceFacility() {
+  src_facility->in_recipe(in_recipe);
+  src_facility->in_commodity(in_commod);
+  src_facility->out_commodity(out_commod);
+  src_facility->tails_assay(tails_assay);
+  src_facility->feed_assay(feed_assay);
+  src_facility->commodity_price(commodity_price);
+  src_facility->SetMaxInventorySize(inv_size);
+
+  EXPECT_EQ(in_recipe, src_facility->in_recipe());
+  EXPECT_EQ(in_commod, src_facility->in_commodity());
+  EXPECT_EQ(out_commod, src_facility->out_commodity());
+  EXPECT_DOUBLE_EQ(tails_assay, src_facility->tails_assay());
+  EXPECT_DOUBLE_EQ(feed_assay, src_facility->feed_assay());
+  EXPECT_DOUBLE_EQ(inv_size, src_facility->MaxInventorySize());
+  EXPECT_DOUBLE_EQ(commodity_price, src_facility->commodity_price());
+  EXPECT_DOUBLE_EQ(0.0, src_facility->InventoryQty());
+}
+
+//- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+TEST_F(EnrichmentFacilityTest, XMLInit) {
+  std::stringstream ss;
   ss << "<start>"
      << "  <input>"
      << "    <incommodity>" << in_commod << "</incommodity>"
@@ -61,27 +81,24 @@ void EnrichmentFacilityTest::InitFacility() {
      << "  </output>"
      << "</start>";
 
-  cyclus::XMLParser parser;
-  parser.Init(ss);
-  cyclus::XMLQueryEngine* engine = new cyclus::XMLQueryEngine(parser);
+  cyclus::XMLParser p;
+  p.Init(ss);
+  cyclus::XMLQueryEngine engine(p);
+  cycamore::EnrichmentFacility fac(tc_.get());
 
-  EXPECT_NO_THROW(src_facility->InitModuleMembers(engine));
-  delete engine;
+  EXPECT_NO_THROW(fac.InitModuleMembers(&engine););
+  EXPECT_EQ(in_recipe, fac.in_recipe());
+  EXPECT_EQ(in_commod, fac.in_commodity());
+  EXPECT_EQ(out_commod, fac.out_commodity());
+  EXPECT_DOUBLE_EQ(tails_assay, fac.tails_assay());
+  EXPECT_DOUBLE_EQ(feed_assay, fac.feed_assay());
+  EXPECT_DOUBLE_EQ(inv_size, fac.MaxInventorySize());
+  EXPECT_DOUBLE_EQ(commodity_price, fac.commodity_price());
+  EXPECT_DOUBLE_EQ(0.0, fac.InventoryQty());
 }
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-TEST_F(EnrichmentFacilityTest, init) {
-  EXPECT_EQ(in_recipe, src_facility->in_recipe());
-  EXPECT_EQ(in_commod, src_facility->in_commodity());
-  EXPECT_EQ(out_commod, src_facility->out_commodity());
-  EXPECT_DOUBLE_EQ(tails_assay, src_facility->tails_assay());
-  EXPECT_DOUBLE_EQ(feed_assay, src_facility->feed_assay());
-  EXPECT_DOUBLE_EQ(inv_size, src_facility->MaxInventorySize());
-  EXPECT_DOUBLE_EQ(commodity_price, src_facility->commodity_price());
-}
-
-//- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-TEST_F(EnrichmentFacilityTest, clone) {
+TEST_F(EnrichmentFacilityTest, Clone) {
   cyclus::Context* ctx = tc_.get();
 
   cycamore::EnrichmentFacility* cloned_fac =
@@ -94,6 +111,7 @@ TEST_F(EnrichmentFacilityTest, clone) {
   EXPECT_DOUBLE_EQ(feed_assay, cloned_fac->feed_assay());
   EXPECT_DOUBLE_EQ(inv_size, cloned_fac->MaxInventorySize());
   EXPECT_DOUBLE_EQ(commodity_price, cloned_fac->commodity_price());
+  EXPECT_DOUBLE_EQ(0.0, cloned_fac->InventoryQty());
 
   delete cloned_fac;
 }

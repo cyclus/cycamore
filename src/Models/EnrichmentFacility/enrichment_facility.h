@@ -89,7 +89,7 @@ class EnrichmentFacility : public cyclus::FacilityModel {
 
   inline double MaxInventorySize() const { return inventory_.capacity(); }
 
-  inline double inventoryQty() const { return inventory_.quantity(); }
+  inline double InventoryQty() const { return inventory_.quantity(); }
 
   inline void feed_assay(double assay) { feed_assay_ = assay; }
 
