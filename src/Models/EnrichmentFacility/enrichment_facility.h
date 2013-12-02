@@ -68,33 +68,10 @@ class EnrichmentFacility : public cyclus::FacilityModel {
   virtual void HandleTock(int time);
   /* --- */
 
-  /* --- cyclus::Transaction Methods --- */
-  /**
-     When this facility receives a message, execute the transaction
-   */
-  virtual void ReceiveMessage(cyclus::Message::Ptr msg);
-
-  /**
-     Transacted resources are extracted through this method
-     @param order the msg/order for which resource(s) are to be prepared
-     @return list of resources to be sent for this order
-   */
-  virtual std::vector<cyclus::Resource::Ptr> RemoveResource(
-    cyclus::Transaction order);
-
-  /**
-     Transacted resources are received through this method
-     @param trans the transaction to which these resource objects belong
-     @param manifest is the set of resources being received
-   */
-  virtual void AddResource(cyclus::Transaction trans,
-                           std::vector<cyclus::Resource::Ptr> manifest);
-  /* --- */
-
   /* --- EnrichmentFacility Methods --- */
   cyclus::enrichment::Assays GetAssays(cyclus::Material::Ptr mat);
 
-  inline void set_in_commodity(std::string in_commod) {
+  inline void in_commodity(std::string in_commod) {
     in_commodity_ = in_commod;
   }
 
@@ -102,7 +79,7 @@ class EnrichmentFacility : public cyclus::FacilityModel {
     return in_commodity_;
   }
 
-  inline void set_out_commodity(std::string out_commod) {
+  inline void out_commodity(std::string out_commod) {
     out_commodity_ = out_commod;
   }
 
@@ -110,7 +87,7 @@ class EnrichmentFacility : public cyclus::FacilityModel {
     return out_commodity_;
   }
 
-  inline void set_in_recipe(std::string in_recipe) {
+  inline void in_recipe(std::string in_recipe) {
     in_recipe_ = in_recipe;
   }
 
@@ -119,7 +96,7 @@ class EnrichmentFacility : public cyclus::FacilityModel {
   }
 
   inline void SetMaxInventorySize(double size) {
-    inventory_.set_capacity(size);
+    inventory_.capacity(size);
   }
 
   inline double MaxInventorySize() {
@@ -130,7 +107,7 @@ class EnrichmentFacility : public cyclus::FacilityModel {
     return inventory_.quantity();
   }
 
-  inline void set_feed_assay(double assay) {
+  inline void feed_assay(double assay) {
     feed_assay_ = assay;
   }
 
@@ -138,7 +115,7 @@ class EnrichmentFacility : public cyclus::FacilityModel {
     return feed_assay_;
   }
 
-  inline void set_tails_assay(double assay) {
+  inline void tails_assay(double assay) {
     tails_assay_ = assay;
   }
 
@@ -146,7 +123,7 @@ class EnrichmentFacility : public cyclus::FacilityModel {
     return tails_assay_;
   }
 
-  inline void set_commodity_price(double price) {
+  inline void commodity_price(double price) {
     commodity_price_ = price;
   }
 

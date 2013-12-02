@@ -166,7 +166,7 @@ class SourceFacility : public cyclus::FacilityModel,
      sets the output commodity name
      @param name the commodity name
    */
-  inline void set_commodity(std::string name) { out_commod_ = name; }
+  inline void commodity(std::string name) { out_commod_ = name; }
 
   /// @return the output commodity
   inline std::string commodity() const { return out_commod_; }
@@ -175,7 +175,7 @@ class SourceFacility : public cyclus::FacilityModel,
      sets the capacity of a material generated at any given time step
      @param capacity the production capacity
    */
-  inline void set_capacity(double capacity) {
+  inline void capacity(double capacity) {
     capacity_ = capacity;
     current_capacity_ = capacity_;
   }
@@ -187,7 +187,7 @@ class SourceFacility : public cyclus::FacilityModel,
      sets the name of the recipe to be produced
      @param name the recipe name
    */
-  inline void set_recipe(std::string name) { recipe_name_ = name; }
+  inline void recipe(std::string name) { recipe_name_ = name; }
 
   /// @return the name of the output recipe
   inline std::string recipe() const { return recipe_name_; }

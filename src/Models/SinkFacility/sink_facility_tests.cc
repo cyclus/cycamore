@@ -35,7 +35,7 @@ void SinkFacilityTest::SetUpSinkFacility() {
   src_facility = new SinkFacility(tc_.get());
   src_facility->AddCommodity(commod1_);
   src_facility->AddCommodity(commod2_);
-  src_facility->set_capacity(capacity_);
+  src_facility->capacity(capacity_);
   src_facility->SetMaxInventorySize(inv_);
 }
 
@@ -133,7 +133,7 @@ TEST_F(SinkFacilityTest, EmptyRequests) {
   using cyclus::Material;
   using cyclus::RequestPortfolio;
 
-  src_facility->set_capacity(0);
+  src_facility->capacity(0);
   std::set<RequestPortfolio<Material>::Ptr> ports =
       src_facility->AddMatlRequests();
   EXPECT_TRUE(ports.empty());

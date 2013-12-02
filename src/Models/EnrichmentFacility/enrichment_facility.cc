@@ -66,8 +66,8 @@ void EnrichmentFacility::InitModuleMembers(cyclus::QueryEngine* qe) {
   string data;
 
   cyclus::QueryEngine* input = qe->QueryElement("input");
-  set_in_commodity(input->GetElementContent("incommodity"));
-  set_in_recipe(input->GetElementContent("inrecipe"));
+  in_commodity(input->GetElementContent("incommodity"));
+  in_recipe(input->GetElementContent("inrecipe"));
 
   double limit =
     cyclus::GetOptionalQuery<double>(input,
@@ -76,14 +76,14 @@ void EnrichmentFacility::InitModuleMembers(cyclus::QueryEngine* qe) {
   SetMaxInventorySize(limit);
 
   cyclus::QueryEngine* output = qe->QueryElement("output");
-  set_out_commodity(output->GetElementContent("outcommodity"));
+  out_commodity(output->GetElementContent("outcommodity"));
 
   data = output->GetElementContent("tails_assay");
-  set_tails_assay(lexical_cast<double>(data));
+  tails_assay(lexical_cast<double>(data));
 
   Material::Ptr feed = Material::CreateUntracked(0,
                                                  context()->GetRecipe(in_recipe_));
-  set_feed_assay(cyclus::enrichment::UraniumAssay(feed));
+  feed_assay(cyclus::enrichment::UraniumAssay(feed));
 }
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -103,13 +103,13 @@ cyclus::Model* EnrichmentFacility::Clone() {
   EnrichmentFacility* m = new EnrichmentFacility(*this);
   m->InitFrom(this);
 
-  m->set_tails_assay(tails_assay());
-  m->set_feed_assay(feed_assay());
-  m->set_in_commodity(in_commodity());
-  m->set_in_recipe(in_recipe());
-  m->set_out_commodity(out_commodity());
+  m->tails_assay(tails_assay());
+  m->feed_assay(feed_assay());
+  m->in_commodity(in_commodity());
+  m->in_recipe(in_recipe());
+  m->out_commodity(out_commodity());
   m->SetMaxInventorySize(MaxInventorySize());
-  m->set_commodity_price(commodity_price());
+  m->commodity_price(commodity_price());
 
   LOG(cyclus::LEV_DEBUG1, "EnrFac") << "Cloned - " << str();
   return m;

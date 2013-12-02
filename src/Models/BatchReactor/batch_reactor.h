@@ -124,7 +124,7 @@ class BatchReactor : public cyclus::FacilityModel,
      set the cycle length
      @param time the cycle length time
    */
-  void set_cycle_length(int time);
+  void cycle_length(int time);
 
   /**
      @return the cycle length
@@ -135,7 +135,7 @@ class BatchReactor : public cyclus::FacilityModel,
      set the time required to refuel the reactor
      @param time the refuel delay time
    */
-  void set_refuel_delay(int time);
+  void refuel_delay(int time);
 
   /**
      @return the refuel delay time
@@ -146,7 +146,7 @@ class BatchReactor : public cyclus::FacilityModel,
      set the input core loading
      @param size the core loading size in kilograms
    */
-  void set_in_core_loading(double size);
+  void in_core_loading(double size);
 
   /**
      @return the input core loading in kilograms
@@ -157,7 +157,7 @@ class BatchReactor : public cyclus::FacilityModel,
      set the output core loading
      @param size the core loading size out kilograms
    */
-  void set_out_core_loading(double size);
+  void out_core_loading(double size);
 
   /**
      @return the output core loading out kilograms
@@ -168,7 +168,7 @@ class BatchReactor : public cyclus::FacilityModel,
      set the number of batches per core
      @param n the number of batches to set
    */
-  void set_batches_per_core(int n);
+  void batches_per_core(int n);
 
   /**
      @return the number of batches per core
@@ -184,7 +184,7 @@ class BatchReactor : public cyclus::FacilityModel,
      set the input commodity
      @param name the commodity name
    */
-  void set_in_commodity(std::string name);
+  void in_commodity(std::string name);
 
   /**
      @return the input commodity
@@ -195,7 +195,7 @@ class BatchReactor : public cyclus::FacilityModel,
      set the input recipe
      @param name the recipe name
    */
-  void set_in_recipe(std::string name);
+  void in_recipe(std::string name);
 
   /**
      @return the input recipe
@@ -206,7 +206,7 @@ class BatchReactor : public cyclus::FacilityModel,
      set the output commodity
      @param name the commodity name
    */
-  void set_out_commodity(std::string name);
+  void out_commodity(std::string name);
 
   /**
      @return the output commodity
@@ -217,7 +217,7 @@ class BatchReactor : public cyclus::FacilityModel,
      set the output recipe
      @param name the recipe name
    */
-  void set_out_recipe(std::string name);
+  void out_recipe(std::string name);
 
   /**
      @return the output recipe
@@ -302,7 +302,7 @@ class BatchReactor : public cyclus::FacilityModel,
   /**
      resets the cycle timer
    */
-  void reset_cycle_timer();
+  void recycle_timer();
 
   /**
      return true if the cycle timer is >= the

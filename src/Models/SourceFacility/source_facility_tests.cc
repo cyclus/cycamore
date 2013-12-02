@@ -34,9 +34,9 @@ void SourceFacilityTest::InitParameters() {
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 void SourceFacilityTest::SetUpSourceFacility() {
   src_facility = new cycamore::SourceFacility(tc.get());
-  src_facility->set_commodity(commod);
-  src_facility->set_recipe(recipe_name);
-  src_facility->set_capacity(capacity);
+  src_facility->commodity(commod);
+  src_facility->recipe(recipe_name);
+  src_facility->capacity(capacity);
 }
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -

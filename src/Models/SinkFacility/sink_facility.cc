@@ -59,11 +59,11 @@ void SinkFacility::InitModuleMembers(cyclus::QueryEngine* qe) {
     AddCommodity(commodities->GetElementContent(query, i));
   }
 
-  double capacity =
+  double cap =
     cyclus::GetOptionalQuery<double>(input,
                                      "input_capacity",
                                      numeric_limits<double>::max());
-  set_capacity(capacity);
+  capacity(cap);
 
   double size =
     cyclus::GetOptionalQuery<double>(input,
@@ -97,7 +97,7 @@ cyclus::Model* SinkFacility::Clone() {
   SinkFacility* m = new SinkFacility(*this);
   m->InitFrom(this);
 
-  m->set_capacity(capacity());
+  m->capacity(capacity());
   m->SetMaxInventorySize(MaxInventorySize());
   m->in_commods_ = in_commods_;
 

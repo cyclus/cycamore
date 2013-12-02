@@ -50,19 +50,19 @@ void SourceFacility::InitModuleMembers(cyclus::QueryEngine* qe) {
   using boost::lexical_cast;
   cyclus::QueryEngine* output = qe->QueryElement("output");
 
-  set_recipe(output->GetElementContent("recipe"));
+  recipe(output->GetElementContent("recipe"));
 
   string data = output->GetElementContent("outcommodity");
-  set_commodity(data);
+  commodity(data);
   cyclus::Commodity commod(data);
   cyclus::CommodityProducer::AddCommodity(commod);
 
-  double capacity =
+  double cap =
     cyclus::GetOptionalQuery<double>(output,
                                      "output_capacity",
                                      numeric_limits<double>::max());
-  cyclus::CommodityProducer::SetCapacity(commod, capacity);
-  set_capacity(capacity);
+  cyclus::CommodityProducer::SetCapacity(commod, cap);
+  capacity(cap);
   current_capacity_ = capacity_;
 }
 
@@ -82,9 +82,9 @@ cyclus::Model* SourceFacility::Clone() {
   SourceFacility* m = new SourceFacility(*this);
   m->InitFrom(this);
 
-  m->set_commodity(commodity());
-  m->set_capacity(capacity());
-  m->set_recipe(recipe());
+  m->commodity(commodity());
+  m->capacity(capacity());
+  m->recipe(recipe());
   m->CopyProducedCommoditiesFrom(this);
   m->current_capacity_ = capacity();
   

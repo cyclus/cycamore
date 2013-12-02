@@ -35,9 +35,9 @@ BatchReactor::BatchReactor(cyclus::Context* ctx)
       out_recipe_(""),
       cycle_timer_(0),
       phase_(INIT) {
-  preCore_.set_capacity(cyclus::kBuffInfinity);
-  inCore_.set_capacity(cyclus::kBuffInfinity);
-  postCore_.set_capacity(cyclus::kBuffInfinity);
+  preCore_.capacity(cyclus::kBuffInfinity);
+  inCore_.capacity(cyclus::kBuffInfinity);
+  postCore_.capacity(cyclus::kBuffInfinity);
   if (phase_names_.size() < 1) {
     SetUpPhaseNames();
   }
@@ -99,30 +99,30 @@ void BatchReactor::InitModuleMembers(cyclus::QueryEngine* qe) {
   using std::string;
   using boost::lexical_cast;
   cyclus::QueryEngine* input = qe->QueryElement("fuel_input");
-  set_in_commodity(input->GetElementContent("incommodity"));
-  set_in_recipe(input->GetElementContent("inrecipe"));
+  in_commodity(input->GetElementContent("incommodity"));
+  in_recipe(input->GetElementContent("inrecipe"));
 
   cyclus::QueryEngine* output = qe->QueryElement("fuel_output");
-  set_out_commodity(output->GetElementContent("outcommodity"));
-  set_out_recipe(output->GetElementContent("outrecipe"));
+  out_commodity(output->GetElementContent("outcommodity"));
+  out_recipe(output->GetElementContent("outrecipe"));
 
   string data;
   data = qe->GetElementContent("cyclelength");
-  set_cycle_length(lexical_cast<int>(data));
+  cycle_length(lexical_cast<int>(data));
 
   int delay =
       cyclus::GetOptionalQuery<int>(qe, "refueldelay", refuel_delay());
-  set_refuel_delay(delay);
+  refuel_delay(delay);
 
   data = qe->GetElementContent("incoreloading");
-  set_in_core_loading(lexical_cast<double>(data));
+  in_core_loading(lexical_cast<double>(data));
 
   double loading = 
       cyclus::GetOptionalQuery<double>(qe, "outcoreloading", in_core_loading());
-  set_out_core_loading(loading);
+  out_core_loading(loading);
 
   data = qe->GetElementContent("batchespercore");
-  set_batches_per_core(lexical_cast<int>(data));
+  batches_per_core(lexical_cast<int>(data));
 
   cyclus::QueryEngine* commodity = qe->QueryElement("commodity_production");
   cyclus::Commodity commod(commodity->GetElementContent("commodity"));
@@ -156,15 +156,15 @@ cyclus::Model* BatchReactor::Clone() {
   BatchReactor* m = new BatchReactor(context());
   m->InitFrom(this);
 
-  m->set_cycle_length(cycle_length());
-  m->set_refuel_delay(refuel_delay());
-  m->set_in_core_loading(in_core_loading());
-  m->set_out_core_loading(out_core_loading());
-  m->set_batches_per_core(batches_per_core());
-  m->set_in_commodity(in_commodity());
-  m->set_out_commodity(out_commodity());
-  m->set_in_recipe(in_recipe());
-  m->set_out_recipe(out_recipe());
+  m->cycle_length(cycle_length());
+  m->refuel_delay(refuel_delay());
+  m->in_core_loading(in_core_loading());
+  m->out_core_loading(out_core_loading());
+  m->batches_per_core(batches_per_core());
+  m->in_commodity(in_commodity());
+  m->out_commodity(out_commodity());
+  m->in_recipe(in_recipe());
+  m->out_recipe(out_recipe());
   m->CopyProducedCommoditiesFrom(this);
 
   return m;
@@ -173,9 +173,9 @@ cyclus::Model* BatchReactor::Clone() {
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 void BatchReactor::Deploy(cyclus::Model* parent) {
   FacilityModel::Deploy(parent);
-  preCore_.set_capacity(in_core_loading());
-  inCore_.set_capacity(in_core_loading());
-  reset_cycle_timer();
+  preCore_.capacity(in_core_loading());
+  inCore_.capacity(in_core_loading());
+  recycle_timer();
   SetPhase(BEGIN);
   LOG(cyclus::LEV_DEBUG2, "BReact") << "Batch Reactor " << name()
                                     << " is entering the simuluation with members:";
@@ -277,7 +277,7 @@ void BatchReactor::HandleTock(int time) {
       if (CoreFilled()) {
 
         SetPhase(OPERATION);
-        reset_cycle_timer();
+        recycle_timer();
       } else {
         SetPhase(WAITING);
       }
@@ -290,7 +290,7 @@ void BatchReactor::HandleTock(int time) {
       LoadCore();
       if (time_delayed_ > refuel_delay() && CoreFilled()) {
         SetPhase(OPERATION);
-        reset_cycle_timer();
+        recycle_timer();
       } else {
         ++time_delayed_;
       }
@@ -359,7 +359,7 @@ void BatchReactor::AddResource(cyclus::Transaction trans,
 }
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-void BatchReactor::set_cycle_length(int time) {
+void BatchReactor::cycle_length(int time) {
   cycle_length_ = time;
 }
 
@@ -369,7 +369,7 @@ int BatchReactor::cycle_length() {
 }
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-void BatchReactor::set_refuel_delay(int time) {
+void BatchReactor::refuel_delay(int time) {
   refuel_delay_ = time;
 }
 
@@ -379,7 +379,7 @@ int BatchReactor::refuel_delay() {
 }
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-void BatchReactor::set_in_core_loading(double size) {
+void BatchReactor::in_core_loading(double size) {
   in_core_loading_ = size;
 }
 
@@ -389,7 +389,7 @@ double BatchReactor::in_core_loading() {
 }
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-void BatchReactor::set_out_core_loading(double size) {
+void BatchReactor::out_core_loading(double size) {
   out_core_loading_ = size;
 }
 
@@ -399,7 +399,7 @@ double BatchReactor::out_core_loading() {
 }
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-void BatchReactor::set_batches_per_core(int n) {
+void BatchReactor::batches_per_core(int n) {
   batches_per_core_ = n;
 }
 
@@ -414,7 +414,7 @@ double BatchReactor::BatchLoading() {
 }
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-void BatchReactor::set_in_commodity(std::string name) {
+void BatchReactor::in_commodity(std::string name) {
   in_commodity_ = name;
 }
 
@@ -424,7 +424,7 @@ std::string BatchReactor::in_commodity() {
 }
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-void BatchReactor::set_in_recipe(std::string name) {
+void BatchReactor::in_recipe(std::string name) {
   in_recipe_ = name;
 }
 
@@ -434,7 +434,7 @@ std::string BatchReactor::in_recipe() {
 }
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-void BatchReactor::set_out_commodity(std::string name) {
+void BatchReactor::out_commodity(std::string name) {
   out_commodity_ = name;
 }
 
@@ -444,7 +444,7 @@ std::string BatchReactor::out_commodity() {
 }
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-void BatchReactor::set_out_recipe(std::string name) {
+void BatchReactor::out_recipe(std::string name) {
   out_recipe_ = name;
 }
 
@@ -491,7 +491,7 @@ void BatchReactor::SetUpPhaseNames() {
 }
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-void BatchReactor::reset_cycle_timer() {
+void BatchReactor::recycle_timer() {
   cycle_timer_ = 1;
 }
 

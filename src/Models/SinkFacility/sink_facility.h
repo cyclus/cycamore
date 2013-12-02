@@ -185,7 +185,7 @@ class SinkFacility : public cyclus::FacilityModel  {
      sets the capacity of a material generated at any given time step
      @param capacity the reception capacity
    */
-  inline void set_capacity(double capacity) { capacity_ = capacity; }
+  inline void capacity(double capacity) { capacity_ = capacity; }
 
   /// @return the reception capacity at any given time step
   inline double capacity() const { return capacity_; }
