@@ -4,6 +4,7 @@
 
 #include <string>
 
+#include "capacity_constraint.h"
 #include "enrichment.h"
 #include "facility_model.h"
 #include "resource_buff.h"
@@ -22,6 +23,36 @@ class Context;
 #include "enrichment_facility_tests.h"
 
 namespace cycamore {
+
+class SWUConverter : public cyclus::Converter<cyclus::Material> { 
+ public:
+  SWUConverter(double feed, double tails) : feed_(feed), tails_(tails) {}
+  virtual ~SWUConverter() {}
+  
+  inline virtual double convert(cyclus::Material::Ptr m) {
+    cyclus::enrichment::Assays a(feed_,
+                                 cyclus::enrichment::UraniumAssay(m), tails_);
+    return cyclus::enrichment::SwuRequired(m->quantity(), a);
+  }
+
+ private:
+  double feed_, tails_;
+};
+
+class NatUConverter : public cyclus::Converter<cyclus::Material> { 
+ public:
+  NatUConverter(double feed, double tails) : feed_(feed), tails_(tails) {}
+  virtual ~NatUConverter() {}
+  
+  inline virtual double convert(cyclus::Material::Ptr m) {
+    cyclus::enrichment::Assays a(feed_,
+                                 cyclus::enrichment::UraniumAssay(m), tails_);
+    return cyclus::enrichment::FeedQty(m->quantity(), a);
+  }
+
+ private:
+  double feed_, tails_;
+};
 
 /**
    @class EnrichmentFacility

@@ -29,6 +29,7 @@ EnrichmentFacility::EnrichmentFacility(cyclus::Context* ctx)
     commodity_price_(0),
     tails_assay_(0),
     feed_assay_(0),
+    swu_capacity_(0),
     in_commodity_(""),
     in_recipe_(""),
     out_commodity_("") {}
@@ -100,6 +101,7 @@ std::string EnrichmentFacility::str() {
   std::stringstream ss;
   ss << cyclus::FacilityModel::str()
      << " with enrichment facility parameters:"
+     << " * SWU capacity: " << swu_capacity()
      << " * Tails assay: " << tails_assay()
      << " * Feed assay: " << feed_assay()
      << " * Input cyclus::Commodity: " << in_commodity()
@@ -343,6 +345,7 @@ EnrichmentFacility::AddMatlBids(cyclus::ExchangeContext<cyclus::Material>* ec) {
   using cyclus::Bid;
   using cyclus::BidPortfolio;
   using cyclus::CapacityConstraint;
+  using cyclus::Converter;
   using cyclus::Material;
   using cyclus::Request;
   
@@ -360,10 +363,12 @@ EnrichmentFacility::AddMatlBids(cyclus::ExchangeContext<cyclus::Material>* ec) {
   //   port->AddBid(bid);
   // }
 
-  // CapacityConstraint<Material> swu(swu_capacity_, swu_converter_);
-  // CapacityConstraint<Material> natu(inventory_.quantity(), nat_u_converter_);
-  // port->AddConstraint(swu);
-  // port->AddConstraint(natu);
+  Converter<Material>::Ptr sc(new SWUConverter(feed_assay_, tails_assay_));
+  Converter<Material>::Ptr nc(new NatUConverter(feed_assay_, tails_assay_));
+  CapacityConstraint<Material> swu(swu_capacity_, sc);
+  CapacityConstraint<Material> natu(inventory_.quantity(), nc);
+  port->AddConstraint(swu);
+  port->AddConstraint(natu);
   ports.insert(port);
   return ports;
 }
