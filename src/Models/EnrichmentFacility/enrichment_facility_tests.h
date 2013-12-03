@@ -35,6 +35,7 @@ class EnrichmentFacilityTest : public ::testing::Test {
   cyclus::Material::Ptr DoRequest();
   cyclus::Material::Ptr DoBid(cyclus::Material::Ptr mat);
   cyclus::Material::Ptr DoOffer(cyclus::Material::Ptr mat);
+  cyclus::Material::Ptr DoEnrich(cyclus::Material::Ptr mat, double qty);
   /// @param nreqs the total number of requests
   /// @param nvalid the number of requests that are valid
   boost::shared_ptr< cyclus::ExchangeContext<cyclus::Material> >

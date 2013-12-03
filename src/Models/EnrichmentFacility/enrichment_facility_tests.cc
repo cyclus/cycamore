@@ -95,6 +95,12 @@ EnrichmentFacilityTest::DoOffer(cyclus::Material::Ptr mat) {
 }
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+cyclus::Material::Ptr
+EnrichmentFacilityTest::DoEnrich(cyclus::Material::Ptr mat, double qty) {
+  return src_facility->Enrich_(mat, qty);
+}
+
+//- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 TEST_F(EnrichmentFacilityTest, InitialState) {
   EXPECT_EQ(in_recipe, src_facility->in_recipe());
   EXPECT_EQ(in_commod, src_facility->in_commodity());
@@ -384,6 +390,47 @@ EnrichmentFacilityTest::GetContext(int nreqs, int nvalid) {
         new Request<Material>(get_mat(), &trader, out_commod)));
   }
   return ec;
+}
+
+//- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+TEST_F(EnrichmentFacilityTest, Enrich) {
+  // this test asks the facility to enrich a material that results in an amount
+  // of natural uranium required that is exactly its inventory level. that
+  // inventory will be comprised of two materials to test the manifest/absorb
+  // strategy employed in Enrich_.
+  using cyclus::CompMap;
+  using cyclus::Material;
+  using cyclus::MatQuery;
+  using cyclus::Composition;
+  using cyclus::enrichment::Assays;
+  using cyclus::enrichment::UraniumAssay;
+  using cyclus::enrichment::SwuRequired;
+  using cyclus::enrichment::FeedQty;
+
+  double qty = 5; // 5 kg
+  double product_assay = 0.05; // of 5 w/o enriched U
+  cyclus::CompMap v;
+  v[92235] = product_assay;
+  v[92238] = 1 - product_assay;
+  // target qty need not be =
+  Material::Ptr target = cyclus::Material::CreateUntracked(
+      qty + 10, cyclus::Composition::CreateFromMass(v)); 
+
+  Assays assays(feed_assay, UraniumAssay(target), tails_assay);
+  double swu_req = SwuRequired(qty, assays);
+  double natu_req = FeedQty(qty, assays);
+
+  src_facility->SetMaxInventorySize(natu_req);
+  DoAddMat(GetMat(natu_req / 2));
+  DoAddMat(GetMat(natu_req / 2));
+
+  Material::Ptr response;
+  EXPECT_NO_THROW(response = DoEnrich(target, qty));
+
+  MatQuery q(response);
+  EXPECT_EQ(response->quantity(), qty);
+  EXPECT_EQ(q.mass_frac(92235), product_assay);
+  EXPECT_EQ(q.mass_frac(92238), 1 - product_assay);
 }
 
 // //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -

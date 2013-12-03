@@ -217,17 +217,15 @@ class EnrichmentFacility : public cyclus::FacilityModel {
   */
   bool ValidReq(const cyclus::Material::Ptr mat);
 
-  cyclus::enrichment::Assays GetAssays(cyclus::Material::Ptr mat);
-
   inline void in_commodity(std::string in_commod) { in_commod_ = in_commod; }
 
   inline std::string in_commodity() const { return in_commod_; }
 
   inline void out_commodity(std::string out_commod) { 
-    out_commodity_ = out_commod;
+    out_commod_ = out_commod;
   }
 
-  inline std::string out_commodity() const { return out_commodity_; }
+  inline std::string out_commodity() const { return out_commod_; }
 
   inline void in_recipe(std::string in_recipe) { in_recipe_ = in_recipe; }
 
@@ -281,17 +279,22 @@ class EnrichmentFacility : public cyclus::FacilityModel {
   cyclus::Material::Ptr Offer_(cyclus::Material::Ptr req);
 
   /**
+   */
+  cyclus::Material::Ptr Enrich_(cyclus::Material::Ptr mat, double qty);
+
+  /**
      @brief records and enrichment with the cyclus::EventManager
    */
   void RecordEnrichment_(double natural_u, double swu);
 
   std::string in_commod_;
-  std::string out_commodity_;
+  std::string out_commod_;
   std::string in_recipe_;
   double commodity_price_;
   double feed_assay_;
   double tails_assay_;
   double swu_capacity_;
+  double current_swu_capacity_;
   cyclus::ResourceBuff inventory_; // of natl u
   static int entry_;
   friend class EnrichmentFacilityTest;
