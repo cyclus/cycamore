@@ -191,11 +191,11 @@ class EnrichmentFacility : public cyclus::FacilityModel {
       const std::vector< std::pair<cyclus::Trade<cyclus::Material>,
       cyclus::Material::Ptr> >& responses);
   
-  /// /// @brief Responds to each request for this facility's commodity.  If a given
-  /// /// request is more than this facility's inventory or SWU capacity, it will
-  /// /// offer its minimum of its capacities.
-  /// virtual std::set<cyclus::BidPortfolio<cyclus::Material>::Ptr>
-  ///     AddMatlBids(cyclus::ExchangeContext<cyclus::Material>* ec);
+  /// @brief Responds to each request for this facility's commodity.  If a given
+  /// request is more than this facility's inventory or SWU capacity, it will
+  /// offer its minimum of its capacities.
+  virtual std::set<cyclus::BidPortfolio<cyclus::Material>::Ptr>
+      AddMatlBids(cyclus::ExchangeContext<cyclus::Material>* ec);
   
   /// /// @brief respond to each trade with a material enriched to the appropriate
   /// /// level given this facility's inventory
@@ -209,6 +209,14 @@ class EnrichmentFacility : public cyclus::FacilityModel {
   /* --- */
 
   /* --- EnrichmentFacility Members --- */
+  /**
+     @brief Determines if a particular material is a valid request to respond
+     to.  Valid requests must contain U235 and U238 and must have a relative
+     U235-to-U238 ratio less than this facility's tails_assay().
+     @return true if the above description is met by the material
+  */
+  bool ValidReq(const cyclus::Material::Ptr mat);
+
   cyclus::enrichment::Assays GetAssays(cyclus::Material::Ptr mat);
 
   inline void in_commodity(std::string in_commod) { in_commod_ = in_commod; }
@@ -250,35 +258,33 @@ class EnrichmentFacility : public cyclus::FacilityModel {
   inline double commodity_price() const { return commodity_price_; }
 
  private:
-  /// /**
-  ///    sends a transaction as an offer
-  ///  */
-  /// void SendOffer_(cyclus::Transaction trans);
-
-  /// /**
-  ///  */
-  /// void MakeRequest();
-
-  /// /**
-  ///  */
-  /// void MakeOffer();
-  /* --- */
-
-  /// /**
-  ///  */
-  /// void ProcessOutgoingMaterial_();
-
   /**
      @brief adds a material into the natural uranium inventory
      @throws if the material is not the same composition as the in_recipe
    */
   void AddMat_(cyclus::Material::Ptr mat);
 
+  /// /**
+  ///    @brief determines if a particular material would exceed either its SWU or
+  ///    natural Uranium inventory capacity
+  ///  */
+  /// bool ExceedsCapacity_(cyclus::Material::Ptr mat);
+
   /**
      @brief generates a request for this facility given its current state. The
      quantity of the material will be equal to the remaining inventory size.
    */
   cyclus::Material::Ptr Request_();
+  
+  /**
+     @brief Generates a material offer for a given request. The response
+     composition will be comprised only of U235 and U238 at their relative ratio
+     in the requested material. The response quantity will be the same as the
+     requested commodity.
+
+     @param req the requested material being responded to
+   */
+  cyclus::Material::Ptr Offer_(cyclus::Material::Ptr req);
 
   /**
      @brief records and enrichment with the cyclus::EventManager

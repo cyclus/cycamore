@@ -379,39 +379,49 @@ void EnrichmentFacility::AcceptMatlTrades(
   }
 }
 
-// //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-// std::set<cyclus::BidPortfolio<cyclus::Material>::Ptr>
-// EnrichmentFacility::AddMatlBids(cyclus::ExchangeContext<cyclus::Material>* ec) {
-//   using cyclus::Bid;
-//   using cyclus::BidPortfolio;
-//   using cyclus::CapacityConstraint;
-//   using cyclus::Converter;
-//   using cyclus::Material;
-//   using cyclus::Request;
+//- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+std::set<cyclus::BidPortfolio<cyclus::Material>::Ptr>
+EnrichmentFacility::AddMatlBids(cyclus::ExchangeContext<cyclus::Material>* ec) {
+  using cyclus::Bid;
+  using cyclus::BidPortfolio;
+  using cyclus::CapacityConstraint;
+  using cyclus::Converter;
+  using cyclus::Material;
+  using cyclus::Request;
   
-//   std::set<BidPortfolio<Material>::Ptr> ports;
-//   BidPortfolio<Material>::Ptr port(new BidPortfolio<Material>());
+  std::set<BidPortfolio<Material>::Ptr> ports;
+  BidPortfolio<Material>::Ptr port(new BidPortfolio<Material>());
   
-//   const std::vector<Request<Material>::Ptr>& requests =
-//       ec->requests_by_commod[out_commodity_];
+  const std::vector<Request<Material>::Ptr>& requests =
+      ec->requests_by_commod[out_commodity_];
 
-//   // std::vector<Request<Material>::Ptr>::const_iterator it;
-//   // for (it = requests.begin(); it != requests.end(); ++it) {
-//   //   const Request<Material>::Ptr req = *it;
-//   //   Material::Ptr offer = GetOffer(req->target());
-//   //   Bid<Material>::Ptr bid(new Bid<Material>(req, offer, this));
-//   //   port->AddBid(bid);
-//   // }
+  std::vector<Request<Material>::Ptr>::const_iterator it;
+  for (it = requests.begin(); it != requests.end(); ++it) {
+    const Request<Material>::Ptr req = *it;
+    if (ValidReq(req->target())) { 
+      Material::Ptr offer = Offer_(req->target());
+      Bid<Material>::Ptr bid(new Bid<Material>(req, offer, this));
+      port->AddBid(bid);
+    }
+  }
 
-//   Converter<Material>::Ptr sc(new SWUConverter(feed_assay_, tails_assay_));
-//   Converter<Material>::Ptr nc(new NatUConverter(feed_assay_, tails_assay_));
-//   CapacityConstraint<Material> swu(swu_capacity_, sc);
-//   CapacityConstraint<Material> natu(inventory_.quantity(), nc);
-//   port->AddConstraint(swu);
-//   port->AddConstraint(natu);
-//   ports.insert(port);
-//   return ports;
-// }
+  Converter<Material>::Ptr sc(new SWUConverter(feed_assay_, tails_assay_));
+  Converter<Material>::Ptr nc(new NatUConverter(feed_assay_, tails_assay_));
+  CapacityConstraint<Material> swu(swu_capacity_, sc);
+  CapacityConstraint<Material> natu(inventory_.quantity(), nc);
+  port->AddConstraint(swu);
+  port->AddConstraint(natu);
+  ports.insert(port);
+  return ports;
+}
+
+//- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+bool EnrichmentFacility::ValidReq(const cyclus::Material::Ptr mat) {
+  cyclus::MatQuery q(mat);
+  double u235 = q.atom_frac(92235);
+  double u238 = q.atom_frac(92238);
+  return (u238 > 0 && u235 / (u235 + u238) > tails_assay());
+}
 
 // //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 // void SourceFacility::PopulateMatlTradeResponses(
@@ -445,6 +455,16 @@ cyclus::Material::Ptr EnrichmentFacility::Request_() {
   double qty = std::max(0.0, MaxInventorySize() - InventorySize());
   return cyclus::Material::CreateUntracked(qty,
                                            context()->GetRecipe(in_recipe_));
+}
+
+//- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+cyclus::Material::Ptr EnrichmentFacility::Offer_(cyclus::Material::Ptr mat) {
+  cyclus::MatQuery q(mat);
+  cyclus::CompMap comp;
+  comp[92235] = q.atom_frac(92235);
+  comp[92238] = q.atom_frac(92238);
+  return cyclus::Material::CreateUntracked(
+      mat->quantity(), cyclus::Composition::CreateFromAtom(comp));
 }
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -

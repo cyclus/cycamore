@@ -4,9 +4,13 @@
 
 #include <gtest/gtest.h>
 
+#include <boost/shared_ptr.hpp>
+
 #include "test_context.h"
-#include "enrichment_facility.h"
+#include "exchange_context.h"
 #include "material.h"
+
+#include "enrichment_facility.h"
 
 namespace cycamore {
 
@@ -25,8 +29,16 @@ class EnrichmentFacilityTest : public ::testing::Test {
   void InitParameters();
   void SetUpSourceFacility();
   cyclus::Material::Ptr GetMat(double qty);
+  /// @param enr the enrichment percent, i.e. for 5 w/o, enr = 0.05
+  cyclus::Material::Ptr GetReqMat(double qty, double enr);
   void DoAddMat(cyclus::Material::Ptr mat);
   cyclus::Material::Ptr DoRequest();
+  cyclus::Material::Ptr DoBid(cyclus::Material::Ptr mat);
+  cyclus::Material::Ptr DoOffer(cyclus::Material::Ptr mat);
+  /// @param nreqs the total number of requests
+  /// @param nvalid the number of requests that are valid
+  boost::shared_ptr< cyclus::ExchangeContext<cyclus::Material> >
+      GetContext(int nreqs, int nvalid);
 };
 
 } // namespace cycamore

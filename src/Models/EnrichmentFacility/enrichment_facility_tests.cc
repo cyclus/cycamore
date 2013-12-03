@@ -5,6 +5,7 @@
 
 #include "commodity.h"
 #include "facility_model_tests.h"
+#include "mat_query.h"
 #include "model_tests.h"
 #include "resource_helpers.h"
 #include "xml_query_engine.h"
@@ -68,6 +69,16 @@ cyclus::Material::Ptr EnrichmentFacilityTest::GetMat(double qty) {
 }
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+cyclus::Material::Ptr EnrichmentFacilityTest::GetReqMat(double qty,
+                                                        double enr) {
+  cyclus::CompMap v;
+  v[92235] = enr;
+  v[92238] = 1 - enr;
+  return cyclus::Material::CreateUntracked(
+      qty, cyclus::Composition::CreateFromAtom(v));
+}
+
+//- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 void EnrichmentFacilityTest::DoAddMat(cyclus::Material::Ptr mat) {
   src_facility->AddMat_(mat);
 }
@@ -77,6 +88,11 @@ cyclus::Material::Ptr EnrichmentFacilityTest::DoRequest() {
   return src_facility->Request_();
 }
 
+//- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+cyclus::Material::Ptr
+EnrichmentFacilityTest::DoOffer(cyclus::Material::Ptr mat) {
+  return src_facility->Offer_(mat);
+}
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 TEST_F(EnrichmentFacilityTest, InitialState) {
@@ -175,6 +191,59 @@ TEST_F(EnrichmentFacilityTest, Request) {
   EXPECT_EQ(mat->comp(), tc_.get()->GetRecipe(in_recipe));
 }
 
+//- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - 
+TEST_F(EnrichmentFacilityTest, Offer) {
+  using cyclus::CompMap;
+  using cyclus::Composition;
+  using cyclus::Material;
+  using cyclus::MatQuery;
+  
+  double qty = 4.5;
+  double u234 = 1.0;
+  double u235 = 1.0;
+  double u238 = 2.0;
+  cyclus::CompMap v;
+  v[92234] = u234;
+  v[92235] = u235;
+  v[92238] = u238;
+  Material::Ptr mat =
+      DoOffer(Material::CreateUntracked(qty, Composition::CreateFromAtom(v)));
+
+  MatQuery q(mat);
+
+  EXPECT_DOUBLE_EQ(q.atom_frac(92234), 0.0);
+  EXPECT_DOUBLE_EQ(q.atom_frac(92235), u235 / (u235 + u238));
+  EXPECT_DOUBLE_EQ(q.atom_frac(92238), u238 / (u235 + u238));
+  EXPECT_DOUBLE_EQ(mat->quantity(), qty);
+}
+
+//- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - 
+TEST_F(EnrichmentFacilityTest, ValidReq) {
+  using cyclus::CompMap;
+  using cyclus::Composition;
+  using cyclus::Material;
+
+  double qty = 4.5; // some magic number
+  
+  cyclus::CompMap v1;
+  v1[92235] = 1;
+  Material::Ptr mat = Material::CreateUntracked(qty,
+                                                Composition::CreateFromAtom(v1));
+  EXPECT_TRUE(!src_facility->ValidReq(mat)); // u238 = 0
+  
+  cyclus::CompMap v2;
+  v2[92235] = tails_assay;
+  v2[92238] = 1 - tails_assay;
+  mat = Material::CreateUntracked(qty, Composition::CreateFromAtom(v2));
+  EXPECT_TRUE(!src_facility->ValidReq(mat)); // u235 / (u235 + u238) <= tails_assay
+
+  cyclus::CompMap v3;
+  v3[92235] = 1;
+  v3[92238] = 1;
+  mat = Material::CreateUntracked(qty, Composition::CreateFromAtom(v3));
+  EXPECT_TRUE(src_facility->ValidReq(mat)); // valid
+}
+
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 TEST_F(EnrichmentFacilityTest, EmptyRequests) {
   using cyclus::Material;
@@ -194,6 +263,8 @@ TEST_F(EnrichmentFacilityTest, AddRequests) {
   using cyclus::CapacityConstraint;
   using cyclus::Converter;
   using cyclus::Material;
+
+  // a request is made for the current available inventory amount
   
   std::set<RequestPortfolio<Material>::Ptr> ports =
       src_facility->AddMatlRequests();
@@ -224,7 +295,7 @@ TEST_F(EnrichmentFacilityTest, Accept) {
   using cyclus::Trade;
   using test_helpers::trader;
 
-  // an enrichment facility gets two requests, each for 1/3 of its inv size
+  // an enrichment facility gets two trades, each for 1/3 of its inv size
   // note that comp != recipe is covered by AddMat tests
   // note that qty >= inv capacity is covered by ResourceBuff tests
   
@@ -250,18 +321,70 @@ TEST_F(EnrichmentFacilityTest, Accept) {
   EXPECT_DOUBLE_EQ(qty * 2, src_facility->InventorySize());
 }
 
-// AddMatlBids
+//- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+TEST_F(EnrichmentFacilityTest, AddBids) {
+  using cyclus::Bid;
+  using cyclus::BidPortfolio;
+  using cyclus::CapacityConstraint;
+  using cyclus::Converter;
+  using cyclus::ExchangeContext;
+  using cyclus::Material;
 
-  // const std::set< CapacityConstraint<Material> >& constraints =
-  //     ports.begin()->get()->constraints();
-  // Converter<Material>::Ptr sc(new SWUConverter(feed_assay, tails_assay));
-  // Converter<Material>::Ptr nc(new NatUConverter(feed_assay, tails_assay));
-  // CapacityConstraint<Material> swu(swu_capacity, sc);
-  // CapacityConstraint<Material> natu(inv_size, nc);
-  // EXPECT_EQ(constraints.size(), 2);
-  // EXPECT_EQ(constraints.count(swu), 1);
-  // EXPECT_EQ(constraints.count(natu), 1);
+  // an enrichment facility bids on nreqs requests
+  // note that bid response is covered by Bid tests  
+  // note that validity of requests is covered by ValidReq tests 
+  int nreqs = 5;
+  int nvalid = 4;
+  
+  // set up inventory
+  double current_size = inv_size / 2; // test something other than max size
+  DoAddMat(GetMat(current_size));
+  
+  boost::shared_ptr< cyclus::ExchangeContext<Material> >
+      ec = GetContext(nreqs, nvalid);
+  
+  std::set<BidPortfolio<Material>::Ptr> ports =
+      src_facility->AddMatlBids(ec.get());
 
+  ASSERT_TRUE(ports.size() > 0);
+  EXPECT_EQ(ports.size(), 1);
+
+  BidPortfolio<Material>::Ptr port = *ports.begin();
+  EXPECT_EQ(port->bidder(), src_facility);
+  EXPECT_EQ(port->bids().size(), nvalid);
+  
+  const std::set< CapacityConstraint<Material> >& constrs = port->constraints();
+  Converter<Material>::Ptr sc(new SWUConverter(feed_assay, tails_assay));
+  Converter<Material>::Ptr nc(new NatUConverter(feed_assay, tails_assay));
+  CapacityConstraint<Material> swu(swu_capacity, sc);
+  CapacityConstraint<Material> natu(current_size, nc);
+  EXPECT_EQ(constrs.size(), 2);
+  EXPECT_TRUE(*constrs.begin() == swu || *(++constrs.begin()) == swu);
+  EXPECT_TRUE(*constrs.begin() == natu || *(++constrs.begin()) == natu);
+}
+
+//- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+boost::shared_ptr< cyclus::ExchangeContext<cyclus::Material> >
+EnrichmentFacilityTest::GetContext(int nreqs, int nvalid) {
+  using cyclus::ExchangeContext;
+  using cyclus::Material;
+  using cyclus::Request;
+  using test_helpers::trader;
+  using test_helpers::get_mat;
+  
+  boost::shared_ptr< ExchangeContext<Material> >
+      ec(new ExchangeContext<Material>());
+  for (int i = 0; i < nvalid; i++) {
+    ec->AddRequest(Request<Material>::Ptr(
+        new Request<Material>(GetReqMat(1.0, 0.05), &trader, out_commod)));
+  }  
+  for (int i = 0; i < nreqs - nvalid; i++) {
+    ec->AddRequest(Request<Material>::Ptr(
+        // get_mat returns a material of only u235, which is not valid
+        new Request<Material>(get_mat(), &trader, out_commod)));
+  }
+  return ec;
+}
 
 // //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 // TEST_F(SourceFacilityTest, Response) {
@@ -315,23 +438,6 @@ TEST_F(EnrichmentFacilityTest, Accept) {
 //   // // reset!
 //   // src_facility->HandleTick(1);
 //   // ASSERT_DOUBLE_EQ(src_facility->current_capacity(), capacity);
-// }
-
-// //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-// boost::shared_ptr< cyclus::ExchangeContext<cyclus::Material> >
-// SourceFacilityTest::GetContext(int nreqs, std::string commod) {
-//   double qty = 3;
-//   boost::shared_ptr< cyclus::ExchangeContext<cyclus::Material> >
-//                      ec(new cyclus::ExchangeContext<cyclus::Material>());
-//   for (int i = 0; i < nreqs; i++) {
-//     using cyclus::Material;
-//     using cyclus::Request;
-//     using test_helpers::trader;
-//     using test_helpers::get_mat;
-//     ec->AddRequest(Request<Material>::Ptr(
-//         new Request<Material>(get_mat(), &trader, commod)));
-//   }
-//   return ec;
 // }
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -

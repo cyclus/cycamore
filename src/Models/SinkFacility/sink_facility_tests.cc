@@ -114,7 +114,6 @@ TEST_F(SinkFacilityTest, Requests) {
       ports.begin()->get()->requests();
   ASSERT_EQ(requests.size(), 2);
 
-  int i = 0;  
   for (int i = 0; i < ncommods_; ++i) {
     Request<Material>::Ptr req = *(requests.begin() + i);
     EXPECT_EQ(req->requester(), src_facility);
