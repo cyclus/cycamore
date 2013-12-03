@@ -87,7 +87,7 @@ TEST_F(EnrichmentFacilityTest, InitialState) {
   EXPECT_DOUBLE_EQ(feed_assay, src_facility->feed_assay());
   EXPECT_DOUBLE_EQ(inv_size, src_facility->MaxInventorySize());
   EXPECT_DOUBLE_EQ(commodity_price, src_facility->commodity_price());
-  EXPECT_DOUBLE_EQ(0.0, src_facility->InventoryQty());
+  EXPECT_DOUBLE_EQ(0.0, src_facility->InventorySize());
   EXPECT_DOUBLE_EQ(swu_capacity, src_facility->swu_capacity());
 }
 
@@ -120,7 +120,7 @@ TEST_F(EnrichmentFacilityTest, XMLInit) {
   EXPECT_DOUBLE_EQ(feed_assay, fac.feed_assay());
   EXPECT_DOUBLE_EQ(inv_size, fac.MaxInventorySize());
   EXPECT_DOUBLE_EQ(commodity_price, fac.commodity_price());
-  EXPECT_DOUBLE_EQ(0.0, fac.InventoryQty());
+  EXPECT_DOUBLE_EQ(0.0, fac.InventorySize());
   EXPECT_DOUBLE_EQ(swu_capacity, fac.swu_capacity());
 }
 
@@ -138,7 +138,7 @@ TEST_F(EnrichmentFacilityTest, Clone) {
   EXPECT_DOUBLE_EQ(feed_assay, cloned_fac->feed_assay());
   EXPECT_DOUBLE_EQ(inv_size, cloned_fac->MaxInventorySize());
   EXPECT_DOUBLE_EQ(commodity_price, cloned_fac->commodity_price());
-  EXPECT_DOUBLE_EQ(0.0, cloned_fac->InventoryQty());
+  EXPECT_DOUBLE_EQ(0.0, cloned_fac->InventorySize());
   EXPECT_DOUBLE_EQ(swu_capacity, cloned_fac->swu_capacity());
   
   delete cloned_fac;
@@ -180,7 +180,7 @@ TEST_F(EnrichmentFacilityTest, EmptyRequests) {
   using cyclus::Material;
   using cyclus::RequestPortfolio;
 
-  src_facility->SetMaxInventorySize(src_facility->InventoryQty());
+  src_facility->SetMaxInventorySize(src_facility->InventorySize());
   std::set<RequestPortfolio<Material>::Ptr> ports =
       src_facility->AddMatlRequests();
   ports = src_facility->AddMatlRequests();
@@ -214,6 +214,40 @@ TEST_F(EnrichmentFacilityTest, AddRequests) {
   CapacityConstraint<Material> c(inv_size);
   EXPECT_EQ(constraints.size(), 1);
   EXPECT_EQ(*constraints.begin(), c);
+}
+
+//- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+TEST_F(EnrichmentFacilityTest, Accept) {
+  using cyclus::Bid;
+  using cyclus::Material;
+  using cyclus::Request;
+  using cyclus::Trade;
+  using test_helpers::trader;
+
+  // an enrichment facility gets two requests, each for 1/3 of its inv size
+  // note that comp != recipe is covered by AddMat tests
+  // note that qty >= inv capacity is covered by ResourceBuff tests
+  
+  double qty = inv_size / 3;
+  std::vector< std::pair<cyclus::Trade<cyclus::Material>,
+                         cyclus::Material::Ptr> > responses;
+
+  Request<Material>::Ptr req1(
+      new Request<Material>(DoRequest(), src_facility, in_commod));
+  Bid<Material>::Ptr bid1(new Bid<Material>(req1, GetMat(qty), &trader));
+
+  Request<Material>::Ptr req2(
+      new Request<Material>(DoRequest(), src_facility, in_commod));
+  Bid<Material>::Ptr bid2(new Bid<Material>(req2, GetMat(qty), &trader));
+
+  Trade<Material> trade1(req1, bid1, qty);
+  responses.push_back(std::make_pair(trade1, GetMat(qty)));
+  Trade<Material> trade2(req2, bid2, qty);
+  responses.push_back(std::make_pair(trade2, GetMat(qty)));
+
+  EXPECT_DOUBLE_EQ(0.0, src_facility->InventorySize());
+  src_facility->AcceptMatlTrades(responses);  
+  EXPECT_DOUBLE_EQ(qty * 2, src_facility->InventorySize());
 }
 
 // AddMatlBids

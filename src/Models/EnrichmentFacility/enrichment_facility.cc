@@ -366,6 +366,19 @@ EnrichmentFacility::AddMatlRequests() {
   return ports;
 }
 
+//- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - 
+void EnrichmentFacility::AcceptMatlTrades(
+    const std::vector< std::pair<cyclus::Trade<cyclus::Material>,
+                                 cyclus::Material::Ptr> >& responses) {
+  // see
+  // http://stackoverflow.com/questions/5181183/boostshared-ptr-and-inheritance
+  std::vector< std::pair<cyclus::Trade<cyclus::Material>,
+                         cyclus::Material::Ptr> >::const_iterator it;
+  for (it = responses.begin(); it != responses.end(); ++it) {
+    AddMat_(it->second);    
+  }
+}
+
 // //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 // std::set<cyclus::BidPortfolio<cyclus::Material>::Ptr>
 // EnrichmentFacility::AddMatlBids(cyclus::ExchangeContext<cyclus::Material>* ec) {
@@ -429,7 +442,7 @@ EnrichmentFacility::AddMatlRequests() {
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 cyclus::Material::Ptr EnrichmentFacility::Request_() {
-  double qty = std::max(0.0, MaxInventorySize() - InventoryQty());
+  double qty = std::max(0.0, MaxInventorySize() - InventorySize());
   return cyclus::Material::CreateUntracked(qty,
                                            context()->GetRecipe(in_recipe_));
 }

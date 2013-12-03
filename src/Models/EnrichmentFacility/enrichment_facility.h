@@ -185,11 +185,11 @@ class EnrichmentFacility : public cyclus::FacilityModel {
   virtual std::set<cyclus::RequestPortfolio<cyclus::Material>::Ptr>
       AddMatlRequests();
 
-  /// /// @brief The EnrichmentFacility place accepted trade Materials in their
-  /// /// Inventory
-  /// virtual void AcceptMatlTrades(
-  ///     const std::vector< std::pair<cyclus::Trade<cyclus::Material>,
-  ///     cyclus::Material::Ptr> >& responses);
+  /// @brief The EnrichmentFacility place accepted trade Materials in their
+  /// Inventory
+  virtual void AcceptMatlTrades(
+      const std::vector< std::pair<cyclus::Trade<cyclus::Material>,
+      cyclus::Material::Ptr> >& responses);
   
   /// /// @brief Responds to each request for this facility's commodity.  If a given
   /// /// request is more than this facility's inventory or SWU capacity, it will
@@ -231,7 +231,7 @@ class EnrichmentFacility : public cyclus::FacilityModel {
 
   inline double MaxInventorySize() const { return inventory_.capacity(); }
 
-  inline double InventoryQty() const { return inventory_.quantity(); }
+  inline double InventorySize() const { return inventory_.quantity(); }
 
   inline void feed_assay(double assay) { feed_assay_ = assay; }
 
