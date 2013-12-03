@@ -423,32 +423,32 @@ bool EnrichmentFacility::ValidReq(const cyclus::Material::Ptr mat) {
   return (u238 > 0 && u235 / (u235 + u238) > tails_assay());
 }
 
-// //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-// void SourceFacility::PopulateMatlTradeResponses(
-//     const std::vector< cyclus::Trade<cyclus::Material> >& trades,
-//     std::vector<std::pair<cyclus::Trade<cyclus::Material>,
-//                           cyclus::Material::Ptr> >& responses) {
-//   using cyclus::Material;
-//   using cyclus::StateError;
-//   using cyclus::Trade;
+//- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+void EnrichmentFacility::PopulateMatlTradeResponses(
+    const std::vector< cyclus::Trade<cyclus::Material> >& trades,
+    std::vector<std::pair<cyclus::Trade<cyclus::Material>,
+                          cyclus::Material::Ptr> >& responses) {
+  using cyclus::Material;
+  using cyclus::StateError;
+  using cyclus::Trade;
 
-//   std::vector< cyclus::Trade<cyclus::Material> >::const_iterator it;
-//   for (it = trades.begin(); it != trades.end(); ++it) {
-//     double qty = it->amt;
-//     current_capacity_ -= qty;
-//     // @TODO we need a policy on negatives..
-//     if (cyclus::IsNegative(current_capacity_)) { 
-//       throw StateError("SourceFac " + name()
-//                        + " is being asked to provide more than its capacity.");
-//     }
-//     Material::Ptr response =
-//         Material::Create(this, qty, context()->GetRecipe(recipe_name_));
-//     responses.push_back(std::make_pair(*it, response));
-//     LOG(cyclus::LEV_INFO5, "SrcFac") << name() << " just received an order"
-//                                      << " for " << qty
-//                                      << " of " << out_commod_;
-//   }
-// }
+  // std::vector< cyclus::Trade<cyclus::Material> >::const_iterator it;
+  // for (it = trades.begin(); it != trades.end(); ++it) {
+  //   double qty = it->amt;
+  //   current_capacity_ -= qty;
+  //   // @TODO we need a policy on negatives..
+  //   if (cyclus::IsNegative(current_capacity_)) { 
+  //     throw StateError("SourceFac " + name()
+  //                      + " is being asked to provide more than its capacity.");
+  //   }
+  //   Material::Ptr response =
+  //       Material::Create(this, qty, context()->GetRecipe(recipe_name_));
+  //   responses.push_back(std::make_pair(*it, response));
+  //   LOG(cyclus::LEV_INFO5, "SrcFac") << name() << " just received an order"
+  //                                    << " for " << qty
+  //                                    << " of " << out_commod_;
+  // }
+}
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 cyclus::Material::Ptr EnrichmentFacility::Request_() {

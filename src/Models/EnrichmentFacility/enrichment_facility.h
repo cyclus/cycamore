@@ -197,15 +197,15 @@ class EnrichmentFacility : public cyclus::FacilityModel {
   virtual std::set<cyclus::BidPortfolio<cyclus::Material>::Ptr>
       AddMatlBids(cyclus::ExchangeContext<cyclus::Material>* ec);
   
-  /// /// @brief respond to each trade with a material enriched to the appropriate
-  /// /// level given this facility's inventory
-  /// ///
-  /// /// @param trades all trades in which this trader is the supplier
-  /// /// @param responses a container to populate with responses to each trade
-  /// virtual void PopulateMatlTradeResponses(
-  ///   const std::vector< cyclus::Trade<cyclus::Material> >& trades,
-  ///   std::vector<std::pair<cyclus::Trade<cyclus::Material>,
-  ///   cyclus::Material::Ptr> >& responses);
+  /// @brief respond to each trade with a material enriched to the appropriate
+  /// level given this facility's inventory
+  ///
+  /// @param trades all trades in which this trader is the supplier
+  /// @param responses a container to populate with responses to each trade
+  virtual void PopulateMatlTradeResponses(
+    const std::vector< cyclus::Trade<cyclus::Material> >& trades,
+    std::vector<std::pair<cyclus::Trade<cyclus::Material>,
+    cyclus::Material::Ptr> >& responses);
   /* --- */
 
   /* --- EnrichmentFacility Members --- */
@@ -263,12 +263,6 @@ class EnrichmentFacility : public cyclus::FacilityModel {
      @throws if the material is not the same composition as the in_recipe
    */
   void AddMat_(cyclus::Material::Ptr mat);
-
-  /// /**
-  ///    @brief determines if a particular material would exceed either its SWU or
-  ///    natural Uranium inventory capacity
-  ///  */
-  /// bool ExceedsCapacity_(cyclus::Material::Ptr mat);
 
   /**
      @brief generates a request for this facility given its current state. The
