@@ -25,7 +25,8 @@ class EnrichmentFacilityTest : public ::testing::Test {
   void InitParameters();
   void SetUpSourceFacility();
   cyclus::Material::Ptr GetMat(double qty);
-  void DoAbsorb(cyclus::Material::Ptr mat);
+  void DoAddMat(cyclus::Material::Ptr mat);
+  cyclus::Material::Ptr DoRequest();
 };
 
 } // namespace cycamore

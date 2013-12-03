@@ -68,9 +68,15 @@ cyclus::Material::Ptr EnrichmentFacilityTest::GetMat(double qty) {
 }
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-void EnrichmentFacilityTest::DoAbsorb(cyclus::Material::Ptr mat) {
-  src_facility->Absorb_(mat);
+void EnrichmentFacilityTest::DoAddMat(cyclus::Material::Ptr mat) {
+  src_facility->AddMat_(mat);
 }
+
+//- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+cyclus::Material::Ptr EnrichmentFacilityTest::DoRequest() {
+  return src_facility->Request_();
+}
+
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 TEST_F(EnrichmentFacilityTest, InitialState) {
@@ -139,12 +145,89 @@ TEST_F(EnrichmentFacilityTest, Clone) {
 }
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-TEST_F(EnrichmentFacilityTest, Absorb) {
-  EXPECT_THROW(DoAbsorb(test_helpers::get_mat()), cyclus::StateError);
-  EXPECT_THROW(DoAbsorb(GetMat(inv_size + 1)), cyclus::ValueError);
-  EXPECT_NO_THROW(DoAbsorb(GetMat(inv_size)));
-  EXPECT_THROW(DoAbsorb(GetMat(1)), cyclus::ValueError);
+TEST_F(EnrichmentFacilityTest, AddMat) {
+  EXPECT_THROW(DoAddMat(test_helpers::get_mat()), cyclus::StateError);
+  EXPECT_THROW(DoAddMat(GetMat(inv_size + 1)), cyclus::ValueError);
+  EXPECT_NO_THROW(DoAddMat(GetMat(inv_size)));
+  EXPECT_THROW(DoAddMat(GetMat(1)), cyclus::ValueError);
 }
+
+//- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - 
+TEST_F(EnrichmentFacilityTest, Request) {
+  double req = inv_size;
+  double add = 0;
+  cyclus::Material::Ptr mat = DoRequest();
+  EXPECT_DOUBLE_EQ(mat->quantity(), req);
+  EXPECT_EQ(mat->comp(), tc_.get()->GetRecipe(in_recipe));
+
+  add = 2 * inv_size / 3;
+  req -= add;
+  DoAddMat(GetMat(add));
+  mat = DoRequest();
+  EXPECT_DOUBLE_EQ(mat->quantity(), req);
+  EXPECT_EQ(mat->comp(), tc_.get()->GetRecipe(in_recipe));
+  
+  add = inv_size / 3;
+  req = 0;
+  DoAddMat(GetMat(add));
+  mat = DoRequest();
+  EXPECT_DOUBLE_EQ(mat->quantity(), req);
+  EXPECT_EQ(mat->comp(), tc_.get()->GetRecipe(in_recipe));
+}
+
+//- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+TEST_F(EnrichmentFacilityTest, EmptyRequests) {
+  using cyclus::Material;
+  using cyclus::RequestPortfolio;
+
+  src_facility->SetMaxInventorySize(src_facility->InventoryQty());
+  std::set<RequestPortfolio<Material>::Ptr> ports =
+      src_facility->AddMatlRequests();
+  ports = src_facility->AddMatlRequests();
+  EXPECT_TRUE(ports.empty());
+}
+
+//- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - 
+TEST_F(EnrichmentFacilityTest, AddRequests) {
+  using cyclus::Request;
+  using cyclus::RequestPortfolio;
+  using cyclus::CapacityConstraint;
+  using cyclus::Converter;
+  using cyclus::Material;
+  
+  std::set<RequestPortfolio<Material>::Ptr> ports =
+      src_facility->AddMatlRequests();
+
+  ASSERT_EQ(ports.size(), 1);
+  ASSERT_EQ(ports.begin()->get()->qty(), inv_size);
+
+  const std::vector<Request<Material>::Ptr>& requests =
+      ports.begin()->get()->requests();
+  ASSERT_EQ(requests.size(), 1);
+
+  Request<Material>::Ptr req = *requests.begin();
+  EXPECT_EQ(req->requester(), src_facility);
+  EXPECT_EQ(req->commodity(), in_commod);
+
+  const std::set< CapacityConstraint<Material> >& constraints =
+      ports.begin()->get()->constraints();
+  CapacityConstraint<Material> c(inv_size);
+  EXPECT_EQ(constraints.size(), 1);
+  EXPECT_EQ(*constraints.begin(), c);
+}
+
+// AddMatlBids
+
+  // const std::set< CapacityConstraint<Material> >& constraints =
+  //     ports.begin()->get()->constraints();
+  // Converter<Material>::Ptr sc(new SWUConverter(feed_assay, tails_assay));
+  // Converter<Material>::Ptr nc(new NatUConverter(feed_assay, tails_assay));
+  // CapacityConstraint<Material> swu(swu_capacity, sc);
+  // CapacityConstraint<Material> natu(inv_size, nc);
+  // EXPECT_EQ(constraints.size(), 2);
+  // EXPECT_EQ(constraints.count(swu), 1);
+  // EXPECT_EQ(constraints.count(natu), 1);
+
 
 // //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 // TEST_F(SourceFacilityTest, Response) {
@@ -162,7 +245,7 @@ TEST_F(EnrichmentFacilityTest, Absorb) {
 //   // Null response
 //   EXPECT_NO_THROW(src_facility->PopulateMatlTradeResponses(trades, responses));
 //   EXPECT_EQ(responses.size(), 0);
-
+  
 //   double qty = capacity / 3;
 //   Request<Material>::Ptr request(
 //       new Request<Material>(get_mat(), &trader, commod));

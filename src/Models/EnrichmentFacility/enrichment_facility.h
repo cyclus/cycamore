@@ -4,10 +4,12 @@
 
 #include <string>
 
+#include "bid_portfolio.h"
 #include "capacity_constraint.h"
 #include "enrichment.h"
 #include "facility_model.h"
 #include "resource_buff.h"
+#include "request_portfolio.h"
 #include "transaction.h"
 #include "material.h"
 
@@ -23,31 +25,58 @@ class Context;
 #include "enrichment_facility_tests.h"
 
 namespace cycamore {
-
+  
+/// @class SWUConverter
+///
+/// @brief The SWUConverter is a simple Converter class for material to
+/// determine the amount of SWU required for their proposed enrichment
 class SWUConverter : public cyclus::Converter<cyclus::Material> { 
  public:
   SWUConverter(double feed, double tails) : feed_(feed), tails_(tails) {}
   virtual ~SWUConverter() {}
-  
+
+  /// @brief provides a conversion for the SWU required
   inline virtual double convert(cyclus::Material::Ptr m) {
     cyclus::enrichment::Assays a(feed_,
                                  cyclus::enrichment::UraniumAssay(m), tails_);
     return cyclus::enrichment::SwuRequired(m->quantity(), a);
   }
 
+  /// @returns true if Converter is a SWUConverter and feed and tails equal
+  virtual bool operator==(Converter& other) const {
+    SWUConverter* cast = dynamic_cast<SWUConverter*>(&other);
+    return cast != NULL
+    && feed_ == cast->feed_
+    && tails_ == cast->tails_;
+  }
+
  private:
   double feed_, tails_;
 };
 
+/// @class NatUConverter
+///
+/// @brief The NatUConverter is a simple Converter class for material to
+/// determine the amount of natural uranium required for their proposed
+/// enrichment
 class NatUConverter : public cyclus::Converter<cyclus::Material> { 
  public:
   NatUConverter(double feed, double tails) : feed_(feed), tails_(tails) {}
   virtual ~NatUConverter() {}
-  
+
+  /// @brief provides a conversion for the amount of natural Uranium required
   inline virtual double convert(cyclus::Material::Ptr m) {
     cyclus::enrichment::Assays a(feed_,
                                  cyclus::enrichment::UraniumAssay(m), tails_);
     return cyclus::enrichment::FeedQty(m->quantity(), a);
+  }
+
+  /// @returns true if Converter is a NatUConverter and feed and tails equal
+  virtual bool operator==(Converter& other) const {
+    NatUConverter* cast = dynamic_cast<NatUConverter*>(&other);
+    return cast != NULL
+    && feed_ == cast->feed_
+    && tails_ == cast->tails_;
   }
 
  private:
@@ -93,6 +122,14 @@ class NatUConverter : public cyclus::Converter<cyclus::Material> {
 
    #. During the trading phase, an exception will be thrown if either the
    EnrichmentFacility's SWU or inventory constraint is breached.
+
+   @section improvements Improvments   
+   The primary improvement to the EnrichmentFacility would be to relax the
+   requirement that all input material have the in_recipe composition (i.e.,
+   allow different base enrichments of Uranium).
+
+   How would I go about doing so? I'd likely develop an EnrichmentBuffer-type
+   class that can be queried as to its SWU and natural Uranium capacity.
  */
 class EnrichmentFacility : public cyclus::FacilityModel {
  public:
@@ -114,7 +151,9 @@ class EnrichmentFacility : public cyclus::FacilityModel {
 
   /**
      Initialize members related to derived module class
-     @param qe a pointer to a cyclus::QueryEngine object containing initialization data
+
+     @param qe a pointer to a cyclus::QueryEngine object containing
+     initialization data
    */
   virtual void InitModuleMembers(cyclus::QueryEngine* qe);
 
@@ -140,12 +179,23 @@ class EnrichmentFacility : public cyclus::FacilityModel {
      @param time is the time to perform the tock
    */
   virtual void HandleTock(int time);
+
+  /// @brief The EnrichmentFacility request Materials of its given
+  /// commodity. 
+  virtual std::set<cyclus::RequestPortfolio<cyclus::Material>::Ptr>
+      AddMatlRequests();
+
+  /// /// @brief The EnrichmentFacility place accepted trade Materials in their
+  /// /// Inventory
+  /// virtual void AcceptMatlTrades(
+  ///     const std::vector< std::pair<cyclus::Trade<cyclus::Material>,
+  ///     cyclus::Material::Ptr> >& responses);
   
-  /// @brief Responds to each request for this facility's commodity.  If a given
-  /// request is more than this facility's inventory or SWU capacity, it will
-  /// offer its minimum of its capacities.
-  virtual std::set<cyclus::BidPortfolio<cyclus::Material>::Ptr>
-      AddMatlBids(cyclus::ExchangeContext<cyclus::Material>* ec);
+  /// /// @brief Responds to each request for this facility's commodity.  If a given
+  /// /// request is more than this facility's inventory or SWU capacity, it will
+  /// /// offer its minimum of its capacities.
+  /// virtual std::set<cyclus::BidPortfolio<cyclus::Material>::Ptr>
+  ///     AddMatlBids(cyclus::ExchangeContext<cyclus::Material>* ec);
   
   /// /// @brief respond to each trade with a material enriched to the appropriate
   /// /// level given this facility's inventory
@@ -161,9 +211,9 @@ class EnrichmentFacility : public cyclus::FacilityModel {
   /* --- EnrichmentFacility Members --- */
   cyclus::enrichment::Assays GetAssays(cyclus::Material::Ptr mat);
 
-  inline void in_commodity(std::string in_commod) { in_commodity_ = in_commod; }
+  inline void in_commodity(std::string in_commod) { in_commod_ = in_commod; }
 
-  inline std::string in_commodity() const { return in_commodity_; }
+  inline std::string in_commodity() const { return in_commod_; }
 
   inline void out_commodity(std::string out_commod) { 
     out_commodity_ = out_commod;
@@ -219,17 +269,23 @@ class EnrichmentFacility : public cyclus::FacilityModel {
   /// void ProcessOutgoingMaterial_();
 
   /**
-     @brief absorbs a material into the natural uranium inventory
+     @brief adds a material into the natural uranium inventory
      @throws if the material is not the same composition as the in_recipe
    */
-  void Absorb_(cyclus::Material::Ptr mat);
+  void AddMat_(cyclus::Material::Ptr mat);
+
+  /**
+     @brief generates a request for this facility given its current state. The
+     quantity of the material will be equal to the remaining inventory size.
+   */
+  cyclus::Material::Ptr Request_();
 
   /**
      @brief records and enrichment with the cyclus::EventManager
    */
   void RecordEnrichment_(double natural_u, double swu);
 
-  std::string in_commodity_;
+  std::string in_commod_;
   std::string out_commodity_;
   std::string in_recipe_;
   double commodity_price_;
@@ -238,7 +294,6 @@ class EnrichmentFacility : public cyclus::FacilityModel {
   double swu_capacity_;
   cyclus::ResourceBuff inventory_; // of natl u
   static int entry_;
-  /// cyclus::Converter converter_;
   friend class EnrichmentFacilityTest;
 /* --- */
 };

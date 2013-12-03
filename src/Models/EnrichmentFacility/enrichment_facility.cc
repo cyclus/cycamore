@@ -5,6 +5,7 @@
 #include <sstream>
 #include <limits>
 #include <cmath>
+#include <algorithm>
 
 #include <boost/lexical_cast.hpp>
 
@@ -30,7 +31,7 @@ EnrichmentFacility::EnrichmentFacility(cyclus::Context* ctx)
     tails_assay_(0),
     feed_assay_(0),
     swu_capacity_(0),
-    in_commodity_(""),
+    in_commod_(""),
     in_recipe_(""),
     out_commodity_("") {}
 
@@ -266,7 +267,7 @@ void EnrichmentFacility::HandleTock(int time) {
 
 //   cyclus::Material::Ptr offer_res =
 //     cyclus::Material::CreateUntracked(offer_amt,
-//                                       context()->GetRecipe(in_commodity_));
+//                                       context()->GetRecipe(in_commod_));
 //   cyclus::Transaction trans(this, cyclus::OFFER);
 
 //   trans.SetCommod(out_commodity());
@@ -340,38 +341,64 @@ void EnrichmentFacility::HandleTock(int time) {
 // }
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-std::set<cyclus::BidPortfolio<cyclus::Material>::Ptr>
-EnrichmentFacility::AddMatlBids(cyclus::ExchangeContext<cyclus::Material>* ec) {
-  using cyclus::Bid;
-  using cyclus::BidPortfolio;
+std::set<cyclus::RequestPortfolio<cyclus::Material>::Ptr>
+EnrichmentFacility::AddMatlRequests() {
   using cyclus::CapacityConstraint;
-  using cyclus::Converter;
   using cyclus::Material;
+  using cyclus::RequestPortfolio;
   using cyclus::Request;
   
-  std::set<BidPortfolio<Material>::Ptr> ports;
-  BidPortfolio<Material>::Ptr port(new BidPortfolio<Material>());
-  
-  const std::vector<Request<Material>::Ptr>& requests =
-      ec->requests_by_commod[out_commodity_];
+  std::set<RequestPortfolio<Material>::Ptr> ports;
+  RequestPortfolio<Material>::Ptr port(new RequestPortfolio<Material>());
+  Material::Ptr mat = Request_();
+  double amt = mat->quantity();
 
-  // std::vector<Request<Material>::Ptr>::const_iterator it;
-  // for (it = requests.begin(); it != requests.end(); ++it) {
-  //   const Request<Material>::Ptr req = *it;
-  //   Material::Ptr offer = GetOffer(req->target());
-  //   Bid<Material>::Ptr bid(new Bid<Material>(req, offer, this));
-  //   port->AddBid(bid);
-  // }
+  if (amt > cyclus::eps()) {
+    CapacityConstraint<Material> cc(amt);
+    port->AddConstraint(cc);
+    
+    Request<Material>::Ptr req(new Request<Material>(mat, this, in_commod_));
+    port->AddRequest(req);
+    
+    ports.insert(port);
+  } // if amt > eps
 
-  Converter<Material>::Ptr sc(new SWUConverter(feed_assay_, tails_assay_));
-  Converter<Material>::Ptr nc(new NatUConverter(feed_assay_, tails_assay_));
-  CapacityConstraint<Material> swu(swu_capacity_, sc);
-  CapacityConstraint<Material> natu(inventory_.quantity(), nc);
-  port->AddConstraint(swu);
-  port->AddConstraint(natu);
-  ports.insert(port);
   return ports;
 }
+
+// //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+// std::set<cyclus::BidPortfolio<cyclus::Material>::Ptr>
+// EnrichmentFacility::AddMatlBids(cyclus::ExchangeContext<cyclus::Material>* ec) {
+//   using cyclus::Bid;
+//   using cyclus::BidPortfolio;
+//   using cyclus::CapacityConstraint;
+//   using cyclus::Converter;
+//   using cyclus::Material;
+//   using cyclus::Request;
+  
+//   std::set<BidPortfolio<Material>::Ptr> ports;
+//   BidPortfolio<Material>::Ptr port(new BidPortfolio<Material>());
+  
+//   const std::vector<Request<Material>::Ptr>& requests =
+//       ec->requests_by_commod[out_commodity_];
+
+//   // std::vector<Request<Material>::Ptr>::const_iterator it;
+//   // for (it = requests.begin(); it != requests.end(); ++it) {
+//   //   const Request<Material>::Ptr req = *it;
+//   //   Material::Ptr offer = GetOffer(req->target());
+//   //   Bid<Material>::Ptr bid(new Bid<Material>(req, offer, this));
+//   //   port->AddBid(bid);
+//   // }
+
+//   Converter<Material>::Ptr sc(new SWUConverter(feed_assay_, tails_assay_));
+//   Converter<Material>::Ptr nc(new NatUConverter(feed_assay_, tails_assay_));
+//   CapacityConstraint<Material> swu(swu_capacity_, sc);
+//   CapacityConstraint<Material> natu(inventory_.quantity(), nc);
+//   port->AddConstraint(swu);
+//   port->AddConstraint(natu);
+//   ports.insert(port);
+//   return ports;
+// }
 
 // //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 // void SourceFacility::PopulateMatlTradeResponses(
@@ -401,7 +428,14 @@ EnrichmentFacility::AddMatlBids(cyclus::ExchangeContext<cyclus::Material>* ec) {
 // }
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-void EnrichmentFacility::Absorb_(cyclus::Material::Ptr mat) {
+cyclus::Material::Ptr EnrichmentFacility::Request_() {
+  double qty = std::max(0.0, MaxInventorySize() - InventoryQty());
+  return cyclus::Material::CreateUntracked(qty,
+                                           context()->GetRecipe(in_recipe_));
+}
+
+//- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+void EnrichmentFacility::AddMat_(cyclus::Material::Ptr mat) {
   if (mat->comp() != context()->GetRecipe(in_recipe_)) {
     throw cyclus::StateError(
         "EnrichmentFacility recipe and material composition not the same.");
