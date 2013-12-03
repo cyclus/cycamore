@@ -412,7 +412,7 @@ TEST_F(EnrichmentFacilityTest, Enrich) {
   cyclus::CompMap v;
   v[92235] = product_assay;
   v[92238] = 1 - product_assay;
-  // target qty need not be =
+  // target qty need not be = to request qty
   Material::Ptr target = cyclus::Material::CreateUntracked(
       qty + 10, cyclus::Composition::CreateFromMass(v)); 
 
@@ -431,6 +431,10 @@ TEST_F(EnrichmentFacilityTest, Enrich) {
   EXPECT_EQ(response->quantity(), qty);
   EXPECT_EQ(q.mass_frac(92235), product_assay);
   EXPECT_EQ(q.mass_frac(92238), 1 - product_assay);
+
+  // test too much natu request
+  DoAddMat(GetMat(natu_req - 1));
+  EXPECT_THROW(response = DoEnrich(target, qty), cyclus::ValueError);
 }
 
 // //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
