@@ -209,7 +209,7 @@ TEST_F(EnrichmentFacilityTest, Offer) {
   double u235 = 1.0;
   double u238 = 2.0;
   cyclus::CompMap v;
-  v[92234] = u234;
+  v[94239] = u234;
   v[92235] = u235;
   v[92238] = u238;
   Material::Ptr mat =
@@ -217,7 +217,7 @@ TEST_F(EnrichmentFacilityTest, Offer) {
 
   MatQuery q(mat);
 
-  EXPECT_DOUBLE_EQ(q.atom_frac(92234), 0.0);
+  EXPECT_DOUBLE_EQ(q.atom_frac(94239), 0.0);
   EXPECT_DOUBLE_EQ(q.atom_frac(92235), u235 / (u235 + u238));
   EXPECT_DOUBLE_EQ(q.atom_frac(92238), u238 / (u235 + u238));
   EXPECT_DOUBLE_EQ(mat->quantity(), qty);
@@ -390,6 +390,37 @@ EnrichmentFacilityTest::GetContext(int nreqs, int nvalid) {
         new Request<Material>(get_mat(), &trader, out_commod)));
   }
   return ec;
+}
+
+//- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+TEST_F(EnrichmentFacilityTest, BidConverters) {
+  // this test is designed to confirm that the bid response behavior matches the
+  // converter behavior.
+  using cyclus::CompMap;
+  using cyclus::Material;
+  using cyclus::MatQuery;
+  using cyclus::Composition;
+  using cyclus::enrichment::Assays;
+  using cyclus::enrichment::UraniumAssay;
+  using cyclus::enrichment::SwuRequired;
+  using cyclus::enrichment::FeedQty;
+
+  double qty = 5; // 5 kg
+  double product_assay = 0.05; // of 5 w/o enriched U
+  CompMap v;
+  v[92235] = product_assay;
+  v[92238] = 1 - product_assay;
+  v[94239] = 0.5; // 94239 shouldn't be taken into account
+  Material::Ptr target = Material::CreateUntracked(
+      qty, Composition::CreateFromMass(v)); 
+
+  SWUConverter swuc(feed_assay, tails_assay);
+  NatUConverter natuc(feed_assay, tails_assay);
+
+  Material::Ptr offer = DoOffer(target);
+
+  EXPECT_DOUBLE_EQ(swuc.convert(target), swuc.convert(offer));
+  EXPECT_DOUBLE_EQ(natuc.convert(target), natuc.convert(offer));
 }
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
