@@ -3,6 +3,7 @@
 from nose.tools import assert_equal
 from numpy.testing import assert_array_equal, assert_array_almost_equal
 import sys
+import os
 import subprocess
 import tables
 import numpy as np
@@ -47,3 +48,7 @@ def test_inpro():
             bdata = bdata[names]
             odata = odata[names]
             yield assert_array_equal, bdata, odata
+        
+        bench.close()
+        output.close()
+        os.remove("./output_temp.h5")
