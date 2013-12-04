@@ -232,7 +232,7 @@ void EnrichmentFacility::PopulateMatlTradeResponses(
   using cyclus::Material;
   using cyclus::StateError;
   using cyclus::Trade;
-  std::cout << current_swu_capacity_ << "\n";
+  
   std::vector< Trade<Material> >::const_iterator it;
   for (it = trades.begin(); it != trades.end(); ++it) {
     Material::Ptr mat = it->bid->offer();
@@ -244,7 +244,6 @@ void EnrichmentFacility::PopulateMatlTradeResponses(
                                      << " for " << it->amt
                                      << " of " << out_commod_;
   }
-  std::cout << current_swu_capacity_ << "\n";
   
   if (cyclus::IsNegative(current_swu_capacity_)) { 
     throw StateError(
