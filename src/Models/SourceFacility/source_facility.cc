@@ -11,7 +11,6 @@
 #include "cyc_limits.h"
 #include "context.h"
 #include "error.h"
-#include "exchange_context.h"
 #include "logger.h"
 #include "request.h"
 
@@ -116,7 +115,8 @@ cyclus::Material::Ptr SourceFacility::GetOffer(
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 std::set<cyclus::BidPortfolio<cyclus::Material>::Ptr>
-SourceFacility::GetMatlBids(cyclus::ExchangeContext<cyclus::Material>* ec) {
+SourceFacility::GetMatlBids(
+    const cyclus::CommodMap<cyclus::Material>::type& requests_by_commodity) {
   using cyclus::Bid;
   using cyclus::BidPortfolio;
   using cyclus::CapacityConstraint;
@@ -127,7 +127,7 @@ SourceFacility::GetMatlBids(cyclus::ExchangeContext<cyclus::Material>* ec) {
   BidPortfolio<Material>::Ptr port(new BidPortfolio<Material>());
   
   const std::vector<Request<Material>::Ptr>& requests =
-      ec->requests_by_commod[out_commod_];
+      requests_by_commodity.at(out_commod_);
 
   std::vector<Request<Material>::Ptr>::const_iterator it;
   for (it = requests.begin(); it != requests.end(); ++it) {

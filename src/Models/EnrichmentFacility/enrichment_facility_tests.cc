@@ -373,7 +373,7 @@ TEST_F(EnrichmentFacilityTest, AddBids) {
       ec = GetContext(nreqs, nvalid);
   
   std::set<BidPortfolio<Material>::Ptr> ports =
-      src_facility->GetMatlBids(ec.get());
+      src_facility->GetMatlBids(ec.get()->requests_by_commod);
 
   ASSERT_TRUE(ports.size() > 0);
   EXPECT_EQ(ports.size(), 1);

@@ -7,6 +7,7 @@
 
 #include "bid_portfolio.h"
 #include "commodity_producer.h"
+#include "exchange_context.h"
 #include "facility_model.h"
 #include "material.h"
 #include "query_engine.h"
@@ -15,7 +16,6 @@
 namespace cycamore {
 
 class Context;
-class ExchangeContext;
 
 /**
    @class SourceFacility
@@ -142,7 +142,8 @@ class SourceFacility : public cyclus::FacilityModel,
   /// If a given request is more than this facility's capacity, it will offer
   /// its capacity.
   virtual std::set<cyclus::BidPortfolio<cyclus::Material>::Ptr>
-      GetMatlBids(cyclus::ExchangeContext<cyclus::Material>* ec);
+      GetMatlBids(const cyclus::CommodMap<cyclus::Material>::type&
+                  requests_by_commodity);
   
   /// @brief respond to each trade with a material made from this facility's
   /// recipe

@@ -6,6 +6,7 @@
 
 #include "bid_portfolio.h"
 #include "capacity_constraint.h"
+#include "exchange_context.h"
 #include "enrichment.h"
 #include "facility_model.h"
 #include "resource_buff.h"
@@ -195,7 +196,8 @@ class EnrichmentFacility : public cyclus::FacilityModel {
   /// request is more than this facility's inventory or SWU capacity, it will
   /// offer its minimum of its capacities.
   virtual std::set<cyclus::BidPortfolio<cyclus::Material>::Ptr>
-      GetMatlBids(cyclus::ExchangeContext<cyclus::Material>* ec);
+      GetMatlBids(const cyclus::CommodMap<cyclus::Material>::type&
+                  requests_by_commodity);
   
   /// @brief respond to each trade with a material enriched to the appropriate
   /// level given this facility's inventory
