@@ -69,15 +69,17 @@ def run_inpros(cyclus, cwd):
     '''Runs cyclus with various inpro inputs and creates reference databases
         in a benchmarks directory.'''
     #Cyclus simulation inputs
-    sim_inputs = ["./inputs/inpro_low.xml",
-                  "./inputs/inpro_high.xml", 
-                  "./inputs/inpro_low_short.xml",
-                  "./inputs/inpro_low_no_decay.xml",    
-                  "./inputs/inpro_high_no_decay.xml"]
+    sim_inputs = ["./inputs/inpro/inpro_low.xml",
+                  "./inputs/inpro/inpro_high.xml", 
+                  "./inputs/inpro/inpro_low_short.xml",
+                  "./inputs/inpro/inpro_high_short.xml",
+                  "./inputs/inpro/inpro_low_no_decay.xml",    
+                  "./inputs/inpro/inpro_high_no_decay.xml"]
     #Benchmark databases must match the order of input files
     bench_dbs = ["./benchmarks/bench_inpro_low.h5",
                  "./benchmarks/bench_inpro_high.h5",
                  "./benchmarks/bench_inpro_low_short.h5",
+                 "./benchmarks/bench_inpro_high_short.h5",
                  "./benchmarks/bench_inpro_low_no_decay.h5",
                  "./benchmarks/bench_inpro_high_no_decay.h5"]
 
