@@ -232,16 +232,19 @@ void EnrichmentFacility::PopulateMatlTradeResponses(
   using cyclus::Material;
   using cyclus::StateError;
   using cyclus::Trade;
-
+  std::cout << current_swu_capacity_ << "\n";
   std::vector< Trade<Material> >::const_iterator it;
   for (it = trades.begin(); it != trades.end(); ++it) {
-    Material::Ptr response = Enrich_(it->bid->offer(), it->amt);
+    Material::Ptr mat = it->bid->offer();
+    double qty = it->amt;
+    Material::Ptr response = Enrich_(mat, qty);
     responses.push_back(std::make_pair(*it, response));
     LOG(cyclus::LEV_INFO5, "EnrFac") << name()
                                      << " just received an order"
                                      << " for " << it->amt
                                      << " of " << out_commod_;
   }
+  std::cout << current_swu_capacity_ << "\n";
   
   if (cyclus::IsNegative(current_swu_capacity_)) { 
     throw StateError(
@@ -304,8 +307,9 @@ cyclus::Material::Ptr EnrichmentFacility::Enrich_(
 
   // "enrich" it, but pull out the composition and quantity we require from the
   // blob
-  Material::Ptr response = r->ExtractComp(qty, mat->comp());
-  
+  cyclus::Composition::Ptr comp = mat->comp();
+  Material::Ptr response = r->ExtractComp(qty, comp);
+
   current_swu_capacity_ -= swu_req;
   
   RecordEnrichment_(natu_req, swu_req);

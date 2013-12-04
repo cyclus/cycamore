@@ -64,8 +64,11 @@ void EnrichmentFacilityTest::SetUpSourceFacility() {
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 cyclus::Material::Ptr EnrichmentFacilityTest::GetMat(double qty) {
+  using test_helpers::trader;
+  // return cyclus::Material::Create(&trader, qty,
+  //                                 tc_.get()->GetRecipe(in_recipe));
   return cyclus::Material::CreateUntracked(qty,
-                                           tc_.get()->GetRecipe(in_recipe));
+                                  tc_.get()->GetRecipe(in_recipe));
 }
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -294,6 +297,26 @@ TEST_F(EnrichmentFacilityTest, AddRequests) {
 }
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+TEST_F(EnrichmentFacilityTest, Extract) {
+  using cyclus::Material;
+  double qty = 1000; // 5 kg
+  Material::Ptr base = GetMat(qty);
+  double time = tc_.get()->time();
+      // cyclus::Material::Create(src_facility, qty,
+      //                                   tc_.get()->GetRecipe(in_recipe));
+  Material::Ptr base2 = GetMat(qty);
+  base->Absorb(base2);
+  double product_assay = 0.05; // of 5 w/o enriched U
+  cyclus::CompMap v;
+  v[92235] = product_assay;
+  v[92238] = 1 - product_assay;
+  // target qty need not be = to request qty
+  Material::Ptr target = cyclus::Material::CreateUntracked(
+      5, cyclus::Composition::CreateFromMass(v)); 
+  Material::Ptr response = base->ExtractComp(6, target->comp());
+}
+
+//- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 TEST_F(EnrichmentFacilityTest, Accept) {
   using cyclus::Bid;
   using cyclus::Material;
@@ -446,18 +469,21 @@ TEST_F(EnrichmentFacilityTest, Enrich) {
   // target qty need not be = to request qty
   Material::Ptr target = cyclus::Material::CreateUntracked(
       qty + 10, cyclus::Composition::CreateFromMass(v)); 
-
+  
   Assays assays(feed_assay, UraniumAssay(target), tails_assay);
   double swu_req = SwuRequired(qty, assays);
   double natu_req = FeedQty(qty, assays);
 
+  double swu_cap = swu_req * 5;
+  src_facility->swu_capacity(swu_cap);
   src_facility->SetMaxInventorySize(natu_req);
   DoAddMat(GetMat(natu_req / 2));
   DoAddMat(GetMat(natu_req / 2));
 
   Material::Ptr response;
   EXPECT_NO_THROW(response = DoEnrich(target, qty));
-
+  EXPECT_DOUBLE_EQ(src_facility->current_swu_capacity(), swu_cap - swu_req);
+  
   MatQuery q(response);
   EXPECT_EQ(response->quantity(), qty);
   EXPECT_EQ(q.mass_frac(92235), product_assay);
@@ -468,59 +494,93 @@ TEST_F(EnrichmentFacilityTest, Enrich) {
   EXPECT_THROW(response = DoEnrich(target, qty), cyclus::ValueError);
 }
 
-// //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-// TEST_F(SourceFacilityTest, Response) {
-//   using cyclus::Bid;
-//   using cyclus::Material;
-//   using cyclus::Request;
-//   using cyclus::Trade;
-//   using test_helpers::trader;
-//   using test_helpers::get_mat;
+//- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+TEST_F(EnrichmentFacilityTest, Response) {
+  // this test asks the facility to respond to multiple requests for enriched
+  // uranium. two requests are provided, whose total equals the swu capacity of
+  // the facility while not exceeding its inventory capacity (that's taken care
+  // of in the Enrich tests).
+  //
+  // note that response quantity and quality need not be tested, because they
+  // are covered by the Enrich and Offer tests
+  using cyclus::Bid;
+  using cyclus::CompMap;
+  using cyclus::Composition;
+  using cyclus::MatQuery;
+  using cyclus::Material;
+  using cyclus::Material;
+  using cyclus::Request;
+  using cyclus::Trade;
+  using cyclus::enrichment::Assays;
+  using cyclus::enrichment::FeedQty;
+  using cyclus::enrichment::SwuRequired;
+  using cyclus::enrichment::UraniumAssay;
+  using test_helpers::get_mat;
+  using test_helpers::trader;
 
-//   std::vector< cyclus::Trade<cyclus::Material> > trades;
-//   std::vector<std::pair<cyclus::Trade<cyclus::Material>,
-//                         cyclus::Material::Ptr> > responses;
+  // problem set up
+  std::vector< cyclus::Trade<cyclus::Material> > trades;
+  std::vector<std::pair<cyclus::Trade<cyclus::Material>,
+                        cyclus::Material::Ptr> > responses;
 
-//   // Null response
-//   EXPECT_NO_THROW(src_facility->PopulateMatlTradeResponses(trades, responses));
-//   EXPECT_EQ(responses.size(), 0);
+  double qty = 5; // 5 kg
+  double trade_qty = qty / 3;
+  double product_assay = 0.05; // of 5 w/o enriched U
+  cyclus::CompMap v;
+  v[92235] = product_assay;
+  v[92238] = 1 - product_assay;
+  // target qty need not be = to request qty
+  Material::Ptr target = cyclus::Material::CreateUntracked(
+      qty + 10, cyclus::Composition::CreateFromMass(v)); 
+
+  Assays assays(feed_assay, UraniumAssay(target), tails_assay);
+  double swu_req = SwuRequired(qty, assays);
+  double natu_req = FeedQty(qty, assays);
+
+  src_facility->SetMaxInventorySize(natu_req * 4); // not capacitated by nat u
+  src_facility->swu_capacity(swu_req); // swu capacitated
+
+  // Null response
+  src_facility->PopulateMatlTradeResponses(trades, responses);
+  EXPECT_NO_THROW();
+  EXPECT_EQ(responses.size(), 0);
+
+  // set up state
+  DoAddMat(GetMat(natu_req * 2));
   
-//   double qty = capacity / 3;
-//   Request<Material>::Ptr request(
-//       new Request<Material>(get_mat(), &trader, commod));
-//   Bid<Material>::Ptr bid(new Bid<Material>(request, get_mat(), src_facility));
-
-//   Trade<Material> trade(request, bid, qty);
-//   trades.push_back(trade);
-
-//   // 1 trade, SWU < SWU cap, NatU < NatU cap
-//   ASSERT_EQ(src_facility->current_capacity(), capacity);
-//   src_facility->PopulateMatlTradeResponses(trades, responses);
-//   EXPECT_EQ(responses.size(), 1);
-//   EXPECT_EQ(responses[0].second->quantity(), qty);
-//   EXPECT_EQ(responses[0].second->comp(), recipe);
-
-//   // 1 trade, SWU > SWU Cap, NatU < NatU cap
-//   ASSERT_DOUBLE_EQ(src_facility->current_capacity(), capacity - qty);
-//   ASSERT_GT(src_facility->current_capacity() - 2 * qty, -1 * cyclus::eps());
-//   trades.push_back(trade);
-//   responses.clear();
-//   EXPECT_NO_THROW(src_facility->PopulateMatlTradeResponses(trades, responses));
-//   EXPECT_EQ(responses.size(), 2);
-//   ASSERT_TRUE(cyclus::AlmostEq(src_facility->current_capacity(), 0));
-
-//   // 1 trade, SWU < SWU Cap, NatU > NatU cap
-//   // 1 trade, SWU = SWU Cap, NatU < NatU cap
-//   // 1 trade, SWU < SWU Cap, NatU = NatU cap
+  Request<Material>::Ptr req(
+      new Request<Material>(target, &trader, out_commod));
+  Bid<Material>::Ptr bid(new Bid<Material>(req, target, src_facility));
+  Trade<Material> trade(req, bid, trade_qty);
+  trades.push_back(trade);
   
-//   // // too much qty, capn!
-//   // EXPECT_THROW(src_facility->PopulateMatlTradeResponses(trades, responses),
-//   //              cyclus::StateError);
+  // 1 trade, SWU < SWU cap
+  ASSERT_DOUBLE_EQ(src_facility->current_swu_capacity(), swu_req);
+  src_facility->PopulateMatlTradeResponses(trades, responses);
+  ASSERT_EQ(responses.size(), 1);
+  EXPECT_DOUBLE_EQ(src_facility->current_swu_capacity(),
+                   swu_req - SwuRequired(trade_qty, assays));
+
+  // 2 trades, SWU = SWU cap
+  ASSERT_GT(src_facility->current_swu_capacity() - 2 * swu_req / 3,
+            -1 * cyclus::eps());
+  trades.push_back(trade);
+  responses.clear();
+  EXPECT_NO_THROW(src_facility->PopulateMatlTradeResponses(trades, responses));
+  EXPECT_EQ(responses.size(), 2);
+  EXPECT_TRUE(cyclus::AlmostEq(src_facility->current_swu_capacity(), 0));
   
-//   // // reset!
-//   // src_facility->HandleTick(1);
-//   // ASSERT_DOUBLE_EQ(src_facility->current_capacity(), capacity);
-// }
+  // too much qty, capn!
+  trade = Trade<Material>(req, bid, 1); // a small number
+  trades.clear();
+  trades.push_back(trade);
+  EXPECT_THROW(src_facility->PopulateMatlTradeResponses(trades, responses),
+               cyclus::StateError);
+  
+  // reset!
+  src_facility->HandleTick(1);
+  EXPECT_DOUBLE_EQ(src_facility->current_swu_capacity(), swu_req);
+}
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 cyclus::Model* EnrichmentFacilityModelConstructor(cyclus::Context* ctx) {

@@ -63,7 +63,6 @@ void SourceFacility::InitModuleMembers(cyclus::QueryEngine* qe) {
                                      numeric_limits<double>::max());
   cyclus::CommodityProducer::SetCapacity(commod, cap);
   capacity(cap);
-  current_capacity_ = capacity_;
 }
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -

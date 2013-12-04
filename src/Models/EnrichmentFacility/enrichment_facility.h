@@ -247,9 +247,14 @@ class EnrichmentFacility : public cyclus::FacilityModel {
 
   inline double tails_assay() const { return tails_assay_; }
 
-  inline void swu_capacity(double capacity) { swu_capacity_ = capacity; }
+  inline void swu_capacity(double capacity) {
+    swu_capacity_ = capacity;
+    current_swu_capacity_ = swu_capacity_;
+  }
 
   inline double swu_capacity() const { return swu_capacity_; }
+
+  inline double current_swu_capacity() const { return current_swu_capacity_; }
 
   inline void commodity_price(double price) { commodity_price_ = price; }
 
