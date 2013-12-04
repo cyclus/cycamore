@@ -197,7 +197,7 @@ class EnrichmentFacility : public cyclus::FacilityModel {
   /// offer its minimum of its capacities.
   virtual std::set<cyclus::BidPortfolio<cyclus::Material>::Ptr>
       GetMatlBids(const cyclus::CommodMap<cyclus::Material>::type&
-                  requests_by_commodity);
+                  commod_requests);
   
   /// @brief respond to each trade with a material enriched to the appropriate
   /// level given this facility's inventory

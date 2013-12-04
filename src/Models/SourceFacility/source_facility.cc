@@ -116,7 +116,7 @@ cyclus::Material::Ptr SourceFacility::GetOffer(
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 std::set<cyclus::BidPortfolio<cyclus::Material>::Ptr>
 SourceFacility::GetMatlBids(
-    const cyclus::CommodMap<cyclus::Material>::type& requests_by_commodity) {
+    const cyclus::CommodMap<cyclus::Material>::type& commod_requests) {
   using cyclus::Bid;
   using cyclus::BidPortfolio;
   using cyclus::CapacityConstraint;
@@ -127,7 +127,7 @@ SourceFacility::GetMatlBids(
   BidPortfolio<Material>::Ptr port(new BidPortfolio<Material>());
   
   const std::vector<Request<Material>::Ptr>& requests =
-      requests_by_commodity.at(out_commod_);
+      commod_requests.at(out_commod_);
 
   std::vector<Request<Material>::Ptr>::const_iterator it;
   for (it = requests.begin(); it != requests.end(); ++it) {
