@@ -106,7 +106,7 @@ TEST_F(SinkFacilityTest, Requests) {
   std::vector<std::string> commods (arr, arr + sizeof(arr) / sizeof(arr[0]) );
   
   std::set<RequestPortfolio<Material>::Ptr> ports =
-      src_facility->AddMatlRequests();
+      src_facility->GetMatlRequests();
 
   ASSERT_EQ(ports.size(), 1);
   ASSERT_EQ(ports.begin()->get()->qty(), capacity_);
@@ -134,7 +134,7 @@ TEST_F(SinkFacilityTest, EmptyRequests) {
 
   src_facility->capacity(0);
   std::set<RequestPortfolio<Material>::Ptr> ports =
-      src_facility->AddMatlRequests();
+      src_facility->GetMatlRequests();
   EXPECT_TRUE(ports.empty());
 }
 

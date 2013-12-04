@@ -142,7 +142,7 @@ class SourceFacility : public cyclus::FacilityModel,
   /// If a given request is more than this facility's capacity, it will offer
   /// its capacity.
   virtual std::set<cyclus::BidPortfolio<cyclus::Material>::Ptr>
-      AddMatlBids(cyclus::ExchangeContext<cyclus::Material>* ec);
+      GetMatlBids(cyclus::ExchangeContext<cyclus::Material>* ec);
   
   /// @brief respond to each trade with a material made from this facility's
   /// recipe

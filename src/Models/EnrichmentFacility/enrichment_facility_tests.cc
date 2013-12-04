@@ -260,8 +260,8 @@ TEST_F(EnrichmentFacilityTest, EmptyRequests) {
 
   src_facility->SetMaxInventorySize(src_facility->InventorySize());
   std::set<RequestPortfolio<Material>::Ptr> ports =
-      src_facility->AddMatlRequests();
-  ports = src_facility->AddMatlRequests();
+      src_facility->GetMatlRequests();
+  ports = src_facility->GetMatlRequests();
   EXPECT_TRUE(ports.empty());
 }
 
@@ -276,7 +276,7 @@ TEST_F(EnrichmentFacilityTest, AddRequests) {
   // a request is made for the current available inventory amount
   
   std::set<RequestPortfolio<Material>::Ptr> ports =
-      src_facility->AddMatlRequests();
+      src_facility->GetMatlRequests();
 
   ASSERT_EQ(ports.size(), 1);
   ASSERT_EQ(ports.begin()->get()->qty(), inv_size);
@@ -373,7 +373,7 @@ TEST_F(EnrichmentFacilityTest, AddBids) {
       ec = GetContext(nreqs, nvalid);
   
   std::set<BidPortfolio<Material>::Ptr> ports =
-      src_facility->AddMatlBids(ec.get());
+      src_facility->GetMatlBids(ec.get());
 
   ASSERT_TRUE(ports.size() > 0);
   EXPECT_EQ(ports.size(), 1);

@@ -143,7 +143,7 @@ void EnrichmentFacility::HandleTock(int time) {
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 std::set<cyclus::RequestPortfolio<cyclus::Material>::Ptr>
-EnrichmentFacility::AddMatlRequests() {
+EnrichmentFacility::GetMatlRequests() {
   using cyclus::CapacityConstraint;
   using cyclus::Material;
   using cyclus::RequestPortfolio;
@@ -182,7 +182,7 @@ void EnrichmentFacility::AcceptMatlTrades(
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 std::set<cyclus::BidPortfolio<cyclus::Material>::Ptr>
-EnrichmentFacility::AddMatlBids(cyclus::ExchangeContext<cyclus::Material>* ec) {
+EnrichmentFacility::GetMatlBids(cyclus::ExchangeContext<cyclus::Material>* ec) {
   using cyclus::Bid;
   using cyclus::BidPortfolio;
   using cyclus::CapacityConstraint;

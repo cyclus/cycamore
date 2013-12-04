@@ -106,7 +106,7 @@ cyclus::Model* SinkFacility::Clone() {
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - 
 std::set<cyclus::RequestPortfolio<cyclus::Material>::Ptr>
-SinkFacility::AddMatlRequests() {
+SinkFacility::GetMatlRequests() {
   using cyclus::CapacityConstraint;
   using cyclus::Material;
   using cyclus::RequestPortfolio;
@@ -135,7 +135,7 @@ SinkFacility::AddMatlRequests() {
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - 
 std::set<cyclus::RequestPortfolio<cyclus::GenericResource>::Ptr>
-SinkFacility::AddGenRsrcRequests() {
+SinkFacility::GetGenRsrcRequests() {
   using cyclus::CapacityConstraint;
   using cyclus::GenericResource;
   using cyclus::RequestPortfolio;

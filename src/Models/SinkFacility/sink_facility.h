@@ -136,13 +136,13 @@ class SinkFacility : public cyclus::FacilityModel  {
   /// @brief SinkFacilities request Materials of their given commodity. Note
   /// that it is assumed the SinkFacility operates on a single resource type!
   virtual std::set<cyclus::RequestPortfolio<cyclus::Material>::Ptr>
-      AddMatlRequests();
+      GetMatlRequests();
   
   /// @brief SinkFacilities request GenericResources of their given
   /// commodity. Note that it is assumed the SinkFacility operates on a single
   /// resource type!
   virtual std::set<cyclus::RequestPortfolio<cyclus::GenericResource>::Ptr>
-      AddGenRsrcRequests();
+      GetGenRsrcRequests();
 
   /// @brief SinkFacilities place accepted trade Materials in their Inventory
   virtual void AcceptMatlTrades(

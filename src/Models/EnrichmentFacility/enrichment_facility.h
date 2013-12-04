@@ -183,7 +183,7 @@ class EnrichmentFacility : public cyclus::FacilityModel {
   /// @brief The EnrichmentFacility request Materials of its given
   /// commodity. 
   virtual std::set<cyclus::RequestPortfolio<cyclus::Material>::Ptr>
-      AddMatlRequests();
+      GetMatlRequests();
 
   /// @brief The EnrichmentFacility place accepted trade Materials in their
   /// Inventory
@@ -195,7 +195,7 @@ class EnrichmentFacility : public cyclus::FacilityModel {
   /// request is more than this facility's inventory or SWU capacity, it will
   /// offer its minimum of its capacities.
   virtual std::set<cyclus::BidPortfolio<cyclus::Material>::Ptr>
-      AddMatlBids(cyclus::ExchangeContext<cyclus::Material>* ec);
+      GetMatlBids(cyclus::ExchangeContext<cyclus::Material>* ec);
   
   /// @brief respond to each trade with a material enriched to the appropriate
   /// level given this facility's inventory

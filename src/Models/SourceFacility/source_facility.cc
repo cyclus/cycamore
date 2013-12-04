@@ -116,7 +116,7 @@ cyclus::Material::Ptr SourceFacility::GetOffer(
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 std::set<cyclus::BidPortfolio<cyclus::Material>::Ptr>
-SourceFacility::AddMatlBids(cyclus::ExchangeContext<cyclus::Material>* ec) {
+SourceFacility::GetMatlBids(cyclus::ExchangeContext<cyclus::Material>* ec) {
   using cyclus::Bid;
   using cyclus::BidPortfolio;
   using cyclus::CapacityConstraint;
