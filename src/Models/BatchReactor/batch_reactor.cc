@@ -17,36 +17,38 @@
 namespace cycamore {
 
 // static members
-std::map<Phase, std::string> BatchReactor::phase_names_ = \
-  std::map<Phase, std::string>();
+std::map<Phase, std::string> BatchReactor::phase_names_ =
+    std::map<Phase, std::string>();
 
-//- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+//- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 BatchReactor::BatchReactor(cyclus::Context* ctx)
     : cyclus::FacilityModel(ctx),
       cyclus::Model(ctx),
-      cycle_length_(1),
-      refuel_delay_(0),
-      batches_per_core_(1),
-      in_core_loading_(1),
-      out_core_loading_(1),
+      process_time_(1),
+      preorder_time_(0),
+      start_time_(-1),
+      n_batches_(1),
+      n_load_(1),
+      n_reserves_(1),
+      refuel_time_(0),
+      batch_size_(1),
       in_commodity_(""),
       in_recipe_(""),
       out_commodity_(""),
       out_recipe_(""),
-      cycle_timer_(0),
-      phase_(INIT) {
+      phase_(INITIAL) {
   preCore_.capacity(cyclus::kBuffInfinity);
   inCore_.capacity(cyclus::kBuffInfinity);
   postCore_.capacity(cyclus::kBuffInfinity);
-  if (phase_names_.size() < 1) {
-    SetUpPhaseNames();
+  if (phase_names_.empty()) {
+    SetUpPhaseNames_();
   }
 }
 
-//- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+//- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 BatchReactor::~BatchReactor() {}
-
-//- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+  
+//- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 std::string BatchReactor::schema() {
   return
     "  <!-- cyclus::Material In/Out  -->         \n"
@@ -60,25 +62,35 @@ std::string BatchReactor::schema() {
     "  </element>                                \n"
     "                                            \n"
     "  <!-- Facility Parameters -->              \n"
-    "  <element name=\"cyclelength\">            \n"
+    "  <element name=\"processtime\">            \n"
     "    <data type=\"nonNegativeInteger\"/>     \n"
     "  </element>                                \n"
-    "  <optional>                                \n"
-    "    <element name =\"refueldelay\">         \n"
-    "      <data type=\"nonNegativeInteger\"/>   \n"
-    "    </element>                              \n"
-    "  </optional>                               \n"
-    "  <element name =\"incoreloading\">         \n"
+    "  <element name=\"nbatches\">               \n"
+    "    <data type=\"nonNegativeInteger\"/>     \n"
+    "  </element>                                \n"
+    "  <element name =\"batchsize\">             \n"
     "    <data type=\"double\"/>                 \n"
     "  </element>                                \n"
     "  <optional>                                \n"
-    "    <element name =\"outcoreloading\">      \n"
-    "      <data type=\"double\"/>               \n"
+    "    <element name =\"refueltime\">          \n"
+    "      <data type=\"nonNegativeInteger\"/>   \n"
     "    </element>                              \n"
     "  </optional>                               \n"
-    "  <element name=\"batchespercore\">         \n"
-    "    <data type=\"nonNegativeInteger\"/>     \n"
-    "  </element>                                \n"
+    "  <optional>                                \n"
+    "    <element name =\"orderlookahead\">      \n"
+    "      <data type=\"nonNegativeInteger\"/>   \n"
+    "    </element>                              \n"
+    "  </optional>                               \n"
+    "  <optional>                                \n"
+    "    <element name =\"norder\">              \n"
+    "      <data type=\"nonNegativeInteger\"/>   \n"
+    "    </element>                              \n"
+    "  </optional>                               \n"
+    "  <optional>                                \n"
+    "    <element name =\"nreload\">             \n"
+    "      <data type=\"nonNegativeInteger\"/>   \n"
+    "    </element>                              \n"
+    "  </optional>                               \n"
     "                                            \n"
     "  <!-- Power Production  -->                \n"
     "  <element name=\"commodity_production\">   \n"
@@ -94,61 +106,53 @@ std::string BatchReactor::schema() {
     "  </element>                                \n";
 };
 
-//- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+//- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 void BatchReactor::InitModuleMembers(cyclus::QueryEngine* qe) {
   using std::string;
   using boost::lexical_cast;
+
+  // in/out
   cyclus::QueryEngine* input = qe->QueryElement("fuel_input");
   in_commodity(input->GetElementContent("incommodity"));
   in_recipe(input->GetElementContent("inrecipe"));
-
+  
   cyclus::QueryEngine* output = qe->QueryElement("fuel_output");
   out_commodity(output->GetElementContent("outcommodity"));
   out_recipe(output->GetElementContent("outrecipe"));
 
+  // facility data required
   string data;
-  data = qe->GetElementContent("cyclelength");
-  cycle_length(lexical_cast<int>(data));
+  data = qe->GetElementContent("processtime");
+  process_time(lexical_cast<int>(data));
+  data = qe->GetElementContent("nbatches");
+  n_batches(lexical_cast<int>(data));
+  data = qe->GetElementContent("batchsize");
+  batch_size(lexical_cast<int>(data));
 
-  int delay =
-      cyclus::GetOptionalQuery<int>(qe, "refueldelay", refuel_delay());
-  refuel_delay(delay);
+  // facility data optional  
+  int time =
+      cyclus::GetOptionalQuery<int>(qe, "refueltime", refuel_time());
+  refuel_time(time);
+  time =
+      cyclus::GetOptionalQuery<int>(qe, "orderlookahead", preorder_time());
+  preorder_time(time);
 
-  data = qe->GetElementContent("incoreloading");
-  in_core_loading(lexical_cast<double>(data));
+  int n = 
+      cyclus::GetOptionalQuery<int>(qe, "nreload", n_load());
+  n_load(n);
+  n = cyclus::GetOptionalQuery<int>(qe, "norder", n_load());
+  n_reserves(n);
 
-  double loading = 
-      cyclus::GetOptionalQuery<double>(qe, "outcoreloading", in_core_loading());
-  out_core_loading(loading);
-
-  data = qe->GetElementContent("batchespercore");
-  batches_per_core(lexical_cast<int>(data));
-
+  // commodity production
   cyclus::QueryEngine* commodity = qe->QueryElement("commodity_production");
   cyclus::Commodity commod(commodity->GetElementContent("commodity"));
   AddCommodity(commod);
   data = commodity->GetElementContent("capacity");
   cyclus::CommodityProducer::SetCapacity(commod,
-                                                        lexical_cast<double>(data));
+                                         lexical_cast<double>(data));
   data = commodity->GetElementContent("cost");
   cyclus::CommodityProducer::SetCost(commod,
-                                                    lexical_cast<double>(data));
-}
-
-//- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-std::string BatchReactor::str() {
-  std::stringstream ss;
-  ss << cyclus::FacilityModel::str();
-  ss << " has facility parameters {"
-     << ", Cycle Length = " << cycle_length()
-     << ", Refuel Delay = " << refuel_delay()
-     << ", InCore Loading = " << in_core_loading()
-     << ", OutCore Loading = " << out_core_loading()
-     << ", Batches Per Core = " << batches_per_core()
-     << ", converts commodity '" << in_commodity()
-     << "' into commodity '" << out_commodity()
-     << "'}";
-  return ss.str();
+                                     lexical_cast<double>(data));
 }
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -156,39 +160,48 @@ cyclus::Model* BatchReactor::Clone() {
   BatchReactor* m = new BatchReactor(context());
   m->InitFrom(this);
 
-  m->cycle_length(cycle_length());
-  m->refuel_delay(refuel_delay());
-  m->in_core_loading(in_core_loading());
-  m->out_core_loading(out_core_loading());
-  m->batches_per_core(batches_per_core());
+  // in/out
   m->in_commodity(in_commodity());
   m->out_commodity(out_commodity());
   m->in_recipe(in_recipe());
   m->out_recipe(out_recipe());
+
+  // facility params
+  m->process_time(process_time());
+  m->preorder_time(preorder_time());
+  m->start_time(start_time());
+  m->n_batches(n_batches());
+  m->n_load(n_load());
+  m->n_reserves(n_reserves());
+  m->batch_size(batch_size());
+
+  // commodity production
   m->CopyProducedCommoditiesFrom(this);
 
   return m;
 }
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+std::string BatchReactor::str() {
+  std::stringstream ss;
+  ss << cyclus::FacilityModel::str();
+  ss << " has facility parameters {"
+     << ", Process Time = " << process_time()
+     << ", Refuel Time = " << refuel_time()
+     << ", Core Loading = " << n_batches() * batch_size()
+     << ", Batches Per Core = " << n_batches()
+     << ", converts commodity '" << in_commodity()
+     << "' into commodity '" << out_commodity()
+     << "'}";
+  return ss.str();
+}
+
+//- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 void BatchReactor::Deploy(cyclus::Model* parent) {
   FacilityModel::Deploy(parent);
-  preCore_.capacity(in_core_loading());
-  inCore_.capacity(in_core_loading());
-  recycle_timer();
-  SetPhase(BEGIN);
-  LOG(cyclus::LEV_DEBUG2, "BReact") << "Batch Reactor " << name()
-                                    << " is entering the simuluation with members:";
-  LOG(cyclus::LEV_DEBUG2, "BReact") << "  * in core loading: " <<
-                                    in_core_loading();
-  LOG(cyclus::LEV_DEBUG2, "BReact") << "  * out core loading: " <<
-                                    out_core_loading();
-  LOG(cyclus::LEV_DEBUG2, "BReact") << "  * pre core capacity: " <<
-                                    preCore_.capacity();
-  LOG(cyclus::LEV_DEBUG2, "BReact") << "  * in core capacity: " <<
-                                    inCore_.capacity();
-  LOG(cyclus::LEV_DEBUG2, "BReact") << "  * cycle timer: " << cycle_timer_;
-  LOG(cyclus::LEV_DEBUG2, "BReact") << "  * phase: " << phase_names_[phase_];
+  phase(INITIAL);
+  LOG(cyclus::LEV_DEBUG2, "BReact") << "Batch Reactor entering the simuluation";
+  LOG(cyclus::LEV_DEBUG2, "BReact") << str();
 }
 
 
@@ -204,8 +217,16 @@ void BatchReactor::HandleTick(int time) {
       }
       break;
 
-    case INIT:
-      Refuel_();
+    case WAITING:
+      if (n_core() == n_batches() &&
+          end_time() + refuel_time() <= context()->time()) {
+        phase(PROCESS);
+      } 
+      break;
+      
+    case INITIAL:
+      // special case for a core primed to go
+      if (n_core() == n_batches()) phase(PROCESS);
       break;
   }
 }
@@ -213,7 +234,7 @@ void BatchReactor::HandleTick(int time) {
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 void BatchReactor::HandleTock(int time) {
   switch (phase()) {
-    case INIT: // falling through
+    case INITIAL: // falling through
     case WAITING:
       Refuel_();
       break;
@@ -226,27 +247,27 @@ BatchReactor::GetMatlRequests() {
   std::set<cyclus::RequestPortfolio<cyclus::Material>::Ptr> set;
   double order_size;
 
-  switch (phase()) {
-    case INIT:
-      // reserves_.quantity() < batch_size() from tick filling
-      int n_orders = n_batches() - n_core(); 
-      if (preorder_time() == 0) n_orders += n_reserves();
-      order_size = n_orders * batch_size() - reserves_.quantity();
-      if (order_size > 0) {
-        RequestPortfolio<cyclus::Material>::Ptr p = GetOrder_(order_size);
-        set.insert(p);
-      }
-      break;
+  // switch (phase()) {
+  //   case INITIAL:
+  //     // reserves_.quantity() < batch_size() from tick filling
+  //     int n_orders = n_batches() - n_core(); 
+  //     if (preorder_time() == 0) n_orders += n_reserves();
+  //     order_size = n_orders * batch_size() - reserves_.quantity();
+  //     if (order_size > 0) {
+  //       RequestPortfolio<cyclus::Material>::Ptr p = GetOrder_(order_size);
+  //       set.insert(p);
+  //     }
+  //     break;
 
-    case default:
-      order_size = n_reserves() * reserves_.count() - reserves_.quantity();
-      if (order_time() <= context()->time() &&
-          order_size > 0) {
-        RequestPortfolio<cyclus::Material>::Ptr p = GetOrder_(order_size);
-        set.insert(p);
-      }
-      break;
+  //   case default:
+  order_size = n_reserves() * batch_size() - reserves_.quantity();
+  if (order_time() <= context()->time() &&
+      order_size > cyclus::eps()) {
+    RequestPortfolio<cyclus::Material>::Ptr p = GetOrder_(order_size);
+    set.insert(p);
   }
+  //     break;
+  // }
 
   return set;
 }
@@ -336,13 +357,73 @@ void BatchReactor::phase(Phase p) {
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 void BatchReactor::Refuel_() {
-  while(n_core() < n_batches() && BatchIn(reserves_, in_batch_size())) {
+  while(n_core() < n_batches() && BatchIn(reserves_, batch_size())) {
     MoveBatchIn_();
   }
-  if (n_core() == n_batches()) { // reactor full
-    /// @todo or time + 1? does the phase start on the tick or tock?
-    phase(PROCESS);
+}
+
+//- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+void BatchReactor::MoveBatchIn_() {
+  core_.Push(reserves_.Pop());
+}
+
+//- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+void BatchReactor::MoveBatchOut_() {
+  using cyclus::Material;
+  Material::Ptr mat = core_.Pop();
+  mat->Transmute(context()->GetRecipe(out_recipe()));
+  storage_.Push(mat);
+}
+
+//- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+cyclus::RequestPortfolio<Material>::Ptr BatchReactor::GetOrder_(double size) {
+  using cyclus::CapacityConstraint;
+  using cyclus::Material;
+  using cyclus::RequestPortfolio;
+  using cyclus::Request;
+
+  Material::Ptr mat =
+      Material::CreateUntracked(size, context()->GetRecipe(in_recipe_));
+  
+  RequestPortfolio<Material>::Ptr port(new RequestPortfolio<Material>());
+  port->AddRequest(mat, this, in_commodity_);
+
+  CapacityConstraint<Material> cc(size);
+  port->AddConstraint(cc);
+
+  return port;
+}
+
+//- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+void BatchReactor::AddBatches_(cyclus::Material::Ptr mat) {
+  using cyclus::Material;
+
+  Material::Ptr last = reserves_.PopBack();
+  if (last->quantity() < batch_size()) {
+    if (last->quantity() + mat->quantity() <= batch_size()) {
+      last->Absorb(mat);
+      reserves.Push(last);
+      return; // return because mat has been absorbed
+    } else {
+      Material::Ptr last_bit = mat->Extract(batch_size() - last->quantity());
+      last->Absorb(last_bit);
+    } // end if (last->quantity() + mat->quantity() <= batch_size())
+  } // end if (last->quantity() < batch_size())
+  reserves_.Push(last);
+  
+  while (mat->quantity() > batch_size()) {
+    Material::Ptr batch = mat->Extract(batch_size());
+    reserves_.Push(batch);
   }
+  
+  if (mat->quantity() > cyclus::eps_rsrc()) reserves_.Push(mat);
+}
+
+//- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+void BatchReactor::SetUpPhaseNames_() {
+  phase_names_.insert(std::make_pair(INITIAL, "initialization"));
+  phase_names_.insert(std::make_pair(PROCESS, "processing batch(es)"));
+  phase_names_.insert(std::make_pair(WAITING, "waiting for fuel"));
 }
 
 // //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -633,18 +714,6 @@ void BatchReactor::Refuel_() {
 // }
 
 // //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-// void BatchReactor::SetUpPhaseNames() {
-//   using std::make_pair;
-//   phase_names_.insert(make_pair(INIT, "initialization"));
-//   phase_names_.insert(make_pair(BEGIN, "beginning"));
-//   phase_names_.insert(make_pair(OPERATION, "operation"));
-//   phase_names_.insert(make_pair(REFUEL, "refueling"));
-//   phase_names_.insert(make_pair(REFUEL_DELAY, "refueling with delay"));
-//   phase_names_.insert(make_pair(WAITING, "waiting for fuel"));
-//   phase_names_.insert(make_pair(END, "ending"));
-// }
-
-// //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 // void BatchReactor::recycle_timer() {
 //   cycle_timer_ = 1;
 // }
@@ -784,4 +853,5 @@ void BatchReactor::Refuel_() {
 extern "C" cyclus::Model* ConstructBatchReactor(cyclus::Context* ctx) {
   return new BatchReactor(ctx);
 }
+
 } // namespace cycamore
