@@ -1,6 +1,8 @@
 // sink_facility_tests.cc
 #include <gtest/gtest.h>
 
+#include "facility_model_tests.h"
+#include "model_tests.h"
 #include "resource_helpers.h"
 #include "xml_query_engine.h"
 #include "xml_parser.h"

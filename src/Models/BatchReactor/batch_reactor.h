@@ -14,7 +14,6 @@
 #include "facility_model.h"
 #include "resource_buff.h"
 #include "request_portfolio.h"
-#include "transaction.h"
 #include "material.h"
 
 // forward declarations

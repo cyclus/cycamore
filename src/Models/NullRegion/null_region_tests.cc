@@ -3,7 +3,6 @@
 
 #include "null_region.h"
 #include "error.h"
-#include "message.h"
 #include "region_model_tests.h"
 #include "model_tests.h"
 #include "timer.h"
@@ -54,12 +53,6 @@ TEST_F(NullRegionTest, Print) {
   FakeNullRegion reg(&ctx);
   EXPECT_NO_THROW(std::string s = reg.str());
   // Test NullRegion specific aspects of the print method here
-}
-
-
-//- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-TEST_F(NullRegionTest, ReceiveMessage) {
-  // Test NullRegion specific behaviors of the ReceiveMessage function here
 }
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -

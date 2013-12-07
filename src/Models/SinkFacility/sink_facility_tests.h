@@ -3,10 +3,7 @@
 
 #include "sink_facility.h"
 
-#include "facility_model_tests.h"
-#include "model_tests.h"
 #include "test_context.h"
-#include "mock_market.h"
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 class SinkFacilityTest : public ::testing::Test {
