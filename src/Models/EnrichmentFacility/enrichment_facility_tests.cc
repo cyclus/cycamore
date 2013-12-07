@@ -332,13 +332,14 @@ TEST_F(EnrichmentFacilityTest, Accept) {
   std::vector< std::pair<cyclus::Trade<cyclus::Material>,
                          cyclus::Material::Ptr> > responses;
 
-  Request<Material>::Ptr req1(
-      new Request<Material>(DoRequest(), src_facility, in_commod));
-  Bid<Material>::Ptr bid1(new Bid<Material>(req1, GetMat(qty), &trader));
+  Request<Material>::Ptr req1 =
+      Request<Material>::Create(DoRequest(), src_facility, in_commod);
+  Bid<Material>::Ptr bid1 =
+      Bid<Material>::Create(req1, GetMat(qty), &trader);
 
-  Request<Material>::Ptr req2(
-      new Request<Material>(DoRequest(), src_facility, in_commod));
-  Bid<Material>::Ptr bid2(new Bid<Material>(req2, GetMat(qty), &trader));
+  Request<Material>::Ptr req2 =
+      Request<Material>::Create(DoRequest(), src_facility, in_commod);
+  Bid<Material>::Ptr bid2 = Bid<Material>::Create(req2, GetMat(qty), &trader);
 
   Trade<Material> trade1(req1, bid1, qty);
   responses.push_back(std::make_pair(trade1, GetMat(qty)));
@@ -404,13 +405,14 @@ EnrichmentFacilityTest::GetContext(int nreqs, int nvalid) {
   boost::shared_ptr< ExchangeContext<Material> >
       ec(new ExchangeContext<Material>());
   for (int i = 0; i < nvalid; i++) {
-    ec->AddRequest(Request<Material>::Ptr(
-        new Request<Material>(GetReqMat(1.0, 0.05), &trader, out_commod)));
+    ec->AddRequest(
+        Request<Material>::Create(GetReqMat(1.0, 0.05), &trader, out_commod));
   }  
   for (int i = 0; i < nreqs - nvalid; i++) {
-    ec->AddRequest(Request<Material>::Ptr(
+    ec->AddRequest(
         // get_mat returns a material of only u235, which is not valid
-        new Request<Material>(get_mat(), &trader, out_commod)));
+        Request<Material>::Create(get_mat(), &trader, out_commod));
+        
   }
   return ec;
 }
@@ -548,9 +550,9 @@ TEST_F(EnrichmentFacilityTest, Response) {
   // set up state
   DoAddMat(GetMat(natu_req * 2));
   
-  Request<Material>::Ptr req(
-      new Request<Material>(target, &trader, out_commod));
-  Bid<Material>::Ptr bid(new Bid<Material>(req, target, src_facility));
+  Request<Material>::Ptr req =
+      Request<Material>::Create(target, &trader, out_commod);
+  Bid<Material>::Ptr bid = Bid<Material>::Create(req, target, src_facility);
   Trade<Material> trade(req, bid, trade_qty);
   trades.push_back(trade);
   

@@ -158,8 +158,7 @@ EnrichmentFacility::GetMatlRequests() {
     CapacityConstraint<Material> cc(amt);
     port->AddConstraint(cc);
     
-    Request<Material>::Ptr req(new Request<Material>(mat, this, in_commod_));
-    port->AddRequest(req);
+    port->AddRequest(mat, this, in_commod_);
     
     ports.insert(port);
   } // if amt > eps
@@ -202,8 +201,7 @@ EnrichmentFacility::GetMatlBids(
     const Request<Material>::Ptr req = *it;
     if (ValidReq(req->target())) { 
       Material::Ptr offer = Offer_(req->target());
-      Bid<Material>::Ptr bid(new Bid<Material>(req, offer, this));
-      port->AddBid(bid);
+      port->AddBid(req, offer, this);
     }
   }
 

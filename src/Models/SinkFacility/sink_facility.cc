@@ -123,8 +123,7 @@ SinkFacility::GetMatlRequests() {
     
     std::vector<std::string>::const_iterator it;
     for (it = in_commods_.begin(); it != in_commods_.end(); ++it) {
-      Request<Material>::Ptr req(new Request<Material>(mat, this, *it));
-      port->AddRequest(req);
+      port->AddRequest(mat, this, *it);
     }
     
     ports.insert(port);
@@ -156,9 +155,7 @@ SinkFacility::GetGenRsrcRequests() {
       std::string units = ""; // not clear what this should be..
       GenericResource::Ptr rsrc =
           GenericResource::CreateUntracked(amt, quality, units);
-      Request<GenericResource>::Ptr
-          req(new Request<GenericResource>(rsrc, this, *it));
-      port->AddRequest(req);
+      port->AddRequest(rsrc, this, *it);
     }
     
     ports.insert(port);

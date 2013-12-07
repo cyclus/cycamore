@@ -133,8 +133,7 @@ SourceFacility::GetMatlBids(
   for (it = requests.begin(); it != requests.end(); ++it) {
     const Request<Material>::Ptr req = *it;
     Material::Ptr offer = GetOffer(req->target());
-    Bid<Material>::Ptr bid(new Bid<Material>(req, offer, this));
-    port->AddBid(bid);
+    port->AddBid(req, offer, this);
   }
 
   CapacityConstraint<Material> cc(capacity_);
