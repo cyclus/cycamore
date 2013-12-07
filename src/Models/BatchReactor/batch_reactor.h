@@ -156,7 +156,7 @@ class BatchReactor : public cyclus::FacilityModel,
   inline int n_core() const { return core_.count(); }
 
   /// @brief the size of a batch 
-  inline void batch_size(double size) { batch_size_ = size_; }
+  inline void batch_size(double size) { batch_size_ = size; }
   inline double batch_size() { return batch_size_; }
 
   /// @brief the input commodity
@@ -191,7 +191,7 @@ class BatchReactor : public cyclus::FacilityModel,
   void MoveBatchOut_();
 
   /// @brief construct a request portfolio for an order of a given size
-  cyclus::RequestPortfolio<Material>::Ptr GetOrder_(double size);
+  cyclus::RequestPortfolio<cyclus::Material>::Ptr GetOrder_(double size);
 
   /// @brief Add a blob of incoming material to reserves_
   ///
@@ -207,6 +207,7 @@ class BatchReactor : public cyclus::FacilityModel,
   static std::map<Phase, std::string> phase_names_;
   int process_time_;
   int preorder_time_;
+  int refuel_time_;
   int start_time_;
   int n_batches_;
   int n_load_;

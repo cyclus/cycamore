@@ -28,7 +28,7 @@ void BatchReactorTest::SetUp() {
   cost = capacity;
   //InitSrcFacility();
   //InitWorld();
-  BatchReactor* src_facility = new BatchReactor(tc_.get());
+  cycamore::BatchReactor* src_facility = new cycamore::BatchReactor(tc_.get());
 }
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
