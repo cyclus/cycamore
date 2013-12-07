@@ -1,7 +1,5 @@
 // batch_reactor.cc
 // Implements the BatchReactor class
-#include "batch_reactor.h"
-
 #include <sstream>
 #include <cmath>
 
@@ -11,13 +9,13 @@
 #include "context.h"
 #include "error.h"
 #include "logger.h"
-#include "generic_resource.h"
-#include "market_model.h"
+
+#include "batch_reactor.h"
 
 namespace cycamore {
 
 // static members
-std::map<Phase, std::string> BatchReactor::phase_names_ =
+std::map<BatchReactor::Phase, std::string> BatchReactor::phase_names_ =
     std::map<Phase, std::string>();
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -347,7 +345,7 @@ void BatchReactor::GetMatlTrades(
 }
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-void BatchReactor::phase(Phase p) {
+void BatchReactor::phase(BatchReactor::Phase p) {
   switch (p) {
     case PROCESS:
       start_time(context()->time());
@@ -441,7 +439,7 @@ void BatchReactor::SetUpPhaseNames_() {
 
 
 //   if (LifetimeReached(time)) {
-//     SetPhase(END);
+//     SetBatchReactor::Phase(END);
 //   }
 
 //   double fuel_quantity, request;
@@ -515,20 +513,20 @@ void BatchReactor::SetUpPhaseNames_() {
 //       LoadCore();
 //       if (CoreFilled()) {
 
-//         SetPhase(OPERATION);
+//         SetBatchReactor::Phase(OPERATION);
 //         recycle_timer();
 //       } else {
-//         SetPhase(WAITING);
+//         SetBatchReactor::Phase(WAITING);
 //       }
 //       break;
 
 //     case REFUEL:
-//       SetPhase(REFUEL_DELAY);
+//       SetBatchReactor::Phase(REFUEL_DELAY);
 //       time_delayed_ = 0;
 //     case REFUEL_DELAY:
 //       LoadCore();
 //       if (time_delayed_ > refuel_delay() && CoreFilled()) {
-//         SetPhase(OPERATION);
+//         SetBatchReactor::Phase(OPERATION);
 //         recycle_timer();
 //       } else {
 //         ++time_delayed_;
@@ -537,7 +535,7 @@ void BatchReactor::SetUpPhaseNames_() {
 
 //     case OPERATION:
 //       if (CycleComplete()) {
-//         SetPhase(REFUEL);
+//         SetBatchReactor::Phase(REFUEL);
 //       }
 //       break;
 
@@ -693,7 +691,7 @@ void BatchReactor::SetUpPhaseNames_() {
 // }
 
 // //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-// Phase BatchReactor::phase() {
+// BatchReactor::Phase BatchReactor::phase() {
 //   return phase_;
 // }
 
@@ -709,7 +707,7 @@ void BatchReactor::SetUpPhaseNames_() {
 // }
 
 // //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-// void BatchReactor::SetPhase(Phase p) {
+// void BatchReactor::SetBatchReactor::Phase(BatchReactor::Phase p) {
 //   LOG(cyclus::LEV_DEBUG2, "BReact") << "BatchReactor " << name()
 //                                     << " is changing phases -";
 //   LOG(cyclus::LEV_DEBUG2, "BReact") << "  * from phase: " << phase_names_[phase_];

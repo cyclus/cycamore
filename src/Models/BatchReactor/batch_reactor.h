@@ -27,15 +27,6 @@ class Context;
 
 namespace cycamore {
 
-/// Defines all possible phases this facility can be in
-enum Phase {
-  INITIAL, ///< The initial phase, after the facility is built but before it is
-           ///filled
-  PROCESS, ///< The processing phase
-  WAITING, ///< The waiting phase, while the factility is waiting for fuel
-           ///between processes
-};
-
 /// @class BatchReactor
 ///
 /// @brief The BatchReactor is a facility that models batch processing.
@@ -44,8 +35,17 @@ enum Phase {
 /// @todo add a refueling delay
 /// @todo add decommissioning behavior if material is still in storage
 class BatchReactor : public cyclus::FacilityModel,
-  public cyclus::CommodityProducer {
+      public cyclus::CommodityProducer {
  public:
+  /// Defines all possible phases this facility can be in
+  enum Phase {
+    INITIAL, ///< The initial phase, after the facility is built but before it is
+             /// filled
+    PROCESS, ///< The processing phase
+    WAITING, ///< The waiting phase, while the factility is waiting for fuel
+             /// between processes
+  };
+
   /* --- Module Members --- */
   /// @param ctx the cyclus context for access to simulation-wide parameters
   BatchReactor(cyclus::Context* ctx);

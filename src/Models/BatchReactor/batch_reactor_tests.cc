@@ -1,10 +1,6 @@
 // batch_reactor_tests.cc
 
-#include "batch_reactor_tests.h"
-
 #include <sstream>
-
-#include <gtest/gtest.h>
 
 #include "commodity.h"
 #include "facility_model_tests.h"
@@ -12,13 +8,13 @@
 #include "model.h"
 #include "xml_query_engine.h"
 
+#include "batch_reactor_tests.h"
+
+namespace cycamore {
+
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 void BatchReactorTest::SetUp() {
   // set up model parameters
-  lencycle = 3;
-  in_loadcore = 10.0;
-  out_loadcore = 9.0;
-  nbatch = 5;
   in_commod = "inc";
   out_commod = "outc";
   in_recipe = "inr";
@@ -28,7 +24,7 @@ void BatchReactorTest::SetUp() {
   cost = capacity;
   //InitSrcFacility();
   //InitWorld();
-  cycamore::BatchReactor* src_facility = new cycamore::BatchReactor(tc_.get());
+  src_facility = new BatchReactor(tc_.get());
 }
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -124,7 +120,6 @@ void BatchReactorTest::TearDown() {
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 TEST_F(BatchReactorTest, Print) {
   EXPECT_NO_THROW(std::string s = src_facility->str());
-  //Test BatchReactor specific aspects of the print method here
 }
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -136,7 +131,7 @@ TEST_F(BatchReactorTest, Tick) {
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 TEST_F(BatchReactorTest, Tock) {
   int time = 1;
-  EXPECT_ANY_THROW(src_facility->HandleTock(time));
+  EXPECT_NO_THROW(src_facility->HandleTock(time));
 }
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -157,3 +152,4 @@ INSTANTIATE_TEST_CASE_P(BatchReactor, FacilityModelTests,
 INSTANTIATE_TEST_CASE_P(BatchReactor, ModelTests,
                         Values(&BatchReactorModelConstructor));
 
+} // namespace cycamore
