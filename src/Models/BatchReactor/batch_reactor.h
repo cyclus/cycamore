@@ -37,7 +37,7 @@ namespace cycamore {
 class BatchReactor : public cyclus::FacilityModel,
       public cyclus::CommodityProducer {
  public:
-  /// Defines all possible phases this facility can be in
+  /// @brief defines all possible phases this facility can be in
   enum Phase {
     INITIAL, ///< The initial phase, after the facility is built but before it is
              /// filled
@@ -46,6 +46,18 @@ class BatchReactor : public cyclus::FacilityModel,
              /// between processes
   };
 
+  /// @brief a struct for initial conditions
+  struct InitCond {
+    InitCond(int n_reserves, int n_core, int n_storage)
+     : n_reserves(n_reserves),
+       n_core(n_core),
+       n_storage(n_storage) {};
+    
+    int n_reserves;
+    int n_core;
+    int n_storage;
+  };
+  
   /* --- Module Members --- */
   /// @param ctx the cyclus context for access to simulation-wide parameters
   BatchReactor(cyclus::Context* ctx);
@@ -179,6 +191,10 @@ class BatchReactor : public cyclus::FacilityModel,
   void phase(Phase p);
   inline Phase phase() const { return phase_; }
 
+  /// @brief this facility's initial conditions
+  inline void  ics(const InitCond& ics) { ics_ = ics; }
+  inline InitCond ics() const { return ics_; }
+
  private:
   /// @brief refuels the reactor until it is full or reserves_ is out of
   /// batches. If the core is full after refueling, the Phase is set to PROCESS.
@@ -218,6 +234,7 @@ class BatchReactor : public cyclus::FacilityModel,
   std::string in_recipe_;
   std::string out_recipe_;
   Phase phase_;
+  InitCond ics_;
   
   /// @brief a cyclus::ResourceBuff for material before they enter the core.
   /// @warning the *youngest* item in the buffer may not be of full

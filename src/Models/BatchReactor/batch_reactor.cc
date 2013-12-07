@@ -34,7 +34,8 @@ BatchReactor::BatchReactor(cyclus::Context* ctx)
       in_recipe_(""),
       out_commodity_(""),
       out_recipe_(""),
-      phase_(INITIAL) {
+      phase_(INITIAL),
+      ics_(InitCond(0, 0, 0)) {
   reserves_.set_capacity(cyclus::kBuffInfinity);
   core_.set_capacity(cyclus::kBuffInfinity);
   storage_.set_capacity(cyclus::kBuffInfinity);
@@ -49,72 +50,95 @@ BatchReactor::~BatchReactor() {}
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 std::string BatchReactor::schema() {
   return
-    "  <!-- cyclus::Material In/Out  -->         \n"
-    "  <element name=\"fuel_input\">             \n"
-    "   <ref name=\"incommodity\"/>              \n"
-    "   <ref name=\"inrecipe\"/>                 \n"
-    "  </element>                                \n"
-    "  <element name=\"fuel_output\">            \n"
-    "   <ref name=\"outcommodity\"/>             \n"
-    "   <ref name=\"outrecipe\"/>                \n"
-    "  </element>                                \n"
-    "                                            \n"
-    "  <!-- Facility Parameters -->              \n"
-    "  <element name=\"processtime\">            \n"
-    "    <data type=\"nonNegativeInteger\"/>     \n"
-    "  </element>                                \n"
-    "  <element name=\"nbatches\">               \n"
-    "    <data type=\"nonNegativeInteger\"/>     \n"
-    "  </element>                                \n"
-    "  <element name =\"batchsize\">             \n"
-    "    <data type=\"double\"/>                 \n"
-    "  </element>                                \n"
-    "  <optional>                                \n"
-    "    <element name =\"refueltime\">          \n"
-    "      <data type=\"nonNegativeInteger\"/>   \n"
-    "    </element>                              \n"
-    "  </optional>                               \n"
-    "  <optional>                                \n"
-    "    <element name =\"orderlookahead\">      \n"
-    "      <data type=\"nonNegativeInteger\"/>   \n"
-    "    </element>                              \n"
-    "  </optional>                               \n"
-    "  <optional>                                \n"
-    "    <element name =\"norder\">              \n"
-    "      <data type=\"nonNegativeInteger\"/>   \n"
-    "    </element>                              \n"
-    "  </optional>                               \n"
-    "  <optional>                                \n"
-    "    <element name =\"nreload\">             \n"
-    "      <data type=\"nonNegativeInteger\"/>   \n"
-    "    </element>                              \n"
-    "  </optional>                               \n"
-    "                                            \n"
-    "  <!-- Power Production  -->                \n"
-    "  <element name=\"commodity_production\">   \n"
-    "   <element name=\"commodity\">             \n"
-    "     <data type=\"string\"/>                \n"
-    "   </element>                               \n"
-    "   <element name=\"capacity\">              \n"
-    "     <data type=\"double\"/>                \n"
-    "   </element>                               \n"
-    "   <element name=\"cost\">                  \n"
-    "     <data type=\"double\"/>                \n"
-    "   </element>                               \n"
-    "  </element>                                \n";
+    "  <!-- cyclus::Material In/Out  -->           \n"
+    "  <element name=\"fuel_input\">               \n"
+    "   <ref name=\"incommodity\"/>                \n"
+    "   <ref name=\"inrecipe\"/>                   \n"
+    "  </element>                                  \n"
+    "  <element name=\"fuel_output\">              \n"
+    "   <ref name=\"outcommodity\"/>               \n"
+    "   <ref name=\"outrecipe\"/>                  \n"
+    "  </element>                                  \n"
+    "                                              \n"
+    "  <!-- Facility Parameters -->                \n"
+    "  <element name=\"processtime\">              \n"
+    "    <data type=\"nonNegativeInteger\"/>       \n"
+    "  </element>                                  \n"
+    "  <element name=\"nbatches\">                 \n"
+    "    <data type=\"nonNegativeInteger\"/>       \n"
+    "  </element>                                  \n"
+    "  <element name =\"batchsize\">               \n"
+    "    <data type=\"double\"/>                   \n"
+    "  </element>                                  \n"
+    "  <optional>                                  \n"
+    "    <element name =\"refueltime\">            \n"
+    "      <data type=\"nonNegativeInteger\"/>     \n"
+    "    </element>                                \n"
+    "  </optional>                                 \n"
+    "  <optional>                                  \n"
+    "    <element name =\"orderlookahead\">        \n"
+    "      <data type=\"nonNegativeInteger\"/>     \n"
+    "    </element>                                \n"
+    "  </optional>                                 \n"
+    "  <optional>                                  \n"
+    "    <element name =\"norder\">                \n"
+    "      <data type=\"nonNegativeInteger\"/>     \n"
+    "    </element>                                \n"
+    "  </optional>                                 \n"
+    "  <optional>                                  \n"
+    "    <element name =\"nreload\">               \n"
+    "      <data type=\"nonNegativeInteger\"/>     \n"
+    "    </element>                                \n"
+    "  </optional>                                 \n"
+    "  <optional>                                  \n"
+    "    <element name =\"initial_condition\">     \n"
+    "      <optional>                              \n"
+    "        <element name =\"nreserves\">         \n"
+    "          <data type=\"nonNegativeInteger\"/> \n"
+    "        </element>                            \n"
+    "      </optional>                             \n"
+    "      <optional>                              \n"
+    "        <element name =\"ncore\">             \n"
+    "          <data type=\"nonNegativeInteger\"/> \n"
+    "        </element>                            \n"
+    "      </optional>                             \n"
+    "      <optional>                              \n"
+    "        <element name =\"nstorage\">          \n"
+    "          <data type=\"nonNegativeInteger\"/> \n"
+    "        </element>                            \n"
+    "      </optional>                             \n"
+    "    </element>                                \n"
+    "  </optional>                                 \n"
+    "                                              \n"
+    "  <!-- Power Production  -->                  \n"
+    "  <element name=\"commodity_production\">     \n"
+    "   <element name=\"commodity\">               \n"
+    "     <data type=\"string\"/>                  \n"
+    "   </element>                                 \n"
+    "   <element name=\"capacity\">                \n"
+    "     <data type=\"double\"/>                  \n"
+    "   </element>                                 \n"
+    "   <element name=\"cost\">                    \n"
+    "     <data type=\"double\"/>                  \n"
+    "   </element>                                 \n"
+    "  </element>                                  \n";
 };
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-void BatchReactor::InitModuleMembers(cyclus::QueryEngine* qe) {
-  using std::string;
+void BatchReactor::InitModuleMembers(cyclus::QueryEngine* qe) {  
   using boost::lexical_cast;
-
+  using cyclus::Commodity;
+  using cyclus::CommodityProducer;
+  using cyclus::GetOptionalQuery;
+  using cyclus::QueryEngine;
+  using std::string;
+  
   // in/out
-  cyclus::QueryEngine* input = qe->QueryElement("fuel_input");
+  QueryEngine* input = qe->QueryElement("fuel_input");
   in_commodity(input->GetElementContent("incommodity"));
   in_recipe(input->GetElementContent("inrecipe"));
   
-  cyclus::QueryEngine* output = qe->QueryElement("fuel_output");
+  QueryEngine* output = qe->QueryElement("fuel_output");
   out_commodity(output->GetElementContent("outcommodity"));
   out_recipe(output->GetElementContent("outrecipe"));
 
@@ -129,27 +153,39 @@ void BatchReactor::InitModuleMembers(cyclus::QueryEngine* qe) {
 
   // facility data optional  
   int time =
-      cyclus::GetOptionalQuery<int>(qe, "refueltime", refuel_time());
+      GetOptionalQuery<int>(qe, "refueltime", refuel_time());
   refuel_time(time);
   time =
-      cyclus::GetOptionalQuery<int>(qe, "orderlookahead", preorder_time());
+      GetOptionalQuery<int>(qe, "orderlookahead", preorder_time());
   preorder_time(time);
 
   int n = 
-      cyclus::GetOptionalQuery<int>(qe, "nreload", n_load());
+      GetOptionalQuery<int>(qe, "nreload", n_load());
   n_load(n);
-  n = cyclus::GetOptionalQuery<int>(qe, "norder", n_load());
+  n = GetOptionalQuery<int>(qe, "norder", n_load());
   n_reserves(n);
 
+  // initial condition
+  int nreserves = 0;
+  int ncore = 0;
+  int nstorage = 0;
+  if (qe->NElementsMatchingQuery("initial_condition") > 0) {
+    QueryEngine* ic = qe->QueryElement("initial_condition");
+    nreserves = GetOptionalQuery<int>(ic, "nreserves", 0);
+    ncore = GetOptionalQuery<int>(ic, "ncore", 0);
+    nstorage = GetOptionalQuery<int>(ic, "nstorage", 0);
+  }
+  ics(InitCond(nreserves, ncore, nstorage));
+      
   // commodity production
-  cyclus::QueryEngine* commodity = qe->QueryElement("commodity_production");
-  cyclus::Commodity commod(commodity->GetElementContent("commodity"));
+  QueryEngine* commodity = qe->QueryElement("commodity_production");
+  Commodity commod(commodity->GetElementContent("commodity"));
   AddCommodity(commod);
   data = commodity->GetElementContent("capacity");
-  cyclus::CommodityProducer::SetCapacity(commod,
+  CommodityProducer::SetCapacity(commod,
                                          lexical_cast<double>(data));
   data = commodity->GetElementContent("cost");
-  cyclus::CommodityProducer::SetCost(commod,
+  CommodityProducer::SetCost(commod,
                                      lexical_cast<double>(data));
 }
 
@@ -176,6 +212,9 @@ cyclus::Model* BatchReactor::Clone() {
   // commodity production
   m->CopyProducedCommoditiesFrom(this);
 
+  // ics
+  m->ics(ics());
+  
   return m;
 }
 
@@ -196,8 +235,25 @@ std::string BatchReactor::str() {
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 void BatchReactor::Deploy(cyclus::Model* parent) {
+  using cyclus::Material;
+
   FacilityModel::Deploy(parent);
   phase(INITIAL);
+
+  Material::Ptr mat;
+  for (int i = 0; i < ics_.n_reserves; ++i) {
+    mat = Material::Create(this, batch_size(), context()->GetRecipe(in_recipe_));
+    reserves_.Push(mat);
+  }
+  for (int i = 0; i < ics_.n_core; ++i) {
+    mat = Material::Create(this, batch_size(), context()->GetRecipe(in_recipe_));
+    core_.Push(mat);
+  }
+  for (int i = 0; i < ics_.n_storage; ++i) {
+    mat =
+        Material::Create(this, batch_size(), context()->GetRecipe(out_recipe_));
+    storage_.Push(mat);
+  }
 
   LOG(cyclus::LEV_DEBUG2, "BReact") << "Batch Reactor entering the simuluation";
   LOG(cyclus::LEV_DEBUG2, "BReact") << str();

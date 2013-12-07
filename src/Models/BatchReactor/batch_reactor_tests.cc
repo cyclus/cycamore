@@ -15,6 +15,14 @@
 namespace cycamore {
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+bool operator==(const BatchReactor::InitCond& l,
+                const BatchReactor::InitCond& r) {
+  return (l.n_reserves == r.n_reserves &&
+          l.n_core == r.n_core &&
+          l.n_storage == r.n_storage);
+}
+
+//- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 void BatchReactorTest::SetUp() {
   src_facility = new BatchReactor(tc_.get());
   InitParameters();
@@ -44,6 +52,10 @@ void BatchReactorTest::InitParameters() {
   preorder_time = 1;
   batch_size = 4.5;
 
+  ic_reserves = 2;
+  ic_core = 3;
+  ic_storage = 1;
+  
   cyclus::CompMap v;
   v[92235] = 1;
   v[92238] = 2;
@@ -68,9 +80,18 @@ void BatchReactorTest::SetUpSourceFacility() {
   src_facility->refuel_time(refuel_time);
   src_facility->preorder_time(preorder_time);
   src_facility->batch_size(batch_size);
+  SetICs(BatchReactor::InitCond(ic_reserves, ic_core, ic_storage));
+  
   src_facility->AddCommodity(commodity);
   src_facility->cyclus::CommodityProducer::SetCapacity(commodity, capacity);
   src_facility->cyclus::CommodityProducer::SetCost(commodity, capacity);
+}
+
+//- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+void BatchReactorTest::TestBuffs(int nreserves, int ncore, int nstorage) {
+  EXPECT_EQ(nreserves, src_facility->reserves_.count());
+  EXPECT_EQ(ncore, src_facility->core_.count());
+  EXPECT_EQ(nstorage, src_facility->storage_.count());
 }
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -112,6 +133,8 @@ TEST_F(BatchReactorTest, InitialState) {
   EXPECT_EQ(batch_size, src_facility->batch_size());
   EXPECT_EQ(0, src_facility->n_core());
   EXPECT_EQ(BatchReactor::INITIAL, src_facility->phase());
+  EXPECT_EQ(BatchReactor::InitCond(ic_reserves, ic_core, ic_storage),
+            src_facility->ics());
 
   cyclus::Commodity commod(commodity);
   EXPECT_TRUE(src_facility->ProducesCommodity(commod));
@@ -138,6 +161,11 @@ TEST_F(BatchReactorTest, XMLInit) {
      << "  <orderlookahead>" << preorder_time << "</orderlookahead>"
      << "  <norder>" << n_reserves << "</norder>"
      << "  <nreload>" << n_load << "</nreload>"
+     << "  <initial_condition>"
+     << "    <nreserves>" << ic_reserves << "</nreserves>"
+     << "    <ncore>" << ic_core << "</ncore>"
+     << "    <nstorage>" << ic_storage << "</nstorage>"
+     << "  </initial_condition>"
      << "  <commodity_production>"
      << "    <commodity>" << commodity << "</commodity>"
      << "    <capacity>" << capacity << "</capacity>"
@@ -164,7 +192,8 @@ TEST_F(BatchReactorTest, XMLInit) {
   EXPECT_EQ(batch_size, fac.batch_size());
   EXPECT_EQ(0, fac.n_core());
   EXPECT_EQ(BatchReactor::INITIAL, fac.phase());
-
+  EXPECT_EQ(BatchReactor::InitCond(ic_reserves, ic_core, ic_storage), fac.ics());
+  
   cyclus::Commodity commod(commodity);
   EXPECT_TRUE(fac.ProducesCommodity(commod));
   EXPECT_EQ(capacity, fac.ProductionCapacity(commod));
@@ -189,6 +218,8 @@ TEST_F(BatchReactorTest, Clone) {
   EXPECT_EQ(batch_size, cloned_fac->batch_size());
   EXPECT_EQ(0, cloned_fac->n_core());
   EXPECT_EQ(BatchReactor::INITIAL, cloned_fac->phase());
+  EXPECT_EQ(BatchReactor::InitCond(ic_reserves, ic_core, ic_storage),
+            cloned_fac->ics());
 
   cyclus::Commodity commod(commodity);
   EXPECT_TRUE(cloned_fac->ProducesCommodity(commod));
@@ -222,6 +253,13 @@ TEST_F(BatchReactorTest, StartProcess) {
   EXPECT_EQ(t, src_facility->start_time());
   EXPECT_EQ(t + process_time, src_facility->end_time());
   EXPECT_EQ(t + process_time - preorder_time, src_facility->order_time());
+}
+
+
+//- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+TEST_F(BatchReactorTest, InitCond) {
+  src_facility->Deploy(src_facility);
+  TestBuffs(ic_reserves, ic_core, ic_storage);
 }
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -

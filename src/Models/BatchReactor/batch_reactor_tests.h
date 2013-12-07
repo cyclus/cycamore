@@ -18,6 +18,7 @@ class BatchReactorTest : public ::testing::Test {
   BatchReactor* src_facility;
   int n_batches, n_load, n_reserves;
   int process_time, refuel_time, preorder_time;
+  int ic_reserves, ic_core, ic_storage;
   double batch_size;
   std::string in_commod, in_recipe, out_commod, out_recipe;
   std::string commodity;
@@ -28,6 +29,12 @@ class BatchReactorTest : public ::testing::Test {
   void InitParameters();
   void SetUpSourceFacility();
 
+  /// @brief sets src_facility's initial conditions
+  void SetICs(BatchReactor::InitCond ics) { src_facility->ics_ = ics; }
+
+  /// @brief tests the number of batches in each buffer
+  void TestBuffs(int nreserves, int ncore, int nstorage);
+  
   /// @brief tests the BatchReactor's reserves_, by calling AddBatches_(mat),
   /// and confirming that there are n items and the last item has quantity qty
   void TestReserveBatches(cyclus::Material::Ptr mat, int n, double qty);
