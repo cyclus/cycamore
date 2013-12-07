@@ -226,7 +226,7 @@ bool EnrichmentFacility::ValidReq(const cyclus::Material::Ptr mat) {
 }
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-void EnrichmentFacility::PopulateMatlTradeResponses(
+void EnrichmentFacility::GetMatlTrades(
     const std::vector< cyclus::Trade<cyclus::Material> >& trades,
     std::vector<std::pair<cyclus::Trade<cyclus::Material>,
                           cyclus::Material::Ptr> >& responses) {

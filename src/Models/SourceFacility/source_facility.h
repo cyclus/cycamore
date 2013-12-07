@@ -150,7 +150,7 @@ class SourceFacility : public cyclus::FacilityModel,
   ///
   /// @param trades all trades in which this trader is the supplier
   /// @param responses a container to populate with responses to each trade
-  virtual void PopulateMatlTradeResponses(
+  virtual void GetMatlTrades(
     const std::vector< cyclus::Trade<cyclus::Material> >& trades,
     std::vector<std::pair<cyclus::Trade<cyclus::Material>,
     cyclus::Material::Ptr> >& responses);

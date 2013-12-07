@@ -153,7 +153,7 @@ TEST_F(SourceFacilityTest, Response) {
                         cyclus::Material::Ptr> > responses;
 
   // Null response
-  EXPECT_NO_THROW(src_facility->PopulateMatlTradeResponses(trades, responses));
+  EXPECT_NO_THROW(src_facility->GetMatlTrades(trades, responses));
   EXPECT_EQ(responses.size(), 0);
 
   double qty = capacity / 3;
@@ -166,7 +166,7 @@ TEST_F(SourceFacilityTest, Response) {
 
   // 1 trade
   ASSERT_EQ(src_facility->current_capacity(), capacity);
-  src_facility->PopulateMatlTradeResponses(trades, responses);
+  src_facility->GetMatlTrades(trades, responses);
   EXPECT_EQ(responses.size(), 1);
   EXPECT_EQ(responses[0].second->quantity(), qty);
   EXPECT_EQ(responses[0].second->comp(), recipe);
@@ -176,12 +176,12 @@ TEST_F(SourceFacilityTest, Response) {
   ASSERT_GT(src_facility->current_capacity() - 2 * qty, -1 * cyclus::eps());
   trades.push_back(trade);
   responses.clear();
-  EXPECT_NO_THROW(src_facility->PopulateMatlTradeResponses(trades, responses));
+  EXPECT_NO_THROW(src_facility->GetMatlTrades(trades, responses));
   EXPECT_EQ(responses.size(), 2);
   ASSERT_TRUE(cyclus::AlmostEq(src_facility->current_capacity(), 0));
 
   // too much qty, capn!
-  EXPECT_THROW(src_facility->PopulateMatlTradeResponses(trades, responses),
+  EXPECT_THROW(src_facility->GetMatlTrades(trades, responses),
                cyclus::StateError);
   
   // reset!

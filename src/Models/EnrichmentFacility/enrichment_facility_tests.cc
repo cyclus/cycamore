@@ -541,7 +541,7 @@ TEST_F(EnrichmentFacilityTest, Response) {
   src_facility->swu_capacity(swu_req); // swu capacitated
 
   // Null response
-  src_facility->PopulateMatlTradeResponses(trades, responses);
+  src_facility->GetMatlTrades(trades, responses);
   EXPECT_NO_THROW();
   EXPECT_EQ(responses.size(), 0);
 
@@ -556,7 +556,7 @@ TEST_F(EnrichmentFacilityTest, Response) {
   
   // 1 trade, SWU < SWU cap
   ASSERT_DOUBLE_EQ(src_facility->current_swu_capacity(), swu_req);
-  src_facility->PopulateMatlTradeResponses(trades, responses);
+  src_facility->GetMatlTrades(trades, responses);
   ASSERT_EQ(responses.size(), 1);
   EXPECT_DOUBLE_EQ(src_facility->current_swu_capacity(),
                    swu_req - SwuRequired(trade_qty, assays));
@@ -566,7 +566,7 @@ TEST_F(EnrichmentFacilityTest, Response) {
             -1 * cyclus::eps());
   trades.push_back(trade);
   responses.clear();
-  EXPECT_NO_THROW(src_facility->PopulateMatlTradeResponses(trades, responses));
+  EXPECT_NO_THROW(src_facility->GetMatlTrades(trades, responses));
   EXPECT_EQ(responses.size(), 2);
   EXPECT_TRUE(cyclus::AlmostEq(src_facility->current_swu_capacity(), 0));
   
@@ -574,7 +574,7 @@ TEST_F(EnrichmentFacilityTest, Response) {
   trade = Trade<Material>(req, bid, 1); // a small number
   trades.clear();
   trades.push_back(trade);
-  EXPECT_THROW(src_facility->PopulateMatlTradeResponses(trades, responses),
+  EXPECT_THROW(src_facility->GetMatlTrades(trades, responses),
                cyclus::StateError);
   
   // reset!
