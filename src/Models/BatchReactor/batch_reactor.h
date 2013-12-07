@@ -29,10 +29,47 @@ namespace cycamore {
 
 /// @class BatchReactor
 ///
-/// @brief The BatchReactor is a facility that models batch processing.
+/// @section introduction Introduction
+/// The BatchReactor is a facility that models batch processing. It has three
+/// buffers which hold batches of materials: reserves, core, and
+/// storage. Incoming material orders are placed into reserves, from which the
+/// core is provided batches during refueling. When a process has been
+/// completed, batches are moved from the core into storage. Requests for
+/// material are bid upon based on the state of the material in storage.
 ///
-/// @todo finish documentation..
-/// @todo add a refueling delay
+/// @section params Parameters
+/// A BatchReactor has the following tuneable parameters:
+///   #. batch_size : the size of batches
+///   #. n_batches : the number of batches that constitute a full core
+///   #. process_time : the number of timesteps a batch process takes
+///   #. n_load : the number of batches processed at any given time (i.e.,
+///   n_load is unloaded and reloaded after a process is finished
+///   #. n_reserves : the preferred number of batches in reserve
+///   #. preorder_time : the amount of time before a process is finished to
+///   order fuel
+///   #. refuel_time : the number of timesteps required to reload the core after
+///   a process has finished
+///   #. in_commodity : the name of the input commodity
+///   #. in_recipe : the name of the input recipe
+///   #. out_commodity : the name of the output commodity
+///   #. out_recipe : the name of the output recipe
+/// 
+/// @section requests Requests  
+/// A BatchReactor will make a request for its input commodity if the
+/// preorder_time has been reached and there are less than n_reserves batches in
+/// its reserves.
+///
+/// A special case exists when the reactor first enters the simulation, where it
+/// will order as much fuel as is needed to fill its full core.
+/// 
+/// @section bids Bids
+/// A BatchReactor will bid on any request for its out_commodity, up to its
+/// storage buffer quantity.
+///
+/// @section ics Initial Conditions
+/// A BatchReactor can be deployed with any number of batches in its reserve,
+/// core, and storage buffers.
+///
 /// @todo add decommissioning behavior if material is still in storage
 class BatchReactor : public cyclus::FacilityModel,
       public cyclus::CommodityProducer {
