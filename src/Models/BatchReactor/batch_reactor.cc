@@ -203,7 +203,6 @@ void BatchReactor::Deploy(cyclus::Model* parent) {
   LOG(cyclus::LEV_DEBUG2, "BReact") << str();
 }
 
-
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 void BatchReactor::HandleTick(int time) {
   LOG(cyclus::LEV_INFO3, "BReact") << name() << " is ticking at time "
@@ -255,30 +254,36 @@ void BatchReactor::HandleTock(int time) {
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 std::set<cyclus::RequestPortfolio<cyclus::Material>::Ptr>
 BatchReactor::GetMatlRequests() {
-  std::set<cyclus::RequestPortfolio<cyclus::Material>::Ptr> set;
+  using cyclus::RequestPortfolio;
+  using cyclus::Material;
+  
+  std::set<RequestPortfolio<Material>::Ptr> set;
   double order_size;
 
-  // switch (phase()) {
-  //   case INITIAL:
-  //     // reserves_.quantity() < batch_size() from tick filling
-  //     int n_orders = n_batches() - n_core(); 
-  //     if (preorder_time() == 0) n_orders += n_reserves();
-  //     order_size = n_orders * batch_size() - reserves_.quantity();
-  //     if (order_size > 0) {
-  //       RequestPortfolio<cyclus::Material>::Ptr p = GetOrder_(order_size);
-  //       set.insert(p);
-  //     }
-  //     break;
+  switch (phase()) {
+    // the initial phase requests as much fuel as necessary to achieve an entire
+    // core
+    case INITIAL:
+      order_size = n_batches() * batch_size()
+                   - core_.quantity() - reserves_.quantity();
+      if (preorder_time() == 0) order_size += batch_size() * n_reserves();
+      if (order_size > 0) {
+        RequestPortfolio<Material>::Ptr p = GetOrder_(order_size);
+        set.insert(p);
+      }
+      break;
 
-  //   case default:
-  order_size = n_reserves() * batch_size() - reserves_.quantity();
-  if (order_time() <= context()->time() &&
-      order_size > cyclus::eps()) {
-    cyclus::RequestPortfolio<cyclus::Material>::Ptr p = GetOrder_(order_size);
-    set.insert(p);
+    // the default case is to request the reserve amount if the order time has
+    // been reached
+    default:
+      order_size = n_reserves() * batch_size() - reserves_.quantity();
+      if (order_time() <= context()->time() &&
+          order_size > 0) {
+        RequestPortfolio<Material>::Ptr p = GetOrder_(order_size);
+        set.insert(p);
+      }
+      break;
   }
-  //     break;
-  // }
 
   return set;
 }
@@ -315,7 +320,7 @@ BatchReactor::GetMatlBids(const cyclus::CommodMap<cyclus::Material>::type&
   for (it = requests.begin(); it != requests.end(); ++it) {
     const Request<Material>::Ptr req = *it;
     double qty = req->target()->quantity();
-    if (qty < storage_.quantity()) {
+    if (qty <= storage_.quantity()) {
       Material::Ptr offer =
           Material::CreateUntracked(qty, context()->GetRecipe(out_recipe_));
       port->AddBid(req, offer, this);
@@ -327,7 +332,7 @@ BatchReactor::GetMatlBids(const cyclus::CommodMap<cyclus::Material>::type&
   ports.insert(port);
   return ports;
 }
-  
+
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 void BatchReactor::GetMatlTrades(
     const std::vector< cyclus::Trade<cyclus::Material> >& trades,
@@ -433,18 +438,20 @@ void BatchReactor::AddBatches_(cyclus::Material::Ptr mat) {
                                     << " is adding " << mat->quantity()
                                     << " of material to its reserves.";
 
-  Material::Ptr last = ResCast<Material>(reserves_.PopBack());
-  if (last->quantity() < batch_size()) {
-    if (last->quantity() + mat->quantity() <= batch_size()) {
-      last->Absorb(mat);
-      reserves_.Push(last);
-      return; // return because mat has been absorbed
-    } else {
-      Material::Ptr last_bit = mat->ExtractQty(batch_size() - last->quantity());
-      last->Absorb(last_bit);
-    } // end if (last->quantity() + mat->quantity() <= batch_size())
-  } // end if (last->quantity() < batch_size())
-  reserves_.Push(last);
+  if (reserves_.count() > 0) {
+    Material::Ptr last = ResCast<Material>(reserves_.PopBack());
+    if (last->quantity() < batch_size()) {
+      if (last->quantity() + mat->quantity() <= batch_size()) {
+        last->Absorb(mat);
+        reserves_.Push(last);
+        return; // return because mat has been absorbed
+      } else {
+        Material::Ptr last_bit = mat->ExtractQty(batch_size() - last->quantity());
+        last->Absorb(last_bit);
+      } // end if (last->quantity() + mat->quantity() <= batch_size())
+    } // end if (last->quantity() < batch_size())
+    reserves_.Push(last);
+  } // end if (reserves_.count() > 0)
   
   while (mat->quantity() > batch_size()) {
     Material::Ptr batch = mat->ExtractQty(batch_size());

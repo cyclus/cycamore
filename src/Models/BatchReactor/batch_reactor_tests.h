@@ -27,7 +27,18 @@ class BatchReactorTest : public ::testing::Test {
   virtual void TearDown();
   void InitParameters();
   void SetUpSourceFacility();
-  /// void InitWorld();
+
+  /// @brief tests the BatchReactor's reserves_, by calling AddBatches_(mat),
+  /// and confirming that there are n items and the last item has quantity qty
+  void TestReserveBatches(cyclus::Material::Ptr mat, int n, double qty);
+
+  /// @brief calls MoveBatchIn_ and tests that the number of objects in core_ is
+  /// n_core and the number of objects in reserves_ is n_reserves
+  void TestBatchIn(int n_core, int n_reserves);
+      
+  /// @brief calls MoveBatchOut_ and tests that the number of objects in core_ is
+  /// n_core and the number of objects in storage_ is n_storage
+  void TestBatchOut(int n_core, int n_storage);
 };
 
 } // namespace cycamore

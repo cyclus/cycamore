@@ -4,6 +4,7 @@
 
 #include "commodity.h"
 #include "composition.h"
+#include "error.h"
 #include "facility_model_tests.h"
 #include "model_tests.h"
 #include "model.h"
@@ -18,7 +19,6 @@ void BatchReactorTest::SetUp() {
   src_facility = new BatchReactor(tc_.get());
   InitParameters();
   SetUpSourceFacility();
-  //InitWorld();
 }
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -71,6 +71,30 @@ void BatchReactorTest::SetUpSourceFacility() {
   src_facility->AddCommodity(commodity);
   src_facility->cyclus::CommodityProducer::SetCapacity(commodity, capacity);
   src_facility->cyclus::CommodityProducer::SetCost(commodity, capacity);
+}
+
+//- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+void BatchReactorTest::TestReserveBatches(cyclus::Material::Ptr mat,
+                                          int n, double qty) {
+  src_facility->AddBatches_(mat);
+  EXPECT_EQ(n, src_facility->reserves_.count());
+  cyclus::Resource::Ptr popped = src_facility->reserves_.PopBack();
+  EXPECT_DOUBLE_EQ(qty, popped->quantity());
+  src_facility->reserves_.Push(popped);
+}
+
+//- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+void BatchReactorTest::TestBatchIn(int n_core, int n_reserves) {
+  src_facility->MoveBatchIn_();
+  EXPECT_EQ(n_core, src_facility->n_core());
+  EXPECT_EQ(n_reserves, src_facility->reserves_.count());
+}
+
+//- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+void BatchReactorTest::TestBatchOut(int n_core, int n_storage) {
+  src_facility->MoveBatchOut_();
+  EXPECT_EQ(n_core, src_facility->n_core());
+  EXPECT_EQ(n_storage, src_facility->storage_.count());
 }
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -189,6 +213,58 @@ TEST_F(BatchReactorTest, Tick) {
 TEST_F(BatchReactorTest, Tock) {
   int time = 1;
   EXPECT_NO_THROW(src_facility->HandleTock(time));
+}
+
+//- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+TEST_F(BatchReactorTest, StartProcess) {
+  int t = tc_.get()->time();
+  src_facility->phase(BatchReactor::PROCESS);
+  EXPECT_EQ(t, src_facility->start_time());
+  EXPECT_EQ(t + process_time, src_facility->end_time());
+  EXPECT_EQ(t + process_time - preorder_time, src_facility->order_time());
+}
+
+//- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+TEST_F(BatchReactorTest, AddBatches) {
+  using cyclus::Material;
+  
+  Material::Ptr mat = Material::CreateBlank(batch_size);
+  TestReserveBatches(mat, 1, batch_size);
+
+  mat = Material::CreateBlank(batch_size - (1 + cyclus::eps()));
+  TestReserveBatches(mat, 2, batch_size - (1 + cyclus::eps()));
+  
+  mat = Material::CreateBlank((1 + cyclus::eps()));
+  TestReserveBatches(mat, 2, batch_size);
+
+  mat = Material::CreateBlank(batch_size + (1 + cyclus::eps()));
+  TestReserveBatches(mat, 4, (1 + cyclus::eps()));
+  
+  mat = Material::CreateBlank(batch_size - (1 + cyclus::eps()));
+  TestReserveBatches(mat, 4, batch_size);
+  
+  mat = Material::CreateBlank((1 + cyclus::eps()));
+  TestReserveBatches(mat, 5, (1 + cyclus::eps()));
+}
+
+//- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+TEST_F(BatchReactorTest, BatchInOut) {
+  using cyclus::Material;
+
+  EXPECT_THROW(TestBatchIn(1, 0), cyclus::ValueError);
+  
+  Material::Ptr mat = Material::CreateBlank(batch_size);
+  TestReserveBatches(mat, 1, batch_size);
+  TestBatchIn(1, 0);
+
+  mat = Material::CreateBlank(batch_size * 2);
+  TestReserveBatches(mat, 2, batch_size);
+  TestBatchIn(2, 1);
+  
+  TestBatchOut(1, 1);
+  TestBatchOut(0, 2);
+
+  EXPECT_THROW(TestBatchOut(1, 0), cyclus::ValueError);
 }
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -

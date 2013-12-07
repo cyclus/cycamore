@@ -232,6 +232,8 @@ class BatchReactor : public cyclus::FacilityModel,
   /// @warning no guarantee can be made to the size of each item in storage_, as
   /// requests can be met that are larger or smaller than batch_size_
   cyclus::ResourceBuff storage_;
+
+  friend class BatchReactorTest;
   /* --- */
 };
 
