@@ -375,12 +375,10 @@ BatchReactor::GetMatlBids(const cyclus::CommodMap<cyclus::Material>::type&
   std::vector<Request<Material>::Ptr>::const_iterator it;
   for (it = requests.begin(); it != requests.end(); ++it) {
     const Request<Material>::Ptr req = *it;
-    double qty = req->target()->quantity();
-    if (qty <= storage_.quantity()) {
-      Material::Ptr offer =
-          Material::CreateUntracked(qty, context()->GetRecipe(out_recipe_));
-      port->AddBid(req, offer, this);
-    }
+    double qty = std::min(req->target()->quantity(), storage_.quantity());
+    Material::Ptr offer =
+        Material::CreateUntracked(qty, context()->GetRecipe(out_recipe_));
+    port->AddBid(req, offer, this);
   }
 
   CapacityConstraint<Material> cc(storage_.quantity());
