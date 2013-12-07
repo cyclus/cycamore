@@ -125,7 +125,7 @@ void BatchReactor::InitModuleMembers(cyclus::QueryEngine* qe) {
   data = qe->GetElementContent("nbatches");
   n_batches(lexical_cast<int>(data));
   data = qe->GetElementContent("batchsize");
-  batch_size(lexical_cast<int>(data));
+  batch_size(lexical_cast<double>(data));
 
   // facility data optional  
   int time =

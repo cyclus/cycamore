@@ -16,8 +16,8 @@ class BatchReactorTest : public ::testing::Test {
  protected:
   cyclus::TestContext tc_;
   BatchReactor* src_facility;
-  int n_batch, n_load, n_reserve;
-  int process, refuel, preorder;
+  int n_batches, n_load, n_reserves;
+  int process_time, refuel_time, preorder_time;
   double batch_size;
   std::string in_commod, in_recipe, out_commod, out_recipe;
   std::string commodity;
@@ -25,7 +25,8 @@ class BatchReactorTest : public ::testing::Test {
 
   virtual void SetUp();
   virtual void TearDown();
-  /// void InitSrcFacility();
+  void InitParameters();
+  void SetUpSourceFacility();
   /// void InitWorld();
 };
 
