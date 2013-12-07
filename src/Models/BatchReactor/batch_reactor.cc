@@ -298,7 +298,7 @@ BatchReactor::GetMatlBids(const cyclus::CommodMap<cyclus::Material>::type&
 }
   
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-virtual void BatchReactor::PopulateMatlTradeResponses(
+virtual void BatchReactor::GetMatlTrades(
     const std::vector< cyclus::Trade<cyclus::Material> >& trades,
     std::vector<std::pair<cyclus::Trade<cyclus::Material>,
                           cyclus::Material::Ptr> >& responses) {
