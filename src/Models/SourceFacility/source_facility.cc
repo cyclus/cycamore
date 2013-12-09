@@ -56,10 +56,9 @@ void SourceFacility::InitModuleMembers(cyclus::QueryEngine* qe) {
   cyclus::Commodity commod(data);
   cyclus::CommodityProducer::AddCommodity(commod);
 
-  double cap =
-    cyclus::GetOptionalQuery<double>(output,
-                                     "output_capacity",
-                                     numeric_limits<double>::max());
+  double cap = cyclus::GetOptionalQuery<double>(output,
+                                                "output_capacity",
+                                                numeric_limits<double>::max());
   cyclus::CommodityProducer::SetCapacity(commod, cap);
   capacity(cap);
 }
@@ -128,8 +127,8 @@ SourceFacility::GetMatlBids(
   if (commod_requests.count(out_commod_) > 0) {
     BidPortfolio<Material>::Ptr port(new BidPortfolio<Material>());
   
-    const std::vector<Request<Material>::Ptr>& requests =
-        commod_requests.at(out_commod_);
+    const std::vector<Request<Material>::Ptr>& requests = commod_requests.at(
+        out_commod_);
 
     std::vector<Request<Material>::Ptr>::const_iterator it;
     for (it = requests.begin(); it != requests.end(); ++it) {
@@ -161,8 +160,9 @@ void SourceFacility::GetMatlTrades(
     current_capacity_ -= qty;
     provided += qty;
     // @TODO we need a policy on negatives..
-    Material::Ptr response =
-        Material::Create(this, qty, context()->GetRecipe(recipe_name_));
+    Material::Ptr response = Material::Create(this,
+                                              qty,
+                                              context()->GetRecipe(recipe_name_));
     responses.push_back(std::make_pair(*it, response));
     LOG(cyclus::LEV_INFO5, "SrcFac") << name() << " just received an order"
                                      << " for " << qty

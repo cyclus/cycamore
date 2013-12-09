@@ -1,17 +1,17 @@
 // sink_facility.cc
 // Implements the SinkFacility class
-#include <sstream>
 #include <algorithm>
+#include <sstream>
 
 #include <boost/lexical_cast.hpp>
-
-#include "sink_facility.h"
 
 #include "capacity_constraint.h"
 #include "context.h"
 #include "cyc_limits.h"
 #include "error.h"
 #include "logger.h"
+
+#include "sink_facility.h"
 
 namespace cycamore {
 
@@ -59,16 +59,14 @@ void SinkFacility::InitModuleMembers(cyclus::QueryEngine* qe) {
     AddCommodity(commodities->GetElementContent(query, i));
   }
 
-  double cap =
-    cyclus::GetOptionalQuery<double>(input,
-                                     "input_capacity",
-                                     numeric_limits<double>::max());
+  double cap = cyclus::GetOptionalQuery<double>(input,
+                                                "input_capacity",
+                                                numeric_limits<double>::max());
   capacity(cap);
 
-  double size =
-    cyclus::GetOptionalQuery<double>(input,
-                                     "inventorysize",
-                                     numeric_limits<double>::max());
+  double size = cyclus::GetOptionalQuery<double>(input,
+                                                 "inventorysize",
+                                                 numeric_limits<double>::max());
   SetMaxInventorySize(size);
 }
 
@@ -153,8 +151,9 @@ SinkFacility::GetGenRsrcRequests() {
     for (it = in_commods_.begin(); it != in_commods_.end(); ++it) {
       std::string quality = ""; // not clear what this should be..
       std::string units = ""; // not clear what this should be..
-      GenericResource::Ptr rsrc =
-          GenericResource::CreateUntracked(amt, quality, units);
+      GenericResource::Ptr rsrc = GenericResource::CreateUntracked(amt,
+                                                                   quality,
+                                                                   units);
       port->AddRequest(rsrc, this, *it);
     }
     
@@ -168,8 +167,6 @@ SinkFacility::GetGenRsrcRequests() {
 void SinkFacility::AcceptMatlTrades(
     const std::vector< std::pair<cyclus::Trade<cyclus::Material>,
                                  cyclus::Material::Ptr> >& responses) {
-  // see
-  // http://stackoverflow.com/questions/5181183/boostshared-ptr-and-inheritance
   std::vector< std::pair<cyclus::Trade<cyclus::Material>,
                          cyclus::Material::Ptr> >::const_iterator it;
   for (it = responses.begin(); it != responses.end(); ++it) {
