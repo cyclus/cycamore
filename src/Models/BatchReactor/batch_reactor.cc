@@ -42,6 +42,7 @@ BatchReactor::BatchReactor(cyclus::Context* ctx)
   if (phase_names_.empty()) {
     SetUpPhaseNames_();
   }
+  spillover_ = cyclus::Material::CreateBlank(0);
 }
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -239,6 +240,7 @@ void BatchReactor::Deploy(cyclus::Model* parent) {
 
   FacilityModel::Deploy(parent);
   phase(INITIAL);
+  spillover_ = Material::CreateBlank(0);
 
   Material::Ptr mat;
   for (int i = 0; i < ics_.n_reserves; ++i) {
@@ -321,7 +323,8 @@ BatchReactor::GetMatlRequests() {
     // core
     case INITIAL:
       order_size = n_batches() * batch_size()
-                   - core_.quantity() - reserves_.quantity();
+                   - core_.quantity() - reserves_.quantity()
+                   - spillover_->quantity();
       if (preorder_time() == 0) order_size += batch_size() * n_reserves();
       if (order_size > 0) {
         RequestPortfolio<Material>::Ptr p = GetOrder_(order_size);
@@ -332,7 +335,8 @@ BatchReactor::GetMatlRequests() {
     // the default case is to request the reserve amount if the order time has
     // been reached
     default:
-      order_size = n_reserves() * batch_size() - reserves_.quantity();
+      order_size = n_reserves() * batch_size()
+                   - reserves_.quantity() - spillover_->quantity();
       if (order_time() <= context()->time() &&
           order_size > 0) {
         RequestPortfolio<Material>::Ptr p = GetOrder_(order_size);
@@ -365,25 +369,28 @@ BatchReactor::GetMatlBids(const cyclus::CommodMap<cyclus::Material>::type&
   using cyclus::Converter;
   using cyclus::Material;
   using cyclus::Request;
-  
-  const std::vector<Request<Material>::Ptr>& requests =
-      commod_requests.at(out_commodity_);
 
   std::set<BidPortfolio<Material>::Ptr> ports;
-  BidPortfolio<Material>::Ptr port(new BidPortfolio<Material>());
 
-  std::vector<Request<Material>::Ptr>::const_iterator it;
-  for (it = requests.begin(); it != requests.end(); ++it) {
-    const Request<Material>::Ptr req = *it;
-    double qty = std::min(req->target()->quantity(), storage_.quantity());
-    Material::Ptr offer =
-        Material::CreateUntracked(qty, context()->GetRecipe(out_recipe_));
-    port->AddBid(req, offer, this);
+  if (commod_requests.count(out_commodity_) > 0 && storage_.quantity() > 0) {
+    const std::vector<Request<Material>::Ptr>& requests =
+        commod_requests.at(out_commodity_);
+
+    BidPortfolio<Material>::Ptr port(new BidPortfolio<Material>());
+
+    std::vector<Request<Material>::Ptr>::const_iterator it;
+    for (it = requests.begin(); it != requests.end(); ++it) {
+      const Request<Material>::Ptr req = *it;
+      double qty = std::min(req->target()->quantity(), storage_.quantity());
+      Material::Ptr offer =
+          Material::CreateUntracked(qty, context()->GetRecipe(out_recipe_));
+      port->AddBid(req, offer, this);
+    }
+
+    CapacityConstraint<Material> cc(storage_.quantity());
+    port->AddConstraint(cc);
+    ports.insert(port);
   }
-
-  CapacityConstraint<Material> cc(storage_.quantity());
-  port->AddConstraint(cc);
-  ports.insert(port);
   return ports;
 }
 
@@ -401,10 +408,15 @@ void BatchReactor::GetMatlTrades(
     LOG(cyclus::LEV_INFO5, "BReact") << name() << " just received an order.";
 
     double qty = it->amt;
-    
-    // pop amount from inventory and blob it into one material
-    std::vector<Material::Ptr> manifest =
-        ResCast<Material>(storage_.PopQty(qty));  
+    std::vector<Material::Ptr> manifest;
+    try {
+      // pop amount from inventory and blob it into one material
+      manifest = ResCast<Material>(storage_.PopQty(qty));  
+    } catch(cyclus::Error e) {
+      std::string msg("BatchReactor experience an error: ");
+      msg += e.what();
+      throw cyclus::Error(msg);
+    }
     Material::Ptr response = manifest[0];
     for (int i = 1; i < manifest.size(); i++) {
       response->Absorb(manifest[i]);
@@ -434,7 +446,7 @@ void BatchReactor::phase(BatchReactor::Phase p) {
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 void BatchReactor::Refuel_() {
-  while(n_core() < n_batches() && BatchIn(reserves_, batch_size())) {
+  while(n_core() < n_batches() && reserves_.count() > 0) {
     MoveBatchIn_();
   }
 }
@@ -443,7 +455,13 @@ void BatchReactor::Refuel_() {
 void BatchReactor::MoveBatchIn_() {
   LOG(cyclus::LEV_DEBUG2, "BReact") << "BatchReactor " << name() << " added"
                                     <<  " a batch from its core.";
-  core_.Push(reserves_.Pop());
+  try {
+    core_.Push(reserves_.Pop());
+  } catch(cyclus::Error e) {
+      std::string msg("BatchReactor experience an error: ");
+      msg += e.what();
+      throw cyclus::Error(msg);
+  }
 }
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -453,10 +471,15 @@ void BatchReactor::MoveBatchOut_() {
   
   LOG(cyclus::LEV_DEBUG2, "BReact") << "BatchReactor " << name() << " removed"
                                     <<  " a batch from its core.";
-
-  Material::Ptr mat = ResCast<Material>(core_.Pop());
-  mat->Transmute(context()->GetRecipe(out_recipe()));
-  storage_.Push(mat);
+  try {
+    Material::Ptr mat = ResCast<Material>(core_.Pop());
+    mat->Transmute(context()->GetRecipe(out_recipe()));
+    storage_.Push(mat);
+  } catch(cyclus::Error e) {
+      std::string msg("BatchReactor experience an error: ");
+      msg += e.what();
+      throw cyclus::Error(msg);
+  }
 }
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -492,27 +515,12 @@ void BatchReactor::AddBatches_(cyclus::Material::Ptr mat) {
                                     << " is adding " << mat->quantity()
                                     << " of material to its reserves.";
 
-  if (reserves_.count() > 0) {
-    Material::Ptr last = ResCast<Material>(reserves_.PopBack());
-    if (last->quantity() < batch_size()) {
-      if (last->quantity() + mat->quantity() <= batch_size()) {
-        last->Absorb(mat);
-        reserves_.Push(last);
-        return; // return because mat has been absorbed
-      } else {
-        Material::Ptr last_bit = mat->ExtractQty(batch_size() - last->quantity());
-        last->Absorb(last_bit);
-      } // end if (last->quantity() + mat->quantity() <= batch_size())
-    } // end if (last->quantity() < batch_size())
-    reserves_.Push(last);
-  } // end if (reserves_.count() > 0)
+  spillover_->Absorb(mat);
   
-  while (mat->quantity() > batch_size()) {
-    Material::Ptr batch = mat->ExtractQty(batch_size());
+  while (spillover_->quantity() >= batch_size()) {
+    Material::Ptr batch = spillover_->ExtractQty(batch_size());
     reserves_.Push(batch);    
   }
-  
-  if (mat->quantity() > cyclus::eps_rsrc()) reserves_.Push(mat);
 }
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -

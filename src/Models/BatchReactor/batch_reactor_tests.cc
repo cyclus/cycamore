@@ -99,9 +99,7 @@ void BatchReactorTest::TestReserveBatches(cyclus::Material::Ptr mat,
                                           int n, double qty) {
   src_facility->AddBatches_(mat);
   EXPECT_EQ(n, src_facility->reserves_.count());
-  cyclus::Resource::Ptr popped = src_facility->reserves_.PopBack();
-  EXPECT_DOUBLE_EQ(qty, popped->quantity());
-  src_facility->reserves_.Push(popped);
+  EXPECT_DOUBLE_EQ(qty, src_facility->spillover_->quantity());
 }
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -267,42 +265,43 @@ TEST_F(BatchReactorTest, AddBatches) {
   using cyclus::Material;
   
   Material::Ptr mat = Material::CreateBlank(batch_size);
-  TestReserveBatches(mat, 1, batch_size);
+  // mat to add, nreserves, qty of spillover
+  TestReserveBatches(mat, 1, 0);
 
   mat = Material::CreateBlank(batch_size - (1 + cyclus::eps()));
-  TestReserveBatches(mat, 2, batch_size - (1 + cyclus::eps()));
+  TestReserveBatches(mat, 1, batch_size - (1 + cyclus::eps()));
   
   mat = Material::CreateBlank((1 + cyclus::eps()));
-  TestReserveBatches(mat, 2, batch_size);
+  TestReserveBatches(mat, 2, 0);
 
   mat = Material::CreateBlank(batch_size + (1 + cyclus::eps()));
-  TestReserveBatches(mat, 4, (1 + cyclus::eps()));
+  TestReserveBatches(mat, 3, 1 + cyclus::eps());
   
   mat = Material::CreateBlank(batch_size - (1 + cyclus::eps()));
-  TestReserveBatches(mat, 4, batch_size);
+  TestReserveBatches(mat, 4, 0);
   
-  mat = Material::CreateBlank((1 + cyclus::eps()));
-  TestReserveBatches(mat, 5, (1 + cyclus::eps()));
+  mat = Material::CreateBlank(1 + cyclus::eps());
+  TestReserveBatches(mat, 4, 1 + cyclus::eps());
 }
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 TEST_F(BatchReactorTest, BatchInOut) {
   using cyclus::Material;
 
-  EXPECT_THROW(TestBatchIn(1, 0), cyclus::ValueError);
+  EXPECT_THROW(TestBatchIn(1, 0), cyclus::Error);
   
   Material::Ptr mat = Material::CreateBlank(batch_size);
-  TestReserveBatches(mat, 1, batch_size);
+  TestReserveBatches(mat, 1, 0);
   TestBatchIn(1, 0);
 
   mat = Material::CreateBlank(batch_size * 2);
-  TestReserveBatches(mat, 2, batch_size);
+  TestReserveBatches(mat, 2, 0);
   TestBatchIn(2, 1);
   
   TestBatchOut(1, 1);
   TestBatchOut(0, 2);
 
-  EXPECT_THROW(TestBatchOut(1, 0), cyclus::ValueError);
+  EXPECT_THROW(TestBatchOut(1, 0), cyclus::Error);
 }
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -

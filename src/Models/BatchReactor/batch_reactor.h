@@ -157,13 +157,6 @@ class BatchReactor : public cyclus::FacilityModel,
   /* --- */
 
   /* --- BatchReactor Members --- */
-  /// @return true if the cyclus::ResourceBuffer has at least one batch inside
-  /// @param b the buffer to query
-  /// @param size the batch size
-  inline bool BatchIn(const cyclus::ResourceBuff& b, double size) {
-    return b.quantity() >= size;
-  }
-  
   /// @brief the processing time required for a full batch process before
   /// refueling
   inline void process_time(int t) { process_time_ = t; }
@@ -271,10 +264,12 @@ class BatchReactor : public cyclus::FacilityModel,
   std::string out_recipe_;
   Phase phase_;
   InitCond ics_;
+
+  /// @brief allows only batches to enter reserves_
+  cyclus::Material::Ptr spillover_;
   
-  /// @brief a cyclus::ResourceBuff for material before they enter the core.
-  /// @warning the *youngest* item in the buffer may not be of full
-  /// batch_size(), but all others
+  /// @brief a cyclus::ResourceBuff for material before they enter the core,
+  /// with all materials guaranteed to be of batch_size_
   cyclus::ResourceBuff reserves_;
   
   /// @brief a cyclus::ResourceBuff for material while they are inside the core,
