@@ -14,22 +14,6 @@
     <name>commodity</name>
   </commodity>
 
-  <market>
-    <name>incommodity_market</name>
-    <mktcommodity>incommodity</mktcommodity>
-    <model>
-      <NullMarket/>
-    </model>
-  </market>
-
-  <market>
-    <name>outcommodity_market</name>
-    <mktcommodity>outcommodity</mktcommodity>
-    <model>
-      <NullMarket/>
-    </model>
-  </market>
-
   <facility>
     <name>Source</name>
     <model>
@@ -52,15 +36,14 @@
         <fuel_input>
          <incommodity>incommodity</incommodity>
          <inrecipe>commod_recipe</inrecipe>
-       </fuel_input>
+        </fuel_input>
         <fuel_output>
-         <outcommodity>outcommodity</outcommodity>
+         <outcommodity>incommodity</outcommodity>
          <outrecipe>commod_recipe</outrecipe>
-       </fuel_output>
-        <cyclelength>1</cyclelength>
-        <incoreloading>1</incoreloading>
-        <outcoreloading>1</outcoreloading>
-        <batchespercore>1</batchespercore>
+        </fuel_output>
+        <processtime>1</processtime>
+        <nbatches>1</nbatches>
+        <batchsize>2</batchsize>
         <commodity_production>
           <commodity>power</commodity>
           <capacity>10</capacity>
