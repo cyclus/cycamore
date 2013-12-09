@@ -216,10 +216,10 @@ EnrichmentFacility::GetMatlBids(
     
     LOG(cyclus::LEV_INFO5, "EnrFac") << name()
                                      << " adding a swu constraint of "
-                                     << swu.capacity() << "\n";
+                                     << swu.capacity();
     LOG(cyclus::LEV_INFO5, "EnrFac") << name()
                                      << " adding a natu constraint of "
-                                     << natu.capacity() << "\n";
+                                     << natu.capacity();
     
     ports.insert(port);
   }
