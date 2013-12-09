@@ -2,21 +2,21 @@
 // Implements the EnrichmentFacility class
 #include "enrichment_facility.h"
 
-#include <sstream>
-#include <limits>
-#include <cmath>
 #include <algorithm>
+#include <cmath>
+#include <limits>
+#include <sstream>
 
 #include <boost/lexical_cast.hpp>
 
-#include "query_engine.h"
-#include "logger.h"
-#include "error.h"
 #include "context.h"
 #include "cyc_limits.h"
+#include "error.h"
 #include "generic_resource.h"
-#include "material.h"
+#include "logger.h"
 #include "mat_query.h"
+#include "material.h"
+#include "query_engine.h"
 #include "timer.h"
 
 namespace cycamore {
@@ -75,10 +75,9 @@ void EnrichmentFacility::InitModuleMembers(cyclus::QueryEngine* qe) {
   in_commodity(input->GetElementContent("incommodity"));
   in_recipe(input->GetElementContent("inrecipe"));
 
-  double limit =
-    cyclus::GetOptionalQuery<double>(input,
-                                     "inventorysize",
-                                     numeric_limits<double>::max());
+  double limit = cyclus::GetOptionalQuery<double>(input,
+                                                  "inventorysize",
+                                                  numeric_limits<double>::max());
   SetMaxInventorySize(limit);
 
   cyclus::QueryEngine* output = qe->QueryElement("output");
@@ -87,8 +86,8 @@ void EnrichmentFacility::InitModuleMembers(cyclus::QueryEngine* qe) {
   data = output->GetElementContent("tails_assay");
   tails_assay(lexical_cast<double>(data));
 
-  Material::Ptr feed =
-      Material::CreateUntracked(0, context()->GetRecipe(in_recipe_));
+  Material::Ptr feed = Material::CreateUntracked(0,
+                                                 context()->GetRecipe(in_recipe_));
   feed_assay(cyclus::enrichment::UraniumAssay(feed));
 
   double cap = cyclus::GetOptionalQuery<double>(output,
@@ -195,8 +194,8 @@ EnrichmentFacility::GetMatlBids(
   if (commod_requests.count(out_commod_) > 0 && inventory_.quantity() > 0) {    
     BidPortfolio<Material>::Ptr port(new BidPortfolio<Material>());
   
-    const std::vector<Request<Material>::Ptr>& requests =
-        commod_requests.at(out_commod_);
+    const std::vector<Request<Material>::Ptr>& requests = commod_requests.at(
+        out_commod_);
 
     std::vector<Request<Material>::Ptr>::const_iterator it;
     for (it = requests.begin(); it != requests.end(); ++it) {
@@ -325,11 +324,9 @@ cyclus::Material::Ptr EnrichmentFacility::Enrich_(
   try {
     // required so popping doesn't take out too much
     if (cyclus::AlmostEq(natu_req, inventory_.quantity())) {
-      manifest =
-          ResCast<Material>(inventory_.PopN(inventory_.count()));  
+      manifest = ResCast<Material>(inventory_.PopN(inventory_.count()));  
     } else {
-      manifest =
-          ResCast<Material>(inventory_.PopQty(natu_req));
+      manifest = ResCast<Material>(inventory_.PopQty(natu_req));
     }
   } catch(cyclus::Error e) {
     cyclus::Converter<Material>::Ptr

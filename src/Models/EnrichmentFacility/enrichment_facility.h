@@ -6,12 +6,12 @@
 
 #include "bid_portfolio.h"
 #include "capacity_constraint.h"
-#include "exchange_context.h"
 #include "enrichment.h"
+#include "exchange_context.h"
 #include "facility_model.h"
-#include "resource_buff.h"
-#include "request_portfolio.h"
 #include "material.h"
+#include "request_portfolio.h"
+#include "resource_buff.h"
 
 // forward declarations
 namespace cycamore {
@@ -45,9 +45,9 @@ class SWUConverter : public cyclus::Converter<cyclus::Material> {
   /// @returns true if Converter is a SWUConverter and feed and tails equal
   virtual bool operator==(Converter& other) const {
     SWUConverter* cast = dynamic_cast<SWUConverter*>(&other);
-    return cast != NULL
-    && feed_ == cast->feed_
-    && tails_ == cast->tails_;
+    return cast != NULL &&
+    feed_ == cast->feed_ &&
+    tails_ == cast->tails_;
   }
 
  private:
@@ -74,9 +74,9 @@ class NatUConverter : public cyclus::Converter<cyclus::Material> {
   /// @returns true if Converter is a NatUConverter and feed and tails equal
   virtual bool operator==(Converter& other) const {
     NatUConverter* cast = dynamic_cast<NatUConverter*>(&other);
-    return cast != NULL
-    && feed_ == cast->feed_
-    && tails_ == cast->tails_;
+    return cast != NULL &&
+    feed_ == cast->feed_ &&
+    tails_ == cast->tails_;
   }
 
  private:

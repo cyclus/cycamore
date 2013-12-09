@@ -2,19 +2,19 @@
 #ifndef CYCAMORE_MODELS_BATCHREACTOR_BATCH_REACTOR_H_
 #define CYCAMORE_MODELS_BATCHREACTOR_BATCH_REACTOR_H_
 
-#include <string>
-#include <queue>
 #include <map>
+#include <queue>
+#include <string>
 
 #include "bid_portfolio.h"
 #include "capacity_constraint.h"
 #include "commodity_producer.h"
-#include "exchange_context.h"
 #include "enrichment.h"
+#include "exchange_context.h"
 #include "facility_model.h"
-#include "resource_buff.h"
-#include "request_portfolio.h"
 #include "material.h"
+#include "request_portfolio.h"
+#include "resource_buff.h"
 
 // forward declarations
 namespace cycamore {

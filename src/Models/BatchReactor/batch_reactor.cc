@@ -155,15 +155,12 @@ void BatchReactor::InitModuleMembers(cyclus::QueryEngine* qe) {
   batch_size(lexical_cast<double>(data));
 
   // facility data optional  
-  int time =
-      GetOptionalQuery<int>(qe, "refueltime", refuel_time());
+  int time = GetOptionalQuery<int>(qe, "refueltime", refuel_time());
   refuel_time(time);
-  time =
-      GetOptionalQuery<int>(qe, "orderlookahead", preorder_time());
+  time = GetOptionalQuery<int>(qe, "orderlookahead", preorder_time());
   preorder_time(time);
 
-  int n = 
-      GetOptionalQuery<int>(qe, "nreload", n_load());
+  int n = GetOptionalQuery<int>(qe, "nreload", n_load());
   n_load(n);
   n = GetOptionalQuery<int>(qe, "norder", n_load());
   n_reserves(n);
@@ -185,11 +182,9 @@ void BatchReactor::InitModuleMembers(cyclus::QueryEngine* qe) {
   Commodity commod(commodity->GetElementContent("commodity"));
   AddCommodity(commod);
   data = commodity->GetElementContent("capacity");
-  CommodityProducer::SetCapacity(commod,
-                                         lexical_cast<double>(data));
+  CommodityProducer::SetCapacity(commod, lexical_cast<double>(data));
   data = commodity->GetElementContent("cost");
-  CommodityProducer::SetCost(commod,
-                                     lexical_cast<double>(data));
+  CommodityProducer::SetCost(commod, lexical_cast<double>(data));
 }
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -419,6 +414,7 @@ void BatchReactor::GetMatlTrades(
       msg += e.what();
       throw cyclus::Error(msg);
     }
+
     Material::Ptr response = manifest[0];
     for (int i = 1; i < manifest.size(); i++) {
       response->Absorb(manifest[i]);
