@@ -171,10 +171,10 @@ TEST_F(EnrichmentFacilityTest, Clone) {
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 TEST_F(EnrichmentFacilityTest, AddMat) {
-  EXPECT_THROW(DoAddMat(test_helpers::get_mat()), cyclus::StateError);
-  EXPECT_THROW(DoAddMat(GetMat(inv_size + 1)), cyclus::ValueError);
+  EXPECT_THROW(DoAddMat(test_helpers::get_mat()), cyclus::ValueError);
+  EXPECT_THROW(DoAddMat(GetMat(inv_size + 1)), cyclus::Error);
   EXPECT_NO_THROW(DoAddMat(GetMat(inv_size)));
-  EXPECT_THROW(DoAddMat(GetMat(1)), cyclus::ValueError);
+  EXPECT_THROW(DoAddMat(GetMat(1)), cyclus::Error);
 }
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - 
@@ -493,7 +493,7 @@ TEST_F(EnrichmentFacilityTest, Enrich) {
 
   // test too much natu request
   DoAddMat(GetMat(natu_req - 1));
-  EXPECT_THROW(response = DoEnrich(target, qty), cyclus::ValueError);
+  EXPECT_THROW(response = DoEnrich(target, qty), cyclus::Error);
 }
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -577,7 +577,7 @@ TEST_F(EnrichmentFacilityTest, Response) {
   trades.clear();
   trades.push_back(trade);
   EXPECT_THROW(src_facility->GetMatlTrades(trades, responses),
-               cyclus::StateError);
+               cyclus::ValueError);
   
   // reset!
   src_facility->HandleTick(1);

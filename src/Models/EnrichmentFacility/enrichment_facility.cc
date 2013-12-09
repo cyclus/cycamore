@@ -191,27 +191,38 @@ EnrichmentFacility::GetMatlBids(
   using cyclus::Request;
   
   std::set<BidPortfolio<Material>::Ptr> ports;
-  BidPortfolio<Material>::Ptr port(new BidPortfolio<Material>());
+
+  if (commod_requests.count(out_commod_) > 0 && inventory_.quantity() > 0) {    
+    BidPortfolio<Material>::Ptr port(new BidPortfolio<Material>());
   
-  const std::vector<Request<Material>::Ptr>& requests =
-      commod_requests.at(out_commod_);
+    const std::vector<Request<Material>::Ptr>& requests =
+        commod_requests.at(out_commod_);
 
-  std::vector<Request<Material>::Ptr>::const_iterator it;
-  for (it = requests.begin(); it != requests.end(); ++it) {
-    const Request<Material>::Ptr req = *it;
-    if (ValidReq(req->target())) { 
-      Material::Ptr offer = Offer_(req->target());
-      port->AddBid(req, offer, this);
+    std::vector<Request<Material>::Ptr>::const_iterator it;
+    for (it = requests.begin(); it != requests.end(); ++it) {
+      const Request<Material>::Ptr req = *it;
+      if (ValidReq(req->target())) { 
+        Material::Ptr offer = Offer_(req->target());
+        port->AddBid(req, offer, this);
+      }
     }
-  }
 
-  Converter<Material>::Ptr sc(new SWUConverter(feed_assay_, tails_assay_));
-  Converter<Material>::Ptr nc(new NatUConverter(feed_assay_, tails_assay_));
-  CapacityConstraint<Material> swu(swu_capacity_, sc);
-  CapacityConstraint<Material> natu(inventory_.quantity(), nc);
-  port->AddConstraint(swu);
-  port->AddConstraint(natu);
-  ports.insert(port);
+    Converter<Material>::Ptr sc(new SWUConverter(feed_assay_, tails_assay_));
+    Converter<Material>::Ptr nc(new NatUConverter(feed_assay_, tails_assay_));
+    CapacityConstraint<Material> swu(swu_capacity_, sc);
+    CapacityConstraint<Material> natu(inventory_.quantity(), nc);
+    port->AddConstraint(swu);
+    port->AddConstraint(natu);
+    
+    LOG(cyclus::LEV_INFO5, "EnrFac") << name()
+                                     << " adding a swu constraint of "
+                                     << swu.capacity() << "\n";
+    LOG(cyclus::LEV_INFO5, "EnrFac") << name()
+                                     << " adding a natu constraint of "
+                                     << natu.capacity() << "\n";
+    
+    ports.insert(port);
+  }
   return ports;
 }
 
@@ -229,7 +240,6 @@ void EnrichmentFacility::GetMatlTrades(
     std::vector<std::pair<cyclus::Trade<cyclus::Material>,
                           cyclus::Material::Ptr> >& responses) {
   using cyclus::Material;
-  using cyclus::StateError;
   using cyclus::Trade;
   
   std::vector< Trade<Material> >::const_iterator it;
@@ -245,7 +255,7 @@ void EnrichmentFacility::GetMatlTrades(
   }
   
   if (cyclus::IsNegative(current_swu_capacity_)) { 
-    throw StateError(
+    throw cyclus::ValueError(
         "EnrFac " + name()
         + " is being asked to provide more than its SWU capacity.");
   }
@@ -254,11 +264,26 @@ void EnrichmentFacility::GetMatlTrades(
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 void EnrichmentFacility::AddMat_(cyclus::Material::Ptr mat) {
   if (mat->comp() != context()->GetRecipe(in_recipe_)) {
-    throw cyclus::StateError(
+    throw cyclus::ValueError(
         "EnrichmentFacility recipe and material composition not the same.");
   } 
 
-  inventory_.Push(mat);    
+  LOG(cyclus::LEV_INFO5, "EnrFac") << name() << " is initially holding " 
+                                   << inventory_.quantity() << " total.";
+  
+  try {
+    inventory_.Push(mat);    
+  } catch(cyclus::Error& e) {
+    std::string msg("EnrichmentFacility experienced an error: ");
+    msg += e.what();
+    throw cyclus::Error(msg);
+  }
+  
+  LOG(cyclus::LEV_INFO5, "EnrFac") << name() << " added " << mat->quantity()
+                                   << " of " << in_commod_
+                                   << " to its inventory, which is holding "
+                                   << inventory_.quantity() << " total.";
+
 }
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -296,8 +321,25 @@ cyclus::Material::Ptr EnrichmentFacility::Enrich_(
   double natu_req = FeedQty(qty, assays);
 
   // pop amount from inventory and blob it into one material
-  std::vector<Material::Ptr> manifest =
-      ResCast<Material>(inventory_.PopQty(natu_req));  
+  std::vector<Material::Ptr> manifest;
+  try {
+    // required so popping doesn't take out too much
+    if (cyclus::AlmostEq(natu_req, inventory_.quantity())) {
+      manifest =
+          ResCast<Material>(inventory_.PopN(inventory_.count()));  
+    } else {
+      manifest =
+          ResCast<Material>(inventory_.PopQty(natu_req));
+    }
+  } catch(cyclus::Error e) {
+    cyclus::Converter<Material>::Ptr
+        nc(new NatUConverter(feed_assay_, tails_assay_));
+    std::stringstream ss;
+    ss << "EnrichmentFacility tried to remove " << natu_req
+       << " from its inventory of size " << inventory_.quantity()
+       << " and the conversion of the material into natu is " << nc->convert(mat);
+    throw cyclus::Error(ss.str());
+  }
   Material::Ptr r = manifest[0];
   for (int i = 1; i < manifest.size(); ++i) {
     r->Absorb(manifest[i]);
