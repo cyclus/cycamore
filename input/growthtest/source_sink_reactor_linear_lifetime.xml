@@ -38,7 +38,7 @@
          <inrecipe>commod_recipe</inrecipe>
         </fuel_input>
         <fuel_output>
-         <outcommodity>incommodity</outcommodity>
+         <outcommodity>outcommodity</outcommodity>
          <outrecipe>commod_recipe</outrecipe>
         </fuel_output>
         <processtime>1</processtime>
