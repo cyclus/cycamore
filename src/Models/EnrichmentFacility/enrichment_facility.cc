@@ -369,6 +369,8 @@ cyclus::Material::Ptr EnrichmentFacility::Enrich_(
                                    << assays.Tails() * 100;
   LOG(cyclus::LEV_INFO5, "EnrFac") << "   * SWU: "
                                    << swu_req;
+  LOG(cyclus::LEV_INFO5, "EnrFac") << "   * Current SWU capacity: "
+                                   << current_swu_capacity_;
 
   return response;
 }
