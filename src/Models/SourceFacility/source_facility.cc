@@ -124,21 +124,24 @@ SourceFacility::GetMatlBids(
   using cyclus::Request;
   
   std::set<BidPortfolio<Material>::Ptr> ports;
-  BidPortfolio<Material>::Ptr port(new BidPortfolio<Material>());
   
-  const std::vector<Request<Material>::Ptr>& requests =
-      commod_requests.at(out_commod_);
+  if (commod_requests.count(out_commod_) > 0) {
+    BidPortfolio<Material>::Ptr port(new BidPortfolio<Material>());
+  
+    const std::vector<Request<Material>::Ptr>& requests =
+        commod_requests.at(out_commod_);
 
-  std::vector<Request<Material>::Ptr>::const_iterator it;
-  for (it = requests.begin(); it != requests.end(); ++it) {
-    const Request<Material>::Ptr req = *it;
-    Material::Ptr offer = GetOffer(req->target());
-    port->AddBid(req, offer, this);
+    std::vector<Request<Material>::Ptr>::const_iterator it;
+    for (it = requests.begin(); it != requests.end(); ++it) {
+      const Request<Material>::Ptr req = *it;
+      Material::Ptr offer = GetOffer(req->target());
+      port->AddBid(req, offer, this);
+    }
+
+    CapacityConstraint<Material> cc(capacity_);
+    port->AddConstraint(cc);
+    ports.insert(port);
   }
-
-  CapacityConstraint<Material> cc(capacity_);
-  port->AddConstraint(cc);
-  ports.insert(port);
   return ports;
 }
 
@@ -151,10 +154,12 @@ void SourceFacility::GetMatlTrades(
   using cyclus::StateError;
   using cyclus::Trade;
 
+  double provided = 0;
   std::vector< cyclus::Trade<cyclus::Material> >::const_iterator it;
   for (it = trades.begin(); it != trades.end(); ++it) {
     double qty = it->amt;
     current_capacity_ -= qty;
+    provided += qty;
     // @TODO we need a policy on negatives..
     Material::Ptr response =
         Material::Create(this, qty, context()->GetRecipe(recipe_name_));
@@ -163,9 +168,12 @@ void SourceFacility::GetMatlTrades(
                                      << " for " << qty
                                      << " of " << out_commod_;
   }
-  if (cyclus::IsNegative(current_capacity_)) { 
-    throw StateError("SourceFac " + name()
-                     + " is being asked to provide more than its capacity.");
+  if (cyclus::IsNegative(current_capacity_)) {
+    std::stringstream ss;
+    ss << "SourceFac " << name()
+       << " is being asked to provide " << provided
+       << " but its capacity is " << capacity_ << ".";
+    throw StateError(ss.str());
   }
 }
 
@@ -173,4 +181,5 @@ void SourceFacility::GetMatlTrades(
 extern "C" cyclus::Model* ConstructSourceFacility(cyclus::Context* ctx) {
   return new SourceFacility(ctx);
 }
+
 } // namespace cycamore
