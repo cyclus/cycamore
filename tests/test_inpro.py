@@ -3,6 +3,7 @@
 from nose.tools import assert_equal
 from numpy.testing import assert_array_equal, assert_array_almost_equal
 import sys
+import os
 import subprocess
 import tables
 import numpy as np
@@ -11,15 +12,17 @@ from tools import check_cmd
 """ Tests """
 def test_inpro():
     #Cyclus simulation inputs
-    sim_inputs = ["./inputs/inpro_low.xml",
-                  "./inputs/inpro_high.xml", 
-                  "./inputs/inpro_low_short.xml",
-                  "./inputs/inpro_low_no_decay.xml",
-                  "./inputs/inpro_high_no_decay.xml"]
+    sim_inputs = ["./inputs/inpro/inpro_low.xml",
+                  "./inputs/inpro/inpro_high.xml", 
+                  "./inputs/inpro/inpro_low_short.xml",
+                  "./inputs/inpro/inpro_high_short.xml",
+                  "./inputs/inpro/inpro_low_no_decay.xml",
+                  "./inputs/inpro/inpro_high_no_decay.xml"]
     #Benchmark databases must match the order of input files
     bench_dbs = ["./benchmarks/bench_inpro_low.h5",
                  "./benchmarks/bench_inpro_high.h5",
                  "./benchmarks/bench_inpro_low_short.h5",
+                 "./benchmarks/bench_inpro_high_short.h5",
                  "./benchmarks/bench_inpro_low_no_decay.h5",
                  "./benchmarks/bench_inpro_high_no_decay.h5"]
 
@@ -47,3 +50,7 @@ def test_inpro():
             bdata = bdata[names]
             odata = odata[names]
             yield assert_array_equal, bdata, odata
+        
+        bench.close()
+        output.close()
+        os.remove("./output_temp.h5")
