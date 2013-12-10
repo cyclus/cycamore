@@ -128,7 +128,7 @@ std::string BatchReactor::schema() {
     "                                              \n"
     "  <!-- Trade Preferences  -->                 \n"
     "  <optional>                                  \n"
-    "  <OneOrMore>                                 \n"
+    "  <oneOrMore>                                 \n"
     "  <element name=\"commod_pref\">              \n"
     "   <element name=\"incommodity\">             \n"
     "     <data type=\"string\"/>                  \n"
@@ -137,7 +137,7 @@ std::string BatchReactor::schema() {
     "     <data type=\"double\"/>                  \n"
     "   </element>                                 \n"
     "  </element>                                  \n"
-    "  </OneOrMore>                                \n"
+    "  </oneOrMore>                                \n"
     "  </optional>                                 \n";
 };
 
