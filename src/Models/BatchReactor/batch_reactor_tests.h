@@ -3,6 +3,7 @@
 
 #include <gtest/gtest.h>
 
+#include <map>
 #include <string>
 
 #include "test_context.h"
@@ -23,6 +24,9 @@ class BatchReactorTest : public ::testing::Test {
   std::string in_commod, in_recipe, out_commod, out_recipe;
   std::string commodity;
   double capacity, cost;
+  std::string commod1, commod2;
+  double pref1, pref2;
+  std::map<std::string, double> commod_prefs;
 
   virtual void SetUp();
   virtual void TearDown();

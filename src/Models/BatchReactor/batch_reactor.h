@@ -224,6 +224,14 @@ class BatchReactor : public cyclus::FacilityModel,
   inline void  ics(const InitCond& ics) { ics_ = ics; }
   inline InitCond ics() const { return ics_; }
 
+  /// @brief this facility's preference for input commodities
+  inline void commod_prefs(const std::map<std::string, double>& prefs) {
+    commod_prefs_ = prefs;
+  }
+  inline const std::map<std::string, double>& commod_prefs() const {
+    return commod_prefs_;
+  }
+
  private:
   /// @brief refuels the reactor until it is full or reserves_ is out of
   /// batches. If the core is full after refueling, the Phase is set to PROCESS.
@@ -264,6 +272,9 @@ class BatchReactor : public cyclus::FacilityModel,
   std::string out_recipe_;
   Phase phase_;
   InitCond ics_;
+
+  /// @brief preferences for each input commodity
+  std::map<std::string, double> commod_prefs_;
 
   /// @brief allows only batches to enter reserves_
   cyclus::Material::Ptr spillover_;

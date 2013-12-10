@@ -65,6 +65,13 @@ void BatchReactorTest::InitParameters() {
   v[94239] = 0.25;
   recipe = cyclus::Composition::CreateFromAtom(v);
   tc_.get()->AddRecipe(out_recipe, recipe);
+
+  commod1 = in_commod;
+  commod2 = "inc2";
+  pref1 = 5;
+  pref2 = 0.5;
+  commod_prefs[commod1] = pref1;
+  commod_prefs[commod2] = pref2;
 }
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -85,6 +92,8 @@ void BatchReactorTest::SetUpSourceFacility() {
   src_facility->AddCommodity(commodity);
   src_facility->cyclus::CommodityProducer::SetCapacity(commodity, capacity);
   src_facility->cyclus::CommodityProducer::SetCost(commodity, capacity);
+
+  src_facility->commod_prefs(commod_prefs);
 }
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -138,6 +147,8 @@ TEST_F(BatchReactorTest, InitialState) {
   EXPECT_TRUE(src_facility->ProducesCommodity(commod));
   EXPECT_EQ(capacity, src_facility->ProductionCapacity(commod));
   EXPECT_EQ(cost, src_facility->ProductionCost(commod));
+
+  EXPECT_EQ(commod_prefs, src_facility->commod_prefs());
 }
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -169,6 +180,14 @@ TEST_F(BatchReactorTest, XMLInit) {
      << "    <capacity>" << capacity << "</capacity>"
      << "    <cost>" << cost << "</cost>"
      << "  </commodity_production>"
+     << "  <commod_pref>"
+     << "    <incommodity>" << commod1 << "</incommodity>"
+     << "    <preference>" << pref1 << "</preference>"
+     << "  </commod_pref>"
+     << "  <commod_pref>"
+     << "    <incommodity>" << commod2 << "</incommodity>"
+     << "    <preference>" << pref2 << "</preference>"
+     << "  </commod_pref>"
      << "</start>";
 
   cyclus::XMLParser p;
@@ -196,6 +215,8 @@ TEST_F(BatchReactorTest, XMLInit) {
   EXPECT_TRUE(fac.ProducesCommodity(commod));
   EXPECT_EQ(capacity, fac.ProductionCapacity(commod));
   EXPECT_EQ(cost, fac.ProductionCost(commod));
+
+  EXPECT_EQ(commod_prefs, fac.commod_prefs());
 }
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -223,6 +244,8 @@ TEST_F(BatchReactorTest, Clone) {
   EXPECT_TRUE(cloned_fac->ProducesCommodity(commod));
   EXPECT_EQ(capacity, cloned_fac->ProductionCapacity(commod));
   EXPECT_EQ(cost, cloned_fac->ProductionCost(commod));
+  
+  EXPECT_EQ(commod_prefs, cloned_fac->commod_prefs());
   
   delete cloned_fac;
 }

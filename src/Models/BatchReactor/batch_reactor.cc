@@ -124,7 +124,21 @@ std::string BatchReactor::schema() {
     "   <element name=\"cost\">                    \n"
     "     <data type=\"double\"/>                  \n"
     "   </element>                                 \n"
-    "  </element>                                  \n";
+    "  </element>                                  \n"
+    "                                              \n"
+    "  <!-- Trade Preferences  -->                 \n"
+    "  <optional>                                  \n"
+    "  <OneOrMore>                                 \n"
+    "  <element name=\"commod_pref\">              \n"
+    "   <element name=\"incommodity\">             \n"
+    "     <data type=\"string\"/>                  \n"
+    "   </element>                                 \n"
+    "   <element name=\"preference\">              \n"
+    "     <data type=\"double\"/>                  \n"
+    "   </element>                                 \n"
+    "  </element>                                  \n"
+    "  </OneOrMore>                                \n"
+    "  </optional>                                 \n";
 };
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -185,6 +199,19 @@ void BatchReactor::InitModuleMembers(cyclus::QueryEngine* qe) {
   CommodityProducer::SetCapacity(commod, lexical_cast<double>(data));
   data = commodity->GetElementContent("cost");
   CommodityProducer::SetCost(commod, lexical_cast<double>(data));
+
+  // trade preferences
+  int nprefs = qe->NElementsMatchingQuery("commod_pref");
+  std::string c;
+  double pref;
+  if (nprefs > 0) {
+    for (int i = 0; i < nprefs; i++) {
+      QueryEngine* cp = qe->QueryElement("commod_pref", i);
+      c = cp->GetElementContent("incommodity");
+      pref = lexical_cast<double>(cp->GetElementContent("preference"));
+      commod_prefs_[c] = pref;
+    }
+  }
 }
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -212,7 +239,9 @@ cyclus::Model* BatchReactor::Clone() {
 
   // ics
   m->ics(ics());
-  
+
+  // trade preferences
+  m->commod_prefs(commod_prefs());
   return m;
 }
 
@@ -496,7 +525,7 @@ BatchReactor::GetOrder_(double size) {
       Material::CreateUntracked(size, context()->GetRecipe(in_recipe_));
   
   RequestPortfolio<Material>::Ptr port(new RequestPortfolio<Material>());
-  port->AddRequest(mat, this, in_commodity_);
+  port->AddRequest(mat, this, in_commodity_, commod_prefs_[in_commodity_]);
 
   CapacityConstraint<Material> cc(size);
   port->AddConstraint(cc);
