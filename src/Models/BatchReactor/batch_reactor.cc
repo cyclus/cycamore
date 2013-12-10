@@ -517,18 +517,22 @@ BatchReactor::GetOrder_(double size) {
   using cyclus::RequestPortfolio;
   using cyclus::Request;
 
-  LOG(cyclus::LEV_DEBUG3, "BReact") << "BatchReactor " << name()
-                                    << " is making an order of size: "
-                                    << size;
-
   Material::Ptr mat =
       Material::CreateUntracked(size, context()->GetRecipe(in_recipe_));
   
   RequestPortfolio<Material>::Ptr port(new RequestPortfolio<Material>());
+  
   port->AddRequest(mat, this, in_commodity_, commod_prefs_[in_commodity_]);
 
   CapacityConstraint<Material> cc(size);
   port->AddConstraint(cc);
+
+  LOG(cyclus::LEV_DEBUG3, "BReact") << "BatchReactor " << name()
+                                    << " is making an order:";
+  LOG(cyclus::LEV_DEBUG3, "BReact") << "          size: " << size;
+  LOG(cyclus::LEV_DEBUG3, "BReact") << "     commodity: " << in_commodity_;
+  LOG(cyclus::LEV_DEBUG3, "BReact") << "    preference: "
+                                    << commod_prefs_[in_commodity_];
 
   return port;
 }

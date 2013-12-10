@@ -33,7 +33,7 @@ commodity. -->
         </output>
       </SourceFacility>
     </model>
-    <outcommodity>commodity</outcommodity>
+    <outcommodity>used_commodity</outcommodity>
   </facility>
   
   <facility>
@@ -57,13 +57,13 @@ commodity. -->
           <cost>10</cost>
         </commodity_production>
         <commod_pref>
-          <incommodity>commodity</incommodity>
+          <incommodity>used_commodity</incommodity>
           <preference>1.0</preference>
         </commod_pref>
       </BatchReactor>
     </model>
-    <incommodity>commodity</incommodity>
-    <outcommodity>commodity</outcommodity>
+    <incommodity>used_commodity</incommodity>
+    <outcommodity>processed_commodity</outcommodity>
   </facility>
 
   <facility>
@@ -79,7 +79,8 @@ commodity. -->
         </input>
       </SinkFacility>
     </model>
-    <incommodity>commodity</incommodity>
+    <incommodity>used_commodity</incommodity>
+    <incommodity>processed_commodity</incommodity>
   </facility>
 
   <region>
