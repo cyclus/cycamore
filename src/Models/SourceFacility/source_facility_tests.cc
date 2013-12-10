@@ -183,7 +183,7 @@ TEST_F(SourceFacilityTest, Response) {
 
   // too much qty, capn!
   EXPECT_THROW(src_facility->GetMatlTrades(trades, responses),
-               cyclus::StateError);
+               cyclus::ValueError);
   
   // reset!
   src_facility->HandleTick(1);

@@ -150,7 +150,6 @@ void SourceFacility::GetMatlTrades(
     std::vector<std::pair<cyclus::Trade<cyclus::Material>,
                           cyclus::Material::Ptr> >& responses) {
   using cyclus::Material;
-  using cyclus::StateError;
   using cyclus::Trade;
 
   double provided = 0;
@@ -170,10 +169,9 @@ void SourceFacility::GetMatlTrades(
   }
   if (cyclus::IsNegative(current_capacity_)) {
     std::stringstream ss;
-    ss << "SourceFac " << name()
-       << " is being asked to provide " << provided
-       << " but its capacity is " << capacity_ << ".";
-    throw StateError(ss.str());
+    ss << "is being asked to provide " << provided
+       << " but its capacity is " << capacity_ << "."; 
+    throw cyclus::ValueError(Model::InformErrorMsg(ss.str()));
   }
 }
 

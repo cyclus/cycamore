@@ -438,10 +438,9 @@ void BatchReactor::GetMatlTrades(
     try {
       // pop amount from inventory and blob it into one material
       manifest = ResCast<Material>(storage_.PopQty(qty));  
-    } catch(cyclus::Error e) {
-      std::string msg("BatchReactor experience an error: ");
-      msg += e.what();
-      throw cyclus::Error(msg);
+    } catch(cyclus::Error& e) {
+      e.msg(Model::InformErrorMsg(e.msg()));
+      throw e;
     }
 
     Material::Ptr response = manifest[0];
@@ -484,10 +483,9 @@ void BatchReactor::MoveBatchIn_() {
                                     <<  " a batch from its core.";
   try {
     core_.Push(reserves_.Pop());
-  } catch(cyclus::Error e) {
-      std::string msg("BatchReactor experience an error: ");
-      msg += e.what();
-      throw cyclus::Error(msg);
+  } catch(cyclus::Error& e) {
+      e.msg(Model::InformErrorMsg(e.msg()));
+      throw e;
   }
 }
 
@@ -502,10 +500,9 @@ void BatchReactor::MoveBatchOut_() {
     Material::Ptr mat = ResCast<Material>(core_.Pop());
     mat->Transmute(context()->GetRecipe(out_recipe()));
     storage_.Push(mat);
-  } catch(cyclus::Error e) {
-      std::string msg("BatchReactor experience an error: ");
-      msg += e.what();
-      throw cyclus::Error(msg);
+  } catch(cyclus::Error& e) {
+      e.msg(Model::InformErrorMsg(e.msg()));
+      throw e;
   }
 }
 

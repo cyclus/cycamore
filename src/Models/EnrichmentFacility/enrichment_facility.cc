@@ -273,9 +273,8 @@ void EnrichmentFacility::AddMat_(cyclus::Material::Ptr mat) {
   try {
     inventory_.Push(mat);    
   } catch(cyclus::Error& e) {
-    std::string msg("EnrichmentFacility experienced an error: ");
-    msg += e.what();
-    throw cyclus::Error(msg);
+      e.msg(Model::InformErrorMsg(e.msg()));
+      throw e;
   }
   
   LOG(cyclus::LEV_INFO5, "EnrFac") << name() << " added " << mat->quantity()
@@ -328,14 +327,13 @@ cyclus::Material::Ptr EnrichmentFacility::Enrich_(
     } else {
       manifest = ResCast<Material>(inventory_.PopQty(natu_req));
     }
-  } catch(cyclus::Error e) {
-    cyclus::Converter<Material>::Ptr
-        nc(new NatUConverter(feed_assay_, tails_assay_));
+  } catch(cyclus::Error& e) {
+    NatUConverter nc(feed_assay_, tails_assay_);
     std::stringstream ss;
-    ss << "EnrichmentFacility tried to remove " << natu_req
+    ss << " tried to remove " << natu_req
        << " from its inventory of size " << inventory_.quantity()
-       << " and the conversion of the material into natu is " << nc->convert(mat);
-    throw cyclus::Error(ss.str());
+       << " and the conversion of the material into natu is " << nc.convert(mat);
+    throw cyclus::ValueError(Model::InformErrorMsg(ss.str()));
   }
   Material::Ptr r = manifest[0];
   for (int i = 1; i < manifest.size(); ++i) {
