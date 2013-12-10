@@ -1,32 +1,31 @@
 #! /usr/bin/python
 
-from nose.tools import assert_equal
-from numpy.testing import assert_array_equal, assert_array_almost_equal
+from nose.tools import assert_not_equal
 import sys
-import subprocess
+import os
 import tables
 import numpy as np
 from tools import check_cmd
 
 """ Tests """
 def test_null_sink():
-    #Cyclus simulation inputs
-    sim_inputs = ["./inputs/null_sink.xml"]
+    #Cyclus simulation input for null sink testing
+    sim_input = "./inputs/null_sink.xml"
+    holdsrtn = [1] # needed because nose does not send() to test generator
+    cmd = ["cyclus", "-o", "./output_temp.h5", "--input-file", sim_input]
+    check_cmd(cmd, '.', holdsrtn)
+    rtn = holdsrtn[0]
+    if rtn != 0:
+        return # don't execute further commands
 
-    for sim_input,bench_db in zip(sim_inputs,bench_dbs):
-        holdsrtn = [1] # needed because nose does not send() to test generator
-        cmd = ["cyclus", "-o", "./output_temp.h5", "--input-file", sim_input]
-        yield check_cmd, cmd, '.', holdsrtn
-        rtn = holdsrtn[0]
-        if rtn != 0:
-            return # don't execute further commands
+    output = tables.open_file("./output_temp.h5", mode = "r")
+    paths = [] # this must contain tables to test
+    for node in output.walkNodes(classname = "Table"):
+        paths.append(node._v_pathname)
+    
+    for path in paths:
+        #No resource exchange is expected
+        yield assert_not_equal, path, "/Transactions"
 
-        bench = tables.open_file(bench_db, mode = "r")
-        output = tables.open_file("./output_temp.h5", mode = "r")
-        paths = [] # this must contain tables to test
-       
-        for path in paths:
-            data = bench.get_node(path)[:]
-            names = [] # this must contain data to test
-            for name in bdata.dtype.names:
-                # Have to check certain values are zero
+    output.close()
+    os.remove("./output_temp.h5")

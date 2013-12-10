@@ -45,7 +45,6 @@
     </model>
     <institution>
       <name>SingleInstitution</name>
-      <availableprototype>Source</availableprototype>
       <availableprototype>Sink</availableprototype>
       <initialfacilitylist>
         <entry>
