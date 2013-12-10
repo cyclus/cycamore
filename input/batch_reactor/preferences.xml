@@ -15,7 +15,11 @@ commodity. -->
   </control>
 
   <commodity>
-    <name>commodity</name>
+    <name>used_commodity</name>
+  </commodity>
+
+  <commodity>
+    <name>processed_commodity</name>
   </commodity>
 
   <facility>
@@ -23,7 +27,7 @@ commodity. -->
     <model>
       <SourceFacility>
         <output>
-          <outcommodity>commodity</outcommodity>
+          <outcommodity>used_commodity</outcommodity>
           <output_capacity>1</output_capacity>
           <recipe>commod_recipe</recipe>
         </output>
@@ -37,11 +41,11 @@ commodity. -->
     <model>
       <BatchReactor>
         <fuel_input>
-         <incommodity>commodity</incommodity>
+         <incommodity>used_commodity</incommodity>
          <inrecipe>commod_recipe</inrecipe>
         </fuel_input>
         <fuel_output>
-         <outcommodity>commodity</outcommodity>
+         <outcommodity>processed_commodity</outcommodity>
          <outrecipe>commod_recipe</outrecipe>
         </fuel_output>
         <processtime>1</processtime>
@@ -68,7 +72,8 @@ commodity. -->
       <SinkFacility>
         <input>
           <commodities>
-            <incommodity>commodity</incommodity>
+            <incommodity>used_commodity</incommodity>
+            <incommodity>processed_commodity</incommodity>
           </commodities>
           <input_capacity>2</input_capacity>
         </input>
