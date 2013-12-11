@@ -24,6 +24,7 @@
 
   <facility>
     <name>Source</name>
+    <lifetime>50</lifetime>
     <model>
       <SourceFacility>
         <output>
@@ -44,7 +45,6 @@
           <commodities>
             <incommodity>commodity</incommodity>
           </commodities>
-          <input_capacity>1</input_capacity>
         </input>
       </SinkFacility>
     </model>
@@ -54,6 +54,7 @@
   <region>
     <name>SingleRegion</name>
     <allowedfacility>Source</allowedfacility>
+
     <allowedfacility>Sink</allowedfacility>
     <model>
       <NullRegion/>
@@ -79,7 +80,7 @@
   </region>
 
   <recipe>
-    <name>commodity</name>
+    <name>commod_recipe</name>
     <basis>mass</basis>
     <isotope>
       <id>01001</id>
