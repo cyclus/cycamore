@@ -297,10 +297,12 @@ class BatchReactor : public cyclus::FacilityModel,
   std::string out_recipe_;
   Phase phase_;
   InitCond ics_;
-
+  
   /// @brief preferences for each input commodity
   std::map<std::string, double> commod_prefs_;
 
+  std::map<int, std::vector< std::pair< std::string, double > > > pref_changes_;
+  
   /// @brief allows only batches to enter reserves_
   cyclus::Material::Ptr spillover_;
   

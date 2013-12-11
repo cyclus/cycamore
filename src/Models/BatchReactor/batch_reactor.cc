@@ -138,6 +138,21 @@ std::string BatchReactor::schema() {
     "   </element>                                 \n"
     "  </element>                                  \n"
     "  </oneOrMore>                                \n"
+    "  </optional>                                 \n"
+    "  <optional>                                  \n"
+    "  <oneOrMore>                                 \n"
+    "  <element name=\"pref_change\">              \n"
+    "   <element name=\"incommodity\">             \n"
+    "     <data type=\"string\"/>                  \n"
+    "   </element>                                 \n"
+    "   <element name=\"new_pref\">                \n"
+    "     <data type=\"double\"/>                  \n"
+    "   </element>                                 \n"
+    "   <element name=\"time\">                    \n"
+    "     <data type=\"nonNegativeInt\"/>          \n"
+    "   </element>                                 \n"
+    "  </element>                                  \n"
+    "  </oneOrMore>                                \n"
     "  </optional>                                 \n";
 };
 
@@ -212,6 +227,19 @@ void BatchReactor::InitModuleMembers(cyclus::QueryEngine* qe) {
       commod_prefs_[c] = pref;
     }
   }
+
+  // pref changes
+  nprefs = qe->NElementsMatchingQuery("pref_changes");
+  if (nprefs > 0) {
+    for (int i = 0; i < nprefs; i++) {
+      QueryEngine* cp = qe->QueryElement("pref_changes", i);
+      c = cp->GetElementContent("incommodity");
+      pref = lexical_cast<double>(cp->GetElementContent("new_pref"));
+      time = lexical_cast<int>(cp->GetElementContent("time"));
+      pref_changes_[time].push_back(std::make_pair(c, pref));
+    }
+  }
+  
 }
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -318,6 +346,15 @@ void BatchReactor::HandleTick(int time) {
       // special case for a core primed to go
       if (n_core() == n_batches()) phase(PROCESS);
       break;
+  }
+
+  // change preferences if its time
+  if (pref_changes_.count(time)) {
+    std::vector< std::pair< std::string, double> >&
+        changes = pref_changes_[time];
+    for (int i = 0; i < changes.size(); i++) {
+      commod_prefs_[changes[i].first] = changes[i].second;
+    }
   }
   
   LOG(cyclus::LEV_INFO3, "BReact") << "}";

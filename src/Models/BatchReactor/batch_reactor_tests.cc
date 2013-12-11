@@ -68,8 +68,8 @@ void BatchReactorTest::InitParameters() {
 
   commod1 = in_commod;
   commod2 = "inc2";
-  pref1 = 5;
-  pref2 = 0.5;
+  pref1 = 7.5;
+  pref2 = 5.5;
   commod_prefs[commod1] = pref1;
   commod_prefs[commod2] = pref2;
 }
@@ -94,6 +94,9 @@ void BatchReactorTest::SetUpSourceFacility() {
   src_facility->cyclus::CommodityProducer::SetCost(commodity, capacity);
 
   src_facility->commod_prefs(commod_prefs);
+
+  src_facility->pref_changes_[1].push_back(std::make_pair(commod1, pref1 - 1));
+  src_facility->pref_changes_[1].push_back(std::make_pair(commod2, pref2 - 2));
 }
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -258,7 +261,11 @@ TEST_F(BatchReactorTest, Print) {
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 TEST_F(BatchReactorTest, Tick) {
   int time = 1;
+  EXPECT_EQ(src_facility->commod_prefs().at(commod1), pref1);
+  EXPECT_EQ(src_facility->commod_prefs().at(commod2), pref2);
   EXPECT_NO_THROW(src_facility->HandleTick(time););
+  EXPECT_EQ(src_facility->commod_prefs().at(commod1), pref1 - 1);
+  EXPECT_EQ(src_facility->commod_prefs().at(commod2), pref2 - 2);
 }
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
