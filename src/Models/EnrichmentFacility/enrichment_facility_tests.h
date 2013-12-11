@@ -24,6 +24,8 @@ class EnrichmentFacilityTest : public ::testing::Test {
 
   double tails_assay, feed_assay, inv_size, commodity_price, swu_capacity;
 
+  double reserves;
+  
   virtual void SetUp();
   virtual void TearDown();
   void InitParameters();

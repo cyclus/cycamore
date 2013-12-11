@@ -133,6 +133,13 @@ class NatUConverter : public cyclus::Converter<cyclus::Material> {
  */
 class EnrichmentFacility : public cyclus::FacilityModel {
  public:
+  /// @brief a struct for initial conditions
+  struct InitCond {
+    InitCond() : reserves(0) {};
+    InitCond(double reserves) : reserves(reserves) {};
+    double reserves;
+  };
+
   /* --- Module Members --- */
   /**
      Constructor for the EnrichmentFacility class
@@ -158,11 +165,21 @@ class EnrichmentFacility : public cyclus::FacilityModel {
   virtual void InitModuleMembers(cyclus::QueryEngine* qe);
 
   /**
+     initialize members from a different model
+  */
+  void InitFrom(EnrichmentFacility* m);
+
+  /**
      Print information about this model
    */
   virtual std::string str();
   /* --- */
 
+  /* --- Facility Members --- */
+  /// perform module-specific tasks when entering the simulation 
+  virtual void Deploy(cyclus::Model* parent);
+  /* --- */
+  
   /* --- Agent Members --- */
   /**
      Each facility is prompted to do its beginning-of-time-step
@@ -261,6 +278,10 @@ class EnrichmentFacility : public cyclus::FacilityModel {
 
   inline double commodity_price() const { return commodity_price_; }
 
+  /// @brief this facility's initial conditions
+  inline void  ics(const InitCond& ics) { ics_ = ics; }
+  inline InitCond ics() const { return ics_; }
+
  private:
   /**
      @brief adds a material into the natural uranium inventory
@@ -302,7 +323,10 @@ class EnrichmentFacility : public cyclus::FacilityModel {
   double swu_capacity_;
   double current_swu_capacity_;
   cyclus::ResourceBuff inventory_; // of natl u
+  InitCond ics_;
+  
   static int entry_;
+  
   friend class EnrichmentFacilityTest;
 /* --- */
 };

@@ -14,6 +14,12 @@
 
 namespace cycamore {
 
+//- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+bool operator==(const EnrichmentFacility::InitCond& l,
+                const EnrichmentFacility::InitCond& r) {
+  return (l.reserves == r.reserves);
+}
+
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 void EnrichmentFacilityTest::SetUp() {
   cyclus::Context* ctx = tc_.get();
@@ -48,6 +54,8 @@ void EnrichmentFacilityTest::InitParameters() {
   swu_capacity = 100;
   inv_size = 5;
   commodity_price = 0;
+
+  reserves = 105.5;
 }
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -60,6 +68,7 @@ void EnrichmentFacilityTest::SetUpSourceFacility() {
   src_facility->commodity_price(commodity_price);
   src_facility->SetMaxInventorySize(inv_size);
   src_facility->swu_capacity(swu_capacity);
+  src_facility->ics(EnrichmentFacility::InitCond(reserves));
 }
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -114,6 +123,7 @@ TEST_F(EnrichmentFacilityTest, InitialState) {
   EXPECT_DOUBLE_EQ(commodity_price, src_facility->commodity_price());
   EXPECT_DOUBLE_EQ(0.0, src_facility->InventorySize());
   EXPECT_DOUBLE_EQ(swu_capacity, src_facility->swu_capacity());
+  EXPECT_EQ(EnrichmentFacility::InitCond(reserves), src_facility->ics());
 }
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -130,6 +140,9 @@ TEST_F(EnrichmentFacilityTest, XMLInit) {
      << "    <tails_assay>" << tails_assay << "</tails_assay>"
      << "    <swu_capacity>" << swu_capacity << "</swu_capacity>"
      << "  </output>"
+     << "  <initial_condition>"
+     << "    <reserves>" << reserves << "</reserves>"
+     << "  </initial_condition>"
      << "</start>";
 
   cyclus::XMLParser p;
@@ -147,6 +160,7 @@ TEST_F(EnrichmentFacilityTest, XMLInit) {
   EXPECT_DOUBLE_EQ(commodity_price, fac.commodity_price());
   EXPECT_DOUBLE_EQ(0.0, fac.InventorySize());
   EXPECT_DOUBLE_EQ(swu_capacity, fac.swu_capacity());
+  EXPECT_EQ(EnrichmentFacility::InitCond(reserves), fac.ics());
 }
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -165,6 +179,7 @@ TEST_F(EnrichmentFacilityTest, Clone) {
   EXPECT_DOUBLE_EQ(commodity_price, cloned_fac->commodity_price());
   EXPECT_DOUBLE_EQ(0.0, cloned_fac->InventorySize());
   EXPECT_DOUBLE_EQ(swu_capacity, cloned_fac->swu_capacity());
+  EXPECT_EQ(EnrichmentFacility::InitCond(reserves), cloned_fac->ics());
   
   delete cloned_fac;
 }

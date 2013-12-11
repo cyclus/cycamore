@@ -41,46 +41,55 @@ EnrichmentFacility::~EnrichmentFacility() {}
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 std::string EnrichmentFacility::schema() {
   return
-    "  <element name =\"input\">            \n"
-    "    <ref name=\"incommodity\"/>        \n"
-    "    <ref name=\"inrecipe\"/>           \n"
-    "    <optional>                         \n"
-    "      <ref name=\"inventorysize\"/>    \n"
-    "    </optional>                        \n"
-    "  </element>                           \n"
-    "  <element name =\"output\">           \n"
-    "    <ref name=\"outcommodity\"/>       \n"
-    "     <element name =\"tails_assay\">   \n"
-    "       <data type=\"double\"/>         \n"
-    "     </element>                        \n"
-    "    <optional>                         \n"
-    "      <element name =\"swu_capacity\"> \n"
-    "        <data type=\"double\"/>        \n"
-    "      </element>                       \n"
-    "    </optional>                        \n"
-    "  </element>                           \n";
+      "  <element name =\"input\">                  \n"
+      "    <ref name=\"incommodity\"/>              \n"
+      "    <ref name=\"inrecipe\"/>                 \n"
+      "    <optional>                               \n"
+      "      <ref name=\"inventorysize\"/>          \n"
+      "    </optional>                              \n"
+      "  </element>                                 \n"
+      "  <element name =\"output\">                 \n"
+      "    <ref name=\"outcommodity\"/>             \n"
+      "     <element name =\"tails_assay\">         \n"
+      "       <data type=\"double\"/>               \n"
+      "     </element>                              \n"
+      "    <optional>                               \n"
+      "      <element name =\"swu_capacity\">       \n"
+      "        <data type=\"double\"/>              \n"
+      "      </element>                             \n"
+      "    </optional>                              \n"
+      "  </element>                                 \n"
+      "  <optional>                                 \n"
+      "    <element name =\"initial_condition\">    \n"
+      "       <element name =\"nreserves\">         \n"
+      "         <data type=\"double\"/>             \n"
+      "       </element>                            \n"
+      "    </element>                               \n"
+      "  </optional>                                \n";
 }
 
-//- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+//- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 void EnrichmentFacility::InitModuleMembers(cyclus::QueryEngine* qe) {
   using std::string;
   using std::numeric_limits;
-  using boost::lexical_cast;
-  using cyclus::Model;
+  using boost::lexical_cast;  
+  using cyclus::GetOptionalQuery;
   using cyclus::Material;
-
+  using cyclus::QueryEngine;
+  using cyclus::Model;
+  
   string data;
 
-  cyclus::QueryEngine* input = qe->QueryElement("input");
+  QueryEngine* input = qe->QueryElement("input");
   in_commodity(input->GetElementContent("incommodity"));
   in_recipe(input->GetElementContent("inrecipe"));
 
-  double limit = cyclus::GetOptionalQuery<double>(input,
-                                                  "inventorysize",
-                                                  numeric_limits<double>::max());
+  double limit = GetOptionalQuery<double>(input,
+                                          "inventorysize",
+                                          numeric_limits<double>::max());
   SetMaxInventorySize(limit);
 
-  cyclus::QueryEngine* output = qe->QueryElement("output");
+  QueryEngine* output = qe->QueryElement("output");
   out_commodity(output->GetElementContent("outcommodity"));
 
   data = output->GetElementContent("tails_assay");
@@ -90,10 +99,40 @@ void EnrichmentFacility::InitModuleMembers(cyclus::QueryEngine* qe) {
                                                  context()->GetRecipe(in_recipe_));
   feed_assay(cyclus::enrichment::UraniumAssay(feed));
 
-  double cap = cyclus::GetOptionalQuery<double>(output,
-                                                "swu_capacity",
-                                                numeric_limits<double>::max());
+  double cap = GetOptionalQuery<double>(output,
+                                        "swu_capacity",
+                                        numeric_limits<double>::max());
   swu_capacity(cap);
+
+  double reserves = 0;
+  if (qe->NElementsMatchingQuery("initial_condition") > 0) {
+    QueryEngine* ic = qe->QueryElement("initial_condition");
+    reserves = lexical_cast<double>(ic->GetElementContent("reserves"));
+  }
+  ics(InitCond(reserves));
+}
+
+//- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+cyclus::Model* EnrichmentFacility::Clone() {
+  EnrichmentFacility* m = new EnrichmentFacility(*this);
+  m->InitFrom(this);
+  LOG(cyclus::LEV_DEBUG1, "EnrFac") << "Cloned - " << str();
+  return m;
+}
+
+//- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+void EnrichmentFacility::InitFrom(EnrichmentFacility* m) {
+  tails_assay(m->tails_assay());
+  feed_assay(m->feed_assay());
+  in_commodity(m->in_commodity());
+  in_recipe(m->in_recipe());
+  out_commodity(m->out_commodity());
+  SetMaxInventorySize(m->MaxInventorySize());
+  commodity_price(m->commodity_price());
+  swu_capacity(m->swu_capacity());
+
+  // ics
+  ics(m->ics());
 }
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -109,22 +148,20 @@ std::string EnrichmentFacility::str() {
   return ss.str();
 }
 
-//- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-cyclus::Model* EnrichmentFacility::Clone() {
-  EnrichmentFacility* m = new EnrichmentFacility(*this);
-  m->InitFrom(this);
+//- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+void EnrichmentFacility::Deploy(cyclus::Model* parent) {
+  using cyclus::Material;
 
-  m->tails_assay(tails_assay());
-  m->feed_assay(feed_assay());
-  m->in_commodity(in_commodity());
-  m->in_recipe(in_recipe());
-  m->out_commodity(out_commodity());
-  m->SetMaxInventorySize(MaxInventorySize());
-  m->commodity_price(commodity_price());
-  m->swu_capacity(swu_capacity());
+  FacilityModel::Deploy(parent);
+  if (ics_.reserves > 0) {
+    inventory_.Push(
+        Material::Create(
+            this, ics_.reserves, context()->GetRecipe(in_recipe_)));
+  }
   
-  LOG(cyclus::LEV_DEBUG1, "EnrFac") << "Cloned - " << str();
-  return m;
+  LOG(cyclus::LEV_DEBUG2, "EnrFac") << "EnrichmentFacility "
+                                    <<" entering the simuluation: ";
+  LOG(cyclus::LEV_DEBUG2, "EnrFac") << str();
 }
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
