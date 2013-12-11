@@ -266,7 +266,7 @@ void BatchReactor::Deploy(cyclus::Model* parent) {
 
   FacilityModel::Deploy(parent);
   phase(INITIAL);
-  spillover_ = Material::CreateBlank(0);
+  spillover_ = Material::Create(this, 0.0, context()->GetRecipe(in_recipe_));
 
   Material::Ptr mat;
   for (int i = 0; i < ics_.n_reserves; ++i) {
