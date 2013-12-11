@@ -54,7 +54,6 @@
   <region>
     <name>SingleRegion</name>
     <allowedfacility>Source</allowedfacility>
-
     <allowedfacility>Sink</allowedfacility>
     <model>
       <NullRegion/>
