@@ -218,31 +218,34 @@ void BatchReactor::InitModuleMembers(cyclus::QueryEngine* qe) {
 cyclus::Model* BatchReactor::Clone() {
   BatchReactor* m = new BatchReactor(context());
   m->InitFrom(this);
+  return m;
+}
 
+//- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+void BatchReactor::InitFrom(BatchReactor* m) {
   // in/out
-  m->in_commodity(in_commodity());
-  m->out_commodity(out_commodity());
-  m->in_recipe(in_recipe());
-  m->out_recipe(out_recipe());
+  in_commodity(m->in_commodity());
+  out_commodity(m->out_commodity());
+  in_recipe(m->in_recipe());
+  out_recipe(m->out_recipe());
 
   // facility params
-  m->process_time(process_time());
-  m->preorder_time(preorder_time());
-  m->refuel_time(refuel_time());
-  m->n_batches(n_batches());
-  m->n_load(n_load());
-  m->n_reserves(n_reserves());
-  m->batch_size(batch_size());
+  process_time(m->process_time());
+  preorder_time(m->preorder_time());
+  refuel_time(m->refuel_time());
+  n_batches(m->n_batches());
+  n_load(m->n_load());
+  n_reserves(m->n_reserves());
+  batch_size(m->batch_size());
 
   // commodity production
-  m->CopyProducedCommoditiesFrom(this);
+  CopyProducedCommoditiesFrom(m);
 
   // ics
-  m->ics(ics());
-
+  ics(m->ics());
+  
   // trade preferences
-  m->commod_prefs(commod_prefs());
-  return m;
+  commod_prefs(m->commod_prefs());
 }
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -389,34 +392,16 @@ void BatchReactor::AcceptMatlTrades(
 std::set<cyclus::BidPortfolio<cyclus::Material>::Ptr>
 BatchReactor::GetMatlBids(const cyclus::CommodMap<cyclus::Material>::type&
                           commod_requests) {
-  using cyclus::Bid;
   using cyclus::BidPortfolio;
-  using cyclus::CapacityConstraint;
-  using cyclus::Converter;
   using cyclus::Material;
-  using cyclus::Request;
 
   std::set<BidPortfolio<Material>::Ptr> ports;
 
-  if (commod_requests.count(out_commodity_) > 0 && storage_.quantity() > 0) {
-    const std::vector<Request<Material>::Ptr>& requests =
-        commod_requests.at(out_commodity_);
-
-    BidPortfolio<Material>::Ptr port(new BidPortfolio<Material>());
-
-    std::vector<Request<Material>::Ptr>::const_iterator it;
-    for (it = requests.begin(); it != requests.end(); ++it) {
-      const Request<Material>::Ptr req = *it;
-      double qty = std::min(req->target()->quantity(), storage_.quantity());
-      Material::Ptr offer =
-          Material::CreateUntracked(qty, context()->GetRecipe(out_recipe_));
-      port->AddBid(req, offer, this);
-    }
-
-    CapacityConstraint<Material> cc(storage_.quantity());
-    port->AddConstraint(cc);
-    ports.insert(port);
-  }
+  BidPortfolio<Material>::Ptr port = GetBids_(commod_requests,
+                                              out_commodity_,
+                                              &storage_);
+  
+  if (!port->bids().empty()) ports.insert(port);
   return ports;
 }
 
@@ -427,26 +412,13 @@ void BatchReactor::GetMatlTrades(
                           cyclus::Material::Ptr> >& responses) {
   using cyclus::Material;
   using cyclus::Trade;
-  using cyclus::ResCast;
 
   std::vector< cyclus::Trade<cyclus::Material> >::const_iterator it;
   for (it = trades.begin(); it != trades.end(); ++it) {
     LOG(cyclus::LEV_INFO5, "BReact") << name() << " just received an order.";
 
     double qty = it->amt;
-    std::vector<Material::Ptr> manifest;
-    try {
-      // pop amount from inventory and blob it into one material
-      manifest = ResCast<Material>(storage_.PopQty(qty));  
-    } catch(cyclus::Error& e) {
-      e.msg(Model::InformErrorMsg(e.msg()));
-      throw e;
-    }
-
-    Material::Ptr response = manifest[0];
-    for (int i = 1; i < manifest.size(); i++) {
-      response->Absorb(manifest[i]);
-    }
+    Material::Ptr response = TradeResponse_(qty, &storage_);
 
     responses.push_back(std::make_pair(*it, response));
     LOG(cyclus::LEV_INFO5, "BatchReactor") << name()
@@ -549,6 +521,63 @@ void BatchReactor::AddBatches_(cyclus::Material::Ptr mat) {
     Material::Ptr batch = spillover_->ExtractQty(batch_size());
     reserves_.Push(batch);    
   }
+}
+
+//- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+cyclus::BidPortfolio<cyclus::Material>::Ptr BatchReactor::GetBids_(
+    const cyclus::CommodMap<cyclus::Material>::type& commod_requests,
+    std::string commod,
+    cyclus::ResourceBuff* buffer) {
+  using cyclus::Bid;
+  using cyclus::BidPortfolio;
+  using cyclus::CapacityConstraint;
+  using cyclus::Converter;
+  using cyclus::Material;
+  using cyclus::Request;
+    
+  BidPortfolio<Material>::Ptr port(new BidPortfolio<Material>());
+  
+  if (commod_requests.count(commod) > 0 && buffer->quantity() > 0) {
+    const std::vector<Request<Material>::Ptr>& requests =
+        commod_requests.at(commod);
+    
+    std::vector<Request<Material>::Ptr>::const_iterator it;
+    for (it = requests.begin(); it != requests.end(); ++it) {
+      const Request<Material>::Ptr req = *it;
+      double qty = std::min(req->target()->quantity(), buffer->quantity());
+      Material::Ptr offer =
+          Material::CreateUntracked(qty, context()->GetRecipe(out_recipe_));
+      port->AddBid(req, offer, this);
+    }
+    
+    CapacityConstraint<Material> cc(buffer->quantity());
+    port->AddConstraint(cc);
+  }
+
+  return port;
+}
+
+//- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+cyclus::Material::Ptr BatchReactor::TradeResponse_(
+    double qty,
+    cyclus::ResourceBuff* buffer) {
+  using cyclus::Material;
+  using cyclus::ResCast;
+
+  std::vector<Material::Ptr> manifest;
+  try {
+    // pop amount from inventory and blob it into one material
+    manifest = ResCast<Material>(buffer->PopQty(qty));  
+  } catch(cyclus::Error& e) {
+    e.msg(Model::InformErrorMsg(e.msg()));
+    throw e;
+  }
+  
+  Material::Ptr response = manifest[0];
+  for (int i = 1; i < manifest.size(); i++) {
+    response->Absorb(manifest[i]);
+  }
+  return response;
 }
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
