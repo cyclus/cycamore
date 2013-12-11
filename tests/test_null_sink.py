@@ -1,7 +1,6 @@
 #! /usr/bin/python
 
-from nose.tools import assert_not_equal
-import sys
+from nose.tools import assert_false
 import os
 import tables
 import numpy as np
@@ -9,6 +8,7 @@ from tools import check_cmd
 
 """ Tests """
 def test_null_sink():
+    """ Testing for null sink case without a source facility """
     #Cyclus simulation input for null sink testing
     sim_input = "./inputs/null_sink.xml"
     holdsrtn = [1] # needed because nose does not send() to test generator
@@ -19,13 +19,10 @@ def test_null_sink():
         return # don't execute further commands
 
     output = tables.open_file("./output_temp.h5", mode = "r")
-    paths = [] # this must contain tables to test
-    for node in output.walkNodes(classname = "Table"):
-        paths.append(node._v_pathname)
-    
+    paths = ["/Transactions", "/TransactedResources"] # this must contain tables to test
+    #No resource exchange is expected
     for path in paths:
-        #No resource exchange is expected
-        yield assert_not_equal, path, "/Transactions"
+        yield assert_false, output.__contains__(path)
 
     output.close()
     os.remove("./output_temp.h5")

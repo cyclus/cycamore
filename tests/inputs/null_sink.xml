@@ -58,13 +58,4 @@
     </institution>
   </region>
 
-  <recipe>
-    <name>commod_recipe</name>
-    <basis>mass</basis>
-    <isotope>
-      <id>01001</id>
-      <comp>1</comp>
-    </isotope>
-  </recipe>
-
 </simulation>
