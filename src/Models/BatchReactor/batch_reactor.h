@@ -70,6 +70,9 @@ namespace cycamore {
 /// core, and storage buffers.
 ///
 /// @todo add decommissioning behavior if material is still in storage
+///
+/// @warning preference time changing is based on *full simulation time*, not
+/// relative time
 class BatchReactor : public cyclus::FacilityModel,
       public cyclus::CommodityProducer {
  public:
@@ -301,6 +304,8 @@ class BatchReactor : public cyclus::FacilityModel,
   /// @brief preferences for each input commodity
   std::map<std::string, double> commod_prefs_;
 
+  /// @warning as is, the int key is **simulation time**, i.e., context()->time
+  /// == key. this should be fixed for future use!
   std::map<int, std::vector< std::pair< std::string, double > > > pref_changes_;
   
   /// @brief allows only batches to enter reserves_

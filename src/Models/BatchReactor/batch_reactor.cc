@@ -274,6 +274,7 @@ void BatchReactor::InitFrom(BatchReactor* m) {
   
   // trade preferences
   commod_prefs(m->commod_prefs());
+  pref_changes_ = m->pref_changes_;
 }
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
