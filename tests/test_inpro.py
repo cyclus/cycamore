@@ -1,10 +1,7 @@
 #! /usr/bin/python
 
-from nose.tools import assert_equal
-from numpy.testing import assert_array_equal, assert_array_almost_equal
-import sys
+from numpy.testing import assert_array_equal
 import os
-import subprocess
 import tables
 import numpy as np
 from tools import check_cmd
@@ -37,7 +34,7 @@ def test_inpro():
         bench = tables.open_file(bench_db, mode = "r")
         output = tables.open_file("./output_temp.h5", mode = "r")
         paths = []
-        for node in bench.walkNodes(classname = "Table"):
+        for node in bench.walk_nodes(classname = "Table"):
             paths.append(node._v_pathname)
        
         for path in paths:

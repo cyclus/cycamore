@@ -6,9 +6,9 @@ import shutil
 from tools import check_cmd
 
 def main():
+    '''Creates reference databases for inpro cases'''
     dirs_to_clean = [] #keep track of directories to delete later
     try:
-        '''Creates reference databases for inpro cases'''
         cwd = os.getcwd()
         #Create Installation and Benchmarks Directories
         install_path = cwd + "/install"
