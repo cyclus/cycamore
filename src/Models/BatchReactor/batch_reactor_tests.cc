@@ -333,7 +333,7 @@ TEST_F(BatchReactorTest, AddBatches) {
   using cyclus::Material;
   
   Material::Ptr mat = Material::CreateBlank(batch_size);
-  // mat to add, nreserves, qty of spillover
+  // mat to add, commodity, nreserves, qty of spillover
   TestReserveBatches(mat, in_c1, 1, 0);
   
   mat = Material::CreateBlank(batch_size - (1 + cyclus::eps()));
@@ -372,22 +372,22 @@ TEST_F(BatchReactorTest, AddBatches) {
 //   EXPECT_THROW(TestBatchOut(1, 0), cyclus::Error);
 // }
 
-// //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-// cyclus::Model* BatchReactorModelConstructor(cyclus::Context* ctx) {
-//   using cycamore::BatchReactor;
-//   return dynamic_cast<cyclus::Model*>(new BatchReactor(ctx));
-// }
+//- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+cyclus::Model* BatchReactorModelConstructor(cyclus::Context* ctx) {
+  using cycamore::BatchReactor;
+  return dynamic_cast<cyclus::Model*>(new BatchReactor(ctx));
+}
 
-// //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-// cyclus::FacilityModel* BatchReactorConstructor(cyclus::Context* ctx) {
-//   using cycamore::BatchReactor;
-//   return dynamic_cast<cyclus::FacilityModel*>(new BatchReactor(ctx));
-// }
+//- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+cyclus::FacilityModel* BatchReactorConstructor(cyclus::Context* ctx) {
+  using cycamore::BatchReactor;
+  return dynamic_cast<cyclus::FacilityModel*>(new BatchReactor(ctx));
+}
 
-// //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-// INSTANTIATE_TEST_CASE_P(BatchReactor, FacilityModelTests,
-//                         Values(&BatchReactorConstructor));
-// INSTANTIATE_TEST_CASE_P(BatchReactor, ModelTests,
-//                         Values(&BatchReactorModelConstructor));
+//- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+INSTANTIATE_TEST_CASE_P(BatchReactor, FacilityModelTests,
+                        Values(&BatchReactorConstructor));
+INSTANTIATE_TEST_CASE_P(BatchReactor, ModelTests,
+                        Values(&BatchReactorModelConstructor));
 
 } // namespace cycamore
