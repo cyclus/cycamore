@@ -88,15 +88,15 @@ std::string BatchReactor::schema() {
       "    <element name =\"initial_condition\">     \n"
       "      <optional>                              \n"
       "        <element name =\"reserves\">          \n"
-      "        <element name =\"nbatches\">          \n"
+      "         <element name =\"nbatches\">         \n"
       "          <data type=\"nonNegativeInteger\"/> \n"
-      "        </element>                            \n"
-      "        <element name =\"commodity\">         \n"
+      "         </element>                           \n"
+      "         <element name =\"commodity\">        \n"
       "          <data type=\"string\"/>             \n"
-      "        </element>                            \n"
-      "        <element name =\"recipe\">            \n"
+      "         </element>                           \n"
+      "         <element name =\"recipe\">           \n"
       "          <data type=\"string\"/>             \n"
-      "        </element>                            \n"
+      "         </element>                           \n"
       "        </element>                            \n"
       "      </optional>                             \n"
       "      <optional>                              \n"
@@ -201,14 +201,14 @@ void BatchReactor::InitModuleMembers(cyclus::QueryEngine* qe) {
   using std::string;
   
   // in/out fuel
-  int nfuel = qe->NElementsMatchingQuery("initial_condition");
+  int nfuel = qe->NElementsMatchingQuery("fuel");
   for (int i = 0; i < nfuel; i++) {
     QueryEngine* fuel = qe->QueryElement("fuel", i);
-    crctx_.AddInCommod(
-        fuel->GetElementContent("incommodity"),
-        fuel->GetElementContent("inrecipe"),
-        fuel->GetElementContent("outcommodity"),
-        fuel->GetElementContent("outrecipe"));
+    std::string in_c = fuel->GetElementContent("incommodity");
+    std::string in_r = fuel->GetElementContent("inrecipe");
+    std::string out_c = fuel->GetElementContent("outcommodity");
+    std::string out_r = fuel->GetElementContent("outrecipe");
+    crctx_.AddInCommod(in_c, in_r, out_c, out_r);
   }
 
   // facility data required
@@ -239,23 +239,23 @@ void BatchReactor::InitModuleMembers(cyclus::QueryEngine* qe) {
     if (ic->NElementsMatchingQuery("reserves") > 0) {
       QueryEngine* reserves = ic->QueryElement("reserves");
       ics_.AddReserves(
-          lexical_cast<int>(ic->GetElementContent("nbatches")),
-          ic->GetElementContent("recipe"),
-          ic->GetElementContent("commodity"));
+          lexical_cast<int>(reserves->GetElementContent("nbatches")),
+          reserves->GetElementContent("recipe"),
+          reserves->GetElementContent("commodity"));
     }
     if (ic->NElementsMatchingQuery("core") > 0) {
       QueryEngine* core = ic->QueryElement("core");
       ics_.AddCore(
-          lexical_cast<int>(ic->GetElementContent("nbatches")),
-          ic->GetElementContent("recipe"),
-          ic->GetElementContent("commodity"));
+          lexical_cast<int>(core->GetElementContent("nbatches")),
+          core->GetElementContent("recipe"),
+          core->GetElementContent("commodity"));
     }
     if (ic->NElementsMatchingQuery("storage") > 0) {
       QueryEngine* storage = ic->QueryElement("storage");
       ics_.AddStorage(
-          lexical_cast<int>(ic->GetElementContent("nbatches")),
-          ic->GetElementContent("recipe"),
-          ic->GetElementContent("commodity"));
+          lexical_cast<int>(storage->GetElementContent("nbatches")),
+          storage->GetElementContent("recipe"),
+          storage->GetElementContent("commodity"));
     }
   }
       
@@ -282,10 +282,10 @@ void BatchReactor::InitModuleMembers(cyclus::QueryEngine* qe) {
   }
 
   // pref changes
-  int nchanges = qe->NElementsMatchingQuery("pref_changes");
+  int nchanges = qe->NElementsMatchingQuery("pref_change");
   if (nchanges > 0) {
     for (int i = 0; i < nchanges; i++) {
-      QueryEngine* cp = qe->QueryElement("pref_changes", i);
+      QueryEngine* cp = qe->QueryElement("pref_change", i);
       c = cp->GetElementContent("incommodity");
       pref = lexical_cast<double>(cp->GetElementContent("new_pref"));
       time = lexical_cast<int>(cp->GetElementContent("time"));

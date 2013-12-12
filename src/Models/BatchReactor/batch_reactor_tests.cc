@@ -80,7 +80,10 @@ void BatchReactorTest::InitParameters() {
   rsrv_n = 2;
   core_n = 3;
   stor_n = 1;
-
+  ics.AddReserves(rsrv_n, rsrv_r, rsrv_c);
+  ics.AddCore(core_n, core_r, core_c);
+  ics.AddStorage(stor_n, stor_r, stor_c);
+  
   // commod prefs
   commod1 = in_c1;
   commod2 = in_c2;
@@ -194,75 +197,85 @@ TEST_F(BatchReactorTest, InitialState) {
   TestInitState(src_facility);
 }
 
-// //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-// TEST_F(BatchReactorTest, XMLInit) {
-//   std::stringstream ss;
-//   ss << "<start>"
-//      << "  <fuel>"
-//      << "    <incommodity>" << in_c1 << "</incommodity>"
-//      << "    <inrecipe>" << in_r1 << "</inrecipe>"
-//      << "    <outcommodity>" << out_c1 << "</outcommodity>"
-//      << "    <outrecipe>" << out_r1 << "</outrecipe>"
-//      << "  </fuel>"
-//      << "  <fuel>"
-//      << "    <incommodity>" << in_c2 << "</incommodity>"
-//      << "    <inrecipe>" << in_r2 << "</inrecipe>"
-//      << "    <outcommodity>" << out_c2 << "</outcommodity>"
-//      << "    <outrecipe>" << out_r2 << "</outrecipe>"
-//      << "  </fuel>"
-//      << "  <processtime>" << process_time << "</processtime>"
-//      << "  <nbatches>" << n_batches << "</nbatches>"
-//      << "  <batchsize>" << batch_size << "</batchsize>"
-//      << "  <refueltime>" << refuel_time << "</refueltime>"
-//      << "  <orderlookahead>" << preorder_time << "</orderlookahead>"
-//      << "  <norder>" << n_reserves << "</norder>"
-//      << "  <nreload>" << n_load << "</nreload>"
-//      << "  <initial_condition>"
-//      << "    <reserves>"
-//      << "      <nbatches>" << n_reserves << "</nbatches>"
-//      << "      <commodity>" << reserves_commod << "</commodity>"
-//      << "      <recipe>" << reserves_rec << "</recipe>"
-//      << "    </reserves>"
-//      << "    <core>"
-//      << "      <nbatches>" << n_core << "</nbatches>"
-//      << "      <commodity>" << core_commod << "</commodity>"
-//      << "      <recipe>" << core_rec << "</recipe>"
-//      << "    </core>"
-//      << "    <storage>"
-//      << "      <nbatches>" << n_storage << "</nbatches>"
-//      << "      <commodity>" << storage_commod << "</commodity>"
-//      << "      <recipe>" << storage_rec << "</recipe>"
-//      << "    </storage>"
-//      << "  </initial_condition>"
-//      << "  <recipe_change>"
-//      << "    <incommodity>" << in_c1 << "</incommodity>"
-//      << "    <new_recipe>" << in_r2 << "</new_recipe>"
-//      << "    <time>" << 1 << "</time>"
-//      << "  </recipe_change>"
-//      << "  <commodity_production>"
-//      << "    <commodity>" << commodity << "</commodity>"
-//      << "    <capacity>" << capacity << "</capacity>"
-//      << "    <cost>" << cost << "</cost>"
-//      << "  </commodity_production>"
-//      << "  <commod_pref>"
-//      << "    <incommodity>" << commod1 << "</incommodity>"
-//      << "    <preference>" << pref1 << "</preference>"
-//      << "  </commod_pref>"
-//      << "  <commod_pref>"
-//      << "    <incommodity>" << commod2 << "</incommodity>"
-//      << "    <preference>" << pref2 << "</preference>"
-//      << "  </commod_pref>"
-//      << "</start>";
+//- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+TEST_F(BatchReactorTest, XMLInit) {
+  std::stringstream ss;
+  ss << "<start>"
+     << "  <fuel>"
+     << "    <incommodity>" << in_c1 << "</incommodity>"
+     << "    <inrecipe>" << in_r1 << "</inrecipe>"
+     << "    <outcommodity>" << out_c1 << "</outcommodity>"
+     << "    <outrecipe>" << out_r1 << "</outrecipe>"
+     << "  </fuel>"
+     << "  <fuel>"
+     << "    <incommodity>" << in_c2 << "</incommodity>"
+     << "    <inrecipe>" << in_r2 << "</inrecipe>"
+     << "    <outcommodity>" << out_c2 << "</outcommodity>"
+     << "    <outrecipe>" << out_r2 << "</outrecipe>"
+     << "  </fuel>"
+     << "  <processtime>" << process_time << "</processtime>"
+     << "  <nbatches>" << n_batches << "</nbatches>"
+     << "  <batchsize>" << batch_size << "</batchsize>"
+     << "  <refueltime>" << refuel_time << "</refueltime>"
+     << "  <orderlookahead>" << preorder_time << "</orderlookahead>"
+     << "  <norder>" << n_reserves << "</norder>"
+     << "  <nreload>" << n_load << "</nreload>"
+     << "  <initial_condition>"
+     << "    <reserves>"
+     << "      <nbatches>" << rsrv_n << "</nbatches>"
+     << "      <commodity>" << rsrv_c << "</commodity>"
+     << "      <recipe>" << rsrv_r << "</recipe>"
+     << "    </reserves>"
+     << "    <core>"
+     << "      <nbatches>" << core_n << "</nbatches>"
+     << "      <commodity>" << core_c << "</commodity>"
+     << "      <recipe>" << core_r << "</recipe>"
+     << "    </core>"
+     << "    <storage>"
+     << "      <nbatches>" << stor_n << "</nbatches>"
+     << "      <commodity>" << stor_c << "</commodity>"
+     << "      <recipe>" << stor_r << "</recipe>"
+     << "    </storage>"
+     << "  </initial_condition>"
+     << "  <recipe_change>"
+     << "    <incommodity>" << in_c1 << "</incommodity>"
+     << "    <new_recipe>" << in_r2 << "</new_recipe>"
+     << "    <time>" << change_time << "</time>"
+     << "  </recipe_change>"
+     << "  <commodity_production>"
+     << "    <commodity>" << commodity << "</commodity>"
+     << "    <capacity>" << capacity << "</capacity>"
+     << "    <cost>" << cost << "</cost>"
+     << "  </commodity_production>"
+     << "  <commod_pref>"
+     << "    <incommodity>" << commod1 << "</incommodity>"
+     << "    <preference>" << frompref1 << "</preference>"
+     << "  </commod_pref>"
+     << "  <commod_pref>"
+     << "    <incommodity>" << commod2 << "</incommodity>"
+     << "    <preference>" << frompref2 << "</preference>"
+     << "  </commod_pref>"
+     << "  <pref_change>"
+     << "    <incommodity>" << commod1 << "</incommodity>"
+     << "    <new_pref>" << topref1 << "</new_pref>"
+     << "    <time>" << change_time << "</time>"
+     << "  </pref_change>"
+     << "  <pref_change>"
+     << "    <incommodity>" << commod2 << "</incommodity>"
+     << "    <new_pref>" << topref2 << "</new_pref>"
+     << "    <time>" << change_time << "</time>"
+     << "  </pref_change>"
+     << "</start>";
 
-//   cyclus::XMLParser p;
-//   p.Init(ss);
-//   cyclus::XMLQueryEngine engine(p);
-//   cycamore::BatchReactor fac(tc_.get());
-  
-//   EXPECT_NO_THROW(fac.InitModuleMembers(&engine););
+  cyclus::XMLParser p;
+  p.Init(ss);
+  cyclus::XMLQueryEngine engine(p);
+  cycamore::BatchReactor fac(tc_.get());
+  fac.InitModuleMembers(&engine);
+  EXPECT_NO_THROW();
 
-//   TestInitState(&fac);
-// }
+  TestInitState(&fac);
+}
 
 // //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 // TEST_F(BatchReactorTest, Clone) {
