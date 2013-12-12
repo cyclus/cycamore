@@ -59,14 +59,12 @@
     <name>Reactor</name>
     <model>
       <BatchReactor>
-        <fuel_input>
+        <fuel>
          <incommodity>enriched_u</incommodity>
          <inrecipe>fuel_recipe</inrecipe>
-        </fuel_input>
-        <fuel_output>
          <outcommodity>waste</outcommodity>
          <outrecipe>used_fuel_recipe</outrecipe>
-        </fuel_output>
+        </fuel>
         <processtime>1</processtime>
         <nbatches>1</nbatches>
         <batchsize>2</batchsize>

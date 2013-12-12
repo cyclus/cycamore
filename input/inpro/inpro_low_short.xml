@@ -59,14 +59,12 @@
     <lifetime>480</lifetime>
     <model>
       <BatchReactor>
-        <fuel_input>
+        <fuel>
          <incommodity>enriched_u</incommodity>
          <inrecipe>natl_u</inrecipe>
-        </fuel_input>
-        <fuel_output>
          <outcommodity>waste</outcommodity>
          <outrecipe>lwr_used_fuel_recipe</outrecipe>
-        </fuel_output>
+        </fuel>
         <processtime>10</processtime>
         <refueltime>2</refueltime>
         <nbatches>4</nbatches>
@@ -87,14 +85,12 @@
     <lifetime>480</lifetime>
     <model>
       <BatchReactor>
-        <fuel_input>
+        <fuel>
          <incommodity>enriched_u</incommodity>
          <inrecipe>natl_u</inrecipe>
-        </fuel_input>
-        <fuel_output>
          <outcommodity>waste</outcommodity>
          <outrecipe>hwr_used_fuel_recipe</outrecipe>
-        </fuel_output>
+        </fuel>
         <processtime>10</processtime>
         <refueltime>2</refueltime>
         <nbatches>1</nbatches>

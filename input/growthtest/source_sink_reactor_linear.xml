@@ -32,14 +32,12 @@
     <name>Reactor</name>
     <model>
       <BatchReactor>
-        <fuel_input>
+        <fuel>
          <incommodity>incommodity</incommodity>
          <inrecipe>commod_recipe</inrecipe>
-        </fuel_input>
-        <fuel_output>
          <outcommodity>outcommodity</outcommodity>
          <outrecipe>commod_recipe</outrecipe>
-        </fuel_output>
+        </fuel>
         <processtime>1</processtime>
         <nbatches>1</nbatches>
         <batchsize>2</batchsize>

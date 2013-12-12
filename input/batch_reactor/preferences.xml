@@ -40,14 +40,12 @@ commodity. -->
     <name>Reactor</name>
     <model>
       <BatchReactor>
-        <fuel_input>
+        <fuel>
          <incommodity>used_commodity</incommodity>
          <inrecipe>commod_recipe</inrecipe>
-        </fuel_input>
-        <fuel_output>
          <outcommodity>processed_commodity</outcommodity>
          <outrecipe>commod_recipe</outrecipe>
-        </fuel_output>
+        </fuel>
         <processtime>1</processtime>
         <nbatches>1</nbatches>
         <batchsize>1</batchsize>
