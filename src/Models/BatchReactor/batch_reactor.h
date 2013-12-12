@@ -9,6 +9,7 @@
 #include "bid_portfolio.h"
 #include "capacity_constraint.h"
 #include "commodity_producer.h"
+#include "commodity_recipe_context.h"
 #include "enrichment.h"
 #include "exchange_context.h"
 #include "facility_model.h"
@@ -87,14 +88,43 @@ class BatchReactor : public cyclus::FacilityModel,
 
   /// @brief a struct for initial conditions
   struct InitCond {
-    InitCond(int n_reserves, int n_core, int n_storage)
-     : n_reserves(n_reserves),
-       n_core(n_core),
-       n_storage(n_storage) {};
-    
+   InitCond() : reserves(false), core(false), storage(false) {};
+
+    AddReserves(int n, std::string rec, std::string commod) {
+      reserves = true;
+      n_reserves = n;
+      reserves_rec = rec;
+      reserves_commod = commod;
+    }
+
+    AddCore(int n, std::string rec, std::string commod) {
+      core = true;
+      n_core = n;
+      core_rec = rec;
+      core_commod = commod;
+    }
+
+    AddStorage(int n, std::string rec, std::string commod) {
+      storage = true;
+      n_storage = n;
+      storage_rec = rec;
+      storage_commod = commod;
+    }
+
+    bool reserves;
     int n_reserves;
+    std::string reserves_rec;
+    std::string reserves_commod;
+
+    bool core;
     int n_core;
+    std::string core_rec;
+    std::string core_commod;
+
+    bool storage;
     int n_storage;
+    std::string storage_rec;
+    std::string storage_commod;
   };
   
   /* --- Module Members --- */
@@ -300,6 +330,13 @@ class BatchReactor : public cyclus::FacilityModel,
   std::string out_recipe_;
   Phase phase_;
   InitCond ics_;
+
+  CommodityRecipeContext crctx_;
+  
+  /// @warning as is, the int key is **simulation time**, i.e., context()->time
+  /// == key. this should be fixed for future use!
+  std::map<int, std::vector< std::pair< std::string, std::string > > >
+      recipe_changes_;
   
   /// @brief preferences for each input commodity
   std::map<std::string, double> commod_prefs_;

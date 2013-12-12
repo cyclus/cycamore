@@ -51,109 +51,150 @@ BatchReactor::~BatchReactor() {}
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 std::string BatchReactor::schema() {
   return
-    "  <!-- cyclus::Material In/Out  -->           \n"
-    "  <element name=\"fuel_input\">               \n"
-    "   <ref name=\"incommodity\"/>                \n"
-    "   <ref name=\"inrecipe\"/>                   \n"
-    "  </element>                                  \n"
-    "  <element name=\"fuel_output\">              \n"
-    "   <ref name=\"outcommodity\"/>               \n"
-    "   <ref name=\"outrecipe\"/>                  \n"
-    "  </element>                                  \n"
-    "                                              \n"
-    "  <!-- Facility Parameters -->                \n"
-    "  <interleave>                                \n"
-    "  <element name=\"processtime\">              \n"
-    "    <data type=\"nonNegativeInteger\"/>       \n"
-    "  </element>                                  \n"
-    "  <element name=\"nbatches\">                 \n"
-    "    <data type=\"nonNegativeInteger\"/>       \n"
-    "  </element>                                  \n"
-    "  <element name =\"batchsize\">               \n"
-    "    <data type=\"double\"/>                   \n"
-    "  </element>                                  \n"
-    "  <optional>                                  \n"
-    "    <element name =\"refueltime\">            \n"
-    "      <data type=\"nonNegativeInteger\"/>     \n"
-    "    </element>                                \n"
-    "  </optional>                                 \n"
-    "  <optional>                                  \n"
-    "    <element name =\"orderlookahead\">        \n"
-    "      <data type=\"nonNegativeInteger\"/>     \n"
-    "    </element>                                \n"
-    "  </optional>                                 \n"
-    "  <optional>                                  \n"
-    "    <element name =\"norder\">                \n"
-    "      <data type=\"nonNegativeInteger\"/>     \n"
-    "    </element>                                \n"
-    "  </optional>                                 \n"
-    "  <optional>                                  \n"
-    "    <element name =\"nreload\">               \n"
-    "      <data type=\"nonNegativeInteger\"/>     \n"
-    "    </element>                                \n"
-    "  </optional>                                 \n"
-    "  <optional>                                  \n"
-    "    <element name =\"initial_condition\">     \n"
-    "      <optional>                              \n"
-    "        <element name =\"nreserves\">         \n"
-    "          <data type=\"nonNegativeInteger\"/> \n"
-    "        </element>                            \n"
-    "      </optional>                             \n"
-    "      <optional>                              \n"
-    "        <element name =\"ncore\">             \n"
-    "          <data type=\"nonNegativeInteger\"/> \n"
-    "        </element>                            \n"
-    "      </optional>                             \n"
-    "      <optional>                              \n"
-    "        <element name =\"nstorage\">          \n"
-    "          <data type=\"nonNegativeInteger\"/> \n"
-    "        </element>                            \n"
-    "      </optional>                             \n"
-    "    </element>                                \n"
-    "  </optional>                                 \n"
-    "  </interleave>                               \n"
-    "                                              \n"
-    "  <!-- Power Production  -->                  \n"
-    "  <element name=\"commodity_production\">     \n"
-    "   <element name=\"commodity\">               \n"
-    "     <data type=\"string\"/>                  \n"
-    "   </element>                                 \n"
-    "   <element name=\"capacity\">                \n"
-    "     <data type=\"double\"/>                  \n"
-    "   </element>                                 \n"
-    "   <element name=\"cost\">                    \n"
-    "     <data type=\"double\"/>                  \n"
-    "   </element>                                 \n"
-    "  </element>                                  \n"
-    "                                              \n"
-    "  <!-- Trade Preferences  -->                 \n"
-    "  <optional>                                  \n"
-    "  <oneOrMore>                                 \n"
-    "  <element name=\"commod_pref\">              \n"
-    "   <element name=\"incommodity\">             \n"
-    "     <data type=\"string\"/>                  \n"
-    "   </element>                                 \n"
-    "   <element name=\"preference\">              \n"
-    "     <data type=\"double\"/>                  \n"
-    "   </element>                                 \n"
-    "  </element>                                  \n"
-    "  </oneOrMore>                                \n"
-    "  </optional>                                 \n"
-    "  <optional>                                  \n"
-    "  <oneOrMore>                                 \n"
-    "  <element name=\"pref_change\">              \n"
-    "   <element name=\"incommodity\">             \n"
-    "     <data type=\"string\"/>                  \n"
-    "   </element>                                 \n"
-    "   <element name=\"new_pref\">                \n"
-    "     <data type=\"double\"/>                  \n"
-    "   </element>                                 \n"
-    "   <element name=\"time\">                    \n"
-    "     <data type=\"nonNegativeInt\"/>          \n"
-    "   </element>                                 \n"
-    "  </element>                                  \n"
-    "  </oneOrMore>                                \n"
-    "  </optional>                                 \n";
+      "  <!-- cyclus::Material In/Out  -->           \n"
+      "  <oneOrMore>                                 \n"
+      "  <element name=\"fuel\">                     \n"
+      "   <ref name=\"incommodity\"/>                \n"
+      "   <ref name=\"inrecipe\"/>                   \n"
+      "   <ref name=\"outcommodity\"/>               \n"
+      "   <ref name=\"outrecipe\"/>                  \n"
+      "  </element>                                  \n"
+      "  </oneOrMore>                                \n"
+      "                                              \n"
+      "  <!-- Facility Parameters -->                \n"
+      "  <interleave>                                \n"
+      "  <element name=\"processtime\">              \n"
+      "    <data type=\"nonNegativeInteger\"/>       \n"
+      "  </element>                                  \n"
+      "  <element name=\"nbatches\">                 \n"
+      "    <data type=\"nonNegativeInteger\"/>       \n"
+      "  </element>                                  \n"
+      "  <element name =\"batchsize\">               \n"
+      "    <data type=\"double\"/>                   \n"
+      "  </element>                                  \n"
+      "  <optional>                                  \n"
+      "    <element name =\"refueltime\">            \n"
+      "      <data type=\"nonNegativeInteger\"/>     \n"
+      "    </element>                                \n"
+      "  </optional>                                 \n"
+      "  <optional>                                  \n"
+      "    <element name =\"orderlookahead\">        \n"
+      "      <data type=\"nonNegativeInteger\"/>     \n"
+      "    </element>                                \n"
+      "  </optional>                                 \n"
+      "  <optional>                                  \n"
+      "    <element name =\"norder\">                \n"
+      "      <data type=\"nonNegativeInteger\"/>     \n"
+      "    </element>                                \n"
+      "  </optional>                                 \n"
+      "  <optional>                                  \n"
+      "    <element name =\"nreload\">               \n"
+      "      <data type=\"nonNegativeInteger\"/>     \n"
+      "    </element>                                \n"
+      "  </optional>                                 \n"
+      "  <optional>                                  \n"
+      "    <element name =\"initial_condition\">     \n"
+      "      <optional>                              \n"
+      "        <element name =\"reserves\">          \n"
+      "        <element name =\"nbatches\">          \n"
+      "          <data type=\"nonNegativeInteger\"/> \n"
+      "        </element>                            \n"
+      "        <element name =\"commodity\">         \n"
+      "          <data type=\"string\"/>             \n"
+      "        </element>                            \n"
+      "        <element name =\"recipe\">            \n"
+      "          <data type=\"string\"/>             \n"
+      "        </element>                            \n"
+      "        </element>                            \n"
+      "      </optional>                             \n"
+      "      <optional>                              \n"
+      "        <element name =\"core\">              \n"
+      "        <element name =\"nbatches\">          \n"
+      "          <data type=\"nonNegativeInteger\"/> \n"
+      "        </element>                            \n"
+      "        <element name =\"commodity\">         \n"
+      "          <data type=\"string\"/>             \n"
+      "        </element>                            \n"
+      "        <element name =\"recipe\">            \n"
+      "          <data type=\"string\"/>             \n"
+      "        </element>                            \n"
+      "        </element>                            \n"
+      "      </optional>                             \n"
+      "      <optional>                              \n"
+      "        <element name =\"storage\">           \n"
+      "        <element name =\"nbatches\">          \n"
+      "          <data type=\"nonNegativeInteger\"/> \n"
+      "        </element>                            \n"
+      "        <element name =\"commodity\">         \n"
+      "          <data type=\"string\"/>             \n"
+      "        </element>                            \n"
+      "        <element name =\"recipe\">            \n"
+      "          <data type=\"string\"/>             \n"
+      "        </element>                            \n"
+      "        </element>                            \n"
+      "      </optional>                             \n"
+      "    </element>                                \n"
+      "  </optional>                                 \n"
+      "                                              \n"
+      "  <!-- Recipe Changes  -->                    \n"
+      "  <optional>                                  \n"
+      "  <oneOrMore>                                 \n"
+      "  <element name=\"recipe_change\">            \n"
+      "   <element name=\"incommodity\">             \n"
+      "     <data type=\"string\"/>                  \n"
+      "   </element>                                 \n"
+      "   <element name=\"new_recipe\">              \n"
+      "     <data type=\"string\"/>                  \n"
+      "   </element>                                 \n"
+      "   <element name=\"time\">                    \n"
+      "     <data type=\"nonNegativeInt\"/>          \n"
+      "   </element>                                 \n"
+      "  </element>                                  \n"
+      "  </oneOrMore>                                \n"
+      "  </optional>                                 \n"
+      "  </interleave>                               \n"
+      "                                              \n"
+      "  <!-- Power Production  -->                  \n"
+      "  <element name=\"commodity_production\">     \n"
+      "   <element name=\"commodity\">               \n"
+      "     <data type=\"string\"/>                  \n"
+      "   </element>                                 \n"
+      "   <element name=\"capacity\">                \n"
+      "     <data type=\"double\"/>                  \n"
+      "   </element>                                 \n"
+      "   <element name=\"cost\">                    \n"
+      "     <data type=\"double\"/>                  \n"
+      "   </element>                                 \n"
+      "  </element>                                  \n"
+      "                                              \n"
+      "  <!-- Trade Preferences  -->                 \n"
+      "  <optional>                                  \n"
+      "  <oneOrMore>                                 \n"
+      "  <element name=\"commod_pref\">              \n"
+      "   <element name=\"incommodity\">             \n"
+      "     <data type=\"string\"/>                  \n"
+      "   </element>                                 \n"
+      "   <element name=\"preference\">              \n"
+      "     <data type=\"double\"/>                  \n"
+      "   </element>                                 \n"
+      "  </element>                                  \n"
+      "  </oneOrMore>                                \n"
+      "  </optional>                                 \n"
+      "  <optional>                                  \n"
+      "  <oneOrMore>                                 \n"
+      "  <element name=\"pref_change\">              \n"
+      "   <element name=\"incommodity\">             \n"
+      "     <data type=\"string\"/>                  \n"
+      "   </element>                                 \n"
+      "   <element name=\"new_pref\">                \n"
+      "     <data type=\"double\"/>                  \n"
+      "   </element>                                 \n"
+      "   <element name=\"time\">                    \n"
+      "     <data type=\"nonNegativeInt\"/>          \n"
+      "   </element>                                 \n"
+      "  </element>                                  \n"
+      "  </oneOrMore>                                \n"
+      "  </optional>                                 \n";
 };
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -166,13 +207,12 @@ void BatchReactor::InitModuleMembers(cyclus::QueryEngine* qe) {
   using std::string;
   
   // in/out
-  QueryEngine* input = qe->QueryElement("fuel_input");
-  in_commodity(input->GetElementContent("incommodity"));
-  in_recipe(input->GetElementContent("inrecipe"));
-  
-  QueryEngine* output = qe->QueryElement("fuel_output");
-  out_commodity(output->GetElementContent("outcommodity"));
-  out_recipe(output->GetElementContent("outrecipe"));
+  QueryEngine* fuel = qe->QueryElement("fuel");
+  crctx_.AddInCommod(
+      fuel->GetElementContent("incommodity"),
+      fuel->GetElementContent("inrecipe"),
+      fuel->GetElementContent("outcommodity"),
+      fuel->GetElementContent("outrecipe"));
 
   // facility data required
   string data;
@@ -195,16 +235,33 @@ void BatchReactor::InitModuleMembers(cyclus::QueryEngine* qe) {
   n_reserves(n);
 
   // initial condition
-  int nreserves = 0;
-  int ncore = 0;
-  int nstorage = 0;
+  int nl;
+  std::string rec;
+  std::string commod;
   if (qe->NElementsMatchingQuery("initial_condition") > 0) {
     QueryEngine* ic = qe->QueryElement("initial_condition");
-    nreserves = GetOptionalQuery<int>(ic, "nreserves", 0);
-    ncore = GetOptionalQuery<int>(ic, "ncore", 0);
-    nstorage = GetOptionalQuery<int>(ic, "nstorage", 0);
+    if (ic->NElementsMatchingQuery("reserves") > 0) {
+      QueryEngine* reserves = ic->QueryElement("reserves");
+      ics_.AddReserves(
+          lexical_cast<int>(ic->GetElementContent("nbatches")),
+          ic->GetElementContent("recipe"),
+          ic->GetElementContent("commodity"));
+    }
+    if (ic->NElementsMatchingQuery("core") > 0) {
+      QueryEngine* core = ic->QueryElement("core");
+      ics_.AddCore(
+          lexical_cast<int>(ic->GetElementContent("nbatches")),
+          ic->GetElementContent("recipe"),
+          ic->GetElementContent("commodity"));
+    }
+    if (ic->NElementsMatchingQuery("storage") > 0) {
+      QueryEngine* storage = ic->QueryElement("storage");
+      ics_.AddStorage(
+          lexical_cast<int>(ic->GetElementContent("nbatches")),
+          ic->GetElementContent("recipe"),
+          ic->GetElementContent("commodity"));
+    }
   }
-  ics(InitCond(nreserves, ncore, nstorage));
       
   // commodity production
   QueryEngine* commodity = qe->QueryElement("commodity_production");
@@ -240,6 +297,18 @@ void BatchReactor::InitModuleMembers(cyclus::QueryEngine* qe) {
     }
   }
   
+  // recipe changes
+  std::string rec;
+  int ncommods = qe->NElementsMatchingQuery("recipe_change");
+  if (ncommods > 0) {
+    for (int i = 0; i < ncommods; i++) {
+      QueryEngine* cp = qe->QueryElement("recipe_change", i);
+      c = cp->GetElementContent("incommodity");
+      rec = cp->GetElementContent("new_recipe");
+      time = lexical_cast<int>(cp->GetElementContent("time"));
+      recipe_changes_[time].push_back(std::make_pair(c, rec));
+    }
+  }  
 }
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -301,18 +370,32 @@ void BatchReactor::Deploy(cyclus::Model* parent) {
   spillover_ = Material::Create(this, 0.0, context()->GetRecipe(in_recipe_));
 
   Material::Ptr mat;
-  for (int i = 0; i < ics_.n_reserves; ++i) {
-    mat = Material::Create(this, batch_size(), context()->GetRecipe(in_recipe_));
-    reserves_.Push(mat);
+  if (ics_.reserves) {
+    for (int i = 0; i < ics_.n_reserves; ++i) {
+      mat = Material::Create(this,
+                             batch_size(),
+                             context()->GetRecipe(ics_.reserves_rec));
+      crctx_.AddMat(ics_.reserves_commod, mat);
+      reserves_.Push(mat);
+    }
   }
-  for (int i = 0; i < ics_.n_core; ++i) {
-    mat = Material::Create(this, batch_size(), context()->GetRecipe(in_recipe_));
-    core_.Push(mat);
+  if (ics_.core) {
+    for (int i = 0; i < ics_.n_core; ++i) {
+      mat = Material::Create(this,
+                             batch_size(),
+                             context()->GetRecipe(ics_.core_rec));
+      crctx_.AddMat(ics_.core_commod, mat);
+      core_.Push(mat);
+    }
   }
-  for (int i = 0; i < ics_.n_storage; ++i) {
-    mat =
-        Material::Create(this, batch_size(), context()->GetRecipe(out_recipe_));
-    storage_.Push(mat);
+  if (ics_.storage) {
+    for (int i = 0; i < ics_.n_storage; ++i) {
+      mat = Material::Create(this,
+                             batch_size(),
+                             context()->GetRecipe(ics_.storage_rec));
+      crctx_.AddMat(ics_.storage_commod, mat);
+      storage_.Push(mat);
+    }
   }
 
   LOG(cyclus::LEV_DEBUG2, "BReact") << "Batch Reactor entering the simuluation";
@@ -355,6 +438,15 @@ void BatchReactor::HandleTick(int time) {
         changes = pref_changes_[time];
     for (int i = 0; i < changes.size(); i++) {
       commod_prefs_[changes[i].first] = changes[i].second;
+    }
+  }
+
+  // change recipes if its time
+  if (recipe_changes_.count(time)) {
+    std::vector< std::pair< std::string, std::string> >&
+        changes = recipe_changes_[time];
+    for (int i = 0; i < changes.size(); i++) {
+      crctx_.UpdateInRec(changes[i].first, changes[i].second);
     }
   }
   
