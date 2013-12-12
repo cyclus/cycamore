@@ -152,6 +152,11 @@ void BatchReactorTest::TestReserveBatches(cyclus::Material::Ptr mat,
   src_facility->AddBatches_(commod, mat);
   EXPECT_EQ(n, src_facility->reserves_.count());
   EXPECT_DOUBLE_EQ(qty, src_facility->spillover_->quantity());
+  
+  cyclus::Material::Ptr back = cyclus::ResCast<cyclus::Material>(
+      src_facility->reserves_.Pop(cyclus::ResourceBuff::BACK));
+  EXPECT_EQ(commod, src_facility->crctx_.commod(back));
+  src_facility->reserves_.Push(back);
 }
 
 // //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -330,7 +335,7 @@ TEST_F(BatchReactorTest, AddBatches) {
   Material::Ptr mat = Material::CreateBlank(batch_size);
   // mat to add, nreserves, qty of spillover
   TestReserveBatches(mat, in_c1, 1, 0);
-
+  
   mat = Material::CreateBlank(batch_size - (1 + cyclus::eps()));
   TestReserveBatches(mat, in_c1, 1, batch_size - (1 + cyclus::eps()));
   
