@@ -85,18 +85,17 @@ void BatchReactorTest::InitParameters() {
   ics.AddStorage(stor_n, stor_r, stor_c);
   
   // commod prefs
-  commod1 = in_c1;
-  commod2 = in_c2;
   frompref1 = 7.5;
   topref1 = frompref1 - 1;
   frompref2 = 5.5;
   topref2 = frompref2 - 2;
-  commod_prefs[commod1] = frompref1;
-  commod_prefs[commod2] = frompref2;
+  commod_prefs[in_c1] = frompref1;
+  commod_prefs[in_c2] = frompref2;
 
   // changes
-  pref_changes[change_time].push_back(std::make_pair(commod1, topref1));
-  pref_changes[change_time].push_back(std::make_pair(commod2, topref2));
+  change_time = 5;
+  pref_changes[change_time].push_back(std::make_pair(in_c1, topref1));
+  pref_changes[change_time].push_back(std::make_pair(in_c2, topref2));
   recipe_changes[change_time].push_back(std::make_pair(in_c1, in_r2));
   
   cyclus::CompMap v;
@@ -131,9 +130,9 @@ void BatchReactorTest::SetUpSourceFacility() {
   src_facility->commod_prefs(commod_prefs);
 
   src_facility->pref_changes_[change_time].push_back(
-      std::make_pair(commod1, topref1));
+      std::make_pair(in_c1, topref1));
   src_facility->pref_changes_[change_time].push_back(
-      std::make_pair(commod2, topref2));
+      std::make_pair(in_c2, topref2));
   src_facility->recipe_changes_[change_time].push_back(
       std::make_pair(in_c1, in_r2));
 }
@@ -248,20 +247,20 @@ TEST_F(BatchReactorTest, XMLInit) {
      << "    <cost>" << cost << "</cost>"
      << "  </commodity_production>"
      << "  <commod_pref>"
-     << "    <incommodity>" << commod1 << "</incommodity>"
+     << "    <incommodity>" << in_c1 << "</incommodity>"
      << "    <preference>" << frompref1 << "</preference>"
      << "  </commod_pref>"
      << "  <commod_pref>"
-     << "    <incommodity>" << commod2 << "</incommodity>"
+     << "    <incommodity>" << in_c2 << "</incommodity>"
      << "    <preference>" << frompref2 << "</preference>"
      << "  </commod_pref>"
      << "  <pref_change>"
-     << "    <incommodity>" << commod1 << "</incommodity>"
+     << "    <incommodity>" << in_c1 << "</incommodity>"
      << "    <new_pref>" << topref1 << "</new_pref>"
      << "    <time>" << change_time << "</time>"
      << "  </pref_change>"
      << "  <pref_change>"
-     << "    <incommodity>" << commod2 << "</incommodity>"
+     << "    <incommodity>" << in_c2 << "</incommodity>"
      << "    <new_pref>" << topref2 << "</new_pref>"
      << "    <time>" << change_time << "</time>"
      << "  </pref_change>"
@@ -285,26 +284,27 @@ TEST_F(BatchReactorTest, Clone) {
   delete cloned_fac;
 }
 
-// //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-// TEST_F(BatchReactorTest, Print) {
-//   EXPECT_NO_THROW(std::string s = src_facility->str());
-// }
+//- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+TEST_F(BatchReactorTest, Print) {
+  EXPECT_NO_THROW(std::string s = src_facility->str());
+}
 
-// //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-// TEST_F(BatchReactorTest, Tick) {
-//   int time = 1;
-//   EXPECT_EQ(src_facility->commod_prefs().at(commod1), pref1);
-//   EXPECT_EQ(src_facility->commod_prefs().at(commod2), pref2);
-//   EXPECT_NO_THROW(src_facility->HandleTick(time););
-//   EXPECT_EQ(src_facility->commod_prefs().at(commod1), pref1 - 1);
-//   EXPECT_EQ(src_facility->commod_prefs().at(commod2), pref2 - 2);
-// }
+//- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+TEST_F(BatchReactorTest, Tick) {
+  EXPECT_EQ(src_facility->commod_prefs().at(in_c1), frompref1);
+  EXPECT_EQ(src_facility->commod_prefs().at(in_c2), frompref2);
+  EXPECT_EQ(src_facility->crctx().in_recipe(in_c1), in_r1);
+  EXPECT_NO_THROW(src_facility->HandleTick(change_time););
+  EXPECT_EQ(src_facility->commod_prefs().at(in_c1), topref1);
+  EXPECT_EQ(src_facility->commod_prefs().at(in_c2), topref2);
+  EXPECT_EQ(src_facility->crctx().in_recipe(in_c1), in_r2);
+}
 
-// //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-// TEST_F(BatchReactorTest, Tock) {
-//   int time = 1;
-//   EXPECT_NO_THROW(src_facility->HandleTock(time));
-// }
+//- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+TEST_F(BatchReactorTest, Tock) {
+  int time = 1;
+  EXPECT_NO_THROW(src_facility->HandleTock(time));
+}
 
 // //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 // TEST_F(BatchReactorTest, StartProcess) {

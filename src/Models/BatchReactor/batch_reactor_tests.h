@@ -35,14 +35,11 @@ class BatchReactorTest : public ::testing::Test {
   int rsrv_n, core_n, stor_n;
   BatchReactor::InitCond ics;
 
-  // pref changes
+  // changes changes
   int change_time;
-  std::string commod1, commod2;
   double frompref1, topref1, frompref2, topref2;
   std::map<std::string, double> commod_prefs;
   std::map<int, std::vector< std::pair< std::string, double > > > pref_changes;
-  // recipe changes
-  std::string rec_commod, from_rec, to_rec;
   std::map<int, std::vector< std::pair< std::string, std::string > > >
       recipe_changes;
   
