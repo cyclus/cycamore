@@ -30,15 +30,7 @@ BatchReactor::BatchReactor(cyclus::Context* ctx)
       n_load_(1),
       n_reserves_(1),
       batch_size_(1),
-      in_commodity_(""),
-      in_recipe_(""),
-      out_commodity_(""),
-      out_recipe_(""),
-      phase_(INITIAL),
-      ics_(InitCond(0, 0, 0)) {
-  reserves_.set_capacity(cyclus::kBuffInfinity);
-  core_.set_capacity(cyclus::kBuffInfinity);
-  storage_.set_capacity(cyclus::kBuffInfinity);
+      phase_(INITIAL) {
   if (phase_names_.empty()) {
     SetUpPhaseNames_();
   }
@@ -180,6 +172,8 @@ std::string BatchReactor::schema() {
       "  </element>                                  \n"
       "  </oneOrMore>                                \n"
       "  </optional>                                 \n"
+      "                                              \n"
+      "  <!-- Trade Preference Changes  -->          \n"
       "  <optional>                                  \n"
       "  <oneOrMore>                                 \n"
       "  <element name=\"pref_change\">              \n"
@@ -206,13 +200,16 @@ void BatchReactor::InitModuleMembers(cyclus::QueryEngine* qe) {
   using cyclus::QueryEngine;
   using std::string;
   
-  // in/out
-  QueryEngine* fuel = qe->QueryElement("fuel");
-  crctx_.AddInCommod(
-      fuel->GetElementContent("incommodity"),
-      fuel->GetElementContent("inrecipe"),
-      fuel->GetElementContent("outcommodity"),
-      fuel->GetElementContent("outrecipe"));
+  // in/out fuel
+  int nfuel = qe->NElementsMatchingQuery("initial_condition");
+  for (int i = 0; i < nfuel, i++) {
+    QueryEngine* fuel = qe->QueryElement("fuel", i);
+    crctx_.AddInCommod(
+        fuel->GetElementContent("incommodity"),
+        fuel->GetElementContent("inrecipe"),
+        fuel->GetElementContent("outcommodity"),
+        fuel->GetElementContent("outrecipe"));
+  }
 
   // facility data required
   string data;
@@ -223,21 +220,20 @@ void BatchReactor::InitModuleMembers(cyclus::QueryEngine* qe) {
   data = qe->GetElementContent("batchsize");
   batch_size(lexical_cast<double>(data));
 
-  // facility data optional  
-  int time = GetOptionalQuery<int>(qe, "refueltime", refuel_time());
+  // facility data optional
+  int time;
+  time = GetOptionalQuery<int>(qe, "refueltime", refuel_time());
   refuel_time(time);
   time = GetOptionalQuery<int>(qe, "orderlookahead", preorder_time());
   preorder_time(time);
 
-  int n = GetOptionalQuery<int>(qe, "nreload", n_load());
+  int n;
+  n= GetOptionalQuery<int>(qe, "nreload", n_load());
   n_load(n);
   n = GetOptionalQuery<int>(qe, "norder", n_load());
   n_reserves(n);
 
   // initial condition
-  int nl;
-  std::string rec;
-  std::string commod;
   if (qe->NElementsMatchingQuery("initial_condition") > 0) {
     QueryEngine* ic = qe->QueryElement("initial_condition");
     if (ic->NElementsMatchingQuery("reserves") > 0) {
@@ -286,9 +282,9 @@ void BatchReactor::InitModuleMembers(cyclus::QueryEngine* qe) {
   }
 
   // pref changes
-  nprefs = qe->NElementsMatchingQuery("pref_changes");
-  if (nprefs > 0) {
-    for (int i = 0; i < nprefs; i++) {
+  int nchanges = qe->NElementsMatchingQuery("pref_changes");
+  if (nchanges > 0) {
+    for (int i = 0; i < nchanges; i++) {
       QueryEngine* cp = qe->QueryElement("pref_changes", i);
       c = cp->GetElementContent("incommodity");
       pref = lexical_cast<double>(cp->GetElementContent("new_pref"));
@@ -299,9 +295,9 @@ void BatchReactor::InitModuleMembers(cyclus::QueryEngine* qe) {
   
   // recipe changes
   std::string rec;
-  int ncommods = qe->NElementsMatchingQuery("recipe_change");
-  if (ncommods > 0) {
-    for (int i = 0; i < ncommods; i++) {
+  int nchanges = qe->NElementsMatchingQuery("recipe_change");
+  if (nchanges > 0) {
+    for (int i = 0; i < nchanges; i++) {
       QueryEngine* cp = qe->QueryElement("recipe_change", i);
       c = cp->GetElementContent("incommodity");
       rec = cp->GetElementContent("new_recipe");
@@ -344,6 +340,11 @@ void BatchReactor::InitFrom(BatchReactor* m) {
   // trade preferences
   commod_prefs(m->commod_prefs());
   pref_changes_ = m->pref_changes_;
+
+  // recipe changes
+  recipe_changes_ = m->recipe_changes_;
+
+  crctx_ = m->crctx_;
 }
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -394,7 +395,7 @@ void BatchReactor::Deploy(cyclus::Model* parent) {
                              batch_size(),
                              context()->GetRecipe(ics_.storage_rec));
       crctx_.AddMat(ics_.storage_commod, mat);
-      storage_.Push(mat);
+      storage_[storage_commod].Push(mat);
     }
   }
 
@@ -511,6 +512,15 @@ BatchReactor::GetMatlRequests() {
 void BatchReactor::AcceptMatlTrades(
     const std::vector< std::pair<cyclus::Trade<cyclus::Material>,
                                  cyclus::Material::Ptr> >& responses) {
+  using cyclus::Material;
+  
+  // std::map<std::string, Material::Ptr> mat_commods;
+   
+  // std::vector< std::pair<cyclus::Trade<cyclus::Material>,
+  //                        cyclus::Material::Ptr> >::const_iterator trade;
+  
+  // for (trade = responses.begin(); trade != responses.end(); ++trade) {
+  // }
   cyclus::Material::Ptr mat = responses.at(0).second;
   for (int i = 1; i < responses.size(); i++) {
     mat->Absorb(responses.at(i).second);
@@ -527,11 +537,15 @@ BatchReactor::GetMatlBids(const cyclus::CommodMap<cyclus::Material>::type&
 
   std::set<BidPortfolio<Material>::Ptr> ports;
 
-  BidPortfolio<Material>::Ptr port = GetBids_(commod_requests,
-                                              out_commodity_,
-                                              &storage_);
+  const std::vector<std::string>& commods = crctx_.out_commods();
+  std::vector<std::string>::const_iterator it;
+  for (it = commods.begin(); it != commods.end(); ++it) {
+    BidPortfolio<Material>::Ptr port = GetBids_(commod_requests,
+                                                *it,
+                                                &storage_[*it]);
+    if (!port->bids().empty()) ports.insert(port);
+  }
   
-  if (!port->bids().empty()) ports.insert(port);
   return ports;
 }
 
@@ -547,14 +561,15 @@ void BatchReactor::GetMatlTrades(
   for (it = trades.begin(); it != trades.end(); ++it) {
     LOG(cyclus::LEV_INFO5, "BReact") << name() << " just received an order.";
 
+    std::string commodity = it->request->commodity();
     double qty = it->amt;
-    Material::Ptr response = TradeResponse_(qty, &storage_);
+    Material::Ptr response = TradeResponse_(qty, &storage_[commodity]);
 
     responses.push_back(std::make_pair(*it, response));
     LOG(cyclus::LEV_INFO5, "BatchReactor") << name()
                                            << " just received an order"
                                            << " for " << qty
-                                           << " of " << out_commodity_;
+                                           << " of " << commodity;
   }
 }
 
@@ -600,8 +615,12 @@ void BatchReactor::MoveBatchOut_() {
                                     <<  " a batch from its core.";
   try {
     Material::Ptr mat = ResCast<Material>(core_.Pop());
-    mat->Transmute(context()->GetRecipe(out_recipe()));
-    storage_.Push(mat);
+    std::string incommod = crctx_.commod(mat);
+    std::string outcommod = crctx_.out_commodity(incommod);
+    std::string outrecipe = crctx_.out_recipe(crctx_.in_recipe(incommod));
+    mat->Transmute(context()->GetRecipe(outrecipe));
+    crctx_.UpdateMat(outcommod, mat);
+    storage_[outcommod].Push(mat);
   } catch(cyclus::Error& e) {
       e.msg(Model::InformErrorMsg(e.msg()));
       throw e;
@@ -615,13 +634,19 @@ BatchReactor::GetOrder_(double size) {
   using cyclus::Material;
   using cyclus::RequestPortfolio;
   using cyclus::Request;
-
-  Material::Ptr mat =
-      Material::CreateUntracked(size, context()->GetRecipe(in_recipe_));
   
   RequestPortfolio<Material>::Ptr port(new RequestPortfolio<Material>());
   
-  port->AddRequest(mat, this, in_commodity_, commod_prefs_[in_commodity_]);
+  const std::vector<std::string>& commods = crctx_.in_commods();
+  std::vector<std::string>::const_iterator it;
+  std::string recipe;
+  Material::Ptr mat;
+  for (it = commods.begin(); it != commods.end(); ++it) {
+    recipe = crctx_.in_recipe(*it);
+    mat =
+        Material::CreateUntracked(size, context()->GetRecipe(recipe));
+    port->AddRequest(mat, this, *it, commod_prefs_[*it]);
+  }
 
   CapacityConstraint<Material> cc(size);
   port->AddConstraint(cc);
@@ -704,7 +729,9 @@ cyclus::Material::Ptr BatchReactor::TradeResponse_(
   }
   
   Material::Ptr response = manifest[0];
+  crctx_.RemoveRsrc(response);
   for (int i = 1; i < manifest.size(); i++) {
+    crctx_.RemoveRsrc(manifest[i]);
     response->Absorb(manifest[i]);
   }
   return response;

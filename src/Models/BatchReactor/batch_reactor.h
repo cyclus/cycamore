@@ -74,6 +74,11 @@ namespace cycamore {
 ///
 /// @warning preference time changing is based on *full simulation time*, not
 /// relative time
+/// @warning the reactor's commodity context *can not* current remove resources
+/// reliably because of the implementation of ResourceBuff::PopQty()'s
+/// implementation. Resource removal from the context requires pointer equality
+/// in order to remove material, and PopQty will split resources, making new
+/// pointers.
 class BatchReactor : public cyclus::FacilityModel,
       public cyclus::CommodityProducer {
  public:
@@ -290,10 +295,11 @@ class BatchReactor : public cyclus::FacilityModel,
   /// with all materials guaranteed to be of batch_size_
   cyclus::ResourceBuff core_;
 
-  /// @brief a cyclus::ResourceBuff for material once they leave the core.  
+  /// @brief a cyclus::ResourceBuff for material once they leave the core.
+  /// there is one storage for each outcommodity
   /// @warning no guarantee can be made to the size of each item in storage_, as
   /// requests can be met that are larger or smaller than batch_size_
-  cyclus::ResourceBuff storage_;
+  std::map<std::string, cyclus::ResourceBuff> storage_;
 
  private:
   /// @brief refuels the reactor until it is full or reserves_ is out of
