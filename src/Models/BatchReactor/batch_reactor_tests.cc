@@ -159,19 +159,19 @@ void BatchReactorTest::TestReserveBatches(cyclus::Material::Ptr mat,
   src_facility->reserves_.Push(back);
 }
 
-// //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-// void BatchReactorTest::TestBatchIn(int n_core, int n_reserves) {
-//   src_facility->MoveBatchIn_();
-//   EXPECT_EQ(n_core, src_facility->n_core());
-//   EXPECT_EQ(n_reserves, src_facility->reserves_.count());
-// }
+//- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+void BatchReactorTest::TestBatchIn(int n_core, int n_reserves) {
+  src_facility->MoveBatchIn_();
+  EXPECT_EQ(n_core, src_facility->n_core());
+  EXPECT_EQ(n_reserves, src_facility->reserves_.count());
+}
 
-// //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-// void BatchReactorTest::TestBatchOut(int n_core, int n_storage) {
-//   src_facility->MoveBatchOut_();
-//   EXPECT_EQ(n_core, src_facility->n_core());
-//   EXPECT_EQ(n_storage, src_facility->storage_.count());
-// }
+//- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+void BatchReactorTest::TestBatchOut(int n_core, int n_storage) {
+  src_facility->MoveBatchOut_();
+  EXPECT_EQ(n_core, src_facility->n_core());
+  EXPECT_EQ(n_storage, src_facility->storage_[out_c1].count());
+}
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 void BatchReactorTest::TestInitState(BatchReactor* fac) {
@@ -352,25 +352,25 @@ TEST_F(BatchReactorTest, AddBatches) {
   TestReserveBatches(mat, in_c1, 4, 1 + cyclus::eps());
 }
 
-// //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-// TEST_F(BatchReactorTest, BatchInOut) {
-//   using cyclus::Material;
+//- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+TEST_F(BatchReactorTest, BatchInOut) {
+  using cyclus::Material;
 
-//   EXPECT_THROW(TestBatchIn(1, 0), cyclus::Error);
+  EXPECT_THROW(TestBatchIn(1, 0), cyclus::Error);
   
-//   Material::Ptr mat = Material::CreateBlank(batch_size);
-//   TestReserveBatches(mat, 1, 0);
-//   TestBatchIn(1, 0);
+  Material::Ptr mat = Material::CreateBlank(batch_size);
+  TestReserveBatches(mat, in_c1, 1, 0);
+  TestBatchIn(1, 0);
 
-//   mat = Material::CreateBlank(batch_size * 2);
-//   TestReserveBatches(mat, 2, 0);
-//   TestBatchIn(2, 1);
+  mat = Material::CreateBlank(batch_size * 2);
+  TestReserveBatches(mat, in_c1, 2, 0);
+  TestBatchIn(2, 1);
   
-//   TestBatchOut(1, 1);
-//   TestBatchOut(0, 2);
+  TestBatchOut(1, 1);
+  TestBatchOut(0, 2);
 
-//   EXPECT_THROW(TestBatchOut(1, 0), cyclus::Error);
-// }
+  EXPECT_THROW(TestBatchOut(1, 0), cyclus::Error);
+}
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 cyclus::Model* BatchReactorModelConstructor(cyclus::Context* ctx) {
