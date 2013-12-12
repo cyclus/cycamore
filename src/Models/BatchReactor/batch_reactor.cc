@@ -361,7 +361,7 @@ void BatchReactor::Deploy(cyclus::Model* parent) {
 
   FacilityModel::Deploy(parent);
   phase(INITIAL);
-  std::string rec = *crctx_.in_commods().begin();
+  std::string rec = crctx_.in_recipe(*crctx_.in_commods().begin());
   spillover_ = Material::Create(this, 0.0, context()->GetRecipe(rec));
 
   Material::Ptr mat;

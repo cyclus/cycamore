@@ -137,12 +137,12 @@ void BatchReactorTest::SetUpSourceFacility() {
       std::make_pair(in_c1, in_r2));
 }
 
-// //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-// void BatchReactorTest::TestBuffs(int nreserves, int ncore, int nstorage) {
-//   EXPECT_EQ(nreserves, src_facility->reserves_.count());
-//   EXPECT_EQ(ncore, src_facility->core_.count());
-//   // EXPECT_EQ(nstorage, src_facility->storage_.count());
-// }
+//- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+void BatchReactorTest::TestBuffs(int nreserves, int ncore, int nstorage) {
+  EXPECT_EQ(nreserves, src_facility->reserves_.count());
+  EXPECT_EQ(ncore, src_facility->core_.count());
+  EXPECT_EQ(nstorage, src_facility->storage_[out_c1].count());
+}
 
 // //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 // void BatchReactorTest::TestReserveBatches(cyclus::Material::Ptr mat,
@@ -306,21 +306,20 @@ TEST_F(BatchReactorTest, Tock) {
   EXPECT_NO_THROW(src_facility->HandleTock(time));
 }
 
-// //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-// TEST_F(BatchReactorTest, StartProcess) {
-//   int t = tc_.get()->time();
-//   src_facility->phase(BatchReactor::PROCESS);
-//   EXPECT_EQ(t, src_facility->start_time());
-//   EXPECT_EQ(t + process_time, src_facility->end_time());
-//   EXPECT_EQ(t + process_time - preorder_time, src_facility->order_time());
-// }
+//- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+TEST_F(BatchReactorTest, StartProcess) {
+  int t = tc_.get()->time();
+  src_facility->phase(BatchReactor::PROCESS);
+  EXPECT_EQ(t, src_facility->start_time());
+  EXPECT_EQ(t + process_time, src_facility->end_time());
+  EXPECT_EQ(t + process_time - preorder_time, src_facility->order_time());
+}
 
-
-// //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-// TEST_F(BatchReactorTest, InitCond) {
-//   src_facility->Deploy(src_facility);
-//   TestBuffs(ic_reserves, ic_core, ic_storage);
-// }
+//- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+TEST_F(BatchReactorTest, InitCond) {
+  src_facility->Deploy(src_facility);
+  TestBuffs(rsrv_n, core_n, stor_n);
+}
 
 // //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 // TEST_F(BatchReactorTest, AddBatches) {
