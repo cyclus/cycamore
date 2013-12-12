@@ -277,36 +277,13 @@ TEST_F(BatchReactorTest, XMLInit) {
   TestInitState(&fac);
 }
 
-// //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-// TEST_F(BatchReactorTest, Clone) {
-//   cycamore::BatchReactor* cloned_fac =
-//     dynamic_cast<cycamore::BatchReactor*>(src_facility->Clone());
-
-//   EXPECT_EQ(in_recipe, cloned_fac->in_recipe());
-//   EXPECT_EQ(in_commod, cloned_fac->in_commodity());
-//   EXPECT_EQ(out_commod, cloned_fac->out_commodity());
-//   EXPECT_EQ(out_recipe, cloned_fac->out_recipe());
-//   EXPECT_EQ(n_batches, cloned_fac->n_batches());
-//   EXPECT_EQ(n_load, cloned_fac->n_load());
-//   EXPECT_EQ(n_reserves, cloned_fac->n_reserves());
-//   EXPECT_EQ(process_time, cloned_fac->process_time());
-//   EXPECT_EQ(refuel_time, cloned_fac->refuel_time());
-//   EXPECT_EQ(preorder_time, cloned_fac->preorder_time());
-//   EXPECT_EQ(batch_size, cloned_fac->batch_size());
-//   EXPECT_EQ(0, cloned_fac->n_core());
-//   EXPECT_EQ(BatchReactor::INITIAL, cloned_fac->phase());
-//   EXPECT_EQ(BatchReactor::InitCond(ic_reserves, ic_core, ic_storage),
-//             cloned_fac->ics());
-
-//   cyclus::Commodity commod(commodity);
-//   EXPECT_TRUE(cloned_fac->ProducesCommodity(commod));
-//   EXPECT_EQ(capacity, cloned_fac->ProductionCapacity(commod));
-//   EXPECT_EQ(cost, cloned_fac->ProductionCost(commod));
-  
-//   EXPECT_EQ(commod_prefs, cloned_fac->commod_prefs());
-  
-//   delete cloned_fac;
-// }
+//- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+TEST_F(BatchReactorTest, Clone) {
+  cycamore::BatchReactor* cloned_fac =
+    dynamic_cast<cycamore::BatchReactor*>(src_facility->Clone());
+  TestInitState(cloned_fac);  
+  delete cloned_fac;
+}
 
 // //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 // TEST_F(BatchReactorTest, Print) {
