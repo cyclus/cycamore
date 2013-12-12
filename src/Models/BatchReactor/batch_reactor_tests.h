@@ -17,24 +17,42 @@ class BatchReactorTest : public ::testing::Test {
  protected:
   cyclus::TestContext tc_;
   BatchReactor* src_facility;
+
+  // init params
+  std::string in_c1, in_c2, out_c1, out_c2;
+  std::string in_r1, in_r2, out_r1, out_r2;
+  cyclus::CommodityRecipeContext crctx;
+
   int n_batches, n_load, n_reserves;
   int process_time, refuel_time, preorder_time;
-  int ic_reserves, ic_core, ic_storage;
   double batch_size;
-  std::string in_commod, in_recipe, out_commod, out_recipe;
+
   std::string commodity;
   double capacity, cost;
-  std::string commod1, commod2;
-  double pref1, pref2;
-  std::map<std::string, double> commod_prefs;
 
+  // init conds
+  std::string rsrv_c, rsrv_r, core_c, core_r, stor_c, stor_r;
+  int rsrv_n, core_n, stor_n;
+  BatchReactor::InitCond ics;
+
+  // pref changes
+  int change_time;
+  std::string commod1, commod2;
+  double frompref1, topref1, frompref2, topref2;
+  std::map<std::string, double> commod_prefs;
+  std::map<int, std::vector< std::pair< std::string, double > > > pref_changes;
+  // recipe changes
+  std::string rec_commod, from_rec, to_rec;
+  std::map<int, std::vector< std::pair< std::string, std::string > > >
+      recipe_changes;
+  
   virtual void SetUp();
   virtual void TearDown();
   void InitParameters();
   void SetUpSourceFacility();
 
-  /// @brief sets src_facility's initial conditions
-  void SetICs(BatchReactor::InitCond ics) { src_facility->ics_ = ics; }
+  /// @brief tests the initial state of a facility
+  void TestInitState(BatchReactor* fac);
 
   /// @brief tests the number of batches in each buffer
   void TestBuffs(int nreserves, int ncore, int nstorage);

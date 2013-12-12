@@ -79,6 +79,8 @@ namespace cycamore {
 /// implementation. Resource removal from the context requires pointer equality
 /// in order to remove material, and PopQty will split resources, making new
 /// pointers.
+/// @warning the reactor uses a hackish way to input materials into its
+/// reserves. See the AddBatches_ member function.
 class BatchReactor : public cyclus::FacilityModel,
       public cyclus::CommodityProducer {
  public:
@@ -95,21 +97,21 @@ class BatchReactor : public cyclus::FacilityModel,
   struct InitCond {
    InitCond() : reserves(false), core(false), storage(false) {};
 
-    AddReserves(int n, std::string rec, std::string commod) {
+    void AddReserves(int n, std::string rec, std::string commod) {
       reserves = true;
       n_reserves = n;
       reserves_rec = rec;
       reserves_commod = commod;
     }
 
-    AddCore(int n, std::string rec, std::string commod) {
+    void AddCore(int n, std::string rec, std::string commod) {
       core = true;
       n_core = n;
       core_rec = rec;
       core_commod = commod;
     }
 
-    AddStorage(int n, std::string rec, std::string commod) {
+    void AddStorage(int n, std::string rec, std::string commod) {
       storage = true;
       n_storage = n;
       storage_rec = rec;
@@ -241,29 +243,19 @@ class BatchReactor : public cyclus::FacilityModel,
   inline void batch_size(double size) { batch_size_ = size; }
   inline double batch_size() { return batch_size_; }
 
-  /// @brief the input commodity
-  inline void in_commodity(std::string name) { in_commodity_ = name; }
-  inline std::string in_commodity() const { return in_commodity_; }
+  /// @brief this facility's commodity-recipe context
+  inline void crctx(const cyclus::CommodityRecipeContext& crctx) {
+    crctx_ = crctx;
+  }
+  inline cyclus::CommodityRecipeContext crctx() const { return crctx_; }
 
-  /// @brief the input recipe
-  inline void in_recipe(std::string name) { in_recipe_ = name; }
-  inline std::string in_recipe() const { return in_recipe_; }
-  
-  /// @brief the output commodity
-  inline void out_commodity(std::string name) { out_commodity_ = name; }
-  inline std::string out_commodity() const { return out_commodity_; }
-  
-  /// @brief the output recipe
-  inline void out_recipe(std::string name) { out_recipe_ = name; }
-  inline std::string out_recipe() const { return out_recipe_; }
+  /// @brief this facility's initial conditions
+  inline void ics(const InitCond& ics) { ics_ = ics; }
+  inline InitCond ics() const { return ics_; }
   
   /// @brief the current phase
   void phase(Phase p);
   inline Phase phase() const { return phase_; }
-
-  /// @brief this facility's initial conditions
-  inline void  ics(const InitCond& ics) { ics_ = ics; }
-  inline InitCond ics() const { return ics_; }
 
   /// @brief this facility's preference for input commodities
   inline void commod_prefs(const std::map<std::string, double>& prefs) {
@@ -287,9 +279,6 @@ class BatchReactor : public cyclus::FacilityModel,
   cyclus::Material::Ptr TradeResponse_(
       double qty,
       cyclus::ResourceBuff* buffer);
-
-  std::string in_commodity_;
-  std::string out_commodity_;
   
   /// @brief a cyclus::ResourceBuff for material while they are inside the core,
   /// with all materials guaranteed to be of batch_size_
@@ -318,7 +307,7 @@ class BatchReactor : public cyclus::FacilityModel,
   /// of batch_size_. If not, material from mat is added to it and it is
   /// returned to reserves_. If more material remains, chunks of batch_size_ are
   /// removed and added to reserves_. The final chunk may be <= batch_size_.
-  void AddBatches_(cyclus::Material::Ptr mat);
+  void AddBatches_(std::string commod, cyclus::Material::Ptr mat);
   
   /// @brief adds phase names to phase_names_ map
   void SetUpPhaseNames_();
@@ -332,12 +321,11 @@ class BatchReactor : public cyclus::FacilityModel,
   int n_load_;
   int n_reserves_;
   double batch_size_;
-  std::string in_recipe_;
-  std::string out_recipe_;
   Phase phase_;
+  
   InitCond ics_;
 
-  CommodityRecipeContext crctx_;
+  cyclus::CommodityRecipeContext crctx_;
   
   /// @warning as is, the int key is **simulation time**, i.e., context()->time
   /// == key. this should be fixed for future use!

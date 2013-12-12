@@ -202,7 +202,7 @@ void BatchReactor::InitModuleMembers(cyclus::QueryEngine* qe) {
   
   // in/out fuel
   int nfuel = qe->NElementsMatchingQuery("initial_condition");
-  for (int i = 0; i < nfuel, i++) {
+  for (int i = 0; i < nfuel; i++) {
     QueryEngine* fuel = qe->QueryElement("fuel", i);
     crctx_.AddInCommod(
         fuel->GetElementContent("incommodity"),
@@ -295,7 +295,7 @@ void BatchReactor::InitModuleMembers(cyclus::QueryEngine* qe) {
   
   // recipe changes
   std::string rec;
-  int nchanges = qe->NElementsMatchingQuery("recipe_change");
+  nchanges = qe->NElementsMatchingQuery("recipe_change");
   if (nchanges > 0) {
     for (int i = 0; i < nchanges; i++) {
       QueryEngine* cp = qe->QueryElement("recipe_change", i);
@@ -317,11 +317,8 @@ cyclus::Model* BatchReactor::Clone() {
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 void BatchReactor::InitFrom(BatchReactor* m) {
   // in/out
-  in_commodity(m->in_commodity());
-  out_commodity(m->out_commodity());
-  in_recipe(m->in_recipe());
-  out_recipe(m->out_recipe());
-
+  crctx_ = m->crctx_;
+  
   // facility params
   process_time(m->process_time());
   preorder_time(m->preorder_time());
@@ -343,8 +340,6 @@ void BatchReactor::InitFrom(BatchReactor* m) {
 
   // recipe changes
   recipe_changes_ = m->recipe_changes_;
-
-  crctx_ = m->crctx_;
 }
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -356,8 +351,6 @@ std::string BatchReactor::str() {
      << ", Refuel Time = " << refuel_time()
      << ", Core Loading = " << n_batches() * batch_size()
      << ", Batches Per Core = " << n_batches()
-     << ", converts commodity '" << in_commodity()
-     << "' into commodity '" << out_commodity()
      << "'}";
   return ss.str();
 }
@@ -368,7 +361,8 @@ void BatchReactor::Deploy(cyclus::Model* parent) {
 
   FacilityModel::Deploy(parent);
   phase(INITIAL);
-  spillover_ = Material::Create(this, 0.0, context()->GetRecipe(in_recipe_));
+  std::string rec = *crctx_.in_commods().begin();
+  spillover_ = Material::Create(this, 0.0, context()->GetRecipe(rec));
 
   Material::Ptr mat;
   if (ics_.reserves) {
@@ -376,7 +370,8 @@ void BatchReactor::Deploy(cyclus::Model* parent) {
       mat = Material::Create(this,
                              batch_size(),
                              context()->GetRecipe(ics_.reserves_rec));
-      crctx_.AddMat(ics_.reserves_commod, mat);
+      assert(ics_.reserves_commod != "");
+      crctx_.AddRsrc(ics_.reserves_commod, mat);
       reserves_.Push(mat);
     }
   }
@@ -385,7 +380,8 @@ void BatchReactor::Deploy(cyclus::Model* parent) {
       mat = Material::Create(this,
                              batch_size(),
                              context()->GetRecipe(ics_.core_rec));
-      crctx_.AddMat(ics_.core_commod, mat);
+      assert(ics_.core_commod != "");
+      crctx_.AddRsrc(ics_.core_commod, mat);
       core_.Push(mat);
     }
   }
@@ -394,8 +390,9 @@ void BatchReactor::Deploy(cyclus::Model* parent) {
       mat = Material::Create(this,
                              batch_size(),
                              context()->GetRecipe(ics_.storage_rec));
-      crctx_.AddMat(ics_.storage_commod, mat);
-      storage_[storage_commod].Push(mat);
+      assert(ics_.storage_commod != "");
+      crctx_.AddRsrc(ics_.storage_commod, mat);
+      storage_[ics_.storage_commod].Push(mat);
     }
   }
 
@@ -447,6 +444,8 @@ void BatchReactor::HandleTick(int time) {
     std::vector< std::pair< std::string, std::string> >&
         changes = recipe_changes_[time];
     for (int i = 0; i < changes.size(); i++) {
+      assert(changes[i].first != "");
+      assert(changes[i].second != "");
       crctx_.UpdateInRec(changes[i].first, changes[i].second);
     }
   }
@@ -514,18 +513,29 @@ void BatchReactor::AcceptMatlTrades(
                                  cyclus::Material::Ptr> >& responses) {
   using cyclus::Material;
   
-  // std::map<std::string, Material::Ptr> mat_commods;
+  std::map<std::string, Material::Ptr> mat_commods;
    
-  // std::vector< std::pair<cyclus::Trade<cyclus::Material>,
-  //                        cyclus::Material::Ptr> >::const_iterator trade;
-  
-  // for (trade = responses.begin(); trade != responses.end(); ++trade) {
-  // }
-  cyclus::Material::Ptr mat = responses.at(0).second;
-  for (int i = 1; i < responses.size(); i++) {
-    mat->Absorb(responses.at(i).second);
+  std::vector< std::pair<cyclus::Trade<cyclus::Material>,
+                         cyclus::Material::Ptr> >::const_iterator trade;
+
+  // blob each material by commodity
+  std::string commod;
+  Material::Ptr mat;
+  for (trade = responses.begin(); trade != responses.end(); ++trade) {
+    commod = trade->first.request->commodity();
+    mat = trade->second;
+    if (mat_commods.count(commod) == 0) {
+      mat_commods[commod] = mat;
+    } else {
+      mat_commods[commod]->Absorb(mat);
+    }
   }
-  AddBatches_(mat);
+
+  // add each blob to reserves
+  std::map<std::string, Material::Ptr>::iterator it;
+  for (it = mat_commods.begin(); it != mat_commods.end(); ++it) {
+    AddBatches_(it->first, it->second);
+  }
 }
   
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -616,10 +626,13 @@ void BatchReactor::MoveBatchOut_() {
   try {
     Material::Ptr mat = ResCast<Material>(core_.Pop());
     std::string incommod = crctx_.commod(mat);
-    std::string outcommod = crctx_.out_commodity(incommod);
+    assert(incommod != "");
+    std::string outcommod = crctx_.out_commod(incommod);
+    assert(outcommod != "");
     std::string outrecipe = crctx_.out_recipe(crctx_.in_recipe(incommod));
+    assert(outrecipe != "");
     mat->Transmute(context()->GetRecipe(outrecipe));
-    crctx_.UpdateMat(outcommod, mat);
+    crctx_.UpdateRsrc(outcommod, mat);
     storage_[outcommod].Push(mat);
   } catch(cyclus::Error& e) {
       e.msg(Model::InformErrorMsg(e.msg()));
@@ -643,26 +656,27 @@ BatchReactor::GetOrder_(double size) {
   Material::Ptr mat;
   for (it = commods.begin(); it != commods.end(); ++it) {
     recipe = crctx_.in_recipe(*it);
+    assert(recipe != "");
     mat =
         Material::CreateUntracked(size, context()->GetRecipe(recipe));
     port->AddRequest(mat, this, *it, commod_prefs_[*it]);
+    
+    LOG(cyclus::LEV_DEBUG3, "BReact") << "BatchReactor " << name()
+                                      << " is making an order:";
+    LOG(cyclus::LEV_DEBUG3, "BReact") << "          size: " << size;
+    LOG(cyclus::LEV_DEBUG3, "BReact") << "     commodity: " << *it;
+    LOG(cyclus::LEV_DEBUG3, "BReact") << "    preference: "
+                                      << commod_prefs_[*it];
   }
 
   CapacityConstraint<Material> cc(size);
   port->AddConstraint(cc);
 
-  LOG(cyclus::LEV_DEBUG3, "BReact") << "BatchReactor " << name()
-                                    << " is making an order:";
-  LOG(cyclus::LEV_DEBUG3, "BReact") << "          size: " << size;
-  LOG(cyclus::LEV_DEBUG3, "BReact") << "     commodity: " << in_commodity_;
-  LOG(cyclus::LEV_DEBUG3, "BReact") << "    preference: "
-                                    << commod_prefs_[in_commodity_];
-
   return port;
 }
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-void BatchReactor::AddBatches_(cyclus::Material::Ptr mat) {
+void BatchReactor::AddBatches_(std::string commod, cyclus::Material::Ptr mat) {
   using cyclus::Material;
   using cyclus::ResCast;
 
@@ -670,10 +684,14 @@ void BatchReactor::AddBatches_(cyclus::Material::Ptr mat) {
                                     << " is adding " << mat->quantity()
                                     << " of material to its reserves.";
 
+  // this is a hack! whatever *was* left in spillover now magically becomes this
+  // new commodity. we need to do something different (maybe) for recycle.
   spillover_->Absorb(mat);
   
   while (spillover_->quantity() >= batch_size()) {
     Material::Ptr batch = spillover_->ExtractQty(batch_size());
+    assert(commod != "");
+    crctx_.AddRsrc(commod, batch);
     reserves_.Push(batch);    
   }
 }
@@ -686,22 +704,30 @@ cyclus::BidPortfolio<cyclus::Material>::Ptr BatchReactor::GetBids_(
   using cyclus::Bid;
   using cyclus::BidPortfolio;
   using cyclus::CapacityConstraint;
+  using cyclus::Composition;
   using cyclus::Converter;
   using cyclus::Material;
   using cyclus::Request;
+  using cyclus::ResCast;
+  using cyclus::ResourceBuff;
     
   BidPortfolio<Material>::Ptr port(new BidPortfolio<Material>());
   
   if (commod_requests.count(commod) > 0 && buffer->quantity() > 0) {
     const std::vector<Request<Material>::Ptr>& requests =
         commod_requests.at(commod);
+
+    // get offer composition
+    Material::Ptr back = ResCast<Material>(buffer->Pop(ResourceBuff::BACK));
+    Composition::Ptr comp = back->comp();
+    buffer->Push(back);
     
     std::vector<Request<Material>::Ptr>::const_iterator it;
     for (it = requests.begin(); it != requests.end(); ++it) {
       const Request<Material>::Ptr req = *it;
       double qty = std::min(req->target()->quantity(), buffer->quantity());
       Material::Ptr offer =
-          Material::CreateUntracked(qty, context()->GetRecipe(out_recipe_));
+          Material::CreateUntracked(qty, comp);
       port->AddBid(req, offer, this);
     }
     
