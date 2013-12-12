@@ -94,12 +94,16 @@ std::string SinkFacility::str() {
 cyclus::Model* SinkFacility::Clone() {
   SinkFacility* m = new SinkFacility(*this);
   m->InitFrom(this);
-
-  m->capacity(capacity());
-  m->SetMaxInventorySize(MaxInventorySize());
-  m->in_commods_ = in_commods_;
-
   return m;
+}
+
+//- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+void SinkFacility::InitFrom(SinkFacility* m) {
+  FacilityModel::InitFrom(m);
+  
+  capacity(m->capacity());
+  SetMaxInventorySize(m->MaxInventorySize());
+  in_commods_ = m->in_commods_;
 }
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - 

@@ -122,6 +122,7 @@ cyclus::Model* EnrichmentFacility::Clone() {
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 void EnrichmentFacility::InitFrom(EnrichmentFacility* m) {
+  FacilityModel::InitFrom(m);
   tails_assay(m->tails_assay());
   feed_assay(m->feed_assay());
   in_commodity(m->in_commodity());

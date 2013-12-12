@@ -116,6 +116,11 @@ class SourceFacility : public cyclus::FacilityModel,
   virtual void InitModuleMembers(cyclus::QueryEngine* qe);
 
   /**
+     initialize members from a different model
+  */
+  void InitFrom(SourceFacility* m);
+
+  /**
      Print information about this model
    */
   virtual std::string str();

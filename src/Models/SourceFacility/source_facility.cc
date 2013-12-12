@@ -78,14 +78,17 @@ std::string SourceFacility::str() {
 cyclus::Model* SourceFacility::Clone() {
   SourceFacility* m = new SourceFacility(*this);
   m->InitFrom(this);
-
-  m->commodity(commodity());
-  m->capacity(capacity());
-  m->recipe(recipe());
-  m->CopyProducedCommoditiesFrom(this);
-  m->current_capacity_ = capacity();
-  
   return m;
+}
+
+//- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+void SourceFacility::InitFrom(SourceFacility* m) {
+  FacilityModel::InitFrom(m);
+  commodity(m->commodity());
+  capacity(m->capacity());
+  recipe(m->recipe());
+  CopyProducedCommoditiesFrom(m);
+  current_capacity_ = capacity();  
 }
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -

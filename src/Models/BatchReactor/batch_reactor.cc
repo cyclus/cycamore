@@ -316,6 +316,8 @@ cyclus::Model* BatchReactor::Clone() {
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 void BatchReactor::InitFrom(BatchReactor* m) {
+  FacilityModel::InitFrom(m);
+  
   // in/out
   crctx_ = m->crctx_;
   

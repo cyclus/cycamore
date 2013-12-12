@@ -113,6 +113,11 @@ class SinkFacility : public cyclus::FacilityModel  {
   virtual void InitModuleMembers(cyclus::QueryEngine* qe);
 
   /**
+     initialize members from a different model
+  */
+  void InitFrom(SinkFacility* m);
+
+  /**
      A verbose printer for the Sink Facility.
    */
   virtual std::string str();
