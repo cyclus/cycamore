@@ -61,7 +61,7 @@ std::string EnrichmentFacility::schema() {
       "  </element>                                 \n"
       "  <optional>                                 \n"
       "    <element name =\"initial_condition\">    \n"
-      "       <element name =\"nreserves\">         \n"
+      "       <element name =\"reserves_qty\">      \n"
       "         <data type=\"double\"/>             \n"
       "       </element>                            \n"
       "    </element>                               \n"
@@ -107,7 +107,7 @@ void EnrichmentFacility::InitModuleMembers(cyclus::QueryEngine* qe) {
   double reserves = 0;
   if (qe->NElementsMatchingQuery("initial_condition") > 0) {
     QueryEngine* ic = qe->QueryElement("initial_condition");
-    reserves = lexical_cast<double>(ic->GetElementContent("reserves"));
+    reserves = lexical_cast<double>(ic->GetElementContent("reserves_qty"));
   }
   ics(InitCond(reserves));
 }
