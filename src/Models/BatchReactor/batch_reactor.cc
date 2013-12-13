@@ -457,6 +457,12 @@ void BatchReactor::HandleTick(int time) {
     }
   }
 
+  if (context()->time() == FacLifetime()) {
+    for (int i = 0; i < n_core(); i++) {
+      MoveBatchOut_(); // unload
+    }
+  }
+  
   LOG(cyclus::LEV_DEBUG3, "BReact") << "Current facility parameters for "
                                     << name()
                                     << " at the end of the tick are:";
