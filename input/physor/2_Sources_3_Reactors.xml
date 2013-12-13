@@ -74,7 +74,7 @@
             <commodity>mox</commodity>
             <recipe>mox_fuel_recipe</recipe>
           </core>
-        </initial_condition>        
+        </initial_condition>
         <commodity_production>
           <commodity>lwr_power</commodity>
           <capacity>.928</capacity>        <!--GWe-y-->

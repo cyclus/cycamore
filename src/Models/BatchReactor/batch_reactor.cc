@@ -28,7 +28,7 @@ BatchReactor::BatchReactor(cyclus::Context* ctx)
       start_time_(-1),
       n_batches_(1),
       n_load_(1),
-      n_reserves_(1),
+      n_reserves_(0),
       batch_size_(1),
       phase_(INITIAL) {
   if (phase_names_.empty()) {
@@ -348,11 +348,14 @@ void BatchReactor::InitFrom(BatchReactor* m) {
 std::string BatchReactor::str() {
   std::stringstream ss;
   ss << cyclus::FacilityModel::str();
-  ss << " has facility parameters {"
-     << ", Process Time = " << process_time()
-     << ", Refuel Time = " << refuel_time()
-     << ", Core Loading = " << n_batches() * batch_size()
-     << ", Batches Per Core = " << n_batches()
+  ss << " has facility parameters {" << "\n"
+     << "     Process Time = " << process_time() << ",\n"
+     << "     Refuel Time = " << refuel_time() << ",\n"
+     << "     Preorder Time = " << preorder_time() << ",\n"
+     << "     Core Loading = " << n_batches() * batch_size() << ",\n"
+     << "     Batches Per Core = " << n_batches() << ",\n"
+     << "     Batches Per Load = " << n_load() << ",\n"
+     << "     Batches To Reserve = " << n_reserves() << ",\n"
      << "'}";
   return ss.str();
 }
@@ -406,19 +409,18 @@ void BatchReactor::Deploy(cyclus::Model* parent) {
 void BatchReactor::HandleTick(int time) {
   LOG(cyclus::LEV_INFO3, "BReact") << name() << " is ticking at time "
                                    << time << " {";
-  LOG(cyclus::LEV_DEBUG3, "BReact") << "The current phase is: "
-                                    << phase_names_[phase_];
+                                    
+  LOG(cyclus::LEV_DEBUG4, "BReact") << "Current facility parameters for "
+                                    << name()
+                                    << " at the beginning of the tick are:";
+  LOG(cyclus::LEV_DEBUG4, "BReact") << "    Phase: " << phase_names_[phase_]; 
+  LOG(cyclus::LEV_DEBUG4, "BReact") << "    Start time: " << start_time_;
+  LOG(cyclus::LEV_DEBUG4, "BReact") << "    End time: " << end_time();  
+  LOG(cyclus::LEV_DEBUG4, "BReact") << "    Order time: " << order_time();  
+  LOG(cyclus::LEV_DEBUG4, "BReact") << "    NReserves: " << reserves_.count();
+  LOG(cyclus::LEV_DEBUG4, "BReact") << "    NCore: " << core_.count();  
 
   switch (phase()) {
-    case PROCESS:
-      if (time == end_time()) {
-        for (int i = 0; i < n_load(); i++) {
-          MoveBatchOut_();
-        }
-        phase(WAITING);
-      }
-      break;
-
     case WAITING:
       if (n_core() == n_batches() &&
           end_time() + refuel_time() <= context()->time()) {
@@ -451,21 +453,56 @@ void BatchReactor::HandleTick(int time) {
       crctx_.UpdateInRec(changes[i].first, changes[i].second);
     }
   }
-  
+
+  LOG(cyclus::LEV_DEBUG3, "BReact") << "Current facility parameters for "
+                                    << name()
+                                    << " at the end of the tick are:";
+  LOG(cyclus::LEV_DEBUG3, "BReact") << "    Phase: " << phase_names_[phase_]; 
+  LOG(cyclus::LEV_DEBUG3, "BReact") << "    Start time: " << start_time_;
+  LOG(cyclus::LEV_DEBUG3, "BReact") << "    End time: " << end_time();  
+  LOG(cyclus::LEV_DEBUG3, "BReact") << "    Order time: " << order_time();  
+  LOG(cyclus::LEV_DEBUG3, "BReact") << "    NReserves: " << reserves_.count();
+  LOG(cyclus::LEV_DEBUG3, "BReact") << "    NCore: " << core_.count();  
   LOG(cyclus::LEV_INFO3, "BReact") << "}";
 }
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 void BatchReactor::HandleTock(int time) {
   LOG(cyclus::LEV_INFO3, "BReact") << name() << " is tocking {";
-  LOG(cyclus::LEV_DEBUG3, "BReact") << "The current phase is: "
-                                    << phase_names_[phase_];
+  LOG(cyclus::LEV_DEBUG4, "BReact") << "Current facility parameters for "
+                                    << name()
+                                    << " at the beginning of the tock are:";
+  LOG(cyclus::LEV_DEBUG4, "BReact") << "    Phase: " << phase_names_[phase_]; 
+  LOG(cyclus::LEV_DEBUG4, "BReact") << "    Start time: " << start_time_;
+  LOG(cyclus::LEV_DEBUG4, "BReact") << "    End time: " << end_time();  
+  LOG(cyclus::LEV_DEBUG4, "BReact") << "    Order time: " << order_time();  
+  LOG(cyclus::LEV_DEBUG4, "BReact") << "    NReserves: " << reserves_.count();
+  LOG(cyclus::LEV_DEBUG4, "BReact") << "    NCore: " << core_.count();  
+  
   switch (phase()) {
-    case INITIAL: // falling through
-    case WAITING:
-      Refuel_();
+    case PROCESS:
+      if (time == end_time()) {
+        for (int i = 0; i < n_load(); i++) {
+          MoveBatchOut_(); // unload
+        }
+        Refuel_(); // reload
+        phase(WAITING);
+      }
+      break;
+    default:
+      Refuel_(); // always try to reload if possible
       break;
   }
+
+  LOG(cyclus::LEV_DEBUG3, "BReact") << "Current facility parameters for "
+                                    << name()
+                                    << " at the end of the tock are:";
+  LOG(cyclus::LEV_DEBUG3, "BReact") << "    Phase: " << phase_names_[phase_]; 
+  LOG(cyclus::LEV_DEBUG3, "BReact") << "    Start time: " << start_time_;
+  LOG(cyclus::LEV_DEBUG3, "BReact") << "    End time: " << end_time();  
+  LOG(cyclus::LEV_DEBUG3, "BReact") << "    Order time: " << order_time();  
+  LOG(cyclus::LEV_DEBUG3, "BReact") << "    NReserves: " << reserves_.count();
+  LOG(cyclus::LEV_DEBUG3, "BReact") << "    NCore: " << core_.count();  
   LOG(cyclus::LEV_INFO3, "BReact") << "}";
 }
 
@@ -496,7 +533,7 @@ BatchReactor::GetMatlRequests() {
     // the default case is to request the reserve amount if the order time has
     // been reached
     default:
-      order_size = n_reserves() * batch_size()
+      order_size = (n_reserves() + n_batches() - n_core()) * batch_size()
                    - reserves_.quantity() - spillover_->quantity();
       if (order_time() <= context()->time() &&
           order_size > 0) {

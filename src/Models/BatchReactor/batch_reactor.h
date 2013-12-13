@@ -219,7 +219,9 @@ class BatchReactor : public cyclus::FacilityModel,
   inline int start_time() const { return start_time_; }
 
   /// @brief the ending time of the last (current) process
-  inline int end_time() const { return start_time() + process_time(); }
+  /// @warning the - 1 is to ensure that a 1 period process time that begins on
+  /// the tick ends on the tock
+  inline int end_time() const { return start_time() + process_time() - 1; }
 
   /// @brief the time orders should be taking place for the next refueling
   inline int order_time() const { return end_time() - preorder_time(); }
