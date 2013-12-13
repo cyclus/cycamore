@@ -227,7 +227,7 @@ class BatchReactor : public cyclus::FacilityModel,
   inline int end_time() const { return start_time() + process_time() - 1; }
 
   /// @brief the beginning time for the next phase, set internally
-  inline int begin_time() const { return begin_time_; }
+  inline int to_begin_time() const { return to_begin_time_; }
 
   /// @brief the time orders should be taking place for the next refueling
   inline int order_time() const { return end_time() - preorder_time(); }
@@ -325,7 +325,7 @@ class BatchReactor : public cyclus::FacilityModel,
   int preorder_time_;
   int refuel_time_;
   int start_time_;
-  int begin_time_;
+  int to_begin_time_;
   int n_batches_;
   int n_load_;
   int n_reserves_;

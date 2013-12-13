@@ -26,7 +26,7 @@ BatchReactor::BatchReactor(cyclus::Context* ctx)
       preorder_time_(0),
       refuel_time_(0),
       start_time_(-1),
-      begin_time_(std::numeric_limits<int>::max()),
+      to_begin_time_(std::numeric_limits<int>::max()),
       n_batches_(1),
       n_load_(1),
       n_reserves_(0),
@@ -426,7 +426,7 @@ void BatchReactor::HandleTick(int time) {
   switch (phase()) {
     case WAITING:
       if (n_core() == n_batches() &&
-          begin_time() <= context()->time()) {
+          to_begin_time() <= context()->time()) {
         phase(PROCESS);
       } 
       break;
@@ -674,8 +674,7 @@ void BatchReactor::Refuel_() {
   while(n_core() < n_batches() && reserves_.count() > 0) {
     MoveBatchIn_();
     if(n_core() == n_batches()) {
-      begin_time_ = start_time_ + process_time_ + refuel_time_;
-      start_time_ += process_time_ + refuel_time_;
+      to_begin_time_ = start_time_ + process_time_ + refuel_time_;
     }
   }
 }
