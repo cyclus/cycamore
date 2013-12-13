@@ -230,7 +230,7 @@ void BatchReactor::InitModuleMembers(cyclus::QueryEngine* qe) {
   int n;
   n= GetOptionalQuery<int>(qe, "nreload", n_load());
   n_load(n);
-  n = GetOptionalQuery<int>(qe, "norder", n_load());
+  n = GetOptionalQuery<int>(qe, "norder", n_reserves());
   n_reserves(n);
 
   // initial condition
@@ -533,8 +533,17 @@ BatchReactor::GetMatlRequests() {
     // the default case is to request the reserve amount if the order time has
     // been reached
     default:
-      order_size = (n_reserves() + n_batches() - n_core()) * batch_size()
-                   - reserves_.quantity() - spillover_->quantity();
+      // double fuel_need = (n_reserves() + n_batches() - n_core()) * batch_size();
+      double fuel_need = (n_reserves() + n_batches()) * batch_size();
+      double fuel_have = reserves_.quantity() + spillover_->quantity();
+      order_size = fuel_need - fuel_have;
+
+      LOG(cyclus::LEV_DEBUG5, "BReact") << "BatchReactor " << name()
+                                        << " is deciding whether to order -";      
+      LOG(cyclus::LEV_DEBUG5, "BReact") << "    Needs fuel amt: " << fuel_need;    
+      LOG(cyclus::LEV_DEBUG5, "BReact") << "    Has fuel amt: " << fuel_have;
+      LOG(cyclus::LEV_DEBUG5, "BReact") << "    Order amt: " << order_size;
+      
       if (order_time() <= context()->time() &&
           order_size > 0) {
         RequestPortfolio<Material>::Ptr p = GetOrder_(order_size);

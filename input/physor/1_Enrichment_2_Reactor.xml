@@ -3,7 +3,7 @@
 
 <simulation>
   <control>
-    <duration>3</duration>
+    <duration>4</duration>
     <startmonth>1</startmonth>
     <startyear>2000</startyear>
     <simstart>0</simstart>
@@ -46,6 +46,50 @@
     <name>Reactor1</name>
     <model>
       <BatchReactor>
+        <fuel>         
+          <incommodity>enriched_u</incommodity>
+          <inrecipe>lwr_fuel_recipe</inrecipe>
+          <outcommodity>waste</outcommodity>
+          <outrecipe>lwr_used_fuel_recipe</outrecipe>
+        </fuel>
+        <processtime>1</processtime>
+        <nbatches>1</nbatches>
+        <batchsize>1</batchsize>
+        <refueltime>0</refueltime>
+        <initial_condition>
+          <core>
+            <nbatches>1</nbatches>
+            <commodity>enriched_u</commodity>
+            <recipe>lwr_fuel_recipe</recipe>
+          </core>
+        </initial_condition>
+        <recipe_change>
+          <incommodity>enriched_u</incommodity>
+          <new_recipe>lwr_fuel_recipe2</new_recipe>
+          <time>1</time>
+        </recipe_change>
+        <recipe_change>
+          <incommodity>enriched_u</incommodity>
+          <new_recipe>lwr_fuel_recipe</new_recipe>
+          <time>2</time>
+        </recipe_change>
+        <commodity_production>
+          <commodity>lwr_power</commodity>
+          <capacity>.928</capacity>        <!--GWe-y-->
+          <cost>64</cost>        <!--$/kWe-y-->
+        </commodity_production>
+        <commod_pref>
+          <incommodity>enriched_u</incommodity>
+          <preference>1.0</preference>
+        </commod_pref>
+      </BatchReactor>
+    </model>
+  </facility>
+
+  <facility>
+    <name>Reactor2</name>
+    <model>
+      <BatchReactor>
         <fuel>
           <incommodity>enriched_u</incommodity>
           <inrecipe>lwr_fuel_recipe</inrecipe>
@@ -71,45 +115,6 @@
         <commod_pref>
           <incommodity>enriched_u</incommodity>
           <preference>0.5</preference>
-        </commod_pref>
-      </BatchReactor>
-    </model>
-  </facility>
-
-  <facility>
-    <name>Reactor2</name>
-    <model>
-      <BatchReactor>
-        <fuel>         
-          <incommodity>enriched_u</incommodity>
-          <inrecipe>lwr_fuel_recipe</inrecipe>
-          <outcommodity>waste</outcommodity>
-          <outrecipe>lwr_used_fuel_recipe</outrecipe>
-        </fuel>
-        <processtime>1</processtime>
-        <nbatches>1</nbatches>
-        <batchsize>1</batchsize>
-        <refueltime>0</refueltime>
-        <initial_condition>
-          <core>
-            <nbatches>1</nbatches>
-            <commodity>enriched_u</commodity>
-            <recipe>lwr_fuel_recipe</recipe>
-          </core>
-        </initial_condition>
-        <recipe_change>
-          <incommodity>enriched_u</incommodity>
-          <new_recipe>lwr_fuel_recipe2</new_recipe>
-          <time>1</time>
-        </recipe_change>
-        <commodity_production>
-          <commodity>lwr_power</commodity>
-          <capacity>.928</capacity>        <!--GWe-y-->
-          <cost>64</cost>        <!--$/kWe-y-->
-        </commodity_production>
-        <commod_pref>
-          <incommodity>enriched_u</incommodity>
-          <preference>1.0</preference>
         </commod_pref>
       </BatchReactor>
     </model>
@@ -165,11 +170,11 @@
     <basis>mass</basis>
     <isotope>
       <id>92235</id>
-      <comp>3.5</comp>
+      <comp>3.0</comp>
     </isotope>
     <isotope>
       <id>92238</id>
-      <comp>96.5</comp>
+      <comp>97.0</comp>
     </isotope>
   </recipe>
 

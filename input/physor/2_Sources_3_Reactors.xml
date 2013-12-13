@@ -3,7 +3,7 @@
 
 <simulation>
   <control>
-    <duration>6</duration>
+    <duration>7</duration>
     <startmonth>1</startmonth>
     <startyear>2000</startyear>
     <simstart>0</simstart>
