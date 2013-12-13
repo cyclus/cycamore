@@ -100,7 +100,7 @@
         <recipe_change>
           <incommodity>enriched_u</incommodity>
           <new_recipe>lwr_fuel_recipe2</new_recipe>
-          <time>3</time>
+          <time>1</time>
         </recipe_change>
         <commodity_production>
           <commodity>lwr_power</commodity>
