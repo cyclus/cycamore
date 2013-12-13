@@ -31,11 +31,17 @@ namespace cycamore {
 ///
 /// @section introduction Introduction
 /// The BatchReactor is a facility that models batch processing. It has three
-/// buffers which hold batches of materials: reserves, core, and
+/// storage areas which hold batches of materials: reserves, core, and
 /// storage. Incoming material orders are placed into reserves, from which the
 /// core is provided batches during refueling. When a process has been
 /// completed, batches are moved from the core into storage. Requests for
 /// material are bid upon based on the state of the material in storage.
+///
+/// The Reactor can manage multiple input-output commodity pairs, and keeps
+/// track of the pair that each batch belongs to. Batches move through the
+/// system independently of their input/output commodity types, but when batches
+/// reach the storage area, they are offered as bids depedent on their output
+/// commodity type.
 ///
 /// @section params Parameters
 /// A BatchReactor has the following tuneable parameters:
@@ -49,26 +55,53 @@ namespace cycamore {
 ///   order fuel
 ///   #. refuel_time : the number of timesteps required to reload the core after
 ///   a process has finished
-///   #. in_commodity : the name of the input commodity
-///   #. in_recipe : the name of the input recipe
-///   #. out_commodity : the name of the output commodity
-///   #. out_recipe : the name of the output recipe
 /// 
-/// @section requests Requests  
-/// A BatchReactor will make a request for its input commodity if the
-/// preorder_time has been reached and there are less than n_reserves batches in
-/// its reserves.
+/// The BatchReactor also maintains a cyclus::CommodityRecipeContext, which
+/// allows it to track incommodity-inrecipe/outcommodity-outrecipe groupings.
+/// 
+/// @section operation Operation
+  
+/// After a BatchReactor enters the simulation, it will begin processing its
+/// first batch load on the Tick after its core has been filled.
+/// 
+/// It will maintain its "processing" state for process_time() time steps,
+/// including the timestep on which it began. It will unload n_load() batches
+/// from its core on the Tock of that time step. For example, if a reactor
+/// begins its process at time 1 and has a process_time equal to 10, it will
+/// unload batches on the Tock of time step 10.
+/// 
+/// Starting at the next time step, the reactor will attempt to refuel itself
+/// from whatever batches exist in its reserves container (i.e, already-ordered
+/// fuel). Assuming its core buffer has been refueled, it will wait reload_time
+/// timesteps. On the tick of the following timestep, the process will begin
+/// again. Using the previous example, assume that the refuel_time is equal to
+/// two and that the core buffer has been refueled appropriately. The refueling
+/// "phase" will begin on time step 11, and will end on the Tock of time step
+/// 12. The process will begin again on time step 13 (analagous to its state
+/// originally at time step 1).
+/// 
+/// @section requests Requests
+/// A BatchReactor will make as many requests as it has possible input
+/// commodities. It provides a constraint based on a total request amount
+/// determined by its batch_size, n_load, and n_reserves parameters. The
+/// n_reserves parameter allows modelers to order fuel in advance of when it is
+/// needed. The fuel order size is batch_size * (n_load + n_reserves). These
+/// requests are made if the current simulation time is less than or equal to
+/// the reactor's current order_time(), which is determined by the ending time
+/// of the current process less a look ahead time, the preorder_time().
 ///
 /// A special case exists when the reactor first enters the simulation, where it
 /// will order as much fuel as is needed to fill its full core.
 /// 
 /// @section bids Bids
-/// A BatchReactor will bid on any request for its out_commodity, up to its
-/// storage buffer quantity.
+/// A BatchReactor will bid on any request for any of its out_commodities, as
+/// long as there is a positive quantity of material in its storage area
+/// associated with that output commodity.
 ///
 /// @section ics Initial Conditions
 /// A BatchReactor can be deployed with any number of batches in its reserve,
-/// core, and storage buffers.
+/// core, and storage buffers. Recipes and commodities for each of these batch
+/// groupings must be specified.
 ///
 /// @todo add decommissioning behavior if material is still in storage
 ///
