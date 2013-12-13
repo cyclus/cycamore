@@ -36,7 +36,7 @@
           <swu_capacity>10</swu_capacity>
         </output>
         <initial_condition>
-          <nreserves>1e5</nreserves>
+          <reserves_qty>1e5</reserves_qty>
         </initial_condition>
       </EnrichmentFacility>
     </model>
