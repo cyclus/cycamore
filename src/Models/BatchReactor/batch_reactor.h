@@ -59,8 +59,7 @@ namespace cycamore {
 /// The BatchReactor also maintains a cyclus::CommodityRecipeContext, which
 /// allows it to track incommodity-inrecipe/outcommodity-outrecipe groupings.
 /// 
-/// @section operation Operation
-  
+/// @section operation Operation  
 /// After a BatchReactor enters the simulation, it will begin processing its
 /// first batch load on the Tick after its core has been filled.
 /// 
@@ -80,6 +79,10 @@ namespace cycamore {
 /// 12. The process will begin again on time step 13 (analagous to its state
 /// originally at time step 1).
 /// 
+/// @section end End of Life
+/// If the current time step is equivalent to the facility's lifetime, the
+/// reactor will move all material in its core to its storage containers.
+///
 /// @section requests Requests
 /// A BatchReactor will make as many requests as it has possible input
 /// commodities. It provides a constraint based on a total request amount
