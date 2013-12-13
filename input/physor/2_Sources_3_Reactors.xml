@@ -3,7 +3,7 @@
 
 <simulation>
   <control>
-    <duration>5</duration>
+    <duration>6</duration>
     <startmonth>1</startmonth>
     <startyear>2000</startyear>
     <simstart>0</simstart>
@@ -16,10 +16,6 @@
 
   <commodity>
     <name>mox</name>
-  </commodity>
-
-  <commodity>
-    <name>lwr_power</name>
   </commodity>
 
   <commodity>
@@ -53,7 +49,52 @@
   </facility>
 
   <facility>
-    <name>LWR_Reactor</name>
+    <name>Reactor1</name>
+    <model>
+      <BatchReactor>
+        <fuel>
+          <incommodity>uox</incommodity>
+          <inrecipe>uox_fuel_recipe</inrecipe>
+          <outcommodity>waste</outcommodity>
+          <outrecipe>uox_used_fuel_recipe</outrecipe> 
+        </fuel>
+        <fuel>
+          <incommodity>mox</incommodity> 
+          <inrecipe>mox_fuel_recipe</inrecipe>
+          <outcommodity>waste</outcommodity>
+          <outrecipe>mox_used_fuel_recipe</outrecipe> 
+        </fuel>
+        <processtime>1</processtime>
+        <nbatches>1</nbatches>
+        <batchsize>1</batchsize>
+        <refueltime>0</refueltime>
+        <initial_condition>
+          <core>
+            <nbatches>1</nbatches>
+            <commodity>mox</commodity>
+            <recipe>mox_fuel_recipe</recipe>
+          </core>
+        </initial_condition>        
+        <commodity_production>
+          <commodity>lwr_power</commodity>
+          <capacity>.928</capacity>        <!--GWe-y-->
+          <cost>64</cost>        <!--$/kWe-y-->
+        </commodity_production>
+        <commod_pref>
+          <incommodity>mox</incommodity>
+          <preference>1.0</preference>
+        </commod_pref>
+        <pref_change>
+          <incommodity>uox</incommodity>
+          <new_pref>2.0</new_pref>
+          <time>5</time>
+        </pref_change>
+      </BatchReactor>
+    </model>
+  </facility>
+
+  <facility>
+    <name>Reactor2</name>
     <model>
       <BatchReactor>
         <fuel>
@@ -93,7 +134,7 @@
   </facility>
 
   <facility>
-    <name>LWR_Reactor_Flex</name>
+    <name>Reactor3</name>
     <model>
       <BatchReactor>
         <fuel>
@@ -118,7 +159,7 @@
             <commodity>mox</commodity>
             <recipe>mox_fuel_recipe</recipe>
           </core>
-        </initial_condition>        
+        </initial_condition>
         <commodity_production>
           <commodity>lwr_power</commodity>
           <capacity>.928</capacity>        <!--GWe-y-->
@@ -126,13 +167,8 @@
         </commodity_production>
         <commod_pref>
           <incommodity>mox</incommodity>
-          <preference>1.0</preference>
+          <preference>0.5</preference>
         </commod_pref>
-        <pref_change>
-          <incommodity>uox</incommodity>
-          <new_pref>1.0</new_pref>
-          <time>5</time>
-        </pref_change>
       </BatchReactor>
     </model>
   </facility>
@@ -141,8 +177,9 @@
     <name>SingleRegion</name>
     <allowedfacility>UOX_Source</allowedfacility>
     <allowedfacility>MOX_Source</allowedfacility>
-    <allowedfacility>LWR_Reactor</allowedfacility>
-    <allowedfacility>LWR_Reactor_Flex</allowedfacility>
+    <allowedfacility>Reactor1</allowedfacility>
+    <allowedfacility>Reactor2</allowedfacility>
+    <allowedfacility>Reactor3</allowedfacility>
     <model>
       <NullRegion/>
     </model>
@@ -150,8 +187,9 @@
       <name>SingleInstitution</name>
       <availableprototype>UOX_Source</availableprototype>
       <availableprototype>MOX_Source</availableprototype>
-      <availableprototype>LWR_Reactor</availableprototype>
-      <availableprototype>LWR_Reactor_Flex</availableprototype>
+      <availableprototype>Reactor1</availableprototype>
+      <availableprototype>Reactor2</availableprototype>
+      <availableprototype>Reactor3</availableprototype>
       <buildorder>
         <prototype>UOX_Source</prototype>
         <number>1</number>
@@ -163,17 +201,17 @@
         <date>1</date>
       </buildorder>
       <buildorder>
-        <prototype>LWR_Reactor_Flex</prototype>
+        <prototype>Reactor1</prototype>
         <number>1</number>        
         <date>1</date>
       </buildorder>
       <buildorder>
-        <prototype>LWR_Reactor</prototype>
+        <prototype>Reactor2</prototype>
         <number>1</number>        
         <date>2</date>
       </buildorder>
       <buildorder>
-        <prototype>LWR_Reactor</prototype>
+        <prototype>Reactor3</prototype>
         <number>1</number>        
         <date>3</date>
       </buildorder>      

@@ -19,10 +19,6 @@
   </commodity>
 
   <commodity>
-    <name>lwr_power</name>
-  </commodity>
-
-  <commodity>
     <name>waste</name>
   </commodity>
 
@@ -37,14 +33,17 @@
         <output>
           <outcommodity>enriched_u</outcommodity>
           <tails_assay>0.003</tails_assay>
-          <swu_capacity>2.5</swu_capacity>
+          <swu_capacity>10</swu_capacity>
         </output>
+        <initial_condition>
+          <nreserves>1e5</nreserves>
+        </initial_condition>
       </EnrichmentFacility>
     </model>
   </facility>
 
   <facility>
-    <name>LWR_Reactor_1</name>
+    <name>Reactor1</name>
     <model>
       <BatchReactor>
         <fuel>
@@ -71,14 +70,14 @@
         </commodity_production>
         <commod_pref>
           <incommodity>enriched_u</incommodity>
-          <preference>1.0</preference>
+          <preference>0.5</preference>
         </commod_pref>
       </BatchReactor>
     </model>
   </facility>
 
   <facility>
-    <name>LWR_Reactor_2</name>
+    <name>Reactor2</name>
     <model>
       <BatchReactor>
         <fuel>         
@@ -98,6 +97,11 @@
             <recipe>lwr_fuel_recipe</recipe>
           </core>
         </initial_condition>
+        <recipe_change>
+          <incommodity>enriched_u</incommodity>
+          <new_recipe>lwr_fuel_recipe2</new_recipe>
+          <time>3</time>
+        </recipe_change>
         <commodity_production>
           <commodity>lwr_power</commodity>
           <capacity>.928</capacity>        <!--GWe-y-->
@@ -106,13 +110,7 @@
         <commod_pref>
           <incommodity>enriched_u</incommodity>
           <preference>1.0</preference>
-          <starttime>1</starttime>
         </commod_pref>
-        <pref_change>
-          <incommodity>enriched_u</incommodity>
-          <new_pref>2.0</new_pref>
-          <time>3</time>
-        </pref_change>
       </BatchReactor>
     </model>
   </facility>
@@ -127,18 +125,19 @@
     <institution>
       <name>SingleInstitution</name>
       <availableprototype>Enrichment</availableprototype>
-      <availableprototype>LWR_Reactor</availableprototype>
+      <availableprototype>Reactor1</availableprototype>
+      <availableprototype>Reactor2</availableprototype>
       <initialfacilitylist>
         <entry>
           <prototype>Enrichment</prototype>
           <number>1</number>
         </entry>
         <entry>
-          <prototype>LWR_Reactor_1</prototype>
+          <prototype>Reactor1</prototype>
           <number>1</number>
         </entry>
         <entry>
-          <prototype>LWR_Reactor_2</prototype>
+          <prototype>Reactor2</prototype>
           <number>1</number>
         </entry>        
       </initialfacilitylist>
@@ -166,11 +165,24 @@
     <basis>mass</basis>
     <isotope>
       <id>92235</id>
-      <comp>4.0</comp>
+      <comp>3.5</comp>
     </isotope>
     <isotope>
       <id>92238</id>
-      <comp>96.0</comp>
+      <comp>96.5</comp>
+    </isotope>
+  </recipe>
+
+  <recipe>
+    <name>lwr_fuel_recipe2</name>
+    <basis>mass</basis>
+    <isotope>
+      <id>92235</id>
+      <comp>5.0</comp>
+    </isotope>
+    <isotope>
+      <id>92238</id>
+      <comp>95.0</comp>
     </isotope>
   </recipe>
 
