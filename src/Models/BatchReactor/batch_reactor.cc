@@ -423,18 +423,27 @@ void BatchReactor::HandleTick(int time) {
   LOG(cyclus::LEV_DEBUG4, "BReact") << "    NStorage: " << StorageCount();  
   LOG(cyclus::LEV_DEBUG4, "BReact") << "    Spillover Qty: " << spillover_->quantity();  
 
-  switch (phase()) {
-    case WAITING:
-      if (n_core() == n_batches() &&
-          to_begin_time() <= context()->time()) {
-        phase(PROCESS);
-      } 
-      break;
-      
-    case INITIAL:
-      // special case for a core primed to go
-      if (n_core() == n_batches()) phase(PROCESS);
-      break;
+  if (context()->time() == FacLifetime()) {
+    int ncore = core_.count();
+    LOG(cyclus::LEV_DEBUG1, "BReact") << "lifetime reached, moving out:"
+                                      << ncore << " batches.";
+    for (int i = 0; i < ncore; i++) {
+      MoveBatchOut_(); // unload
+    }
+  } else {
+    switch (phase()) {
+      case WAITING:
+        if (n_core() == n_batches() &&
+            to_begin_time() <= context()->time()) {
+          phase(PROCESS);
+        } 
+        break;
+        
+      case INITIAL:
+        // special case for a core primed to go
+        if (n_core() == n_batches()) phase(PROCESS);
+        break;
+    }
   }
 
   // change preferences if its time
@@ -454,12 +463,6 @@ void BatchReactor::HandleTick(int time) {
       assert(changes[i].first != "");
       assert(changes[i].second != "");
       crctx_.UpdateInRec(changes[i].first, changes[i].second);
-    }
-  }
-
-  if (context()->time() == FacLifetime()) {
-    for (int i = 0; i < n_core(); i++) {
-      MoveBatchOut_(); // unload
     }
   }
   

@@ -141,7 +141,7 @@ TEST_F(EnrichmentFacilityTest, XMLInit) {
      << "    <swu_capacity>" << swu_capacity << "</swu_capacity>"
      << "  </output>"
      << "  <initial_condition>"
-     << "    <reserves>" << reserves << "</reserves>"
+     << "    <reserves_qty>" << reserves << "</reserves_qty>"
      << "  </initial_condition>"
      << "</start>";
 

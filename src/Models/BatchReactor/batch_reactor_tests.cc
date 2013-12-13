@@ -318,8 +318,8 @@ TEST_F(BatchReactorTest, StartProcess) {
   int t = tc_.get()->time();
   src_facility->phase(BatchReactor::PROCESS);
   EXPECT_EQ(t, src_facility->start_time());
-  EXPECT_EQ(t + process_time, src_facility->end_time());
-  EXPECT_EQ(t + process_time - preorder_time, src_facility->order_time());
+  EXPECT_EQ(t + process_time - 1, src_facility->end_time());
+  EXPECT_EQ(t + process_time - preorder_time -1, src_facility->order_time());
 }
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -

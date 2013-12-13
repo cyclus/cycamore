@@ -7,11 +7,12 @@
      12 - end refuel period
      13 - begin operation
      22 - finish opertion, order batch, refuel core
-     24 - end refuel period -->
+     24 - end refuel period
+     26 - end lifetime, remove core -->
 
 <simulation>
   <control>
-    <duration>25</duration>
+    <duration>27</duration>
     <startmonth>1</startmonth>
     <startyear>2000</startyear>
     <simstart>0</simstart>
@@ -42,6 +43,7 @@
 
   <facility>
     <name>LWR_Reactor</name>
+    <lifetime>26</lifetime>
     <model>
       <BatchReactor>
         <fuel>
