@@ -61,14 +61,14 @@
       <BatchReactor>
         <fuel>
          <incommodity>enriched_u</incommodity>
-         <inrecipe>natl_u</inrecipe>
+         <inrecipe>lwr_fuel_recipe</inrecipe>
          <outcommodity>waste</outcommodity>
          <outrecipe>lwr_used_fuel_recipe</outrecipe>
         </fuel>
         <processtime>10</processtime>
         <refueltime>2</refueltime>
         <nbatches>4</nbatches>
-        <batchsize>7.8707064e4</batchsize>
+        <batchsize>19676.766</batchsize>
         <commodity_production>
           <commodity>lwr_power</commodity>
           <capacity>1000</capacity>
