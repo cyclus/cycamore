@@ -7,7 +7,7 @@
     <startmonth>1</startmonth>
     <startyear>2000</startyear>
     <simstart>0</simstart>
-    <decay>2</decay>
+    <decay>0</decay>
   </control>
 
   <commodity>
@@ -190,33 +190,34 @@
       <availableprototype>Reactor1</availableprototype>
       <availableprototype>Reactor2</availableprototype>
       <availableprototype>Reactor3</availableprototype>
-      <buildorder>
-        <prototype>UOX_Source</prototype>
-        <number>1</number>
-        <date>1</date>
-      </buildorder>
-      <buildorder>
-        <prototype>MOX_Source</prototype>        
-        <number>1</number>
-        <date>1</date>
-      </buildorder>
-      <buildorder>
-        <prototype>Reactor1</prototype>
-        <number>1</number>        
-        <date>1</date>
-      </buildorder>
-      <buildorder>
-        <prototype>Reactor2</prototype>
-        <number>1</number>        
-        <date>2</date>
-      </buildorder>
-      <buildorder>
-        <prototype>Reactor3</prototype>
-        <number>1</number>        
-        <date>3</date>
-      </buildorder>      
       <model>
-        <DeployInst/>          
+        <DeployInst>
+          <buildorder>
+            <prototype>UOX_Source</prototype>
+            <number>1</number>
+            <date>1</date>
+          </buildorder>
+          <buildorder>
+            <prototype>MOX_Source</prototype>        
+            <number>1</number>
+            <date>1</date>
+          </buildorder>
+          <buildorder>
+            <prototype>Reactor1</prototype>
+            <number>1</number>        
+            <date>1</date>
+          </buildorder>
+          <buildorder>
+            <prototype>Reactor2</prototype>
+            <number>1</number>        
+            <date>2</date>
+          </buildorder>
+          <buildorder>
+            <prototype>Reactor3</prototype>
+            <number>1</number>        
+            <date>3</date>
+          </buildorder>        
+        </DeployInst>
       </model>
     </institution>
   </region>
