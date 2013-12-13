@@ -1,0 +1,203 @@
+<?xml version="1.0"?>
+<!-- This input file is used to verify the INPRO reactor model for two cycles.
+     The event list is as follows, based on simulation time:
+     0  - enter simulation, order core, fill core
+     1  - begin operation
+     10 - finish opertion, order batch, refuel core
+     12 - end refuel period
+     13 - begin operation
+     22 - finish opertion, order batch, refuel core
+     24 - end refuel period -->
+
+<simulation>
+  <control>
+    <duration>25</duration>
+    <startmonth>1</startmonth>
+    <startyear>2000</startyear>
+    <simstart>0</simstart>
+    <decay>0</decay>
+  </control>
+
+  <commodity>
+    <name>enriched_u</name>
+  </commodity>
+
+  <commodity>
+    <name>waste</name>
+  </commodity>
+
+  <facility>
+    <name>Source</name>
+    <model>
+      <SourceFacility>
+        <output>
+          <outcommodity>enriched_u</outcommodity>
+          <output_capacity>1.0e10</output_capacity>
+          <recipe>lwr_fuel_recipe</recipe>
+        </output>
+      </SourceFacility>
+    </model>
+    <outcommodity>enriched_u</outcommodity>
+  </facility>
+
+  <facility>
+    <name>LWR_Reactor</name>
+    <model>
+      <BatchReactor>
+        <fuel>
+         <incommodity>enriched_u</incommodity>
+         <inrecipe>lwr_fuel_recipe</inrecipe>
+         <outcommodity>waste</outcommodity>
+         <outrecipe>lwr_used_fuel_recipe</outrecipe>
+        </fuel>
+        <processtime>10</processtime>
+        <refueltime>2</refueltime>
+        <nbatches>4</nbatches>
+        <batchsize>7.8707064e4</batchsize>
+        <commodity_production>
+          <commodity>lwr_power</commodity>
+          <capacity>1000</capacity>
+          <cost>1000</cost>
+        </commodity_production>
+      </BatchReactor>
+    </model>
+    <incommodity>enriched_u</incommodity>
+    <outcommodity>waste</outcommodity>
+  </facility>
+  
+  <facility>
+    <name>Sink</name>
+    <model>
+      <SinkFacility>
+        <input>
+          <commodities>
+            <incommodity>waste</incommodity>
+          </commodities>
+          <input_capacity>1.0e10</input_capacity>
+        </input>
+      </SinkFacility>
+    </model>
+    <incommodity>waste</incommodity>
+  </facility>
+
+  <region>
+    <name>SingleRegion</name>
+    <allowedfacility>Source</allowedfacility>
+    <allowedfacility>LWR_Reactor</allowedfacility>
+    <allowedfacility>Sink</allowedfacility>
+    <model>
+     <NullRegion/>
+    </model>
+    <institution>
+      <name>SingleInstitution</name>
+      <availableprototype>Source</availableprototype>
+      <availableprototype>LWR_Reactor</availableprototype>
+      <availableprototype>Sink</availableprototype>
+      <initialfacilitylist>
+        <entry>
+          <prototype>Source</prototype>
+          <number>1</number>
+        </entry>
+        <entry>
+          <prototype>LWR_Reactor</prototype>
+          <number>1</number>
+        </entry>
+        <entry>
+          <prototype>Sink</prototype>
+          <number>1</number>
+        </entry>
+      </initialfacilitylist>
+      <model>
+        <NullInst/>
+      </model>
+    </institution>
+  </region>
+
+  <recipe>
+    <name>natl_u</name>
+    <basis>mass</basis>
+    <isotope>
+      <id>92235</id>
+      <comp>0.711</comp>
+    </isotope>
+    <isotope>
+      <id>92238</id>
+      <comp>99.289</comp>
+    </isotope>
+  </recipe>
+
+  <recipe>
+    <name>lwr_fuel_recipe</name>
+    <basis>mass</basis>
+    <isotope>
+      <id>92235</id>
+      <comp>4.0</comp>
+    </isotope>
+    <isotope>
+      <id>92238</id>
+      <comp>96.0</comp>
+    </isotope>
+  </recipe>
+
+  <recipe>
+    <name>lwr_used_fuel_recipe</name>
+    <basis>mass</basis>
+    <isotope>
+      <id>92235</id>
+      <comp>156.729</comp>
+    </isotope>
+    <isotope>
+      <id>92236</id>
+      <comp>102.103</comp>
+    </isotope>
+    <isotope>
+      <id>92238</id>
+      <comp>18280.324</comp>
+    </isotope>
+    <isotope>
+      <id>93237</id>
+      <comp>13.656</comp>
+    </isotope>
+    <isotope>
+      <id>94238</id>
+      <comp>5.043</comp>
+    </isotope>
+    <isotope>
+      <id>94239</id>
+      <comp>106.343</comp>
+    </isotope>
+    <isotope>
+      <id>94240</id>
+      <comp>41.357</comp>
+    </isotope>
+    <isotope>
+      <id>94241</id>
+      <comp>36.477</comp>
+    </isotope>
+    <isotope>
+      <id>94242</id>
+      <comp>15.387</comp>
+    </isotope>
+    <isotope>
+      <id>95241</id>
+      <comp>1.234</comp>
+    </isotope>
+    <!-- <isotope> -->
+    <!--   <id>95242m</id> -->
+    <!--   <comp>0.03</comp> -->
+    <!-- </isotope> -->
+    <isotope>
+      <id>95243</id>
+      <comp>3.607</comp>
+    </isotope>
+    <isotope>
+      <id>96244</id>
+      <comp>0.431</comp>
+    </isotope>
+    <isotope>
+      <id>96245</id>
+      <comp>1.263</comp>
+    </isotope>
+  </recipe>
+
+</simulation>

@@ -200,6 +200,9 @@ class BatchReactor : public cyclus::FacilityModel,
   /* --- */
 
   /* --- BatchReactor Members --- */
+  /// @return the total number of batches in storage
+  int StorageCount();
+  
   /// @brief the processing time required for a full batch process before
   /// refueling
   inline void process_time(int t) { process_time_ = t; }
@@ -222,6 +225,9 @@ class BatchReactor : public cyclus::FacilityModel,
   /// @warning the - 1 is to ensure that a 1 period process time that begins on
   /// the tick ends on the tock
   inline int end_time() const { return start_time() + process_time() - 1; }
+
+  /// @brief the beginning time for the next phase, set internally
+  inline int begin_time() const { return begin_time_; }
 
   /// @brief the time orders should be taking place for the next refueling
   inline int order_time() const { return end_time() - preorder_time(); }
@@ -319,6 +325,7 @@ class BatchReactor : public cyclus::FacilityModel,
   int preorder_time_;
   int refuel_time_;
   int start_time_;
+  int begin_time_;
   int n_batches_;
   int n_load_;
   int n_reserves_;

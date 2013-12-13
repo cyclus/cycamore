@@ -26,6 +26,7 @@ BatchReactor::BatchReactor(cyclus::Context* ctx)
       preorder_time_(0),
       refuel_time_(0),
       start_time_(-1),
+      begin_time_(std::numeric_limits<int>::max()),
       n_batches_(1),
       n_load_(1),
       n_reserves_(0),
@@ -419,11 +420,13 @@ void BatchReactor::HandleTick(int time) {
   LOG(cyclus::LEV_DEBUG4, "BReact") << "    Order time: " << order_time();  
   LOG(cyclus::LEV_DEBUG4, "BReact") << "    NReserves: " << reserves_.count();
   LOG(cyclus::LEV_DEBUG4, "BReact") << "    NCore: " << core_.count();  
+  LOG(cyclus::LEV_DEBUG4, "BReact") << "    NStorage: " << StorageCount();  
+  LOG(cyclus::LEV_DEBUG4, "BReact") << "    Spillover Qty: " << spillover_->quantity();  
 
   switch (phase()) {
     case WAITING:
       if (n_core() == n_batches() &&
-          end_time() + refuel_time() <= context()->time()) {
+          begin_time() <= context()->time()) {
         phase(PROCESS);
       } 
       break;
@@ -463,6 +466,8 @@ void BatchReactor::HandleTick(int time) {
   LOG(cyclus::LEV_DEBUG3, "BReact") << "    Order time: " << order_time();  
   LOG(cyclus::LEV_DEBUG3, "BReact") << "    NReserves: " << reserves_.count();
   LOG(cyclus::LEV_DEBUG3, "BReact") << "    NCore: " << core_.count();  
+  LOG(cyclus::LEV_DEBUG3, "BReact") << "    NStorage: " << StorageCount();  
+  LOG(cyclus::LEV_DEBUG3, "BReact") << "    Spillover Qty: " << spillover_->quantity();  
   LOG(cyclus::LEV_INFO3, "BReact") << "}";
 }
 
@@ -478,6 +483,8 @@ void BatchReactor::HandleTock(int time) {
   LOG(cyclus::LEV_DEBUG4, "BReact") << "    Order time: " << order_time();  
   LOG(cyclus::LEV_DEBUG4, "BReact") << "    NReserves: " << reserves_.count();
   LOG(cyclus::LEV_DEBUG4, "BReact") << "    NCore: " << core_.count();  
+  LOG(cyclus::LEV_DEBUG4, "BReact") << "    NStorage: " << StorageCount();  
+  LOG(cyclus::LEV_DEBUG4, "BReact") << "    Spillover Qty: " << spillover_->quantity();  
   
   switch (phase()) {
     case PROCESS:
@@ -503,6 +510,8 @@ void BatchReactor::HandleTock(int time) {
   LOG(cyclus::LEV_DEBUG3, "BReact") << "    Order time: " << order_time();  
   LOG(cyclus::LEV_DEBUG3, "BReact") << "    NReserves: " << reserves_.count();
   LOG(cyclus::LEV_DEBUG3, "BReact") << "    NCore: " << core_.count();  
+  LOG(cyclus::LEV_DEBUG3, "BReact") << "    NStorage: " << StorageCount();  
+  LOG(cyclus::LEV_DEBUG3, "BReact") << "    Spillover Qty: " << spillover_->quantity();  
   LOG(cyclus::LEV_INFO3, "BReact") << "}";
 }
 
@@ -534,18 +543,23 @@ BatchReactor::GetMatlRequests() {
     // been reached
     default:
       // double fuel_need = (n_reserves() + n_batches() - n_core()) * batch_size();
-      double fuel_need = (n_reserves() + n_batches()) * batch_size();
+      double fuel_need = (n_reserves() + n_load()) * batch_size();
       double fuel_have = reserves_.quantity() + spillover_->quantity();
       order_size = fuel_need - fuel_have;
+      bool ordering = order_time() <= context()->time() && order_size > 0;
 
       LOG(cyclus::LEV_DEBUG5, "BReact") << "BatchReactor " << name()
                                         << " is deciding whether to order -";      
       LOG(cyclus::LEV_DEBUG5, "BReact") << "    Needs fuel amt: " << fuel_need;    
       LOG(cyclus::LEV_DEBUG5, "BReact") << "    Has fuel amt: " << fuel_have;
       LOG(cyclus::LEV_DEBUG5, "BReact") << "    Order amt: " << order_size;
+      LOG(cyclus::LEV_DEBUG5, "BReact") << "    Order time: " << order_time();
+      LOG(cyclus::LEV_DEBUG5, "BReact") << "    Current time: "
+                                        << context()->time();
+      LOG(cyclus::LEV_DEBUG5, "BReact") << "    Ordering?: "
+                                        << ((ordering == true) ? "yes" : "no");
       
-      if (order_time() <= context()->time() &&
-          order_size > 0) {
+      if (ordering) {
         RequestPortfolio<Material>::Ptr p = GetOrder_(order_size);
         set.insert(p);
       }
@@ -632,6 +646,16 @@ void BatchReactor::GetMatlTrades(
 }
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+int BatchReactor::StorageCount() {
+  int count = 0;
+  std::map<std::string, cyclus::ResourceBuff>::const_iterator it;
+  for (it = storage_.begin(); it != storage_.end(); ++it) {
+    count += it->second.count();
+  }
+  return count;
+}
+
+//- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 void BatchReactor::phase(BatchReactor::Phase p) {
   LOG(cyclus::LEV_DEBUG2, "BReact") << "BatchReactor " << name()
                                     << " is changing phases -";
@@ -649,6 +673,10 @@ void BatchReactor::phase(BatchReactor::Phase p) {
 void BatchReactor::Refuel_() {
   while(n_core() < n_batches() && reserves_.count() > 0) {
     MoveBatchIn_();
+    if(n_core() == n_batches()) {
+      begin_time_ = start_time_ + process_time_ + refuel_time_;
+      start_time_ += process_time_ + refuel_time_;
+    }
   }
 }
 
@@ -736,8 +764,15 @@ void BatchReactor::AddBatches_(std::string commod, cyclus::Material::Ptr mat) {
   // new commodity. we need to do something different (maybe) for recycle.
   spillover_->Absorb(mat);
   
-  while (spillover_->quantity() >= batch_size()) {
-    Material::Ptr batch = spillover_->ExtractQty(batch_size());
+  while (!cyclus::IsNegative(spillover_->quantity() - batch_size())) {
+    Material::Ptr batch;
+    // this is a hack to deal with close-to-equal issues between batch size and
+    // the amount of fuel in spillover
+    if (spillover_->quantity() >= batch_size()) {
+      batch = spillover_->ExtractQty(batch_size());
+    } else {
+      batch = spillover_->ExtractQty(spillover_->quantity());
+    }
     assert(commod != "");
     crctx_.AddRsrc(commod, batch);
     reserves_.Push(batch);    
