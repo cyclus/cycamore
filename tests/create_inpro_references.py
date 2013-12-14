@@ -45,7 +45,7 @@ def mkdir_safe(path):
     ''' Create a non-existing directory '''
     if os.path.exists(path):
         if os.listdir(path) != []:
-            raise OSError("Found a non-empty " + path)
+            print("a non-empty " + path + ". Cancel manually to avoid overwriting")
     else:
         os.mkdir(path)
 
