@@ -1,18 +1,19 @@
 #! /usr/bin/env python
 
-from numpy.testing import assert_array_equal
 import os
+
 import tables
 import numpy as np
+from numpy.testing import assert_array_equal
+
 from tools import check_cmd
 
 """Tests"""
 def test_physor():
     """Test for physor cases. Checks if reference and current cyclus physor
-    output is the same. 
+    output is the same.
 
-    WARNING: the tests require either alias cyclus='location of cyclus'
-             or the location of cyclus executable to be included in PATH
+    WARNING: the tests require cyclus executable to be included in PATH
     """
 
     # Cyclus simulation inputs
@@ -35,7 +36,7 @@ def test_physor():
         paths = []
         for node in bench.walk_nodes(classname = "Table"):
             paths.append(node._v_pathname)
-       
+
         for path in paths:
             bdata = bench.get_node(path)[:]
             odata = output.get_node(path)[:]
@@ -46,7 +47,7 @@ def test_physor():
             bdata = bdata[names]
             odata = odata[names]
             yield assert_array_equal, bdata, odata
-        
+
         bench.close()
         output.close()
         os.remove("./output_temp.h5")

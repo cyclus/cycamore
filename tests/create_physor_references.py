@@ -3,6 +3,7 @@
 import os
 import sys
 import shutil
+
 from tools import check_cmd
 
 def main(cyclus_version, cycamore_version):
