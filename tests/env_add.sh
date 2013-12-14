@@ -9,4 +9,4 @@ export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:$CNERG_ROOT/users/rakhimov/hdf5-1.8.11/h
 # For some unkown reasons sphinx 1.1.3 libraries for python 2.6 breaks pytables
 # Remove that libraries from pythonpath
 
-export PYTHONPATH=`echo $PYTHONPATH | sed 's/\/filespace\/groups\/cnerg\/opt\/Sphinx-1.1.3\/lib\/python2.6\/site-packages\///g'`
+export PYTHONPATH=`echo $PYTHONPATH | sed 's/\/filespace\/groups\/cnerg\/opt\/Sphinx-1.1.3\/lib\/python2.6\/site-packages\///'`
