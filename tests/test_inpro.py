@@ -1,4 +1,4 @@
-#! /usr/bin/python
+#! /usr/bin/env python
 
 from numpy.testing import assert_array_equal
 import os
@@ -6,9 +6,9 @@ import tables
 import numpy as np
 from tools import check_cmd
 
-""" Tests """
+"""Tests"""
 def test_inpro():
-    """ Test for inpro cases. Checks if reference and current cyclus inpro
+    """Test for inpro cases. Checks if reference and current cyclus inpro
     output is the same. 
 
     WARNING: the tests require either alias cyclus='location of cyclus'

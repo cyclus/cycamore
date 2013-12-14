@@ -1,4 +1,4 @@
-#! /usr/bin/python
+#! /usr/bin/env python
 
 import os
 import sys
@@ -6,11 +6,11 @@ import shutil
 from tools import check_cmd
 
 def main(cyclus_version, cycamore_version):
-    '''Creates reference databases for physor cases
+    """Creates reference databases for physor cases
     in benchmarks folder.
 
     Arguments: version or sha of cyclus and cycamore to be checkout out by git
-    '''
+    """
     dirs_to_clean = [] #keep track of directories to delete later
     try:
         cwd = os.getcwd()
@@ -42,7 +42,7 @@ def main(cyclus_version, cycamore_version):
             shutil.rmtree(dir)
 
 def mkdir_safe(path):
-    ''' Create a non-existing directory '''
+    """Create a non-existing directory"""
     if os.path.exists(path):
         if os.listdir(path) != []:
             print("a non-empty " + path + ". Cancel manually to avoid overwriting")
@@ -50,7 +50,7 @@ def mkdir_safe(path):
         os.mkdir(path)
 
 def get_repo(project, version, target_dir):
-    ''' Gets repo from cyclus on gihub.'''
+    """Gets repo from cyclus on gihub."""
     holdsrtn = [1]
     repo_address = "https://github.com/gidden/" + project + ".git"
     cmd_clone = ["git","clone", repo_address]
@@ -62,15 +62,15 @@ def get_repo(project, version, target_dir):
     if holdsrtn[0] != 0 : sys.exit(1)
 
 def install_project(project_path, install_path):
-    ''' Installs project by invoking install.py '''
+    """Installs project by invoking install.py"""
     holdsrtn = [1]
     cmd_install = ["python", "install.py", "--prefix="+install_path]
     check_cmd(cmd_install, project_path, holdsrtn)
     if holdsrtn[0] != 0 : sys.exit(1)
 
 def run_physor(cyclus, cwd):
-    '''Runs cyclus with various physor inputs and creates reference databases
-        in a benchmarks directory.'''
+    """Runs cyclus with various physor inputs and creates reference databases
+        in a benchmarks directory."""
     #Cyclus simulation inputs
     sim_inputs = ["./inputs/physor/1_Enrichment_2_Reactor.xml",
                   "./inputs/physor/2_Sources_3_Reactors.xml"]
@@ -84,7 +84,7 @@ def run_physor(cyclus, cwd):
         check_cmd(cmd, cwd, holdsrtn)
         rtn = holdsrtn[0]
         if rtn != 0:
-            return # don't execute further commands
+            return # don"t execute further commands
 
 if __name__ == "__main__":
     if (len(sys.argv) == 1):

@@ -4,7 +4,7 @@ import tables
 import numpy as np
 
 def main(argv):
-    """ Compare two databases
+    """Compare two databases
 
     Arguments: must be two databases
 

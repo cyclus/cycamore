@@ -1,4 +1,4 @@
-#! /usr/bin/python
+#! /usr/bin/env python
 
 from numpy.testing import assert_array_equal
 import os
@@ -6,9 +6,9 @@ import tables
 import numpy as np
 from tools import check_cmd
 
-""" Tests """
+"""Tests"""
 def test_physor():
-    """ Test for physor cases. Checks if reference and current cyclus physor
+    """Test for physor cases. Checks if reference and current cyclus physor
     output is the same. 
 
     WARNING: the tests require either alias cyclus='location of cyclus'
