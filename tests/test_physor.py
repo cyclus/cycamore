@@ -16,10 +16,10 @@ def test_physor():
     """
 
     #Cyclus simulation inputs
-    sim_inputs = ["./inputs/physor/1_Enrichment_2_Reactor.xml"
+    sim_inputs = ["./inputs/physor/1_Enrichment_2_Reactor.xml",
                   "./inputs/physor/2_Sources_3_Reactors.xml"]
     #Benchmark databases must match the order of input files
-    bench_dbs = ["./benchmarks/physor_1_Enrichment_2_Reactor.h5"
+    bench_dbs = ["./benchmarks/physor_1_Enrichment_2_Reactor.h5",
                   "./benchmarks/physor_2_Sources_3_Reactors.h5"]
 
     for sim_input,bench_db in zip(sim_inputs,bench_dbs):
