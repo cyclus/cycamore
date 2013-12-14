@@ -44,7 +44,6 @@
           <commodities>
             <incommodity>commodity</incommodity>
           </commodities>
-          <input_capacity>1</input_capacity>
         </input>
       </SinkFacility>
     </model>
