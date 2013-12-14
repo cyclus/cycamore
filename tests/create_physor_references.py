@@ -11,17 +11,17 @@ def main(cyclus_version, cycamore_version):
 
     Arguments: version or sha of cyclus and cycamore to be checkout out by git
     """
-    dirs_to_clean = [] #keep track of directories to delete later
+    dirs_to_clean = [] # keep track of directories to delete later
     try:
         cwd = os.getcwd()
-        #Create Installation and Benchmarks Directories
+        # Create Installation and Benchmarks Directories
         install_path = cwd + "/install"
         benchmarks_path = cwd + "/benchmarks"
         mkdir_safe(install_path)
         dirs_to_clean.append(install_path)
         mkdir_safe(benchmarks_path)
 
-        #Create cyclus and cycamore repositories in the current directory
+        # Create cyclus and cycamore repositories in the current directory
         get_repo("cyclus", cyclus_version, cwd)
         get_repo("cycamore", cycamore_version, cwd)
         cyclus_path = cwd + "/cyclus"
@@ -29,15 +29,15 @@ def main(cyclus_version, cycamore_version):
         dirs_to_clean.append(cyclus_path)
         dirs_to_clean.append(cycamore_path)
 
-        #Install cyclus and cycamore
+        # Install cyclus and cycamore
         install_project(cyclus_path, install_path)
         install_project(cycamore_path, install_path)
         cyclus = install_path + "/bin/cyclus" # cyclus executable
 
-        #Run physor cases
+        # Run physor cases
         run_physor(cyclus, cwd)
     finally:
-        #Clean up
+        # Clean up
         for dir in dirs_to_clean:
             shutil.rmtree(dir)
 
@@ -71,10 +71,10 @@ def install_project(project_path, install_path):
 def run_physor(cyclus, cwd):
     """Runs cyclus with various physor inputs and creates reference databases
         in a benchmarks directory."""
-    #Cyclus simulation inputs
+    # Cyclus simulation inputs
     sim_inputs = ["./inputs/physor/1_Enrichment_2_Reactor.xml",
                   "./inputs/physor/2_Sources_3_Reactors.xml"]
-    #Benchmark databases must match the order of input files
+    # Benchmark databases must match the order of input files
     bench_dbs = ["./benchmarks/physor_1_Enrichment_2_Reactor.h5",
                   "./benchmarks/physor_2_Sources_3_Reactors.h5"]
 

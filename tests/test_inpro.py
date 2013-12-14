@@ -15,14 +15,14 @@ def test_inpro():
              or the location of cyclus executable to be included in PATH
     """
 
-    #Cyclus simulation inputs
+    # Cyclus simulation inputs
     sim_inputs = ["./inputs/inpro/inpro_low.xml",
                   "./inputs/inpro/inpro_high.xml", 
                   "./inputs/inpro/inpro_low_short.xml",
                   "./inputs/inpro/inpro_high_short.xml",
                   "./inputs/inpro/inpro_low_no_decay.xml",
                   "./inputs/inpro/inpro_high_no_decay.xml"]
-    #Benchmark databases must match the order of input files
+    # Benchmark databases must match the order of input files
     bench_dbs = ["./benchmarks/bench_inpro_low.h5",
                  "./benchmarks/bench_inpro_high.h5",
                  "./benchmarks/bench_inpro_low_short.h5",

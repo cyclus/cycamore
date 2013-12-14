@@ -1,3 +1,4 @@
+#! /usr/bin/env python
 from numpy.testing import assert_array_equal
 import sys
 import tables

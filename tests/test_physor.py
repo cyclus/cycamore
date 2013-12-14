@@ -15,10 +15,10 @@ def test_physor():
              or the location of cyclus executable to be included in PATH
     """
 
-    #Cyclus simulation inputs
+    # Cyclus simulation inputs
     sim_inputs = ["./inputs/physor/1_Enrichment_2_Reactor.xml",
                   "./inputs/physor/2_Sources_3_Reactors.xml"]
-    #Benchmark databases must match the order of input files
+    # Benchmark databases must match the order of input files
     bench_dbs = ["./benchmarks/physor_1_Enrichment_2_Reactor.h5",
                   "./benchmarks/physor_2_Sources_3_Reactors.h5"]
 
