@@ -1,4 +1,4 @@
-from numpy import array_equal
+from numpy.testing import assert_array_equal
 import sys
 import tables
 import numpy as np
@@ -9,6 +9,8 @@ def main(argv):
     Arguments: must be two databases
 
     Returns: message that indicates if the databases differ
+
+    Raises: IOError if the databases don't exist
     """
     # Check for valid arguments
     if (len(argv) != 3):
@@ -37,10 +39,12 @@ def main(argv):
             path_two.append(node._v_pathname)
 
         # Check if databases contain the same tables
-        if array_equal(path_one, path_two):
+        try:
+            assert_array_equal(path_one, path_two)
             paths = path_one
-        else:
+        except AssertionError as err:
             print("The number or names of tables in databases are not the same.")
+            print(err.message)
             sys.exit()
 
         for path in paths:
@@ -48,12 +52,15 @@ def main(argv):
             data_two = db_two.get_node(path)[:]
             names = []
             for name in data_one.dtype.names:
-                if name != "SimID" and name != "InputFiles":
+                if name != "SimID":
                     names.append(name)
             data_one = data_one[names]
             data_two = data_two[names]
-            if (not array_equal(data_one, data_two)):
-                print(name + " table are different in the databases.")
+            try:
+                assert_array_equal(data_one, data_two)
+            except AssertionError as err:
+                print("\n" + path + " table are different in the databases.")
+                print(err.message)
                 dbs_same = False
 
         if dbs_same:
