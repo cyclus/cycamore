@@ -8,6 +8,13 @@ from tools import check_cmd
 
 """ Tests """
 def test_inpro():
+    """ Test for inpro cases. Checks if reference and current cyclus inpro
+    output is the same. 
+
+    WARNING: the tests require either alias cyclus='location of cyclus'
+             or the location of cyclus executable to be included in PATH
+    """
+
     #Cyclus simulation inputs
     sim_inputs = ["./inputs/inpro/inpro_low.xml",
                   "./inputs/inpro/inpro_high.xml", 
