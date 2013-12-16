@@ -28,7 +28,6 @@
       <SourceFacility>
         <output>
           <outcommodity>natl_u</outcommodity>
-          <output_capacity>1.0e10</output_capacity>
           <recipe>natl_u</recipe>
         </output>
       </SourceFacility>
@@ -120,7 +119,6 @@
           <commodities>
             <incommodity>waste</incommodity>
           </commodities>
-          <input_capacity>1.0e10</input_capacity>
         </input>
       </SinkFacility>
     </model>
