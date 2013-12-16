@@ -1,14 +1,20 @@
 // sink_facility.h
-#ifndef _SINKFACILITY_H
-#define _SINKFACILITY_H
+#ifndef CYCAMORE_MODELS_SINK_FACILITY_H_
+#define CYCAMORE_MODELS_SINK_FACILITY_H_
 
+#include <algorithm>
 #include <string>
+#include <utility>
+#include <vector>
 
 #include "facility_model.h"
-
-#include "query_engine.h"
-#include "resource_buff.h"
+#include "generic_resource.h"
 #include "logger.h"
+#include "material.h"
+#include "query_engine.h"
+#include "request_portfolio.h"
+#include "resource_buff.h"
+#include "trade.h"
 
 namespace cycamore {
 
@@ -82,7 +88,7 @@ class Context;
  */
 class SinkFacility : public cyclus::FacilityModel  {
  public:
-  /* --- Module Methods --- */
+  /* --- Module Members --- */
   /**
      Constructor for the SinkFacility class.
      @param ctx the cyclus context for access to simulation-wide parameters
@@ -100,9 +106,16 @@ class SinkFacility : public cyclus::FacilityModel  {
 
   /**
      Initialize members related to derived module class
-     @param qe a pointer to a cyclus::QueryEngine object containing initialization data
+
+     @param qe a pointer to a cyclus::QueryEngine object containing
+     initialization data
    */
   virtual void InitModuleMembers(cyclus::QueryEngine* qe);
+
+  /**
+     initialize members from a different model
+  */
+  void InitFrom(SinkFacility* m);
 
   /**
      A verbose printer for the Sink Facility.
@@ -110,7 +123,7 @@ class SinkFacility : public cyclus::FacilityModel  {
   virtual std::string str();
   /* --- */
 
-  /* --- Agent Methods --- */
+  /* --- Agent Members --- */
   /**
      The SinkFacility can handle the Tick.
 
@@ -124,59 +137,69 @@ class SinkFacility : public cyclus::FacilityModel  {
      @param time the current simulation time.
    */
   virtual void HandleTock(int time);
+
+  /// @brief SinkFacilities request Materials of their given commodity. Note
+  /// that it is assumed the SinkFacility operates on a single resource type!
+  virtual std::set<cyclus::RequestPortfolio<cyclus::Material>::Ptr>
+      GetMatlRequests();
+  
+  /// @brief SinkFacilities request GenericResources of their given
+  /// commodity. Note that it is assumed the SinkFacility operates on a single
+  /// resource type!
+  virtual std::set<cyclus::RequestPortfolio<cyclus::GenericResource>::Ptr>
+      GetGenRsrcRequests();
+
+  /// @brief SinkFacilities place accepted trade Materials in their Inventory
+  virtual void AcceptMatlTrades(
+      const std::vector< std::pair<cyclus::Trade<cyclus::Material>,
+      cyclus::Material::Ptr> >& responses);
+
+  /// @brief SinkFacilities place accepted trade Materials in their Inventory
+  virtual void AcceptGenRsrcTrades(
+      const std::vector< std::pair<cyclus::Trade<cyclus::GenericResource>,
+      cyclus::GenericResource::Ptr> >& responses);
   /* --- */
 
-  /* --- cyclus::Transaction Methods --- */
-  /**
-     Transacted resources are received through this method
-
-     @param trans the transaction to which these resource objects belong
-     @param manifest is the set of resources being received
-   */
-  virtual void AddResource(cyclus::Transaction trans,
-                           std::vector<cyclus::Resource::Ptr> manifest);
-
-  /**
-     The sink Facility doesn't need to do anything if it gets a message.
-     It never sends any matieral to anyone.
-   */
-  virtual void ReceiveMessage(cyclus::Message::Ptr msg) {};
-  /* --- */
-
-  /* --- SinkFacility Methods --- */
+  /* --- SinkFacility Members --- */
   /**
      add a commodity to the set of input commodities
      @param name the commodity name
    */
-  void AddCommodity(std::string name);
-
-  /**
-     sets the capacity of a material generated at any given time step
-     @param capacity the reception capacity
-   */
-  void SetCapacity(double capacity);
-
-  /// @return the reception capacity at any given time step
-  double capacity();
+  inline void AddCommodity(std::string name) { in_commods_.push_back(name); }
 
   /**
      sets the size of the storage inventory for received material
      @param size the storage size
    */
-  void SetMaxInventorySize(double size);
+  inline void SetMaxInventorySize(double size) { inventory_.set_capacity(size); }
 
   /// @return the maximum inventory storage size
-  double MaxInventorySize();
+  inline double MaxInventorySize() const { return inventory_.capacity(); }
 
   /// @return the current inventory storage size
-  double InventorySize();
+  inline double InventorySize() const { return inventory_.quantity(); }
+
+  /**
+     determines the amount to request
+   */
+  inline double RequestAmt() const {
+    return std::min(capacity_, std::max(0.0, inventory_.space()));
+  }
+    
+  /**
+     sets the capacity of a material generated at any given time step
+     @param capacity the reception capacity
+   */
+  inline void capacity(double capacity) { capacity_ = capacity; }
+
+  /// @return the reception capacity at any given time step
+  inline double capacity() const { return capacity_; }
 
   /// @return the input commodities
-  std::vector<std::string> InputCommodities();
-  /* --- */
+  inline const std::vector<std::string>&
+      input_commodities() const { return in_commods_; }
 
- protected:
-  /* --- SourceFacility Members and Methods --- */
+ private: 
   /**
      all facilities must have at least one input commodity
    */
@@ -196,13 +219,9 @@ class SinkFacility : public cyclus::FacilityModel  {
      this facility holds material in storage.
    */
   cyclus::ResourceBuff inventory_;
-
-  /**
-     determines the amount to request
-   */
-  const double getRequestAmt();
 };
 
 } // namespace cycamore
-#endif
+
+#endif // CYCAMORE_MODELS_SINK_FACILITY_H_
 

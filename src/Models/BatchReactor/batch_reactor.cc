@@ -1,7 +1,5 @@
 // batch_reactor.cc
 // Implements the BatchReactor class
-#include "batch_reactor.h"
-
 #include <sstream>
 #include <cmath>
 
@@ -11,622 +9,861 @@
 #include "context.h"
 #include "error.h"
 #include "logger.h"
-#include "generic_resource.h"
-#include "market_model.h"
+
+#include "batch_reactor.h"
 
 namespace cycamore {
 
 // static members
-std::map<Phase, std::string> BatchReactor::phase_names_ = \
-  std::map<Phase, std::string>();
+std::map<BatchReactor::Phase, std::string> BatchReactor::phase_names_ =
+    std::map<Phase, std::string>();
 
-//- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+//- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 BatchReactor::BatchReactor(cyclus::Context* ctx)
     : cyclus::FacilityModel(ctx),
-      cycle_length_(1),
-      refuel_delay_(0),
-      batches_per_core_(1),
-      in_core_loading_(1),
-      out_core_loading_(1),
-      in_commodity_(""),
-      in_recipe_(""),
-      out_commodity_(""),
-      out_recipe_(""),
-      cycle_timer_(0),
-      phase_(INIT) {
-  preCore_.set_capacity(cyclus::kBuffInfinity);
-  inCore_.set_capacity(cyclus::kBuffInfinity);
-  postCore_.set_capacity(cyclus::kBuffInfinity);
-  if (phase_names_.size() < 1) {
-    SetUpPhaseNames();
+      cyclus::Model(ctx),
+      process_time_(1),
+      preorder_time_(0),
+      refuel_time_(0),
+      start_time_(-1),
+      to_begin_time_(std::numeric_limits<int>::max()),
+      n_batches_(1),
+      n_load_(1),
+      n_reserves_(0),
+      batch_size_(1),
+      phase_(INITIAL) {
+  if (phase_names_.empty()) {
+    SetUpPhaseNames_();
   }
+  spillover_ = cyclus::Material::CreateBlank(0);
 }
 
-//- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+//- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 BatchReactor::~BatchReactor() {}
-
-//- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+  
+//- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 std::string BatchReactor::schema() {
   return
-    "  <!-- cyclus::Material In/Out  -->         \n"
-    "  <element name=\"fuel_input\">             \n"
-    "   <ref name=\"incommodity\"/>              \n"
-    "   <ref name=\"inrecipe\"/>                 \n"
-    "  </element>                                \n"
-    "  <element name=\"fuel_output\">            \n"
-    "   <ref name=\"outcommodity\"/>             \n"
-    "   <ref name=\"outrecipe\"/>                \n"
-    "  </element>                                \n"
-    "                                            \n"
-    "  <!-- Facility Parameters -->              \n"
-    "  <element name=\"cyclelength\">            \n"
-    "    <data type=\"nonNegativeInteger\"/>     \n"
-    "  </element>                                \n"
-    "  <optional>                                \n"
-    "    <element name =\"refueldelay\">         \n"
-    "      <data type=\"nonNegativeInteger\"/>   \n"
-    "    </element>                              \n"
-    "  </optional>                               \n"
-    "  <element name =\"incoreloading\">         \n"
-    "    <data type=\"double\"/>                 \n"
-    "  </element>                                \n"
-    "  <optional>                                \n"
-    "    <element name =\"outcoreloading\">      \n"
-    "      <data type=\"double\"/>               \n"
-    "    </element>                              \n"
-    "  </optional>                               \n"
-    "  <element name=\"batchespercore\">         \n"
-    "    <data type=\"nonNegativeInteger\"/>     \n"
-    "  </element>                                \n"
-    "                                            \n"
-    "  <!-- Power Production  -->                \n"
-    "  <element name=\"commodity_production\">   \n"
-    "   <element name=\"commodity\">             \n"
-    "     <data type=\"string\"/>                \n"
-    "   </element>                               \n"
-    "   <element name=\"capacity\">              \n"
-    "     <data type=\"double\"/>                \n"
-    "   </element>                               \n"
-    "   <element name=\"cost\">                  \n"
-    "     <data type=\"double\"/>                \n"
-    "   </element>                               \n"
-    "  </element>                                \n";
+      "  <!-- cyclus::Material In/Out  -->           \n"
+      "  <oneOrMore>                                 \n"
+      "  <element name=\"fuel\">                     \n"
+      "   <ref name=\"incommodity\"/>                \n"
+      "   <ref name=\"inrecipe\"/>                   \n"
+      "   <ref name=\"outcommodity\"/>               \n"
+      "   <ref name=\"outrecipe\"/>                  \n"
+      "  </element>                                  \n"
+      "  </oneOrMore>                                \n"
+      "                                              \n"
+      "  <!-- Facility Parameters -->                \n"
+      "  <interleave>                                \n"
+      "  <element name=\"processtime\">              \n"
+      "    <data type=\"nonNegativeInteger\"/>       \n"
+      "  </element>                                  \n"
+      "  <element name=\"nbatches\">                 \n"
+      "    <data type=\"nonNegativeInteger\"/>       \n"
+      "  </element>                                  \n"
+      "  <element name =\"batchsize\">               \n"
+      "    <data type=\"double\"/>                   \n"
+      "  </element>                                  \n"
+      "  <optional>                                  \n"
+      "    <element name =\"refueltime\">            \n"
+      "      <data type=\"nonNegativeInteger\"/>     \n"
+      "    </element>                                \n"
+      "  </optional>                                 \n"
+      "  <optional>                                  \n"
+      "    <element name =\"orderlookahead\">        \n"
+      "      <data type=\"nonNegativeInteger\"/>     \n"
+      "    </element>                                \n"
+      "  </optional>                                 \n"
+      "  <optional>                                  \n"
+      "    <element name =\"norder\">                \n"
+      "      <data type=\"nonNegativeInteger\"/>     \n"
+      "    </element>                                \n"
+      "  </optional>                                 \n"
+      "  <optional>                                  \n"
+      "    <element name =\"nreload\">               \n"
+      "      <data type=\"nonNegativeInteger\"/>     \n"
+      "    </element>                                \n"
+      "  </optional>                                 \n"
+      "  <optional>                                  \n"
+      "    <element name =\"initial_condition\">     \n"
+      "      <optional>                              \n"
+      "        <element name =\"reserves\">          \n"
+      "         <element name =\"nbatches\">         \n"
+      "          <data type=\"nonNegativeInteger\"/> \n"
+      "         </element>                           \n"
+      "         <element name =\"commodity\">        \n"
+      "          <data type=\"string\"/>             \n"
+      "         </element>                           \n"
+      "         <element name =\"recipe\">           \n"
+      "          <data type=\"string\"/>             \n"
+      "         </element>                           \n"
+      "        </element>                            \n"
+      "      </optional>                             \n"
+      "      <optional>                              \n"
+      "        <element name =\"core\">              \n"
+      "        <element name =\"nbatches\">          \n"
+      "          <data type=\"nonNegativeInteger\"/> \n"
+      "        </element>                            \n"
+      "        <element name =\"commodity\">         \n"
+      "          <data type=\"string\"/>             \n"
+      "        </element>                            \n"
+      "        <element name =\"recipe\">            \n"
+      "          <data type=\"string\"/>             \n"
+      "        </element>                            \n"
+      "        </element>                            \n"
+      "      </optional>                             \n"
+      "      <optional>                              \n"
+      "        <element name =\"storage\">           \n"
+      "        <element name =\"nbatches\">          \n"
+      "          <data type=\"nonNegativeInteger\"/> \n"
+      "        </element>                            \n"
+      "        <element name =\"commodity\">         \n"
+      "          <data type=\"string\"/>             \n"
+      "        </element>                            \n"
+      "        <element name =\"recipe\">            \n"
+      "          <data type=\"string\"/>             \n"
+      "        </element>                            \n"
+      "        </element>                            \n"
+      "      </optional>                             \n"
+      "    </element>                                \n"
+      "  </optional>                                 \n"
+      "                                              \n"
+      "  <!-- Recipe Changes  -->                    \n"
+      "  <optional>                                  \n"
+      "  <oneOrMore>                                 \n"
+      "  <element name=\"recipe_change\">            \n"
+      "   <element name=\"incommodity\">             \n"
+      "     <data type=\"string\"/>                  \n"
+      "   </element>                                 \n"
+      "   <element name=\"new_recipe\">              \n"
+      "     <data type=\"string\"/>                  \n"
+      "   </element>                                 \n"
+      "   <element name=\"time\">                    \n"
+      "     <data type=\"nonNegativeInteger\"/>      \n"
+      "   </element>                                 \n"
+      "  </element>                                  \n"
+      "  </oneOrMore>                                \n"
+      "  </optional>                                 \n"
+      "  </interleave>                               \n"
+      "                                              \n"
+      "  <!-- Power Production  -->                  \n"
+      "  <element name=\"commodity_production\">     \n"
+      "   <element name=\"commodity\">               \n"
+      "     <data type=\"string\"/>                  \n"
+      "   </element>                                 \n"
+      "   <element name=\"capacity\">                \n"
+      "     <data type=\"double\"/>                  \n"
+      "   </element>                                 \n"
+      "   <element name=\"cost\">                    \n"
+      "     <data type=\"double\"/>                  \n"
+      "   </element>                                 \n"
+      "  </element>                                  \n"
+      "                                              \n"
+      "  <!-- Trade Preferences  -->                 \n"
+      "  <optional>                                  \n"
+      "  <oneOrMore>                                 \n"
+      "  <element name=\"commod_pref\">              \n"
+      "   <element name=\"incommodity\">             \n"
+      "     <data type=\"string\"/>                  \n"
+      "   </element>                                 \n"
+      "   <element name=\"preference\">              \n"
+      "     <data type=\"double\"/>                  \n"
+      "   </element>                                 \n"
+      "  </element>                                  \n"
+      "  </oneOrMore>                                \n"
+      "  </optional>                                 \n"
+      "                                              \n"
+      "  <!-- Trade Preference Changes  -->          \n"
+      "  <optional>                                  \n"
+      "  <oneOrMore>                                 \n"
+      "  <element name=\"pref_change\">              \n"
+      "   <element name=\"incommodity\">             \n"
+      "     <data type=\"string\"/>                  \n"
+      "   </element>                                 \n"
+      "   <element name=\"new_pref\">                \n"
+      "     <data type=\"double\"/>                  \n"
+      "   </element>                                 \n"
+      "   <element name=\"time\">                    \n"
+      "     <data type=\"nonNegativeInteger\"/>      \n"
+      "   </element>                                 \n"
+      "  </element>                                  \n"
+      "  </oneOrMore>                                \n"
+      "  </optional>                                 \n";
 };
 
-//- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-void BatchReactor::InitModuleMembers(cyclus::QueryEngine* qe) {
-  using std::string;
+//- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+void BatchReactor::InitModuleMembers(cyclus::QueryEngine* qe) {  
   using boost::lexical_cast;
-  cyclus::QueryEngine* input = qe->QueryElement("fuel_input");
-  set_in_commodity(input->GetElementContent("incommodity"));
-  set_in_recipe(input->GetElementContent("inrecipe"));
+  using cyclus::Commodity;
+  using cyclus::CommodityProducer;
+  using cyclus::GetOptionalQuery;
+  using cyclus::QueryEngine;
+  using std::string;
+  
+  // in/out fuel
+  int nfuel = qe->NElementsMatchingQuery("fuel");
+  for (int i = 0; i < nfuel; i++) {
+    QueryEngine* fuel = qe->QueryElement("fuel", i);
+    std::string in_c = fuel->GetElementContent("incommodity");
+    std::string in_r = fuel->GetElementContent("inrecipe");
+    std::string out_c = fuel->GetElementContent("outcommodity");
+    std::string out_r = fuel->GetElementContent("outrecipe");
+    crctx_.AddInCommod(in_c, in_r, out_c, out_r);
+  }
 
-  cyclus::QueryEngine* output = qe->QueryElement("fuel_output");
-  set_out_commodity(output->GetElementContent("outcommodity"));
-  set_out_recipe(output->GetElementContent("outrecipe"));
-
+  // facility data required
   string data;
-  data = qe->GetElementContent("cyclelength");
-  set_cycle_length(lexical_cast<int>(data));
+  data = qe->GetElementContent("processtime");
+  process_time(lexical_cast<int>(data));
+  data = qe->GetElementContent("nbatches");
+  n_batches(lexical_cast<int>(data));
+  data = qe->GetElementContent("batchsize");
+  batch_size(lexical_cast<double>(data));
 
-  int delay =
-      cyclus::GetOptionalQuery<int>(qe, "refueldelay", refuel_delay());
-  set_refuel_delay(delay);
+  // facility data optional
+  int time;
+  time = GetOptionalQuery<int>(qe, "refueltime", refuel_time());
+  refuel_time(time);
+  time = GetOptionalQuery<int>(qe, "orderlookahead", preorder_time());
+  preorder_time(time);
 
-  data = qe->GetElementContent("incoreloading");
-  set_in_core_loading(lexical_cast<double>(data));
+  int n;
+  n= GetOptionalQuery<int>(qe, "nreload", n_load());
+  n_load(n);
+  n = GetOptionalQuery<int>(qe, "norder", n_reserves());
+  n_reserves(n);
 
-  double loading = 
-      cyclus::GetOptionalQuery<double>(qe, "outcoreloading", in_core_loading());
-  set_out_core_loading(loading);
-
-  data = qe->GetElementContent("batchespercore");
-  set_batches_per_core(lexical_cast<int>(data));
-
-  cyclus::QueryEngine* commodity = qe->QueryElement("commodity_production");
-  cyclus::Commodity commod(commodity->GetElementContent("commodity"));
+  // initial condition
+  if (qe->NElementsMatchingQuery("initial_condition") > 0) {
+    QueryEngine* ic = qe->QueryElement("initial_condition");
+    if (ic->NElementsMatchingQuery("reserves") > 0) {
+      QueryEngine* reserves = ic->QueryElement("reserves");
+      ics_.AddReserves(
+          lexical_cast<int>(reserves->GetElementContent("nbatches")),
+          reserves->GetElementContent("recipe"),
+          reserves->GetElementContent("commodity"));
+    }
+    if (ic->NElementsMatchingQuery("core") > 0) {
+      QueryEngine* core = ic->QueryElement("core");
+      ics_.AddCore(
+          lexical_cast<int>(core->GetElementContent("nbatches")),
+          core->GetElementContent("recipe"),
+          core->GetElementContent("commodity"));
+    }
+    if (ic->NElementsMatchingQuery("storage") > 0) {
+      QueryEngine* storage = ic->QueryElement("storage");
+      ics_.AddStorage(
+          lexical_cast<int>(storage->GetElementContent("nbatches")),
+          storage->GetElementContent("recipe"),
+          storage->GetElementContent("commodity"));
+    }
+  }
+      
+  // commodity production
+  QueryEngine* commodity = qe->QueryElement("commodity_production");
+  Commodity commod(commodity->GetElementContent("commodity"));
   AddCommodity(commod);
   data = commodity->GetElementContent("capacity");
-  cyclus::CommodityProducer::SetCapacity(commod,
-                                                        lexical_cast<double>(data));
+  CommodityProducer::SetCapacity(commod, lexical_cast<double>(data));
   data = commodity->GetElementContent("cost");
-  cyclus::CommodityProducer::SetCost(commod,
-                                                    lexical_cast<double>(data));
-}
+  CommodityProducer::SetCost(commod, lexical_cast<double>(data));
 
-//- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-std::string BatchReactor::str() {
-  std::stringstream ss;
-  ss << cyclus::FacilityModel::str();
-  ss << " has facility parameters {"
-     << ", Cycle Length = " << cycle_length()
-     << ", Refuel Delay = " << refuel_delay()
-     << ", InCore Loading = " << in_core_loading()
-     << ", OutCore Loading = " << out_core_loading()
-     << ", Batches Per Core = " << batches_per_core()
-     << ", converts commodity '" << in_commodity()
-     << "' into commodity '" << out_commodity()
-     << "'}";
-  return ss.str();
+  // trade preferences
+  int nprefs = qe->NElementsMatchingQuery("commod_pref");
+  std::string c;
+  double pref;
+  if (nprefs > 0) {
+    for (int i = 0; i < nprefs; i++) {
+      QueryEngine* cp = qe->QueryElement("commod_pref", i);
+      c = cp->GetElementContent("incommodity");
+      pref = lexical_cast<double>(cp->GetElementContent("preference"));
+      commod_prefs_[c] = pref;
+    }
+  }
+
+  // pref changes
+  int nchanges = qe->NElementsMatchingQuery("pref_change");
+  if (nchanges > 0) {
+    for (int i = 0; i < nchanges; i++) {
+      QueryEngine* cp = qe->QueryElement("pref_change", i);
+      c = cp->GetElementContent("incommodity");
+      pref = lexical_cast<double>(cp->GetElementContent("new_pref"));
+      time = lexical_cast<int>(cp->GetElementContent("time"));
+      pref_changes_[time].push_back(std::make_pair(c, pref));
+    }
+  }
+  
+  // recipe changes
+  std::string rec;
+  nchanges = qe->NElementsMatchingQuery("recipe_change");
+  if (nchanges > 0) {
+    for (int i = 0; i < nchanges; i++) {
+      QueryEngine* cp = qe->QueryElement("recipe_change", i);
+      c = cp->GetElementContent("incommodity");
+      rec = cp->GetElementContent("new_recipe");
+      time = lexical_cast<int>(cp->GetElementContent("time"));
+      recipe_changes_[time].push_back(std::make_pair(c, rec));
+    }
+  }  
 }
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 cyclus::Model* BatchReactor::Clone() {
   BatchReactor* m = new BatchReactor(context());
   m->InitFrom(this);
-
-  m->set_cycle_length(cycle_length());
-  m->set_refuel_delay(refuel_delay());
-  m->set_in_core_loading(in_core_loading());
-  m->set_out_core_loading(out_core_loading());
-  m->set_batches_per_core(batches_per_core());
-  m->set_in_commodity(in_commodity());
-  m->set_out_commodity(out_commodity());
-  m->set_in_recipe(in_recipe());
-  m->set_out_recipe(out_recipe());
-  m->CopyProducedCommoditiesFrom(this);
-
   return m;
 }
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-void BatchReactor::Deploy(cyclus::Model* parent) {
-  FacilityModel::Deploy(parent);
-  preCore_.set_capacity(in_core_loading());
-  inCore_.set_capacity(in_core_loading());
-  reset_cycle_timer();
-  SetPhase(BEGIN);
-  LOG(cyclus::LEV_DEBUG2, "BReact") << "Batch Reactor " << name()
-                                    << " is entering the simuluation with members:";
-  LOG(cyclus::LEV_DEBUG2, "BReact") << "  * in core loading: " <<
-                                    in_core_loading();
-  LOG(cyclus::LEV_DEBUG2, "BReact") << "  * out core loading: " <<
-                                    out_core_loading();
-  LOG(cyclus::LEV_DEBUG2, "BReact") << "  * pre core capacity: " <<
-                                    preCore_.capacity();
-  LOG(cyclus::LEV_DEBUG2, "BReact") << "  * in core capacity: " <<
-                                    inCore_.capacity();
-  LOG(cyclus::LEV_DEBUG2, "BReact") << "  * cycle timer: " << cycle_timer_;
-  LOG(cyclus::LEV_DEBUG2, "BReact") << "  * phase: " << phase_names_[phase_];
+void BatchReactor::InitFrom(BatchReactor* m) {
+  FacilityModel::InitFrom(m);
+  
+  // in/out
+  crctx_ = m->crctx_;
+  
+  // facility params
+  process_time(m->process_time());
+  preorder_time(m->preorder_time());
+  refuel_time(m->refuel_time());
+  n_batches(m->n_batches());
+  n_load(m->n_load());
+  n_reserves(m->n_reserves());
+  batch_size(m->batch_size());
+
+  // commodity production
+  CopyProducedCommoditiesFrom(m);
+
+  // ics
+  ics(m->ics());
+  
+  // trade preferences
+  commod_prefs(m->commod_prefs());
+  pref_changes_ = m->pref_changes_;
+
+  // recipe changes
+  recipe_changes_ = m->recipe_changes_;
 }
 
-//- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+//- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+std::string BatchReactor::str() {
+  std::stringstream ss;
+  ss << cyclus::FacilityModel::str();
+  ss << " has facility parameters {" << "\n"
+     << "     Process Time = " << process_time() << ",\n"
+     << "     Refuel Time = " << refuel_time() << ",\n"
+     << "     Preorder Time = " << preorder_time() << ",\n"
+     << "     Core Loading = " << n_batches() * batch_size() << ",\n"
+     << "     Batches Per Core = " << n_batches() << ",\n"
+     << "     Batches Per Load = " << n_load() << ",\n"
+     << "     Batches To Reserve = " << n_reserves() << ",\n"
+     << "'}";
+  return ss.str();
+}
+
+//- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+void BatchReactor::Deploy(cyclus::Model* parent) {
+  using cyclus::Material;
+
+  FacilityModel::Deploy(parent);
+  phase(INITIAL);
+  std::string rec = crctx_.in_recipe(*crctx_.in_commods().begin());
+  spillover_ = Material::Create(this, 0.0, context()->GetRecipe(rec));
+
+  Material::Ptr mat;
+  if (ics_.reserves) {
+    for (int i = 0; i < ics_.n_reserves; ++i) {
+      mat = Material::Create(this,
+                             batch_size(),
+                             context()->GetRecipe(ics_.reserves_rec));
+      assert(ics_.reserves_commod != "");
+      crctx_.AddRsrc(ics_.reserves_commod, mat);
+      reserves_.Push(mat);
+    }
+  }
+  if (ics_.core) {
+    for (int i = 0; i < ics_.n_core; ++i) {
+      mat = Material::Create(this,
+                             batch_size(),
+                             context()->GetRecipe(ics_.core_rec));
+      assert(ics_.core_commod != "");
+      crctx_.AddRsrc(ics_.core_commod, mat);
+      core_.Push(mat);
+    }
+  }
+  if (ics_.storage) {
+    for (int i = 0; i < ics_.n_storage; ++i) {
+      mat = Material::Create(this,
+                             batch_size(),
+                             context()->GetRecipe(ics_.storage_rec));
+      assert(ics_.storage_commod != "");
+      crctx_.AddRsrc(ics_.storage_commod, mat);
+      storage_[ics_.storage_commod].Push(mat);
+    }
+  }
+
+  LOG(cyclus::LEV_DEBUG2, "BReact") << "Batch Reactor entering the simuluation";
+  LOG(cyclus::LEV_DEBUG2, "BReact") << str();
+}
+
+//- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 void BatchReactor::HandleTick(int time) {
-  using std::string;
-  using boost::lexical_cast;
   LOG(cyclus::LEV_INFO3, "BReact") << name() << " is ticking at time "
                                    << time << " {";
-  LOG(cyclus::LEV_DEBUG3, "BReact") << "The current phase is: "
-                                    << phase_names_[phase_];
+                                    
+  LOG(cyclus::LEV_DEBUG4, "BReact") << "Current facility parameters for "
+                                    << name()
+                                    << " at the beginning of the tick are:";
+  LOG(cyclus::LEV_DEBUG4, "BReact") << "    Phase: " << phase_names_[phase_]; 
+  LOG(cyclus::LEV_DEBUG4, "BReact") << "    Start time: " << start_time_;
+  LOG(cyclus::LEV_DEBUG4, "BReact") << "    End time: " << end_time();  
+  LOG(cyclus::LEV_DEBUG4, "BReact") << "    Order time: " << order_time();  
+  LOG(cyclus::LEV_DEBUG4, "BReact") << "    NReserves: " << reserves_.count();
+  LOG(cyclus::LEV_DEBUG4, "BReact") << "    NCore: " << core_.count();  
+  LOG(cyclus::LEV_DEBUG4, "BReact") << "    NStorage: " << StorageCount();  
+  LOG(cyclus::LEV_DEBUG4, "BReact") << "    Spillover Qty: " << spillover_->quantity();  
 
-
-  if (LifetimeReached(time)) {
-    SetPhase(END);
-  }
-
-  double fuel_quantity, request;
-  string msg;
-
-  switch (phase()) {
-    case INIT:
-      // intentional fall through
-
-    case OPERATION:
-      cycle_timer_++;
-      break;
-
-    case REFUEL:
-      OffloadBatch();
-
-    case REFUEL_DELAY:
-      // intentional fall through
-
-    case WAITING:
-      // intentional fall through
-
-    case BEGIN:
-      cycle_timer_++;
-      fuel_quantity = preCore_.quantity() + inCore_.quantity();
-      request = in_core_loading() - fuel_quantity;
-      if (request > cyclus::eps()) {
-        MakeRequest(request);
-      }
-      break;
-
-    case END:
-      OffloadCore();
-      break;
-
-    default:
-      msg = "BatchReactors have undefined behvaior during ticks for phase: "
-            + phase_names_[phase_];
-      throw cyclus::Error(msg);
-      break;
-  }
-
-  MakeOffers();
-
-  LOG(cyclus::LEV_INFO3, "BReact") << "}";
-}
-
-//- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-void BatchReactor::HandleTock(int time) {
-  using std::string;
-  using boost::lexical_cast;
-  LOG(cyclus::LEV_INFO3, "BReact") << name() << " is tocking {";
-  LOG(cyclus::LEV_DEBUG3, "BReact") << "The current phase is: "
-                                    << phase_names_[phase_];
-
-  HandleOrders();
-
-  string msg;
-
-  switch (phase()) {
-
-    case END:
-      // if ( postCore_.empty() )
-      //   Decommission();
-      break;
-
-    case BEGIN:
-      // intentional fall through
-
-    case WAITING:
-      LoadCore();
-      if (CoreFilled()) {
-
-        SetPhase(OPERATION);
-        reset_cycle_timer();
-      } else {
-        SetPhase(WAITING);
-      }
-      break;
-
-    case REFUEL:
-      SetPhase(REFUEL_DELAY);
-      time_delayed_ = 0;
-    case REFUEL_DELAY:
-      LoadCore();
-      if (time_delayed_ > refuel_delay() && CoreFilled()) {
-        SetPhase(OPERATION);
-        reset_cycle_timer();
-      } else {
-        ++time_delayed_;
-      }
-      break;
-
-    case OPERATION:
-      if (CycleComplete()) {
-        SetPhase(REFUEL);
-      }
-      break;
-
-    default:
-      msg = "BatchReactors have undefined behvaior during tocks for phase: "
-            + phase_names_[phase_];
-      throw cyclus::Error(msg);
-      break;
-  }
-
-  LOG(cyclus::LEV_DEBUG3, "BReact") << "cycle timer: "
-                                    << cycle_timer_;
-  LOG(cyclus::LEV_DEBUG3, "BReact") << "delay: "
-                                    << time_delayed_;
-  LOG(cyclus::LEV_INFO3, "BReact") << "}";
-}
-
-//- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-void BatchReactor::ReceiveMessage(cyclus::Message::Ptr msg) {
-  // is this a message from on high?
-  if (msg->trans().supplier() == this) {
-    // file the order
-    ordersWaiting_.push_front(msg);
-    LOG(cyclus::LEV_INFO5, "BReact") << name() << " just received an order.";
+  if (context()->time() == FacLifetime()) {
+    int ncore = core_.count();
+    LOG(cyclus::LEV_DEBUG1, "BReact") << "lifetime reached, moving out:"
+                                      << ncore << " batches.";
+    for (int i = 0; i < ncore; i++) {
+      MoveBatchOut_(); // unload
+    }
   } else {
-    throw cyclus::Error("BatchReactor is not the supplier of this msg.");
+    switch (phase()) {
+      case WAITING:
+        if (n_core() == n_batches() &&
+            to_begin_time() <= context()->time()) {
+          phase(PROCESS);
+        } 
+        break;
+        
+      case INITIAL:
+        // special case for a core primed to go
+        if (n_core() == n_batches()) phase(PROCESS);
+        break;
+    }
+  }
+
+  // change preferences if its time
+  if (pref_changes_.count(time)) {
+    std::vector< std::pair< std::string, double> >&
+        changes = pref_changes_[time];
+    for (int i = 0; i < changes.size(); i++) {
+      commod_prefs_[changes[i].first] = changes[i].second;
+    }
+  }
+
+  // change recipes if its time
+  if (recipe_changes_.count(time)) {
+    std::vector< std::pair< std::string, std::string> >&
+        changes = recipe_changes_[time];
+    for (int i = 0; i < changes.size(); i++) {
+      assert(changes[i].first != "");
+      assert(changes[i].second != "");
+      crctx_.UpdateInRec(changes[i].first, changes[i].second);
+    }
+  }
+  
+  LOG(cyclus::LEV_DEBUG3, "BReact") << "Current facility parameters for "
+                                    << name()
+                                    << " at the end of the tick are:";
+  LOG(cyclus::LEV_DEBUG3, "BReact") << "    Phase: " << phase_names_[phase_]; 
+  LOG(cyclus::LEV_DEBUG3, "BReact") << "    Start time: " << start_time_;
+  LOG(cyclus::LEV_DEBUG3, "BReact") << "    End time: " << end_time();  
+  LOG(cyclus::LEV_DEBUG3, "BReact") << "    Order time: " << order_time();  
+  LOG(cyclus::LEV_DEBUG3, "BReact") << "    NReserves: " << reserves_.count();
+  LOG(cyclus::LEV_DEBUG3, "BReact") << "    NCore: " << core_.count();  
+  LOG(cyclus::LEV_DEBUG3, "BReact") << "    NStorage: " << StorageCount();  
+  LOG(cyclus::LEV_DEBUG3, "BReact") << "    Spillover Qty: " << spillover_->quantity();  
+  LOG(cyclus::LEV_INFO3, "BReact") << "}";
+}
+
+//- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+void BatchReactor::HandleTock(int time) {
+  LOG(cyclus::LEV_INFO3, "BReact") << name() << " is tocking {";
+  LOG(cyclus::LEV_DEBUG4, "BReact") << "Current facility parameters for "
+                                    << name()
+                                    << " at the beginning of the tock are:";
+  LOG(cyclus::LEV_DEBUG4, "BReact") << "    Phase: " << phase_names_[phase_]; 
+  LOG(cyclus::LEV_DEBUG4, "BReact") << "    Start time: " << start_time_;
+  LOG(cyclus::LEV_DEBUG4, "BReact") << "    End time: " << end_time();  
+  LOG(cyclus::LEV_DEBUG4, "BReact") << "    Order time: " << order_time();  
+  LOG(cyclus::LEV_DEBUG4, "BReact") << "    NReserves: " << reserves_.count();
+  LOG(cyclus::LEV_DEBUG4, "BReact") << "    NCore: " << core_.count();  
+  LOG(cyclus::LEV_DEBUG4, "BReact") << "    NStorage: " << StorageCount();  
+  LOG(cyclus::LEV_DEBUG4, "BReact") << "    Spillover Qty: " << spillover_->quantity();  
+  
+  switch (phase()) {
+    case PROCESS:
+      if (time == end_time()) {
+        for (int i = 0; i < n_load(); i++) {
+          MoveBatchOut_(); // unload
+        }
+        Refuel_(); // reload
+        phase(WAITING);
+      }
+      break;
+    default:
+      Refuel_(); // always try to reload if possible
+      break;
+  }
+
+  LOG(cyclus::LEV_DEBUG3, "BReact") << "Current facility parameters for "
+                                    << name()
+                                    << " at the end of the tock are:";
+  LOG(cyclus::LEV_DEBUG3, "BReact") << "    Phase: " << phase_names_[phase_]; 
+  LOG(cyclus::LEV_DEBUG3, "BReact") << "    Start time: " << start_time_;
+  LOG(cyclus::LEV_DEBUG3, "BReact") << "    End time: " << end_time();  
+  LOG(cyclus::LEV_DEBUG3, "BReact") << "    Order time: " << order_time();  
+  LOG(cyclus::LEV_DEBUG3, "BReact") << "    NReserves: " << reserves_.count();
+  LOG(cyclus::LEV_DEBUG3, "BReact") << "    NCore: " << core_.count();  
+  LOG(cyclus::LEV_DEBUG3, "BReact") << "    NStorage: " << StorageCount();  
+  LOG(cyclus::LEV_DEBUG3, "BReact") << "    Spillover Qty: " << spillover_->quantity();  
+  LOG(cyclus::LEV_INFO3, "BReact") << "}";
+}
+
+
+//- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+std::set<cyclus::RequestPortfolio<cyclus::Material>::Ptr>
+BatchReactor::GetMatlRequests() {
+  using cyclus::RequestPortfolio;
+  using cyclus::Material;
+  
+  std::set<RequestPortfolio<Material>::Ptr> set;
+  double order_size;
+
+  switch (phase()) {
+    // the initial phase requests as much fuel as necessary to achieve an entire
+    // core
+    case INITIAL:
+      order_size = n_batches() * batch_size()
+                   - core_.quantity() - reserves_.quantity()
+                   - spillover_->quantity();
+      if (preorder_time() == 0) order_size += batch_size() * n_reserves();
+      if (order_size > 0) {
+        RequestPortfolio<Material>::Ptr p = GetOrder_(order_size);
+        set.insert(p);
+      }
+      break;
+
+    // the default case is to request the reserve amount if the order time has
+    // been reached
+    default:
+      // double fuel_need = (n_reserves() + n_batches() - n_core()) * batch_size();
+      double fuel_need = (n_reserves() + n_load()) * batch_size();
+      double fuel_have = reserves_.quantity() + spillover_->quantity();
+      order_size = fuel_need - fuel_have;
+      bool ordering = order_time() <= context()->time() && order_size > 0;
+
+      LOG(cyclus::LEV_DEBUG5, "BReact") << "BatchReactor " << name()
+                                        << " is deciding whether to order -";      
+      LOG(cyclus::LEV_DEBUG5, "BReact") << "    Needs fuel amt: " << fuel_need;    
+      LOG(cyclus::LEV_DEBUG5, "BReact") << "    Has fuel amt: " << fuel_have;
+      LOG(cyclus::LEV_DEBUG5, "BReact") << "    Order amt: " << order_size;
+      LOG(cyclus::LEV_DEBUG5, "BReact") << "    Order time: " << order_time();
+      LOG(cyclus::LEV_DEBUG5, "BReact") << "    Current time: "
+                                        << context()->time();
+      LOG(cyclus::LEV_DEBUG5, "BReact") << "    Ordering?: "
+                                        << ((ordering == true) ? "yes" : "no");
+      
+      if (ordering) {
+        RequestPortfolio<Material>::Ptr p = GetOrder_(order_size);
+        set.insert(p);
+      }
+      break;
+  }
+
+  return set;
+}
+
+//- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+void BatchReactor::AcceptMatlTrades(
+    const std::vector< std::pair<cyclus::Trade<cyclus::Material>,
+                                 cyclus::Material::Ptr> >& responses) {
+  using cyclus::Material;
+  
+  std::map<std::string, Material::Ptr> mat_commods;
+   
+  std::vector< std::pair<cyclus::Trade<cyclus::Material>,
+                         cyclus::Material::Ptr> >::const_iterator trade;
+
+  // blob each material by commodity
+  std::string commod;
+  Material::Ptr mat;
+  for (trade = responses.begin(); trade != responses.end(); ++trade) {
+    commod = trade->first.request->commodity();
+    mat = trade->second;
+    if (mat_commods.count(commod) == 0) {
+      mat_commods[commod] = mat;
+    } else {
+      mat_commods[commod]->Absorb(mat);
+    }
+  }
+
+  // add each blob to reserves
+  std::map<std::string, Material::Ptr>::iterator it;
+  for (it = mat_commods.begin(); it != mat_commods.end(); ++it) {
+    AddBatches_(it->first, it->second);
+  }
+}
+  
+//- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+std::set<cyclus::BidPortfolio<cyclus::Material>::Ptr>
+BatchReactor::GetMatlBids(const cyclus::CommodMap<cyclus::Material>::type&
+                          commod_requests) {
+  using cyclus::BidPortfolio;
+  using cyclus::Material;
+
+  std::set<BidPortfolio<Material>::Ptr> ports;
+
+  const std::vector<std::string>& commods = crctx_.out_commods();
+  std::vector<std::string>::const_iterator it;
+  for (it = commods.begin(); it != commods.end(); ++it) {
+    BidPortfolio<Material>::Ptr port = GetBids_(commod_requests,
+                                                *it,
+                                                &storage_[*it]);
+    if (!port->bids().empty()) ports.insert(port);
+  }
+  
+  return ports;
+}
+
+//- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+void BatchReactor::GetMatlTrades(
+    const std::vector< cyclus::Trade<cyclus::Material> >& trades,
+    std::vector<std::pair<cyclus::Trade<cyclus::Material>,
+                          cyclus::Material::Ptr> >& responses) {
+  using cyclus::Material;
+  using cyclus::Trade;
+
+  std::vector< cyclus::Trade<cyclus::Material> >::const_iterator it;
+  for (it = trades.begin(); it != trades.end(); ++it) {
+    LOG(cyclus::LEV_INFO5, "BReact") << name() << " just received an order.";
+
+    std::string commodity = it->request->commodity();
+    double qty = it->amt;
+    Material::Ptr response = TradeResponse_(qty, &storage_[commodity]);
+
+    responses.push_back(std::make_pair(*it, response));
+    LOG(cyclus::LEV_INFO5, "BatchReactor") << name()
+                                           << " just received an order"
+                                           << " for " << qty
+                                           << " of " << commodity;
   }
 }
 
-//- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-void BatchReactor::SendMessage(Communicator* recipient,
-                               cyclus::Transaction trans) {
-  cyclus::Message::Ptr msg(new cyclus::Message(this, recipient, trans));
-  msg->SendOn();
+//- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+int BatchReactor::StorageCount() {
+  int count = 0;
+  std::map<std::string, cyclus::ResourceBuff>::const_iterator it;
+  for (it = storage_.begin(); it != storage_.end(); ++it) {
+    count += it->second.count();
+  }
+  return count;
 }
 
-//- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-std::vector<cyclus::Resource::Ptr> BatchReactor::RemoveResource(
-  cyclus::Transaction order) {
-  cyclus::Transaction trans = order;
-  double amt = trans.resource()->quantity();
-
-  LOG(cyclus::LEV_DEBUG2, "BReact") << "BatchReactor " << name() << " removed "
-                                    << amt << " of " << postCore_.quantity()
-                                    << " to its postcore buffer.";
-
-  return postCore_.PopQty(amt);
-}
-
-//- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-void BatchReactor::AddResource(cyclus::Transaction trans,
-                               std::vector<cyclus::Resource::Ptr> manifest) {
-  double preQuantity = preCore_.quantity();
-  preCore_.PushAll(manifest);
-  double added = preCore_.quantity() - preQuantity;
-  LOG(cyclus::LEV_DEBUG2, "BReact") << "BatchReactor " << name() << " added "
-                                    << added << " to its precore buffer.";
-}
-
-//- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-void BatchReactor::set_cycle_length(int time) {
-  cycle_length_ = time;
-}
-
-//- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-int BatchReactor::cycle_length() {
-  return cycle_length_;
-}
-
-//- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-void BatchReactor::set_refuel_delay(int time) {
-  refuel_delay_ = time;
-}
-
-//- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-int BatchReactor::refuel_delay() {
-  return refuel_delay_;
-}
-
-//- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-void BatchReactor::set_in_core_loading(double size) {
-  in_core_loading_ = size;
-}
-
-//- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-double BatchReactor::in_core_loading() {
-  return in_core_loading_;
-}
-
-//- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-void BatchReactor::set_out_core_loading(double size) {
-  out_core_loading_ = size;
-}
-
-//- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-double BatchReactor::out_core_loading() {
-  return out_core_loading_;
-}
-
-//- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-void BatchReactor::set_batches_per_core(int n) {
-  batches_per_core_ = n;
-}
-
-//- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-int BatchReactor::batches_per_core() {
-  return batches_per_core_;
-}
-
-//- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-double BatchReactor::BatchLoading() {
-  return in_core_loading_ / batches_per_core_;
-}
-
-//- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-void BatchReactor::set_in_commodity(std::string name) {
-  in_commodity_ = name;
-}
-
-//- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-std::string BatchReactor::in_commodity() {
-  return in_commodity_;
-}
-
-//- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-void BatchReactor::set_in_recipe(std::string name) {
-  in_recipe_ = name;
-}
-
-//- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-std::string BatchReactor::in_recipe() {
-  return in_recipe_;
-}
-
-//- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-void BatchReactor::set_out_commodity(std::string name) {
-  out_commodity_ = name;
-}
-
-//- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-std::string BatchReactor::out_commodity() {
-  return out_commodity_;
-}
-
-//- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-void BatchReactor::set_out_recipe(std::string name) {
-  out_recipe_ = name;
-}
-
-//- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-std::string BatchReactor::out_recipe() {
-  return out_recipe_;
-}
-
-//- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-Phase BatchReactor::phase() {
-  return phase_;
-}
-
-//- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-bool BatchReactor::CheckDecommissionCondition() {
-  bool empty = (preCore_.empty() && inCore_.empty() &&
-                postCore_.empty());
-  // if (!empty) {
-  //   string msg = "Can't delete a BatchReactor with material still in its inventory.";
-  //   throw cyclus::CycBatchReactorDestructException(msg);
-  // }
-  return empty;
-}
-
-//- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-void BatchReactor::SetPhase(Phase p) {
+//- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+void BatchReactor::phase(BatchReactor::Phase p) {
   LOG(cyclus::LEV_DEBUG2, "BReact") << "BatchReactor " << name()
                                     << " is changing phases -";
   LOG(cyclus::LEV_DEBUG2, "BReact") << "  * from phase: " << phase_names_[phase_];
   LOG(cyclus::LEV_DEBUG2, "BReact") << "  * to phase: " << phase_names_[p];
+  
+  switch (p) {
+    case PROCESS:
+      start_time(context()->time());
+  }
   phase_ = p;
 }
 
-//- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-void BatchReactor::SetUpPhaseNames() {
-  using std::make_pair;
-  phase_names_.insert(make_pair(INIT, "initialization"));
-  phase_names_.insert(make_pair(BEGIN, "beginning"));
-  phase_names_.insert(make_pair(OPERATION, "operation"));
-  phase_names_.insert(make_pair(REFUEL, "refueling"));
-  phase_names_.insert(make_pair(REFUEL_DELAY, "refueling with delay"));
-  phase_names_.insert(make_pair(WAITING, "waiting for fuel"));
-  phase_names_.insert(make_pair(END, "ending"));
-}
-
-//- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-void BatchReactor::reset_cycle_timer() {
-  cycle_timer_ = 1;
-}
-
-//- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-bool BatchReactor::CycleComplete() {
-  return (cycle_timer_ >= cycle_length_ - 1);
-}
-
-//- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-bool BatchReactor::CoreFilled() {
-  LOG(cyclus::LEV_DEBUG2, "BReact") << "Querying whether the core is filled -";
-  LOG(cyclus::LEV_DEBUG2, "BReact") << "  * quantity in core: " <<
-                                    inCore_.quantity();
-  LOG(cyclus::LEV_DEBUG2, "BReact") << "  * core capacity: " <<
-                                    inCore_.capacity();
-  // @MJGFlag need to assert that the in core capacity must be > 0
-  // 9/29/12 error with a negative in core capacity
-  return (abs(inCore_.quantity() - inCore_.capacity()) < cyclus::eps());
-}
-
-//- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-void BatchReactor::MakeRequest(double amt) {
-  interactWithMarket(in_commodity(), amt, cyclus::REQUEST);
-}
-
-//- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-void BatchReactor::MakeOffers() {
-  if (!postCore_.empty()) {
-    interactWithMarket(out_commodity(), postCore_.quantity(), cyclus::OFFER);
-  }
-}
-
-//- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-void BatchReactor::interactWithMarket(std::string commod, double amt,
-                                      cyclus::TransType type) {
-  using std::string;
-  using cyclus::Context;
-  using cyclus::GenericResource;
-  using cyclus::Material;
-  using cyclus::Model;
-  
-  LOG(cyclus::LEV_INFO4, "BReact") << " making requests {";
-  // get the market
-  cyclus::MarketModel* market = cyclus::MarketModel::MarketForCommod(commod);
-  Communicator* recipient = dynamic_cast<Communicator*>(market);
-  // set the price
-  double commodity_price = 0;
-  // request a generic resource
-  // build the transaction and message
-  cyclus::Transaction trans(this, type);
-  trans.SetCommod(commod);
-  trans.SetMinFrac(1.0);
-  trans.SetPrice(commodity_price);
-
-  if (type == cyclus::OFFER) {
-    GenericResource::Ptr trade_res =
-        GenericResource::CreateUntracked(amt, "kg", commod);
-    trans.SetResource(trade_res);
-  } else {
-    Material::Ptr trade_res =
-        Material::CreateUntracked(amt, context()->GetRecipe(in_recipe_));
-    trans.SetResource(trade_res);
-
-    LOG(cyclus::LEV_DEBUG1, "BatR") << "Requesting material: ";
-  }
-
-  // log the event
-  string text;
-  if (type == cyclus::OFFER) {
-    text = " has offered ";
-  } else {
-    text = " has requested ";
-  }
-  LOG(cyclus::LEV_INFO5, "BReact") << name() << text << amt
-                                   << " kg of " << commod << ".";
-  // send the message
-  SendMessage(recipient, trans);
-  LOG(cyclus::LEV_INFO4, "BReact") << "}";
-}
-
-//- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-void BatchReactor::HandleOrders() {
-  while (!ordersWaiting_.empty()) {
-    cyclus::Message::Ptr order = ordersWaiting_.front();
-    order->trans().ApproveTransfer();
-    ordersWaiting_.pop_front();
-  }
-}
-
-//- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-void BatchReactor::OffloadBatch() {
-  using cyclus::Context;
-  using cyclus::Material;
-  
-  Material::Ptr m = cyclus::ResCast<Material>(inCore_.Pop());
-  double factor = out_core_loading() / in_core_loading();
-  double loss = m->quantity() * (1 - factor);
-
-  m->ExtractQty(loss); // mass discrepancy
-  m->Transmute(context()->GetRecipe(out_recipe()));
-  postCore_.Push(m);
-}
-
-//- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-void BatchReactor::LoadCore() {
-  using cyclus::Material;
-  if (preCore_.quantity() >= BatchLoading()) {
-    // combine materials into a single resource of batch size and move to inCore buf
-    std::vector<Material::Ptr> mats = cyclus::ResCast<Material>(preCore_.PopQty(BatchLoading()));
-    Material::Ptr m = mats[0];
-    for (int i = 1; i < mats.size(); ++i) {
-      m->Absorb(mats[i]);
+//- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+void BatchReactor::Refuel_() {
+  while(n_core() < n_batches() && reserves_.count() > 0) {
+    MoveBatchIn_();
+    if(n_core() == n_batches()) {
+      to_begin_time_ = start_time_ + process_time_ + refuel_time_;
     }
-    inCore_.Push(m);
-    LOG(cyclus::LEV_DEBUG2, "BReact") << "BatchReactor " << name()
-                                      << " moved fuel into the core:";
-    LOG(cyclus::LEV_DEBUG2, "BReact") << "  precore level: " << preCore_.quantity();
-    LOG(cyclus::LEV_DEBUG2, "BReact") << "  incore level: " << inCore_.quantity();
   }
 }
 
-//- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-void BatchReactor::OffloadCore() {
-  while (!inCore_.empty()) {
-    OffloadBatch();
+//- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+void BatchReactor::MoveBatchIn_() {
+  LOG(cyclus::LEV_DEBUG2, "BReact") << "BatchReactor " << name() << " added"
+                                    <<  " a batch from its core.";
+  try {
+    core_.Push(reserves_.Pop());
+  } catch(cyclus::Error& e) {
+      e.msg(Model::InformErrorMsg(e.msg()));
+      throw e;
   }
-  LOG(cyclus::LEV_DEBUG2, "BReact") << "BatchReactor " << name()
-                                    << " removed a core of fuel from the core:";
-  LOG(cyclus::LEV_DEBUG2, "BReact") << "  precore level: " << preCore_.quantity();
-  LOG(cyclus::LEV_DEBUG2, "BReact") << "  incore level: " << inCore_.quantity();
-  LOG(cyclus::LEV_DEBUG2, "BReact") << "  postcore level: " <<
-                                    postCore_.quantity();
+}
+
+//- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+void BatchReactor::MoveBatchOut_() {
+  using cyclus::Material;
+  using cyclus::ResCast;
+  
+  LOG(cyclus::LEV_DEBUG2, "BReact") << "BatchReactor " << name() << " removed"
+                                    <<  " a batch from its core.";
+  try {
+    Material::Ptr mat = ResCast<Material>(core_.Pop());
+    std::string incommod = crctx_.commod(mat);
+    assert(incommod != "");
+    std::string outcommod = crctx_.out_commod(incommod);
+    assert(outcommod != "");
+    std::string outrecipe = crctx_.out_recipe(crctx_.in_recipe(incommod));
+    assert(outrecipe != "");
+    mat->Transmute(context()->GetRecipe(outrecipe));
+    crctx_.UpdateRsrc(outcommod, mat);
+    storage_[outcommod].Push(mat);
+  } catch(cyclus::Error& e) {
+      e.msg(Model::InformErrorMsg(e.msg()));
+      throw e;
+  }
+}
+
+//- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+cyclus::RequestPortfolio<cyclus::Material>::Ptr
+BatchReactor::GetOrder_(double size) {
+  using cyclus::CapacityConstraint;
+  using cyclus::Material;
+  using cyclus::RequestPortfolio;
+  using cyclus::Request;
+  
+  RequestPortfolio<Material>::Ptr port(new RequestPortfolio<Material>());
+  
+  const std::vector<std::string>& commods = crctx_.in_commods();
+  std::vector<std::string>::const_iterator it;
+  std::string recipe;
+  Material::Ptr mat;
+  for (it = commods.begin(); it != commods.end(); ++it) {
+    recipe = crctx_.in_recipe(*it);
+    assert(recipe != "");
+    mat =
+        Material::CreateUntracked(size, context()->GetRecipe(recipe));
+    port->AddRequest(mat, this, *it, commod_prefs_[*it]);
+    
+    LOG(cyclus::LEV_DEBUG3, "BReact") << "BatchReactor " << name()
+                                      << " is making an order:";
+    LOG(cyclus::LEV_DEBUG3, "BReact") << "          size: " << size;
+    LOG(cyclus::LEV_DEBUG3, "BReact") << "     commodity: " << *it;
+    LOG(cyclus::LEV_DEBUG3, "BReact") << "    preference: "
+                                      << commod_prefs_[*it];
+  }
+
+  CapacityConstraint<Material> cc(size);
+  port->AddConstraint(cc);
+
+  return port;
+}
+
+//- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+void BatchReactor::AddBatches_(std::string commod, cyclus::Material::Ptr mat) {
+  using cyclus::Material;
+  using cyclus::ResCast;
+
+  LOG(cyclus::LEV_DEBUG3, "BReact") << "BatchReactor " << name()
+                                    << " is adding " << mat->quantity()
+                                    << " of material to its reserves.";
+
+  // this is a hack! whatever *was* left in spillover now magically becomes this
+  // new commodity. we need to do something different (maybe) for recycle.
+  spillover_->Absorb(mat);
+  
+  while (!cyclus::IsNegative(spillover_->quantity() - batch_size())) {
+    Material::Ptr batch;
+    // this is a hack to deal with close-to-equal issues between batch size and
+    // the amount of fuel in spillover
+    if (spillover_->quantity() >= batch_size()) {
+      batch = spillover_->ExtractQty(batch_size());
+    } else {
+      batch = spillover_->ExtractQty(spillover_->quantity());
+    }
+    assert(commod != "");
+    crctx_.AddRsrc(commod, batch);
+    reserves_.Push(batch);    
+  }
+}
+
+//- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+cyclus::BidPortfolio<cyclus::Material>::Ptr BatchReactor::GetBids_(
+    const cyclus::CommodMap<cyclus::Material>::type& commod_requests,
+    std::string commod,
+    cyclus::ResourceBuff* buffer) {
+  using cyclus::Bid;
+  using cyclus::BidPortfolio;
+  using cyclus::CapacityConstraint;
+  using cyclus::Composition;
+  using cyclus::Converter;
+  using cyclus::Material;
+  using cyclus::Request;
+  using cyclus::ResCast;
+  using cyclus::ResourceBuff;
+    
+  BidPortfolio<Material>::Ptr port(new BidPortfolio<Material>());
+  
+  if (commod_requests.count(commod) > 0 && buffer->quantity() > 0) {
+    const std::vector<Request<Material>::Ptr>& requests =
+        commod_requests.at(commod);
+
+    // get offer composition
+    Material::Ptr back = ResCast<Material>(buffer->Pop(ResourceBuff::BACK));
+    Composition::Ptr comp = back->comp();
+    buffer->Push(back);
+    
+    std::vector<Request<Material>::Ptr>::const_iterator it;
+    for (it = requests.begin(); it != requests.end(); ++it) {
+      const Request<Material>::Ptr req = *it;
+      double qty = std::min(req->target()->quantity(), buffer->quantity());
+      Material::Ptr offer =
+          Material::CreateUntracked(qty, comp);
+      port->AddBid(req, offer, this);
+    }
+    
+    CapacityConstraint<Material> cc(buffer->quantity());
+    port->AddConstraint(cc);
+  }
+
+  return port;
+}
+
+//- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+cyclus::Material::Ptr BatchReactor::TradeResponse_(
+    double qty,
+    cyclus::ResourceBuff* buffer) {
+  using cyclus::Material;
+  using cyclus::ResCast;
+
+  std::vector<Material::Ptr> manifest;
+  try {
+    // pop amount from inventory and blob it into one material
+    manifest = ResCast<Material>(buffer->PopQty(qty));  
+  } catch(cyclus::Error& e) {
+    e.msg(Model::InformErrorMsg(e.msg()));
+    throw e;
+  }
+  
+  Material::Ptr response = manifest[0];
+  crctx_.RemoveRsrc(response);
+  for (int i = 1; i < manifest.size(); i++) {
+    crctx_.RemoveRsrc(manifest[i]);
+    response->Absorb(manifest[i]);
+  }
+  return response;
+}
+
+//- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+void BatchReactor::SetUpPhaseNames_() {
+  phase_names_.insert(std::make_pair(INITIAL, "initialization"));
+  phase_names_.insert(std::make_pair(PROCESS, "processing batch(es)"));
+  phase_names_.insert(std::make_pair(WAITING, "waiting for fuel"));
 }
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 extern "C" cyclus::Model* ConstructBatchReactor(cyclus::Context* ctx) {
   return new BatchReactor(ctx);
 }
+
 } // namespace cycamore

@@ -3,7 +3,7 @@
 
 <simulation>
   <control>
-    <duration>10</duration>
+    <duration>12</duration>
     <startmonth>1</startmonth>
     <startyear>2000</startyear>
     <simstart>0</simstart>
@@ -43,11 +43,12 @@
         <input>
           <incommodity>natl_u</incommodity>
           <inrecipe>natl_u</inrecipe>
-          <inventorysize>500</inventorysize>
+          <inventorysize>100</inventorysize>
         </input>
         <output>
           <outcommodity>enriched_u</outcommodity>
           <tails_assay>0.003</tails_assay>
+          <swu_capacity>30.0</swu_capacity>
         </output>
       </EnrichmentFacility>
     </model>
@@ -87,7 +88,7 @@
           <commodities>
             <incommodity>waste</incommodity>
           </commodities>
-          <input_capacity>1</input_capacity>
+          <input_capacity>1000</input_capacity>
         </input>
       </SinkFacility>
     </model>
@@ -101,7 +102,15 @@
     <allowedfacility>Reactor</allowedfacility>
     <allowedfacility>Sink</allowedfacility>
     <model>
-      <NullRegion/>
+      <GrowthRegion>
+        <commodity>
+          <name>power</name>
+          <demand>
+            <type>linear</type>
+            <parameters>10 0</parameters>
+          </demand>
+        </commodity>
+      </GrowthRegion>
     </model>
     <institution>
       <name>SingleInstitution</name>
@@ -119,16 +128,12 @@
           <number>1</number>
         </entry>
         <entry>
-          <prototype>Reactor</prototype>
-          <number>1</number>
-        </entry>
-        <entry>
           <prototype>Sink</prototype>
           <number>1</number>
         </entry>
       </initialfacilitylist>
       <model>
-        <NullInst/>
+        <ManagerInst/>
       </model>
     </institution>
   </region>

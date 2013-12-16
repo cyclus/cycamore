@@ -118,21 +118,21 @@ IF(CMAKE_USE_PTHREADS_INIT)  # The pthreads library is available.
   SET(cxx_base_flags "${cxx_base_flags} -DGTEST_HAS_PTHREAD=1")
 ENDIF()
 
-# Build CycamoreUnitTestDriver
-ADD_EXECUTABLE( CycamoreUnitTestDriver
+# Build cycamore_unit_tests
+ADD_EXECUTABLE( cycamore_unit_tests
   Testing/cycamore_unit_test_driver.cc ${TestSource}
   ${GENERATED_TEST_SOURCE}
 )
-TARGET_LINK_LIBRARIES( CycamoreUnitTestDriver dl ${CYCAMORE_LIBRARIES} 
+TARGET_LINK_LIBRARIES( cycamore_unit_tests dl ${CYCAMORE_LIBRARIES} 
   dl ${LIBS} ${CYCLUS_GTEST_LIBRARIES})
 
-INSTALL(TARGETS CycamoreUnitTestDriver
+INSTALL(TARGETS cycamore_unit_tests
   RUNTIME DESTINATION bin
   COMPONENT testing
   )
 
 # read tests after building the driver, and add them to ctest
-set( tgt "CycamoreUnitTestDriver")
+set( tgt "cycamore_unit_tests")
 set( script "${CYCAMORE_SOURCE_DIR}/Config/generate_test_macros.py")
 set( exec "--executable=${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/${tgt}")
 set( out "--output=${CMAKE_BINARY_DIR}/CTestTestfile.cmake")
@@ -172,7 +172,7 @@ SET(CPACK_PACKAGE_NAME "${CMAKE_PROJECT_NAME}")
 CONFIGURE_FILE("${CYCAMORE_SOURCE_DIR}/CMake/CycamoreCPackOptions.cmake.in"
   "${CYCAMORE_BINARY_DIR}/CMake/CycamoreCPackOptions.cmake" @ONLY)
 SET(CPACK_PROJECT_CONFIG_FILE "${CYCAMORE_BINARY_DIR}/CMake/CycamoreCPackOptions.cmake")
-SET(CPACK_PACKAGE_EXECUTABLES "cycamore" "CycamoreUnitTestDriver")
+SET(CPACK_PACKAGE_EXECUTABLES "cycamore" "cycamore_unit_tests")
 
 
 INCLUDE(CPack)

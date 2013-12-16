@@ -15,7 +15,9 @@
 namespace cycamore {
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-GrowthRegion::GrowthRegion(cyclus::Context* ctx) : cyclus::RegionModel(ctx) {}
+GrowthRegion::GrowthRegion(cyclus::Context* ctx)
+    : cyclus::RegionModel(ctx),
+      cyclus::Model(ctx) {}
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 GrowthRegion::~GrowthRegion() {}
@@ -98,8 +100,8 @@ void GrowthRegion::AddCommodityDemand(cyclus::QueryEngine* qe) {
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 void GrowthRegion::Deploy(cyclus::Model* parent) {
   cyclus::RegionModel::Deploy(parent);
-  for (int i = 0; i != NChildren(); i++) {
-    cyclus::Model* child = children(i);
+  for (int i = 0; i != children().size(); i++) {
+    cyclus::Model* child = children().at(i);
     RegisterCommodityProducerManager(child);
     RegisterBuilder(child);
   }
@@ -124,7 +126,7 @@ void GrowthRegion::HandleTick(int time) {
     LOG(cyclus::LEV_INFO3, "greg") << "  * unmetdemand = " << unmetdemand;
 
     if (unmetdemand > 0) {
-      orderBuilds(commodity, unmetdemand);
+      OrderBuilds(commodity, unmetdemand);
     }
   }
   cyclus::RegionModel::HandleTick(time);
@@ -161,7 +163,7 @@ void GrowthRegion::RegisterBuilder(cyclus::Model* child) {
 }
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-void GrowthRegion::orderBuilds(cyclus::Commodity& commodity,
+void GrowthRegion::OrderBuilds(cyclus::Commodity& commodity,
                                double unmetdemand) {
   using std::vector;
   vector<cyclus::BuildOrder> orders =

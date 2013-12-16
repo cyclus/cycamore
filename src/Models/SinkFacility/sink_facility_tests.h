@@ -3,18 +3,16 @@
 
 #include "sink_facility.h"
 
-#include "facility_model_tests.h"
-#include "model_tests.h"
 #include "test_context.h"
-#include "mock_market.h"
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 class SinkFacilityTest : public ::testing::Test {
  protected:
   cyclus::TestContext tc_;
   cycamore::SinkFacility* src_facility;
-  MockMarket* commod_market;
-  std::string commod_;
+  std::string commod1_, commod2_, commod3_;
+  double capacity_, inv_, qty_;
+  int ncommods_;
 
   virtual void SetUp();
   virtual void TearDown();

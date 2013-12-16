@@ -7,7 +7,9 @@
 namespace cycamore {
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-ManagerInst::ManagerInst(cyclus::Context* ctx) : cyclus::InstModel(ctx) {}
+ManagerInst::ManagerInst(cyclus::Context* ctx)
+    : cyclus::InstModel(ctx),
+      cyclus::Model(ctx) {}
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 ManagerInst::~ManagerInst() {}
@@ -24,7 +26,7 @@ void ManagerInst::RegisterAvailablePrototype(std::string prototype) {
                                        << " and "
                                        << " now has " << NBuildingPrototypes()
                                        << " registered total.";
-  } catch (cyclus::CastError err) { }
+  } catch (cyclus::CastError err) {}
 }
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -

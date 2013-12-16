@@ -1,361 +1,400 @@
 // batch_reactor.h
-#ifndef _BATCHREACTOR_H
-#define _BATCHREACTOR_H
+#ifndef CYCAMORE_MODELS_BATCHREACTOR_BATCH_REACTOR_H_
+#define CYCAMORE_MODELS_BATCHREACTOR_BATCH_REACTOR_H_
 
-#include "facility_model.h"
+#include <map>
+#include <queue>
+#include <string>
+
+#include "bid_portfolio.h"
+#include "capacity_constraint.h"
 #include "commodity_producer.h"
-
+#include "commodity_recipe_context.h"
+#include "enrichment.h"
+#include "exchange_context.h"
+#include "facility_model.h"
+#include "material.h"
+#include "request_portfolio.h"
 #include "resource_buff.h"
 
-#include <string>
-#include <queue>
-#include <map>
+// forward declarations
+namespace cycamore {
+class BatchReactor;
+} // namespace cycamore
+namespace cyclus {  
+class Context;
+} // namespace cyclus
 
 namespace cycamore {
 
-class Context;
-  
-/**
-   Defines all possible phases this facility can be in
- */
-enum Phase {INIT, BEGIN, OPERATION, REFUEL, REFUEL_DELAY, WAITING, END};
-
-/* /\** */
-/*    information about an entry into the spent fuel pool */
-/*  *\/ */
-/* struct PoolEntry */
-/* { */
-/*   int exit_time; */
-/*   cyclus::Material::Ptr mat; */
-
-/* PoolEntry(int time, mat_rsr_ptr mat) : exit_time(time), mat(mat_ptr) {}; */
-/* }; */
-
-/**
-   @class BatchReactor
-   This class is identical to the RecipeReactor, except that it
-   operates in a batch-like manner, i.e. it refuels in batches.
- */
+/// @class BatchReactor
+///
+/// @section introduction Introduction
+/// The BatchReactor is a facility that models batch processing. It has three
+/// storage areas which hold batches of materials: reserves, core, and
+/// storage. Incoming material orders are placed into reserves, from which the
+/// core is provided batches during refueling. When a process has been
+/// completed, batches are moved from the core into storage. Requests for
+/// material are bid upon based on the state of the material in storage.
+///
+/// The Reactor can manage multiple input-output commodity pairs, and keeps
+/// track of the pair that each batch belongs to. Batches move through the
+/// system independently of their input/output commodity types, but when batches
+/// reach the storage area, they are offered as bids depedent on their output
+/// commodity type.
+///
+/// @section params Parameters
+/// A BatchReactor has the following tuneable parameters:
+///   #. batch_size : the size of batches
+///   #. n_batches : the number of batches that constitute a full core
+///   #. process_time : the number of timesteps a batch process takes
+///   #. n_load : the number of batches processed at any given time (i.e.,
+///   n_load is unloaded and reloaded after a process is finished
+///   #. n_reserves : the preferred number of batches in reserve
+///   #. preorder_time : the amount of time before a process is finished to
+///   order fuel
+///   #. refuel_time : the number of timesteps required to reload the core after
+///   a process has finished
+/// 
+/// The BatchReactor also maintains a cyclus::CommodityRecipeContext, which
+/// allows it to track incommodity-inrecipe/outcommodity-outrecipe groupings.
+/// 
+/// @section operation Operation  
+/// After a BatchReactor enters the simulation, it will begin processing its
+/// first batch load on the Tick after its core has been filled.
+/// 
+/// It will maintain its "processing" state for process_time() time steps,
+/// including the timestep on which it began. It will unload n_load() batches
+/// from its core on the Tock of that time step. For example, if a reactor
+/// begins its process at time 1 and has a process_time equal to 10, it will
+/// unload batches on the Tock of time step 10.
+/// 
+/// Starting at the next time step, the reactor will attempt to refuel itself
+/// from whatever batches exist in its reserves container (i.e, already-ordered
+/// fuel). Assuming its core buffer has been refueled, it will wait reload_time
+/// timesteps. On the tick of the following timestep, the process will begin
+/// again. Using the previous example, assume that the refuel_time is equal to
+/// two and that the core buffer has been refueled appropriately. The refueling
+/// "phase" will begin on time step 11, and will end on the Tock of time step
+/// 12. The process will begin again on time step 13 (analagous to its state
+/// originally at time step 1).
+/// 
+/// @section end End of Life
+/// If the current time step is equivalent to the facility's lifetime, the
+/// reactor will move all material in its core to its storage containers.
+///
+/// @section requests Requests
+/// A BatchReactor will make as many requests as it has possible input
+/// commodities. It provides a constraint based on a total request amount
+/// determined by its batch_size, n_load, and n_reserves parameters. The
+/// n_reserves parameter allows modelers to order fuel in advance of when it is
+/// needed. The fuel order size is batch_size * (n_load + n_reserves). These
+/// requests are made if the current simulation time is less than or equal to
+/// the reactor's current order_time(), which is determined by the ending time
+/// of the current process less a look ahead time, the preorder_time().
+///
+/// A special case exists when the reactor first enters the simulation, where it
+/// will order as much fuel as is needed to fill its full core.
+/// 
+/// @section bids Bids
+/// A BatchReactor will bid on any request for any of its out_commodities, as
+/// long as there is a positive quantity of material in its storage area
+/// associated with that output commodity.
+///
+/// @section ics Initial Conditions
+/// A BatchReactor can be deployed with any number of batches in its reserve,
+/// core, and storage buffers. Recipes and commodities for each of these batch
+/// groupings must be specified.
+///
+/// @todo add decommissioning behavior if material is still in storage
+///
+/// @warning preference time changing is based on *full simulation time*, not
+/// relative time
+/// @warning the reactor's commodity context *can not* current remove resources
+/// reliably because of the implementation of ResourceBuff::PopQty()'s
+/// implementation. Resource removal from the context requires pointer equality
+/// in order to remove material, and PopQty will split resources, making new
+/// pointers.
+/// @warning the reactor uses a hackish way to input materials into its
+/// reserves. See the AddBatches_ member function.
 class BatchReactor : public cyclus::FacilityModel,
-  public cyclus::CommodityProducer {
+      public cyclus::CommodityProducer {
  public:
-  /* --- Module Methods --- */
-  /**
-     Constructor for the BatchReactor class.
-     @param ctx the cyclus context for access to simulation-wide parameters
-  */
+  /// @brief defines all possible phases this facility can be in
+  enum Phase {
+    INITIAL, ///< The initial phase, after the facility is built but before it is
+             /// filled
+    PROCESS, ///< The processing phase
+    WAITING, ///< The waiting phase, while the factility is waiting for fuel
+             /// between processes
+  };
+
+  /// @brief a struct for initial conditions
+  struct InitCond {
+   InitCond() : reserves(false), core(false), storage(false) {};
+
+    void AddReserves(int n, std::string rec, std::string commod) {
+      reserves = true;
+      n_reserves = n;
+      reserves_rec = rec;
+      reserves_commod = commod;
+    }
+
+    void AddCore(int n, std::string rec, std::string commod) {
+      core = true;
+      n_core = n;
+      core_rec = rec;
+      core_commod = commod;
+    }
+
+    void AddStorage(int n, std::string rec, std::string commod) {
+      storage = true;
+      n_storage = n;
+      storage_rec = rec;
+      storage_commod = commod;
+    }
+
+    bool reserves;
+    int n_reserves;
+    std::string reserves_rec;
+    std::string reserves_commod;
+
+    bool core;
+    int n_core;
+    std::string core_rec;
+    std::string core_commod;
+
+    bool storage;
+    int n_storage;
+    std::string storage_rec;
+    std::string storage_commod;
+  };
+  
+  /* --- Module Members --- */
+  /// @param ctx the cyclus context for access to simulation-wide parameters
   BatchReactor(cyclus::Context* ctx);
-
-  /**
-     Destructor for the BatchReactor class.
-  */
+  
   virtual ~BatchReactor();
-
+  
   virtual cyclus::Model* Clone();
-
+  
   virtual std::string schema();
 
-  /**
-     Initialize members related to derived module class
-     @param qe a pointer to a cyclus::QueryEngine object containing initialization data
-  */
+  /// Initialize members related to derived module class
+  /// @param qe a pointer to a cyclus::QueryEngine object containing
+  /// initialization data
   virtual void InitModuleMembers(cyclus::QueryEngine* qe);
 
-  /**
-     Print information about this model
-  */
+  /// initialize members from a different model
+  void InitFrom(BatchReactor* m);
+  
+  /// Print information about this model
   virtual std::string str();
   /* --- */
 
-  /* --- Facility Methods --- */
-
-  /**
-     perform module-specific tasks when entering the simulation
-   */
+  /* --- Facility Members --- */
+  /// perform module-specific tasks when entering the simulation 
   virtual void Deploy(cyclus::Model* parent);
   /* --- */
 
-  /* --- Agent Methods --- */
-  /**
-     The HandleTick function specific to the BatchReactor.
-     @param time the time of the tick
-   */
+  /* --- Agent Members --- */  
+  /// The HandleTick function specific to the BatchReactor.
+  /// @param time the time of the tick
   virtual void HandleTick(int time);
-
-  /**
-     The HandleTick function specific to the BatchReactor.
-     @param time the time of the tock
-   */
+  
+  /// The HandleTick function specific to the BatchReactor.
+  /// @param time the time of the tock
   virtual void HandleTock(int time);
+  
+  /// @brief The EnrichmentFacility request Materials of its given
+  /// commodity. 
+  virtual std::set<cyclus::RequestPortfolio<cyclus::Material>::Ptr>
+      GetMatlRequests();
+
+  /// @brief The EnrichmentFacility place accepted trade Materials in their
+  /// Inventory
+  virtual void AcceptMatlTrades(
+      const std::vector< std::pair<cyclus::Trade<cyclus::Material>,
+      cyclus::Material::Ptr> >& responses);
+  
+  /// @brief Responds to each request for this facility's commodity.  If a given
+  /// request is more than this facility's inventory or SWU capacity, it will
+  /// offer its minimum of its capacities.
+  virtual std::set<cyclus::BidPortfolio<cyclus::Material>::Ptr>
+      GetMatlBids(const cyclus::CommodMap<cyclus::Material>::type&
+                  commod_requests);
+  
+  /// @brief respond to each trade with a material enriched to the appropriate
+  /// level given this facility's inventory
+  ///
+  /// @param trades all trades in which this trader is the supplier
+  /// @param responses a container to populate with responses to each trade
+  virtual void GetMatlTrades(
+    const std::vector< cyclus::Trade<cyclus::Material> >& trades,
+    std::vector<std::pair<cyclus::Trade<cyclus::Material>,
+    cyclus::Material::Ptr> >& responses);
   /* --- */
 
-  /* --- cyclus::Transaction Methods --- */
-  /**
-     When the facility receives a message, execute any transaction
-   */
-  virtual void ReceiveMessage(cyclus::Message::Ptr msg);
+  /* --- BatchReactor Members --- */
+  /// @return the total number of batches in storage
+  int StorageCount();
+  
+  /// @brief the processing time required for a full batch process before
+  /// refueling
+  inline void process_time(int t) { process_time_ = t; }
+  inline int process_time() const { return process_time_; }
+  
+  /// @brief the time it takes to refuel
+  inline void refuel_time(int t) { refuel_time_ = t; }
+  inline int refuel_time() const { return refuel_time_; }
+  
+  /// @brief the amount of time an order should be placed for new fuel before a
+  /// process is finished
+  inline void preorder_time(int t) { preorder_time_ = t; }
+  inline int preorder_time() const { return preorder_time_; }
 
-  /**
-     send messages up through the institution
-     @param recipient the final recipient
-     @param trans the transaction to send
-   */
-  void SendMessage(Communicator* recipient, cyclus::Transaction trans);
+  /// @brief the starting time of the last (current) process
+  inline void start_time(int t) { start_time_ = t; }
+  inline int start_time() const { return start_time_; }
 
-  /**
-     Transacted resources are extracted through this method
-     @param order the msg/order for which resource(s) are to be prepared
-     @return list of resources to be sent for this order
-   */
-  virtual std::vector<cyclus::Resource::Ptr> RemoveResource(
-    cyclus::Transaction order);
+  /// @brief the ending time of the last (current) process
+  /// @warning the - 1 is to ensure that a 1 period process time that begins on
+  /// the tick ends on the tock
+  inline int end_time() const { return start_time() + process_time() - 1; }
 
-  /**
-     Transacted resources are received through this method
-     @param trans the transaction to which these resource objects belong
-     @param manifest is the set of resources being received
-   */
-  virtual void AddResource(cyclus::Transaction trans,
-                           std::vector<cyclus::Resource::Ptr> manifest);
-  /* --- */
+  /// @brief the beginning time for the next phase, set internally
+  inline int to_begin_time() const { return to_begin_time_; }
 
-  /* --- BatchReactor Methods --- */
-  /**
-     set the cycle length
-     @param time the cycle length time
-   */
-  void set_cycle_length(int time);
+  /// @brief the time orders should be taking place for the next refueling
+  inline int order_time() const { return end_time() - preorder_time(); }
 
-  /**
-     @return the cycle length
-   */
-  int cycle_length();
+  /// @brief the number of batches in a full reactor
+  inline void n_batches(int n) { n_batches_ = n; }
+  inline int n_batches() const { return n_batches_; }
 
-  /**
-     set the time required to refuel the reactor
-     @param time the refuel delay time
-   */
-  void set_refuel_delay(int time);
+  /// @brief the number of batches in reactor refuel loading/unloading
+  inline void n_load(int n) { n_load_ = n; }
+  inline int n_load() const { return n_load_; }
 
-  /**
-     @return the refuel delay time
-   */
-  int refuel_delay();
+  /// @brief the preferred number of fresh fuel batches to keep in reserve
+  inline void n_reserves(int n) { n_reserves_ = n; }
+  inline int n_reserves() const { return n_reserves_; }
 
-  /**
-     set the input core loading
-     @param size the core loading size in kilograms
-   */
-  void set_in_core_loading(double size);
+  /// @brief the number of batches currently in the reactor
+  inline int n_core() const { return core_.count(); }
 
-  /**
-     @return the input core loading in kilograms
-   */
-  double in_core_loading();
+  /// @brief the size of a batch 
+  inline void batch_size(double size) { batch_size_ = size; }
+  inline double batch_size() { return batch_size_; }
 
-  /**
-     set the output core loading
-     @param size the core loading size out kilograms
-   */
-  void set_out_core_loading(double size);
+  /// @brief this facility's commodity-recipe context
+  inline void crctx(const cyclus::CommodityRecipeContext& crctx) {
+    crctx_ = crctx;
+  }
+  inline cyclus::CommodityRecipeContext crctx() const { return crctx_; }
 
-  /**
-     @return the output core loading out kilograms
-   */
-  double out_core_loading();
+  /// @brief this facility's initial conditions
+  inline void ics(const InitCond& ics) { ics_ = ics; }
+  inline InitCond ics() const { return ics_; }
+  
+  /// @brief the current phase
+  void phase(Phase p);
+  inline Phase phase() const { return phase_; }
 
-  /**
-     set the number of batches per core
-     @param n the number of batches to set
-   */
-  void set_batches_per_core(int n);
-
-  /**
-     @return the number of batches per core
-   */
-  int batches_per_core();
-
-  /**
-     return the batch loading
-   */
-  double BatchLoading();
-
-  /**
-     set the input commodity
-     @param name the commodity name
-   */
-  void set_in_commodity(std::string name);
-
-  /**
-     @return the input commodity
-  */
-  std::string in_commodity();
-
-  /**
-     set the input recipe
-     @param name the recipe name
-   */
-  void set_in_recipe(std::string name);
-
-  /**
-     @return the input recipe
-  */
-  std::string in_recipe();
-
-  /**
-     set the output commodity
-     @param name the commodity name
-   */
-  void set_out_commodity(std::string name);
-
-  /**
-     @return the output commodity
-   */
-  std::string out_commodity();
-
-  /**
-     set the output recipe
-     @param name the recipe name
-   */
-  void set_out_recipe(std::string name);
-
-  /**
-     @return the output recipe
-   */
-  std::string out_recipe();
-
-  /**
-     @return the current phase
-  */
-  Phase phase();
-  /* --- */
+  /// @brief this facility's preference for input commodities
+  inline void commod_prefs(const std::map<std::string, double>& prefs) {
+    commod_prefs_ = prefs;
+  }
+  inline const std::map<std::string, double>& commod_prefs() const {
+    return commod_prefs_;
+  }
 
  protected:
-  /* --- Facility Methods --- */
-  /**
-     facilities over write this method if a condition must be met
-     before their destructors can be called
-  */
-  virtual bool CheckDecommissionCondition();
-  /* --- */
+  /// @brief moves a batch from core_ to storage_
+  virtual void MoveBatchOut_();
+
+  /// @brief gets bids for a commodity from a buffer
+  cyclus::BidPortfolio<cyclus::Material>::Ptr GetBids_(
+      const cyclus::CommodMap<cyclus::Material>::type& commod_requests,
+      std::string commod,
+      cyclus::ResourceBuff* buffer);
+  
+  /// @brief returns a qty of material from the a buffer
+  cyclus::Material::Ptr TradeResponse_(
+      double qty,
+      cyclus::ResourceBuff* buffer);
+  
+  /// @brief a cyclus::ResourceBuff for material while they are inside the core,
+  /// with all materials guaranteed to be of batch_size_
+  cyclus::ResourceBuff core_;
+
+  /// @brief a cyclus::ResourceBuff for material once they leave the core.
+  /// there is one storage for each outcommodity
+  /// @warning no guarantee can be made to the size of each item in storage_, as
+  /// requests can be met that are larger or smaller than batch_size_
+  std::map<std::string, cyclus::ResourceBuff> storage_;
 
  private:
-  /* --- BatchReactor Members and Methods --- */
-  /// a map of phase names
+  /// @brief refuels the reactor until it is full or reserves_ is out of
+  /// batches. If the core is full after refueling, the Phase is set to PROCESS.
+  void Refuel_();
+
+  /// @brief moves a batch from reserves_ to core_
+  void MoveBatchIn_();
+  
+  /// @brief construct a request portfolio for an order of a given size
+  cyclus::RequestPortfolio<cyclus::Material>::Ptr GetOrder_(double size);
+
+  /// @brief Add a blob of incoming material to reserves_
+  ///
+  /// The last material to join reserves_ is first investigated to see if it is
+  /// of batch_size_. If not, material from mat is added to it and it is
+  /// returned to reserves_. If more material remains, chunks of batch_size_ are
+  /// removed and added to reserves_. The final chunk may be <= batch_size_.
+  void AddBatches_(std::string commod, cyclus::Material::Ptr mat);
+  
+  /// @brief adds phase names to phase_names_ map
+  void SetUpPhaseNames_();
+  
   static std::map<Phase, std::string> phase_names_;
-
-  cyclus::Material::Ptr staged_precore_;
-
-  /// The time between batch reloadings.
-  int cycle_length_;
-
-  /// The time required to refuel the reactor
-  int refuel_delay_;
-
-  /// The time the present reactor has spent in phase REFUEL_DELAY
-  int time_delayed_;
-
-  /// batches per core
-  int batches_per_core_;
-
-  /// The total mass per core upon entry
-  double in_core_loading_;
-
-  /// The total mass per core upon exit
-  double out_core_loading_;
-
-  /// the name of the input commodity
-  std::string in_commodity_;
-
-  /// the name of the input recipe
-  std::string in_recipe_;
-
-  /// the name of the output commodity
-  std::string out_commodity_;
-
-  /// the name of the output recipe
-  std::string out_recipe_;
-
-  /// The current time step in the cycle
-  int cycle_timer_;
-
-  /// The current phase this facility is in
+  int process_time_;
+  int preorder_time_;
+  int refuel_time_;
+  int start_time_;
+  int to_begin_time_;
+  int n_batches_;
+  int n_load_;
+  int n_reserves_;
+  double batch_size_;
   Phase phase_;
+  
+  InitCond ics_;
 
-  /// a matbuff for material before they enter the core
-  cyclus::ResourceBuff preCore_;
+  cyclus::CommodityRecipeContext crctx_;
+  
+  /// @warning as is, the int key is **simulation time**, i.e., context()->time
+  /// == key. this should be fixed for future use!
+  std::map<int, std::vector< std::pair< std::string, std::string > > >
+      recipe_changes_;
+  
+  /// @brief preferences for each input commodity
+  std::map<std::string, double> commod_prefs_;
 
-  /// a matbuff for material while they are inside the core
-  cyclus::ResourceBuff inCore_;
+  /// @warning as is, the int key is **simulation time**, i.e., context()->time
+  /// == key. this should be fixed for future use!
+  std::map<int, std::vector< std::pair< std::string, double > > > pref_changes_;
+  
+  /// @brief allows only batches to enter reserves_
+  cyclus::Material::Ptr spillover_;
+  
+  /// @brief a cyclus::ResourceBuff for material before they enter the core,
+  /// with all materials guaranteed to be of batch_size_
+  cyclus::ResourceBuff reserves_;
 
-  /// a matbuff for material after they exit the core
-  cyclus::ResourceBuff postCore_;
-
-  /// The list of orders to process on the Tock
-  std::deque<cyclus::Message::Ptr> ordersWaiting_;
-
-  /**
-     populate the phase name map
-   */
-  void SetUpPhaseNames();
-
-  /**
-     resets the cycle timer
-   */
-  void reset_cycle_timer();
-
-  /**
-     return true if the cycle timer is >= the
-     cycle length
-   */
-  bool CycleComplete();
-
-  /**
-     return true if the core is filled
-   */
-  bool CoreFilled();
-
-  /**
-     set the next phase
-     @param p the next phase
-   */
-  void SetPhase(Phase p);
-
-  /**
-     make reqest for a specific amount of fuel
-   */
-  void MakeRequest(double amt);
-
-  /**
-     offer all off-loaded fuel
-   */
-  void MakeOffers();
-
-  /**
-     sends a request of offer to the commodity's market
-   */
-  void interactWithMarket(std::string commod, double amt, cyclus::TransType type);
-
-  /**
-     Processes all orders in ordersWaiting_
-   */
-  void HandleOrders();
-
-  /**
-     load fuel from preCore_ into inCore_
-   */
-  void LoadCore();
-
-  /**
-     move a batch from inCore_ to postCore_
-   */
-  void OffloadBatch();
-
-  /**
-     move all material from inCore_ to postCore_
-   */
-  void OffloadCore();
+  friend class BatchReactorTest;
   /* --- */
 };
+
 } // namespace cycamore
-#endif
+
+#endif // CYCAMORE_MODELS_BATCHREACTOR_BATCH_REACTOR_H_

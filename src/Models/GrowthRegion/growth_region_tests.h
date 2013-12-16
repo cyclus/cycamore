@@ -9,6 +9,8 @@
 #include "event_manager.h"
 #include "timer.h"
 
+namespace cycamore {
+
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 class GrowthRegionTests : public ::testing::Test {
  protected:
@@ -23,5 +25,7 @@ class GrowthRegionTests : public ::testing::Test {
   void InitRegion();
   bool ManagesCommodity(cyclus::Commodity& commodity);
 };
+
+} // namespace cycamore
 
 #endif
