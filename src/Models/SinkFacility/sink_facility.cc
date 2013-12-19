@@ -190,7 +190,7 @@ void SinkFacility::AcceptGenRsrcTrades(
 }
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - 
-void SinkFacility::HandleTick(int time) {
+void SinkFacility::Tick(int time) {
   using std::string;
   using std::vector;
   LOG(cyclus::LEV_INFO3, "SnkFac") << FacName() << " is ticking {";
@@ -209,7 +209,7 @@ void SinkFacility::HandleTick(int time) {
 }
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-void SinkFacility::HandleTock(int time) {
+void SinkFacility::Tock(int time) {
   LOG(cyclus::LEV_INFO3, "SnkFac") << FacName() << " is tocking {";
 
   // On the tock, the sink facility doesn't really do much.

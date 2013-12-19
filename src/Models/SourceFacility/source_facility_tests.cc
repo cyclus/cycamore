@@ -186,7 +186,7 @@ TEST_F(SourceFacilityTest, Response) {
                cyclus::ValueError);
   
   // reset!
-  src_facility->HandleTick(1);
+  src_facility->Tick(1);
   ASSERT_DOUBLE_EQ(src_facility->current_capacity(), capacity);
 }
 

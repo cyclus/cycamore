@@ -85,7 +85,7 @@ void DeployInst::InitModuleMembers(cyclus::QueryEngine* qe) {
 }
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-void DeployInst::HandleTick(int time) {
+void DeployInst::Tick(int time) {
   using std::map;
   using std::set;
   using std::make_pair;
@@ -100,7 +100,7 @@ void DeployInst::HandleTick(int time) {
       Build(prototype);
     }
   }
-  InstModel::HandleTick(time);
+  InstModel::Tick(time);
 }
 
 /* ------------------- */

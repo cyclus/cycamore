@@ -108,7 +108,7 @@ void GrowthRegion::Deploy(cyclus::Model* parent) {
 }
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-void GrowthRegion::HandleTick(int time) {
+void GrowthRegion::Tick(int time) {
   using std::set;
   set<cyclus::Commodity>::iterator it;
   for (it = commodities_.begin(); it != commodities_.end(); it++) {
@@ -129,7 +129,7 @@ void GrowthRegion::HandleTick(int time) {
       OrderBuilds(commodity, unmetdemand);
     }
   }
-  cyclus::RegionModel::HandleTick(time);
+  cyclus::RegionModel::Tick(time);
 }
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -

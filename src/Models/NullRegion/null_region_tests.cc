@@ -6,7 +6,7 @@
 #include "region_model_tests.h"
 #include "model_tests.h"
 #include "timer.h"
-#include "event_manager.h"
+#include "recorder.h"
 
 #include <string>
 #include <queue>
@@ -48,7 +48,7 @@ TEST_F(NullRegionTest, InitialState) {
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 TEST_F(NullRegionTest, Print) {
   cyclus::Timer ti;
-  cyclus::EventManager em;
+  cyclus::Recorder em;
   cyclus::Context ctx(&ti, &em);
   FakeNullRegion reg(&ctx);
   EXPECT_NO_THROW(std::string s = reg.str());

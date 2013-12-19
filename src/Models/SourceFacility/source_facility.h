@@ -133,7 +133,7 @@ class SourceFacility : public cyclus::FacilityModel,
 
      @param time is the time to perform the tick
    */
-  virtual void HandleTick(int time);
+  virtual void Tick(int time);
 
   /**
      Each facility is prompted to its end-of-time-step
@@ -141,7 +141,7 @@ class SourceFacility : public cyclus::FacilityModel,
 
      @param time is the time to perform the tock
    */
-  virtual void HandleTock(int time);
+  virtual void Tock(int time);
   
   /// @brief Responds to each request for this source facility's commodity.
   /// If a given request is more than this facility's capacity, it will offer

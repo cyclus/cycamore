@@ -191,7 +191,7 @@ void InproReactor::Deploy(cyclus::Model* parent) {
 }
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-void InproReactor::HandleTick(int time) {
+void InproReactor::Tick(int time) {
   LOG(cyclus::LEV_INFO3, "BReact") << name() << " is ticking at time "
                                    << time << " {";
   LOG(cyclus::LEV_DEBUG3, "BReact") << "The current phase is: "
@@ -323,7 +323,7 @@ void InproReactor::GetMatlTrades(
 }
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-void InproReactor::HandleTock(int time) {
+void InproReactor::Tock(int time) {
   using std::string;
   using boost::lexical_cast;
   LOG(cyclus::LEV_INFO3, "BReact") << name() << " is tocking {";

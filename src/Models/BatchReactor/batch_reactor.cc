@@ -407,7 +407,7 @@ void BatchReactor::Deploy(cyclus::Model* parent) {
 }
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-void BatchReactor::HandleTick(int time) {
+void BatchReactor::Tick(int time) {
   LOG(cyclus::LEV_INFO3, "BReact") << name() << " is ticking at time "
                                    << time << " {";
                                     
@@ -481,7 +481,7 @@ void BatchReactor::HandleTick(int time) {
 }
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-void BatchReactor::HandleTock(int time) {
+void BatchReactor::Tock(int time) {
   LOG(cyclus::LEV_INFO3, "BReact") << name() << " is tocking {";
   LOG(cyclus::LEV_DEBUG4, "BReact") << "Current facility parameters for "
                                     << name()
