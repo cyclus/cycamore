@@ -3,7 +3,7 @@
 
 <simulation>
   <control>
-    <duration>7</duration>
+    <duration>5</duration>
     <startmonth>1</startmonth>
     <startyear>2000</startyear>
     <simstart>0</simstart>
@@ -87,7 +87,7 @@
         <pref_change>
           <incommodity>uox</incommodity>
           <new_pref>2.0</new_pref>
-          <time>5</time>
+          <time>4</time>
         </pref_change>
       </BatchReactor>
     </model>
