@@ -48,8 +48,8 @@ TEST_F(NullRegionTest, InitialState) {
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 TEST_F(NullRegionTest, Print) {
   cyclus::Timer ti;
-  cyclus::Recorder em;
-  cyclus::Context ctx(&ti, &em);
+  cyclus::Recorder rec;
+  cyclus::Context ctx(&ti, &rec);
   FakeNullRegion reg(&ctx);
   EXPECT_NO_THROW(std::string s = reg.str());
   // Test NullRegion specific aspects of the print method here

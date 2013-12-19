@@ -37,7 +37,7 @@ class ManagerInstTests : public ::testing::Test {
   double capacity;
   cyclus::Context* ctx_;
   cyclus::Timer ti_;
-  cyclus::Recorder em_;
+  cyclus::Recorder rec_;
 
  public:
   virtual void SetUp();

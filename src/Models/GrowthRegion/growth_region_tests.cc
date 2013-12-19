@@ -13,7 +13,7 @@ namespace cycamore {
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 void GrowthRegionTests::SetUp() {
-  ctx = new cyclus::Context(&ti, &em);
+  ctx = new cyclus::Context(&ti, &rec);
   region = new cycamore::GrowthRegion(ctx);
   commodity_name = "commod";
   demand_type = "linear";

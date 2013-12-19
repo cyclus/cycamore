@@ -16,7 +16,7 @@ class GrowthRegionTests : public ::testing::Test {
  protected:
   cyclus::Context* ctx;
   cyclus::Timer ti;
-  cyclus::Recorder em;
+  cyclus::Recorder rec;
   cycamore::GrowthRegion* region;
   std::string commodity_name, demand_type, demand_params, demand_start;
 
