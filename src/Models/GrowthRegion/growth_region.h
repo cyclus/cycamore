@@ -72,7 +72,7 @@ class GrowthRegion : public cyclus::RegionModel {
      is constructed and executed.
      @param time is the time to perform the tick
    */
-  virtual void HandleTick(int time);
+  virtual void Tick(int time);
   /* --- */
 
   virtual cyclus::Model* Clone() {

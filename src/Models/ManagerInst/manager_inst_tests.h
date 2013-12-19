@@ -3,7 +3,7 @@
 
 #include "context.h"
 #include "commodity_producer.h"
-#include "event_manager.h"
+#include "recorder.h"
 #include "facility_model.h"
 #include "manager_inst.h"
 #include "timer.h"
@@ -23,8 +23,8 @@ class TestProducer :
   }
 
   void CloneModuleMembersFrom(cyclus::FacilityModel* source) {};
-  void HandleTock(int time) {};
-  void HandleTick(int time) {};
+  void Tock(int time) {};
+  void Tick(int time) {};
 };
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -37,7 +37,7 @@ class ManagerInstTests : public ::testing::Test {
   double capacity;
   cyclus::Context* ctx_;
   cyclus::Timer ti_;
-  cyclus::EventManager em_;
+  cyclus::Recorder rec_;
 
  public:
   virtual void SetUp();

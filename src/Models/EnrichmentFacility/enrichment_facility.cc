@@ -166,14 +166,14 @@ void EnrichmentFacility::Deploy(cyclus::Model* parent) {
 }
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-void EnrichmentFacility::HandleTick(int time) {
+void EnrichmentFacility::Tick(int time) {
   LOG(cyclus::LEV_INFO3, "EnrFac") << FacName() << " is ticking {";
   LOG(cyclus::LEV_INFO3, "EnrFac") << "}";
   current_swu_capacity_ = swu_capacity();
 }
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-void EnrichmentFacility::HandleTock(int time) {
+void EnrichmentFacility::Tock(int time) {
   LOG(cyclus::LEV_INFO3, "EnrFac") << FacName() << " is tocking {";
   LOG(cyclus::LEV_INFO3, "EnrFac") << "}";
 }
@@ -418,7 +418,7 @@ void EnrichmentFacility::RecordEnrichment_(double natural_u, double swu) {
   LOG(cyclus::LEV_DEBUG1, "EnrFac") << "  *    SWU: " << swu;
 
   Context* ctx = Model::context();
-  ctx->NewEvent("Enrichments")
+  ctx->NewDatum("Enrichments")
   ->AddVal("ENTRY", ++entry_)
   ->AddVal("ID", id())
   ->AddVal("Time", ctx->time())

@@ -187,7 +187,7 @@ class EnrichmentFacility : public cyclus::FacilityModel {
 
      @param time is the time to perform the tick
    */
-  virtual void HandleTick(int time);
+  virtual void Tick(int time);
 
   /**
      Each facility is prompted to its end-of-time-step
@@ -195,7 +195,7 @@ class EnrichmentFacility : public cyclus::FacilityModel {
 
      @param time is the time to perform the tock
    */
-  virtual void HandleTock(int time);
+  virtual void Tock(int time);
 
   /// @brief The EnrichmentFacility request Materials of its given
   /// commodity. 
@@ -310,7 +310,7 @@ class EnrichmentFacility : public cyclus::FacilityModel {
   cyclus::Material::Ptr Enrich_(cyclus::Material::Ptr mat, double qty);
 
   /**
-     @brief records and enrichment with the cyclus::EventManager
+     @brief records and enrichment with the cyclus::Recorder
    */
   void RecordEnrichment_(double natural_u, double swu);
 

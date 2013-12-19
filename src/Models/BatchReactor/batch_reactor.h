@@ -198,13 +198,13 @@ class BatchReactor : public cyclus::FacilityModel,
   /* --- */
 
   /* --- Agent Members --- */  
-  /// The HandleTick function specific to the BatchReactor.
+  /// The Tick function specific to the BatchReactor.
   /// @param time the time of the tick
-  virtual void HandleTick(int time);
+  virtual void Tick(int time);
   
-  /// The HandleTick function specific to the BatchReactor.
+  /// The Tick function specific to the BatchReactor.
   /// @param time the time of the tock
-  virtual void HandleTock(int time);
+  virtual void Tock(int time);
   
   /// @brief The EnrichmentFacility request Materials of its given
   /// commodity. 

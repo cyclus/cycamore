@@ -117,13 +117,13 @@ TEST_F(InproReactorTest, Print) {
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 TEST_F(InproReactorTest, Tick) {
   int time = 1;
-  EXPECT_NO_THROW(src_facility->HandleTick(time););
+  EXPECT_NO_THROW(src_facility->Tick(time););
 }
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 TEST_F(InproReactorTest, Tock) {
   int time = 1;
-  EXPECT_ANY_THROW(src_facility->HandleTock(time));
+  EXPECT_ANY_THROW(src_facility->Tock(time));
 }
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -

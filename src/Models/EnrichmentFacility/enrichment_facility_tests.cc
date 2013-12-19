@@ -595,7 +595,7 @@ TEST_F(EnrichmentFacilityTest, Response) {
                cyclus::ValueError);
   
   // reset!
-  src_facility->HandleTick(1);
+  src_facility->Tick(1);
   EXPECT_DOUBLE_EQ(src_facility->current_swu_capacity(), swu_req);
 }
 

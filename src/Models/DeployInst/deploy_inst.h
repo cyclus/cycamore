@@ -75,7 +75,7 @@ class DeployInst : public cyclus::InstModel {
   /**
      tick handling function for this inst
    */
-  virtual void HandleTick(int time);
+  virtual void Tick(int time);
 
   /* ------------------- */
 

@@ -92,7 +92,7 @@ void SourceFacility::InitFrom(SourceFacility* m) {
 }
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-void SourceFacility::HandleTick(int time) {
+void SourceFacility::Tick(int time) {
   LOG(cyclus::LEV_INFO3, "SrcFac") << FacName() << " is ticking {";
   LOG(cyclus::LEV_INFO4, "SrcFac") << "will offer " << capacity_
                                    << " kg of "
@@ -102,7 +102,7 @@ void SourceFacility::HandleTick(int time) {
 }
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-void SourceFacility::HandleTock(int time) {
+void SourceFacility::Tock(int time) {
   LOG(cyclus::LEV_INFO3, "SrcFac") << FacName() << " is tocking {";
   LOG(cyclus::LEV_INFO3, "SrcFac") << "}";
 }
