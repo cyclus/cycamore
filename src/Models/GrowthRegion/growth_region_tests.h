@@ -6,15 +6,17 @@
 
 #include "context.h"
 #include "growth_region.h"
-#include "event_manager.h"
+#include "recorder.h"
 #include "timer.h"
+
+namespace cycamore {
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 class GrowthRegionTests : public ::testing::Test {
  protected:
   cyclus::Context* ctx;
   cyclus::Timer ti;
-  cyclus::EventManager em;
+  cyclus::Recorder rec;
   cycamore::GrowthRegion* region;
   std::string commodity_name, demand_type, demand_params, demand_start;
 
@@ -23,5 +25,7 @@ class GrowthRegionTests : public ::testing::Test {
   void InitRegion();
   bool ManagesCommodity(cyclus::Commodity& commodity);
 };
+
+} // namespace cycamore
 
 #endif

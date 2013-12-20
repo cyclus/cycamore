@@ -72,11 +72,8 @@ class GrowthRegion : public cyclus::RegionModel {
      is constructed and executed.
      @param time is the time to perform the tick
    */
-  virtual void HandleTick(int time);
+  virtual void Tick(int time);
   /* --- */
-
-  /// manager for Supply and emand
-  cyclus::SupplyDemandManager sdmanager_;
 
   virtual cyclus::Model* Clone() {
     GrowthRegion* m = new GrowthRegion(context());
@@ -91,6 +88,9 @@ class GrowthRegion : public cyclus::RegionModel {
 
   /// manager for building things
   cyclus::BuildingManager buildmanager_;
+
+  /// manager for Supply and emand
+  cyclus::SupplyDemandManager sdmanager_;
 
   /**
      register a commodity for which production capacity is being
@@ -117,14 +117,14 @@ class GrowthRegion : public cyclus::RegionModel {
      @param commodity the commodity being demanded
      @param unmetdemand the unmet demand
    */
-  void orderBuilds(cyclus::Commodity& commodity, double unmetdemand);
+  void OrderBuilds(cyclus::Commodity& commodity, double unmetdemand);
 
   /**
      orders builder to build a prototype
      @param builder the model that can build buildee
      @param prototype the model to be built
    */
-  void orderBuild(cyclus::Model* builder, cyclus::Model* prototype);
+  void OrderBuild(cyclus::Model* builder, cyclus::Model* prototype);
   /* --- */
 };
 } // namespace cycamore

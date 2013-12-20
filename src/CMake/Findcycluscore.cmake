@@ -23,7 +23,7 @@ ENDIF(DEFINED CYCLUS_ROOT_DIR)
 
 # Set the include dir, this will be the future basis for other
 # defined dirs
-FIND_PATH(CYCLUS_CORE_INCLUDE_DIR suffix.h
+FIND_PATH(CYCLUS_CORE_INCLUDE_DIR cyclus.h
   HINTS "${CYCLUS_ROOT_DIR}" "${CYCLUS_ROOT_DIR}/cyclus"
   "${CYCLUS_ROOT_DIR}/include" 
   "${CYCLUS_ROOT_DIR}/include/cyclus" 
@@ -31,7 +31,7 @@ FIND_PATH(CYCLUS_CORE_INCLUDE_DIR suffix.h
   PATH_SUFFIXES cyclus/include include include/cyclus)
 
 # Add the root dir to the hints
-SET(CYCLUS_ROOT_DIR "${CYCLUS_CORE_INCLUDE_DIR}/..")
+SET(CYCLUS_ROOT_DIR "${CYCLUS_CORE_INCLUDE_DIR}/../..")
 MESSAGE(STATUS "CYCLUS_ROOT_DIR hint has been set to : ${CYCLUS_ROOT_DIR}")
 
 # Look for the header files

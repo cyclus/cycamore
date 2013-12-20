@@ -22,30 +22,6 @@
     <name>waste</name>
   </commodity>
 
-  <market>
-    <name>natl_u_market</name>
-    <mktcommodity>natl_u</mktcommodity>
-    <model>
-      <NullMarket/>
-    </model>
-  </market>
-
-  <market>
-    <name>enr_u_market</name>
-    <mktcommodity>enriched_u</mktcommodity>
-    <model>
-      <NullMarket/>
-    </model>
-  </market>
-
-  <market>
-    <name>waste_market</name>
-    <mktcommodity>waste</mktcommodity>
-    <model>
-      <NullMarket/>
-    </model>
-  </market>
-
   <facility>
     <name>Source</name>
     <model>
@@ -67,6 +43,7 @@
         <input>
           <incommodity>natl_u</incommodity>
           <inrecipe>natl_u</inrecipe>
+          <inventorysize>1000</inventorysize>
         </input>
         <output>
           <outcommodity>enriched_u</outcommodity>
@@ -82,17 +59,15 @@
     <name>Reactor</name>
     <model>
       <BatchReactor>
-        <fuel_input>
+        <fuel>
          <incommodity>enriched_u</incommodity>
          <inrecipe>fuel_recipe</inrecipe>
-        </fuel_input>
-        <fuel_output>
          <outcommodity>waste</outcommodity>
          <outrecipe>used_fuel_recipe</outrecipe>
-        </fuel_output>
-        <cyclelength>1</cyclelength>
-        <coreloading>2</coreloading>
-        <batchespercore>1</batchespercore>
+        </fuel>
+        <processtime>1</processtime>
+        <nbatches>1</nbatches>
+        <batchsize>2</batchsize>
         <commodity_production>
           <commodity>power</commodity>
           <capacity>10</capacity>

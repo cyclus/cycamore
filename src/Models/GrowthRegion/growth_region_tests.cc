@@ -9,9 +9,11 @@
 #include "xml_query_engine.h"
 #include "xml_parser.h"
 
+namespace cycamore {
+
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 void GrowthRegionTests::SetUp() {
-  ctx = new cyclus::Context(&ti, &em);
+  ctx = new cyclus::Context(&ti, &rec);
   region = new cycamore::GrowthRegion(ctx);
   commodity_name = "commod";
   demand_type = "linear";
@@ -74,4 +76,6 @@ INSTANTIATE_TEST_CASE_P(GrowthRegion, RegionModelTests,
                         Values(&GrowthRegionConstructor));
 INSTANTIATE_TEST_CASE_P(GrowthRegion, ModelTests,
                         Values(&GrowthRegionModelConstructor));
+
+} // namespace cycamore
 

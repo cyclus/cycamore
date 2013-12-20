@@ -15,14 +15,16 @@
 
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-TestProducer::TestProducer(cyclus::Context* ctx) : cyclus::FacilityModel(ctx) {}
+TestProducer::TestProducer(cyclus::Context* ctx)
+    : cyclus::FacilityModel(ctx),
+      cyclus::Model(ctx) {}
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 TestProducer::~TestProducer() {}
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 void ManagerInstTests::SetUp() {
-  ctx_ = new cyclus::Context(&ti_, &em_);
+  ctx_ = new cyclus::Context(&ti_, &rec_);
   src_inst = new cycamore::ManagerInst(ctx_);
   producer = new TestProducer(ctx_);
   commodity = cyclus::Commodity("commod");

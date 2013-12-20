@@ -14,14 +14,6 @@
     <name>commodity</name>
   </commodity>
 
-  <market>
-    <name>commodity_market</name>
-    <mktcommodity>commodity</mktcommodity>
-    <model>
-      <NullMarket/>
-    </model>
-  </market>
-
   <facility>
     <name>Source</name>
     <lifetime>1</lifetime>
