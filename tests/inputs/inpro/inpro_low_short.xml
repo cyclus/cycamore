@@ -3,7 +3,7 @@
 
 <simulation>
   <control>
-    <duration>301</duration>
+    <duration>100</duration>
     <startmonth>11</startmonth>
     <startyear>2007</startyear>
     <simstart>0</simstart>
@@ -22,37 +22,12 @@
     <name>waste</name>
   </commodity>
 
-  <market>
-    <name>natl_u_market</name>
-    <mktcommodity>natl_u</mktcommodity>
-    <model>
-      <NullMarket/>
-    </model>
-  </market>
-
-  <market>
-    <name>enr_u_market</name>
-    <mktcommodity>enriched_u</mktcommodity>
-    <model>
-      <NullMarket/>
-    </model>
-  </market>
-
-  <market>
-    <name>waste_market</name>
-    <mktcommodity>waste</mktcommodity>
-    <model>
-      <NullMarket/>
-    </model>
-  </market>
-
   <facility>
     <name>Source</name>
     <model>
       <SourceFacility>
         <output>
           <outcommodity>natl_u</outcommodity>
-          <output_capacity>1.0e10</output_capacity>
           <recipe>natl_u</recipe>
         </output>
       </SourceFacility>
@@ -79,10 +54,10 @@
   </facility>
 
   <facility>
-    <name>LWR_Reactor</name>    
+    <name>LWR_Reactor</name>
     <lifetime>480</lifetime>
     <model>
-      <BatchReactor>
+      <InproReactor>
         <fuel_input>
          <incommodity>enriched_u</incommodity>
          <inrecipe>lwr_fuel_recipe</inrecipe>
@@ -101,17 +76,17 @@
           <capacity>1000</capacity>
           <cost>1000</cost>
         </commodity_production>
-      </BatchReactor>
+      </InproReactor>
     </model>
     <incommodity>enriched_u</incommodity>
     <outcommodity>waste</outcommodity>
   </facility>
 
   <facility>
-    <name>HWR_Reactor</name>    
+    <name>HWR_Reactor</name>
     <lifetime>480</lifetime>
     <model>
-      <BatchReactor>
+      <InproReactor>
         <fuel_input>
          <incommodity>enriched_u</incommodity>
          <inrecipe>natl_u</inrecipe>
@@ -122,15 +97,15 @@
         </fuel_output>
         <cyclelength>10</cyclelength>
         <refueldelay>2</refueldelay>
-        <incoreloading>1.39142873e6</incoreloading>
-        <outcoreloading>1.38138735e6</outcoreloading>
+        <incoreloading>1.39142873e5</incoreloading>
+        <outcoreloading>1.38138735e5</outcoreloading>
         <batchespercore>1</batchespercore>
         <commodity_production>
           <commodity>hwr_power</commodity>
           <capacity>600</capacity>
           <cost>600</cost>
         </commodity_production>
-      </BatchReactor>
+      </InproReactor>
     </model>
     <incommodity>enriched_u</incommodity>
     <outcommodity>waste</outcommodity>
@@ -144,7 +119,6 @@
           <commodities>
             <incommodity>waste</incommodity>
           </commodities>
-          <input_capacity>1.0e10</input_capacity>
         </input>
       </SinkFacility>
     </model>
@@ -164,36 +138,36 @@
           <name>lwr_power</name>
           <demand>
             <type>linear</type>
-            <parameters>0.95 3.497e5</parameters> <!-- 372 GWe * 0.94 -->
+            <parameters>811.82 349680</parameters> <!-- 372 GWe * 0.94 -->
             <start_time>1</start_time>
           </demand>
           <demand>
             <type>linear</type>
-            <parameters>1.111 0</parameters>
-            <start_time>241</start_time>
+            <parameters>1566.7 0</parameters>
+            <start_time>265</start_time>
           </demand>
           <demand>
             <type>linear</type>
-            <parameters>2.500 0</parameters>
-            <start_time>601</start_time>
+            <parameters>2350 0</parameters>
+            <start_time>505</start_time>
           </demand>
         </commodity>
         <commodity>
           <name>hwr_power</name>
           <demand>
             <type>linear</type>
-            <parameters>0.95 0.223e5</parameters> <!-- 372 GWe * 0.06 -->
+            <parameters>51.812 22320</parameters> <!-- 372 GWe * 0.06 -->
             <start_time>1</start_time>
           </demand>
           <demand>
             <type>linear</type>
-            <parameters>1.111 0</parameters>
-            <start_time>241</start_time>
+            <parameters>100 0</parameters>
+            <start_time>265</start_time>
           </demand>
           <demand>
             <type>linear</type>
-            <parameters>2.500 0</parameters>
-            <start_time>601</start_time>
+            <parameters>150 0</parameters>
+            <start_time>505</start_time>
           </demand>
         </commodity>
       </GrowthRegion>
