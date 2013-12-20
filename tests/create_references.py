@@ -29,15 +29,20 @@ def main():
     repo_owner = "Owner of cyclus and cycamore repos on github.com"
     parser.add_argument("--repo_owner", help=repo_owner, default="cyclus")
 
+    input_source = "Where input files should be taken from. The default is local."
+    parser.add_argument("--input_source", help=input_source, default="local") 
+
     args = parser.parse_args()
+
+    cwd = os.getcwd()
 
     if (args.scenario == "physor"):
         # Cyclus simulation inputs for physor
         sim_inputs = ["./inputs/physor/1_Enrichment_2_Reactor.xml",
                       "./inputs/physor/2_Sources_3_Reactors.xml"]
         # Benchmark databases for physor must match the order of input files
-        bench_dbs = ["./benchmarks/physor_1_Enrichment_2_Reactor.h5",
-                      "./benchmarks/physor_2_Sources_3_Reactors.h5"]
+        bench_dbs = [cwd + "/benchmarks/physor_1_Enrichment_2_Reactor.h5",
+                     cwd + "/benchmarks/physor_2_Sources_3_Reactors.h5"]
     elif (args.scenario == "inpro"):
         # Cyclus simulation inputs
         sim_inputs = ["./inputs/inpro/inpro_low.xml",
@@ -47,12 +52,12 @@ def main():
                       "./inputs/inpro/inpro_low_no_decay.xml",
                       "./inputs/inpro/inpro_high_no_decay.xml"]
         # Benchmark databases must match the order of input files
-        bench_dbs = ["./benchmarks/bench_inpro_low.h5",
-                     "./benchmarks/bench_inpro_high.h5",
-                     "./benchmarks/bench_inpro_low_short.h5",
-                     "./benchmarks/bench_inpro_high_short.h5",
-                     "./benchmarks/bench_inpro_low_no_decay.h5",
-                     "./benchmarks/bench_inpro_high_no_decay.h5"]
+        bench_dbs = [cwd + "/benchmarks/bench_inpro_low.h5",
+                     cwd + "/benchmarks/bench_inpro_high.h5",
+                     cwd + "/benchmarks/bench_inpro_low_short.h5",
+                     cwd + "/benchmarks/bench_inpro_high_short.h5",
+                     cwd + "/benchmarks/bench_inpro_low_no_decay.h5",
+                     cwd + "/benchmarks/bench_inpro_high_no_decay.h5"]
     else:
         print("No legitimate scenario is provided")
         sys.exit()
@@ -64,6 +69,7 @@ def main():
                   args.cycamore_version,
                   args.repo_owner,
                   dirs_to_clean,
+                  args.input_source,
                   sim_inputs,
                   bench_dbs)
     finally:
@@ -75,6 +81,7 @@ def main_body(cyclus_version,
                cycamore_version,
                repo_owner,
                dirs_to_clean,
+               input_source,
                sim_inputs,
                bench_dbs):
     """The body of main that creates reference databases"""
@@ -99,14 +106,22 @@ def main_body(cyclus_version,
     install_project(cycamore_path, install_path)
     cyclus = install_path + "/bin/cyclus"  # cyclus executable
 
-    # Run physor cases
-    run_cyclus(cyclus, cwd, sim_inputs, bench_dbs)
+    if (input_source == "remote"):
+        inputs_location = cycamore_path + "/tests/"
+    elif (input_source == "local"):
+        inputs_location = cwd
+    else:
+        print("input_source is not identified correctly")
+        sys.exit()
+
+    # Run cyclus
+    run_cyclus(cyclus, inputs_location, sim_inputs, bench_dbs)
 
 def mkdir_safe(path):
     """Create a non-existing directory"""
     if os.path.exists(path):
         if os.listdir(path) != []:
-            print("WARNING: A non-empty " + path + "\nCANCEL MANUALLY TO AVOID OVERWRITING")
+            print("WARNING: A non-empty " + path + "\nABORT MANUALLY TO AVOID OVERWRITING")
     else:
         os.mkdir(path)
 
