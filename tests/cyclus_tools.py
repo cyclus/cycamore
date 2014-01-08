@@ -25,7 +25,7 @@ def run_cyclus(cyclus, cwd, sim_files):
         if rtn != 0:
             return  # don"t execute further commands
 
-def db_comparator(args, file_one, file_two):
+def db_comparator(file_one, file_two):
     """Compares two hdf5 databases"""
 
     db_one = tables.open_file(file_one, mode = "r")
