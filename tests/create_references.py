@@ -3,7 +3,7 @@
 import os
 
 from cyclus_tools import run_cyclus
-from tests_list import sim_files
+from testcases import sim_files
 
 def main():
     """Creates reference databases. Assumes that cyclus is included into PATH.
