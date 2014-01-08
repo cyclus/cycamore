@@ -6,7 +6,7 @@ def run_cyclus(cyclus, cwd, sim_files):
     """Runs cyclus with various inputs and creates output databases
        """
 
-    for sim_input, sim_output in zip(sim_files):
+    for sim_input, sim_output in sim_files:
         holdsrtn = [1]  # needed because nose does not send() to test generator
         cmd = [cyclus, "-o", sim_output, "--input-file", sim_input]
         check_cmd(cmd, cwd, holdsrtn)
