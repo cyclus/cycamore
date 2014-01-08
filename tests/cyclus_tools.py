@@ -1,5 +1,7 @@
 #! /usr/bin/env python
 
+import os
+
 from tools import check_cmd
 
 def run_cyclus(cyclus, cwd, sim_files):
@@ -8,6 +10,10 @@ def run_cyclus(cyclus, cwd, sim_files):
 
     for sim_input, sim_output in sim_files:
         holdsrtn = [1]  # needed because nose does not send() to test generator
+        # make sure the output target directory exists
+        if not os.path.exists(sim_output):
+            os.makedirs(sim_output)
+
         cmd = [cyclus, "-o", sim_output, "--input-file", sim_input]
         check_cmd(cmd, cwd, holdsrtn)
         rtn = holdsrtn[0]
