@@ -2,7 +2,7 @@
 
 import os
 
-from tests_list import sim_files
+from testcases import sim_files
 from cyclus_tools import run_cyclus, db_comparator
 
 """Tests"""
