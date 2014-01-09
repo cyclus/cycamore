@@ -46,7 +46,7 @@ def db_comparator(file_one, file_two):
     except AssertionError as err:
         print("The number or names of tables in databases are not the same.")
         print(err.message)
-        sys.exit()
+        return
 
     for path in paths:
         data_one = db_one.get_node(path)[:]
