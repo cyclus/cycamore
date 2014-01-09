@@ -19,7 +19,6 @@ def test_cyclus():
         temp_output = [(sim_input, "./output_temp.h5")]
         yield run_cyclus, "cyclus", cwd, temp_output
 
-        yield db_comparator, bench_db, "./output_temp.h5"
-
-        if os.path.isfile("./output_temp.h5):
+        if os.path.isfile("./output_temp.h5"):
+            yield db_comparator, bench_db, "./output_temp.h5"
             os.remove("./output_temp.h5")
