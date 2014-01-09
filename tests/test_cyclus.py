@@ -17,8 +17,8 @@ def test_cyclus():
     for sim_input,bench_db in sim_files:
 
         temp_output = [(sim_input, "./output_temp.h5")]
-        yield run_cyclus("cyclus", cwd, temp_output)
+        yield run_cyclus, "cyclus", cwd, temp_output
 
-        yield db_comparator(bench_db, "./output_temp.h5")
+        yield db_comparator, bench_db, "./output_temp.h5"
 
         os.remove("./output_temp.h5")
