@@ -13,7 +13,7 @@ def test_cyclus():
     WARNING: the tests require cyclus executable to be included in PATH
     """
     cwd = os.getcwd()
-    
+
     for sim_input,bench_db in sim_files:
 
         temp_output = [(sim_input, "./output_temp.h5")]
@@ -21,4 +21,5 @@ def test_cyclus():
 
         yield db_comparator, bench_db, "./output_temp.h5"
 
-        os.remove("./output_temp.h5")
+        if os.path.isfile("./output_temp.h5):
+            os.remove("./output_temp.h5")
