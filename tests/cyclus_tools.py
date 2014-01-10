@@ -26,8 +26,14 @@ def run_cyclus(cyclus, cwd, sim_files):
             return  # don"t execute further commands
 
 def db_comparator(file_one, file_two):
-    """Compares two hdf5 databases"""
+    """Compares two hdf5 databases
+    
+    Returns:
+            True or False. In case of False, it prints out the names
+            and differences in the compared databases.
+    """
 
+    dbs_same = True
     db_one = tables.open_file(file_one, mode = "r")
     db_two = tables.open_file(file_two, mode = "r")
     path_one = []
@@ -49,7 +55,8 @@ def db_comparator(file_one, file_two):
         # Close databases
         db_one.close()
         db_two.close()
-        return
+        dbs_same = False
+        return dbs_same
 
     for path in paths:
         data_one = db_one.get_node(path)[:]
@@ -65,6 +72,8 @@ def db_comparator(file_one, file_two):
         except AssertionError as err:
             print("\n" + path + " table are different in the databases.")
             print(err.message)
+            dbs_same = False
     # Close databases
     db_one.close()
     db_two.close()
+    return dbs_same
