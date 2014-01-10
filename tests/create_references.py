@@ -13,4 +13,5 @@ def main():
     # Run cyclus
     run_cyclus("cyclus", cwd, sim_files)
 
-if __name__ == "__main__": main()
+if __name__ == "__main__": 
+    main()
