@@ -4,8 +4,7 @@ import os
 import sys
 
 import tables
-import numpy as np
-from numpy.testing import assert_array_equal
+from numpy import array_equal
 
 from tools import check_cmd
 
@@ -27,7 +26,7 @@ def run_cyclus(cyclus, cwd, sim_files):
 
 def db_comparator(file_one, file_two):
     """Compares two hdf5 databases
-    
+
     Returns:
             True or False. In case of False, it prints out the names
             and differences in the compared databases.
@@ -46,32 +45,32 @@ def db_comparator(file_one, file_two):
         path_two.append(node._v_pathname)
 
     # Check if databases contain the same tables
-    try:
-        assert_array_equal(path_one, path_two)
-        paths = path_one
-    except AssertionError as err:
+    if not array_equal(path_one, path_two):
         print("The number or names of tables in databases are not the same.")
-        print(err.message)
+        print(path_one)
+        print(path_two)
         # Close databases
         db_one.close()
         db_two.close()
         dbs_same = False
         return dbs_same
 
+    paths = path_one
+
     for path in paths:
         data_one = db_one.get_node(path)[:]
         data_two = db_two.get_node(path)[:]
         names = []
+
         for name in data_one.dtype.names:
             if name != "SimID":
                 names.append(name)
+
         data_one = data_one[names]
         data_two = data_two[names]
-        try:
-            assert_array_equal(data_one, data_two)
-        except AssertionError as err:
-            print("\n" + path + " table are different in the databases.")
-            print(err.message)
+
+        if not array_equal(data_one, data_two):
+            print("\n" + path + " table is different in the databases.")
             dbs_same = False
     # Close databases
     db_one.close()
