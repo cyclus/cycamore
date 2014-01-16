@@ -48,7 +48,6 @@ class HDF5RegressionVisitor(object):
             if hasattr(self, methname):
                 meth = getattr(self, methname)
                 obj = meth(table)
-                print(obj)
                 ret.add(obj)
         return ret
 

@@ -11,10 +11,20 @@ from cyclus_tools import run_cyclus
 
 def db_comparator(path1, path2):
     db1 = tables.open_file(path1, mode = "r")
-    db2 = tables.open_file(path1, mode = "r")
+    db2 = tables.open_file(path2, mode = "r")
     v1 = visitors.HDF5RegressionVisitor(db1)
     v2 = visitors.HDF5RegressionVisitor(db2)
-    return v1.walk() == v2.walk()    
+    obj1 = v1.walk()
+    obj2 = v2.walk()
+
+    thing1 = obj1.pop()
+    thing2 = obj2.pop()
+    print([thing1[i][2] for i in range(len(thing1))])
+    print([thing2[i][2] for i in range(len(thing2))])
+    # print(str(len(obj1)) + " " + str(len(obj2)))
+    # print(obj1)
+    # print(obj2)
+    return obj1 == obj2
 
 def test_cyclus():
     
