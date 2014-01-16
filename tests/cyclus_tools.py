@@ -23,7 +23,7 @@ def run_cyclus(cyclus, cwd, sim_files):
             return  # don"t execute further commands
 
 def db_comparator(file_one, file_two):
-    """Compares two hdf5 databases
+    """Compares two Cyclus HDF5 
 
     Returns:
             True or False. In case of False, it prints out the names
