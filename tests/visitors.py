@@ -2,6 +2,8 @@ from __future__ import print_function
 
 import re
 
+import tables
+
 _table_names = {"agents": "Agents",}
 
 _agent_key = "ID"
@@ -14,15 +16,18 @@ class HDF5RegressionVisitor(object):
     returning objects that can be equality-comparable with other visitors.
     """
 
-    def __init__(self, db):
+    def __init__(self, db_path):
         """Parameters
         ----------
-        db : PyTables File
-           The database associated with this visitor
+        db_path : str
+           The path to an HDF5 database
         """
-        self._db = db
+        self._db = tables.open_file(db_path, mode = "r")
         self.agent_invariants = self._populate_agent_invariants()
 
+    def __del__(self):
+        self._db.close()
+        
     def _populate_agent_invariants(self):
         invars = {}
         table = self._db.get_node(self._db.root,
@@ -52,10 +57,10 @@ class HDF5RegressionVisitor(object):
         return ret
 
     def visit_agents(self, table):
-        return tuple(
-            tuple(row[i] 
-                  if i not in _agent_id_names or i is _agent_key
-                  else self.agent_invariants[row[i]] 
-                  for i in _agent_schema
-                  )
-            for row in table.iterrows())
+        d = {self.agent_invariants[row[_agent_key]]:
+                 tuple(row[i] if i not in _agent_id_names
+                       else self.agent_invariants[row[i]] 
+                       for i in _agent_schema)
+             for row in table.iterrows()}
+        #print(d)
+        return tuple((k, d[k]) for k in sorted(d.keys()))
