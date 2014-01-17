@@ -12,6 +12,9 @@ _agent_schema = ["AgentType", "ModelType", "Prototype", "ParentID", "EnterDate"]
 _agent_deaths_key = "AgentID"
 _agent_deaths_schema = ["DeathDate"]
 
+_simulation_time_info_schema = ["InitialYear", "InitialMonth", "SimulationStart",
+                                "Duration", "DecayInterval"]
+
 _agent_id_names = ["ParentID"]
 
 class HDF5RegressionVisitor(object):
@@ -65,7 +68,6 @@ class HDF5RegressionVisitor(object):
                        else self.agent_invariants[row[i]] 
                        for i in _agent_schema)
              for row in table.iterrows()}
-        #print(d)
         return tuple((k, d[k]) for k in sorted(d.keys()))
 
     def visit_agent_deaths(self, table):
@@ -74,5 +76,8 @@ class HDF5RegressionVisitor(object):
                        else self.agent_invariants[row[i]] 
                        for i in _agent_deaths_schema)
              for row in table.iterrows()}
-        #print(d)
         return tuple((k, d[k]) for k in sorted(d.keys()))
+
+    def visit_simulation_time_info(self, table):
+        return tuple(row[i] for i in _simulation_time_info_schema
+                     for row in table.iterrows())
