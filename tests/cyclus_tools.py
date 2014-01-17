@@ -1,10 +1,10 @@
-
 import os
-
-import tables
-from numpy import array_equal
-
 from tools import check_cmd
+
+from numpy import array_equal
+import tables
+
+import visitors
 
 def run_cyclus(cyclus, cwd, in_path, out_path):
     """Runs cyclus with various inputs and creates output databases
@@ -14,55 +14,13 @@ def run_cyclus(cyclus, cwd, in_path, out_path):
     cmd = [cyclus, "-o", out_path, "--input-file", in_path]
     check_cmd(cmd, cwd, holdsrtn)
 
-def db_comparator(file_one, file_two):
-    """Compares two Cyclus HDF5 
+def db_comparator(path1, path2):
+    """Compares two Cyclus HDF5 databases 
 
     Returns:
             True or False. In case of False, it prints out the names
             and differences in the compared databases.
     """
-
-    dbs_same = True
-    db_one = tables.open_file(file_one, mode = "r")
-    db_two = tables.open_file(file_two, mode = "r")
-    path_one = []
-    path_two = []
-
-    for node in db_one.walk_nodes(classname = "Table"):
-        path_one.append(node._v_pathname)
-
-    for node in db_two.walk_nodes(classname = "Table"):
-        path_two.append(node._v_pathname)
-
-    # Check if databases contain the same tables
-    if not array_equal(path_one, path_two):
-        print("The number or names of tables in databases are not the same.")
-        print(path_one)
-        print(path_two)
-        # Close databases
-        db_one.close()
-        db_two.close()
-        dbs_same = False
-        return dbs_same
-
-    paths = path_one
-
-    for path in paths:
-        data_one = db_one.get_node(path)[:]
-        data_two = db_two.get_node(path)[:]
-        names = []
-
-        for name in data_one.dtype.names:
-            if name != "SimID":
-                names.append(name)
-
-        data_one = data_one[names]
-        data_two = data_two[names]
-
-        if not array_equal(data_one, data_two):
-            print("\n" + path + " table is different in the databases.")
-            dbs_same = False
-    # Close databases
-    db_one.close()
-    db_two.close()
-    return dbs_same
+    v1 = visitors.HDF5RegressionVisitor(path1)
+    v2 = visitors.HDF5RegressionVisitor(path2)
+    return v1.walk() == v2.walk()
