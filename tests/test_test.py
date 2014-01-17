@@ -18,10 +18,9 @@ def test_cyclus():
         
         print("testing input: " + sim_input + " and bench_db: " + bench_db)
         tmp_file = "tmp.h5"
-
-        temp_output = [(sim_input, tmp_file)]
-        run_cyclus("cyclus", os.getcwd(), temp_output)
-
+        
+        run_cyclus("cyclus", os.getcwd(), sim_input, tmp_file)
+        
         if os.path.isfile(tmp_file):
             assert_true(db_comparator(bench_db, tmp_file))
             os.remove(tmp_file)

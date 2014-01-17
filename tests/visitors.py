@@ -9,6 +9,9 @@ _table_names = {"agents": "Agents",}
 _agent_key = "ID"
 _agent_schema = ["AgentType", "ModelType", "Prototype", "ParentID", "EnterDate"]
 
+_agent_deaths_key = _agent_key
+_agent_deaths_schema = ["DeathDate"]
+
 _agent_id_names = ["ParentID"]
 
 class HDF5RegressionVisitor(object):
@@ -49,8 +52,8 @@ class HDF5RegressionVisitor(object):
         ret = set()
         for table in self._db.walk_nodes(classname = "Table"):
             methname = 'visit' + re.sub('([A-Z]+)', r'_\1', table._v_name).lower()
-            # print(methname)
             if hasattr(self, methname):
+                print(methname)
                 meth = getattr(self, methname)
                 obj = meth(table)
                 ret.add(obj)
@@ -64,3 +67,12 @@ class HDF5RegressionVisitor(object):
              for row in table.iterrows()}
         #print(d)
         return tuple((k, d[k]) for k in sorted(d.keys()))
+
+    # def visit_agent_deaths(self, table):
+    #     d = {self.agent_invariants[row[_agent_deaths_key]]:
+    #              tuple(row[i] if i not in _agent_names
+    #                    else self.agent_invariants[row[i]] 
+    #                    for i in _agent_deaths_schema)
+    #          for row in table.iterrows()}
+    #     #print(d)
+    #     return tuple((k, d[k]) for k in sorted(d.keys()))
