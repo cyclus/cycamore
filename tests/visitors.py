@@ -37,7 +37,7 @@ class HDF5RegressionVisitor(object):
         """
         self._db = tables.open_file(db_path, mode = "r")
         self.agent_invariants = self._populate_agent_invariants()
-        self.rsrc_qtys = self._populate_rsrc_qtys()
+        self.rsrc_invariants = self._populate_rsrc_invariants()
 
     def __del__(self):
         self._db.close()
@@ -57,11 +57,11 @@ class HDF5RegressionVisitor(object):
                                  for i in _agent_schema)
         return invars
     
-    def _populate_rsrc_qtys(self):
+    def _populate_rsrc_invariants(self):
         table = self._db.get_node(self._db.root,
                                   name = _table_names["rsrcs"], 
                                   classname = "Table")
-        return {row["ID"]: row["ID"] for row in table.iterrows()}
+        return {row["ID"]: row["Quantity"] for row in table.iterrows()}
 
     def _xaction_entry(self, row):
         entry = []
@@ -69,7 +69,7 @@ class HDF5RegressionVisitor(object):
             if item in _agent_id_names:
                 entry.append(self.agent_invariants[row[item]])
             elif item in _rsrc_id_names:
-                entry.append(self.rsrc_qtys[row[item]])
+                entry.append(self.rsrc_invariants[row[item]])
             else:
                 entry.append(row[item])
         return tuple(i for i in entry)
