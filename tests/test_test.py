@@ -16,7 +16,7 @@ def test_cyclus():
     
     for sim_input, bench_db in sim_files:
         
-        print("testing input: " + sim_input + " and bench_db: " + bench_db)
+        # print("testing input: " + sim_input + " and bench_db: " + bench_db)
         tmp_file = "tmp.h5"
         
         run_cyclus("cyclus", os.getcwd(), sim_input, tmp_file)

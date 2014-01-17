@@ -5,9 +5,8 @@ from collections import defaultdict
 
 import tables
 
-_table_names = {"agents": "Agents",
-                "rsrcs": "Resources",
-                "comps": "Compositions",}
+_invar_table_names = {"agents": "Agents",
+                      "rsrcs": "Resources"}
 
 _agent_key = "ID"
 _agent_schema = ["AgentType", "ModelType", "Prototype", "ParentID", "EnterDate"]
@@ -48,7 +47,7 @@ class HDF5RegressionVisitor(object):
     def _populate_agent_invariants(self):
         invars = {}
         table = self._db.get_node(self._db.root,
-                                  name = _table_names["agents"], 
+                                  name = _invar_table_names["agents"], 
                                   classname = "Table")
         for row in table.iterrows():
             a_id = row["ID"]
@@ -62,7 +61,7 @@ class HDF5RegressionVisitor(object):
     
     def _populate_rsrc_invariants(self):
         table = self._db.get_node(self._db.root,
-                                  name = _table_names["rsrcs"], 
+                                  name = _invar_table_names["rsrcs"], 
                                   classname = "Table")
         return {row[_rsrc_key]: 
                 tuple(row[item] for item in _rsrc_schema) 
@@ -86,7 +85,6 @@ class HDF5RegressionVisitor(object):
         for table in self._db.walk_nodes(classname = "Table"):
             methname = 'visit' + re.sub('([A-Z]+)', r'_\1', table._v_name).lower()
             if hasattr(self, methname):
-                print(methname)
                 meth = getattr(self, methname)
                 obj = meth(table)
                 ret.add(obj)
