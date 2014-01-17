@@ -21,6 +21,9 @@ _simulation_time_info_schema = ["InitialYear", "InitialMonth", "SimulationStart"
 _xaction_schema = ["SenderID", "ReceiverID", "ResourceID", "Commodity", 
                    "Price", "Time"]
 
+_rsrc_key = "ID"
+_rsrc_schema = ["Type", "TimeCreated", "Quantity", "units"]
+
 _agent_id_names = ["ParentID", "SenderID", "ReceiverID"]
 _rsrc_id_names = ["ResourceID"]
 
@@ -61,7 +64,9 @@ class HDF5RegressionVisitor(object):
         table = self._db.get_node(self._db.root,
                                   name = _table_names["rsrcs"], 
                                   classname = "Table")
-        return {row["ID"]: row["Quantity"] for row in table.iterrows()}
+        return {row[_rsrc_key]: 
+                tuple(row[item] for item in _rsrc_schema) 
+                for row in table.iterrows()}
 
     def _xaction_entry(self, row):
         entry = []
