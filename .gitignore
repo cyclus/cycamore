@@ -5,3 +5,4 @@ doxygen.conf
 suffix.h
 *~
 #*
+*.pyc
