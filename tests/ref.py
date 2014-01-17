@@ -10,6 +10,10 @@ import uuid
 import multiprocessing
 import test_cases
 import shutil
+import importlib
+import sys
+import pyrax
+pyrax.set_setting("identity_type", "rackspace")
 
 def gen_main(args):
     # create sandbox dir
@@ -36,6 +40,8 @@ def gen_main(args):
     build_cycamore(build_path, install_path, prefix_path = args.cmake_prefix, boost = args.boost_root, coin = args.coin_root)
 
     # run cyclus simulations
+    sys.path.insert(0, os.path.join(cycamore_path, "tests"))
+    mod = importlib.import_module("test_cases")
     for infile in test_cases.sim_files:
         run_cyclus(install_path, infile, args.cyclus_refspec, args.cycamore_refspec)
 
@@ -142,16 +148,26 @@ def add_main(args):
         (cyclus_ref, cycamore_ref, infile) = decode_dbname(refname)
         reflist.append({
             'fname': refname,
-            'fname-sha1': h.hexdigest(),
+            'sha1-checksum': h.hexdigest(),
             'cyclus-ref': cyclus_ref,
             'cycamore-ref': cycamore_ref,
             'input-file': infile
             })
 
+        push_rackspace(refname, args.rs_cred)
+
     # update reflist
     data = json.dumps(reflist, indent=4, sort_keys=True)
     with open(args.reflist, 'w') as f:
         f.write(data)
+    
+def push_rackspace(fname, cred_file='rs.cred'):
+  creds_file = os.path.expanduser(cred_file)
+  pyrax.set_credential_file(cred_file)
+  cf = pyrax.cloudfiles
+  with open(fname, 'rb') as f:
+    fdata = f.read()
+  obj = cf.store_object("cyclus", fname, fdata)
 
 def fetch_refdbs(cyclus_ref, cycamore_ref, dst_path = '.'):
     cwd = os.getcwd()
@@ -188,6 +204,7 @@ if __name__ == '__main__':
     sub_add = subs.add_parser('add', help='add a new reference db set to the project')
     sub_add.add_argument('ref_dbs', metavar='FILE', nargs='+', help='list of reference db files')
     sub_add.add_argument('--reflist', help='filename of reflist', default='./reflist.json')
+    sub_add.add_argument('--rs-cred', help='rackspace credentials file', default='rs.cred')
     sub_add.set_defaults(func=add_main)
 
     args = p.parse_args()
