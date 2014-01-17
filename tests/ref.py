@@ -8,7 +8,7 @@ import json
 import os.path
 import uuid
 import multiprocessing
-import testcases
+import test_cases
 import shutil
 
 def gen_main(args):
@@ -36,7 +36,7 @@ def gen_main(args):
     build_cycamore(build_path, install_path, prefix_path = args.cmake_prefix, boost = args.boost_root, coin = args.coin_root)
 
     # run cyclus simulations
-    for infile in testcases.sim_files:
+    for infile in test_cases.sim_files:
         run_cyclus(install_path, infile, args.cyclus_refspec, args.cycamore_refspec)
 
     # cleanup
