@@ -1,10 +1,13 @@
 from __future__ import print_function
 
 import re
+from collections import defaultdict
 
 import tables
 
-_table_names = {"agents": "Agents",}
+_table_names = {"agents": "Agents",
+                "rsrcs": "Resources",
+                "comps": "Compositions",}
 
 _agent_key = "ID"
 _agent_schema = ["AgentType", "ModelType", "Prototype", "ParentID", "EnterDate"]
@@ -15,7 +18,11 @@ _agent_deaths_schema = ["DeathDate"]
 _simulation_time_info_schema = ["InitialYear", "InitialMonth", "SimulationStart",
                                 "Duration", "DecayInterval"]
 
-_agent_id_names = ["ParentID"]
+_xaction_schema = ["SenderID", "ReceiverID", "ResourceID", "Commodity", 
+                   "Price", "Time"]
+
+_agent_id_names = ["ParentID", "SenderID", "ReceiverID"]
+_rsrc_id_names = ["ResourceID"]
 
 class HDF5RegressionVisitor(object):
     """ An HDF5RegressionVisitor visits a number of Cyclus HDF5 tables,
@@ -30,6 +37,7 @@ class HDF5RegressionVisitor(object):
         """
         self._db = tables.open_file(db_path, mode = "r")
         self.agent_invariants = self._populate_agent_invariants()
+        self.rsrc_qtys = self._populate_rsrc_qtys()
 
     def __del__(self):
         self._db.close()
@@ -48,6 +56,23 @@ class HDF5RegressionVisitor(object):
             invars[a_id] = tuple(row[i] if i not in _agent_id_names else p_invar 
                                  for i in _agent_schema)
         return invars
+    
+    def _populate_rsrc_qtys(self):
+        table = self._db.get_node(self._db.root,
+                                  name = _table_names["rsrcs"], 
+                                  classname = "Table")
+        return {row["ID"]: row["ID"] for row in table.iterrows()}
+
+    def _xaction_entry(self, row):
+        entry = []
+        for item in _xaction_schema:
+            if item in _agent_id_names:
+                entry.append(self.agent_invariants[row[item]])
+            elif item in _rsrc_id_names:
+                entry.append(self.rsrc_qtys[row[item]])
+            else:
+                entry.append(row[item])
+        return tuple(i for i in entry)
     
     def walk(self):
         """Visits all tables, populating an equality-comparable object
@@ -81,3 +106,14 @@ class HDF5RegressionVisitor(object):
     def visit_simulation_time_info(self, table):
         return tuple(row[i] for i in _simulation_time_info_schema
                      for row in table.iterrows())
+
+    def visit_transactions(self, table):
+        xactions = []
+        tmin = table[0]["Time"]
+        tmax = table[-1]["Time"]
+        xactions = tuple(
+            frozenset(
+                self._xaction_entry(row) 
+                for row in table.where('Time ==' + str(i)) 
+                ) for i in range(tmin, tmax + 1))
+        return xactions
