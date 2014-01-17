@@ -1,0 +1,16 @@
+[
+    {
+        "cycamore-ref": "8b2d61c", 
+        "cyclus-ref": "fc5bbee", 
+        "fname": "fc5bbee_8b2d61c_1_Enrichment_2_Reactor.h5", 
+        "input-file": "1_Enrichment_2_Reactor.xml", 
+        "sha1-checksum": "451b951e378c2883c506568ff7763119e23281db"
+    }, 
+    {
+        "cycamore-ref": "8b2d61c", 
+        "cyclus-ref": "fc5bbee", 
+        "fname": "fc5bbee_8b2d61c_2_Sources_3_Reactors.h5", 
+        "input-file": "2_Sources_3_Reactors.xml", 
+        "sha1-checksum": "e7028d6c70ff6606792d90045d0a3495590e46d9"
+    }
+]

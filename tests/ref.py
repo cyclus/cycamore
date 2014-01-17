@@ -8,7 +8,6 @@ import json
 import os.path
 import uuid
 import multiprocessing
-import test_cases
 import shutil
 import importlib
 import sys
@@ -42,7 +41,7 @@ def gen_main(args):
     # run cyclus simulations
     sys.path.insert(0, os.path.join(cycamore_path, "tests"))
     mod = importlib.import_module("test_cases")
-    for infile in test_cases.sim_files:
+    for infile in mod.sim_files:
         run_cyclus(install_path, infile, args.cyclus_refspec, args.cycamore_refspec)
 
     # cleanup
@@ -157,7 +156,7 @@ def add_main(args):
         push_rackspace(refname, args.rs_cred)
 
     # update reflist
-    data = json.dumps(reflist, indent=4, sort_keys=True)
+    data = json.dumps(reflist, indent=4)
     with open(args.reflist, 'w') as f:
         f.write(data)
     
