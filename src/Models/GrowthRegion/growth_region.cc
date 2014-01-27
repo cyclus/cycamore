@@ -10,7 +10,6 @@
 
 #include <vector>
 
-#include <boost/lexical_cast.hpp>
 
 namespace cycamore {
 
@@ -54,47 +53,52 @@ std::string GrowthRegion::schema() {
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 void GrowthRegion::InitModuleMembers(cyclus::QueryEngine* qe) {
-  using std::string;
   LOG(cyclus::LEV_DEBUG2, "greg") << "A Growth Region is being initialized";
 
-  string query = "commodity";
-
+  std::string query = "commodity";
   int nCommodities = qe->NElementsMatchingQuery(query);
-
   // populate supply demand manager info for each commodity
   for (int i = 0; i < nCommodities; i++) {
-    AddCommodityDemand(qe->QueryElement(query, i));
+    cyclus::QueryEngine* iqe = qe->QueryElement(query, i);
+
+    std::string name = iqe->GetElementContent("name");
+    commodities_.insert(cyclus::Commodity(name));
+
+    std::string query = "demand";
+    int n = iqe->NElementsMatchingQuery(query);
+    for (int j = 0; j < n; j++) {
+      cyclus::QueryEngine* jqe = iqe->QueryElement(query, j);
+      DemandInfo di;
+      di.type = jqe->GetElementContent("type");
+      di.params = jqe->GetElementContent("parameters");
+      di.time = cyclus::GetOptionalQuery<int>(jqe, "start_time", 0);
+      demands_[name].push_back(di);
+    }
   }
 }
 
+//- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+void GrowthRegion::InitFrom(GrowthRegion* m) {
+  RegionModel::InitFrom(m);
+  commodities_ = m->commodities_;
+  demands_ = m->demands_;
+}
+
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-void GrowthRegion::AddCommodityDemand(cyclus::QueryEngine* qe) {
-  // instantiate product
-  using std::string;
-  using boost::lexical_cast;
-  string name = qe->GetElementContent("name");
-  cyclus::Commodity commodity(name);
-  RegisterCommodity(commodity);
+void GrowthRegion::AddCommodityDemand(cyclus::Commodity commod) {
+  std::string name = commod.name();
 
   // instantiatedemand
-  string query = "demand";
-  int n = qe->NElementsMatchingQuery(query);
   cyclus::PiecewiseFunctionFactory pff;
-
-  for (int i = 0; i < n; i++) {
-    cyclus::QueryEngine* demand = qe->QueryElement(query, i);
-
-    string type = demand->GetElementContent("type");
-    string params = demand->GetElementContent("parameters");
-    int time = cyclus::GetOptionalQuery<int>(demand, "start_time", 0);
-
+  for (int i = 0; i < demands_[name].size(); i++) {
+    DemandInfo di = demands_[name][i];
     cyclus::BasicFunctionFactory bff;
     bool continuous = (i != 0); // the first entry is not continuous
-    pff.AddFunction(bff.GetFunctionPtr(type, params), time, continuous);
+    pff.AddFunction(bff.GetFunctionPtr(di.type, di.params), di.time, continuous);
   }
 
   // register the commodity anddemand
-  sdmanager_.RegisterCommodity(commodity, pff.GetFunctionPtr());
+  sdmanager_.RegisterCommodity(commod, pff.GetFunctionPtr());
 }
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -104,6 +108,11 @@ void GrowthRegion::Deploy(cyclus::Model* parent) {
     cyclus::Model* child = children().at(i);
     RegisterCommodityProducerManager(child);
     RegisterBuilder(child);
+  }
+
+  std::set<cyclus::Commodity>::iterator it;
+  for (it = commodities_.begin(); it != commodities_.end(); ++it) {
+    AddCommodityDemand(*it);
   }
 }
 

@@ -36,6 +36,11 @@ class ManagerInst : public cyclus::InstModel,
     return m;
   }
 
+  void InitFrom(ManagerInst* m) {
+    InstModel::InitFrom(m);
+    commod_producers_ = m->commod_producers_;
+  }
+
   /**
      perform any actions required after prototype has been added to
      the list of available prototypes
