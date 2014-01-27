@@ -29,6 +29,13 @@ namespace cycamore {
    type are required and then determine, facility by facility, which
    of its institutions are available to build each facility.
  */
+
+struct DemandInfo {
+  std::string type;
+  std::string params;
+  int time;
+};
+
 class GrowthRegion : public cyclus::RegionModel {
   friend class GrowthRegionTests;
  public:
@@ -58,7 +65,7 @@ class GrowthRegion : public cyclus::RegionModel {
      add a demand for a commodity on which this region request that
      facilities be built
    */
-  void AddCommodityDemand(cyclus::QueryEngine* qe);
+  void AddCommodityDemand(cyclus::Commodity commod);
 
   /**
      perform module-specific tasks when entering the simulation
@@ -81,10 +88,14 @@ class GrowthRegion : public cyclus::RegionModel {
     return m;
   }
 
+  void InitFrom(GrowthRegion* m);
+
  protected:
   /* --- GrowthRegion Members --- */
   /// a container of all commodities managed by region
   std::set<cyclus::Commodity, cyclus::CommodityCompare> commodities_;
+
+  std::map<std::string, std::vector<DemandInfo> > demands_;
 
   /// manager for building things
   cyclus::BuildingManager buildmanager_;
