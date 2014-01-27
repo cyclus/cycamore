@@ -21,7 +21,6 @@ std::map<BatchReactor::Phase, std::string> BatchReactor::phase_names_ =
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 BatchReactor::BatchReactor(cyclus::Context* ctx)
     : cyclus::FacilityModel(ctx),
-      cyclus::Model(ctx),
       process_time_(1),
       preorder_time_(0),
       refuel_time_(0),

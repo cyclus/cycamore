@@ -15,8 +15,7 @@ namespace cycamore {
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 GrowthRegion::GrowthRegion(cyclus::Context* ctx)
-    : cyclus::RegionModel(ctx),
-      cyclus::Model(ctx) {}
+    : cyclus::RegionModel(ctx) {}
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 GrowthRegion::~GrowthRegion() {}
