@@ -4,6 +4,9 @@ import test_regression as tst
 import subprocess
 from collections import defaultdict
 
+diff_tbl = """table is different"""
+diff_col = """Column"""
+
 def determ_analysis(niter = 1000, fname = "report"):
     """
     Calls nosetests for a number of iterations and reports findings of
@@ -22,11 +25,12 @@ def determ_analysis(niter = 1000, fname = "report"):
         out, err = rtn.communicate()
         for line in out.split("\n"):
             line = line.strip()
-            if "table is different" in line.strip():
+            if diff_tbl in line.strip():
                 tbl_name = line.split()[0]
                 tbl_freq[tbl_name] += 1 
-            if "Column" in line.strip():
+            if diff_col in line.strip():
                 col_freq[tbl_name][line.split()[1]] += 1
+
     # normalize
     for tbl, dic in col_freq.iteritems():
         for col, freq in dic.iteritems():
@@ -45,5 +49,5 @@ def determ_analysis(niter = 1000, fname = "report"):
 
 if __name__ == "__main__":
     niter = 100
-    fname = "null_report"
+    fname = "report"
     determ_analysis(niter, fname)
