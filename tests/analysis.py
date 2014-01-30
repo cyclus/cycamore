@@ -8,6 +8,9 @@ def determ_analysis(niter = 1000, fname = "report"):
     """
     Calls nosetests for a number of iterations and reports findings of
     nondeterminism to a file.
+
+    Note that the tests that nosetest will call must be configured to test the
+    supposed deterministic cases.
     """
     tbl_freq = defaultdict(int)
     col_freq = defaultdict(lambda: defaultdict(int))
