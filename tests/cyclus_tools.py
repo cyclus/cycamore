@@ -24,45 +24,6 @@ def compare_nondeterm(path1, path2):
     v1 = visitors.HDF5RegressionVisitor(path1)
     v2 = visitors.HDF5RegressionVisitor(path2)
     return v1.walk() == v2.walk()
-
-def determ_err_msg(data_one, data_two):
-    """Returns a string describing the deterministic difference between two
-    databases.
-    """
-    msg = ""
-    msg += "\n" + path + " table is different in the databases.\n"
-            # Investigation of the differences
-            # check if the lengths are different
-    if len(data_one) != len(data_two):
-        msg += "Length mismatch: " + str(len(data_one)) + ", " + str(len(data_two))
-    else:
-        for name in names:
-            column_one = data_one[name]
-            column_two = data_two[name]
-                        # check if data types are the same
-            if column_one.dtype != column_two.dtype:
-                msg += "Datatypes in column " + name +" are different."
-                msg += str(column_one.dtype)
-                msg += str(column_two.dtype)
-            elif not np.array_equal(column_one, column_two):
-                msg += "The difference is in column " + name
-                diff = np.equal(column_one, column_two)
-                            # find indices and elements for numerical values
-                indices = np.where(diff==False)
-                            # check if whole table is different
-                if len(indices) == len(column_one):
-                    msg += "All the elements in this column are different"
-                else:
-                    # provide mismatch percentage
-                    mismatch = 100*float(len(indices))/len(column_one)
-                    msg += "Mismatch is " + str(mismatch) + "%"
-                    msg += "Indices of different objects are "
-                    msg += str(indices[0]) # this prints indices in a clearer way
-                    msg += "The different elements on these indices."
-                    msg += str(column_one[indices])
-                    msg += str(column_two[indices])
-                    msg += "\n" # a new line to make reading the output easier
-    return msg
                     
 def compare_determ(path1, path2, verbose=False):
     """Compares two Cyclus HDF5 databases assuming deterministic AgentIDs and
@@ -113,9 +74,51 @@ def compare_determ(path1, path2, verbose=False):
 
         dbs_same = False
         if verbose:
-            print(determ_err_msg(data_one, data_two))
+            msg = ""
+            msg += path.replace("/", "") 
+            msg += " table is different in the databases.\n" 
+            msg += determ_err_msg(names, data_one, data_two)
+            print(msg)
 
     # Close databases
     db_one.close()
     db_two.close()
     return dbs_same
+
+def determ_err_msg(names, data_one, data_two):
+    """Returns a string describing the deterministic difference between two
+    databases.
+    """
+    msg = ""
+    # Investigation of the differences
+    # check if the lengths are different
+    if len(data_one) != len(data_two):
+        msg += "Length mismatch: " + str(len(data_one)) + ", " + str(len(data_two))
+    else:
+        for name in names:
+            column_one = data_one[name]
+            column_two = data_two[name]
+            # check if data types are the same
+            if column_one.dtype != column_two.dtype:
+                msg += "Datatypes in column " + name +" are different."
+                msg += str(column_one.dtype)
+                msg += str(column_two.dtype)
+            elif not np.all(column_one == column_two):
+                msg += "Column " + name
+                diff = np.equal(column_one, column_two)
+                # find indices and elements for numerical values
+                indices = np.where(diff==False)
+                # check if whole table is different
+                if len(indices) == len(column_one):
+                    msg += " is completely different"
+                else:
+                    # provide mismatch percentage
+                    mismatch = 100*float(len(indices))/len(column_one)
+                    msg += " has a mismatch of" 
+                    msg += " {0:.2f}".format(mismatch) + "% \n"
+                    msg += "Indices of different objects are:\n"
+                    msg += str(indices[0]) + "\n"
+                    msg += "The different elements on these indices: \n"
+                    msg += str(column_one[indices]) + "\n"
+                    msg += str(column_two[indices]) + "\n"
+    return msg

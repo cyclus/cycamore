@@ -50,5 +50,5 @@ def test_regression():
             if os.path.isfile(tmp_file):
                 verbose = True
                 assert_true(compare_nondeterm(sim_files[f], tmp_file))
-                #assert_true(compare_determ(sim_files[f], tmp_file, verbose))
+                assert_true(compare_determ(sim_files[f], tmp_file, verbose))
                 os.remove(tmp_file)
