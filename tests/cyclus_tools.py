@@ -18,20 +18,57 @@ def compare_nondeterm(path1, path2):
     """Compares two Cyclus HDF5 databases assuming non-deterministic AgentIDs
     and TransactionIDs
 
-    Returns:
-            True or False. 
+    Returns True if both databases are the same, taking into account
+            nondeterministic id assignments
     """
     v1 = visitors.HDF5RegressionVisitor(path1)
     v2 = visitors.HDF5RegressionVisitor(path2)
     return v1.walk() == v2.walk()
 
+def determ_err_msg(data_one, data_two):
+    """Returns a string describing the deterministic difference between two
+    databases.
+    """
+    msg = ""
+    msg += "\n" + path + " table is different in the databases.\n"
+            # Investigation of the differences
+            # check if the lengths are different
+    if len(data_one) != len(data_two):
+        msg += "Length mismatch: " + str(len(data_one)) + ", " + str(len(data_two))
+    else:
+        for name in names:
+            column_one = data_one[name]
+            column_two = data_two[name]
+                        # check if data types are the same
+            if column_one.dtype != column_two.dtype:
+                msg += "Datatypes in column " + name +" are different."
+                msg += str(column_one.dtype)
+                msg += str(column_two.dtype)
+            elif not np.array_equal(column_one, column_two):
+                msg += "The difference is in column " + name
+                diff = np.equal(column_one, column_two)
+                            # find indices and elements for numerical values
+                indices = np.where(diff==False)
+                            # check if whole table is different
+                if len(indices) == len(column_one):
+                    msg += "All the elements in this column are different"
+                else:
+                    # provide mismatch percentage
+                    mismatch = 100*float(len(indices))/len(column_one)
+                    msg += "Mismatch is " + str(mismatch) + "%"
+                    msg += "Indices of different objects are "
+                    msg += str(indices[0]) # this prints indices in a clearer way
+                    msg += "The different elements on these indices."
+                    msg += str(column_one[indices])
+                    msg += str(column_two[indices])
+                    msg += "\n" # a new line to make reading the output easier
+    return msg
+                    
 def compare_determ(path1, path2, verbose=False):
     """Compares two Cyclus HDF5 databases assuming deterministic AgentIDs and
     TransactionIDs
 
-    Returns:
-            True or False. In case of False, it prints out the names
-            and differences in the compared databases.
+    Returns True if both databases are identical other than their SimIDs
     """
     dbs_same = True
     db_one = tables.open_file(path1, mode = "r")
@@ -71,41 +108,12 @@ def compare_determ(path1, path2, verbose=False):
         data_one = data_one[names]
         data_two = data_two[names]
 
-        if not np.all(data_one == data_two):
-            dbs_same = False
-            if verbose:
-                print("\n" + path + " table is different in the databases.")
-                # Investigation of the differences
-                # check if the lengths are different
-                if len(data_one) != len(data_two):
-                    print("Length mismatch: " + len(data_one) + ", " + len(data_two))
-                else:
-                    for name in names:
-                        column_one = data_one[name]
-                        column_two = data_two[name]
-                        # check if data types are the same
-                        if column_one.dtype != column_two.dtype:
-                            print("Datatypes in column " + name +" are different.")
-                            print(column_one.dtype)
-                            print(column_two.dtype)
-                        elif not np.array_equal(column_one, column_two):
-                            print("The difference is in column " + name)
-                            diff = np.equal(column_one, column_two)
-                            # find indices and elements for numerical values
-                            indices = np.where(diff==False)
-                            # check if whole table is different
-                            if len(indices) == len(column_one):
-                                print("All the elements in this column are different")
-                            else:
-                                # provide mismatch percentage
-                                mismatch = 100*float(len(indices))/len(column_one)
-                                print("Mismatch is " + str(mismatch) + "%")
-                                print("Indices of different objects are ")
-                                print(indices[0]) # this prints indices in a clearer way
-                                print("The different elements on these indices.")
-                                print(column_one[indices])
-                                print(column_two[indices])
-                                print("") # a new line to make reading the output easier
+        if np.all(data_one == data_two):
+            continue
+
+        dbs_same = False
+        if verbose:
+            print(determ_err_msg(data_one, data_two))
 
     # Close databases
     db_one.close()
