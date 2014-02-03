@@ -19,7 +19,7 @@ def collect(args):
          "t.setup(); t.test_regression(deterministic=True)"], 
         stdout=subprocess.PIPE, stderr=subprocess.PIPE)
     out, err = rtn.communicate()
-    print(out, err)
+    #print(out, err)
     
     for line in out.split("\n"):
         line = line.strip()
