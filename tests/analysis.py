@@ -9,20 +9,25 @@ diff_tbl = """table is different"""
 diff_col = """Column"""
 
 def collect(args):
-    """collects information on a given nosetest run
+    """collects information on a determinisitic regression test run
     """
     tbl_freq, col_freq = args
 
-    rtn = subprocess.Popen(["nosetests", "-s"], stdout=subprocess.PIPE, 
-                           stderr=subprocess.PIPE)
+    rtn = subprocess.Popen(
+        ["python", "-c", 
+         "import test_regression as t; " +
+         "t.setup(); t.test_regression(deterministic=True)"], 
+        stdout=subprocess.PIPE, stderr=subprocess.PIPE)
     out, err = rtn.communicate()
-
+    print(out, err)
+    
     for line in out.split("\n"):
         line = line.strip()
         tbl_name = line.split()[0]
         col_name = line.split()[1]
         if diff_tbl in line.strip():
-            tbl_freq[tbl_name] = tbl_freq[tbl_name] + 1 if tbl_name in tbl_freq else 1
+            tbl_freq[tbl_name] = \
+                tbl_freq[tbl_name] + 1 if tbl_name in tbl_freq else 1
         if diff_col in line.strip():
             col_freq.append((tbl_name, col_name))
 
@@ -36,11 +41,16 @@ def proxy_lst_to_dict(lst):
 
 def determ_analysis(niter=1000, fname="report"):
     """
-    Calls nosetests for a number of iterations and reports findings of
-    nondeterminism to a file.
+    Calls deterministic regression tests for a number of iterations and reports
+    findings of nondeterminism to a file.
 
-    Note that the tests that nosetest will call must be configured to test the
-    supposed deterministic cases.
+    Parameters
+    ----------
+    niter : int
+          The number of times to run regression tests
+         
+    fname : str
+          The output filename to report to
     """
     m = Manager()
 
@@ -77,4 +87,7 @@ def determ_analysis(niter=1000, fname="report"):
         f.writelines(lines)
 
 if __name__ == "__main__":
+    """This module, by default will run 100 instances of the regression tests
+    and send its findings to a file named 'report'.
+    """
     determ_analysis(niter=100)
