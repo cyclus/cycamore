@@ -18,7 +18,6 @@ void SourceFacilityTest::SetUp() {
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 void SourceFacilityTest::TearDown() {
-  delete src_facility;
 }
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -79,7 +78,6 @@ TEST_F(SourceFacilityTest, Clone) {
   EXPECT_EQ(src_facility->recipe(), cloned_fac->recipe());
   EXPECT_EQ(src_facility->capacity(), cloned_fac->current_capacity());
 
-  delete cloned_fac;
 }
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -

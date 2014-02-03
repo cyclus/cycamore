@@ -41,7 +41,6 @@ void BatchReactorTest::SetUp() {
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 void BatchReactorTest::TearDown() {
-  delete src_facility;
 }
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -288,7 +287,6 @@ TEST_F(BatchReactorTest, Clone) {
   cycamore::BatchReactor* cloned_fac =
     dynamic_cast<cycamore::BatchReactor*>(src_facility->Clone());
   TestInitState(cloned_fac);  
-  delete cloned_fac;
 }
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -

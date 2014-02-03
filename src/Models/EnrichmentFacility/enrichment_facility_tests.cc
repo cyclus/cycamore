@@ -31,7 +31,6 @@ void EnrichmentFacilityTest::SetUp() {
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 void EnrichmentFacilityTest::TearDown() {
-  delete src_facility;
 }
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -181,7 +180,6 @@ TEST_F(EnrichmentFacilityTest, Clone) {
   EXPECT_DOUBLE_EQ(swu_capacity, cloned_fac->swu_capacity());
   EXPECT_EQ(EnrichmentFacility::InitCond(reserves), cloned_fac->ics());
   
-  delete cloned_fac;
 }
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
