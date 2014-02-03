@@ -87,9 +87,8 @@ def main():
     assert os.path.exists(args.executable)
     assert os.path.exists(args.output)
 
-    cmd = [args.executable, "--gtest_list_tests"]
-
-    rtn = subprocess.Popen(cmd, stdout=subprocess.PIPE, shell=(os.name=='nt'))
+    rtn = subprocess.Popen([args.executable, "--gtest_list_tests"], 
+                           stdout=subprocess.PIPE, shell=(os.name=='nt'))
     rtn.wait()
     if rtn.returncode != 0:
         raise OSError('Could not generate test list, return code: ' 
