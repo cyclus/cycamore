@@ -138,8 +138,6 @@ set( script "${CYCAMORE_SOURCE_DIR}/Config/generate_test_macros.py")
 set( exec "--executable=${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/${tgt}")
 set( reg_dir "--reg_dir=${CYCAMORE_SOURCE_DIR}/${test_dir}")
 set( out "--output=${CMAKE_BINARY_DIR}/CTestTestfile.cmake")
-set( cmd "python ${script} ${exec} ${reg_dir} ${out}")
-MESSAGE("test generation cmd: ${cmd}")
 add_custom_command(TARGET ${tgt}
   POST_BUILD
   COMMAND python ${script} ${exec} ${reg_dir} ${out}
