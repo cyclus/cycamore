@@ -38,6 +38,11 @@ def test_regression(deterministic=False):
     """Test for all inputs in sim_files. Checks if reference and current cyclus 
     output is the same.
 
+    Parameters
+    ----------
+    deterministic : bool
+                  If True, also test determinisitc equality of simulations
+
     WARNING: the tests require cyclus executable to be included in PATH
     """    
     for root, dirs, files in os.walk("../input"):
