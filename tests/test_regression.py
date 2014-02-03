@@ -4,6 +4,7 @@ import os
 import json
 import hashlib
 import urllib
+import uuid
 from nose.tools import assert_true
 from cyclus_tools import run_cyclus, compare_determ, compare_nondeterm
 
@@ -18,7 +19,9 @@ def setup():
         refs = json.load(f)
     cyclus_ref = refs[-1]["cyclus-ref"]
     cycamore_ref = refs[-1]["cycamore-ref"]
-    refs = [r for r in refs if r["cyclus-ref"] == cyclus_ref and r["cycamore-ref"] == cycamore_ref]
+    refs = [r for r in refs 
+            if r["cyclus-ref"] == cyclus_ref 
+            and r["cycamore-ref"] == cycamore_ref]
     base_url = "http://regtests.fuelcycle.org/"
     for r in refs:
         fpath = os.path.join(fetchdir, r["fname"])
@@ -31,7 +34,7 @@ def setup():
             raise RuntimeError("They tooks our data!!! All our rackspace are belong to them.")
         sim_files[r["input-file"]] = fpath
 
-def test_regression():
+def test_regression(deterministic=False):
     """Test for all inputs in sim_files. Checks if reference and current cyclus 
     output is the same.
 
@@ -42,13 +45,12 @@ def test_regression():
             if f not in sim_files:
                 continue
             
-            # print("testing input: " + sim_input + " and bench_db: " + bench_db)
-            tmp_file = "tmp.h5"
-        
+            tmp_file = str(uuid.uuid4()) + ".h5"
             run_cyclus("cyclus", os.getcwd(), os.path.join(root, f), tmp_file)
         
             if os.path.isfile(tmp_file):
                 verbose = True
                 assert_true(compare_nondeterm(sim_files[f], tmp_file))
-                #assert_true(compare_determ(sim_files[f], tmp_file, verbose))
+                if deterministic:
+                    assert_true(compare_determ(sim_files[f], tmp_file, verbose))
                 os.remove(tmp_file)
