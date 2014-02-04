@@ -90,4 +90,4 @@ if __name__ == "__main__":
     """This module, by default will run 100 instances of the regression tests
     and send its findings to a file named 'report'.
     """
-    determ_analysis(niter=10)
+    determ_analysis(niter=100)
