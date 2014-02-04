@@ -18,7 +18,7 @@ def collect(args):
     rtn = subprocess.Popen(
         ["python", "-c", 
          "import test_regression as t; " +
-         "t.setup(); t.test_regression(deterministic=True)"], 
+         "t.setup(); t.test_regression(check_deterministic=True)"], 
         stdout=subprocess.PIPE, stderr=subprocess.PIPE)
     out, err = rtn.communicate()
     #print(out, err)

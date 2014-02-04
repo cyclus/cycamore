@@ -34,14 +34,14 @@ def setup():
             raise RuntimeError("They tooks our data!!! All our rackspace are belong to them.")
         sim_files[r["input-file"]] = fpath
 
-def test_regression(deterministic=False):
+def test_regression(check_deterministic=False):
     """Test for all inputs in sim_files. Checks if reference and current cyclus 
     output is the same.
 
     Parameters
     ----------
-    deterministic : bool
-                  If True, also test determinisitc equality of simulations
+    check_deterministic : bool
+                        If True, also test determinisitc equality of simulations
 
     WARNING: the tests require cyclus executable to be included in PATH
     """    
