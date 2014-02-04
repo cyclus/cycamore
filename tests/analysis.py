@@ -92,7 +92,7 @@ def determ_analysis(niter=1000, fname="report"):
     with open(fname, "w") as f:
         f.writelines(lines)
 
-if __name__ == "__main__":
+def main():
     description = "A module for analyzing the determinism of Cyclus output." 
 
     parser = ap.ArgumentParser(description=description)
@@ -106,4 +106,6 @@ if __name__ == "__main__":
     
     args = parser.parse_args()
     determ_analysis(args.niterations, args.report)
-    
+
+if __name__ == "__main__":
+    main()
