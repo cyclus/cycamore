@@ -146,6 +146,18 @@ add_custom_command(TARGET ${tgt}
   VERBATIM
   )
 
+# for post test commands
+configure_file(
+    "${CMAKE_CURRENT_SOURCE_DIR}/Config/CTestCustom.cmake"
+    "${CMAKE_CURRENT_BINARY_DIR}/CTestCustom.cmake"
+    IMMEDIATE @ONLY)
+
+# for printing regression tests
+configure_file(
+    "${CMAKE_CURRENT_SOURCE_DIR}/Config/print_regs.py"
+    "${CMAKE_CURRENT_BINARY_DIR}/print_regs.py"
+    IMMEDIATE @ONLY)
+
 # AMS: I don't believe that this is needed anymore.
 # This just copies the shared dir from cyclus to cycamore.
 # However, the 'share/' dir should now be the same.  So this 
