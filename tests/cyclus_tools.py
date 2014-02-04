@@ -16,11 +16,14 @@ def run_cyclus(cyclus, cwd, in_path, out_path):
 
 def compare_nondeterm(path1, path2):
     """Compares two Cyclus HDF5 databases assuming non-deterministic AgentIDs
-    and TransactionIDs
-
-    Returns True if both databases are the same, taking into account
-            nondeterministic id assignments
-    """
+    and TransactionIDs.
+    
+    Returns
+    -------
+    rtn : bool 
+        True if both databases are the same, taking into account
+        nondeterministic id assignments.
+    """    
     v1 = visitors.HDF5RegressionVisitor(path1)
     v2 = visitors.HDF5RegressionVisitor(path2)
     return v1.walk() == v2.walk()
@@ -29,7 +32,10 @@ def compare_determ(path1, path2, verbose=False):
     """Compares two Cyclus HDF5 databases assuming deterministic AgentIDs and
     TransactionIDs
 
-    Returns True if both databases are identical other than their SimIDs
+    Returns
+    -------
+    rtn : bool 
+        True if both databases are identical other than their SimIDs
     """
     dbs_same = True
     db_one = tables.open_file(path1, mode = "r")
