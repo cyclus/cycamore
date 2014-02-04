@@ -1,9 +1,11 @@
 from __future__ import print_function
-import test_regression as tst
 
 import subprocess
 from multiprocessing import Pool, Manager, cpu_count
 from collections import defaultdict
+import argparse as ap
+
+import test_regression as tst
 
 diff_tbl = """table is different"""
 diff_col = """Column"""
@@ -87,7 +89,17 @@ def determ_analysis(niter=1000, fname="report"):
         f.writelines(lines)
 
 if __name__ == "__main__":
-    """This module, by default will run 100 instances of the regression tests
-    and send its findings to a file named 'report'.
-    """
-    determ_analysis(niter=100)
+    description = "A module for analyzing the determinism of Cyclus output." 
+
+    parser = ap.ArgumentParser(description=description)
+
+    niter = 'the number of regression test runs to perform'
+    parser.add_argument('-n', '--niterations', type=int, help=niter, 
+                        default=100)
+
+    report = 'the file to write the report to'
+    parser.add_argument('--report', help=report, default='report')
+    
+    args = parser.parse_args()
+    determ_analysis(args.niterations, args.report)
+    
