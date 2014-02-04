@@ -153,12 +153,12 @@ TEST_F(SinkFacilityTest, Accept) {
 
   Request<Material>::Ptr req1 =
       Request<Material>::Create(get_mat(92235, qty_), src_facility, commod1_);
-  Bid<Material>::Ptr bid1 = Bid<Material>::Create(req1, get_mat(), &trader);
+  Bid<Material>::Ptr bid1 = Bid<Material>::Create(req1, get_mat(), trader);
 
   Request<Material>::Ptr req2 =
       Request<Material>::Create(get_mat(92235, qty_), src_facility, commod2_);
   Bid<Material>::Ptr bid2 =
-      Bid<Material>::Create(req2, get_mat(92235, qty_), &trader);
+      Bid<Material>::Create(req2, get_mat(92235, qty_), trader);
 
   Trade<Material> trade1(req1, bid1, qty_);
   responses.push_back(std::make_pair(trade1, get_mat(92235, qty_)));

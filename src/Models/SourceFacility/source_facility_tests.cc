@@ -156,7 +156,7 @@ TEST_F(SourceFacilityTest, Response) {
 
   double qty = capacity / 3;
   Request<Material>::Ptr request =
-      Request<Material>::Create(get_mat(), &trader, commod);
+      Request<Material>::Create(get_mat(), trader, commod);
   Bid<Material>::Ptr bid =
       Bid<Material>::Create(request, get_mat(), src_facility);
 
@@ -199,7 +199,7 @@ SourceFacilityTest::GetContext(int nreqs, std::string commod) {
     using cyclus::Request;
     using test_helpers::trader;
     using test_helpers::get_mat;
-    ec->AddRequest(Request<Material>::Create(get_mat(), &trader, commod));
+    ec->AddRequest(Request<Material>::Create(get_mat(), trader, commod));
   }
   return ec;
 }
