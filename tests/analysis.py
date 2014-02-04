@@ -23,12 +23,12 @@ def collect(args):
     
     for line in out.split("\n"):
         line = line.strip()
-        tbl_name = line.split()[0]
-        col_name = line.split()[1]
         if diff_tbl in line.strip():
+            tbl_name = line.split()[0]
             tbl_freq[tbl_name] = \
                 tbl_freq[tbl_name] + 1 if tbl_name in tbl_freq else 1
         if diff_col in line.strip():
+            col_name = line.split()[1]
             col_freq.append((tbl_name, col_name))
 
 def proxy_lst_to_dict(lst):
@@ -90,4 +90,4 @@ if __name__ == "__main__":
     """This module, by default will run 100 instances of the regression tests
     and send its findings to a file named 'report'.
     """
-    determ_analysis(niter=100)
+    determ_analysis(niter=10)
