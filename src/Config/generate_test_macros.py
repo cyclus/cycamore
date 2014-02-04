@@ -39,7 +39,7 @@ def parse_tests(test_lines):
                 tests.append(current_test + line) 
     return tests
 
-def write_macros_to_output(tests, executable, output=None):
+def write_macros_to_output(tests, executable, reg_dir, output=None):
     """writes a list of test names as ADD_TEST cmake macros to an 
     output file
     
@@ -51,9 +51,14 @@ def write_macros_to_output(tests, executable, output=None):
     specified, the list of ADD_TEST macros will be written to stdout
     """
     lines = []
+    # add unit tests
     for test in tests:
         lines.append("ADD_TEST(" + test + " " + \
                          executable + " " + "--gtest_filter=" + test + ")")
+    # add regression tests
+    lines.append("ADD_TEST(RegressionTests nosetests -v -w " + \
+                     reg_dir + ")")
+
     if output is None:
         for line in lines:
             print(line)
@@ -70,6 +75,9 @@ def main():
     executable = 'the path to the test exectuable to call'
     parser.add_argument('--executable', help=executable, required=True)
 
+    reg_dir = "the regression tests directory"
+    parser.add_argument('--reg_dir', help=reg_dir, required=True)
+
     output = "the file to write the ADD_TEST macros to "+\
         "(nominally CTestTestfile.cmake)"
     parser.add_argument('--output', help=output, required=True)
@@ -81,11 +89,15 @@ def main():
 
     rtn = subprocess.Popen([args.executable, "--gtest_list_tests"], 
                            stdout=subprocess.PIPE, shell=(os.name=='nt'))
-    
+    rtn.wait()
+    if rtn.returncode != 0:
+        raise OSError('Could not generate test list, return code: ' 
+                      + str(rtn.returncode) + '.')
+
     tests = parse_tests(rtn.stdout.readlines())
     rtn.stdout.close()
 
-    write_macros_to_output(tests, args.executable, args.output)
+    write_macros_to_output(tests, args.executable, args.reg_dir, args.output)
 
     return 0
 

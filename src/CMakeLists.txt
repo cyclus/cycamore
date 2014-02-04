@@ -135,14 +135,27 @@ INSTALL(TARGETS cycamore_unit_tests
 set( tgt "cycamore_unit_tests")
 set( script "${CYCAMORE_SOURCE_DIR}/Config/generate_test_macros.py")
 set( exec "--executable=${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/${tgt}")
+set( reg_dir "--reg_dir=${CYCAMORE_SOURCE_DIR}/../${test_dir}")
 set( out "--output=${CMAKE_BINARY_DIR}/CTestTestfile.cmake")
 add_custom_command(TARGET ${tgt}
   POST_BUILD
-  COMMAND python ${script} ${exec} ${out}
+  COMMAND python ${script} ${exec} ${reg_dir} ${out}
   COMMENT "adding tests from ${tgt}"
   DEPENDS
   VERBATIM
   )
+
+# for post test commands
+configure_file(
+    "${CMAKE_CURRENT_SOURCE_DIR}/Config/CTestCustom.cmake"
+    "${CMAKE_CURRENT_BINARY_DIR}/CTestCustom.cmake"
+    IMMEDIATE @ONLY)
+
+# for printing regression tests
+configure_file(
+    "${CMAKE_CURRENT_SOURCE_DIR}/Config/print_regs.py"
+    "${CMAKE_CURRENT_BINARY_DIR}/print_regs.py"
+    IMMEDIATE @ONLY)
 
 # AMS: I don't believe that this is needed anymore.
 # This just copies the shared dir from cyclus to cycamore.
