@@ -322,7 +322,7 @@ TEST_F(BatchReactorTest, StartProcess) {
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 TEST_F(BatchReactorTest, InitCond) {
-  src_facility->Deploy(src_facility);
+  src_facility->Deploy();
   TestBuffs(rsrv_n, core_n, stor_n);
 }
 
