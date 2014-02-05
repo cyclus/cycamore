@@ -195,7 +195,7 @@ std::string BatchReactor::schema() {
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 void BatchReactor::InitFrom(cyclus::QueryEngine* qe) {  
   cyclus::FacilityModel::InitFrom(qe);
-  qe = qe->QueryElement(ModelImpl());
+  qe = qe->QueryElement("model/" + ModelImpl());
   
   using boost::lexical_cast;
   using cyclus::Commodity;

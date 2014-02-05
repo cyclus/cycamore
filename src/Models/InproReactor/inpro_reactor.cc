@@ -96,7 +96,7 @@ std::string InproReactor::schema() {
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 void InproReactor::InitFrom(cyclus::QueryEngine* qe) {
   cyclus::FacilityModel::InitFrom(qe);
-  qe = qe->QueryElement(ModelImpl());
+  qe = qe->QueryElement("model/" + ModelImpl());
 
   using std::string;
   using boost::lexical_cast;

@@ -70,7 +70,7 @@ std::string DeployInst::schema() {
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 void DeployInst::InitFrom(cyclus::QueryEngine* qe) {
   cyclus::InstModel::InitFrom(qe);
-  qe = qe->QueryElement(ModelImpl());
+  qe = qe->QueryElement("model/" + ModelImpl());
 
   using std::map;
   using std::string;

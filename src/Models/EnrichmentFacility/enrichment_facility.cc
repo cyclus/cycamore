@@ -71,7 +71,7 @@ std::string EnrichmentFacility::schema() {
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 void EnrichmentFacility::InitFrom(cyclus::QueryEngine* qe) {
   cyclus::FacilityModel::InitFrom(qe);
-  qe = qe->QueryElement(ModelImpl());
+  qe = qe->QueryElement("model/" + ModelImpl());
 
   using std::string;
   using std::numeric_limits;
