@@ -1,9 +1,11 @@
 from __future__ import print_function
+from __future__ import division
 
 import subprocess
 from multiprocessing import Pool, Manager, cpu_count
 from collections import defaultdict
 import argparse as ap
+import time 
 
 import test_regression as tst
 
@@ -63,10 +65,17 @@ def determ_analysis(niter=1000, fname="report"):
     nproc = cpu_count()
     count = nproc if nproc == 1 else nproc - 1
     pool  = Pool(count)
+
+    print("Beginning iterations on " + str(nproc) + " processors.")
     args = ((tbl_freq, col_freq) for i in range(niter))
-    pool.map_async(collect, args)
+    jobs = pool.map_async(collect, args)
+    while not jobs.ready():
+        print('{0:.1%} of jobs left to start.'.format(
+                jobs._number_left / niter))
+        time.sleep(5.0)
     pool.close()
     pool.join()
+    print("Finished iterations.")
 
     # convert from proxy
     col_freq = proxy_lst_to_dict(col_freq)
@@ -85,6 +94,8 @@ def determ_analysis(niter=1000, fname="report"):
                  " of total runs.\n\n")
     lines.append("Column values are reported as percent nondeterministic" +
                  " of all table nondeterminism occurences.\n\n")
+    if len(tbl_freq) == 0:
+        lines.append("No nondeterminism found.")
     for tbl, freq in tbl_freq.iteritems():
         lines.append(tbl + " " + freq + "\n")
         for col, freq in col_freq[tbl].iteritems():
