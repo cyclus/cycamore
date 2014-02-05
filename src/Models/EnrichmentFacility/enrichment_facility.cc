@@ -117,7 +117,7 @@ void EnrichmentFacility::InitFrom(cyclus::QueryEngine* qe) {
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 cyclus::Model* EnrichmentFacility::Clone() {
-  EnrichmentFacility* m = new EnrichmentFacility(*this);
+  EnrichmentFacility* m = new EnrichmentFacility(context());
   m->InitFrom(this);
   LOG(cyclus::LEV_DEBUG1, "EnrFac") << "Cloned - " << str();
   return m;

@@ -79,7 +79,7 @@ std::string SourceFacility::str() {
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 cyclus::Model* SourceFacility::Clone() {
-  SourceFacility* m = new SourceFacility(*this);
+  SourceFacility* m = new SourceFacility(context());
   m->InitFrom(this);
   return m;
 }
