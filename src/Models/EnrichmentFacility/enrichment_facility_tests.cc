@@ -128,7 +128,7 @@ TEST_F(EnrichmentFacilityTest, InitialState) {
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 TEST_F(EnrichmentFacilityTest, XMLInit) {
   std::stringstream ss;
-  ss << "<start>"
+  ss << "<start><name>fooname</name><UNSPECIFIED>"
      << "  <input>"
      << "    <incommodity>" << in_commod << "</incommodity>"
      << "    <inrecipe>" << in_recipe << "</inrecipe>"
@@ -142,6 +142,7 @@ TEST_F(EnrichmentFacilityTest, XMLInit) {
      << "  <initial_condition>"
      << "    <reserves_qty>" << reserves << "</reserves_qty>"
      << "  </initial_condition>"
+     << "</UNSPECIFIED>"
      << "</start>";
 
   cyclus::XMLParser p;

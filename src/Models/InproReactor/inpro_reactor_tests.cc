@@ -37,7 +37,7 @@ void InproReactorTest::TearDown() {
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 void InproReactorTest::InitSrcFacility() {
   std::stringstream ss("");
-  ss << "<start>"
+  ss << "<start><name>fooname</name><UNSPECIFIED>"
      << "  <fuel_input>"
      << "    <incommodity>" << in_commod << "</incommodity>"
      << "    <inrecipe>" << in_recipe << "</inrecipe>"
@@ -56,6 +56,7 @@ void InproReactorTest::InitSrcFacility() {
      << "    <capacity>" << capacity << "</capacity>"
      << "    <cost>" << cost << "</cost>"
      << "  </commodity_production>"
+     << "</UNSPECIFIED>"
      << "</start>";
 
   cyclus::XMLParser parser;

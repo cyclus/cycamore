@@ -40,7 +40,7 @@ cyclus::RegionModel* GrowthRegionConstructor(cyclus::Context* ctx) {
 void GrowthRegionTests::InitRegion() {
   using std::stringstream;
   stringstream ss("");
-  ss << "<start>"
+  ss << "<start><name>fooname</name><UNSPECIFIED>"
      << "  <commodity>"
      << "    <name>" << commodity_name << "</name>"
      << "    <demand>"
@@ -49,6 +49,7 @@ void GrowthRegionTests::InitRegion() {
      << "      <start_time>" << demand_start << "</start_time>"
      << "    </demand>"
      << "  </commodity>"
+     << "</UNSPECIFIED>"
      << "</start>";
 
   cyclus::XMLParser parser;

@@ -46,6 +46,11 @@ class InproReactor : public cyclus::FacilityModel,
 
   virtual cyclus::Model* Clone();
 
+  /**
+     initialize members from a different model
+  */
+  void InitFrom(InproReactor* m);
+
   virtual std::string schema();
 
   /**

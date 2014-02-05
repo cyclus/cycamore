@@ -205,7 +205,7 @@ TEST_F(BatchReactorTest, InitialState) {
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 TEST_F(BatchReactorTest, XMLInit) {
   std::stringstream ss;
-  ss << "<start>"
+  ss << "<start><name>fooname</name><UNSPECIFIED>"
      << "  <fuel>"
      << "    <incommodity>" << in_c1 << "</incommodity>"
      << "    <inrecipe>" << in_r1 << "</inrecipe>"
@@ -270,6 +270,7 @@ TEST_F(BatchReactorTest, XMLInit) {
      << "    <new_pref>" << topref2 << "</new_pref>"
      << "    <time>" << change_time << "</time>"
      << "  </pref_change>"
+     << "</UNSPECIFIED>"
      << "</start>";
 
   cyclus::XMLParser p;
@@ -277,7 +278,6 @@ TEST_F(BatchReactorTest, XMLInit) {
   cyclus::XMLQueryEngine engine(p);
   cycamore::BatchReactor fac(tc_.get());
   fac.InitFrom(&engine);
-  EXPECT_NO_THROW();
 
   TestInitState(&fac);
 }

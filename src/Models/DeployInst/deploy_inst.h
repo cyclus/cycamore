@@ -56,9 +56,16 @@ class DeployInst : public cyclus::InstModel {
   virtual cyclus::Model* Clone() {
     DeployInst* m = new DeployInst(context());
     m->InitFrom(this);
-    m->build_orders_ = build_orders_;
     return m;
   }
+
+  /**
+     initialize members from a different model
+  */
+  void InitFrom(DeployInst* m) {
+    cyclus::InstModel::InitFrom(m);
+    build_orders_ = m->build_orders_;
+  };
 
   /**
      Initialize members related to derived module class
