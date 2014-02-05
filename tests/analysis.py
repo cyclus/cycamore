@@ -93,7 +93,7 @@ def determ_analysis(niter=1000, fname="report"):
     lines.append("Table values are reported as percent nondeterministic" + 
                  " of total runs.\n\n")
     lines.append("Column values are reported as percent nondeterministic" +
-                 " of all table nondeterminism occurences.\n\n")
+                 " of all table nondeterminism occurrences.\n\n")
     if len(tbl_freq) == 0:
         lines.append("No nondeterminism found.")
     for tbl, freq in tbl_freq.iteritems():
