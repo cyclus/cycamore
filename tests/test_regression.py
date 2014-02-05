@@ -55,10 +55,10 @@ def test_regression(check_deterministic=False):
         
             if os.path.isfile(tmp_file):
                 nondeterm = compare_nondeterm(sim_files[f], tmp_file)
-                if deterministic:
+                if check_deterministic:
                     determ = compare_determ(sim_files[f], tmp_file, verbose=True)
                 os.remove(tmp_file)
                 
                 assert_true(nondeterm)
-                if deterministic:
+                if check_deterministic:
                     assert_true(determ) 
