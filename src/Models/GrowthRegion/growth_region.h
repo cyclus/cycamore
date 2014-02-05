@@ -59,7 +59,7 @@ class GrowthRegion : public cyclus::RegionModel {
      Initialize members related to derived module class
      @param qe a pointer to a cyclus::QueryEngine object containing initialization data
    */
-  virtual void InitModuleMembers(cyclus::QueryEngine* qe);
+  virtual void InitFrom(cyclus::QueryEngine* qe);
 
   /**
      add a demand for a commodity on which this region request that

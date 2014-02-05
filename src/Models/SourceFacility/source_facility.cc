@@ -43,7 +43,10 @@ std::string SourceFacility::schema() {
 }
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-void SourceFacility::InitModuleMembers(cyclus::QueryEngine* qe) {
+void SourceFacility::InitFrom(cyclus::QueryEngine* qe) {
+  cyclus::FacilityModel::InitFrom(qe);
+  qe = qe->QueryElement(ModelImpl());
+  
   using std::string;
   using std::numeric_limits;
   using boost::lexical_cast;

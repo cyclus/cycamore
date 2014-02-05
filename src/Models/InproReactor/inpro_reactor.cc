@@ -94,7 +94,10 @@ std::string InproReactor::schema() {
 };
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-void InproReactor::InitModuleMembers(cyclus::QueryEngine* qe) {
+void InproReactor::InitFrom(cyclus::QueryEngine* qe) {
+  cyclus::FacilityModel::InitFrom(qe);
+  qe = qe->QueryElement(ModelImpl());
+
   using std::string;
   using boost::lexical_cast;
   cyclus::QueryEngine* input = qe->QueryElement("fuel_input");

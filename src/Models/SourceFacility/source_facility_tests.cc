@@ -60,7 +60,7 @@ TEST_F(SourceFacilityTest, XMLInit) {
   cyclus::XMLQueryEngine engine(p);
   cycamore::SourceFacility fac(tc.get());
 
-  EXPECT_NO_THROW(fac.InitModuleMembers(&engine););
+  EXPECT_NO_THROW(fac.InitFrom(&engine););
   EXPECT_EQ(fac.capacity(), capacity);
   EXPECT_EQ(fac.commodity(), commod);
   EXPECT_EQ(fac.recipe(), recipe_name);

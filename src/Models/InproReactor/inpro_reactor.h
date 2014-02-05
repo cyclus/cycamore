@@ -52,7 +52,7 @@ class InproReactor : public cyclus::FacilityModel,
      Initialize members related to derived module class
      @param qe a pointer to a cyclus::QueryEngine object containing initialization data
   */
-  virtual void InitModuleMembers(cyclus::QueryEngine* qe);
+  virtual void InitFrom(cyclus::QueryEngine* qe);
 
   /**
      Print information about this model

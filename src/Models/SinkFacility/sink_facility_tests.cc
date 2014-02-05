@@ -85,7 +85,7 @@ TEST_F(SinkFacilityTest, XMLInit) {
   cyclus::XMLQueryEngine engine(p);
   cycamore::SinkFacility fac(tc_.get());
 
-  EXPECT_NO_THROW(fac.InitModuleMembers(&engine););
+  EXPECT_NO_THROW(fac.InitFrom(&engine););
   std::string arr[] = {commod1_, commod2_};
   std::vector<std::string> vexp (arr, arr + sizeof(arr) / sizeof(arr[0]) );
   EXPECT_EQ(vexp, fac.input_commodities());

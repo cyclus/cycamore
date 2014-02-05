@@ -113,7 +113,7 @@ class SourceFacility : public cyclus::FacilityModel,
      @param qe a pointer to a cyclus::QueryEngine object containing
      initialization data
    */
-  virtual void InitModuleMembers(cyclus::QueryEngine* qe);
+  virtual void InitFrom(cyclus::QueryEngine* qe);
 
   /**
      initialize members from a different model

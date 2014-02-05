@@ -149,7 +149,7 @@ TEST_F(EnrichmentFacilityTest, XMLInit) {
   cyclus::XMLQueryEngine engine(p);
   cycamore::EnrichmentFacility fac(tc_.get());
 
-  EXPECT_NO_THROW(fac.InitModuleMembers(&engine););
+  EXPECT_NO_THROW(fac.InitFrom(&engine););
   EXPECT_EQ(in_recipe, fac.in_recipe());
   EXPECT_EQ(in_commod, fac.in_commodity());
   EXPECT_EQ(out_commod, fac.out_commodity());

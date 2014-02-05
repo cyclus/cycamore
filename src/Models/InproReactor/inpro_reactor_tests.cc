@@ -61,7 +61,7 @@ void InproReactorTest::InitSrcFacility() {
   cyclus::XMLParser parser;
   parser.Init(ss);
   cyclus::XMLQueryEngine* engine = new cyclus::XMLQueryEngine(parser);
-  src_facility->InitModuleMembers(engine);
+  src_facility->InitFrom(engine);
   delete engine;
 }
 

@@ -276,7 +276,7 @@ TEST_F(BatchReactorTest, XMLInit) {
   p.Init(ss);
   cyclus::XMLQueryEngine engine(p);
   cycamore::BatchReactor fac(tc_.get());
-  fac.InitModuleMembers(&engine);
+  fac.InitFrom(&engine);
   EXPECT_NO_THROW();
 
   TestInitState(&fac);
