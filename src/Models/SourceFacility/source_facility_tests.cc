@@ -49,11 +49,18 @@ TEST_F(SourceFacilityTest, InitialState) {
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 TEST_F(SourceFacilityTest, XMLInit) {
   std::stringstream ss;
-  ss << "<start><name>fooname</name><UNSPECIFIED><output>"
-     << "<outcommodity>" << commod << "</outcommodity>"
-     << "<output_capacity>" << capacity << "</output_capacity>"
-     << "<recipe>" << recipe_name << "</recipe>"
-     << "</output></UNSPECIFIED></start>";
+  ss << "<start>"
+     << "<name>fooname</name>"
+     << "<model>"
+     << "<UNSPECIFIED>"
+     << "<output>"
+     << "  <outcommodity>" << commod << "</outcommodity>"
+     << "  <output_capacity>" << capacity << "</output_capacity>"
+     << "  <recipe>" << recipe_name << "</recipe>"
+     << "</output>"
+     << "</UNSPECIFIED>"
+     << "</model>"
+     << "</start>";
 
   cyclus::XMLParser p;
   p.Init(ss);

@@ -71,14 +71,21 @@ TEST_F(SinkFacilityTest, Clone) {
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 TEST_F(SinkFacilityTest, XMLInit) {
   std::stringstream ss;
-  ss << "<start><name>fooname</name><UNSPECIFIED><input>"
-     << "<commodities>"
-     << "<incommodity>" << commod1_ << "</incommodity>"
-     << "<incommodity>" << commod2_ << "</incommodity>"
-     << "</commodities>"
-     << "<input_capacity>" << capacity_ << "</input_capacity>"
-     << "<inventorysize>" << inv_ << "</inventorysize>"
-     << "</input></UNSPECIFIED></start>";
+  ss << "<start>"
+     << "<name>fooname</name>"
+     << "<model>"
+     << "<UNSPECIFIED>"
+     << "<input>"
+     << "  <commodities>"
+     << "  <incommodity>" << commod1_ << "</incommodity>"
+     << "  <incommodity>" << commod2_ << "</incommodity>"
+     << "  </commodities>"
+     << "  <input_capacity>" << capacity_ << "</input_capacity>"
+     << "  <inventorysize>" << inv_ << "</inventorysize>"
+     << "</input>"
+     << "</UNSPECIFIED>"
+     << "</model>"
+     << "</start>";
 
   cyclus::XMLParser p;
   p.Init(ss);

@@ -205,7 +205,10 @@ TEST_F(BatchReactorTest, InitialState) {
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 TEST_F(BatchReactorTest, XMLInit) {
   std::stringstream ss;
-  ss << "<start><name>fooname</name><UNSPECIFIED>"
+  ss << "<start>"
+     << "<name>fooname</name>"
+     << "<model>"
+     << "<UNSPECIFIED>"
      << "  <fuel>"
      << "    <incommodity>" << in_c1 << "</incommodity>"
      << "    <inrecipe>" << in_r1 << "</inrecipe>"
@@ -271,6 +274,7 @@ TEST_F(BatchReactorTest, XMLInit) {
      << "    <time>" << change_time << "</time>"
      << "  </pref_change>"
      << "</UNSPECIFIED>"
+     << "</model>"
      << "</start>";
 
   cyclus::XMLParser p;
