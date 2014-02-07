@@ -280,10 +280,10 @@ TEST_F(BatchReactorTest, XMLInit) {
   cyclus::XMLParser p;
   p.Init(ss);
   cyclus::XMLQueryEngine engine(p);
-  cycamore::BatchReactor fac(tc_.get());
-  fac.InitFrom(&engine);
+  cycamore::BatchReactor* fac = new cycamore::BatchReactor(tc_.get());
+  fac->InitFrom(&engine);
 
-  TestInitState(&fac);
+  TestInitState(fac);
 }
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
