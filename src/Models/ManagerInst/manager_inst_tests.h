@@ -17,12 +17,15 @@ class TestProducer :
   virtual ~TestProducer();
 
   virtual cyclus::Model* Clone() {
-    TestProducer* m = new TestProducer(*this);
+    TestProducer* m = new TestProducer(context());
     m->InitFrom(this);
     return m;
-  }
+  };
 
-  void CloneModuleMembersFrom(cyclus::FacilityModel* source) {};
+  void InitFrom(TestProducer* m) {
+    cyclus::FacilityModel::InitFrom(m);
+  };
+
   void Tock(int time) {};
   void Tick(int time) {};
 };

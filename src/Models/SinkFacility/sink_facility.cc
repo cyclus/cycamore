@@ -46,7 +46,10 @@ std::string SinkFacility::schema() {
 }
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-void SinkFacility::InitModuleMembers(cyclus::QueryEngine* qe) {
+void SinkFacility::InitFrom(cyclus::QueryEngine* qe) {
+  cyclus::FacilityModel::InitFrom(qe);
+  qe = qe->QueryElement("model/" + ModelImpl());
+  
   using std::string;
   using std::numeric_limits;
   using boost::lexical_cast;
@@ -92,7 +95,7 @@ std::string SinkFacility::str() {
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 cyclus::Model* SinkFacility::Clone() {
-  SinkFacility* m = new SinkFacility(*this);
+  SinkFacility* m = new SinkFacility(context());
   m->InitFrom(this);
   return m;
 }
@@ -103,6 +106,7 @@ void SinkFacility::InitFrom(SinkFacility* m) {
   
   capacity(m->capacity());
   SetMaxInventorySize(m->MaxInventorySize());
+  capacity_ = m->capacity_;
   in_commods_ = m->in_commods_;
 }
 

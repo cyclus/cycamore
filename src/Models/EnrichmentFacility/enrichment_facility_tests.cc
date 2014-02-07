@@ -31,7 +31,6 @@ void EnrichmentFacilityTest::SetUp() {
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 void EnrichmentFacilityTest::TearDown() {
-  delete src_facility;
 }
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -74,7 +73,7 @@ void EnrichmentFacilityTest::SetUpSourceFacility() {
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 cyclus::Material::Ptr EnrichmentFacilityTest::GetMat(double qty) {
   using test_helpers::trader;
-  // return cyclus::Material::Create(&trader, qty,
+  // return cyclus::Material::Create(trader, qty,
   //                                 tc_.get()->GetRecipe(in_recipe));
   return cyclus::Material::CreateUntracked(qty,
                                   tc_.get()->GetRecipe(in_recipe));
@@ -130,6 +129,9 @@ TEST_F(EnrichmentFacilityTest, InitialState) {
 TEST_F(EnrichmentFacilityTest, XMLInit) {
   std::stringstream ss;
   ss << "<start>"
+     << "<name>fooname</name>"
+     << "<model>"
+     << "<UNSPECIFIED>"
      << "  <input>"
      << "    <incommodity>" << in_commod << "</incommodity>"
      << "    <inrecipe>" << in_recipe << "</inrecipe>"
@@ -143,6 +145,8 @@ TEST_F(EnrichmentFacilityTest, XMLInit) {
      << "  <initial_condition>"
      << "    <reserves_qty>" << reserves << "</reserves_qty>"
      << "  </initial_condition>"
+     << "</UNSPECIFIED>"
+     << "</model>"
      << "</start>";
 
   cyclus::XMLParser p;
@@ -150,7 +154,7 @@ TEST_F(EnrichmentFacilityTest, XMLInit) {
   cyclus::XMLQueryEngine engine(p);
   cycamore::EnrichmentFacility fac(tc_.get());
 
-  EXPECT_NO_THROW(fac.InitModuleMembers(&engine););
+  EXPECT_NO_THROW(fac.InitFrom(&engine););
   EXPECT_EQ(in_recipe, fac.in_recipe());
   EXPECT_EQ(in_commod, fac.in_commodity());
   EXPECT_EQ(out_commod, fac.out_commodity());
@@ -181,7 +185,6 @@ TEST_F(EnrichmentFacilityTest, Clone) {
   EXPECT_DOUBLE_EQ(swu_capacity, cloned_fac->swu_capacity());
   EXPECT_EQ(EnrichmentFacility::InitCond(reserves), cloned_fac->ics());
   
-  delete cloned_fac;
 }
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -350,11 +353,11 @@ TEST_F(EnrichmentFacilityTest, Accept) {
   Request<Material>::Ptr req1 =
       Request<Material>::Create(DoRequest(), src_facility, in_commod);
   Bid<Material>::Ptr bid1 =
-      Bid<Material>::Create(req1, GetMat(qty), &trader);
+      Bid<Material>::Create(req1, GetMat(qty), trader);
 
   Request<Material>::Ptr req2 =
       Request<Material>::Create(DoRequest(), src_facility, in_commod);
-  Bid<Material>::Ptr bid2 = Bid<Material>::Create(req2, GetMat(qty), &trader);
+  Bid<Material>::Ptr bid2 = Bid<Material>::Create(req2, GetMat(qty), trader);
 
   Trade<Material> trade1(req1, bid1, qty);
   responses.push_back(std::make_pair(trade1, GetMat(qty)));
@@ -421,12 +424,12 @@ EnrichmentFacilityTest::GetContext(int nreqs, int nvalid) {
       ec(new ExchangeContext<Material>());
   for (int i = 0; i < nvalid; i++) {
     ec->AddRequest(
-        Request<Material>::Create(GetReqMat(1.0, 0.05), &trader, out_commod));
+        Request<Material>::Create(GetReqMat(1.0, 0.05), trader, out_commod));
   }  
   for (int i = 0; i < nreqs - nvalid; i++) {
     ec->AddRequest(
         // get_mat returns a material of only u235, which is not valid
-        Request<Material>::Create(get_mat(), &trader, out_commod));
+        Request<Material>::Create(get_mat(), trader, out_commod));
         
   }
   return ec;
@@ -566,7 +569,7 @@ TEST_F(EnrichmentFacilityTest, Response) {
   DoAddMat(GetMat(natu_req * 2));
   
   Request<Material>::Ptr req =
-      Request<Material>::Create(target, &trader, out_commod);
+      Request<Material>::Create(target, trader, out_commod);
   Bid<Material>::Ptr bid = Bid<Material>::Create(req, target, src_facility);
   Trade<Material> trade(req, bid, trade_qty);
   trades.push_back(trade);

@@ -46,13 +46,18 @@ class InproReactor : public cyclus::FacilityModel,
 
   virtual cyclus::Model* Clone();
 
+  /**
+     initialize members from a different model
+  */
+  void InitFrom(InproReactor* m);
+
   virtual std::string schema();
 
   /**
      Initialize members related to derived module class
      @param qe a pointer to a cyclus::QueryEngine object containing initialization data
   */
-  virtual void InitModuleMembers(cyclus::QueryEngine* qe);
+  virtual void InitFrom(cyclus::QueryEngine* qe);
 
   /**
      Print information about this model

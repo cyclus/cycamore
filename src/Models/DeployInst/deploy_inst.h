@@ -60,10 +60,18 @@ class DeployInst : public cyclus::InstModel {
   }
 
   /**
+     initialize members from a different model
+  */
+  void InitFrom(DeployInst* m) {
+    cyclus::InstModel::InitFrom(m);
+    build_orders_ = m->build_orders_;
+  };
+
+  /**
      Initialize members related to derived module class
      @param qe a pointer to a cyclus::QueryEngine object containing initialization data
    */
-  virtual void InitModuleMembers(cyclus::QueryEngine* qe);
+  virtual void InitFrom(cyclus::QueryEngine* qe);
 
   /* ------------------- */
 

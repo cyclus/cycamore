@@ -35,8 +35,6 @@ void ManagerInstTests::SetUp() {
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 void ManagerInstTests::TearDown() {
-  delete producer;
-  delete src_inst;
   delete ctx_;
 }
 

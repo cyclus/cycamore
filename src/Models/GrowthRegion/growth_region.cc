@@ -52,7 +52,9 @@ std::string GrowthRegion::schema() {
 }
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-void GrowthRegion::InitModuleMembers(cyclus::QueryEngine* qe) {
+void GrowthRegion::InitFrom(cyclus::QueryEngine* qe) {
+  cyclus::RegionModel::InitFrom(qe);
+  qe = qe->QueryElement("model/" + ModelImpl());
   LOG(cyclus::LEV_DEBUG2, "greg") << "A Growth Region is being initialized";
 
   std::string query = "commodity";

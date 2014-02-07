@@ -68,11 +68,15 @@ std::string DeployInst::schema() {
 }
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-void DeployInst::InitModuleMembers(cyclus::QueryEngine* qe) {
+void DeployInst::InitFrom(cyclus::QueryEngine* qe) {
+  cyclus::InstModel::InitFrom(qe);
+  qe = qe->QueryElement("model/" + ModelImpl());
+
   using std::map;
   using std::string;
   using std::make_pair;
   string query = "buildorder";
+
   int nOrders = qe->NElementsMatchingQuery(query);
 
   for (int i = 0; i < nOrders; i++) {

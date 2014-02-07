@@ -193,14 +193,17 @@ std::string BatchReactor::schema() {
 };
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-void BatchReactor::InitModuleMembers(cyclus::QueryEngine* qe) {  
+void BatchReactor::InitFrom(cyclus::QueryEngine* qe) {  
+  cyclus::FacilityModel::InitFrom(qe);
+  qe = qe->QueryElement("model/" + ModelImpl());
+  
   using boost::lexical_cast;
   using cyclus::Commodity;
   using cyclus::CommodityProducer;
   using cyclus::GetOptionalQuery;
   using cyclus::QueryEngine;
   using std::string;
-  
+
   // in/out fuel
   int nfuel = qe->NElementsMatchingQuery("fuel");
   for (int i = 0; i < nfuel; i++) {

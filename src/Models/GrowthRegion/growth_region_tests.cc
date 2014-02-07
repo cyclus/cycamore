@@ -23,7 +23,6 @@ void GrowthRegionTests::SetUp() {
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 void GrowthRegionTests::TearDown() {
-  delete region;
   delete ctx;
 }
 
@@ -42,6 +41,9 @@ void GrowthRegionTests::InitRegion() {
   using std::stringstream;
   stringstream ss("");
   ss << "<start>"
+     << "<name>fooname</name>"
+     << "<model>"
+     << "<UNSPECIFIED>"
      << "  <commodity>"
      << "    <name>" << commodity_name << "</name>"
      << "    <demand>"
@@ -50,12 +52,14 @@ void GrowthRegionTests::InitRegion() {
      << "      <start_time>" << demand_start << "</start_time>"
      << "    </demand>"
      << "  </commodity>"
+     << "</UNSPECIFIED>"
+     << "</model>"
      << "</start>";
 
   cyclus::XMLParser parser;
   parser.Init(ss);
   cyclus::XMLQueryEngine* engine = new cyclus::XMLQueryEngine(parser);
-  region->InitModuleMembers(engine);
+  region->InitFrom(engine);
   region->Deploy(NULL);
   delete engine;
 }

@@ -94,7 +94,10 @@ std::string InproReactor::schema() {
 };
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-void InproReactor::InitModuleMembers(cyclus::QueryEngine* qe) {
+void InproReactor::InitFrom(cyclus::QueryEngine* qe) {
+  cyclus::FacilityModel::InitFrom(qe);
+  qe = qe->QueryElement("model/" + ModelImpl());
+
   using std::string;
   using boost::lexical_cast;
   cyclus::QueryEngine* input = qe->QueryElement("fuel_input");
@@ -154,19 +157,23 @@ std::string InproReactor::str() {
 cyclus::Model* InproReactor::Clone() {
   InproReactor* m = new InproReactor(context());
   m->InitFrom(this);
-
-  m->set_cycle_length(cycle_length());
-  m->set_refuel_delay(refuel_delay());
-  m->set_in_core_loading(in_core_loading());
-  m->set_out_core_loading(out_core_loading());
-  m->set_batches_per_core(batches_per_core());
-  m->set_in_commodity(in_commodity());
-  m->set_out_commodity(out_commodity());
-  m->set_in_recipe(in_recipe());
-  m->set_out_recipe(out_recipe());
-  m->CopyProducedCommoditiesFrom(this);
-
   return m;
+}
+
+//- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+void InproReactor::InitFrom(InproReactor* m) {
+  cyclus::FacilityModel::InitFrom(m);
+
+  set_cycle_length(m->cycle_length());
+  set_refuel_delay(m->refuel_delay());
+  set_in_core_loading(m->in_core_loading());
+  set_out_core_loading(m->out_core_loading());
+  set_batches_per_core(m->batches_per_core());
+  set_in_commodity(m->in_commodity());
+  set_out_commodity(m->out_commodity());
+  set_in_recipe(m->in_recipe());
+  set_out_recipe(m->out_recipe());
+  CopyProducedCommoditiesFrom(m);
 }
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -

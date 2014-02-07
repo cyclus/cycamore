@@ -17,7 +17,6 @@ void SinkFacilityTest::SetUp() {
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 void SinkFacilityTest::TearDown() {
-  delete src_facility;
 }
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -67,27 +66,33 @@ TEST_F(SinkFacilityTest, Clone) {
   std::vector<std::string> vexp (arr, arr + sizeof(arr) / sizeof(arr[0]) );
   EXPECT_EQ(vexp, cloned_fac->input_commodities());
 
-  delete cloned_fac;
 }
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 TEST_F(SinkFacilityTest, XMLInit) {
   std::stringstream ss;
-  ss << "<root>" << "<input>"
-     << "<commodities>"
-     << "<incommodity>" << commod1_ << "</incommodity>"
-     << "<incommodity>" << commod2_ << "</incommodity>"
-     << "</commodities>"
-     << "<input_capacity>" << capacity_ << "</input_capacity>"
-     << "<inventorysize>" << inv_ << "</inventorysize>"
-     << "</input>" << "</root>";
+  ss << "<start>"
+     << "<name>fooname</name>"
+     << "<model>"
+     << "<UNSPECIFIED>"
+     << "<input>"
+     << "  <commodities>"
+     << "  <incommodity>" << commod1_ << "</incommodity>"
+     << "  <incommodity>" << commod2_ << "</incommodity>"
+     << "  </commodities>"
+     << "  <input_capacity>" << capacity_ << "</input_capacity>"
+     << "  <inventorysize>" << inv_ << "</inventorysize>"
+     << "</input>"
+     << "</UNSPECIFIED>"
+     << "</model>"
+     << "</start>";
 
   cyclus::XMLParser p;
   p.Init(ss);
   cyclus::XMLQueryEngine engine(p);
   cycamore::SinkFacility fac(tc_.get());
 
-  EXPECT_NO_THROW(fac.InitModuleMembers(&engine););
+  EXPECT_NO_THROW(fac.InitFrom(&engine););
   std::string arr[] = {commod1_, commod2_};
   std::vector<std::string> vexp (arr, arr + sizeof(arr) / sizeof(arr[0]) );
   EXPECT_EQ(vexp, fac.input_commodities());
@@ -155,12 +160,12 @@ TEST_F(SinkFacilityTest, Accept) {
 
   Request<Material>::Ptr req1 =
       Request<Material>::Create(get_mat(92235, qty_), src_facility, commod1_);
-  Bid<Material>::Ptr bid1 = Bid<Material>::Create(req1, get_mat(), &trader);
+  Bid<Material>::Ptr bid1 = Bid<Material>::Create(req1, get_mat(), trader);
 
   Request<Material>::Ptr req2 =
       Request<Material>::Create(get_mat(92235, qty_), src_facility, commod2_);
   Bid<Material>::Ptr bid2 =
-      Bid<Material>::Create(req2, get_mat(92235, qty_), &trader);
+      Bid<Material>::Create(req2, get_mat(92235, qty_), trader);
 
   Trade<Material> trade1(req1, bid1, qty_);
   responses.push_back(std::make_pair(trade1, get_mat(92235, qty_)));

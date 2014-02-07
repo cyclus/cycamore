@@ -69,7 +69,10 @@ std::string EnrichmentFacility::schema() {
 }
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-void EnrichmentFacility::InitModuleMembers(cyclus::QueryEngine* qe) {
+void EnrichmentFacility::InitFrom(cyclus::QueryEngine* qe) {
+  cyclus::FacilityModel::InitFrom(qe);
+  qe = qe->QueryElement("model/" + ModelImpl());
+
   using std::string;
   using std::numeric_limits;
   using boost::lexical_cast;  
@@ -77,7 +80,7 @@ void EnrichmentFacility::InitModuleMembers(cyclus::QueryEngine* qe) {
   using cyclus::Material;
   using cyclus::QueryEngine;
   using cyclus::Model;
-  
+
   string data;
 
   QueryEngine* input = qe->QueryElement("input");
@@ -114,7 +117,7 @@ void EnrichmentFacility::InitModuleMembers(cyclus::QueryEngine* qe) {
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 cyclus::Model* EnrichmentFacility::Clone() {
-  EnrichmentFacility* m = new EnrichmentFacility(*this);
+  EnrichmentFacility* m = new EnrichmentFacility(context());
   m->InitFrom(this);
   LOG(cyclus::LEV_DEBUG1, "EnrFac") << "Cloned - " << str();
   return m;

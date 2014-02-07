@@ -43,7 +43,10 @@ std::string SourceFacility::schema() {
 }
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-void SourceFacility::InitModuleMembers(cyclus::QueryEngine* qe) {
+void SourceFacility::InitFrom(cyclus::QueryEngine* qe) {
+  cyclus::FacilityModel::InitFrom(qe);
+  qe = qe->QueryElement("model/" + ModelImpl());
+  
   using std::string;
   using std::numeric_limits;
   using boost::lexical_cast;
@@ -76,7 +79,7 @@ std::string SourceFacility::str() {
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 cyclus::Model* SourceFacility::Clone() {
-  SourceFacility* m = new SourceFacility(*this);
+  SourceFacility* m = new SourceFacility(context());
   m->InitFrom(this);
   return m;
 }

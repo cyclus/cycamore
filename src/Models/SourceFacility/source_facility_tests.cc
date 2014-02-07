@@ -18,7 +18,6 @@ void SourceFacilityTest::SetUp() {
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 void SourceFacilityTest::TearDown() {
-  delete src_facility;
 }
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -50,18 +49,25 @@ TEST_F(SourceFacilityTest, InitialState) {
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 TEST_F(SourceFacilityTest, XMLInit) {
   std::stringstream ss;
-  ss << "<root>" << "<output>"
-     << "<outcommodity>" << commod << "</outcommodity>"
-     << "<output_capacity>" << capacity << "</output_capacity>"
-     << "<recipe>" << recipe_name << "</recipe>"
-     << "</output>" << "</root>";
+  ss << "<start>"
+     << "<name>fooname</name>"
+     << "<model>"
+     << "<UNSPECIFIED>"
+     << "<output>"
+     << "  <outcommodity>" << commod << "</outcommodity>"
+     << "  <output_capacity>" << capacity << "</output_capacity>"
+     << "  <recipe>" << recipe_name << "</recipe>"
+     << "</output>"
+     << "</UNSPECIFIED>"
+     << "</model>"
+     << "</start>";
 
   cyclus::XMLParser p;
   p.Init(ss);
   cyclus::XMLQueryEngine engine(p);
   cycamore::SourceFacility fac(tc.get());
 
-  EXPECT_NO_THROW(fac.InitModuleMembers(&engine););
+  EXPECT_NO_THROW(fac.InitFrom(&engine););
   EXPECT_EQ(fac.capacity(), capacity);
   EXPECT_EQ(fac.commodity(), commod);
   EXPECT_EQ(fac.recipe(), recipe_name);
@@ -79,7 +85,6 @@ TEST_F(SourceFacilityTest, Clone) {
   EXPECT_EQ(src_facility->recipe(), cloned_fac->recipe());
   EXPECT_EQ(src_facility->capacity(), cloned_fac->current_capacity());
 
-  delete cloned_fac;
 }
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -158,7 +163,7 @@ TEST_F(SourceFacilityTest, Response) {
 
   double qty = capacity / 3;
   Request<Material>::Ptr request =
-      Request<Material>::Create(get_mat(), &trader, commod);
+      Request<Material>::Create(get_mat(), trader, commod);
   Bid<Material>::Ptr bid =
       Bid<Material>::Create(request, get_mat(), src_facility);
 
@@ -201,7 +206,7 @@ SourceFacilityTest::GetContext(int nreqs, std::string commod) {
     using cyclus::Request;
     using test_helpers::trader;
     using test_helpers::get_mat;
-    ec->AddRequest(Request<Material>::Create(get_mat(), &trader, commod));
+    ec->AddRequest(Request<Material>::Create(get_mat(), trader, commod));
   }
   return ec;
 }

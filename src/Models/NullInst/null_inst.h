@@ -41,9 +41,13 @@ class NullInst : public cyclus::InstModel {
   virtual ~NullInst();
 
   virtual cyclus::Model* Clone() {
-    NullInst* m = new NullInst(*this);
+    NullInst* m = new NullInst(context());
     m->InitFrom(this);
     return m;
+  }
+
+  void InitFrom(NullInst* m) {
+    cyclus::InstModel::InitFrom(m);
   }
 
   /* ------------------- */

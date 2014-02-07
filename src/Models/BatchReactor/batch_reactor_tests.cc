@@ -41,7 +41,6 @@ void BatchReactorTest::SetUp() {
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 void BatchReactorTest::TearDown() {
-  delete src_facility;
 }
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -207,6 +206,9 @@ TEST_F(BatchReactorTest, InitialState) {
 TEST_F(BatchReactorTest, XMLInit) {
   std::stringstream ss;
   ss << "<start>"
+     << "<name>fooname</name>"
+     << "<model>"
+     << "<UNSPECIFIED>"
      << "  <fuel>"
      << "    <incommodity>" << in_c1 << "</incommodity>"
      << "    <inrecipe>" << in_r1 << "</inrecipe>"
@@ -271,16 +273,17 @@ TEST_F(BatchReactorTest, XMLInit) {
      << "    <new_pref>" << topref2 << "</new_pref>"
      << "    <time>" << change_time << "</time>"
      << "  </pref_change>"
+     << "</UNSPECIFIED>"
+     << "</model>"
      << "</start>";
 
   cyclus::XMLParser p;
   p.Init(ss);
   cyclus::XMLQueryEngine engine(p);
-  cycamore::BatchReactor fac(tc_.get());
-  fac.InitModuleMembers(&engine);
-  EXPECT_NO_THROW();
+  cycamore::BatchReactor* fac = new cycamore::BatchReactor(tc_.get());
+  fac->InitFrom(&engine);
 
-  TestInitState(&fac);
+  TestInitState(fac);
 }
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -288,7 +291,6 @@ TEST_F(BatchReactorTest, Clone) {
   cycamore::BatchReactor* cloned_fac =
     dynamic_cast<cycamore::BatchReactor*>(src_facility->Clone());
   TestInitState(cloned_fac);  
-  delete cloned_fac;
 }
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -324,7 +326,7 @@ TEST_F(BatchReactorTest, StartProcess) {
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 TEST_F(BatchReactorTest, InitCond) {
-  src_facility->Deploy(src_facility);
+  src_facility->Deploy();
   TestBuffs(rsrv_n, core_n, stor_n);
 }
 

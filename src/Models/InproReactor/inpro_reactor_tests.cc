@@ -32,13 +32,15 @@ void InproReactorTest::SetUp() {
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 void InproReactorTest::TearDown() {
-  delete src_facility;
 }
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 void InproReactorTest::InitSrcFacility() {
   std::stringstream ss("");
   ss << "<start>"
+     << "<name>fooname</name>"
+     << "<model>"
+     << "<UNSPECIFIED>"
      << "  <fuel_input>"
      << "    <incommodity>" << in_commod << "</incommodity>"
      << "    <inrecipe>" << in_recipe << "</inrecipe>"
@@ -57,12 +59,14 @@ void InproReactorTest::InitSrcFacility() {
      << "    <capacity>" << capacity << "</capacity>"
      << "    <cost>" << cost << "</cost>"
      << "  </commodity_production>"
+     << "</UNSPECIFIED>"
+     << "</model>"
      << "</start>";
 
   cyclus::XMLParser parser;
   parser.Init(ss);
   cyclus::XMLQueryEngine* engine = new cyclus::XMLQueryEngine(parser);
-  src_facility->InitModuleMembers(engine);
+  src_facility->InitFrom(engine);
   delete engine;
 }
 
@@ -105,7 +109,6 @@ TEST_F(InproReactorTest, clone) {
   EXPECT_EQ(capacity, cloned_fac->ProductionCapacity(commod));
   EXPECT_EQ(cost, cloned_fac->ProductionCost(commod));
 
-  delete cloned_fac;
 }
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
