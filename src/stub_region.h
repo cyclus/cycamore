@@ -1,10 +1,13 @@
-// StubRegion.h
-#ifndef _STUBREGION_H
-#define _STUBREGION_H
+#ifndef STUB_REGION_H_
+#define STUB_REGION_H_
 
-#include "RegionModel.h"
+#include <string>
 
-#include "Logger.h"
+#include "context.h"
+#include "region_model.h"
+#include "query_engine.h"
+
+namespace stubs {
 
 /**
    @class StubRegion 
@@ -31,53 +34,44 @@
    describing the behavior at the tick and tock as well as the behavior 
    upon sending and receiving materials and messages. 
  */
-class StubRegion : public RegionModel {
+class StubRegion : public cyclus::RegionModel {
 /* --------------------
- * all MODEL classes have these members
+ * all REGIONMODEL classes have these members
  * --------------------
  */
  public:
   /**
-     Default constructor for StubStub Class 
+     Constructor for StubRegion Class 
+     @param ctx the cyclus context for access to simulation-wide parameters
    */
-  StubRegion();
-  
+  StubRegion(cyclus::Context* ctx);
+
   /**
      every model should be destructable 
    */
   virtual ~StubRegion();
     
   /**
-     Initializes the model data members from data in the QueryEngine object
-      
-     @param qe a QueryEngine object containing initialization data
+     Initialize members related to derived module class
+
+     @param qe a pointer to a QueryEngine object containing initialization data
    */
-  virtual void initModuleMembers(QueryEngine* qe);
+  virtual void InitFrom(cyclus::QueryEngine* qe);
   
   /**
-     Copies data members based on those of the src RegionModel
-      
-     @param src is the RegionModel to copy 
+     Initialize members for a cloned module.
    */
-  virtual void cloneModuleMembersFrom(RegionModel* src) ;
+  virtual void InitFrom(StubRegion* m);
 
   /**
-     every model should be able to print a verbose description 
+     A verbose printer for the StubRegion
    */
-  virtual std::string str();
-  
-/* ------------------- */ 
+   virtual std::string str();
 
-
-/* --------------------
- * all COMMUNICATOR classes have these members
- * --------------------
- */
- public:   
   /**
-     The StubRegion should ignore incoming messages 
+     Initializes a StubRegion object by copying the members of another.
    */
-  virtual void receiveMessage(msg_ptr msg);
+   virtual cyclus::Model* Clone();
   
 /* -------------------- */
 
@@ -91,4 +85,6 @@ class StubRegion : public RegionModel {
 
 };
 
-#endif
+} // namespace stubs
+  
+#endif // STUB_REGION_H_
