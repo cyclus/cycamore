@@ -1,8 +1,6 @@
-_______________________________________________________________________
-Cycstub : Cyclus Stub Models 
-_______________________________________________________________________
-
-**Last Updated: 8.8.2012**
+***********************************************************************
+Cycstub: Cyclus Stub Models 
+***********************************************************************
 
 This repository provides templates for creating modules for use with the 
 Cyclus nuclear fuel cycle simulator from the University of Wisconsin - 
@@ -11,47 +9,9 @@ simulations with the Cyclus fuel cycle simulator.
 
 To see user and developer documentation for the cyclus code, please visit the `Cyclus Homepage`_.
 
-
------------------------------------------------------------------------
-LISCENSE
------------------------------------------------------------------------
-
-::
-
-    Copyright (c) 2010-2012, University of Wisconsin Computational Nuclear Engineering Research Group
-     All rights reserved.
-    
-    Redistribution and use in source and binary forms, with or without
-    modification, are permitted provided that the following conditions are met:
-    
-      - Redistributions of source code must retain the above copyright notice,
-        this list of conditions and the following disclaimer.
-      
-      - Redistributions in binary form must reproduce the above copyright
-        notice, this list of conditions and the following disclaimer in the
-        documentation and/or other materials provided with the distribution.
-      
-      - Neither the name of the University of Wisconsin Computational
-        Nuclear Engineering Research Group nor the names of its
-        contributors may be used to endorse or promote products derived
-        from this software without specific prior written permission.
-    
-    THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
-    AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE
-    IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE
-    ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT HOLDER OR CONTRIBUTORS BE
-    LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR
-    CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF
-    SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS; OR BUSINESS
-    INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY, WHETHER IN
-    CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE)
-    ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
-    POSSIBILITY OF SUCH DAMAGE.
-
 ------------------------------------------------------------------
 The Purpose of Cycstub
 ------------------------------------------------------------------
-
 One important goal of the Cyclus effort is to attract a community of developers
 contributing to a vibrant ecosystem of models for use by users. In addition to the 
 wide availability of the core infrastructure, an element that is critical to the 
@@ -78,7 +38,6 @@ cases for each contributed module.
 ------------------------------------------------------------------
 How To Use Cycstub
 ------------------------------------------------------------------
-
 Let's say you've decided to implement a new Facility model. Let's say it's a 
 one group burnup approximation of some kind, intended to generically represent 
 material transmutation in a reactor. You want to call it OneGroupReactor. A
@@ -93,7 +52,6 @@ modules.
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 Forking this Repository
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-
 In order to download and use this repository in a way that will keep 
 track of changes in the Cyclus model interface, you'll need to *Fork* this 
 repository.  
@@ -111,11 +69,9 @@ the wrong name.
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 Renaming Your Fork
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-
 Your fork is, by default, called cycstub. You may rather call it 
 OneGroupReactor. To do this, go to your new fork (github should have taken you 
-there automatically, but you can find it at https://github.com/username/cycstub 
-).
+there automatically, but you can find it at https://github.com/username/cycstub).
 
 In the upper right hand corner of the browser will be a button called admin. 
 Click on that button and rename your fork.
@@ -130,16 +86,12 @@ First, make sure you've `configured git on your computer
 
 Once that's done, you can clone your repository. 
 In a terminal on your machine, run the following code, replacing username with 
-your github user name and onegroupreactor with the new name of your fork.
-
-::
+your github user name and onegroupreactor with the new name of your fork::
 
   git clone https://github.com/username/onegroupreactor.git
  
 
-Add a remote, read-only branch that points to the cycstub repo : 
-
-::
+Add a remote, read-only branch that points to the cycstub repo::
 
   cd onegroupreactor
   git remote add cyclus git://github.com/cyclus/cycstub.git
@@ -269,17 +221,8 @@ the stub module libraries for the first time.
 Dependencies
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-Building a module for the Cyclus  code requires the following software and libraries.
-
-====================   ==================
-Package                Minimum Version   
-====================   ==================
-`Cyclus`               0.1  
-`CMake`                2.8            
-`boost`                1.34.1
-`libxml2`              2                 
-`sqlite3`              3.7.10            
-====================   ==================
+Building a module via cycstub requires Cyclus requires the most recent release of 
+`Cyclus <http://fuelcycle.org/>`_.
 
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~
 Building Your Module
@@ -328,7 +271,7 @@ The `Cyclus Homepage`_ has much more detailed guides and information.  If
 you intend to develop for *Cyclus*, please visit it to learn more.
 
 
-.. _`Cyclus Homepage`: http://cyclus.github.com
+.. _`Cyclus Homepage`: http://fuelcycle.org/
 
 
 
@@ -441,3 +384,4 @@ See also
 
 A good description of a git workflow with good graphics is available at
 http://nvie.com/posts/a-successful-git-branching-model/
+
