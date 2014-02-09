@@ -1,9 +1,13 @@
-// StubInst.h
-#ifndef _STUBINST_H
-#define _STUBINST_H
+#ifndef STUB_INST_H_
+#define STUB_INST_H_
 
-#include "Logger.h"
-#include "InstModel.h"
+#include <string>
+
+#include "context.h"
+#include "inst_model.h"
+#include "query_engine.h"
+
+namespace stubs {
 
 /**
    @class StubInst 
@@ -30,17 +34,17 @@
    describing the behavior at the tick and tock as well as the behavior 
    upon sending and receiving materials and messages. 
  */
-
-class StubInst : public InstModel {
+class StubInst : public cyclus::InstModel {
 /* --------------------
- * all MODEL classes have these members
+ * all INSTMODEL classes have these members
  * --------------------
  */
  public:
   /**
-     Default constructor for StubInst Class 
+     Constructor for StubInst Class 
+     @param ctx the cyclus context for access to simulation-wide parameters
    */
-  StubInst();
+  StubInst(cyclus::Context* ctx);
 
   /**
      every model should be destructable 
@@ -52,15 +56,18 @@ class StubInst : public InstModel {
       
      @param qe is a QueryEngine object that contains intialization data
    */
-  virtual void initModuleMembers(QueryEngine* qe);
-  
-  /**
-     Copies the data from one object to another 
-      
-     @param src is the InstModel to copy 
-   */
-  virtual void cloneModuleMembersFrom(InstModel* src) ;
+  virtual void InitFrom(cyclus::QueryEngine* qe);
 
+  /**
+     Initialize members for a cloned module.
+   */
+  virtual void InitFrom(StubInst* m);
+
+  /**
+     Initializes a StubInst object by copying the members of another.
+   */
+   virtual cyclus::Model* Clone();
+   
   /**
      every model should be able to print a verbose description 
    */
@@ -68,30 +75,9 @@ class StubInst : public InstModel {
 
 /* ------------------- */ 
 
-   
-/* --------------------
- * all COMMUNICATOR classes have these members
- * --------------------
- */
- public:
-   /**
-      The StubInst should ignore incoming messages 
-    */
-   virtual void receiveMessage(msg_ptr msg);
-   
-/* -------------------- */
-
 
 /* --------------------
- * all INSTMODEL classes have these members
- * --------------------
- */
-
-/* ------------------- */ 
-
-
-/* --------------------
- * This INSTMODEL class has these members
+ * _THIS_ INSTMODEL class has these members
  * --------------------
  */
 
@@ -99,4 +85,6 @@ class StubInst : public InstModel {
 
 };
 
-#endif
+} // namespace stubs
+  
+#endif // STUB_INST_H_
