@@ -63,3 +63,15 @@ Finally, feel free to clean up after yourself
 .. code-block:: bash
 
   $ rm *.h5
+
+Nondeterminisitic Analysis
+==========================
+
+An `analysis` python module can assist in analyzing the determinism of Cyclus
+output. It does so by running the regression tests some number of times and
+analyzing the frequency of nondeterminism of output tables and columns within
+those tables. See the module's help: 
+
+.. code-block:: python
+
+  $ python analysis.py -h

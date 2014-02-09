@@ -4,8 +4,9 @@ import os
 import json
 import hashlib
 import urllib
+import uuid
 from nose.tools import assert_true
-from cyclus_tools import run_cyclus, db_comparator
+from cyclus_tools import run_cyclus, compare_determ, compare_nondeterm
 
 sim_files = {}
 fetchdir = "fetch"
@@ -18,7 +19,9 @@ def setup():
         refs = json.load(f)
     cyclus_ref = refs[-1]["cyclus-ref"]
     cycamore_ref = refs[-1]["cycamore-ref"]
-    refs = [r for r in refs if r["cyclus-ref"] == cyclus_ref and r["cycamore-ref"] == cycamore_ref]
+    refs = [r for r in refs 
+            if r["cyclus-ref"] == cyclus_ref 
+            and r["cycamore-ref"] == cycamore_ref]
     base_url = "http://regtests.fuelcycle.org/"
     for r in refs:
         fpath = os.path.join(fetchdir, r["fname"])
@@ -31,9 +34,14 @@ def setup():
             raise RuntimeError("They tooks our data!!! All our rackspace are belong to them.")
         sim_files[r["input-file"]] = fpath
 
-def test_regression():
+def test_regression(check_deterministic=False):
     """Test for all inputs in sim_files. Checks if reference and current cyclus 
     output is the same.
+
+    Parameters
+    ----------
+    check_deterministic : bool
+                        If True, also test determinisitc equality of simulations
 
     WARNING: the tests require cyclus executable to be included in PATH
     """    
@@ -42,11 +50,15 @@ def test_regression():
             if f not in sim_files:
                 continue
             
-            # print("testing input: " + sim_input + " and bench_db: " + bench_db)
-            tmp_file = "tmp.h5"
-        
+            tmp_file = str(uuid.uuid4()) + ".h5"
             run_cyclus("cyclus", os.getcwd(), os.path.join(root, f), tmp_file)
         
             if os.path.isfile(tmp_file):
-                assert_true(db_comparator(sim_files[f], tmp_file))
+                nondeterm = compare_nondeterm(sim_files[f], tmp_file)
+                if check_deterministic:
+                    determ = compare_determ(sim_files[f], tmp_file, verbose=True)
                 os.remove(tmp_file)
+                
+                assert_true(nondeterm)
+                if check_deterministic:
+                    assert_true(determ) 
