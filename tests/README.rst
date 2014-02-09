@@ -26,7 +26,7 @@ First, generate the new databases:
 
 .. code-block:: bash
 
-  $ python refs.py gen
+  $ python ref.py gen
 
 Next, rename the databases:
 
@@ -56,7 +56,7 @@ Now, update (add) them on the regression test server
 
 .. code-block:: bash
 
-  $ python refs.py add *.h5
+  $ python ref.py add *.h5
 
 Finally, feel free to clean up after yourself
 
