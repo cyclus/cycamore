@@ -43,7 +43,7 @@ def proxy_lst_to_dict(lst):
         col_freq[tbl][col] += 1
     return col_freq
 
-def determ_analysis(niter=1000, fname="report"):
+def determ_analysis(niter=1000):
     """
     Calls deterministic regression tests for a number of iterations and reports
     findings of nondeterminism to a file.
@@ -87,7 +87,10 @@ def determ_analysis(niter=1000, fname="report"):
             dic[col] = "{0:.2f}".format(float(freq) / tbl_freq[tbl])    
     for k, v in tbl_freq.iteritems():
         tbl_freq[k] = "{0:.2f}".format(float(v) / niter)
-    
+
+    return tbl_freq, col_freq
+
+def report(tbl_freq, col_freq, , fname="report"):
     # report
     lines = []
     lines.append("Table values are reported as percent nondeterministic" + 
@@ -103,6 +106,7 @@ def determ_analysis(niter=1000, fname="report"):
     with open(fname, "w") as f:
         f.writelines(lines)
 
+
 def main():
     description = "A module for analyzing the determinism of Cyclus output." 
 
@@ -116,7 +120,8 @@ def main():
     parser.add_argument('--report', help=report, default='report')
     
     args = parser.parse_args()
-    determ_analysis(args.niterations, args.report)
+    tbl_freq, col_freq = determ_analysis(args.niterations)
+    report(tbl_freq, col_freq, args.report)
 
 if __name__ == "__main__":
     main()
