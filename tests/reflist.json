@@ -1,16 +1,30 @@
 [
     {
-        "cycamore-ref": "8b2d61c", 
         "cyclus-ref": "fc5bbee", 
-        "fname": "fc5bbee_8b2d61c_1_Enrichment_2_Reactor.h5", 
+        "sha1-checksum": "451b951e378c2883c506568ff7763119e23281db", 
         "input-file": "1_Enrichment_2_Reactor.xml", 
-        "sha1-checksum": "451b951e378c2883c506568ff7763119e23281db"
+        "fname": "fc5bbee_8b2d61c_1_Enrichment_2_Reactor.h5", 
+        "cycamore-ref": "8b2d61c"
     }, 
     {
-        "cycamore-ref": "8b2d61c", 
         "cyclus-ref": "fc5bbee", 
-        "fname": "fc5bbee_8b2d61c_2_Sources_3_Reactors.h5", 
+        "sha1-checksum": "e7028d6c70ff6606792d90045d0a3495590e46d9", 
         "input-file": "2_Sources_3_Reactors.xml", 
-        "sha1-checksum": "e7028d6c70ff6606792d90045d0a3495590e46d9"
+        "fname": "fc5bbee_8b2d61c_2_Sources_3_Reactors.h5", 
+        "cycamore-ref": "8b2d61c"
+    }, 
+    {
+        "cycamore-ref": "v0.4-rc1", 
+        "sha1-checksum": "0060c462e82a5c23db7cf5f10b2b1a1e67462125", 
+        "input-file": "1_Enrichment_2_Reactor.xml", 
+        "fname": "v0.4-rc1_v0.4-rc1_1_Enrichment_2_Reactor.h5", 
+        "cyclus-ref": "v0.4-rc1"
+    }, 
+    {
+        "cycamore-ref": "v0.4-rc1", 
+        "sha1-checksum": "be0d48a5bc229c4d46d8d72de63fa6da4f4097ae", 
+        "input-file": "2_Sources_3_Reactors.xml", 
+        "fname": "v0.4-rc1_v0.4-rc1_2_Sources_3_Reactors.h5", 
+        "cyclus-ref": "v0.4-rc1"
     }
 ]
