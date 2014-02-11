@@ -56,7 +56,7 @@ class HDF5RegressionVisitor(object):
             # print(p_id, a_id)
             if p_id != -1:
                 if p_id not in invars:
-                    raise KeyError("Parent ID " + str(p_id) +\
+                    raise KeyError("Parent with id " + str(a_id) +\
                                        " not previously registered.")
                 else:
                     p_invar = invars[p_id]
