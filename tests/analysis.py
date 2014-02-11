@@ -55,6 +55,13 @@ def determ_analysis(niter=1000):
          
     fname : str
           The output filename to report to
+
+    Returns
+    -------
+    tbl_freq, col_freq : 2-tuple of dicts
+                       tbl_freq is a frequency map of nondeterministic tables
+                       col_freq is a frequency map of nondeterminisitc columns, 
+                       per table
     """
     m = Manager()
 
@@ -91,7 +98,20 @@ def determ_analysis(niter=1000):
     return tbl_freq, col_freq
 
 def report(tbl_freq, col_freq, , fname="report"):
-    # report
+    """
+    Prints the results of determ_analysis to a file
+
+    Parameters
+    ----------
+    tbl_freq : dict
+             the table frequency output from determ_analysis
+         
+    col_freq : dict
+             the column frequency output from determ_analysis
+
+    fname : str
+          the output file name to print to
+    """
     lines = []
     lines.append("Table values are reported as percent nondeterministic" + 
                  " of total runs.\n\n")
@@ -108,7 +128,7 @@ def report(tbl_freq, col_freq, , fname="report"):
 
 
 def main():
-    description = "A module for analyzing the determinism of Cyclus output." 
+    description = "A module for analyzing the (non)determinism of Cyclus output."
 
     parser = ap.ArgumentParser(description=description)
 
