@@ -58,6 +58,14 @@ Now, update (add) them on the regression test server
 
   $ python ref.py add *.h5
 
+Next, add the reflist file you just altered:
+
+.. code-block:: bash
+
+  $ git add reflist.json
+  $ git commit -m "updated reflist.json"
+  $ git push upstream develop
+
 Finally, feel free to clean up after yourself
 
 .. code-block:: bash
