@@ -98,7 +98,7 @@ class HDF5RegressionVisitor(object):
     def visit_agents(self, table):
         d = {self.agent_invariants[row[_agent_key]]:
                  tuple(row[i] if i not in _agent_id_names
-                       else self.agent_invariants[row[i]] 
+                       else self.agent_invariants[row[_agent_key]] 
                        for i in _agent_schema)
              for row in table.iterrows()}
         return tuple((k, d[k]) for k in sorted(d.keys()))
