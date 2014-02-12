@@ -54,9 +54,20 @@ def test_regression(check_deterministic=False):
             run_cyclus("cyclus", os.getcwd(), os.path.join(root, f), tmp_file)
         
             if os.path.isfile(tmp_file):
-                nondeterm = compare_nondeterm(sim_files[f], tmp_file)
+                try:
+                    nondeterm = compare_nondeterm(sim_files[f], tmp_file)
+                except KeyError:
+                    os.remove(tmp_file)
+                    raise
+                    
                 if check_deterministic:
-                    determ = compare_determ(sim_files[f], tmp_file, verbose=True)
+                    try:
+                        determ = \
+                            compare_determ(sim_files[f], tmp_file, verbose=True)
+                    except KeyError:
+                        os.remove(tmp_file)
+                        raise
+
                 os.remove(tmp_file)
                 
                 assert_true(nondeterm)

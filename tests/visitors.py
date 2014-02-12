@@ -53,8 +53,13 @@ class HDF5RegressionVisitor(object):
             a_id = row["ID"]
             p_id = row["ParentID"]
             p_invar = None
-            if (a_id != p_id):
-                p_invar = invars[p_id]
+            # print(p_id, a_id)
+            if p_id != -1:
+                if p_id not in invars:
+                    raise KeyError("Parent with id " + str(a_id) +\
+                                       " not previously registered.")
+                else:
+                    p_invar = invars[p_id]
             invars[a_id] = tuple(row[i] if i not in _agent_id_names else p_invar 
                                  for i in _agent_schema)
         return invars
@@ -93,7 +98,7 @@ class HDF5RegressionVisitor(object):
     def visit_agents(self, table):
         d = {self.agent_invariants[row[_agent_key]]:
                  tuple(row[i] if i not in _agent_id_names
-                       else self.agent_invariants[row[i]] 
+                       else self.agent_invariants[row[_agent_key]] 
                        for i in _agent_schema)
              for row in table.iterrows()}
         return tuple((k, d[k]) for k in sorted(d.keys()))
