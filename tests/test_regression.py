@@ -26,7 +26,10 @@ def setup():
     for r in refs:
         fpath = os.path.join(fetchdir, r["fname"])
         if not os.path.exists(fpath):
-            urllib.urlretrieve(base_url+r["fname"], fpath)
+            try:
+                urllib.urlretrieve(base_url+r["fname"], fpath)
+            except AttributeError: # try python 3.1+ api version
+                urllib.request.urlretrieve(base_url+r["fname"], fpath)
         h = hashlib.sha1()
         with open(fpath, "rb") as f: 
             h.update(f.read())
