@@ -225,157 +225,157 @@
   <recipe>
     <name>natl_u</name>
     <basis>mass</basis>
-    <isotope>
+    <nuclide>
       <id>92235</id>
       <comp>0.711</comp>
-    </isotope>
-    <isotope>
+    </nuclide>
+    <nuclide>
       <id>92238</id>
       <comp>99.289</comp>
-    </isotope>
+    </nuclide>
   </recipe>
 
   <recipe>
     <name>uox_fuel_recipe</name>
     <basis>mass</basis>
-    <isotope>
+    <nuclide>
       <id>92235</id>
       <comp>4.0</comp>
-    </isotope>
-    <isotope>
+    </nuclide>
+    <nuclide>
       <id>92238</id>
       <comp>96.0</comp>
-    </isotope>
+    </nuclide>
   </recipe>
 
   <recipe>
     <name>uox_used_fuel_recipe</name>
     <basis>mass</basis>
-    <isotope>
+    <nuclide>
       <id>92235</id>
       <comp>156.729</comp>
-    </isotope>
-    <isotope>
+    </nuclide>
+    <nuclide>
       <id>92236</id>
       <comp>102.103</comp>
-    </isotope>
-    <isotope>
+    </nuclide>
+    <nuclide>
       <id>92238</id>
       <comp>18280.324</comp>
-    </isotope>
-    <isotope>
+    </nuclide>
+    <nuclide>
       <id>93237</id>
       <comp>13.656</comp>
-    </isotope>
-    <isotope>
+    </nuclide>
+    <nuclide>
       <id>94238</id>
       <comp>5.043</comp>
-    </isotope>
-    <isotope>
+    </nuclide>
+    <nuclide>
       <id>94239</id>
       <comp>106.343</comp>
-    </isotope>
-    <isotope>
+    </nuclide>
+    <nuclide>
       <id>94240</id>
       <comp>41.357</comp>
-    </isotope>
-    <isotope>
+    </nuclide>
+    <nuclide>
       <id>94241</id>
       <comp>36.477</comp>
-    </isotope>
-    <isotope>
+    </nuclide>
+    <nuclide>
       <id>94242</id>
       <comp>15.387</comp>
-    </isotope>
-    <isotope>
+    </nuclide>
+    <nuclide>
       <id>95241</id>
       <comp>1.234</comp>
-    </isotope>
-    <!-- <isotope> -->
+    </nuclide>
+    <!-- <nuclide> -->
       <!--   <id>95242m</id> -->
       <!--   <comp>0.03</comp> -->
-      <!-- </isotope> -->
-    <isotope>
+      <!-- </nuclide> -->
+    <nuclide>
       <id>95243</id>
       <comp>3.607</comp>
-    </isotope>
-    <isotope>
+    </nuclide>
+    <nuclide>
       <id>96244</id>
       <comp>0.431</comp>
-    </isotope>
-    <isotope>
+    </nuclide>
+    <nuclide>
       <id>96245</id>
       <comp>1.263</comp>
-    </isotope>
+    </nuclide>
   </recipe>
 
   <recipe>
     <name>mox_fuel_recipe</name>
     <basis>mass</basis>
-    <isotope>
+    <nuclide>
       <id>92234</id>
       <comp>0.0002</comp>
-    </isotope>
-    <isotope>
+    </nuclide>
+    <nuclide>
       <id>92235</id>
       <comp>0.0018</comp>
-    </isotope>
-    <isotope>
+    </nuclide>
+    <nuclide>
       <id>92236</id>
       <comp>0.01</comp>
-    </isotope>
-    <isotope>
+    </nuclide>
+    <nuclide>
       <id>92238</id><comp>0.8973</comp>
-    </isotope>
-    <isotope>
+    </nuclide>
+    <nuclide>
       <id>94238</id>
       <comp>0.0032</comp>
-    </isotope>
-    <isotope>
+    </nuclide>
+    <nuclide>
       <id>94239</id>
       <comp>0.0507</comp>
-    </isotope>
-    <isotope>
+    </nuclide>
+    <nuclide>
       <id>94240</id>
       <comp>0.0247</comp>
-    </isotope>
-    <isotope>
+    </nuclide>
+    <nuclide>
       <id>94241</id>
       <comp>0.0134</comp>
-    </isotope>
-    <isotope>
+    </nuclide>
+    <nuclide>
       <id>94242</id>
       <comp>0.0085</comp>
-    </isotope>    
-    <isotope>
+    </nuclide>
+    <nuclide>
       <id>08016</id>
       <comp>0.13</comp>
-    </isotope>
+    </nuclide>
   </recipe>
 
   <recipe>
     <name>mox_used_fuel_recipe</name>
     <basis>mass</basis>
-    <isotope>
+    <nuclide>
       <id>92235</id>
       <comp>0.01</comp>
-    </isotope>
-    <isotope>
+    </nuclide>
+    <nuclide>
       <id>92238</id>
       <comp>0.94</comp>
-    </isotope>
-    <isotope>
+    </nuclide>
+    <nuclide>
       <id>92236</id>
       <comp>0.03</comp>
-    </isotope>
-    <isotope>
+    </nuclide>
+    <nuclide>
       <id>08016</id>
       <comp>0.13</comp>
-    </isotope>
-    <isotope>
+    </nuclide>
+    <nuclide>
       <id>94239</id>
       <comp>0.02</comp>
-    </isotope>
+    </nuclide>
   </recipe>
 
 </simulation>
