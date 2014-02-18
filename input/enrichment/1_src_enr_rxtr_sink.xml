@@ -136,36 +136,36 @@
   <recipe>
     <name>natl_u</name>
     <basis>atom</basis>
-    <isotope>
+    <nuclide>
       <id>92235</id>
       <comp>0.7</comp>
-    </isotope>
-    <isotope>
+    </nuclide>
+    <nuclide>
       <id>92238</id>
       <comp>99.3</comp>
-    </isotope>
+    </nuclide>
   </recipe>
 
   <recipe>
     <name>fuel_recipe</name>
     <basis>atom</basis>
-    <isotope>
+    <nuclide>
       <id>92235</id>
       <comp>4.5</comp>
-    </isotope>
-    <isotope>
+    </nuclide>
+    <nuclide>
       <id>92238</id>
       <comp>95.5</comp>
-    </isotope>
+    </nuclide>
   </recipe>
 
   <recipe>
     <name>used_fuel_recipe</name>
     <basis>atom</basis>
-    <isotope>
+    <nuclide>
       <id>1001</id>
       <comp>100</comp>
-    </isotope>
+    </nuclide>
   </recipe>
 
 </simulation>

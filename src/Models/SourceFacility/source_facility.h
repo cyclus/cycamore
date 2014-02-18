@@ -47,7 +47,7 @@ class Context;
    produces -  double inventorysize: the maximum quantity of material to
    be held in the inventory
    -  double commodprice: the price of the output material PER UNIT
-   -  map<Isos, NumDens> outComp
+   -  map<Nucs, NumDens> outComp
 
    @section optionalparams Optional Parameters
    SourceFacility behavior may also be specified with the following
