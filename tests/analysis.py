@@ -97,7 +97,7 @@ def determ_analysis(niter=1000):
 
     return tbl_freq, col_freq
 
-def report(tbl_freq, col_freq, , fname="report"):
+def report(tbl_freq, col_freq, fname="report"):
     """
     Prints the results of determ_analysis to a file
 
