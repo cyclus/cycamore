@@ -136,12 +136,12 @@ def main():
     parser.add_argument('-n', '--niterations', type=int, help=niter, 
                         default=100)
 
-    report = 'the file to write the report to'
-    parser.add_argument('--report', help=report, default='report')
+    out = 'the file to write the report to'
+    parser.add_argument('--out', help=out, default='report')
     
     args = parser.parse_args()
     tbl_freq, col_freq = determ_analysis(args.niterations)
-    report(tbl_freq, col_freq, args.report)
+    report(tbl_freq, col_freq, args.out)
 
 if __name__ == "__main__":
     main()
