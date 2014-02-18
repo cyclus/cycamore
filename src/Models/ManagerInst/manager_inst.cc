@@ -8,8 +8,7 @@ namespace cycamore {
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 ManagerInst::ManagerInst(cyclus::Context* ctx)
-    : cyclus::InstModel(ctx),
-      cyclus::Model(ctx) {}
+    : cyclus::InstModel(ctx) {}
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 ManagerInst::~ManagerInst() {}

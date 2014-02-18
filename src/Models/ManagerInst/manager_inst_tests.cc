@@ -16,8 +16,7 @@
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 TestProducer::TestProducer(cyclus::Context* ctx)
-    : cyclus::FacilityModel(ctx),
-      cyclus::Model(ctx) {}
+    : cyclus::FacilityModel(ctx) {}
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 TestProducer::~TestProducer() {}

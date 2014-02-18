@@ -19,7 +19,6 @@ namespace cycamore {
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 SourceFacility::SourceFacility(cyclus::Context* ctx)
   : cyclus::FacilityModel(ctx),
-    cyclus::Model(ctx),
     out_commod_(""),
     recipe_name_(""),
     commod_price_(0),
