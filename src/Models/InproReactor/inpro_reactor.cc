@@ -22,7 +22,6 @@ std::map<Phase, std::string> InproReactor::phase_names_ = \
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 InproReactor::InproReactor(cyclus::Context* ctx)
     : cyclus::FacilityModel(ctx),
-      cyclus::Model(ctx),
       cycle_length_(1),
       refuel_delay_(0),
       batches_per_core_(1),

@@ -26,7 +26,6 @@ int EnrichmentFacility::entry_ = 0;
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 EnrichmentFacility::EnrichmentFacility(cyclus::Context* ctx)
   : cyclus::FacilityModel(ctx),
-    cyclus::Model(ctx),
     commodity_price_(0),
     tails_assay_(0),
     feed_assay_(0),
