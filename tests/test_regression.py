@@ -59,7 +59,7 @@ def test_regression(check_deterministic=False):
             if os.path.isfile(tmp_file):
                 try:
                     nondeterm = compare_nondeterm(sim_files[f], tmp_file)
-                except KeyError:
+                except Exception:
                     os.remove(tmp_file)
                     raise
                     
@@ -67,10 +67,10 @@ def test_regression(check_deterministic=False):
                     try:
                         determ = \
                             compare_determ(sim_files[f], tmp_file, verbose=True)
-                    except KeyError:
+                    except Exception:
                         os.remove(tmp_file)
                         raise
-
+                print("tmp file: ", tmp_file)
                 os.remove(tmp_file)
                 
                 assert_true(nondeterm)
