@@ -137,11 +137,11 @@
     <name>natl_u</name>
     <basis>atom</basis>
     <nuclide>
-      <id>92235</id>
+      <id>922350000</id>
       <comp>0.7</comp>
     </nuclide>
     <nuclide>
-      <id>92238</id>
+      <id>922380000</id>
       <comp>99.3</comp>
     </nuclide>
   </recipe>
@@ -150,11 +150,11 @@
     <name>fuel_recipe</name>
     <basis>atom</basis>
     <nuclide>
-      <id>92235</id>
+      <id>922350000</id>
       <comp>4.5</comp>
     </nuclide>
     <nuclide>
-      <id>92238</id>
+      <id>922380000</id>
       <comp>95.5</comp>
     </nuclide>
   </recipe>
@@ -163,7 +163,7 @@
     <name>used_fuel_recipe</name>
     <basis>atom</basis>
     <nuclide>
-      <id>1001</id>
+      <id>10010000</id>
       <comp>100</comp>
     </nuclide>
   </recipe>

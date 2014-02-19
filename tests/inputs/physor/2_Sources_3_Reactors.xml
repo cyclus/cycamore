@@ -226,11 +226,11 @@
     <name>natl_u</name>
     <basis>mass</basis>
     <nuclide>
-      <id>92235</id>
+      <id>922350000</id>
       <comp>0.711</comp>
     </nuclide>
     <nuclide>
-      <id>92238</id>
+      <id>922380000</id>
       <comp>99.289</comp>
     </nuclide>
   </recipe>
@@ -239,11 +239,11 @@
     <name>uox_fuel_recipe</name>
     <basis>mass</basis>
     <nuclide>
-      <id>92235</id>
+      <id>922350000</id>
       <comp>4.0</comp>
     </nuclide>
     <nuclide>
-      <id>92238</id>
+      <id>922380000</id>
       <comp>96.0</comp>
     </nuclide>
   </recipe>
@@ -252,43 +252,43 @@
     <name>uox_used_fuel_recipe</name>
     <basis>mass</basis>
     <nuclide>
-      <id>92235</id>
+      <id>922350000</id>
       <comp>156.729</comp>
     </nuclide>
     <nuclide>
-      <id>92236</id>
+      <id>922360000</id>
       <comp>102.103</comp>
     </nuclide>
     <nuclide>
-      <id>92238</id>
+      <id>922380000</id>
       <comp>18280.324</comp>
     </nuclide>
     <nuclide>
-      <id>93237</id>
+      <id>932370000</id>
       <comp>13.656</comp>
     </nuclide>
     <nuclide>
-      <id>94238</id>
+      <id>942380000</id>
       <comp>5.043</comp>
     </nuclide>
     <nuclide>
-      <id>94239</id>
+      <id>942390000</id>
       <comp>106.343</comp>
     </nuclide>
     <nuclide>
-      <id>94240</id>
+      <id>942400000</id>
       <comp>41.357</comp>
     </nuclide>
     <nuclide>
-      <id>94241</id>
+      <id>942410000</id>
       <comp>36.477</comp>
     </nuclide>
     <nuclide>
-      <id>94242</id>
+      <id>942420000</id>
       <comp>15.387</comp>
     </nuclide>
     <nuclide>
-      <id>95241</id>
+      <id>952410000</id>
       <comp>1.234</comp>
     </nuclide>
     <!-- <nuclide> -->
@@ -296,15 +296,15 @@
       <!--   <comp>0.03</comp> -->
       <!-- </nuclide> -->
     <nuclide>
-      <id>95243</id>
+      <id>952430000</id>
       <comp>3.607</comp>
     </nuclide>
     <nuclide>
-      <id>96244</id>
+      <id>962440000</id>
       <comp>0.431</comp>
     </nuclide>
     <nuclide>
-      <id>96245</id>
+      <id>962450000</id>
       <comp>1.263</comp>
     </nuclide>
   </recipe>
@@ -313,42 +313,42 @@
     <name>mox_fuel_recipe</name>
     <basis>mass</basis>
     <nuclide>
-      <id>92234</id>
+      <id>922340000</id>
       <comp>0.0002</comp>
     </nuclide>
     <nuclide>
-      <id>92235</id>
+      <id>922350000</id>
       <comp>0.0018</comp>
     </nuclide>
     <nuclide>
-      <id>92236</id>
+      <id>922360000</id>
       <comp>0.01</comp>
     </nuclide>
     <nuclide>
-      <id>92238</id><comp>0.8973</comp>
+      <id>922380000</id><comp>0.8973</comp>
     </nuclide>
     <nuclide>
-      <id>94238</id>
+      <id>942380000</id>
       <comp>0.0032</comp>
     </nuclide>
     <nuclide>
-      <id>94239</id>
+      <id>942390000</id>
       <comp>0.0507</comp>
     </nuclide>
     <nuclide>
-      <id>94240</id>
+      <id>942400000</id>
       <comp>0.0247</comp>
     </nuclide>
     <nuclide>
-      <id>94241</id>
+      <id>942410000</id>
       <comp>0.0134</comp>
     </nuclide>
     <nuclide>
-      <id>94242</id>
+      <id>942420000</id>
       <comp>0.0085</comp>
     </nuclide>
     <nuclide>
-      <id>08016</id>
+      <id>080160000</id>
       <comp>0.13</comp>
     </nuclide>
   </recipe>
@@ -357,23 +357,23 @@
     <name>mox_used_fuel_recipe</name>
     <basis>mass</basis>
     <nuclide>
-      <id>92235</id>
+      <id>922350000</id>
       <comp>0.01</comp>
     </nuclide>
     <nuclide>
-      <id>92238</id>
+      <id>922380000</id>
       <comp>0.94</comp>
     </nuclide>
     <nuclide>
-      <id>92236</id>
+      <id>922360000</id>
       <comp>0.03</comp>
     </nuclide>
     <nuclide>
-      <id>08016</id>
+      <id>080160000</id>
       <comp>0.13</comp>
     </nuclide>
     <nuclide>
-      <id>94239</id>
+      <id>942390000</id>
       <comp>0.02</comp>
     </nuclide>
   </recipe>
