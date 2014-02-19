@@ -111,11 +111,11 @@ reasonably for its lifetime. -->
     <name>natl_u</name>
     <basis>mass</basis>
     <nuclide>
-      <id>92235</id>
+      <id>922350000</id>
       <comp>0.711</comp>
     </nuclide>
     <nuclide>
-      <id>92238</id>
+      <id>922380000</id>
       <comp>99.289</comp>
     </nuclide>
   </recipe>
@@ -124,11 +124,11 @@ reasonably for its lifetime. -->
     <name>lwr_fuel_recipe</name>
     <basis>mass</basis>
     <nuclide>
-      <id>92235</id>
+      <id>922350000</id>
       <comp>4.0</comp>
     </nuclide>
     <nuclide>
-      <id>92238</id>
+      <id>922380000</id>
       <comp>96.0</comp>
     </nuclide>
   </recipe>
@@ -137,43 +137,43 @@ reasonably for its lifetime. -->
     <name>lwr_used_fuel_recipe</name>
     <basis>mass</basis>
     <nuclide>
-      <id>92235</id>
+      <id>922350000</id>
       <comp>156.729</comp>
     </nuclide>
     <nuclide>
-      <id>92236</id>
+      <id>922360000</id>
       <comp>102.103</comp>
     </nuclide>
     <nuclide>
-      <id>92238</id>
+      <id>922380000</id>
       <comp>18280.324</comp>
     </nuclide>
     <nuclide>
-      <id>93237</id>
+      <id>932370000</id>
       <comp>13.656</comp>
     </nuclide>
     <nuclide>
-      <id>94238</id>
+      <id>942380000</id>
       <comp>5.043</comp>
     </nuclide>
     <nuclide>
-      <id>94239</id>
+      <id>942390000</id>
       <comp>106.343</comp>
     </nuclide>
     <nuclide>
-      <id>94240</id>
+      <id>942400000</id>
       <comp>41.357</comp>
     </nuclide>
     <nuclide>
-      <id>94241</id>
+      <id>942410000</id>
       <comp>36.477</comp>
     </nuclide>
     <nuclide>
-      <id>94242</id>
+      <id>942420000</id>
       <comp>15.387</comp>
     </nuclide>
     <nuclide>
-      <id>95241</id>
+      <id>952410000</id>
       <comp>1.234</comp>
     </nuclide>
     <!-- <nuclide> -->
@@ -181,15 +181,15 @@ reasonably for its lifetime. -->
     <!--   <comp>0.03</comp> -->
     <!-- </nuclide> -->
     <nuclide>
-      <id>95243</id>
+      <id>952430000</id>
       <comp>3.607</comp>
     </nuclide>
     <nuclide>
-      <id>96244</id>
+      <id>962440000</id>
       <comp>0.431</comp>
     </nuclide>
     <nuclide>
-      <id>96245</id>
+      <id>962450000</id>
       <comp>1.263</comp>
     </nuclide>
   </recipe>
