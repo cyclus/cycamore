@@ -98,8 +98,8 @@ void BatchReactorTest::InitParameters() {
   recipe_changes[change_time].push_back(std::make_pair(in_c1, in_r2));
   
   cyclus::CompMap v;
-  v[92235] = 1;
-  v[92238] = 2;
+  v[922350000] = 1;
+  v[922380000] = 2;
   cyclus::Composition::Ptr recipe = cyclus::Composition::CreateFromAtom(v);
   tc_.get()->AddRecipe(in_r1, recipe);
   tc_.get()->AddRecipe(in_r2, recipe);

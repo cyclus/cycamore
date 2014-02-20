@@ -268,8 +268,8 @@ EnrichmentFacility::GetMatlBids(
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 bool EnrichmentFacility::ValidReq(const cyclus::Material::Ptr mat) {
   cyclus::MatQuery q(mat);
-  double u235 = q.atom_frac(92235);
-  double u238 = q.atom_frac(92238);
+  double u235 = q.atom_frac(922350000);
+  double u238 = q.atom_frac(922380000);
   return (u238 > 0 && u235 / (u235 + u238) > tails_assay());
 }
 
@@ -335,8 +335,8 @@ cyclus::Material::Ptr EnrichmentFacility::Request_() {
 cyclus::Material::Ptr EnrichmentFacility::Offer_(cyclus::Material::Ptr mat) {
   cyclus::MatQuery q(mat);
   cyclus::CompMap comp;
-  comp[92235] = q.atom_frac(92235);
-  comp[92238] = q.atom_frac(92238);
+  comp[922350000] = q.atom_frac(922350000);
+  comp[922380000] = q.atom_frac(922380000);
   return cyclus::Material::CreateUntracked(
       mat->quantity(), cyclus::Composition::CreateFromAtom(comp));
 }

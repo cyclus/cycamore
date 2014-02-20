@@ -44,8 +44,8 @@ void EnrichmentFacilityTest::InitParameters() {
   feed_assay = 0.0072;
 
   cyclus::CompMap v;
-  v[92235] = feed_assay;
-  v[92238] = 1 - feed_assay;
+  v[922350000] = feed_assay;
+  v[922380000] = 1 - feed_assay;
   recipe = cyclus::Composition::CreateFromAtom(v);
   ctx->AddRecipe(in_recipe, recipe);
 
@@ -83,8 +83,8 @@ cyclus::Material::Ptr EnrichmentFacilityTest::GetMat(double qty) {
 cyclus::Material::Ptr EnrichmentFacilityTest::GetReqMat(double qty,
                                                         double enr) {
   cyclus::CompMap v;
-  v[92235] = enr;
-  v[92238] = 1 - enr;
+  v[922350000] = enr;
+  v[922380000] = 1 - enr;
   return cyclus::Material::CreateUntracked(
       qty, cyclus::Composition::CreateFromAtom(v));
 }
@@ -231,16 +231,16 @@ TEST_F(EnrichmentFacilityTest, Offer) {
   double u238 = 2.0;
   cyclus::CompMap v;
   v[94239] = u234;
-  v[92235] = u235;
-  v[92238] = u238;
+  v[922350000] = u235;
+  v[922380000] = u238;
   Material::Ptr mat =
       DoOffer(Material::CreateUntracked(qty, Composition::CreateFromAtom(v)));
 
   MatQuery q(mat);
 
   EXPECT_DOUBLE_EQ(q.atom_frac(94239), 0.0);
-  EXPECT_DOUBLE_EQ(q.atom_frac(92235), u235 / (u235 + u238));
-  EXPECT_DOUBLE_EQ(q.atom_frac(92238), u238 / (u235 + u238));
+  EXPECT_DOUBLE_EQ(q.atom_frac(922350000), u235 / (u235 + u238));
+  EXPECT_DOUBLE_EQ(q.atom_frac(922380000), u238 / (u235 + u238));
   EXPECT_DOUBLE_EQ(mat->quantity(), qty);
 }
 
@@ -253,20 +253,20 @@ TEST_F(EnrichmentFacilityTest, ValidReq) {
   double qty = 4.5; // some magic number
   
   cyclus::CompMap v1;
-  v1[92235] = 1;
+  v1[922350000] = 1;
   Material::Ptr mat = Material::CreateUntracked(qty,
                                                 Composition::CreateFromAtom(v1));
   EXPECT_TRUE(!src_facility->ValidReq(mat)); // u238 = 0
   
   cyclus::CompMap v2;
-  v2[92235] = tails_assay;
-  v2[92238] = 1 - tails_assay;
+  v2[922350000] = tails_assay;
+  v2[922380000] = 1 - tails_assay;
   mat = Material::CreateUntracked(qty, Composition::CreateFromAtom(v2));
   EXPECT_TRUE(!src_facility->ValidReq(mat)); // u235 / (u235 + u238) <= tails_assay
 
   cyclus::CompMap v3;
-  v3[92235] = 1;
-  v3[92238] = 1;
+  v3[922350000] = 1;
+  v3[922380000] = 1;
   mat = Material::CreateUntracked(qty, Composition::CreateFromAtom(v3));
   EXPECT_TRUE(src_facility->ValidReq(mat)); // valid
 }
@@ -326,8 +326,8 @@ TEST_F(EnrichmentFacilityTest, Extract) {
   base->Absorb(base2);
   double product_assay = 0.05; // of 5 w/o enriched U
   cyclus::CompMap v;
-  v[92235] = product_assay;
-  v[92238] = 1 - product_assay;
+  v[922350000] = product_assay;
+  v[922380000] = 1 - product_assay;
   // target qty need not be = to request qty
   Material::Ptr target = cyclus::Material::CreateUntracked(
       5, cyclus::Composition::CreateFromMass(v)); 
@@ -451,8 +451,8 @@ TEST_F(EnrichmentFacilityTest, BidConverters) {
   double qty = 5; // 5 kg
   double product_assay = 0.05; // of 5 w/o enriched U
   CompMap v;
-  v[92235] = product_assay;
-  v[92238] = 1 - product_assay;
+  v[922350000] = product_assay;
+  v[922380000] = 1 - product_assay;
   v[94239] = 0.5; // 94239 shouldn't be taken into account
   Material::Ptr target = Material::CreateUntracked(
       qty, Composition::CreateFromMass(v)); 
@@ -484,8 +484,8 @@ TEST_F(EnrichmentFacilityTest, Enrich) {
   double qty = 5; // 5 kg
   double product_assay = 0.05; // of 5 w/o enriched U
   cyclus::CompMap v;
-  v[92235] = product_assay;
-  v[92238] = 1 - product_assay;
+  v[922350000] = product_assay;
+  v[922380000] = 1 - product_assay;
   // target qty need not be = to request qty
   Material::Ptr target = cyclus::Material::CreateUntracked(
       qty + 10, cyclus::Composition::CreateFromMass(v)); 
@@ -506,8 +506,8 @@ TEST_F(EnrichmentFacilityTest, Enrich) {
   
   MatQuery q(response);
   EXPECT_EQ(response->quantity(), qty);
-  EXPECT_EQ(q.mass_frac(92235), product_assay);
-  EXPECT_EQ(q.mass_frac(92238), 1 - product_assay);
+  EXPECT_EQ(q.mass_frac(922350000), product_assay);
+  EXPECT_EQ(q.mass_frac(922380000), 1 - product_assay);
 
   // test too much natu request
   DoAddMat(GetMat(natu_req - 1));
@@ -547,8 +547,8 @@ TEST_F(EnrichmentFacilityTest, Response) {
   double trade_qty = qty / 3;
   double product_assay = 0.05; // of 5 w/o enriched U
   cyclus::CompMap v;
-  v[92235] = product_assay;
-  v[92238] = 1 - product_assay;
+  v[922350000] = product_assay;
+  v[922380000] = 1 - product_assay;
   // target qty need not be = to request qty
   Material::Ptr target = cyclus::Material::CreateUntracked(
       qty + 10, cyclus::Composition::CreateFromMass(v)); 
