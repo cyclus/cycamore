@@ -363,11 +363,11 @@ std::string BatchReactor::str() {
   return ss.str();
 }
 
-// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-void BatchReactor::Deploy(cyclus::Model* parent) {
+//- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+void BatchReactor::Build(cyclus::Model* parent) {
   using cyclus::Material;
 
-  FacilityModel::Deploy(parent);
+  FacilityModel::Build(parent);
   phase(INITIAL);
   std::string rec = crctx_.in_recipe(*crctx_.in_commods().begin());
   spillover_ = Material::Create(this, 0.0, context()->GetRecipe(rec));

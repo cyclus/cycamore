@@ -69,7 +69,7 @@ class InproReactor : public cyclus::FacilityModel,
   /**
      perform module-specific tasks when entering the simulation
    */
-  virtual void Deploy(cyclus::Model* parent);
+  virtual void Build(cyclus::Model* parent);
   /* --- */
 
   /* --- Agent Members --- */  
