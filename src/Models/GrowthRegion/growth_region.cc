@@ -199,7 +199,7 @@ void GrowthRegion::OrderBuilds(cyclus::Commodity& commodity,
 
     for (int j = 0; j < order.number; j++) {
       LOG(cyclus::LEV_DEBUG2, "greg") << "Ordering build number: " << j + 1;
-      instcast->Build(modelcast->name());
+      context()->SchedBuild(instcast, modelcast->name());
     }
   }
 }

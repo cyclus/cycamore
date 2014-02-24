@@ -100,7 +100,7 @@ void DeployInst::Tick(int time) {
     int number = it->second;
     for (int i = 0; i < number; i++) {
       // build as many as required
-      Build(prototype);
+      context()->SchedBuild(this, prototype);
     }
   }
   InstModel::Tick(time);
