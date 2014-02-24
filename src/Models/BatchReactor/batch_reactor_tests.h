@@ -1,18 +1,17 @@
-#ifndef CYCAMORE_MODELS_BATCHREACTOR_BATCH_REACTOR_TESTS_
-#define CYCAMORE_MODELS_BATCHREACTOR_BATCH_REACTOR_TESTS_
+#ifndef CYCAMORE_MODELS_BATCHREACTOR_BATCH_REACTOR_TESTS_H_
+#define CYCAMORE_MODELS_BATCHREACTOR_BATCH_REACTOR_TESTS_H_
 
 #include <gtest/gtest.h>
 
 #include <map>
 #include <string>
 
-#include "test_context.h"
-
 #include "batch_reactor.h"
+#include "test_context.h"
 
 namespace cycamore {
 
-//- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 class BatchReactorTest : public ::testing::Test {
  protected:
   cyclus::TestContext tc_;
@@ -42,7 +41,7 @@ class BatchReactorTest : public ::testing::Test {
   std::map<int, std::vector< std::pair< std::string, double > > > pref_changes;
   std::map<int, std::vector< std::pair< std::string, std::string > > >
       recipe_changes;
-  
+
   virtual void SetUp();
   virtual void TearDown();
   void InitParameters();
@@ -53,7 +52,7 @@ class BatchReactorTest : public ::testing::Test {
 
   /// @brief tests the number of batches in each buffer
   void TestBuffs(int nreserves, int ncore, int nstorage);
-  
+
   /// @brief tests the BatchReactor's reserves_, by calling AddBatches_(mat),
   /// and confirming that there are n items and the last item has quantity qty
   void TestReserveBatches(cyclus::Material::Ptr mat, std::string commod,
@@ -62,12 +61,12 @@ class BatchReactorTest : public ::testing::Test {
   /// @brief calls MoveBatchIn_ and tests that the number of objects in core_ is
   /// n_core and the number of objects in reserves_ is n_reserves
   void TestBatchIn(int n_core, int n_reserves);
-      
+
   /// @brief calls MoveBatchOut_ and tests that the number of objects in core_ is
   /// n_core and the number of objects in storage_ is n_storage
   void TestBatchOut(int n_core, int n_storage);
 };
 
-} // namespace cycamore
+}  // namespace cycamore
 
-#endif // CYCAMORE_MODELS_BATCHREACTOR_BATCH_REACTOR_TESTS_
+#endif  // CYCAMORE_MODELS_BATCHREACTOR_BATCH_REACTOR_TESTS_H_

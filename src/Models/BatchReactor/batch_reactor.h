@@ -20,10 +20,10 @@
 // forward declarations
 namespace cycamore {
 class BatchReactor;
-} // namespace cycamore
-namespace cyclus {  
+}  // namespace cycamore
+namespace cyclus {
 class Context;
-} // namespace cyclus
+}  // namespace cyclus
 
 namespace cycamore {
 
@@ -40,11 +40,11 @@ namespace cycamore {
 /// The Reactor can manage multiple input-output commodity pairs, and keeps
 /// track of the pair that each batch belongs to. Batches move through the
 /// system independently of their input/output commodity types, but when batches
-/// reach the storage area, they are offered as bids depedent on their output
+/// reach the storage area, they are offered as bids dependent on their output
 /// commodity type.
 ///
 /// @section params Parameters
-/// A BatchReactor has the following tuneable parameters:
+/// A BatchReactor has the following tunable parameters:
 ///   #. batch_size : the size of batches
 ///   #. n_batches : the number of batches that constitute a full core
 ///   #. process_time : the number of timesteps a batch process takes
@@ -55,20 +55,20 @@ namespace cycamore {
 ///   order fuel
 ///   #. refuel_time : the number of timesteps required to reload the core after
 ///   a process has finished
-/// 
+///
 /// The BatchReactor also maintains a cyclus::CommodityRecipeContext, which
 /// allows it to track incommodity-inrecipe/outcommodity-outrecipe groupings.
-/// 
-/// @section operation Operation  
+///
+/// @section operation Operation
 /// After a BatchReactor enters the simulation, it will begin processing its
 /// first batch load on the Tick after its core has been filled.
-/// 
+///
 /// It will maintain its "processing" state for process_time() time steps,
 /// including the timestep on which it began. It will unload n_load() batches
 /// from its core on the Tock of that time step. For example, if a reactor
 /// begins its process at time 1 and has a process_time equal to 10, it will
 /// unload batches on the Tock of time step 10.
-/// 
+///
 /// Starting at the next time step, the reactor will attempt to refuel itself
 /// from whatever batches exist in its reserves container (i.e, already-ordered
 /// fuel). Assuming its core buffer has been refueled, it will wait reload_time
@@ -76,9 +76,9 @@ namespace cycamore {
 /// again. Using the previous example, assume that the refuel_time is equal to
 /// two and that the core buffer has been refueled appropriately. The refueling
 /// "phase" will begin on time step 11, and will end on the Tock of time step
-/// 12. The process will begin again on time step 13 (analagous to its state
+/// 12. The process will begin again on time step 13 (analogous to its state
 /// originally at time step 1).
-/// 
+///
 /// @section end End of Life
 /// If the current time step is equivalent to the facility's lifetime, the
 /// reactor will move all material in its core to its storage containers.
@@ -95,7 +95,7 @@ namespace cycamore {
 ///
 /// A special case exists when the reactor first enters the simulation, where it
 /// will order as much fuel as is needed to fill its full core.
-/// 
+///
 /// @section bids Bids
 /// A BatchReactor will bid on any request for any of its out_commodities, as
 /// long as there is a positive quantity of material in its storage area
@@ -110,28 +110,29 @@ namespace cycamore {
 ///
 /// @warning preference time changing is based on *full simulation time*, not
 /// relative time
-/// @warning the reactor's commodity context *can not* current remove resources
-/// reliably because of the implementation of ResourceBuff::PopQty()'s
-/// implementation. Resource removal from the context requires pointer equality
+/// @warning the reactor's commodity context *can not* currently remove
+/// resources reliably because of ResourceBuff::PopQty()'s implementation.
+/// Resource removal from the context requires pointer equality
 /// in order to remove material, and PopQty will split resources, making new
 /// pointers.
 /// @warning the reactor uses a hackish way to input materials into its
 /// reserves. See the AddBatches_ member function.
-class BatchReactor : public cyclus::FacilityModel,
+class BatchReactor
+    : public cyclus::FacilityModel,
       public cyclus::CommodityProducer {
  public:
   /// @brief defines all possible phases this facility can be in
   enum Phase {
-    INITIAL, ///< The initial phase, after the facility is built but before it is
-             /// filled
-    PROCESS, ///< The processing phase
-    WAITING, ///< The waiting phase, while the factility is waiting for fuel
-             /// between processes
+    INITIAL,  ///< The initial phase, after the facility is built but before it is
+              /// filled
+    PROCESS,  ///< The processing phase
+    WAITING,  ///< The waiting phase, while the facility is waiting for fuel
+              /// between processes
   };
 
   /// @brief a struct for initial conditions
   struct InitCond {
-   InitCond() : reserves(false), core(false), storage(false) {};
+    InitCond() : reserves(false), core(false), storage(false) {}
 
     void AddReserves(int n, std::string rec, std::string commod) {
       reserves = true;
@@ -169,15 +170,15 @@ class BatchReactor : public cyclus::FacilityModel,
     std::string storage_rec;
     std::string storage_commod;
   };
-  
+
   /* --- Module Members --- */
   /// @param ctx the cyclus context for access to simulation-wide parameters
   BatchReactor(cyclus::Context* ctx);
-  
+
   virtual ~BatchReactor();
-  
+
   virtual cyclus::Model* Clone();
-  
+
   virtual std::string schema();
 
   /// Initialize members related to derived module class
@@ -187,27 +188,27 @@ class BatchReactor : public cyclus::FacilityModel,
 
   /// initialize members from a different model
   void InitFrom(BatchReactor* m);
-  
+
   /// Print information about this model
   virtual std::string str();
   /* --- */
 
   /* --- Facility Members --- */
-  /// perform module-specific tasks when entering the simulation 
+  /// perform module-specific tasks when entering the simulation
   virtual void Deploy(cyclus::Model* parent = NULL);
   /* --- */
 
-  /* --- Agent Members --- */  
+  /* --- Agent Members --- */
   /// The Tick function specific to the BatchReactor.
   /// @param time the time of the tick
   virtual void Tick(int time);
-  
+
   /// The Tick function specific to the BatchReactor.
   /// @param time the time of the tock
   virtual void Tock(int time);
-  
+
   /// @brief The EnrichmentFacility request Materials of its given
-  /// commodity. 
+  /// commodity.
   virtual std::set<cyclus::RequestPortfolio<cyclus::Material>::Ptr>
       GetMatlRequests();
 
@@ -216,14 +217,14 @@ class BatchReactor : public cyclus::FacilityModel,
   virtual void AcceptMatlTrades(
       const std::vector< std::pair<cyclus::Trade<cyclus::Material>,
       cyclus::Material::Ptr> >& responses);
-  
+
   /// @brief Responds to each request for this facility's commodity.  If a given
   /// request is more than this facility's inventory or SWU capacity, it will
   /// offer its minimum of its capacities.
   virtual std::set<cyclus::BidPortfolio<cyclus::Material>::Ptr>
       GetMatlBids(const cyclus::CommodMap<cyclus::Material>::type&
                   commod_requests);
-  
+
   /// @brief respond to each trade with a material enriched to the appropriate
   /// level given this facility's inventory
   ///
@@ -238,68 +239,116 @@ class BatchReactor : public cyclus::FacilityModel,
   /* --- BatchReactor Members --- */
   /// @return the total number of batches in storage
   int StorageCount();
-  
+
   /// @brief the processing time required for a full batch process before
   /// refueling
-  inline void process_time(int t) { process_time_ = t; }
-  inline int process_time() const { return process_time_; }
-  
+  inline void process_time(int t) {
+    process_time_ = t;
+  }
+  inline int process_time() const {
+    return process_time_;
+  }
+
   /// @brief the time it takes to refuel
-  inline void refuel_time(int t) { refuel_time_ = t; }
-  inline int refuel_time() const { return refuel_time_; }
-  
+  inline void refuel_time(int t) {
+    refuel_time_ = t;
+  }
+  inline int refuel_time() const {
+    return refuel_time_;
+  }
+
   /// @brief the amount of time an order should be placed for new fuel before a
   /// process is finished
-  inline void preorder_time(int t) { preorder_time_ = t; }
-  inline int preorder_time() const { return preorder_time_; }
+  inline void preorder_time(int t) {
+    preorder_time_ = t;
+  }
+  inline int preorder_time() const {
+    return preorder_time_;
+  }
 
   /// @brief the starting time of the last (current) process
-  inline void start_time(int t) { start_time_ = t; }
-  inline int start_time() const { return start_time_; }
+  inline void start_time(int t) {
+    start_time_ = t;
+  }
+  inline int start_time() const {
+    return start_time_;
+  }
 
   /// @brief the ending time of the last (current) process
   /// @warning the - 1 is to ensure that a 1 period process time that begins on
   /// the tick ends on the tock
-  inline int end_time() const { return start_time() + process_time() - 1; }
+  inline int end_time() const {
+    return start_time() + process_time() - 1;
+  }
 
   /// @brief the beginning time for the next phase, set internally
-  inline int to_begin_time() const { return to_begin_time_; }
+  inline int to_begin_time() const {
+    return to_begin_time_;
+  }
 
   /// @brief the time orders should be taking place for the next refueling
-  inline int order_time() const { return end_time() - preorder_time(); }
+  inline int order_time() const {
+    return end_time() - preorder_time();
+  }
 
   /// @brief the number of batches in a full reactor
-  inline void n_batches(int n) { n_batches_ = n; }
-  inline int n_batches() const { return n_batches_; }
+  inline void n_batches(int n) {
+    n_batches_ = n;
+  }
+  inline int n_batches() const {
+    return n_batches_;
+  }
 
   /// @brief the number of batches in reactor refuel loading/unloading
-  inline void n_load(int n) { n_load_ = n; }
-  inline int n_load() const { return n_load_; }
+  inline void n_load(int n) {
+    n_load_ = n;
+  }
+  inline int n_load() const {
+    return n_load_;
+  }
 
   /// @brief the preferred number of fresh fuel batches to keep in reserve
-  inline void n_reserves(int n) { n_reserves_ = n; }
-  inline int n_reserves() const { return n_reserves_; }
+  inline void n_reserves(int n) {
+    n_reserves_ = n;
+  }
+  inline int n_reserves() const {
+    return n_reserves_;
+  }
 
   /// @brief the number of batches currently in the reactor
-  inline int n_core() const { return core_.count(); }
+  inline int n_core() const {
+    return core_.count();
+  }
 
-  /// @brief the size of a batch 
-  inline void batch_size(double size) { batch_size_ = size; }
-  inline double batch_size() { return batch_size_; }
+  /// @brief the size of a batch
+  inline void batch_size(double size) {
+    batch_size_ = size;
+  }
+  inline double batch_size() {
+    return batch_size_;
+  }
 
   /// @brief this facility's commodity-recipe context
   inline void crctx(const cyclus::CommodityRecipeContext& crctx) {
     crctx_ = crctx;
   }
-  inline cyclus::CommodityRecipeContext crctx() const { return crctx_; }
+  inline cyclus::CommodityRecipeContext crctx() const {
+    return crctx_;
+  }
 
   /// @brief this facility's initial conditions
-  inline void ics(const InitCond& ics) { ics_ = ics; }
-  inline InitCond ics() const { return ics_; }
-  
+  inline void ics(const InitCond& ics) {
+    ics_ = ics;
+  }
+  inline InitCond ics() const {
+    return ics_;
+  }
+
   /// @brief the current phase
   void phase(Phase p);
-  inline Phase phase() const { return phase_; }
+  inline Phase phase() const {
+    return phase_;
+  }
 
   /// @brief this facility's preference for input commodities
   inline void commod_prefs(const std::map<std::string, double>& prefs) {
@@ -318,12 +367,11 @@ class BatchReactor : public cyclus::FacilityModel,
       const cyclus::CommodMap<cyclus::Material>::type& commod_requests,
       std::string commod,
       cyclus::ResourceBuff* buffer);
-  
-  /// @brief returns a qty of material from the a buffer
-  cyclus::Material::Ptr TradeResponse_(
-      double qty,
-      cyclus::ResourceBuff* buffer);
-  
+
+  /// @brief returns a qty of material from a buffer
+  cyclus::Material::Ptr TradeResponse_(double qty,
+                                       cyclus::ResourceBuff* buffer);
+
   /// @brief a cyclus::ResourceBuff for material while they are inside the core,
   /// with all materials guaranteed to be of batch_size_
   cyclus::ResourceBuff core_;
@@ -341,7 +389,7 @@ class BatchReactor : public cyclus::FacilityModel,
 
   /// @brief moves a batch from reserves_ to core_
   void MoveBatchIn_();
-  
+
   /// @brief construct a request portfolio for an order of a given size
   cyclus::RequestPortfolio<cyclus::Material>::Ptr GetOrder_(double size);
 
@@ -352,10 +400,10 @@ class BatchReactor : public cyclus::FacilityModel,
   /// returned to reserves_. If more material remains, chunks of batch_size_ are
   /// removed and added to reserves_. The final chunk may be <= batch_size_.
   void AddBatches_(std::string commod, cyclus::Material::Ptr mat);
-  
+
   /// @brief adds phase names to phase_names_ map
   void SetUpPhaseNames_();
-  
+
   static std::map<Phase, std::string> phase_names_;
   int process_time_;
   int preorder_time_;
@@ -367,26 +415,26 @@ class BatchReactor : public cyclus::FacilityModel,
   int n_reserves_;
   double batch_size_;
   Phase phase_;
-  
+
   InitCond ics_;
 
   cyclus::CommodityRecipeContext crctx_;
-  
+
   /// @warning as is, the int key is **simulation time**, i.e., context()->time
-  /// == key. this should be fixed for future use!
+  /// == key. This should be fixed for future use!
   std::map<int, std::vector< std::pair< std::string, std::string > > >
       recipe_changes_;
-  
+
   /// @brief preferences for each input commodity
   std::map<std::string, double> commod_prefs_;
 
   /// @warning as is, the int key is **simulation time**, i.e., context()->time
-  /// == key. this should be fixed for future use!
+  /// == key. This should be fixed for future use!
   std::map<int, std::vector< std::pair< std::string, double > > > pref_changes_;
-  
+
   /// @brief allows only batches to enter reserves_
   cyclus::Material::Ptr spillover_;
-  
+
   /// @brief a cyclus::ResourceBuff for material before they enter the core,
   /// with all materials guaranteed to be of batch_size_
   cyclus::ResourceBuff reserves_;
@@ -395,6 +443,6 @@ class BatchReactor : public cyclus::FacilityModel,
   /* --- */
 };
 
-} // namespace cycamore
+}  // namespace cycamore
 
-#endif // CYCAMORE_MODELS_BATCHREACTOR_BATCH_REACTOR_H_
+#endif  // CYCAMORE_MODELS_BATCHREACTOR_BATCH_REACTOR_H_
