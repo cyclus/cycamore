@@ -219,11 +219,11 @@
     <basis>mass</basis>
     <nuclide>
       <id>922350000</id>
-      <frac>0.711</frac>
+      <comp>0.711</comp>
     </nuclide>
     <nuclide>
       <id>922380000</id>
-      <frac>99.289</frac>
+      <comp>99.289</comp>
     </nuclide>
   </recipe>
 
@@ -232,11 +232,11 @@
     <basis>mass</basis>
     <nuclide>
       <id>922350000</id>
-      <frac>4.0</frac>
+      <comp>4.0</comp>
     </nuclide>
     <nuclide>
       <id>922380000</id>
-      <frac>96.0</frac>
+      <comp>96.0</comp>
     </nuclide>
   </recipe>
 
@@ -245,55 +245,55 @@
     <basis>mass</basis>
     <nuclide>
       <id>922350000</id>
-      <frac>156.729</frac>
+      <comp>156.729</comp>
     </nuclide>
     <nuclide>
       <id>922360000</id>
-      <frac>102.103</frac>
+      <comp>102.103</comp>
     </nuclide>
     <nuclide>
       <id>922380000</id>
-      <frac>18280.324</frac>
+      <comp>18280.324</comp>
     </nuclide>
     <nuclide>
       <id>932370000</id>
-      <frac>13.656</frac>
+      <comp>13.656</comp>
     </nuclide>
     <nuclide>
       <id>942380000</id>
-      <frac>5.043</frac>
+      <comp>5.043</comp>
     </nuclide>
     <nuclide>
       <id>942390000</id>
-      <frac>106.343</frac>
+      <comp>106.343</comp>
     </nuclide>
     <nuclide>
       <id>942400000</id>
-      <frac>41.357</frac>
+      <comp>41.357</comp>
     </nuclide>
     <nuclide>
       <id>942410000</id>
-      <frac>36.477</frac>
+      <comp>36.477</comp>
     </nuclide>
     <nuclide>
       <id>942420000</id>
-      <frac>15.387</frac>
+      <comp>15.387</comp>
     </nuclide>
     <nuclide>
       <id>952410000</id>
-      <frac>1.234</frac>
+      <comp>1.234</comp>
     </nuclide>
     <nuclide>
       <id>952430000</id>
-      <frac>3.607</frac>
+      <comp>3.607</comp>
     </nuclide>
     <nuclide>
       <id>962440000</id>
-      <frac>0.431</frac>
+      <comp>0.431</comp>
     </nuclide>
     <nuclide>
       <id>962450000</id>
-      <frac>1.263</frac>
+      <comp>1.263</comp>
     </nuclide>
   </recipe>
 
@@ -302,55 +302,55 @@
     <basis>mass</basis>
     <nuclide>
       <id>922350000</id>
-      <frac>330.478</frac>
+      <comp>330.478</comp>
     </nuclide>
     <nuclide>
       <id>922360000</id>
-      <frac>98.944</frac>
+      <comp>98.944</comp>
     </nuclide>
     <nuclide>
       <id>922380000</id>
-      <frac>137171.079</frac>
+      <comp>137171.079</comp>
     </nuclide>
     <nuclide>
       <id>932370000</id>
-      <frac>3.604</frac>
+      <comp>3.604</comp>
     </nuclide>
     <nuclide>
       <id>942380000</id>
-      <frac>0.459</frac>
+      <comp>0.459</comp>
     </nuclide>
     <nuclide>
       <id>942390000</id>
-      <frac>369.87</frac>
+      <comp>369.87</comp>
     </nuclide>
     <nuclide>
       <id>942400000</id>
-      <frac>133.16</frac>
+      <comp>133.16</comp>
     </nuclide>
     <nuclide>
       <id>942410000</id>
-      <frac>25.227</frac>
+      <comp>25.227</comp>
     </nuclide>
     <nuclide>
       <id>942420000</id>
-      <frac>5.468</frac>
+      <comp>5.468</comp>
     </nuclide>
     <nuclide>
       <id>952410000</id>
-      <frac>0.195</frac>
+      <comp>0.195</comp>
     </nuclide>
     <nuclide>
       <id>952430000</id>
-      <frac>0.167</frac>
+      <comp>0.167</comp>
     </nuclide>
     <nuclide>
       <id>962440000</id>
-      <frac>0.07</frac>
+      <comp>0.07</comp>
     </nuclide>
     <nuclide>
       <id>962450000</id>
-      <frac>0.014</frac>
+      <comp>0.014</comp>
     </nuclide>
   </recipe>
 

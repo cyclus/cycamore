@@ -90,6 +90,8 @@ class GrowthRegion : public cyclus::RegionModel {
 
   void InitFrom(GrowthRegion* m);
 
+  virtual void BuildNotify(Model* m);
+
  protected:
   /* --- GrowthRegion Members --- */
   /// a container of all commodities managed by region
@@ -100,15 +102,8 @@ class GrowthRegion : public cyclus::RegionModel {
   /// manager for building things
   cyclus::BuildingManager buildmanager_;
 
-  /// manager for Supply and emand
+  /// manager for Supply and demand
   cyclus::SupplyDemandManager sdmanager_;
-
-  /**
-     register a commodity for which production capacity is being
-     demanded region
-     @param commodity a reference to the commodity
-   */
-  void RegisterCommodity(cyclus::Commodity& commodity);
 
   /**
      register a child as a commodity producer manager if it is one

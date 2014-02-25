@@ -105,16 +105,17 @@ void GrowthRegion::AddCommodityDemand(cyclus::Commodity commod) {
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 void GrowthRegion::Build(cyclus::Model* parent) {
   cyclus::RegionModel::Build(parent);
-  for (int i = 0; i != children().size(); i++) {
-    cyclus::Model* child = children().at(i);
-    RegisterCommodityProducerManager(child);
-    RegisterBuilder(child);
-  }
 
   std::set<cyclus::Commodity>::iterator it;
   for (it = commodities_.begin(); it != commodities_.end(); ++it) {
     AddCommodityDemand(*it);
   }
+}
+
+//- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+void GrowthRegion::BuildNotify(Model* m) {
+    RegisterCommodityProducerManager(m);
+    RegisterBuilder(m);
 }
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -140,16 +141,6 @@ void GrowthRegion::Tick(int time) {
     }
   }
   cyclus::RegionModel::Tick(time);
-}
-
-//- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-void GrowthRegion::RegisterCommodity(cyclus::Commodity& commodity) {
-  if (commodities_.find(commodity) != commodities_.end()) {
-    throw cyclus::KeyError("A GrowthRegion ("
-                           + name() + " is trying to register a commodity twice.");
-  } else {
-    commodities_.insert(commodity);
-  }
 }
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
