@@ -180,20 +180,6 @@
     <availableprototype>LWR_Reactor</availableprototype>
     <availableprototype>HWR_Reactor</availableprototype>
     <availableprototype>Sink</availableprototype>
-    <initialfacilitylist>
-      <entry>
-        <prototype>Source</prototype>
-        <number>1</number>
-      </entry>
-      <entry>
-        <prototype>Enrichment</prototype>
-        <number>1</number>
-      </entry>
-      <entry>
-        <prototype>Sink</prototype>
-        <number>1</number>
-      </entry>
-    </initialfacilitylist>
     <model>
       <ManagerInst/>
     </model>
@@ -210,16 +196,34 @@
     <parent>region1</parent>
   </agent>
 
+  <agent>
+    <name>source</name>
+    <prototype>Sink</prototype>
+    <parent>inst1</parent>
+  </agent>
+
+  <agent>
+    <name>enrichment</name>
+    <prototype>Enrichment</prototype>
+    <parent>inst1</parent>
+  </agent>
+
+  <agent>
+    <name>sink</name>
+    <prototype>Source</prototype>
+    <parent>inst1</parent>
+  </agent>
+
   <recipe>
     <name>natl_u</name>
     <basis>mass</basis>
     <nuclide>
       <id>922350000</id>
-      <comp>0.711</comp>
+      <frac>0.711</frac>
     </nuclide>
     <nuclide>
       <id>922380000</id>
-      <comp>99.289</comp>
+      <frac>99.289</frac>
     </nuclide>
   </recipe>
 
@@ -228,11 +232,11 @@
     <basis>mass</basis>
     <nuclide>
       <id>922350000</id>
-      <comp>4.0</comp>
+      <frac>4.0</frac>
     </nuclide>
     <nuclide>
       <id>922380000</id>
-      <comp>96.0</comp>
+      <frac>96.0</frac>
     </nuclide>
   </recipe>
 
@@ -241,59 +245,55 @@
     <basis>mass</basis>
     <nuclide>
       <id>922350000</id>
-      <comp>156.729</comp>
+      <frac>156.729</frac>
     </nuclide>
     <nuclide>
       <id>922360000</id>
-      <comp>102.103</comp>
+      <frac>102.103</frac>
     </nuclide>
     <nuclide>
       <id>922380000</id>
-      <comp>18280.324</comp>
+      <frac>18280.324</frac>
     </nuclide>
     <nuclide>
       <id>932370000</id>
-      <comp>13.656</comp>
+      <frac>13.656</frac>
     </nuclide>
     <nuclide>
       <id>942380000</id>
-      <comp>5.043</comp>
+      <frac>5.043</frac>
     </nuclide>
     <nuclide>
       <id>942390000</id>
-      <comp>106.343</comp>
+      <frac>106.343</frac>
     </nuclide>
     <nuclide>
       <id>942400000</id>
-      <comp>41.357</comp>
+      <frac>41.357</frac>
     </nuclide>
     <nuclide>
       <id>942410000</id>
-      <comp>36.477</comp>
+      <frac>36.477</frac>
     </nuclide>
     <nuclide>
       <id>942420000</id>
-      <comp>15.387</comp>
+      <frac>15.387</frac>
     </nuclide>
     <nuclide>
       <id>952410000</id>
-      <comp>1.234</comp>
+      <frac>1.234</frac>
     </nuclide>
-    <!-- <nuclide> -->
-    <!--   <id>95242m</id> -->
-    <!--   <comp>0.03</comp> -->
-    <!-- </nuclide> -->
     <nuclide>
       <id>952430000</id>
-      <comp>3.607</comp>
+      <frac>3.607</frac>
     </nuclide>
     <nuclide>
       <id>962440000</id>
-      <comp>0.431</comp>
+      <frac>0.431</frac>
     </nuclide>
     <nuclide>
       <id>962450000</id>
-      <comp>1.263</comp>
+      <frac>1.263</frac>
     </nuclide>
   </recipe>
 
@@ -302,59 +302,55 @@
     <basis>mass</basis>
     <nuclide>
       <id>922350000</id>
-      <comp>330.478</comp>
+      <frac>330.478</frac>
     </nuclide>
     <nuclide>
       <id>922360000</id>
-      <comp>98.944</comp>
+      <frac>98.944</frac>
     </nuclide>
     <nuclide>
       <id>922380000</id>
-      <comp>137171.079</comp>
+      <frac>137171.079</frac>
     </nuclide>
     <nuclide>
       <id>932370000</id>
-      <comp>3.604</comp>
+      <frac>3.604</frac>
     </nuclide>
     <nuclide>
       <id>942380000</id>
-      <comp>0.459</comp>
+      <frac>0.459</frac>
     </nuclide>
     <nuclide>
       <id>942390000</id>
-      <comp>369.87</comp>
+      <frac>369.87</frac>
     </nuclide>
     <nuclide>
       <id>942400000</id>
-      <comp>133.16</comp>
+      <frac>133.16</frac>
     </nuclide>
     <nuclide>
       <id>942410000</id>
-      <comp>25.227</comp>
+      <frac>25.227</frac>
     </nuclide>
     <nuclide>
       <id>942420000</id>
-      <comp>5.468</comp>
+      <frac>5.468</frac>
     </nuclide>
     <nuclide>
       <id>952410000</id>
-      <comp>0.195</comp>
+      <frac>0.195</frac>
     </nuclide>
-    <!-- <nuclide> -->
-    <!--   <id>95242m</id> -->
-    <!--   <comp>0.00</comp> -->
-    <!-- </nuclide> -->
     <nuclide>
       <id>952430000</id>
-      <comp>0.167</comp>
+      <frac>0.167</frac>
     </nuclide>
     <nuclide>
       <id>962440000</id>
-      <comp>0.07</comp>
+      <frac>0.07</frac>
     </nuclide>
     <nuclide>
       <id>962450000</id>
-      <comp>0.014</comp>
+      <frac>0.014</frac>
     </nuclide>
   </recipe>
 
