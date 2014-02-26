@@ -1,11 +1,10 @@
 // null_inst_tests.cc
 #include <gtest/gtest.h>
 
-#include "null_inst.h"
-
 #include "context.h"
 #include "inst_model_tests.h"
 #include "model_tests.h"
+#include "null_inst.h"
 
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 class NullInstTest : public ::testing::Test {
