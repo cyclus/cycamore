@@ -20,11 +20,12 @@ def collect(args):
     rtn = subprocess.Popen(
         ["python", "-c", 
          "import test_regression as t; " +
-         "t.setup(); t.test_regression(check_deterministic=True)"], 
+         "t.setup(); obj = t.TestRegression();" +
+         "obj.test_regression(check_deterministic=True)"], 
         stdout=subprocess.PIPE, stderr=subprocess.PIPE)
     out, err = rtn.communicate()
-    #print(out, err)
-    
+    #print out, err
+
     for line in out.split("\n"):
         line = line.strip()
         if diff_tbl in line.strip():
@@ -80,6 +81,8 @@ def determ_analysis(niter=1000):
         print('{0:.1%} of jobs left to start.'.format(
                 jobs._number_left / niter))
         time.sleep(5.0)
+    if not jobs.successful():
+        raise ValueError("At least one job failed.")
     pool.close()
     pool.join()
     print("Finished iterations.")

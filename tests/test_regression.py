@@ -6,6 +6,8 @@ import hashlib
 import urllib
 import uuid
 from nose.tools import assert_true
+from nose import with_setup
+
 from cyclus_tools import run_cyclus, compare_determ, compare_nondeterm
 
 sim_files = {}
@@ -37,42 +39,51 @@ def setup():
             raise RuntimeError("They tooks our data!!! All our rackspace are belong to them.")
         sim_files[r["input-file"]] = fpath
 
-def test_regression(check_deterministic=False):
-    """Test for all inputs in sim_files. Checks if reference and current cyclus 
-    output is the same.
+class TestRegression(object):
+    def __init__(self):
+        self.in_dir_ = "../input"
+        self.tmp_files_ = {}        
+        for root, dirs, files in os.walk(self.in_dir_):
+            for f in files:
+                self.tmp_files_[f] = str(uuid.uuid4()) + ".h5"
 
-    Parameters
-    ----------
-    check_deterministic : bool
-                        If True, also test determinisitc equality of simulations
-
-    WARNING: the tests require cyclus executable to be included in PATH
-    """    
-    for root, dirs, files in os.walk("../input"):
-        for f in files:
-            if f not in sim_files:
-                continue
-            
-            tmp_file = str(uuid.uuid4()) + ".h5"
-            run_cyclus("cyclus", os.getcwd(), os.path.join(root, f), tmp_file)
-        
-            if os.path.isfile(tmp_file):
-                try:
-                    nondeterm = compare_nondeterm(sim_files[f], tmp_file)
-                except Exception:
-                    os.remove(tmp_file)
-                    raise
-                    
-                if check_deterministic:
-                    try:
-                        determ = \
-                            compare_determ(sim_files[f], tmp_file, verbose=True)
-                    except Exception:
-                        os.remove(tmp_file)
-                        raise
-                print("tmp file: ", tmp_file)
-                os.remove(tmp_file)
+    def __del__(self):
+        for inf, outf in self.tmp_files_.items():
+            if os.path.isfile(outf):
+                os.remove(outf)
                 
-                assert_true(nondeterm)
-                if check_deterministic:
-                    assert_true(determ) 
+    def tearDown(self):
+        for inf, outf in self.tmp_files_.items():
+            if os.path.isfile(outf):
+                os.remove(outf)
+
+
+    def test_regression(self, check_deterministic=False):
+        """Test for all inputs in sim_files. Checks if reference and current cyclus 
+        output is the same.
+
+        Parameters
+        ----------
+        check_deterministic : bool
+            If True, also test determinisitc equality of simulations
+        
+        WARNING: the tests require cyclus executable to be included in PATH
+        """
+        for root, dirs, files in os.walk(self.in_dir_):
+            for f in files:
+                if f not in sim_files:
+                    continue
+                tmp_file = self.tmp_files_[f]
+                run_cyclus("cyclus", os.getcwd(), os.path.join(root, f), 
+                           tmp_file)
+
+                if os.path.isfile(tmp_file):
+                    if check_deterministic:
+                        determ = compare_determ(sim_files[f], tmp_file, 
+                                                verbose=True)
+                        assert_true(determ)
+                    else:         
+                        nondeterm = compare_nondeterm(sim_files[f], tmp_file)
+                        assert_true(nondeterm)
+                    
+           
