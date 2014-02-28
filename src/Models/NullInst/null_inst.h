@@ -1,6 +1,6 @@
 // null_inst.h
-#ifndef _NULLINST_H
-#define _NULLINST_H
+#ifndef CYCAMORE_SRC_NULL_INST_H_
+#define CYCAMORE_SRC_NULL_INST_H_
 
 #include "inst_model.h"
 
@@ -11,7 +11,7 @@ namespace cycamore {
 
    @section introduction Introduction
    The NullInst is an institution type in Cyclus which performs the
-   most basic instutituion functionality as defined by the InstModel
+   most basic institution functionality as defined by the InstModel
    class.
 
    @section detailedBehavior Detailed Behavior
@@ -51,7 +51,7 @@ class NullInst : public cyclus::InstModel {
   }
 
   /* ------------------- */
-
 };
-} // namespace cycamore 
-#endif
+}  // namespace cycamore
+
+#endif  // CYCAMORE_SRC_NULL_INST_H_
