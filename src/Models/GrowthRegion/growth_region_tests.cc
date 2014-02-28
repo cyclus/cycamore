@@ -60,7 +60,7 @@ void GrowthRegionTests::InitRegion() {
   parser.Init(ss);
   cyclus::XMLQueryEngine* engine = new cyclus::XMLQueryEngine(parser);
   region->InitFrom(engine);
-  region->Deploy(NULL);
+  region->Build(NULL);
   delete engine;
 }
 

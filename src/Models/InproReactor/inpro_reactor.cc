@@ -176,8 +176,8 @@ void InproReactor::InitFrom(InproReactor* m) {
 }
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-void InproReactor::Deploy(cyclus::Model* parent) {
-  FacilityModel::Deploy(parent);
+void InproReactor::Build(cyclus::Model* parent) {
+  FacilityModel::Build(parent);
   preCore_.set_capacity(in_core_loading());
   inCore_.set_capacity(in_core_loading());
   reset_cycle_timer();

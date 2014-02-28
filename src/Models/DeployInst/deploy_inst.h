@@ -10,22 +10,7 @@
 
 namespace cycamore {
 
-typedef std::pair<std::string, int> BuildOrder;
-
-/**
-   a helper class for storing and extracting build orders
- */
-class BuildOrderList {
- public:
-  /// add a build order
-  void AddBuildOrder(std::string prototype, int number, int time);
-
-  /// extract a set of build orders
-  std::set<BuildOrder> ExtractOrders(int time);
-
- private:
-  std::map<int, std::set<BuildOrder> > all_orders_;
-};
+typedef std::map<int, std::vector<std::string> > BuildSched;
 
 /**
    @class DeployInst
@@ -64,8 +49,10 @@ class DeployInst : public cyclus::InstModel {
   */
   void InitFrom(DeployInst* m) {
     cyclus::InstModel::InitFrom(m);
-    build_orders_ = m->build_orders_;
+    build_sched_ = m->build_sched_;
   };
+
+  void Build(cyclus::Model* parent);
 
   /**
      Initialize members related to derived module class
@@ -75,27 +62,11 @@ class DeployInst : public cyclus::InstModel {
 
   /* ------------------- */
 
-  /* --------------------
-   * all INSTMODEL classes have these members
-   * --------------------
-   */
- public:
-  /**
-     tick handling function for this inst
-   */
-  virtual void Tick(int time);
-
-  /* ------------------- */
-
-  /* --------------------
-   * This INSTMODEL classes have these members
-   * --------------------
-   */
  protected:
   /**
      a collection of orders to build
    */
-  BuildOrderList build_orders_;
+  BuildSched build_sched_;
 
   /* ------------------- */
 

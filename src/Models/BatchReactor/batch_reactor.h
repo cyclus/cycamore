@@ -194,8 +194,8 @@ class BatchReactor
   /* --- */
 
   /* --- Facility Members --- */
-  /// perform module-specific tasks when entering the simulation
-  virtual void Deploy(cyclus::Model* parent = NULL);
+  /// perform module-specific tasks when entering the simulation 
+  virtual void Build(cyclus::Model* parent = NULL);
   /* --- */
 
   /* --- Agent Members --- */
