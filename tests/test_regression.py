@@ -52,7 +52,7 @@ class TestRegression(object):
             if os.path.isfile(outf):
                 os.remove(outf)
                 
-    def tearDown(self):
+    def teardown(self):
         for inf, outf in self.tmp_files_.items():
             if os.path.isfile(outf):
                 os.remove(outf)
