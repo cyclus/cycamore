@@ -62,9 +62,9 @@ TEST_F(ManagerInstTests, producerexists) {
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 TEST_F(ManagerInstTests, productioncapacity) {
   EXPECT_EQ(src_inst->TotalProductionCapacity(commodity), 0);
-  src_inst->RegisterCloneAsBuilt(producer);
+  src_inst->BuildNotify(producer);
   EXPECT_EQ(src_inst->TotalProductionCapacity(commodity), capacity);
-  src_inst->RegisterCloneAsDecommissioned(producer);
+  src_inst->DecomNotify(producer);
   EXPECT_EQ(src_inst->TotalProductionCapacity(commodity), 0);
 }
 

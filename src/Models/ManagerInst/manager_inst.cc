@@ -29,7 +29,7 @@ void ManagerInst::RegisterAvailablePrototype(std::string prototype) {
 }
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-void ManagerInst::RegisterCloneAsBuilt(cyclus::Model* clone) {
+void ManagerInst::BuildNotify(cyclus::Model* clone) {
   cyclus::CommodityProducer* cast =
     dynamic_cast<cyclus::CommodityProducer*>(clone);
   if (cast) {
@@ -43,7 +43,7 @@ void ManagerInst::RegisterCloneAsBuilt(cyclus::Model* clone) {
 }
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-void ManagerInst::RegisterCloneAsDecommissioned(cyclus::Model* clone) {
+void ManagerInst::DecomNotify(cyclus::Model* clone) {
   cyclus::CommodityProducer* cast =
     dynamic_cast<cyclus::CommodityProducer*>(clone);
   if (cast) {

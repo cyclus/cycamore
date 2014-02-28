@@ -53,14 +53,14 @@ class ManagerInst : public cyclus::InstModel,
      built
      @param clone the built (cloned) prototype
    */
-  virtual void RegisterCloneAsBuilt(cyclus::Model* clone);
+  virtual void BuildNotify(cyclus::Model* clone);
 
   /**
      perform any registration functionality before a clone is
      decommissioned(deleted)
      @param clone the to-be-decommissioned prototype
    */
-  virtual void RegisterCloneAsDecommissioned(cyclus::Model* clone);
+  virtual void DecomNotify(cyclus::Model* clone);
 
   /**
      write information about a commodity producer to a stream
