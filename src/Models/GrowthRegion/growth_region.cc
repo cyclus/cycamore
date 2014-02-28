@@ -103,8 +103,8 @@ void GrowthRegion::AddCommodityDemand(cyclus::Commodity commod) {
 }
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-void GrowthRegion::Deploy(cyclus::Model* parent) {
-  cyclus::RegionModel::Deploy(parent);
+void GrowthRegion::Build(cyclus::Model* parent) {
+  cyclus::RegionModel::Build(parent);
   for (int i = 0; i != children().size(); i++) {
     cyclus::Model* child = children().at(i);
     RegisterCommodityProducerManager(child);
@@ -199,7 +199,7 @@ void GrowthRegion::OrderBuilds(cyclus::Commodity& commodity,
 
     for (int j = 0; j < order.number; j++) {
       LOG(cyclus::LEV_DEBUG2, "greg") << "Ordering build number: " << j + 1;
-      instcast->Build(modelcast->name());
+      context()->SchedBuild(instcast, modelcast->name());
     }
   }
 }

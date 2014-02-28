@@ -152,10 +152,10 @@ std::string EnrichmentFacility::str() {
 }
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-void EnrichmentFacility::Deploy(cyclus::Model* parent) {
+void EnrichmentFacility::Build(cyclus::Model* parent) {
   using cyclus::Material;
 
-  FacilityModel::Deploy(parent);
+  FacilityModel::Build(parent);
   if (ics_.reserves > 0) {
     inventory_.Push(
         Material::Create(

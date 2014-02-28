@@ -5,26 +5,26 @@ from collections import defaultdict
 
 import tables
 
-_invar_table_names = {"agents": "Agents",
+_invar_table_names = {"agents": "AgentEntry",
                       "rsrcs": "Resources"}
 
-_agent_key = "ID"
-_agent_schema = ["AgentType", "ModelType", "Prototype", "ParentID", "EnterDate"]
+_agent_key = "AgentId"
+_agent_schema = ["Kind", "Implementation", "Prototype", "ParentId", "EnterTime"]
 
-_agent_deaths_key = "AgentID"
-_agent_deaths_schema = ["DeathDate"]
+_agent_deaths_key = "AgentId"
+_agent_deaths_schema = ["ExitTime"]
 
-_simulation_time_info_schema = ["InitialYear", "InitialMonth", "SimulationStart",
+_simulation_time_info_schema = ["InitialYear", "InitialMonth", "Start",
                                 "Duration", "DecayInterval"]
 
-_xaction_schema = ["SenderID", "ReceiverID", "ResourceID", "Commodity", 
-                   "Price", "Time"]
+_xaction_schema = ["SenderId", "ReceiverId", "ResourceId", "Commodity", 
+                   "Time"]
 
-_rsrc_key = "ID"
-_rsrc_schema = ["Type", "TimeCreated", "Quantity", "units"]
+_rsrc_key = "ResourceId"
+_rsrc_schema = ["Type", "TimeCreated", "Quantity", "Units"]
 
-_agent_id_names = ["ParentID", "SenderID", "ReceiverID"]
-_rsrc_id_names = ["ResourceID"]
+_agent_id_names = ["ParentId", "SenderId", "ReceiverId"]
+_rsrc_id_names = ["ResourceId"]
 
 class HDF5RegressionVisitor(object):
     """ An HDF5RegressionVisitor visits a number of Cyclus HDF5 tables,
@@ -50,8 +50,8 @@ class HDF5RegressionVisitor(object):
                                   name = _invar_table_names["agents"], 
                                   classname = "Table")
         for row in table.iterrows():
-            a_id = row["ID"]
-            p_id = row["ParentID"]
+            a_id = row["AgentId"]
+            p_id = row["ParentId"]
             p_invar = None
             # print(p_id, a_id)
             if p_id != -1:
