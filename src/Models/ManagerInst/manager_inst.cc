@@ -19,7 +19,7 @@ void ManagerInst::RegisterAvailablePrototype(std::string prototype) {
   try {
     CommodityProducer* cast = context()->CreateModel<CommodityProducer>(prototype);
     cyclus::Builder::RegisterProducer(cast);
-    LOG(cyclus::LEV_DEBUG3, "maninst") << "ManagerInst " << name()
+    LOG(cyclus::LEV_DEBUG3, "maninst") << "ManagerInst " << this->prototype()
                                        << " has registered a producer prototype: "
                                        << prototype
                                        << " and "
@@ -35,7 +35,7 @@ void ManagerInst::BuildNotify(cyclus::Model* clone) {
   if (cast) {
     cyclus::CommodityProducerManager::RegisterProducer(cast);
     if (cyclus::LEV_DEBUG3 >= cyclus::Logger::ReportLevel()) {
-      LOG(cyclus::LEV_DEBUG3, "maninst") << "ManagerInst " << name()
+      LOG(cyclus::LEV_DEBUG3, "maninst") << "ManagerInst " << prototype()
                                          << " has registered a producer clone:";
       WriteProducerInformation(cast);
     }

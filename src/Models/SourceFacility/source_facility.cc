@@ -95,7 +95,7 @@ void SourceFacility::InitFrom(SourceFacility* m) {
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 void SourceFacility::Tick(int time) {
-  LOG(cyclus::LEV_INFO3, "SrcFac") << name() << " is ticking {";
+  LOG(cyclus::LEV_INFO3, "SrcFac") << prototype() << " is ticking {";
   LOG(cyclus::LEV_INFO4, "SrcFac") << "will offer " << capacity_
                                    << " kg of "
                                    << out_commod_ << ".";
@@ -105,7 +105,7 @@ void SourceFacility::Tick(int time) {
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 void SourceFacility::Tock(int time) {
-  LOG(cyclus::LEV_INFO3, "SrcFac") << name() << " is tocking {";
+  LOG(cyclus::LEV_INFO3, "SrcFac") << prototype() << " is tocking {";
   LOG(cyclus::LEV_INFO3, "SrcFac") << "}";
 }
 
@@ -168,7 +168,7 @@ void SourceFacility::GetMatlTrades(
                                               qty,
                                               context()->GetRecipe(recipe_name_));
     responses.push_back(std::make_pair(*it, response));
-    LOG(cyclus::LEV_INFO5, "SrcFac") << name() << " just received an order"
+    LOG(cyclus::LEV_INFO5, "SrcFac") << prototype() << " just received an order"
                                      << " for " << qty
                                      << " of " << out_commod_;
   }

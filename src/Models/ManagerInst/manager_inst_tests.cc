@@ -55,7 +55,7 @@ TEST_F(ManagerInstTests, producerexists) {
   set<cyclus::CommodityProducer*>::iterator it;
   for (it = src_inst->BeginningProducer(); it != src_inst->EndingProducer();
        it++) {
-    EXPECT_EQ(dynamic_cast<TestProducer*>(*it)->name(), producer->name());
+    EXPECT_EQ(dynamic_cast<TestProducer*>(*it)->prototype(), producer->prototype());
   }
 }
 

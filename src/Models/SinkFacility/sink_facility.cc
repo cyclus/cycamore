@@ -195,7 +195,7 @@ void SinkFacility::AcceptGenRsrcTrades(
 void SinkFacility::Tick(int time) {
   using std::string;
   using std::vector;
-  LOG(cyclus::LEV_INFO3, "SnkFac") << name() << " is ticking {";
+  LOG(cyclus::LEV_INFO3, "SnkFac") << prototype() << " is ticking {";
 
   double requestAmt = RequestAmt();
   // inform the simulation about what the sink facility will be requesting
@@ -212,7 +212,7 @@ void SinkFacility::Tick(int time) {
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 void SinkFacility::Tock(int time) {
-  LOG(cyclus::LEV_INFO3, "SnkFac") << name() << " is tocking {";
+  LOG(cyclus::LEV_INFO3, "SnkFac") << prototype() << " is tocking {";
 
   // On the tock, the sink facility doesn't really do much.
   // Maybe someday it will record things.

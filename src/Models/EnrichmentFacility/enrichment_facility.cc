@@ -169,14 +169,14 @@ void EnrichmentFacility::Build(cyclus::Model* parent) {
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 void EnrichmentFacility::Tick(int time) {
-  LOG(cyclus::LEV_INFO3, "EnrFac") << name() << " is ticking {";
+  LOG(cyclus::LEV_INFO3, "EnrFac") << prototype() << " is ticking {";
   LOG(cyclus::LEV_INFO3, "EnrFac") << "}";
   current_swu_capacity_ = swu_capacity();
 }
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 void EnrichmentFacility::Tock(int time) {
-  LOG(cyclus::LEV_INFO3, "EnrFac") << name() << " is tocking {";
+  LOG(cyclus::LEV_INFO3, "EnrFac") << prototype() << " is tocking {";
   LOG(cyclus::LEV_INFO3, "EnrFac") << "}";
 }
 
@@ -253,10 +253,10 @@ EnrichmentFacility::GetMatlBids(
     port->AddConstraint(swu);
     port->AddConstraint(natu);
     
-    LOG(cyclus::LEV_INFO5, "EnrFac") << name()
+    LOG(cyclus::LEV_INFO5, "EnrFac") << prototype()
                                      << " adding a swu constraint of "
                                      << swu.capacity();
-    LOG(cyclus::LEV_INFO5, "EnrFac") << name()
+    LOG(cyclus::LEV_INFO5, "EnrFac") << prototype()
                                      << " adding a natu constraint of "
                                      << natu.capacity();
     
@@ -287,7 +287,7 @@ void EnrichmentFacility::GetMatlTrades(
     double qty = it->amt;
     Material::Ptr response = Enrich_(mat, qty);
     responses.push_back(std::make_pair(*it, response));
-    LOG(cyclus::LEV_INFO5, "EnrFac") << name()
+    LOG(cyclus::LEV_INFO5, "EnrFac") << prototype()
                                      << " just received an order"
                                      << " for " << it->amt
                                      << " of " << out_commod_;
@@ -295,7 +295,7 @@ void EnrichmentFacility::GetMatlTrades(
   
   if (cyclus::IsNegative(current_swu_capacity_)) { 
     throw cyclus::ValueError(
-        "EnrFac " + name()
+        "EnrFac " + prototype()
         + " is being asked to provide more than its SWU capacity.");
   }
 }
@@ -307,7 +307,7 @@ void EnrichmentFacility::AddMat_(cyclus::Material::Ptr mat) {
         "EnrichmentFacility recipe and material composition not the same.");
   } 
 
-  LOG(cyclus::LEV_INFO5, "EnrFac") << name() << " is initially holding " 
+  LOG(cyclus::LEV_INFO5, "EnrFac") << prototype() << " is initially holding " 
                                    << inventory_.quantity() << " total.";
   
   try {
@@ -317,7 +317,7 @@ void EnrichmentFacility::AddMat_(cyclus::Material::Ptr mat) {
       throw e;
   }
   
-  LOG(cyclus::LEV_INFO5, "EnrFac") << name() << " added " << mat->quantity()
+  LOG(cyclus::LEV_INFO5, "EnrFac") << prototype() << " added " << mat->quantity()
                                    << " of " << in_commod_
                                    << " to its inventory, which is holding "
                                    << inventory_.quantity() << " total.";
@@ -389,7 +389,7 @@ cyclus::Material::Ptr EnrichmentFacility::Enrich_(
   
   RecordEnrichment_(natu_req, swu_req);
 
-  LOG(cyclus::LEV_INFO5, "EnrFac") << name() << " has performed an enrichment: ";
+  LOG(cyclus::LEV_INFO5, "EnrFac") << prototype() << " has performed an enrichment: ";
   LOG(cyclus::LEV_INFO5, "EnrFac") << "   * Feed Qty: "
                                    << natu_req;
   LOG(cyclus::LEV_INFO5, "EnrFac") << "   * Feed Assay: "
@@ -415,7 +415,7 @@ void EnrichmentFacility::RecordEnrichment_(double natural_u, double swu) {
   using cyclus::Context;
   using cyclus::Model;
 
-  LOG(cyclus::LEV_DEBUG1, "EnrFac") << name() << " has enriched a material:";
+  LOG(cyclus::LEV_DEBUG1, "EnrFac") << prototype() << " has enriched a material:";
   LOG(cyclus::LEV_DEBUG1, "EnrFac") << "  * Amount: " << natural_u;
   LOG(cyclus::LEV_DEBUG1, "EnrFac") << "  *    SWU: " << swu;
 

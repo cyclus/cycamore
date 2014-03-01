@@ -181,7 +181,7 @@ void InproReactor::Build(cyclus::Model* parent) {
   inCore_.set_capacity(in_core_loading());
   reset_cycle_timer();
   SetPhase(BEGIN);
-  LOG(cyclus::LEV_DEBUG2, "BReact") << "Batch Reactor " << name()
+  LOG(cyclus::LEV_DEBUG2, "BReact") << "Batch Reactor " << prototype()
                                     << " is entering the simuluation with members:";
   LOG(cyclus::LEV_DEBUG2, "BReact") << "  * in core loading: " <<
                                     in_core_loading();
@@ -197,7 +197,7 @@ void InproReactor::Build(cyclus::Model* parent) {
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 void InproReactor::Tick(int time) {
-  LOG(cyclus::LEV_INFO3, "BReact") << name() << " is ticking at time "
+  LOG(cyclus::LEV_INFO3, "BReact") << prototype() << " is ticking at time "
                                    << time << " {";
   LOG(cyclus::LEV_DEBUG3, "BReact") << "The current phase is: "
                                     << phase_names_[phase_];
@@ -252,7 +252,7 @@ InproReactor::GetMatlRequests() {
   
   if (request > cyclus::eps()) {
     LOG(cyclus::LEV_INFO4, "BReact") << " making requests {";
-    LOG(cyclus::LEV_INFO5, "BReact") << name() << " is requesting " << request
+    LOG(cyclus::LEV_INFO5, "BReact") << prototype() << " is requesting " << request
                                      << " kg of " << in_commodity_ << ".";
     LOG(cyclus::LEV_INFO4, "BReact") << "}";
   
@@ -274,7 +274,7 @@ InproReactor::GetMatlBids(const cyclus::CommodMap<cyclus::Material>::type&
                                               &postCore_);
   if (!port->bids().empty()) {
     LOG(cyclus::LEV_INFO4, "BReact") << " making offers {";
-    LOG(cyclus::LEV_INFO5, "BReact") << name() << " is offering "
+    LOG(cyclus::LEV_INFO5, "BReact") << prototype() << " is offering "
                                      << postCore_.quantity()
                                      << " kg of " << out_commodity_ << ".";
     LOG(cyclus::LEV_INFO4, "BReact") << "}";
@@ -300,7 +300,7 @@ void InproReactor::AcceptMatlTrades(
     preCore_.Push(trade->second);
   }  
   double added = preCore_.quantity() - preQuantity;
-  LOG(cyclus::LEV_DEBUG2, "BReact") << "InproReactor " << name() << " added "
+  LOG(cyclus::LEV_DEBUG2, "BReact") << "InproReactor " << prototype() << " added "
                                     << added << " to its precore buffer.";
 }
 
@@ -314,13 +314,13 @@ void InproReactor::GetMatlTrades(
 
   std::vector< cyclus::Trade<cyclus::Material> >::const_iterator it;
   for (it = trades.begin(); it != trades.end(); ++it) {
-    LOG(cyclus::LEV_INFO5, "BReact") << name() << " just received an order.";
+    LOG(cyclus::LEV_INFO5, "BReact") << prototype() << " just received an order.";
 
     double qty = it->amt;
     Material::Ptr response = TradeResponse_(qty, &postCore_);
 
     responses.push_back(std::make_pair(*it, response));
-    LOG(cyclus::LEV_INFO5, "InproReactor") << name()
+    LOG(cyclus::LEV_INFO5, "InproReactor") << prototype()
                                            << " just received an order"
                                            << " for " << qty
                                            << " of " << out_commodity_;
@@ -331,7 +331,7 @@ void InproReactor::GetMatlTrades(
 void InproReactor::Tock(int time) {
   using std::string;
   using boost::lexical_cast;
-  LOG(cyclus::LEV_INFO3, "BReact") << name() << " is tocking {";
+  LOG(cyclus::LEV_INFO3, "BReact") << prototype() << " is tocking {";
   LOG(cyclus::LEV_DEBUG3, "BReact") << "The current phase is: "
                                     << phase_names_[phase_];
 
@@ -504,7 +504,7 @@ bool InproReactor::CheckDecommissionCondition() {
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 void InproReactor::SetPhase(Phase p) {
-  LOG(cyclus::LEV_DEBUG2, "BReact") << "InproReactor " << name()
+  LOG(cyclus::LEV_DEBUG2, "BReact") << "InproReactor " << prototype()
                                     << " is changing phases -";
   LOG(cyclus::LEV_DEBUG2, "BReact") << "  * from phase: " << phase_names_[phase_];
   LOG(cyclus::LEV_DEBUG2, "BReact") << "  * to phase: " << phase_names_[p];
@@ -560,7 +560,7 @@ InproReactor::GetOrder_(double size) {
       context()->GetRecipe(in_recipe_));
   port->AddRequest(mat, this, in_commodity_);
   
-  LOG(cyclus::LEV_DEBUG3, "IReact") << "InproReactor " << name()
+  LOG(cyclus::LEV_DEBUG3, "IReact") << "InproReactor " << prototype()
                                     << " is making an order:";
   LOG(cyclus::LEV_DEBUG3, "IReact") << "          size: " << size;
   LOG(cyclus::LEV_DEBUG3, "IReact") << "     commodity: "
@@ -662,7 +662,7 @@ void InproReactor::LoadCore() {
       m->Absorb(mats[i]);
     }
     inCore_.Push(m);
-    LOG(cyclus::LEV_DEBUG2, "BReact") << "InproReactor " << name()
+    LOG(cyclus::LEV_DEBUG2, "BReact") << "InproReactor " << prototype()
                                       << " moved fuel into the core:";
     LOG(cyclus::LEV_DEBUG2, "BReact") << "  precore level: " << preCore_.quantity();
     LOG(cyclus::LEV_DEBUG2, "BReact") << "  incore level: " << inCore_.quantity();
@@ -674,7 +674,7 @@ void InproReactor::OffloadCore() {
   while (!inCore_.empty()) {
     OffloadBatch();
   }
-  LOG(cyclus::LEV_DEBUG2, "BReact") << "InproReactor " << name()
+  LOG(cyclus::LEV_DEBUG2, "BReact") << "InproReactor " << prototype()
                                     << " removed a core of fuel from the core:";
   LOG(cyclus::LEV_DEBUG2, "BReact") << "  precore level: " << preCore_.quantity();
   LOG(cyclus::LEV_DEBUG2, "BReact") << "  incore level: " << inCore_.quantity();

@@ -128,7 +128,7 @@ void GrowthRegion::Tick(int time) {
     double supply = sdmanager_.Supply(commodity);
     double unmetdemand = demand - supply;
 
-    LOG(cyclus::LEV_INFO3, "greg") << "GrowthRegion: " << name()
+    LOG(cyclus::LEV_INFO3, "greg") << "GrowthRegion: " << prototype()
                                    << " at time: " << time
                                    << " has the following values regaring "
                                    << " commodity: " << commodity.name();
@@ -184,13 +184,13 @@ void GrowthRegion::OrderBuilds(cyclus::Commodity& commodity,
 
     LOG(cyclus::LEV_INFO3, "greg") << "A build order for " << order.number
                                    << " prototype(s) of type "
-                                   << dynamic_cast<cyclus::Model*>(modelcast)->name()
-                                   << " from builder " << instcast->name()
+                                   << dynamic_cast<cyclus::Model*>(modelcast)->prototype()
+                                   << " from builder " << instcast->prototype()
                                    << " is being placed.";
 
     for (int j = 0; j < order.number; j++) {
       LOG(cyclus::LEV_DEBUG2, "greg") << "Ordering build number: " << j + 1;
-      context()->SchedBuild(instcast, modelcast->name());
+      context()->SchedBuild(instcast, modelcast->prototype());
     }
   }
 }

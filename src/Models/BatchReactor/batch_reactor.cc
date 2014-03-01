@@ -410,11 +410,11 @@ void BatchReactor::Build(cyclus::Model* parent) {
 
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 void BatchReactor::Tick(int time) {
-  LOG(cyclus::LEV_INFO3, "BReact") << name() << " is ticking at time "
+  LOG(cyclus::LEV_INFO3, "BReact") << prototype() << " is ticking at time "
                                    << time << " {";
 
   LOG(cyclus::LEV_DEBUG4, "BReact") << "Current facility parameters for "
-                                    << name()
+                                    << prototype()
                                     << " at the beginning of the tick are:";
   LOG(cyclus::LEV_DEBUG4, "BReact") << "    Phase: " << phase_names_[phase_];
   LOG(cyclus::LEV_DEBUG4, "BReact") << "    Start time: " << start_time_;
@@ -471,7 +471,7 @@ void BatchReactor::Tick(int time) {
   }
 
   LOG(cyclus::LEV_DEBUG3, "BReact") << "Current facility parameters for "
-                                    << name()
+                                    << prototype()
                                     << " at the end of the tick are:";
   LOG(cyclus::LEV_DEBUG3, "BReact") << "    Phase: " << phase_names_[phase_];
   LOG(cyclus::LEV_DEBUG3, "BReact") << "    Start time: " << start_time_;
@@ -486,9 +486,9 @@ void BatchReactor::Tick(int time) {
 
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 void BatchReactor::Tock(int time) {
-  LOG(cyclus::LEV_INFO3, "BReact") << name() << " is tocking {";
+  LOG(cyclus::LEV_INFO3, "BReact") << prototype() << " is tocking {";
   LOG(cyclus::LEV_DEBUG4, "BReact") << "Current facility parameters for "
-                                    << name()
+                                    << prototype()
                                     << " at the beginning of the tock are:";
   LOG(cyclus::LEV_DEBUG4, "BReact") << "    Phase: " << phase_names_[phase_];
   LOG(cyclus::LEV_DEBUG4, "BReact") << "    Start time: " << start_time_;
@@ -515,7 +515,7 @@ void BatchReactor::Tock(int time) {
   }
 
   LOG(cyclus::LEV_DEBUG3, "BReact") << "Current facility parameters for "
-                                    << name()
+                                    << prototype()
                                     << " at the end of the tock are:";
   LOG(cyclus::LEV_DEBUG3, "BReact") << "    Phase: " << phase_names_[phase_];
   LOG(cyclus::LEV_DEBUG3, "BReact") << "    Start time: " << start_time_;
@@ -563,9 +563,9 @@ BatchReactor::GetMatlRequests() {
       order_size = fuel_need - fuel_have;
       bool ordering = order_time() <= context()->time() && order_size > 0;
 
-      LOG(cyclus::LEV_DEBUG5, "BReact") << "BatchReactor " << name()
-                                        << " is deciding whether to order -";
-      LOG(cyclus::LEV_DEBUG5, "BReact") << "    Needs fuel amt: " << fuel_need;
+      LOG(cyclus::LEV_DEBUG5, "BReact") << "BatchReactor " << prototype()
+                                        << " is deciding whether to order -";      
+      LOG(cyclus::LEV_DEBUG5, "BReact") << "    Needs fuel amt: " << fuel_need;    
       LOG(cyclus::LEV_DEBUG5, "BReact") << "    Has fuel amt: " << fuel_have;
       LOG(cyclus::LEV_DEBUG5, "BReact") << "    Order amt: " << order_size;
       LOG(cyclus::LEV_DEBUG5, "BReact") << "    Order time: " << order_time();
@@ -648,14 +648,14 @@ void BatchReactor::GetMatlTrades(
 
   std::vector< cyclus::Trade<cyclus::Material> >::const_iterator it;
   for (it = trades.begin(); it != trades.end(); ++it) {
-    LOG(cyclus::LEV_INFO5, "BReact") << name() << " just received an order.";
+    LOG(cyclus::LEV_INFO5, "BReact") << prototype() << " just received an order.";
 
     std::string commodity = it->request->commodity();
     double qty = it->amt;
     Material::Ptr response = TradeResponse_(qty, &storage_[commodity]);
 
     responses.push_back(std::make_pair(*it, response));
-    LOG(cyclus::LEV_INFO5, "BatchReactor") << name()
+    LOG(cyclus::LEV_INFO5, "BatchReactor") << prototype()
                                            << " just received an order"
                                            << " for " << qty
                                            << " of " << commodity;
@@ -674,7 +674,7 @@ int BatchReactor::StorageCount() {
 
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 void BatchReactor::phase(BatchReactor::Phase p) {
-  LOG(cyclus::LEV_DEBUG2, "BReact") << "BatchReactor " << name()
+  LOG(cyclus::LEV_DEBUG2, "BReact") << "BatchReactor " << prototype()
                                     << " is changing phases -";
   LOG(cyclus::LEV_DEBUG2, "BReact") << "  * from phase: " << phase_names_[phase_];
   LOG(cyclus::LEV_DEBUG2, "BReact") << "  * to phase: " << phase_names_[p];
@@ -698,7 +698,7 @@ void BatchReactor::Refuel_() {
 
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 void BatchReactor::MoveBatchIn_() {
-  LOG(cyclus::LEV_DEBUG2, "BReact") << "BatchReactor " << name() << " added"
+  LOG(cyclus::LEV_DEBUG2, "BReact") << "BatchReactor " << prototype() << " added"
                                     <<  " a batch from its core.";
   try {
     core_.Push(reserves_.Pop());
@@ -712,8 +712,8 @@ void BatchReactor::MoveBatchIn_() {
 void BatchReactor::MoveBatchOut_() {
   using cyclus::Material;
   using cyclus::ResCast;
-
-  LOG(cyclus::LEV_DEBUG2, "BReact") << "BatchReactor " << name() << " removed"
+  
+  LOG(cyclus::LEV_DEBUG2, "BReact") << "BatchReactor " << prototype() << " removed"
                                     <<  " a batch from its core.";
   try {
     Material::Ptr mat = ResCast<Material>(core_.Pop());
@@ -751,8 +751,8 @@ BatchReactor::GetOrder_(double size) {
     assert(recipe != "");
     mat = Material::CreateUntracked(size, context()->GetRecipe(recipe));
     port->AddRequest(mat, this, *it, commod_prefs_[*it]);
-
-    LOG(cyclus::LEV_DEBUG3, "BReact") << "BatchReactor " << name()
+    
+    LOG(cyclus::LEV_DEBUG3, "BReact") << "BatchReactor " << prototype()
                                       << " is making an order:";
     LOG(cyclus::LEV_DEBUG3, "BReact") << "          size: " << size;
     LOG(cyclus::LEV_DEBUG3, "BReact") << "     commodity: " << *it;
@@ -771,7 +771,7 @@ void BatchReactor::AddBatches_(std::string commod, cyclus::Material::Ptr mat) {
   using cyclus::Material;
   using cyclus::ResCast;
 
-  LOG(cyclus::LEV_DEBUG3, "BReact") << "BatchReactor " << name()
+  LOG(cyclus::LEV_DEBUG3, "BReact") << "BatchReactor " << prototype()
                                     << " is adding " << mat->quantity()
                                     << " of material to its reserves.";
 
