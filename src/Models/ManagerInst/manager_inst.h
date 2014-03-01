@@ -41,12 +41,14 @@ class ManagerInst : public cyclus::InstModel,
     commod_producers_ = m->commod_producers_;
   }
 
+  virtual void InitFrom(cyclus::QueryEngine* qe);
+
   /**
      perform any actions required after prototype has been added to
      the list of available prototypes
      @param prototype the prototype to register
    */
-  virtual void RegisterAvailablePrototype(std::string prototype);
+  void RegisterAvailablePrototype(std::string prototype);
 
   /**
      perform any registration functionality after a clone has been

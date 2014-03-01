@@ -13,6 +13,21 @@ ManagerInst::ManagerInst(cyclus::Context* ctx)
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 ManagerInst::~ManagerInst() {}
 
+void ManagerInst::InitFrom(cyclus::QueryEngine* qe) {
+  std::string name, query;
+  int nEntries;
+  // populate prototypes_
+  query = "availableprototype";
+  nEntries = qe->NElementsMatchingQuery(query);
+  if (nEntries > 0) {
+    // populate prototypes_
+    for (int i = 0; i < nEntries; i++) {
+      name = qe->GetElementContent(query, i);
+      RegisterAvailablePrototype(name);
+    }
+  }
+}
+
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 void ManagerInst::RegisterAvailablePrototype(std::string prototype) {
   using cyclus::CommodityProducer;
