@@ -55,11 +55,6 @@ std::string BatchReactor::schema() {
       "                                              \n"
       "  <!-- Facility Parameters -->                \n"
       "  <interleave>                                \n"
-      "  <optional>                          \n"
-      "    <element name=\"lifetime\">            \n"
-      "      <data type=\"nonNegativeInteger\"/>  \n"
-      "    </element>                             \n"
-      "  </optional>                         \n"
       "  <element name=\"processtime\">              \n"
       "    <data type=\"nonNegativeInteger\"/>       \n"
       "  </element>                                  \n"
@@ -220,8 +215,6 @@ void BatchReactor::InitFrom(cyclus::QueryEngine* qe) {
   }
 
   // facility data required
-  int lt = context()->sim_dur() + 1;
-  lifetime_ = cyclus::GetOptionalQuery<int>(qe, "lifetime", lt);
   string data;
   data = qe->GetElementContent("processtime");
   process_time(lexical_cast<int>(data));
@@ -332,7 +325,6 @@ void BatchReactor::InitFrom(BatchReactor* m) {
   crctx_ = m->crctx_;
 
   // facility params
-  lifetime_ = m->lifetime_;
   process_time(m->process_time());
   preorder_time(m->preorder_time());
   refuel_time(m->refuel_time());
@@ -433,7 +425,7 @@ void BatchReactor::Tick(int time) {
   LOG(cyclus::LEV_DEBUG4, "BReact") << "    NStorage: " << StorageCount();
   LOG(cyclus::LEV_DEBUG4, "BReact") << "    Spillover Qty: " << spillover_->quantity();
 
-  if (context()->time() >= birthtime() + lifetime()) {
+  if (lifetime() != -1 && context()->time() >= birthtime() + lifetime()) {
     int ncore = core_.count();
     LOG(cyclus::LEV_DEBUG1, "BReact") << "lifetime reached, moving out:"
                                       << ncore << " batches.";

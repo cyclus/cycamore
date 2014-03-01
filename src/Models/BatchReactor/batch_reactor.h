@@ -206,8 +206,7 @@ class BatchReactor
   /// The Tick function specific to the BatchReactor.
   /// @param time the time of the tock
   virtual void Tock(int time);
-  virtual int lifetime() {return lifetime_;};
-
+  
   /// @brief The EnrichmentFacility request Materials of its given
   /// commodity.
   virtual std::set<cyclus::RequestPortfolio<cyclus::Material>::Ptr>
@@ -406,7 +405,6 @@ class BatchReactor
   void SetUpPhaseNames_();
 
   static std::map<Phase, std::string> phase_names_;
-  int lifetime_;
   int process_time_;
   int preorder_time_;
   int refuel_time_;

@@ -15,14 +15,14 @@
 
   <facility>
     <name>Source</name>
+    <lifetime>5</lifetime>
     <model>
       <SourceFacility>
-        <lifetime>5</lifetime>
-        <output>
-          <outcommodity>commodity</outcommodity>
-          <output_capacity>1</output_capacity>
-          <recipe>commod_recipe</recipe>
-        </output>
+	<output>
+	  <outcommodity>commodity</outcommodity>
+	  <output_capacity>1</output_capacity>
+	  <recipe>commod_recipe</recipe>
+	</output>
       </SourceFacility>
     </model>
     <outcommodity>commodity</outcommodity>

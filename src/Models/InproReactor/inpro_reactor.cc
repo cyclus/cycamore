@@ -58,11 +58,6 @@ std::string InproReactor::schema() {
     "  </element>                                \n"
     "                                            \n"
     "  <!-- Facility Parameters -->              \n"
-    "  <optional>                          \n"
-    "    <element name=\"lifetime\">            \n"
-    "      <data type=\"nonNegativeInteger\"/>  \n"
-    "    </element>                             \n"
-    "  </optional>                         \n"
     "  <element name=\"cyclelength\">            \n"
     "    <data type=\"nonNegativeInteger\"/>     \n"
     "  </element>                                \n"
@@ -116,9 +111,6 @@ void InproReactor::InitFrom(cyclus::QueryEngine* qe) {
   data = qe->GetElementContent("cyclelength");
   set_cycle_length(lexical_cast<int>(data));
 
-  int lt = context()->sim_dur() + 1;
-  lifetime_ = cyclus::GetOptionalQuery<int>(qe, "lifetime", lt);
-
   int delay =
       cyclus::GetOptionalQuery<int>(qe, "refueldelay", refuel_delay());
   set_refuel_delay(delay);
@@ -170,8 +162,6 @@ cyclus::Model* InproReactor::Clone() {
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 void InproReactor::InitFrom(InproReactor* m) {
   cyclus::FacilityModel::InitFrom(m);
-
-  lifetime_ = m->lifetime_;
   set_cycle_length(m->cycle_length());
   set_refuel_delay(m->refuel_delay());
   set_in_core_loading(m->in_core_loading());
@@ -213,7 +203,7 @@ void InproReactor::Tick(int time) {
                                     << phase_names_[phase_];
 
 
-  if (time >= lifetime() + birthtime()) {
+  if (lifetime() != -1 && time >= lifetime() + birthtime()) {
     SetPhase(END);
   }
 

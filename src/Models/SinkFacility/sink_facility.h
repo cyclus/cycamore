@@ -138,8 +138,6 @@ class SinkFacility : public cyclus::FacilityModel  {
    */
   virtual void Tock(int time);
 
-  virtual int lifetime() {return lifetime_;};
-
   /// @brief SinkFacilities request Materials of their given commodity. Note
   /// that it is assumed the SinkFacility operates on a single resource type!
   virtual std::set<cyclus::RequestPortfolio<cyclus::Material>::Ptr>
@@ -202,8 +200,6 @@ class SinkFacility : public cyclus::FacilityModel  {
       input_commodities() const { return in_commods_; }
 
  private: 
-  int lifetime_;
-
   /**
      all facilities must have at least one input commodity
    */

@@ -29,11 +29,6 @@ SinkFacility::~SinkFacility() {}
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 std::string SinkFacility::schema() {
   return
-    "  <optional>                          \n"
-    "    <element name=\"lifetime\">            \n"
-    "      <data type=\"nonNegativeInteger\"/>  \n"
-    "    </element>                             \n"
-    "  </optional>                         \n"
     "  <element name =\"input\">          \n"
     "    <element name = \"commodities\"> \n"
     "      <oneOrMore>                    \n"
@@ -57,9 +52,6 @@ void SinkFacility::InitFrom(cyclus::QueryEngine* qe) {
   using std::string;
   using std::numeric_limits;
   using boost::lexical_cast;
-
-  int lt = context()->sim_dur() + 1;
-  lifetime_ = cyclus::GetOptionalQuery<int>(qe, "lifetime", lt);
   cyclus::QueryEngine* input = qe->QueryElement("input");
 
   cyclus::QueryEngine* commodities = input->QueryElement("commodities");
@@ -110,8 +102,6 @@ cyclus::Model* SinkFacility::Clone() {
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 void SinkFacility::InitFrom(SinkFacility* m) {
   FacilityModel::InitFrom(m);
-  
-  lifetime_ = m->lifetime_;
   capacity(m->capacity());
   SetMaxInventorySize(m->MaxInventorySize());
   capacity_ = m->capacity_;

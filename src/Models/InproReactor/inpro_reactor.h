@@ -59,8 +59,6 @@ class InproReactor : public cyclus::FacilityModel,
   */
   virtual void InitFrom(cyclus::QueryEngine* qe);
 
-  virtual int lifetime() {return lifetime_;};
-
   /**
      Print information about this model
   */
@@ -302,8 +300,6 @@ class InproReactor : public cyclus::FacilityModel,
 
   /// The current time step in the cycle
   int cycle_timer_;
-
-  int lifetime_;
 
   /// The current phase this facility is in
   Phase phase_;

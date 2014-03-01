@@ -201,11 +201,7 @@ class SourceFacility : public cyclus::FacilityModel,
   /// @return the current timestep's capacity
   inline double current_capacity() const { return current_capacity_; }
 
-  virtual int lifetime() {return lifetime_;};
-
  private:
-  int lifetime_;
-
   /**
      This facility has only one output commodity
    */

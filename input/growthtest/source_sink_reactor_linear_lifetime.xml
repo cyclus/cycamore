@@ -29,6 +29,7 @@
 
   <facility>
     <name>Reactor</name>
+    <lifetime>1</lifetime>
     <model>
       <BatchReactor>
         <fuel>
@@ -37,7 +38,6 @@
          <outcommodity>outcommodity</outcommodity>
          <outrecipe>commod_recipe</outrecipe>
         </fuel>
-        <lifetime>1</lifetime>
         <processtime>1</processtime>
         <nbatches>1</nbatches>
         <batchsize>2</batchsize>
