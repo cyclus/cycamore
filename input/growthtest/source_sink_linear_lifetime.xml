@@ -15,9 +15,9 @@
 
   <facility>
     <name>Source</name>
-    <lifetime>1</lifetime>
     <model>
       <SourceFacility>
+        <lifetime>1</lifetime>
         <output>
           <outcommodity>commodity</outcommodity>
           <output_capacity>1</output_capacity>

@@ -30,6 +30,11 @@ SourceFacility::~SourceFacility() {}
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 std::string SourceFacility::schema() {
   return
+    "  <optional>                          \n"
+    "    <element name=\"lifetime\">            \n"
+    "      <data type=\"nonNegativeInteger\"/>  \n"
+    "    </element>                             \n"
+    "  </optional>                         \n"
     "  <element name =\"output\">          \n"
     "    <ref name=\"outcommodity\"/>      \n"
     "    <optional>                        \n"
@@ -49,6 +54,9 @@ void SourceFacility::InitFrom(cyclus::QueryEngine* qe) {
   using std::string;
   using std::numeric_limits;
   using boost::lexical_cast;
+
+  int lt = context()->sim_dur() + 1;
+  lifetime_ = cyclus::GetOptionalQuery<int>(qe, "lifetime", lt);
   cyclus::QueryEngine* output = qe->QueryElement("output");
 
   recipe(output->GetElementContent("recipe"));
@@ -86,6 +94,7 @@ cyclus::Model* SourceFacility::Clone() {
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 void SourceFacility::InitFrom(SourceFacility* m) {
   FacilityModel::InitFrom(m);
+  lifetime_ = m->lifetime_;
   commodity(m->commodity());
   capacity(m->capacity());
   recipe(m->recipe());
@@ -95,7 +104,7 @@ void SourceFacility::InitFrom(SourceFacility* m) {
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 void SourceFacility::Tick(int time) {
-  LOG(cyclus::LEV_INFO3, "SrcFac") << FacName() << " is ticking {";
+  LOG(cyclus::LEV_INFO3, "SrcFac") << name() << " is ticking {";
   LOG(cyclus::LEV_INFO4, "SrcFac") << "will offer " << capacity_
                                    << " kg of "
                                    << out_commod_ << ".";
@@ -105,7 +114,7 @@ void SourceFacility::Tick(int time) {
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 void SourceFacility::Tock(int time) {
-  LOG(cyclus::LEV_INFO3, "SrcFac") << FacName() << " is tocking {";
+  LOG(cyclus::LEV_INFO3, "SrcFac") << name() << " is tocking {";
   LOG(cyclus::LEV_INFO3, "SrcFac") << "}";
 }
 

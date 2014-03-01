@@ -169,14 +169,14 @@ void EnrichmentFacility::Build(cyclus::Model* parent) {
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 void EnrichmentFacility::Tick(int time) {
-  LOG(cyclus::LEV_INFO3, "EnrFac") << FacName() << " is ticking {";
+  LOG(cyclus::LEV_INFO3, "EnrFac") << name() << " is ticking {";
   LOG(cyclus::LEV_INFO3, "EnrFac") << "}";
   current_swu_capacity_ = swu_capacity();
 }
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 void EnrichmentFacility::Tock(int time) {
-  LOG(cyclus::LEV_INFO3, "EnrFac") << FacName() << " is tocking {";
+  LOG(cyclus::LEV_INFO3, "EnrFac") << name() << " is tocking {";
   LOG(cyclus::LEV_INFO3, "EnrFac") << "}";
 }
 

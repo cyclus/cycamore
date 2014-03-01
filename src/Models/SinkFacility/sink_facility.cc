@@ -29,6 +29,11 @@ SinkFacility::~SinkFacility() {}
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 std::string SinkFacility::schema() {
   return
+    "  <optional>                          \n"
+    "    <element name=\"lifetime\">            \n"
+    "      <data type=\"nonNegativeInteger\"/>  \n"
+    "    </element>                             \n"
+    "  </optional>                         \n"
     "  <element name =\"input\">          \n"
     "    <element name = \"commodities\"> \n"
     "      <oneOrMore>                    \n"
@@ -52,6 +57,9 @@ void SinkFacility::InitFrom(cyclus::QueryEngine* qe) {
   using std::string;
   using std::numeric_limits;
   using boost::lexical_cast;
+
+  int lt = context()->sim_dur() + 1;
+  lifetime_ = cyclus::GetOptionalQuery<int>(qe, "lifetime", lt);
   cyclus::QueryEngine* input = qe->QueryElement("input");
 
   cyclus::QueryEngine* commodities = input->QueryElement("commodities");
@@ -103,6 +111,7 @@ cyclus::Model* SinkFacility::Clone() {
 void SinkFacility::InitFrom(SinkFacility* m) {
   FacilityModel::InitFrom(m);
   
+  lifetime_ = m->lifetime_;
   capacity(m->capacity());
   SetMaxInventorySize(m->MaxInventorySize());
   capacity_ = m->capacity_;
@@ -196,7 +205,7 @@ void SinkFacility::AcceptGenRsrcTrades(
 void SinkFacility::Tick(int time) {
   using std::string;
   using std::vector;
-  LOG(cyclus::LEV_INFO3, "SnkFac") << FacName() << " is ticking {";
+  LOG(cyclus::LEV_INFO3, "SnkFac") << name() << " is ticking {";
 
   double requestAmt = RequestAmt();
   // inform the simulation about what the sink facility will be requesting
@@ -213,7 +222,7 @@ void SinkFacility::Tick(int time) {
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 void SinkFacility::Tock(int time) {
-  LOG(cyclus::LEV_INFO3, "SnkFac") << FacName() << " is tocking {";
+  LOG(cyclus::LEV_INFO3, "SnkFac") << name() << " is tocking {";
 
   // On the tock, the sink facility doesn't really do much.
   // Maybe someday it will record things.
