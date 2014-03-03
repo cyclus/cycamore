@@ -57,7 +57,6 @@ class TestRegression(object):
             if os.path.isfile(outf):
                 os.remove(outf)
 
-
     def test_regression(self, check_deterministic=False):
         """Test for all inputs in sim_files. Checks if reference and current cyclus 
         output is the same.
@@ -85,5 +84,3 @@ class TestRegression(object):
                     else:         
                         nondeterm = compare_nondeterm(sim_files[f], tmp_file)
                         assert_true(nondeterm)
-                    
-           
