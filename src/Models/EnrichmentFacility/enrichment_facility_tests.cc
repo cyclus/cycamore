@@ -447,6 +447,7 @@ TEST_F(EnrichmentFacilityTest, BidConverters) {
   using cyclus::enrichment::UraniumAssay;
   using cyclus::enrichment::SwuRequired;
   using cyclus::enrichment::FeedQty;
+  cyclus::Env::SetNucDataPath();
 
   double qty = 5; // 5 kg
   double product_assay = 0.05; // of 5 w/o enriched U
@@ -462,8 +463,8 @@ TEST_F(EnrichmentFacilityTest, BidConverters) {
 
   Material::Ptr offer = DoOffer(target);
 
-  EXPECT_DOUBLE_EQ(swuc.convert(target), swuc.convert(offer));
-  EXPECT_DOUBLE_EQ(natuc.convert(target), natuc.convert(offer));
+  EXPECT_NEAR(swuc.convert(target), swuc.convert(offer), 0.001);
+  EXPECT_NEAR(natuc.convert(target), natuc.convert(offer), 0.001);
 }
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
