@@ -156,10 +156,8 @@ SinkFacility::GetGenRsrcRequests() {
     std::vector<std::string>::const_iterator it;
     for (it = in_commods_.begin(); it != in_commods_.end(); ++it) {
       std::string quality = ""; // not clear what this should be..
-      std::string units = ""; // not clear what this should be..
       GenericResource::Ptr rsrc = GenericResource::CreateUntracked(amt,
-                                                                   quality,
-                                                                   units);
+                                                                   quality);
       port->AddRequest(rsrc, this, *it);
     }
     
