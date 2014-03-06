@@ -1,10 +1,8 @@
 // source_facility_tests.cc
-#ifndef CYCAMORE_MODELS_SOURCE_FACILITY_SOURCE_FACILITY_TESTS_
-#define CYCAMORE_MODELS_SOURCE_FACILITY_SOURCE_FACILITY_TESTS_
+#ifndef CYCAMORE_SRC_MODELS_SOURCEFACILITY_SOURCE_FACILITY_TESTS_H_
+#define CYCAMORE_SRC_MODELS_SOURCEFACILITY_SOURCE_FACILITY_TESTS_H_
 
 #include <gtest/gtest.h>
-
-#include "source_facility.h"
 
 #include <boost/shared_ptr.hpp>
 
@@ -13,8 +11,9 @@
 #include "facility_model_tests.h"
 #include "material.h"
 #include "model_tests.h"
+#include "source_facility.h"
 
-//- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 class SourceFacilityTest : public ::testing::Test {
  public:
   cyclus::TestContext tc;
@@ -32,4 +31,4 @@ class SourceFacilityTest : public ::testing::Test {
       GetContext(int nreqs, std::string commodity);
 };
 
-#endif // CYCAMORE_MODELS_SOURCE_FACILITY_SOURCE_FACILITY_TESTS_
+#endif  // CYCAMORE_SRC_MODELS_SOURCEFACILITY_SOURCE_FACILITY_TESTS_H_
