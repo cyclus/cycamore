@@ -1,6 +1,6 @@
 // sink_facility.h
-#ifndef CYCAMORE_MODELS_SINK_FACILITY_H_
-#define CYCAMORE_MODELS_SINK_FACILITY_H_
+#ifndef CYCAMORE_SRC_MODELS_SINKFACILITY_SINK_FACILITY_H_
+#define CYCAMORE_SRC_MODELS_SINKFACILITY_SINK_FACILITY_H_
 
 #include <algorithm>
 #include <string>
@@ -19,7 +19,7 @@
 namespace cycamore {
 
 class Context;
-  
+
 /**
    @class SinkFacility
    This cyclus::FacilityModel requests a finite amount of its input commodity.
@@ -142,7 +142,7 @@ class SinkFacility : public cyclus::FacilityModel  {
   /// that it is assumed the SinkFacility operates on a single resource type!
   virtual std::set<cyclus::RequestPortfolio<cyclus::Material>::Ptr>
       GetMatlRequests();
-  
+
   /// @brief SinkFacilities request GenericResources of their given
   /// commodity. Note that it is assumed the SinkFacility operates on a single
   /// resource type!
@@ -152,12 +152,12 @@ class SinkFacility : public cyclus::FacilityModel  {
   /// @brief SinkFacilities place accepted trade Materials in their Inventory
   virtual void AcceptMatlTrades(
       const std::vector< std::pair<cyclus::Trade<cyclus::Material>,
-      cyclus::Material::Ptr> >& responses);
+                                   cyclus::Material::Ptr> >& responses);
 
   /// @brief SinkFacilities place accepted trade Materials in their Inventory
   virtual void AcceptGenRsrcTrades(
       const std::vector< std::pair<cyclus::Trade<cyclus::GenericResource>,
-      cyclus::GenericResource::Ptr> >& responses);
+                                   cyclus::GenericResource::Ptr> >& responses);
   /* --- */
 
   /* --- SinkFacility Members --- */
@@ -165,41 +165,55 @@ class SinkFacility : public cyclus::FacilityModel  {
      add a commodity to the set of input commodities
      @param name the commodity name
    */
-  inline void AddCommodity(std::string name) { in_commods_.push_back(name); }
+  inline void AddCommodity(std::string name) {
+    in_commods_.push_back(name);
+  }
 
   /**
-     sets the size of the storage inventory for received material
-     @param size the storage size
-   */
-  inline void SetMaxInventorySize(double size) { inventory_.set_capacity(size); }
+    sets the size of the storage inventory for received material
+    @param size the storage size
+    */
+  inline void SetMaxInventorySize(double size) {
+    inventory_.set_capacity(size);
+  }
 
   /// @return the maximum inventory storage size
-  inline double MaxInventorySize() const { return inventory_.capacity(); }
+  inline double MaxInventorySize() const {
+    return inventory_.capacity();
+  }
 
   /// @return the current inventory storage size
-  inline double InventorySize() const { return inventory_.quantity(); }
+  inline double InventorySize() const {
+    return inventory_.quantity();
+  }
 
   /**
-     determines the amount to request
-   */
+    determines the amount to request
+    */
   inline double RequestAmt() const {
     return std::min(capacity_, std::max(0.0, inventory_.space()));
   }
-    
+
   /**
-     sets the capacity of a material generated at any given time step
-     @param capacity the reception capacity
-   */
-  inline void capacity(double capacity) { capacity_ = capacity; }
+    sets the capacity of a material generated at any given time step
+    @param capacity the reception capacity
+    */
+  inline void capacity(double capacity) {
+    capacity_ = capacity;
+  }
 
   /// @return the reception capacity at any given time step
-  inline double capacity() const { return capacity_; }
+  inline double capacity() const {
+    return capacity_;
+  }
 
   /// @return the input commodities
   inline const std::vector<std::string>&
-      input_commodities() const { return in_commods_; }
+      input_commodities() const {
+        return in_commods_;
+      }
 
- private: 
+ private:
   /**
      all facilities must have at least one input commodity
    */
@@ -221,7 +235,6 @@ class SinkFacility : public cyclus::FacilityModel  {
   cyclus::ResourceBuff inventory_;
 };
 
-} // namespace cycamore
+}  // namespace cycamore
 
-#endif // CYCAMORE_MODELS_SINK_FACILITY_H_
-
+#endif  // CYCAMORE_SRC_MODELS_SINKFACILITY_SINK_FACILITY_H_

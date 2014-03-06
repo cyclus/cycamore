@@ -1,11 +1,13 @@
 // sink_facility_tests.cc
+#ifndef CYCAMORE_SRC_MODELS_SINKFACILITY_SINK_FACILITY_TESTS_H_
+#define CYCAMORE_SRC_MODELS_SINKFACILITY_SINK_FACILITY_TESTS_H_
+
 #include <gtest/gtest.h>
 
 #include "sink_facility.h"
-
 #include "test_context.h"
 
-//- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 class SinkFacilityTest : public ::testing::Test {
  protected:
   cyclus::TestContext tc_;
@@ -19,3 +21,4 @@ class SinkFacilityTest : public ::testing::Test {
   void InitParameters();
   void SetUpSinkFacility();
 };
+#endif  // CYCAMORE_SRC_MODELS_SINKFACILITY_SINK_FACILITY_TESTS_H_
