@@ -1,6 +1,6 @@
 // source_facility.h
-#ifndef CYCAMORE_MODELS__SOURCE_FACILITY_H_
-#define CYCAMORE_MODELS__SOURCE_FACILITY_H_
+#ifndef CYCAMORE_SRC_MODELS_SOURCEFACILITY_SOURCE_FACILITY_H_
+#define CYCAMORE_SRC_MODELS_SOURCEFACILITY_SOURCE_FACILITY_H_
 
 #include <set>
 #include <vector>
@@ -20,11 +20,10 @@ class Context;
 /**
    @class SourceFacility
    This cyclus::FacilityModel provides a simple source of some capacity
-   (possibly infinite) of some commodity/Recipe.
+   (possibly infinite) of some commodity/recipe.
 
    The SourceFacility class inherits from the cyclus::FacilityModel class and is
    dynamically loaded by the Model class when requested.
-
 
    @section introduction Introduction
    The SourceFacility is a facility type in Cyclus capable of providing
@@ -91,8 +90,9 @@ class Context;
    What is the best way to allow offers of an infinite amount of
    material on a market?
  */
-class SourceFacility : public cyclus::FacilityModel,
-  public cyclus::CommodityProducer {
+class SourceFacility
+    : public cyclus::FacilityModel,
+      public cyclus::CommodityProducer {
  public:
   /* --- Module Members --- */
   /**
@@ -142,14 +142,14 @@ class SourceFacility : public cyclus::FacilityModel,
      @param time is the time to perform the tock
    */
   virtual void Tock(int time);
-  
+
   /// @brief Responds to each request for this source facility's commodity.
   /// If a given request is more than this facility's capacity, it will offer
   /// its capacity.
   virtual std::set<cyclus::BidPortfolio<cyclus::Material>::Ptr>
       GetMatlBids(const cyclus::CommodMap<cyclus::Material>::type&
                   commod_requests);
-  
+
   /// @brief respond to each trade with a material made from this facility's
   /// recipe
   ///
@@ -158,7 +158,7 @@ class SourceFacility : public cyclus::FacilityModel,
   virtual void GetMatlTrades(
     const std::vector< cyclus::Trade<cyclus::Material> >& trades,
     std::vector<std::pair<cyclus::Trade<cyclus::Material>,
-    cyclus::Material::Ptr> >& responses);
+                          cyclus::Material::Ptr> >& responses);
   /* --- */
 
   /* --- SourceFacility Members --- */
@@ -172,34 +172,46 @@ class SourceFacility : public cyclus::FacilityModel,
      sets the output commodity name
      @param name the commodity name
    */
-  inline void commodity(std::string name) { out_commod_ = name; }
+  inline void commodity(std::string name) {
+    out_commod_ = name;
+  }
 
   /// @return the output commodity
-  inline std::string commodity() const { return out_commod_; }
+  inline std::string commodity() const {
+    return out_commod_;
+  }
 
   /**
-     sets the capacity of a material generated at any given time step
-     @param capacity the production capacity
-   */
+    sets the capacity of a material generated at any given time step
+    @param capacity the production capacity
+    */
   inline void capacity(double capacity) {
     capacity_ = capacity;
     current_capacity_ = capacity_;
   }
 
   /// @return the production capacity at any given time step
-  inline double capacity() const { return capacity_; }
+  inline double capacity() const {
+    return capacity_;
+  }
 
   /**
-     sets the name of the recipe to be produced
-     @param name the recipe name
-   */
-  inline void recipe(std::string name) { recipe_name_ = name; }
+    sets the name of the recipe to be produced
+    @param name the recipe name
+    */
+  inline void recipe(std::string name) {
+    recipe_name_ = name;
+  }
 
   /// @return the name of the output recipe
-  inline std::string recipe() const { return recipe_name_; }
+  inline std::string recipe() const {
+    return recipe_name_;
+  }
 
   /// @return the current timestep's capacity
-  inline double current_capacity() const { return current_capacity_; }
+  inline double current_capacity() const {
+    return current_capacity_;
+  }
 
  private:
   /**
@@ -232,7 +244,6 @@ class SourceFacility : public cyclus::FacilityModel,
   /* --- */
 };
 
-} // namespace cycamore
+}  // namespace cycamore
 
-#endif // CYCAMORE_MODELS__SOURCE_FACILITY_H_
-
+#endif   // CYCAMORE_SRC_MODELS_SOURCEFACILITY_SOURCE_FACILITY_H_

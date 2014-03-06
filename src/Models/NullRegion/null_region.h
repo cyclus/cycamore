@@ -1,6 +1,6 @@
 // null_region.h
-#ifndef _NULLREGION_H
-#define _NULLREGION_H
+#ifndef CYCAMORE_SRC_MODELS_NULLREGION_NULL_REGION_H_
+#define CYCAMORE_SRC_MODELS_NULLREGION_NULL_REGION_H_
 
 #include "region_model.h"
 
@@ -59,7 +59,6 @@ class NullRegion : public cyclus::RegionModel  {
   virtual ~NullRegion();
 
   /* ------------------- */
-
 };
-} // namespace cycamore 
-#endif
+}  // namespace cycamore
+#endif  // CYCAMORE_SRC_MODELS_NULLREGION_NULL_REGION_H_

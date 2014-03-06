@@ -1,36 +1,36 @@
 // source_facility_tests.cc
+#include "source_facility_tests.h"
+
 #include <gtest/gtest.h>
 
 #include <sstream>
 
 #include "cyc_limits.h"
 #include "resource_helpers.h"
-#include "xml_query_engine.h"
 #include "xml_parser.h"
+#include "xml_query_engine.h"
 
-#include "source_facility_tests.h"
-
-//- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 void SourceFacilityTest::SetUp() {
   InitParameters();
   SetUpSourceFacility();
 }
 
-//- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 void SourceFacilityTest::TearDown() {
 }
 
-//- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 void SourceFacilityTest::InitParameters() {
   commod = "commod";
   recipe_name = "recipe";
-  capacity = 5; // some magic number..
+  capacity = 5;  // some magic number..
 
   recipe = cyclus::Composition::CreateFromAtom(cyclus::CompMap());
   tc.get()->AddRecipe(recipe_name, recipe);
 }
 
-//- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 void SourceFacilityTest::SetUpSourceFacility() {
   src_facility = new cycamore::SourceFacility(tc.get());
   src_facility->commodity(commod);
@@ -38,7 +38,7 @@ void SourceFacilityTest::SetUpSourceFacility() {
   src_facility->capacity(capacity);
 }
 
-//- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 TEST_F(SourceFacilityTest, InitialState) {
   EXPECT_EQ(src_facility->capacity(), capacity);
   EXPECT_EQ(src_facility->commodity(), commod);
@@ -46,7 +46,7 @@ TEST_F(SourceFacilityTest, InitialState) {
   EXPECT_EQ(src_facility->current_capacity(), capacity);
 }
 
-//- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 TEST_F(SourceFacilityTest, XMLInit) {
   std::stringstream ss;
   ss << "<start>"
@@ -74,7 +74,7 @@ TEST_F(SourceFacilityTest, XMLInit) {
   EXPECT_EQ(fac.current_capacity(), capacity);
 }
 
-//- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 TEST_F(SourceFacilityTest, Clone) {
   cyclus::Context* ctx = tc.get();
   cycamore::SourceFacility* cloned_fac = dynamic_cast<cycamore::SourceFacility*>
@@ -87,21 +87,21 @@ TEST_F(SourceFacilityTest, Clone) {
 
 }
 
-//- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 TEST_F(SourceFacilityTest, Print) {
   EXPECT_NO_THROW(std::string s = src_facility->str());
 }
 
-//- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 TEST_F(SourceFacilityTest, GetOffer) {
   using cyclus::Material;
-  
+
   double qty = capacity - 1;
   Material::Ptr mat = Material::CreateBlank(qty);
   Material::Ptr obs_mat = src_facility->GetOffer(mat);
   EXPECT_EQ(obs_mat->quantity(), qty);
   EXPECT_EQ(obs_mat->comp(), recipe);
-  
+
   qty = capacity + 1;
   mat = Material::CreateBlank(qty);
   obs_mat = src_facility->GetOffer(mat);
@@ -115,19 +115,19 @@ TEST_F(SourceFacilityTest, GetOffer) {
   EXPECT_EQ(obs_mat->comp(), recipe);
 }
 
-//- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 TEST_F(SourceFacilityTest, AddBids) {
   using cyclus::Bid;
   using cyclus::BidPortfolio;
   using cyclus::CapacityConstraint;
   using cyclus::ExchangeContext;
   using cyclus::Material;
-  
+
   int nreqs = 5;
-  
+
   boost::shared_ptr< cyclus::ExchangeContext<Material> >
       ec = GetContext(nreqs, commod);
-  
+
   std::set<BidPortfolio<Material>::Ptr> ports =
       src_facility->GetMatlBids(ec.get()->commod_requests);
 
@@ -137,14 +137,14 @@ TEST_F(SourceFacilityTest, AddBids) {
   BidPortfolio<Material>::Ptr port = *ports.begin();
   EXPECT_EQ(port->bidder(), src_facility);
   EXPECT_EQ(port->bids().size(), nreqs);
-  
+
   const std::set< CapacityConstraint<Material> >& constrs = port->constraints();
   ASSERT_TRUE(constrs.size() > 0);
   EXPECT_EQ(constrs.size(), 1);
-  EXPECT_EQ(*constrs.begin(), CapacityConstraint<Material>(capacity));  
+  EXPECT_EQ(*constrs.begin(), CapacityConstraint<Material>(capacity));
 }
 
-//- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 TEST_F(SourceFacilityTest, Response) {
   using cyclus::Bid;
   using cyclus::Material;
@@ -189,13 +189,13 @@ TEST_F(SourceFacilityTest, Response) {
   // too much qty, capn!
   EXPECT_THROW(src_facility->GetMatlTrades(trades, responses),
                cyclus::ValueError);
-  
+
   // reset!
   src_facility->Tick(1);
   ASSERT_DOUBLE_EQ(src_facility->current_capacity(), capacity);
 }
 
-//- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 boost::shared_ptr< cyclus::ExchangeContext<cyclus::Material> >
 SourceFacilityTest::GetContext(int nreqs, std::string commod) {
   double qty = 3;
@@ -211,19 +211,19 @@ SourceFacilityTest::GetContext(int nreqs, std::string commod) {
   return ec;
 }
 
-//- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 cyclus::Model* SourceFacilityModelConstructor(cyclus::Context* ctx) {
   using cycamore::SourceFacility;
   return dynamic_cast<cyclus::Model*>(new SourceFacility(ctx));
 }
 
-//- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 cyclus::FacilityModel* SourceFacilityConstructor(cyclus::Context* ctx) {
   using cycamore::SourceFacility;
   return dynamic_cast<cyclus::FacilityModel*>(new SourceFacility(ctx));
 }
 
-//- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 INSTANTIATE_TEST_CASE_P(SourceFac, FacilityModelTests,
                         Values(&SourceFacilityConstructor));
 INSTANTIATE_TEST_CASE_P(SourceFac, ModelTests,
