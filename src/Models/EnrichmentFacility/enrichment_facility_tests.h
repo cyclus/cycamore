@@ -7,6 +7,7 @@
 #include <boost/shared_ptr.hpp>
 
 #include "test_context.h"
+#include "env.h"
 #include "exchange_context.h"
 #include "material.h"
 
