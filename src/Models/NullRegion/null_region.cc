@@ -9,17 +9,16 @@ namespace cycamore {
  * --------------------
  */
 
-//- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-NullRegion::NullRegion(cyclus::Context* ctx)
-    : cyclus::RegionModel(ctx) {}
+// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+NullRegion::NullRegion(cyclus::Context* ctx) : cyclus::RegionModel(ctx) {}
 
-//- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 NullRegion::~NullRegion() {}
 
-//- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 extern "C" cyclus::Model* ConstructNullRegion(cyclus::Context* ctx) {
   return new NullRegion(ctx);
 }
 
 /* -------------------- */
-} // namespace cycamore
+}  // namespace cycamore
