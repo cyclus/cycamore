@@ -425,7 +425,7 @@ void BatchReactor::Tick(int time) {
   LOG(cyclus::LEV_DEBUG4, "BReact") << "    NStorage: " << StorageCount();
   LOG(cyclus::LEV_DEBUG4, "BReact") << "    Spillover Qty: " << spillover_->quantity();
 
-  if (lifetime() != -1 && context()->time() >= birthtime() + lifetime()) {
+  if (lifetime() != -1 && context()->time() >= enter_time() + lifetime()) {
     int ncore = core_.count();
     LOG(cyclus::LEV_DEBUG1, "BReact") << "lifetime reached, moving out:"
                                       << ncore << " batches.";

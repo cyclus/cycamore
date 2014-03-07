@@ -203,7 +203,7 @@ void InproReactor::Tick(int time) {
                                     << phase_names_[phase_];
 
 
-  if (lifetime() != -1 && time >= lifetime() + birthtime()) {
+  if (lifetime() != -1 && time >= lifetime() + enter_time()) {
     SetPhase(END);
   }
 
