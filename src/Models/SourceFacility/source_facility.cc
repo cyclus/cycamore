@@ -44,7 +44,7 @@ std::string SourceFacility::schema() {
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 void SourceFacility::InitFrom(cyclus::QueryEngine* qe) {
   cyclus::FacilityModel::InitFrom(qe);
-  qe = qe->QueryElement("model/" + ModelImpl());
+  qe = qe->QueryElement("model/" + model_impl());
   
   using std::string;
   using std::numeric_limits;
