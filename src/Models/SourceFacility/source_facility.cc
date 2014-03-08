@@ -40,8 +40,8 @@ void SourceFacility::InfileToDb(cyc::QueryEngine* qe, cyc::DbInit di) {
   using boost::lexical_cast;
   cyc::QueryEngine* output = qe->QueryElement("output");
 
-  std::string recipe = output->GetElementContent("recipe");
-  std::string out_commod = output->GetElementContent("outcommodity");
+  std::string recipe = output->GetString("recipe");
+  std::string out_commod = output->GetString("outcommodity");
   double cap = cyc::GetOptionalQuery<double>(output,
                                                 "output_capacity",
                                                 numeric_limits<double>::max());

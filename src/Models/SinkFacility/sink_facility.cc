@@ -58,7 +58,7 @@ void SinkFacility::InitFrom(cyclus::QueryEngine* qe) {
   string query = "incommodity";
   int nCommodities = commodities->NElementsMatchingQuery(query);
   for (int i = 0; i < nCommodities; i++) {
-    AddCommodity(commodities->GetElementContent(query, i));
+    AddCommodity(commodities->GetString(query, i));
   }
 
   double cap = cyclus::GetOptionalQuery<double>(input,

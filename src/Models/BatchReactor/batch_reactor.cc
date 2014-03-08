@@ -207,20 +207,20 @@ void BatchReactor::InitFrom(cyclus::QueryEngine* qe) {
   int nfuel = qe->NElementsMatchingQuery("fuel");
   for (int i = 0; i < nfuel; i++) {
     QueryEngine* fuel = qe->QueryElement("fuel", i);
-    std::string in_c = fuel->GetElementContent("incommodity");
-    std::string in_r = fuel->GetElementContent("inrecipe");
-    std::string out_c = fuel->GetElementContent("outcommodity");
-    std::string out_r = fuel->GetElementContent("outrecipe");
+    std::string in_c = fuel->GetString("incommodity");
+    std::string in_r = fuel->GetString("inrecipe");
+    std::string out_c = fuel->GetString("outcommodity");
+    std::string out_r = fuel->GetString("outrecipe");
     crctx_.AddInCommod(in_c, in_r, out_c, out_r);
   }
 
   // facility data required
   string data;
-  data = qe->GetElementContent("processtime");
+  data = qe->GetString("processtime");
   process_time(lexical_cast<int>(data));
-  data = qe->GetElementContent("nbatches");
+  data = qe->GetString("nbatches");
   n_batches(lexical_cast<int>(data));
-  data = qe->GetElementContent("batchsize");
+  data = qe->GetString("batchsize");
   batch_size(lexical_cast<double>(data));
 
   // facility data optional
@@ -242,33 +242,33 @@ void BatchReactor::InitFrom(cyclus::QueryEngine* qe) {
     if (ic->NElementsMatchingQuery("reserves") > 0) {
       QueryEngine* reserves = ic->QueryElement("reserves");
       ics_.AddReserves(
-          lexical_cast<int>(reserves->GetElementContent("nbatches")),
-          reserves->GetElementContent("recipe"),
-          reserves->GetElementContent("commodity"));
+          lexical_cast<int>(reserves->GetString("nbatches")),
+          reserves->GetString("recipe"),
+          reserves->GetString("commodity"));
     }
     if (ic->NElementsMatchingQuery("core") > 0) {
       QueryEngine* core = ic->QueryElement("core");
       ics_.AddCore(
-          lexical_cast<int>(core->GetElementContent("nbatches")),
-          core->GetElementContent("recipe"),
-          core->GetElementContent("commodity"));
+          lexical_cast<int>(core->GetString("nbatches")),
+          core->GetString("recipe"),
+          core->GetString("commodity"));
     }
     if (ic->NElementsMatchingQuery("storage") > 0) {
       QueryEngine* storage = ic->QueryElement("storage");
       ics_.AddStorage(
-          lexical_cast<int>(storage->GetElementContent("nbatches")),
-          storage->GetElementContent("recipe"),
-          storage->GetElementContent("commodity"));
+          lexical_cast<int>(storage->GetString("nbatches")),
+          storage->GetString("recipe"),
+          storage->GetString("commodity"));
     }
   }
 
   // commodity production
   QueryEngine* commodity = qe->QueryElement("commodity_production");
-  Commodity commod(commodity->GetElementContent("commodity"));
+  Commodity commod(commodity->GetString("commodity"));
   AddCommodity(commod);
-  data = commodity->GetElementContent("capacity");
+  data = commodity->GetString("capacity");
   CommodityProducer::SetCapacity(commod, lexical_cast<double>(data));
-  data = commodity->GetElementContent("cost");
+  data = commodity->GetString("cost");
   CommodityProducer::SetCost(commod, lexical_cast<double>(data));
 
   // trade preferences
@@ -278,8 +278,8 @@ void BatchReactor::InitFrom(cyclus::QueryEngine* qe) {
   if (nprefs > 0) {
     for (int i = 0; i < nprefs; i++) {
       QueryEngine* cp = qe->QueryElement("commod_pref", i);
-      c = cp->GetElementContent("incommodity");
-      pref = lexical_cast<double>(cp->GetElementContent("preference"));
+      c = cp->GetString("incommodity");
+      pref = lexical_cast<double>(cp->GetString("preference"));
       commod_prefs_[c] = pref;
     }
   }
@@ -289,9 +289,9 @@ void BatchReactor::InitFrom(cyclus::QueryEngine* qe) {
   if (nchanges > 0) {
     for (int i = 0; i < nchanges; i++) {
       QueryEngine* cp = qe->QueryElement("pref_change", i);
-      c = cp->GetElementContent("incommodity");
-      pref = lexical_cast<double>(cp->GetElementContent("new_pref"));
-      time = lexical_cast<int>(cp->GetElementContent("time"));
+      c = cp->GetString("incommodity");
+      pref = lexical_cast<double>(cp->GetString("new_pref"));
+      time = lexical_cast<int>(cp->GetString("time"));
       pref_changes_[time].push_back(std::make_pair(c, pref));
     }
   }
@@ -302,9 +302,9 @@ void BatchReactor::InitFrom(cyclus::QueryEngine* qe) {
   if (nchanges > 0) {
     for (int i = 0; i < nchanges; i++) {
       QueryEngine* cp = qe->QueryElement("recipe_change", i);
-      c = cp->GetElementContent("incommodity");
-      rec = cp->GetElementContent("new_recipe");
-      time = lexical_cast<int>(cp->GetElementContent("time"));
+      c = cp->GetString("incommodity");
+      rec = cp->GetString("new_recipe");
+      time = lexical_cast<int>(cp->GetString("time"));
       recipe_changes_[time].push_back(std::make_pair(c, rec));
     }
   }

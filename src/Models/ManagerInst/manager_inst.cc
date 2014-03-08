@@ -22,7 +22,7 @@ void ManagerInst::InitFrom(cyclus::QueryEngine* qe) {
   if (nEntries > 0) {
     // populate prototypes_
     for (int i = 0; i < nEntries; i++) {
-      name = qe->GetElementContent(query, i);
+      name = qe->GetString(query, i);
       RegisterAvailablePrototype(name);
     }
   }

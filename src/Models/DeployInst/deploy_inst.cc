@@ -45,9 +45,9 @@ void DeployInst::InitFrom(cyclus::QueryEngine* qe) {
   int nOrders = qe->NElementsMatchingQuery(query);
   for (int i = 0; i < nOrders; i++) {
     cyclus::QueryEngine* order = qe->QueryElement(query, i);
-    string name = order->GetElementContent("prototype");
-    int number = atoi(order->GetElementContent("number").c_str());
-    int time = atoi(order->GetElementContent("date").c_str());
+    string name = order->GetString("prototype");
+    int number = atoi(order->GetString("number").c_str());
+    int time = atoi(order->GetString("date").c_str());
     for (int j = 0; j < number; ++j) {
       build_sched_[time].push_back(name);
     }

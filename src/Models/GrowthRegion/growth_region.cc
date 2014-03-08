@@ -62,7 +62,7 @@ void GrowthRegion::InitFrom(cyclus::QueryEngine* qe) {
   for (int i = 0; i < nCommodities; i++) {
     cyclus::QueryEngine* iqe = qe->QueryElement(query, i);
 
-    std::string name = iqe->GetElementContent("name");
+    std::string name = iqe->GetString("name");
     commodities_.insert(cyclus::Commodity(name));
 
     std::string query = "demand";
@@ -70,8 +70,8 @@ void GrowthRegion::InitFrom(cyclus::QueryEngine* qe) {
     for (int j = 0; j < n; j++) {
       cyclus::QueryEngine* jqe = iqe->QueryElement(query, j);
       DemandInfo di;
-      di.type = jqe->GetElementContent("type");
-      di.params = jqe->GetElementContent("parameters");
+      di.type = jqe->GetString("type");
+      di.params = jqe->GetString("parameters");
       di.time = cyclus::GetOptionalQuery<int>(jqe, "start_time", 0);
       demands_[name].push_back(di);
     }

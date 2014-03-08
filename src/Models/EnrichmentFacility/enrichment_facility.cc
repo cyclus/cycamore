@@ -83,8 +83,8 @@ void EnrichmentFacility::InitFrom(cyclus::QueryEngine* qe) {
   string data;
 
   QueryEngine* input = qe->QueryElement("input");
-  in_commodity(input->GetElementContent("incommodity"));
-  in_recipe(input->GetElementContent("inrecipe"));
+  in_commodity(input->GetString("incommodity"));
+  in_recipe(input->GetString("inrecipe"));
 
   double limit = GetOptionalQuery<double>(input,
                                           "inventorysize",
@@ -92,9 +92,9 @@ void EnrichmentFacility::InitFrom(cyclus::QueryEngine* qe) {
   SetMaxInventorySize(limit);
 
   QueryEngine* output = qe->QueryElement("output");
-  out_commodity(output->GetElementContent("outcommodity"));
+  out_commodity(output->GetString("outcommodity"));
 
-  data = output->GetElementContent("tails_assay");
+  data = output->GetString("tails_assay");
   tails_assay(lexical_cast<double>(data));
 
   Material::Ptr feed = Material::CreateUntracked(0,
@@ -109,7 +109,7 @@ void EnrichmentFacility::InitFrom(cyclus::QueryEngine* qe) {
   double reserves = 0;
   if (qe->NElementsMatchingQuery("initial_condition") > 0) {
     QueryEngine* ic = qe->QueryElement("initial_condition");
-    reserves = lexical_cast<double>(ic->GetElementContent("reserves_qty"));
+    reserves = lexical_cast<double>(ic->GetString("reserves_qty"));
   }
   ics(InitCond(reserves));
 }

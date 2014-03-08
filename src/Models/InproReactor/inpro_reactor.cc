@@ -100,38 +100,38 @@ void InproReactor::InitFrom(cyclus::QueryEngine* qe) {
   using std::string;
   using boost::lexical_cast;
   cyclus::QueryEngine* input = qe->QueryElement("fuel_input");
-  set_in_commodity(input->GetElementContent("incommodity"));
-  set_in_recipe(input->GetElementContent("inrecipe"));
+  set_in_commodity(input->GetString("incommodity"));
+  set_in_recipe(input->GetString("inrecipe"));
 
   cyclus::QueryEngine* output = qe->QueryElement("fuel_output");
-  set_out_commodity(output->GetElementContent("outcommodity"));
-  set_out_recipe(output->GetElementContent("outrecipe"));
+  set_out_commodity(output->GetString("outcommodity"));
+  set_out_recipe(output->GetString("outrecipe"));
 
   string data;
-  data = qe->GetElementContent("cyclelength");
+  data = qe->GetString("cyclelength");
   set_cycle_length(lexical_cast<int>(data));
 
   int delay =
       cyclus::GetOptionalQuery<int>(qe, "refueldelay", refuel_delay());
   set_refuel_delay(delay);
 
-  data = qe->GetElementContent("incoreloading");
+  data = qe->GetString("incoreloading");
   set_in_core_loading(lexical_cast<double>(data));
 
   double loading = 
       cyclus::GetOptionalQuery<double>(qe, "outcoreloading", in_core_loading());
   set_out_core_loading(loading);
 
-  data = qe->GetElementContent("batchespercore");
+  data = qe->GetString("batchespercore");
   set_batches_per_core(lexical_cast<int>(data));
 
   cyclus::QueryEngine* commodity = qe->QueryElement("commodity_production");
-  cyclus::Commodity commod(commodity->GetElementContent("commodity"));
+  cyclus::Commodity commod(commodity->GetString("commodity"));
   AddCommodity(commod);
-  data = commodity->GetElementContent("capacity");
+  data = commodity->GetString("capacity");
   cyclus::CommodityProducer::SetCapacity(commod,
                                                         lexical_cast<double>(data));
-  data = commodity->GetElementContent("cost");
+  data = commodity->GetString("cost");
   cyclus::CommodityProducer::SetCost(commod,
                                                     lexical_cast<double>(data));
 }
