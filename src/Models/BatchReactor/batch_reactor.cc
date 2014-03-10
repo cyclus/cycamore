@@ -5,8 +5,6 @@
 #include <sstream>
 #include <cmath>
 
-#include <boost/lexical_cast.hpp>
-
 namespace cycamore {
 
 // static members
@@ -39,15 +37,7 @@ BatchReactor::~BatchReactor() {}
 std::string BatchReactor::schema() {
   return
       "  <!-- cyc::Material In/Out  -->           \n"
-      "  <oneOrMore>                                 \n"
-      "  <element name=\"fuel\">                     \n"
-      "   <ref name=\"incommodity\"/>                \n"
-      "   <ref name=\"inrecipe\"/>                   \n"
-      "   <ref name=\"outcommodity\"/>               \n"
-      "   <ref name=\"outrecipe\"/>                  \n"
-      "  </element>                                  \n"
-      "  </oneOrMore>                                \n"
-      "                                              \n"
+      + crctx_.schema() + 
       "  <!-- Facility Parameters -->                \n"
       "  <interleave>                                \n"
       "  <element name=\"processtime\">              \n"
@@ -189,26 +179,74 @@ std::string BatchReactor::schema() {
 void BatchReactor::InitFrom(cyc::QueryBackend* b) {
   cyc::FacilityModel::InitFrom(b);
 
-  QueryResult qr = b->Query("BatchReactorFuels", NULL);
+  crctx_.InitFrom(b);
+
+  // facility info
+  cyc::QueryResult qr = b->Query("Info", NULL);
+  process_time_ = qr.GetVal<int>(0, "processtime");
+  preorder_time_ = qr.GetVal<int>(0, "preorder_t");
+  refuel_time_ = qr.GetVal<int>(0, "refueltime");
+  start_time_ = qr.GetVal<int>(0, "starttime");
+  to_begin_time_ = qr.GetVal<int>(0, "tobegintime");
+  n_batches_ = qr.GetVal<int>(0, "nbatches");
+  n_load_ = qr.GetVal<int>(0, "nreload");
+  n_reserves_ = qr.GetVal<int>(0, "norder");
+  batch_size_ = qr.GetVal<double>(0, "batchsize");
+  phase_ = qr.GetVal<Phase>(0, "phase");
+
+  std::string out_commod = qr.GetVal<std::string>(0, "out_commod");
+  CommodityProducer::AddCommodity(out_commod);
+  CommodityProducer::SetCapacity(out_commod, qr.GetVal<double>(0, "out_commod_cap"));
+  CommodityProducer::SetCost(out_commod, qr.GetVal<double>(0, "out_commod_cap"));
+
+  // initial condition inventories
+  std::vector<cyc::Cond> conds;
+  conds.push_back(cyc::Cond("inventory", "==", std::string("reserves")));
+  qr = b->Query("InitialInv", &conds);
+  ics_.AddReserves(
+    qr.GetVal<int>(0, "nbatches"),
+    qr.GetVal<std::string>(0, "recipe"),
+    qr.GetVal<std::string>(0, "commod")
+    );
+  conds[0] = cyc::Cond("inventory", "==", std::string("core"));
+  qr = b->Query("InitialInv", &conds);
+  ics_.AddCore(
+    qr.GetVal<int>(0, "nbatches"),
+    qr.GetVal<std::string>(0, "recipe"),
+    qr.GetVal<std::string>(0, "commod")
+    );
+  conds[0] = cyc::Cond("inventory", "==", std::string("storage"));
+  qr = b->Query("InitialInv", &conds);
+  ics_.AddStorage(
+    qr.GetVal<int>(0, "nbatches"),
+    qr.GetVal<std::string>(0, "recipe"),
+    qr.GetVal<std::string>(0, "commod")
+    );
+
+  // trade preferences
+  qr = b->Query("CommodPrefs", NULL);
   for (int i = 0; i < qr.rows.size(); ++i) {
-    Commod inc = qr.GetVal<Commod>(
-    crctx_.AddInCommod(qr.GetVal<std::string>(i, "in_commod"), 
-                       qr.GetVal<std::string>(i, "in_recipe"), 
-                       qr.GetVal<std::string>(i, "out_commod"), 
-                       qr.GetVal<std::string>(i, "out_recipe"));
+    std::string c = qr.GetVal<std::string>(i, "incommodity");
+    commod_prefs_[c] = qr.GetVal<double>(i, "preference");
   }
 
-  // facility data required
-  process_time(lexical_cast<int>(data));
-  n_batches(lexical_cast<int>(data));
-  batch_size(lexical_cast<double>(data));
+  // pref changes
+  qr = b->Query("PrefChanges", NULL);
+  for (int i = 0; i < qr.rows.size(); ++i) {
+    std::string c = qr.GetVal<std::string>(i, "incommodity");
+    int t = qr.GetVal<int>(i, "time");
+    double new_pref = qr.GetVal<double>(i, "new_pref");
+    pref_changes_[t].push_back(std::make_pair(c, new_pref));
+  }
 
-  // facility data optional
-  refuel_time(refuel_t);
-  preorder_time(preorder_t);
-  n_load(nreload);
-  n_reserves(norder);
-
+  // pref changes
+  qr = b->Query("RecipeChanges", NULL);
+  for (int i = 0; i < qr.rows.size(); ++i) {
+    std::string c = qr.GetVal<std::string>(i, "incommodity");
+    int t = qr.GetVal<int>(i, "time");
+    std::string new_recipe = qr.GetVal<std::string>(i, "new_recipe");
+    recipe_changes_[t].push_back(std::make_pair(c, new_recipe));
+  }
 }
 
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -216,70 +254,69 @@ void BatchReactor::InfileToDb(cyc::QueryEngine* qe, cyc::DbInit di) {
   cyc::FacilityModel::InfileToDb(qe, di);
   qe = qe->QueryElement("model/" + model_impl());
 
-  using boost::lexical_cast;
   using cyc::Commodity;
   using cyc::CommodityProducer;
   using cyc::GetOptionalQuery;
   using cyc::QueryEngine;
   using std::string;
 
-  // in/out fuel
-  int nfuel = qe->NElementsMatchingQuery("fuel");
-  for (int i = 0; i < nfuel; i++) {
-    QueryEngine* fuel = qe->QueryElement("fuel", i);
-    di.NewDatum(this, "BatchReactorFuels")
-      ->AddVal("in_commod", qe->GetString("incommodity"))
-      ->AddVal("in_recipe", qe->GetString("inrecipe"))
-      ->AddVal("out_commod", qe->GetString("outcommodity"))
-      ->AddVal("out_recipe", qe->GetString("outrecipe"))
-      ->Record();
-  }
+  crctx_.InfileToDb(qe, di);
 
-  // facility data required
-  std::string processtime = qe->GetString("processtime");
+  // facility data
+  int processtime = qe->GetInt("processtime");
   int nbatches = qe->GetInt("nbatches");
   double batchsize = qe->GetDouble("batchsize");
-
-  // facility data optional
   int refuel_t = GetOptionalQuery<int>(qe, "refueltime", refuel_time());
   int preorder_t = GetOptionalQuery<int>(qe, "orderlookahead", preorder_time());
   int nreload = GetOptionalQuery<int>(qe, "nreload", n_load());
   int norder = GetOptionalQuery<int>(qe, "norder", n_reserves());
 
-  // initial condition
-  if (qe->NElementsMatchingQuery("initial_condition") > 0) {
-    QueryEngine* ic = qe->QueryElement("initial_condition");
-    if (ic->NElementsMatchingQuery("reserves") > 0) {
-      QueryEngine* reserves = ic->QueryElement("reserves");
-      ics_.AddReserves(
-          lexical_cast<int>(reserves->GetString("nbatches")),
-          reserves->GetString("recipe"),
-          reserves->GetString("commodity"));
-    }
-    if (ic->NElementsMatchingQuery("core") > 0) {
-      QueryEngine* core = ic->QueryElement("core");
-      ics_.AddCore(
-          lexical_cast<int>(core->GetString("nbatches")),
-          core->GetString("recipe"),
-          core->GetString("commodity"));
-    }
-    if (ic->NElementsMatchingQuery("storage") > 0) {
-      QueryEngine* storage = ic->QueryElement("storage");
-      ics_.AddStorage(
-          lexical_cast<int>(storage->GetString("nbatches")),
-          storage->GetString("recipe"),
-          storage->GetString("commodity"));
-    }
-  }
-
-  // commodity production
   QueryEngine* commodity = qe->QueryElement("commodity_production");
-  Commodity commod(commodity->GetString("commodity"));
-  AddCommodity(commod);
-  data = commodity->GetString("capacity");
-  CommodityProducer::SetCapacity(commod, lexical_cast<double>(data));
-  data = commodity->GetString("cost");
-  CommodityProducer::SetCost(commod, lexical_cast<double>(data));
+  std::string out_commod = commodity->GetString("commodity");
+  double commod_cap = commodity->GetDouble("capacity");
+  double commod_cost = commodity->GetDouble("cost");
+
+  di.NewDatum("Info")
+    ->AddVal("processtime", processtime)
+    ->AddVal("nbatches", nbatches)
+    ->AddVal("batchsize", batchsize)
+    ->AddVal("refueltime", refuel_t)
+    ->AddVal("preorder_t", preorder_t)
+    ->AddVal("nreload", nreload)
+    ->AddVal("norder", norder)
+    ->AddVal("starttime", -1)
+    ->AddVal("tobegintime", std::numeric_limits<int>::max())
+    ->AddVal("phase", INITIAL)
+    ->AddVal("out_commod", out_commod)
+    ->AddVal("out_commod_cap", commod_cap)
+    ->AddVal("out_commod_cost", commod_cost)
+    ->Record();
+
+  // initial condition inventories
+  std::vector<std::string> inv_names;
+  inv_names.push_back("reserves");
+  inv_names.push_back("core");
+  inv_names.push_back("storage");
+  for (int i = 0; i < inv_names.size(); ++i) {
+    int n = 0;
+    std::string recipe;
+    std::string commod;
+    if (qe->NElementsMatchingQuery("initial_condition") > 0) {
+      QueryEngine* ic = qe->QueryElement("initial_condition");
+      if (ic->NElementsMatchingQuery(inv_names[i]) > 0) {
+        QueryEngine* reserves = ic->QueryElement(inv_names[i]);
+        n = reserves->GetInt("nbatches");
+        recipe = reserves->GetString("recipe");
+        commod = reserves->GetString("commodity");
+      }
+    }
+    di.NewDatum("InitialInv")
+      ->AddVal("inventory", inv_names[i])
+      ->AddVal("nbatches", n)
+      ->AddVal("recipe", recipe)
+      ->AddVal("commod", commod)
+      ->Record();
+  }
 
   // trade preferences
   int nprefs = qe->NElementsMatchingQuery("commod_pref");
@@ -288,9 +325,10 @@ void BatchReactor::InfileToDb(cyc::QueryEngine* qe, cyc::DbInit di) {
   if (nprefs > 0) {
     for (int i = 0; i < nprefs; i++) {
       QueryEngine* cp = qe->QueryElement("commod_pref", i);
-      c = cp->GetString("incommodity");
-      pref = lexical_cast<double>(cp->GetString("preference"));
-      commod_prefs_[c] = pref;
+      di.NewDatum("CommodPrefs")
+        ->AddVal("incommodity", cp->GetString("incommodity"))
+        ->AddVal("preference", cp->GetDouble("preference"))
+        ->Record();
     }
   }
 
@@ -299,10 +337,11 @@ void BatchReactor::InfileToDb(cyc::QueryEngine* qe, cyc::DbInit di) {
   if (nchanges > 0) {
     for (int i = 0; i < nchanges; i++) {
       QueryEngine* cp = qe->QueryElement("pref_change", i);
-      c = cp->GetString("incommodity");
-      pref = lexical_cast<double>(cp->GetString("new_pref"));
-      time = lexical_cast<int>(cp->GetString("time"));
-      pref_changes_[time].push_back(std::make_pair(c, pref));
+      di.NewDatum("PrefChanges")
+        ->AddVal("incommodity", cp->GetString("incommodity"))
+        ->AddVal("new_pref", cp->GetDouble("new_pref"))
+        ->AddVal("time", cp->GetInt("time"))
+        ->Record();
     }
   }
 
@@ -312,12 +351,105 @@ void BatchReactor::InfileToDb(cyc::QueryEngine* qe, cyc::DbInit di) {
   if (nchanges > 0) {
     for (int i = 0; i < nchanges; i++) {
       QueryEngine* cp = qe->QueryElement("recipe_change", i);
-      c = cp->GetString("incommodity");
-      rec = cp->GetString("new_recipe");
-      time = lexical_cast<int>(cp->GetString("time"));
-      recipe_changes_[time].push_back(std::make_pair(c, rec));
+      di.NewDatum("RecipeChanges")
+        ->AddVal("incommodity", cp->GetString("incommodity"))
+        ->AddVal("new_recipe", cp->GetString("new_recipe"))
+        ->AddVal("time", cp->GetInt("time"))
+        ->Record();
     }
   }
+}
+
+void BatchReactor::Snapshot(cyc::DbInit di) {
+  crctx_.Snapshot(di);
+
+  std::set<cyc::Commodity, cyc::CommodityCompare>::iterator it;
+  it = CommodityProducer::ProducedCommodities().begin();
+  std::string out_commod = it->name();
+  double cost = CommodityProducer::ProductionCost(out_commod);
+  double cap = CommodityProducer::ProductionCapacity(out_commod);
+  di.NewDatum("Info")
+    ->AddVal("processtime", process_time_)
+    ->AddVal("nbatches", n_batches_)
+    ->AddVal("batchsize", batch_size_)
+    ->AddVal("refueltime", refuel_time_)
+    ->AddVal("preorder_t", preorder_time_)
+    ->AddVal("nreload", n_load_)
+    ->AddVal("norder", n_reserves_)
+    ->AddVal("starttime", start_time_)
+    ->AddVal("tobegintime", to_begin_time_)
+    ->AddVal("phase", static_cast<int>(phase_))
+    ->AddVal("out_commod", out_commod)
+    ->AddVal("out_commod_cap", cap)
+    ->AddVal("out_commod_cost", cost)
+    ->Record();
+
+  // initial condition inventories
+  di.NewDatum("InitialInv")
+    ->AddVal("inventory", std::string("reserves"))
+    ->AddVal("nbatches", ics_.n_reserves)
+    ->AddVal("recipe", ics_.reserves_rec)
+    ->AddVal("commod", ics_.reserves_commod)
+    ->Record();
+  di.NewDatum("InitialInv")
+    ->AddVal("inventory", std::string("core"))
+    ->AddVal("nbatches", ics_.n_core)
+    ->AddVal("recipe", ics_.core_rec)
+    ->AddVal("commod", ics_.core_commod)
+    ->Record();
+  di.NewDatum("InitialInv")
+    ->AddVal("inventory", std::string("storage"))
+    ->AddVal("nbatches", ics_.n_storage)
+    ->AddVal("recipe", ics_.storage_rec)
+    ->AddVal("commod", ics_.storage_commod)
+    ->Record();
+
+  // trade preferences
+  std::map<std::string, double>::iterator it2 = commod_prefs_.begin();
+  for (; it2 != commod_prefs_.end(); ++it2) {
+    di.NewDatum("CommodPrefs")
+      ->AddVal("incommodity", it2->first)
+      ->AddVal("preference", it2->second)
+      ->Record();
+  }
+
+  // pref changes
+  std::map<int, std::vector< std::pair< std::string, double > > >::iterator it3;
+  for (it3 = pref_changes_.begin(); it3 != pref_changes_.end(); ++it3) {
+    int t = it3->first;
+    for (int i = 0; i < it3->second.size(); ++i) {
+      std::string commod = it3->second[i].first;
+      double pref = it3->second[i].second;
+      di.NewDatum("PrefChanges")
+        ->AddVal("incommodity", commod)
+        ->AddVal("new_pref", pref)
+        ->AddVal("time", t)
+        ->Record();
+    }
+  }
+
+  // recipe changes
+  std::map<int, std::vector< std::pair< std::string, std::string > > >::iterator it4;
+  for (it4 = recipe_changes_.begin(); it4 != recipe_changes_.end(); ++it4) {
+    int t = it4->first;
+    for (int i = 0; i < it4->second.size(); ++i) {
+      std::string commod = it4->second[i].first;
+      std::string recipe = it4->second[i].second;
+      di.NewDatum("RecipeChanges")
+        ->AddVal("incommodity", commod)
+        ->AddVal("new_recipe", recipe)
+        ->AddVal("time", t)
+        ->Record();
+    }
+  }
+}
+
+void BatchReactor::InitInv(const cyc::Inventories& inv) {
+}
+
+cyc::Inventories BatchReactor::SnapshotInv() {
+  cyc::Inventories invs;
+  return invs;
 }
 
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -383,35 +515,29 @@ void BatchReactor::Build(cyc::Model* parent) {
   spillover_ = Material::Create(this, 0.0, context()->GetRecipe(rec));
 
   Material::Ptr mat;
-  if (ics_.reserves) {
-    for (int i = 0; i < ics_.n_reserves; ++i) {
-      mat = Material::Create(this,
-                             batch_size(),
-                             context()->GetRecipe(ics_.reserves_rec));
-      assert(ics_.reserves_commod != "");
-      crctx_.AddRsrc(ics_.reserves_commod, mat);
-      reserves_.Push(mat);
-    }
+  for (int i = 0; i < ics_.n_reserves; ++i) {
+    mat = Material::Create(this,
+                           batch_size(),
+                           context()->GetRecipe(ics_.reserves_rec));
+    assert(ics_.reserves_commod != "");
+    crctx_.AddRsrc(ics_.reserves_commod, mat);
+    reserves_.Push(mat);
   }
-  if (ics_.core) {
-    for (int i = 0; i < ics_.n_core; ++i) {
-      mat = Material::Create(this,
-                             batch_size(),
-                             context()->GetRecipe(ics_.core_rec));
-      assert(ics_.core_commod != "");
-      crctx_.AddRsrc(ics_.core_commod, mat);
-      core_.Push(mat);
-    }
+  for (int i = 0; i < ics_.n_core; ++i) {
+    mat = Material::Create(this,
+                           batch_size(),
+                           context()->GetRecipe(ics_.core_rec));
+    assert(ics_.core_commod != "");
+    crctx_.AddRsrc(ics_.core_commod, mat);
+    core_.Push(mat);
   }
-  if (ics_.storage) {
-    for (int i = 0; i < ics_.n_storage; ++i) {
-      mat = Material::Create(this,
-                             batch_size(),
-                             context()->GetRecipe(ics_.storage_rec));
-      assert(ics_.storage_commod != "");
-      crctx_.AddRsrc(ics_.storage_commod, mat);
-      storage_[ics_.storage_commod].Push(mat);
-    }
+  for (int i = 0; i < ics_.n_storage; ++i) {
+    mat = Material::Create(this,
+                           batch_size(),
+                           context()->GetRecipe(ics_.storage_rec));
+    assert(ics_.storage_commod != "");
+    crctx_.AddRsrc(ics_.storage_commod, mat);
+    storage_[ics_.storage_commod].Push(mat);
   }
 
   LOG(cyc::LEV_DEBUG2, "BReact") << "Batch Reactor entering the simuluation";

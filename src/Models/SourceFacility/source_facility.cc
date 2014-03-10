@@ -45,7 +45,7 @@ void SourceFacility::InfileToDb(cyc::QueryEngine* qe, cyc::DbInit di) {
   double cap = cyc::GetOptionalQuery<double>(output,
                                                 "output_capacity",
                                                 numeric_limits<double>::max());
-  di.NewDatum(this, "SourceFacility")
+  di.NewDatum("Info")
     ->AddVal("recipe", recipe)
     ->AddVal("out_commod", out_commod)
     ->AddVal("capacity", cap)
@@ -55,7 +55,7 @@ void SourceFacility::InfileToDb(cyc::QueryEngine* qe, cyc::DbInit di) {
 
 void SourceFacility::InitFrom(cyc::QueryBackend* b) {
   cyc::FacilityModel::InitFrom(b);
-  cyc::QueryResult qr = b->Query("SourceFacility", NULL);
+  cyc::QueryResult qr = b->Query("Info", NULL);
   recipe_name_ = qr.GetVal<std::string>(0, "recipe");
   out_commod_ = qr.GetVal<std::string>(0, "out_commod");
   capacity_ = qr.GetVal<double>(0, "capacity");
@@ -68,7 +68,7 @@ void SourceFacility::InitFrom(cyc::QueryBackend* b) {
 
 void SourceFacility::Snapshot(cyc::DbInit di) {
   cyc::FacilityModel::Snapshot(di);
-  di.NewDatum(this, "SourceFacility")
+  di.NewDatum("Info")
     ->AddVal("recipe", recipe_name_)
     ->AddVal("out_commod", out_commod_)
     ->AddVal("capacity", capacity_)

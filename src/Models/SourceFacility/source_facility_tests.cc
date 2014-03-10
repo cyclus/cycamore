@@ -5,7 +5,7 @@
 
 #include "cyc_limits.h"
 #include "resource_helpers.h"
-#include "xml_query_engine.h"
+#include "query_engine.h"
 #include "xml_parser.h"
 
 #include "source_facility_tests.h"

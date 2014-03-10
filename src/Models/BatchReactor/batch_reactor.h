@@ -125,40 +125,34 @@ class BatchReactor
 
   /// @brief a struct for initial conditions
   struct InitCond {
-    InitCond() : reserves(false), core(false), storage(false) {}
+    InitCond() : n_reserves(0), n_core(0), n_storage(0) {}
 
     void AddReserves(int n, std::string rec, std::string commod) {
-      reserves = true;
       n_reserves = n;
       reserves_rec = rec;
       reserves_commod = commod;
     }
 
     void AddCore(int n, std::string rec, std::string commod) {
-      core = true;
       n_core = n;
       core_rec = rec;
       core_commod = commod;
     }
 
     void AddStorage(int n, std::string rec, std::string commod) {
-      storage = true;
       n_storage = n;
       storage_rec = rec;
       storage_commod = commod;
     }
 
-    bool reserves;
     int n_reserves;
     std::string reserves_rec;
     std::string reserves_commod;
 
-    bool core;
     int n_core;
     std::string core_rec;
     std::string core_commod;
 
-    bool storage;
     int n_storage;
     std::string storage_rec;
     std::string storage_commod;
@@ -172,12 +166,17 @@ class BatchReactor
 
   virtual cyc::Model* Clone();
 
-  virtual std::string schema();
+  virtual void InfileToDb(cyc::QueryEngine* qe, cyc::DbInit di);
 
-  /// Initialize members related to derived module class
-  /// @param qe a pointer to a cyc::QueryEngine object containing
-  /// initialization data
-  virtual void InitFrom(cyc::QueryEngine* qe);
+  virtual void InitFrom(cyc::QueryBackend* b);
+
+  virtual void Snapshot(cyc::DbInit di);
+
+  virtual void InitInv(const cyc::Inventories& inv);
+
+  virtual cyc::Inventories SnapshotInv();
+
+  virtual std::string schema();
 
   /// initialize members from a different model
   void InitFrom(BatchReactor* m);
@@ -410,12 +409,6 @@ class BatchReactor
   Phase phase_;
 
   InitCond ics_;
-
-  typedef std::string Commod;
-  typedef std::string Recipe;
-  std::map<Commod, Commod> in_out_commod_;
-  std::map<Commod, Recipe> incommod_to_recipe_;
-  std::map<Commod, Recipe> outcommod_to_recipe_;
 
   cyc::CommodityRecipeContext crctx_;
 
