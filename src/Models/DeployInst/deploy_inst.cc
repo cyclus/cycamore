@@ -86,10 +86,10 @@ void DeployInsg::InfileToDb(cyc::QueryEngine* qe, cyc::DbInit di) {
 void DeployInsg::InitFrom(cyc::QueryBackend* b) {
   cyc::FacilityModel::InitFrom(b);
   cyc::QueryResult qr = b->Query("Info", NULL);
-  recipe_name_ = qr.GetVal<std::string>("recipe", 0);
-  out_commod_ = qr.GetVal<std::string>("out_commod", 0);
-  capacity_ = qr.GetVal<double>("capacity", 0);
-  current_capacity_ = qr.GetVal<double>("curr_capacity", 0);
+  recipe_name_ = qr.GetVal<std::string>("recipe");
+  out_commod_ = qr.GetVal<std::string>("out_commod");
+  capacity_ = qr.GetVal<double>("capacity");
+  current_capacity_ = qr.GetVal<double>("curr_capacity");
 
   cyc::Commodity commod(out_commod_);
   cyc::CommodityProducer::AddCommodity(commod);

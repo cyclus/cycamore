@@ -183,44 +183,44 @@ void BatchReactor::InitFrom(cyc::QueryBackend* b) {
 
   // facility info
   cyc::QueryResult qr = b->Query("Info", NULL);
-  process_time_ = qr.GetVal<int>("processtime", 0);
-  preorder_time_ = qr.GetVal<int>("preorder_t", 0);
-  refuel_time_ = qr.GetVal<int>("refueltime", 0);
-  start_time_ = qr.GetVal<int>("starttime", 0);
-  to_begin_time_ = qr.GetVal<int>("tobegintime", 0);
-  n_batches_ = qr.GetVal<int>("nbatches", 0);
-  n_load_ = qr.GetVal<int>("nreload", 0);
-  n_reserves_ = qr.GetVal<int>("norder", 0);
-  batch_size_ = qr.GetVal<double>("batchsize", 0);
-  phase_ = qr.GetVal<Phase>("phase", 0);
+  process_time_ = qr.GetVal<int>("processtime");
+  preorder_time_ = qr.GetVal<int>("preorder_t");
+  refuel_time_ = qr.GetVal<int>("refueltime");
+  start_time_ = qr.GetVal<int>("starttime");
+  to_begin_time_ = qr.GetVal<int>("tobegintime");
+  n_batches_ = qr.GetVal<int>("nbatches");
+  n_load_ = qr.GetVal<int>("nreload");
+  n_reserves_ = qr.GetVal<int>("norder");
+  batch_size_ = qr.GetVal<double>("batchsize");
+  phase_ = qr.GetVal<Phase>("phase");
 
-  std::string out_commod = qr.GetVal<std::string>("out_commod", 0);
+  std::string out_commod = qr.GetVal<std::string>("out_commod");
   CommodityProducer::AddCommodity(out_commod);
-  CommodityProducer::SetCapacity(out_commod, qr.GetVal<double>("out_commod_cap", 0));
-  CommodityProducer::SetCost(out_commod, qr.GetVal<double>("out_commod_cap", 0));
+  CommodityProducer::SetCapacity(out_commod, qr.GetVal<double>("out_commod_cap"));
+  CommodityProducer::SetCost(out_commod, qr.GetVal<double>("out_commod_cap"));
 
   // initial condition inventories
   std::vector<cyc::Cond> conds;
   conds.push_back(cyc::Cond("inventory", "==", std::string("reserves")));
   qr = b->Query("InitialInv", &conds);
   ics_.AddReserves(
-    qr.GetVal<int>("nbatches", 0),
-    qr.GetVal<std::string>("recipe", 0),
-    qr.GetVal<std::string>("commod", 0)
+    qr.GetVal<int>("nbatches"),
+    qr.GetVal<std::string>("recipe"),
+    qr.GetVal<std::string>("commod")
     );
   conds[0] = cyc::Cond("inventory", "==", std::string("core"));
   qr = b->Query("InitialInv", &conds);
   ics_.AddCore(
-    qr.GetVal<int>("nbatches", 0),
-    qr.GetVal<std::string>("recipe", 0),
-    qr.GetVal<std::string>("commod", 0)
+    qr.GetVal<int>("nbatches"),
+    qr.GetVal<std::string>("recipe"),
+    qr.GetVal<std::string>("commod")
     );
   conds[0] = cyc::Cond("inventory", "==", std::string("storage"));
   qr = b->Query("InitialInv", &conds);
   ics_.AddStorage(
-    qr.GetVal<int>("nbatches", 0),
-    qr.GetVal<std::string>("recipe", 0),
-    qr.GetVal<std::string>("commod", 0)
+    qr.GetVal<int>("nbatches"),
+    qr.GetVal<std::string>("recipe"),
+    qr.GetVal<std::string>("commod")
     );
 
   // trade preferences
