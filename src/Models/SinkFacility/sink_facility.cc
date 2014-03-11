@@ -119,7 +119,7 @@ SinkFacility::GetMatlRequests() {
   std::set<RequestPortfolio<Material>::Ptr> ports;
   RequestPortfolio<Material>::Ptr port(new RequestPortfolio<Material>());
   double amt = RequestAmt();
-  Material::Ptr mat = Material::CreateBlank(amt);
+  Material::Ptr mat = cyclus::NewBlankMaterial(amt);
 
   if (amt > cyclus::eps()) {
     CapacityConstraint<Material> cc(amt);

@@ -97,19 +97,19 @@ TEST_F(SourceFacilityTest, GetOffer) {
   using cyclus::Material;
   
   double qty = capacity - 1;
-  Material::Ptr mat = Material::CreateBlank(qty);
+  Material::Ptr mat = cyclus::NewBlankMaterial(qty);
   Material::Ptr obs_mat = src_facility->GetOffer(mat);
   EXPECT_EQ(obs_mat->quantity(), qty);
   EXPECT_EQ(obs_mat->comp(), recipe);
   
   qty = capacity + 1;
-  mat = Material::CreateBlank(qty);
+  mat = cyclus::NewBlankMaterial(qty);
   obs_mat = src_facility->GetOffer(mat);
   EXPECT_EQ(obs_mat->quantity(), capacity);
   EXPECT_EQ(obs_mat->comp(), recipe);
 
   qty = capacity;
-  mat = Material::CreateBlank(qty);
+  mat = cyclus::NewBlankMaterial(qty);
   obs_mat = src_facility->GetOffer(mat);
   EXPECT_EQ(obs_mat->quantity(), capacity);
   EXPECT_EQ(obs_mat->comp(), recipe);

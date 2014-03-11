@@ -16,15 +16,15 @@ namespace cycamore {
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 bool operator==(const BatchReactor::InitCond& l,
                 const BatchReactor::InitCond& r) {
-  bool reserves = (
+  bool reserves = (l.n_reserves != 0 &&
                    l.n_reserves == r.n_reserves &&
                    l.reserves_rec == r.reserves_rec &&
                    l.reserves_commod == r.reserves_commod);
-  bool core = (
+  bool core = (l.n_core != 0 &&
                l.n_core == r.n_core &&
                l.core_rec == r.core_rec &&
                l.core_commod == r.core_commod);
-  bool storage = (
+  bool storage = (l.n_storage != 0 &&
                   l.n_storage == r.n_storage &&
                   l.storage_rec == r.storage_rec &&
                   l.storage_commod == r.storage_commod);
@@ -333,23 +333,23 @@ TEST_F(BatchReactorTest, InitCond) {
 TEST_F(BatchReactorTest, AddBatches) {
   using cyclus::Material;
 
-  Material::Ptr mat = Material::CreateBlank(batch_size);
+  Material::Ptr mat = cyclus::NewBlankMaterial(batch_size);
   // mat to add, commodity, reserves, qty of spillover
   TestReserveBatches(mat, in_c1, 1, 0);
 
-  mat = Material::CreateBlank(batch_size - (1 + cyclus::eps()));
+  mat = cyclus::NewBlankMaterial(batch_size - (1 + cyclus::eps()));
   TestReserveBatches(mat, in_c1, 1, batch_size - (1 + cyclus::eps()));
 
-  mat = Material::CreateBlank((1 + cyclus::eps()));
+  mat = cyclus::NewBlankMaterial((1 + cyclus::eps()));
   TestReserveBatches(mat, in_c1, 2, 0);
 
-  mat = Material::CreateBlank(batch_size + (1 + cyclus::eps()));
+  mat = cyclus::NewBlankMaterial(batch_size + (1 + cyclus::eps()));
   TestReserveBatches(mat, in_c1, 3, 1 + cyclus::eps());
 
-  mat = Material::CreateBlank(batch_size - (1 + cyclus::eps()));
+  mat = cyclus::NewBlankMaterial(batch_size - (1 + cyclus::eps()));
   TestReserveBatches(mat, in_c1, 4, 0);
 
-  mat = Material::CreateBlank(1 + cyclus::eps());
+  mat = cyclus::NewBlankMaterial(1 + cyclus::eps());
   TestReserveBatches(mat, in_c1, 4, 1 + cyclus::eps());
 }
 
@@ -359,11 +359,11 @@ TEST_F(BatchReactorTest, BatchInOut) {
 
   EXPECT_THROW(TestBatchIn(1, 0), cyclus::Error);
 
-  Material::Ptr mat = Material::CreateBlank(batch_size);
+  Material::Ptr mat = cyclus::NewBlankMaterial(batch_size);
   TestReserveBatches(mat, in_c1, 1, 0);
   TestBatchIn(1, 0);
 
-  mat = Material::CreateBlank(batch_size * 2);
+  mat = cyclus::NewBlankMaterial(batch_size * 2);
   TestReserveBatches(mat, in_c1, 2, 0);
   TestBatchIn(2, 1);
 

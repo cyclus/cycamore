@@ -27,7 +27,7 @@ BatchReactor::BatchReactor(cyc::Context* ctx)
   if (phase_names_.empty()) {
     SetUpPhaseNames_();
   }
-  spillover_ = cyc::Material::CreateBlank(0);
+  spillover_ = cyc::NewBlankMaterial(0);
 }
 
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
