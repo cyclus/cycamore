@@ -21,19 +21,9 @@ typedef std::map<int, std::vector<std::string> > BuildSched;
    specific facilities as defined explicitly in the input file.
  */
 class DeployInst : public cyclus::InstModel {
-  /* --------------------
-   * all MODEL classes have these members
-   * --------------------
-   */
  public:
-  /**
-     Default constructor
-   */
   DeployInst(cyclus::Context* ctx);
 
-  /**
-     Destructor
-   */
   virtual ~DeployInst();
 
   virtual std::string schema();
@@ -54,21 +44,17 @@ class DeployInst : public cyclus::InstModel {
 
   void Build(cyclus::Model* parent);
 
-  /**
-     Initialize members related to derived module class
-     @param qe a pointer to a cyclus::QueryEngine object containing initialization data
-   */
-  virtual void InitFrom(cyclus::QueryEngine* qe);
+  virtual void InfileToDb(cyc::QueryEngine* qe, cyc::DbInit di);
 
-  /* ------------------- */
+  virtual void InitFrom(cyc::QueryBackend* b);
+
+  virtual void Snapshot(cyc::DbInit di);
 
  protected:
   /**
      a collection of orders to build
    */
   BuildSched build_sched_;
-
-  /* ------------------- */
 
 };
 } // namespace cycamore

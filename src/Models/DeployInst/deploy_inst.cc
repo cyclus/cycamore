@@ -7,14 +7,11 @@
 
 namespace cycamore {
 
-//- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 DeployInst::DeployInst(cyclus::Context* ctx)
     : cyclus::InstModel(ctx) {}
 
-//- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 DeployInst::~DeployInst() {}
 
-//- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 std::string DeployInst::schema() {
   return
     "<oneOrMore>                               \n"
@@ -32,7 +29,6 @@ std::string DeployInst::schema() {
     "</oneOrMore>                              \n";
 }
 
-//- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 void DeployInst::InitFrom(cyclus::QueryEngine* qe) {
   cyclus::InstModel::InitFrom(qe);
   qe = qe->QueryElement("model/" + model_impl());
@@ -54,7 +50,62 @@ void DeployInst::InitFrom(cyclus::QueryEngine* qe) {
   }
 }
 
-//- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+void DeployInsg::InfileToDb(cyc::QueryEngine* qe, cyc::DbInit di) {
+  cyc::InstModel::InfileToDb(qe, di);
+  qe = qe->QueryElement("model/" + model_impl());
+
+  int nOrders = qe->NElementsMatchingQuery("buildorder");
+  for (int i = 0; i < nOrders; i++) {
+    cyclus::QueryEngine* order = qe->QueryElement("buildorder", i);
+    string name = order->GetString("prototype");
+    int number = atoi(order->GetString("number").c_str());
+    int time = atoi(order->GetString("date").c_str());
+    for (int j = 0; j < number; ++j) {
+      build_sched_[time].push_back(name);
+    }
+  }
+
+  
+  using std::numeric_limits;
+  using boost::lexical_cast;
+  cyc::QueryEngine* output = qe->QueryElement("output");
+
+  std::string recipe = output->GetString("recipe");
+  std::string out_commod = output->GetString("outcommodity");
+  double cap = cyc::GetOptionalQuery<double>(output,
+                                                "output_capacity",
+                                                numeric_limits<double>::max());
+  di.NewDatum("Info")
+    ->AddVal("recipe", recipe)
+    ->AddVal("out_commod", out_commod)
+    ->AddVal("capacity", cap)
+    ->AddVal("curr_capacity", cap)
+    ->Record();
+}
+
+void DeployInsg::InitFrom(cyc::QueryBackend* b) {
+  cyc::FacilityModel::InitFrom(b);
+  cyc::QueryResult qr = b->Query("Info", NULL);
+  recipe_name_ = qr.GetVal<std::string>("recipe", 0);
+  out_commod_ = qr.GetVal<std::string>("out_commod", 0);
+  capacity_ = qr.GetVal<double>("capacity", 0);
+  current_capacity_ = qr.GetVal<double>("curr_capacity", 0);
+
+  cyc::Commodity commod(out_commod_);
+  cyc::CommodityProducer::AddCommodity(commod);
+  cyc::CommodityProducer::SetCapacity(commod, capacity_);
+}
+
+void DeployInsg::Snapshot(cyc::DbInit di) {
+  cyc::FacilityModel::Snapshot(di);
+  di.NewDatum("Info")
+    ->AddVal("recipe", recipe_name_)
+    ->AddVal("out_commod", out_commod_)
+    ->AddVal("capacity", capacity_)
+    ->AddVal("curr_capacity", current_capacity_)
+    ->Record();
+}
+
 void DeployInst::Build(cyclus::Model* parent) {
   cyclus::InstModel::Build(parent);
   BuildSched::iterator it;
@@ -67,18 +118,8 @@ void DeployInst::Build(cyclus::Model* parent) {
   }
 }
 
-/* ------------------- */
-
-
-/* --------------------
- * all MODEL classes have these members
- * --------------------
- */
-
-//- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 extern "C" cyclus::Model* ConstructDeployInst(cyclus::Context* ctx) {
   return new DeployInst(ctx);
 }
-/* ------------------- */
 
 } // namespace cycamore

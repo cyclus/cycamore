@@ -183,68 +183,68 @@ void BatchReactor::InitFrom(cyc::QueryBackend* b) {
 
   // facility info
   cyc::QueryResult qr = b->Query("Info", NULL);
-  process_time_ = qr.GetVal<int>(0, "processtime");
-  preorder_time_ = qr.GetVal<int>(0, "preorder_t");
-  refuel_time_ = qr.GetVal<int>(0, "refueltime");
-  start_time_ = qr.GetVal<int>(0, "starttime");
-  to_begin_time_ = qr.GetVal<int>(0, "tobegintime");
-  n_batches_ = qr.GetVal<int>(0, "nbatches");
-  n_load_ = qr.GetVal<int>(0, "nreload");
-  n_reserves_ = qr.GetVal<int>(0, "norder");
-  batch_size_ = qr.GetVal<double>(0, "batchsize");
-  phase_ = qr.GetVal<Phase>(0, "phase");
+  process_time_ = qr.GetVal<int>("processtime", 0);
+  preorder_time_ = qr.GetVal<int>("preorder_t", 0);
+  refuel_time_ = qr.GetVal<int>("refueltime", 0);
+  start_time_ = qr.GetVal<int>("starttime", 0);
+  to_begin_time_ = qr.GetVal<int>("tobegintime", 0);
+  n_batches_ = qr.GetVal<int>("nbatches", 0);
+  n_load_ = qr.GetVal<int>("nreload", 0);
+  n_reserves_ = qr.GetVal<int>("norder", 0);
+  batch_size_ = qr.GetVal<double>("batchsize", 0);
+  phase_ = qr.GetVal<Phase>("phase", 0);
 
-  std::string out_commod = qr.GetVal<std::string>(0, "out_commod");
+  std::string out_commod = qr.GetVal<std::string>("out_commod", 0);
   CommodityProducer::AddCommodity(out_commod);
-  CommodityProducer::SetCapacity(out_commod, qr.GetVal<double>(0, "out_commod_cap"));
-  CommodityProducer::SetCost(out_commod, qr.GetVal<double>(0, "out_commod_cap"));
+  CommodityProducer::SetCapacity(out_commod, qr.GetVal<double>("out_commod_cap", 0));
+  CommodityProducer::SetCost(out_commod, qr.GetVal<double>("out_commod_cap", 0));
 
   // initial condition inventories
   std::vector<cyc::Cond> conds;
   conds.push_back(cyc::Cond("inventory", "==", std::string("reserves")));
   qr = b->Query("InitialInv", &conds);
   ics_.AddReserves(
-    qr.GetVal<int>(0, "nbatches"),
-    qr.GetVal<std::string>(0, "recipe"),
-    qr.GetVal<std::string>(0, "commod")
+    qr.GetVal<int>("nbatches", 0),
+    qr.GetVal<std::string>("recipe", 0),
+    qr.GetVal<std::string>("commod", 0)
     );
   conds[0] = cyc::Cond("inventory", "==", std::string("core"));
   qr = b->Query("InitialInv", &conds);
   ics_.AddCore(
-    qr.GetVal<int>(0, "nbatches"),
-    qr.GetVal<std::string>(0, "recipe"),
-    qr.GetVal<std::string>(0, "commod")
+    qr.GetVal<int>("nbatches", 0),
+    qr.GetVal<std::string>("recipe", 0),
+    qr.GetVal<std::string>("commod", 0)
     );
   conds[0] = cyc::Cond("inventory", "==", std::string("storage"));
   qr = b->Query("InitialInv", &conds);
   ics_.AddStorage(
-    qr.GetVal<int>(0, "nbatches"),
-    qr.GetVal<std::string>(0, "recipe"),
-    qr.GetVal<std::string>(0, "commod")
+    qr.GetVal<int>("nbatches", 0),
+    qr.GetVal<std::string>("recipe", 0),
+    qr.GetVal<std::string>("commod", 0)
     );
 
   // trade preferences
   qr = b->Query("CommodPrefs", NULL);
   for (int i = 0; i < qr.rows.size(); ++i) {
-    std::string c = qr.GetVal<std::string>(i, "incommodity");
-    commod_prefs_[c] = qr.GetVal<double>(i, "preference");
+    std::string c = qr.GetVal<std::string>("incommodity", i);
+    commod_prefs_[c] = qr.GetVal<double>("preference", i);
   }
 
   // pref changes
   qr = b->Query("PrefChanges", NULL);
   for (int i = 0; i < qr.rows.size(); ++i) {
-    std::string c = qr.GetVal<std::string>(i, "incommodity");
-    int t = qr.GetVal<int>(i, "time");
-    double new_pref = qr.GetVal<double>(i, "new_pref");
+    std::string c = qr.GetVal<std::string>("incommodity", i);
+    int t = qr.GetVal<int>("time", i);
+    double new_pref = qr.GetVal<double>("new_pref", i);
     pref_changes_[t].push_back(std::make_pair(c, new_pref));
   }
 
   // pref changes
   qr = b->Query("RecipeChanges", NULL);
   for (int i = 0; i < qr.rows.size(); ++i) {
-    std::string c = qr.GetVal<std::string>(i, "incommodity");
-    int t = qr.GetVal<int>(i, "time");
-    std::string new_recipe = qr.GetVal<std::string>(i, "new_recipe");
+    std::string c = qr.GetVal<std::string>("incommodity", i);
+    int t = qr.GetVal<int>("time", i);
+    std::string new_recipe = qr.GetVal<std::string>("new_recipe", i);
     recipe_changes_[t].push_back(std::make_pair(c, new_recipe));
   }
 }
