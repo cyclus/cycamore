@@ -3,12 +3,10 @@
 
 #include "deploy_inst.h"
 
-#include "error.h"
-
 namespace cycamore {
 
-DeployInst::DeployInst(cyclus::Context* ctx)
-    : cyclus::InstModel(ctx) {}
+DeployInst::DeployInst(cyc::Context* ctx)
+    : cyc::InstModel(ctx) {}
 
 DeployInst::~DeployInst() {}
 
@@ -29,85 +27,51 @@ std::string DeployInst::schema() {
     "</oneOrMore>                              \n";
 }
 
-void DeployInst::InitFrom(cyclus::QueryEngine* qe) {
-  cyclus::InstModel::InitFrom(qe);
-  qe = qe->QueryElement("model/" + model_impl());
-
-  using std::map;
-  using std::string;
-  using std::make_pair;
-  string query = "buildorder";
-
-  int nOrders = qe->NElementsMatchingQuery(query);
-  for (int i = 0; i < nOrders; i++) {
-    cyclus::QueryEngine* order = qe->QueryElement(query, i);
-    string name = order->GetString("prototype");
-    int number = atoi(order->GetString("number").c_str());
-    int time = atoi(order->GetString("date").c_str());
-    for (int j = 0; j < number; ++j) {
-      build_sched_[time].push_back(name);
-    }
-  }
-}
-
-void DeployInsg::InfileToDb(cyc::QueryEngine* qe, cyc::DbInit di) {
+void DeployInst::InfileToDb(cyc::QueryEngine* qe, cyc::DbInit di) {
   cyc::InstModel::InfileToDb(qe, di);
   qe = qe->QueryElement("model/" + model_impl());
 
   int nOrders = qe->NElementsMatchingQuery("buildorder");
   for (int i = 0; i < nOrders; i++) {
-    cyclus::QueryEngine* order = qe->QueryElement("buildorder", i);
-    string name = order->GetString("prototype");
-    int number = atoi(order->GetString("number").c_str());
-    int time = atoi(order->GetString("date").c_str());
-    for (int j = 0; j < number; ++j) {
-      build_sched_[time].push_back(name);
+    cyc::QueryEngine* order = qe->QueryElement("buildorder", i);
+    int n = order->GetInt("number");
+    for (int j = 0; j < n; ++j) {
+      di.NewDatum("BuildOrder")
+        ->AddVal("prototype", order->GetString("prototype"))
+        ->AddVal("date", order->GetInt("date"))
+        ->Record();
     }
   }
-
-  
-  using std::numeric_limits;
-  using boost::lexical_cast;
-  cyc::QueryEngine* output = qe->QueryElement("output");
-
-  std::string recipe = output->GetString("recipe");
-  std::string out_commod = output->GetString("outcommodity");
-  double cap = cyc::GetOptionalQuery<double>(output,
-                                                "output_capacity",
-                                                numeric_limits<double>::max());
-  di.NewDatum("Info")
-    ->AddVal("recipe", recipe)
-    ->AddVal("out_commod", out_commod)
-    ->AddVal("capacity", cap)
-    ->AddVal("curr_capacity", cap)
-    ->Record();
 }
 
-void DeployInsg::InitFrom(cyc::QueryBackend* b) {
-  cyc::FacilityModel::InitFrom(b);
-  cyc::QueryResult qr = b->Query("Info", NULL);
-  recipe_name_ = qr.GetVal<std::string>("recipe");
-  out_commod_ = qr.GetVal<std::string>("out_commod");
-  capacity_ = qr.GetVal<double>("capacity");
-  current_capacity_ = qr.GetVal<double>("curr_capacity");
-
-  cyc::Commodity commod(out_commod_);
-  cyc::CommodityProducer::AddCommodity(commod);
-  cyc::CommodityProducer::SetCapacity(commod, capacity_);
+void DeployInst::InitFrom(cyc::QueryBackend* b) {
+  cyc::InstModel::InitFrom(b);
+  cyc::QueryResult qr = b->Query("BuildOrder", NULL);
+  for (int i = 0; i < qr.rows.size(); i++) {
+    std::string proto = qr.GetVal<std::string>("prototype", i);
+    int t = qr.GetVal<int>("date", i);
+    build_sched_[t].push_back(proto);
+  }
 }
 
-void DeployInsg::Snapshot(cyc::DbInit di) {
-  cyc::FacilityModel::Snapshot(di);
-  di.NewDatum("Info")
-    ->AddVal("recipe", recipe_name_)
-    ->AddVal("out_commod", out_commod_)
-    ->AddVal("capacity", capacity_)
-    ->AddVal("curr_capacity", current_capacity_)
-    ->Record();
+void DeployInst::Snapshot(cyc::DbInit di) {
+  cyc::InstModel::Snapshot(di);
+
+  BuildSched::iterator it;
+  for (it = build_sched_.begin(); it != build_sched_.end(); ++it) {
+    int t = it->first;
+    std::vector<std::string> protos = it->second;
+    for (int i = 0; i < protos.size(); ++i) {
+      di.NewDatum("BuildOrder")
+        ->AddVal("prototype", protos[i])
+        ->AddVal("date", t)
+        ->Record();
+    }
+  }
 }
 
-void DeployInst::Build(cyclus::Model* parent) {
-  cyclus::InstModel::Build(parent);
+void DeployInst::Build(cyc::Model* parent) {
+  cyc::InstModel::Build(parent);
   BuildSched::iterator it;
   for (it = build_sched_.begin(); it != build_sched_.end(); ++it) {
     int t = it->first;
@@ -118,7 +82,7 @@ void DeployInst::Build(cyclus::Model* parent) {
   }
 }
 
-extern "C" cyclus::Model* ConstructDeployInst(cyclus::Context* ctx) {
+extern "C" cyc::Model* ConstructDeployInst(cyc::Context* ctx) {
   return new DeployInst(ctx);
 }
 

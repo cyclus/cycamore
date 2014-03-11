@@ -192,7 +192,7 @@ void BatchReactor::InitFrom(cyc::QueryBackend* b) {
   n_load_ = qr.GetVal<int>("nreload");
   n_reserves_ = qr.GetVal<int>("norder");
   batch_size_ = qr.GetVal<double>("batchsize");
-  phase_ = qr.GetVal<Phase>("phase");
+  phase_ = static_cast<Phase>(qr.GetVal<int>("phase"));
 
   std::string out_commod = qr.GetVal<std::string>("out_commod");
   CommodityProducer::AddCommodity(out_commod);
@@ -286,7 +286,7 @@ void BatchReactor::InfileToDb(cyc::QueryEngine* qe, cyc::DbInit di) {
     ->AddVal("norder", norder)
     ->AddVal("starttime", -1)
     ->AddVal("tobegintime", std::numeric_limits<int>::max())
-    ->AddVal("phase", INITIAL)
+    ->AddVal("phase", static_cast<int>(INITIAL))
     ->AddVal("out_commod", out_commod)
     ->AddVal("out_commod_cap", commod_cap)
     ->AddVal("out_commod_cost", commod_cost)

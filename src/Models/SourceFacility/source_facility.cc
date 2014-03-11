@@ -37,14 +37,13 @@ void SourceFacility::InfileToDb(cyc::QueryEngine* qe, cyc::DbInit di) {
   qe = qe->QueryElement("model/" + model_impl());
   
   using std::numeric_limits;
-  using boost::lexical_cast;
   cyc::QueryEngine* output = qe->QueryElement("output");
 
   std::string recipe = output->GetString("recipe");
   std::string out_commod = output->GetString("outcommodity");
   double cap = cyc::GetOptionalQuery<double>(output,
-                                                "output_capacity",
-                                                numeric_limits<double>::max());
+                                             "output_capacity",
+                                             numeric_limits<double>::max());
   di.NewDatum("Info")
     ->AddVal("recipe", recipe)
     ->AddVal("out_commod", out_commod)
