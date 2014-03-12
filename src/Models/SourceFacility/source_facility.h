@@ -107,7 +107,7 @@ class SourceFacility : public cyc::FacilityModel,
 
   virtual void Snapshot(cyc::DbInit di);
 
-  virtual void InitInv(const cyc::Inventories& inv) {};
+  virtual void InitInv(cyc::Inventories& inv) {};
 
   virtual cyc::Inventories SnapshotInv() {return cyc::Inventories();}
 

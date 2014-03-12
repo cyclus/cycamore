@@ -445,7 +445,7 @@ void BatchReactor::Snapshot(cyc::DbInit di) {
   }
 }
 
-void BatchReactor::InitInv(const cyc::Inventories& inv) {
+void BatchReactor::InitInv(cyc::Inventories& inv) {
 }
 
 cyc::Inventories BatchReactor::SnapshotInv() {
