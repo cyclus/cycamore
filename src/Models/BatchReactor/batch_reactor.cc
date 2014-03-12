@@ -201,21 +201,21 @@ void BatchReactor::InitFrom(cyc::QueryBackend* b) {
 
   // initial condition inventories
   std::vector<cyc::Cond> conds;
-  conds.push_back(cyc::Cond("inventory", "==", std::string("reserves")));
+  conds.push_back(cyc::Cond("inventory", "==", "reserves"));
   qr = b->Query("InitialInv", &conds);
   ics_.AddReserves(
     qr.GetVal<int>("nbatches"),
     qr.GetVal<std::string>("recipe"),
     qr.GetVal<std::string>("commod")
     );
-  conds[0] = cyc::Cond("inventory", "==", std::string("core"));
+  conds[0] = cyc::Cond("inventory", "==", "core");
   qr = b->Query("InitialInv", &conds);
   ics_.AddCore(
     qr.GetVal<int>("nbatches"),
     qr.GetVal<std::string>("recipe"),
     qr.GetVal<std::string>("commod")
     );
-  conds[0] = cyc::Cond("inventory", "==", std::string("storage"));
+  conds[0] = cyc::Cond("inventory", "==", "storage");
   qr = b->Query("InitialInv", &conds);
   ics_.AddStorage(
     qr.GetVal<int>("nbatches"),
@@ -224,14 +224,20 @@ void BatchReactor::InitFrom(cyc::QueryBackend* b) {
     );
 
   // trade preferences
-  qr = b->Query("CommodPrefs", NULL);
+  try {
+    qr.Reset();
+    qr = b->Query("CommodPrefs", NULL);
+  } catch(std::exception err) {} // table doesn't exist (okay)
   for (int i = 0; i < qr.rows.size(); ++i) {
     std::string c = qr.GetVal<std::string>("incommodity", i);
     commod_prefs_[c] = qr.GetVal<double>("preference", i);
   }
 
   // pref changes
-  qr = b->Query("PrefChanges", NULL);
+  try {
+    qr.Reset();
+    qr = b->Query("PrefChanges", NULL);
+  } catch(std::exception err) {} // table doesn't exist (okay)
   for (int i = 0; i < qr.rows.size(); ++i) {
     std::string c = qr.GetVal<std::string>("incommodity", i);
     int t = qr.GetVal<int>("time", i);
@@ -240,7 +246,10 @@ void BatchReactor::InitFrom(cyc::QueryBackend* b) {
   }
 
   // pref changes
-  qr = b->Query("RecipeChanges", NULL);
+  try {
+    qr.Reset();
+    qr = b->Query("RecipeChanges", NULL);
+  } catch(std::exception err) {} // table doesn't exist (okay)
   for (int i = 0; i < qr.rows.size(); ++i) {
     std::string c = qr.GetVal<std::string>("incommodity", i);
     int t = qr.GetVal<int>("time", i);
@@ -321,42 +330,34 @@ void BatchReactor::InfileToDb(cyc::QueryEngine* qe, cyc::DbInit di) {
   // trade preferences
   int nprefs = qe->NElementsMatchingQuery("commod_pref");
   std::string c;
-  double pref;
-  if (nprefs > 0) {
-    for (int i = 0; i < nprefs; i++) {
-      QueryEngine* cp = qe->QueryElement("commod_pref", i);
-      di.NewDatum("CommodPrefs")
-        ->AddVal("incommodity", cp->GetString("incommodity"))
-        ->AddVal("preference", cp->GetDouble("preference"))
-        ->Record();
-    }
+  for (int i = 0; i < nprefs; i++) {
+    QueryEngine* cp = qe->QueryElement("commod_pref", i);
+    di.NewDatum("CommodPrefs")
+      ->AddVal("incommodity", cp->GetString("incommodity"))
+      ->AddVal("preference", cp->GetDouble("preference"))
+      ->Record();
   }
 
   // pref changes
   int nchanges = qe->NElementsMatchingQuery("pref_change");
-  if (nchanges > 0) {
-    for (int i = 0; i < nchanges; i++) {
-      QueryEngine* cp = qe->QueryElement("pref_change", i);
-      di.NewDatum("PrefChanges")
-        ->AddVal("incommodity", cp->GetString("incommodity"))
-        ->AddVal("new_pref", cp->GetDouble("new_pref"))
-        ->AddVal("time", cp->GetInt("time"))
-        ->Record();
-    }
+  for (int i = 0; i < nchanges; i++) {
+    QueryEngine* cp = qe->QueryElement("pref_change", i);
+    di.NewDatum("PrefChanges")
+      ->AddVal("incommodity", cp->GetString("incommodity"))
+      ->AddVal("new_pref", cp->GetDouble("new_pref"))
+      ->AddVal("time", cp->GetInt("time"))
+      ->Record();
   }
 
   // recipe changes
-  std::string rec;
   nchanges = qe->NElementsMatchingQuery("recipe_change");
-  if (nchanges > 0) {
-    for (int i = 0; i < nchanges; i++) {
-      QueryEngine* cp = qe->QueryElement("recipe_change", i);
-      di.NewDatum("RecipeChanges")
-        ->AddVal("incommodity", cp->GetString("incommodity"))
-        ->AddVal("new_recipe", cp->GetString("new_recipe"))
-        ->AddVal("time", cp->GetInt("time"))
-        ->Record();
-    }
+  for (int i = 0; i < nchanges; i++) {
+    QueryEngine* cp = qe->QueryElement("recipe_change", i);
+    di.NewDatum("RecipeChanges")
+      ->AddVal("incommodity", cp->GetString("incommodity"))
+      ->AddVal("new_recipe", cp->GetString("new_recipe"))
+      ->AddVal("time", cp->GetInt("time"))
+      ->Record();
   }
 }
 
@@ -386,19 +387,19 @@ void BatchReactor::Snapshot(cyc::DbInit di) {
 
   // initial condition inventories
   di.NewDatum("InitialInv")
-    ->AddVal("inventory", std::string("reserves"))
+    ->AddVal("inventory", "reserves")
     ->AddVal("nbatches", ics_.n_reserves)
     ->AddVal("recipe", ics_.reserves_rec)
     ->AddVal("commod", ics_.reserves_commod)
     ->Record();
   di.NewDatum("InitialInv")
-    ->AddVal("inventory", std::string("core"))
+    ->AddVal("inventory", "core")
     ->AddVal("nbatches", ics_.n_core)
     ->AddVal("recipe", ics_.core_rec)
     ->AddVal("commod", ics_.core_commod)
     ->Record();
   di.NewDatum("InitialInv")
-    ->AddVal("inventory", std::string("storage"))
+    ->AddVal("inventory", "storage")
     ->AddVal("nbatches", ics_.n_storage)
     ->AddVal("recipe", ics_.storage_rec)
     ->AddVal("commod", ics_.storage_commod)
