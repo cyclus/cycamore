@@ -445,11 +445,32 @@ void BatchReactor::Snapshot(cyc::DbInit di) {
   }
 }
 
-void BatchReactor::InitInv(cyc::Inventories& inv) {
+void BatchReactor::InitInv(cyc::Inventories& invs) {
+  reserves_.PushAll(invs["reserves"]);
+  core_.PushAll(invs["core"]);
+  spillover_ = cyc::ResCast<cyc::Material>(invs["spillover"][0]);
+
+  cyc::Inventories::iterator it;
+  for (it = invs.begin(); it != invs.end(); ++it) {
+    std::string name = it->first;
+    if (name.find("storage-") == 0) {
+      storage_[name].PushAll(it->second);
+    }
+  }
 }
 
 cyc::Inventories BatchReactor::SnapshotInv() {
   cyc::Inventories invs;
+  invs["reserves"] = reserves_.PopN(reserves_.count());
+  invs["core"] = core_.PopN(core_.count());
+  std::vector<cyc::Resource::Ptr> v;
+  v.push_back(spillover_);
+  invs["spillover"] = v;
+  std::map<std::string, cyc::ResourceBuff>::iterator it;
+  for (it = storage_.begin(); it != storage_.end(); ++it) {
+    std::string name = it->first;
+    invs["storage-" + name] = it->second.PopN(it->second.count());
+  }
   return invs;
 }
 

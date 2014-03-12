@@ -172,7 +172,7 @@ class BatchReactor
 
   virtual void Snapshot(cyc::DbInit di);
 
-  virtual void InitInv(cyc::Inventories& inv);
+  virtual void InitInv(cyc::Inventories& invs);
 
   virtual cyc::Inventories SnapshotInv();
 
