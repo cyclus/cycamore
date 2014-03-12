@@ -12,14 +12,12 @@ IF(DEFINED ENV{CYCLUS_ROOT_DIR})
     MESSAGE(STATUS "\t\tThe defined cmake variable CYCLUS_ROOT_DIR: ${CYCLUS_ROOT_DIR}")
     MESSAGE(STATUS "\t\tThe environment variable CYCLUS_ROOT_DIR: $ENV{CYCLUS_ROOT_DIR}")
   ENDIF(NOT DEFINED CYCLUS_ROOT_DIR)
+ELSE(DEFINED ENV{CYCLUS_ROOT_DIR})
+  SET(CYCLUS_ROOT_DIR "$ENV{HOME}/.local") 
 ENDIF(DEFINED ENV{CYCLUS_ROOT_DIR})
 
 # Let the user know if we're using a hint
-IF(DEFINED CYCLUS_ROOT_DIR)
-  MESSAGE(STATUS "CYCLUS_ROOT_DIR hint is : ${CYCLUS_ROOT_DIR}")
-ELSE(DEFINED CYCLUS_ROOT_DIR)
-  MESSAGE(STATUS "No hint is used for CYCLUS_ROOT_DIR")
-ENDIF(DEFINED CYCLUS_ROOT_DIR)
+MESSAGE(STATUS "Using ${CYCLUS_ROOT_DIR} as CYCLUS_ROOT_DIR.")
 
 # Set the include dir, this will be the future basis for other
 # defined dirs
@@ -27,7 +25,7 @@ FIND_PATH(CYCLUS_CORE_INCLUDE_DIR cyclus.h
   HINTS "${CYCLUS_ROOT_DIR}" "${CYCLUS_ROOT_DIR}/cyclus"
   "${CYCLUS_ROOT_DIR}/include" 
   "${CYCLUS_ROOT_DIR}/include/cyclus" 
-  /usr/local/cyclus /opt/local/cyclus 
+  /usr/local/cyclus /opt/local/cyclus  
   PATH_SUFFIXES cyclus/include include include/cyclus)
 
 # Add the root dir to the hints
