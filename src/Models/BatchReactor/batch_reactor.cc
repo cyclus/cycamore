@@ -362,6 +362,7 @@ void BatchReactor::InfileToDb(cyc::QueryEngine* qe, cyc::DbInit di) {
 }
 
 void BatchReactor::Snapshot(cyc::DbInit di) {
+  cyc::FacilityModel::Snapshot(di);
   crctx_.Snapshot(di);
 
   std::set<cyc::Commodity, cyc::CommodityCompare>::iterator it;

@@ -7,14 +7,7 @@
 #include <utility>
 #include <vector>
 
-#include "facility_model.h"
-#include "generic_resource.h"
-#include "logger.h"
-#include "material.h"
-#include "query_engine.h"
-#include "request_portfolio.h"
-#include "resource_buff.h"
-#include "trade.h"
+#include "cyclus.h"
 
 namespace cyc = cyclus;
 

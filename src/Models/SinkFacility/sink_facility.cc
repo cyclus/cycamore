@@ -5,12 +5,6 @@
 
 #include <boost/lexical_cast.hpp>
 
-#include "capacity_constraint.h"
-#include "context.h"
-#include "cyc_limits.h"
-#include "error.h"
-#include "logger.h"
-
 #include "sink_facility.h"
 
 namespace cycamore {
