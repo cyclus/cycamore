@@ -6,16 +6,9 @@
 #include <queue>
 #include <string>
 
-#include "bid_portfolio.h"
-#include "capacity_constraint.h"
-#include "commodity_producer.h"
-#include "commodity_recipe_context.h"
-#include "enrichment.h"
-#include "exchange_context.h"
-#include "facility_model.h"
-#include "material.h"
-#include "request_portfolio.h"
-#include "resource_buff.h"
+#include "cyclus.h"
+
+namespace cyc = cyclus;
 
 // forward declarations
 namespace cycamore {
@@ -56,7 +49,7 @@ namespace cycamore {
 ///   #. refuel_time : the number of timesteps required to reload the core after
 ///   a process has finished
 ///
-/// The BatchReactor also maintains a cyclus::CommodityRecipeContext, which
+/// The BatchReactor also maintains a cyc::CommodityRecipeContext, which
 /// allows it to track incommodity-inrecipe/outcommodity-outrecipe groupings.
 ///
 /// @section operation Operation
@@ -118,8 +111,8 @@ namespace cycamore {
 /// @warning the reactor uses a hackish way to input materials into its
 /// reserves. See the AddBatches_ member function.
 class BatchReactor
-    : public cyclus::FacilityModel,
-      public cyclus::CommodityProducer {
+    : public cyc::FacilityModel,
+      public cyc::CommodityProducer {
  public:
   /// @brief defines all possible phases this facility can be in
   enum Phase {
@@ -132,40 +125,34 @@ class BatchReactor
 
   /// @brief a struct for initial conditions
   struct InitCond {
-    InitCond() : reserves(false), core(false), storage(false) {}
+    InitCond() : n_reserves(0), n_core(0), n_storage(0) {}
 
     void AddReserves(int n, std::string rec, std::string commod) {
-      reserves = true;
       n_reserves = n;
       reserves_rec = rec;
       reserves_commod = commod;
     }
 
     void AddCore(int n, std::string rec, std::string commod) {
-      core = true;
       n_core = n;
       core_rec = rec;
       core_commod = commod;
     }
 
     void AddStorage(int n, std::string rec, std::string commod) {
-      storage = true;
       n_storage = n;
       storage_rec = rec;
       storage_commod = commod;
     }
 
-    bool reserves;
     int n_reserves;
     std::string reserves_rec;
     std::string reserves_commod;
 
-    bool core;
     int n_core;
     std::string core_rec;
     std::string core_commod;
 
-    bool storage;
     int n_storage;
     std::string storage_rec;
     std::string storage_commod;
@@ -173,18 +160,23 @@ class BatchReactor
 
   /* --- Module Members --- */
   /// @param ctx the cyclus context for access to simulation-wide parameters
-  BatchReactor(cyclus::Context* ctx);
+  BatchReactor(cyc::Context* ctx);
 
   virtual ~BatchReactor();
 
-  virtual cyclus::Model* Clone();
+  virtual cyc::Model* Clone();
+
+  virtual void InfileToDb(cyc::QueryEngine* qe, cyc::DbInit di);
+
+  virtual void InitFrom(cyc::QueryBackend* b);
+
+  virtual void Snapshot(cyc::DbInit di);
+
+  virtual void InitInv(cyc::Inventories& invs);
+
+  virtual cyc::Inventories SnapshotInv();
 
   virtual std::string schema();
-
-  /// Initialize members related to derived module class
-  /// @param qe a pointer to a cyclus::QueryEngine object containing
-  /// initialization data
-  virtual void InitFrom(cyclus::QueryEngine* qe);
 
   /// initialize members from a different model
   void InitFrom(BatchReactor* m);
@@ -195,7 +187,7 @@ class BatchReactor
 
   /* --- Facility Members --- */
   /// perform module-specific tasks when entering the simulation 
-  virtual void Build(cyclus::Model* parent = NULL);
+  virtual void Build(cyc::Model* parent = NULL);
   /* --- */
 
   /* --- Agent Members --- */
@@ -206,23 +198,23 @@ class BatchReactor
   /// The Tick function specific to the BatchReactor.
   /// @param time the time of the tock
   virtual void Tock(int time);
-
+  
   /// @brief The EnrichmentFacility request Materials of its given
   /// commodity.
-  virtual std::set<cyclus::RequestPortfolio<cyclus::Material>::Ptr>
+  virtual std::set<cyc::RequestPortfolio<cyc::Material>::Ptr>
       GetMatlRequests();
 
   /// @brief The EnrichmentFacility place accepted trade Materials in their
   /// Inventory
   virtual void AcceptMatlTrades(
-      const std::vector< std::pair<cyclus::Trade<cyclus::Material>,
-      cyclus::Material::Ptr> >& responses);
+      const std::vector< std::pair<cyc::Trade<cyc::Material>,
+      cyc::Material::Ptr> >& responses);
 
   /// @brief Responds to each request for this facility's commodity.  If a given
   /// request is more than this facility's inventory or SWU capacity, it will
   /// offer its minimum of its capacities.
-  virtual std::set<cyclus::BidPortfolio<cyclus::Material>::Ptr>
-      GetMatlBids(const cyclus::CommodMap<cyclus::Material>::type&
+  virtual std::set<cyc::BidPortfolio<cyc::Material>::Ptr>
+      GetMatlBids(const cyc::CommodMap<cyc::Material>::type&
                   commod_requests);
 
   /// @brief respond to each trade with a material enriched to the appropriate
@@ -231,9 +223,9 @@ class BatchReactor
   /// @param trades all trades in which this trader is the supplier
   /// @param responses a container to populate with responses to each trade
   virtual void GetMatlTrades(
-    const std::vector< cyclus::Trade<cyclus::Material> >& trades,
-    std::vector<std::pair<cyclus::Trade<cyclus::Material>,
-    cyclus::Material::Ptr> >& responses);
+    const std::vector< cyc::Trade<cyc::Material> >& trades,
+    std::vector<std::pair<cyc::Trade<cyc::Material>,
+    cyc::Material::Ptr> >& responses);
   /* --- */
 
   /* --- BatchReactor Members --- */
@@ -329,10 +321,10 @@ class BatchReactor
   }
 
   /// @brief this facility's commodity-recipe context
-  inline void crctx(const cyclus::CommodityRecipeContext& crctx) {
+  inline void crctx(const cyc::CommodityRecipeContext& crctx) {
     crctx_ = crctx;
   }
-  inline cyclus::CommodityRecipeContext crctx() const {
+  inline cyc::CommodityRecipeContext crctx() const {
     return crctx_;
   }
 
@@ -363,24 +355,24 @@ class BatchReactor
   virtual void MoveBatchOut_();
 
   /// @brief gets bids for a commodity from a buffer
-  cyclus::BidPortfolio<cyclus::Material>::Ptr GetBids_(
-      const cyclus::CommodMap<cyclus::Material>::type& commod_requests,
+  cyc::BidPortfolio<cyc::Material>::Ptr GetBids_(
+      const cyc::CommodMap<cyc::Material>::type& commod_requests,
       std::string commod,
-      cyclus::ResourceBuff* buffer);
+      cyc::ResourceBuff* buffer);
 
   /// @brief returns a qty of material from a buffer
-  cyclus::Material::Ptr TradeResponse_(double qty,
-                                       cyclus::ResourceBuff* buffer);
+  cyc::Material::Ptr TradeResponse_(double qty,
+                                       cyc::ResourceBuff* buffer);
 
-  /// @brief a cyclus::ResourceBuff for material while they are inside the core,
+  /// @brief a cyc::ResourceBuff for material while they are inside the core,
   /// with all materials guaranteed to be of batch_size_
-  cyclus::ResourceBuff core_;
+  cyc::ResourceBuff core_;
 
-  /// @brief a cyclus::ResourceBuff for material once they leave the core.
+  /// @brief a cyc::ResourceBuff for material once they leave the core.
   /// there is one storage for each outcommodity
   /// @warning no guarantee can be made to the size of each item in storage_, as
   /// requests can be met that are larger or smaller than batch_size_
-  std::map<std::string, cyclus::ResourceBuff> storage_;
+  std::map<std::string, cyc::ResourceBuff> storage_;
 
  private:
   /// @brief refuels the reactor until it is full or reserves_ is out of
@@ -391,7 +383,7 @@ class BatchReactor
   void MoveBatchIn_();
 
   /// @brief construct a request portfolio for an order of a given size
-  cyclus::RequestPortfolio<cyclus::Material>::Ptr GetOrder_(double size);
+  cyc::RequestPortfolio<cyc::Material>::Ptr GetOrder_(double size);
 
   /// @brief Add a blob of incoming material to reserves_
   ///
@@ -399,7 +391,7 @@ class BatchReactor
   /// of batch_size_. If not, material from mat is added to it and it is
   /// returned to reserves_. If more material remains, chunks of batch_size_ are
   /// removed and added to reserves_. The final chunk may be <= batch_size_.
-  void AddBatches_(std::string commod, cyclus::Material::Ptr mat);
+  void AddBatches_(std::string commod, cyc::Material::Ptr mat);
 
   /// @brief adds phase names to phase_names_ map
   void SetUpPhaseNames_();
@@ -418,7 +410,7 @@ class BatchReactor
 
   InitCond ics_;
 
-  cyclus::CommodityRecipeContext crctx_;
+  cyc::CommodityRecipeContext crctx_;
 
   /// @warning as is, the int key is **simulation time**, i.e., context()->time
   /// == key. This should be fixed for future use!
@@ -433,11 +425,11 @@ class BatchReactor
   std::map<int, std::vector< std::pair< std::string, double > > > pref_changes_;
 
   /// @brief allows only batches to enter reserves_
-  cyclus::Material::Ptr spillover_;
+  cyc::Material::Ptr spillover_;
 
-  /// @brief a cyclus::ResourceBuff for material before they enter the core,
+  /// @brief a cyc::ResourceBuff for material before they enter the core,
   /// with all materials guaranteed to be of batch_size_
-  cyclus::ResourceBuff reserves_;
+  cyc::ResourceBuff reserves_;
 
   friend class BatchReactorTest;
   /* --- */

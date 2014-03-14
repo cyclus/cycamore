@@ -7,14 +7,9 @@
 #include <utility>
 #include <vector>
 
-#include "facility_model.h"
-#include "generic_resource.h"
-#include "logger.h"
-#include "material.h"
-#include "query_engine.h"
-#include "request_portfolio.h"
-#include "resource_buff.h"
-#include "trade.h"
+#include "cyclus.h"
+
+namespace cyc = cyclus;
 
 namespace cycamore {
 
@@ -22,10 +17,10 @@ class Context;
   
 /**
    @class SinkFacility
-   This cyclus::FacilityModel requests a finite amount of its input commodity.
+   This cyc::FacilityModel requests a finite amount of its input commodity.
    It offers nothing.
 
-   The SinkFacility class inherits from the cyclus::FacilityModel class and is
+   The SinkFacility class inherits from the cyc::FacilityModel class and is
    dynamically loaded by the Model class when requested.
 
    @section intro Introduction
@@ -86,14 +81,14 @@ class Context;
    What is the best way to allow requests of an infinite amount of
    material on a market?
  */
-class SinkFacility : public cyclus::FacilityModel  {
+class SinkFacility : public cyc::FacilityModel  {
  public:
   /* --- Module Members --- */
   /**
      Constructor for the SinkFacility class.
      @param ctx the cyclus context for access to simulation-wide parameters
   */
-  SinkFacility(cyclus::Context* ctx);
+  SinkFacility(cyc::Context* ctx);
 
   /**
      Destructor for the SinkFacility class.
@@ -102,15 +97,17 @@ class SinkFacility : public cyclus::FacilityModel  {
 
   virtual std::string schema();
 
-  virtual cyclus::Model* Clone();
+  virtual cyc::Model* Clone();
 
-  /**
-     Initialize members related to derived module class
+  virtual void InfileToDb(cyc::QueryEngine* qe, cyc::DbInit di);
 
-     @param qe a pointer to a cyclus::QueryEngine object containing
-     initialization data
-   */
-  virtual void InitFrom(cyclus::QueryEngine* qe);
+  virtual void InitFrom(cyc::QueryBackend* b);
+
+  virtual void Snapshot(cyc::DbInit di);
+
+  virtual void InitInv(cyc::Inventories& inv);
+
+  virtual cyc::Inventories SnapshotInv();
 
   /**
      initialize members from a different model
@@ -140,24 +137,24 @@ class SinkFacility : public cyclus::FacilityModel  {
 
   /// @brief SinkFacilities request Materials of their given commodity. Note
   /// that it is assumed the SinkFacility operates on a single resource type!
-  virtual std::set<cyclus::RequestPortfolio<cyclus::Material>::Ptr>
+  virtual std::set<cyc::RequestPortfolio<cyc::Material>::Ptr>
       GetMatlRequests();
   
   /// @brief SinkFacilities request GenericResources of their given
   /// commodity. Note that it is assumed the SinkFacility operates on a single
   /// resource type!
-  virtual std::set<cyclus::RequestPortfolio<cyclus::GenericResource>::Ptr>
+  virtual std::set<cyc::RequestPortfolio<cyc::GenericResource>::Ptr>
       GetGenRsrcRequests();
 
   /// @brief SinkFacilities place accepted trade Materials in their Inventory
   virtual void AcceptMatlTrades(
-      const std::vector< std::pair<cyclus::Trade<cyclus::Material>,
-      cyclus::Material::Ptr> >& responses);
+      const std::vector< std::pair<cyc::Trade<cyc::Material>,
+      cyc::Material::Ptr> >& responses);
 
   /// @brief SinkFacilities place accepted trade Materials in their Inventory
   virtual void AcceptGenRsrcTrades(
-      const std::vector< std::pair<cyclus::Trade<cyclus::GenericResource>,
-      cyclus::GenericResource::Ptr> >& responses);
+      const std::vector< std::pair<cyc::Trade<cyc::GenericResource>,
+      cyc::GenericResource::Ptr> >& responses);
   /* --- */
 
   /* --- SinkFacility Members --- */
@@ -218,7 +215,7 @@ class SinkFacility : public cyclus::FacilityModel  {
   /**
      this facility holds material in storage.
    */
-  cyclus::ResourceBuff inventory_;
+  cyc::ResourceBuff inventory_;
 };
 
 } // namespace cycamore

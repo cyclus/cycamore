@@ -5,13 +5,9 @@
 #include <set>
 #include <vector>
 
-#include "bid_portfolio.h"
-#include "commodity_producer.h"
-#include "exchange_context.h"
-#include "facility_model.h"
-#include "material.h"
-#include "query_engine.h"
-#include "trade.h"
+#include "cyclus.h"
+
+namespace cyc = cyclus;
 
 namespace cycamore {
 
@@ -19,10 +15,10 @@ class Context;
 
 /**
    @class SourceFacility
-   This cyclus::FacilityModel provides a simple source of some capacity
+   This cyc::FacilityModel provides a simple source of some capacity
    (possibly infinite) of some commodity/Recipe.
 
-   The SourceFacility class inherits from the cyclus::FacilityModel class and is
+   The SourceFacility class inherits from the cyc::FacilityModel class and is
    dynamically loaded by the Model class when requested.
 
 
@@ -91,29 +87,31 @@ class Context;
    What is the best way to allow offers of an infinite amount of
    material on a market?
  */
-class SourceFacility : public cyclus::FacilityModel,
-  public cyclus::CommodityProducer {
+class SourceFacility : public cyc::FacilityModel,
+  public cyc::CommodityProducer {
  public:
   /* --- Module Members --- */
   /**
      Constructor for the SourceFacility class
      @param ctx the cyclus context for access to simulation-wide parameters
    */
-  SourceFacility(cyclus::Context* ctx);
+  SourceFacility(cyc::Context* ctx);
 
   virtual ~SourceFacility();
 
   virtual std::string schema();
 
-  virtual cyclus::Model* Clone();
+  virtual void InfileToDb(cyc::QueryEngine* qe, cyc::DbInit di);
 
-  /**
-     Initialize members related to derived module class
+  virtual void InitFrom(cyc::QueryBackend* b);
 
-     @param qe a pointer to a cyclus::QueryEngine object containing
-     initialization data
-   */
-  virtual void InitFrom(cyclus::QueryEngine* qe);
+  virtual void Snapshot(cyc::DbInit di);
+
+  virtual void InitInv(cyc::Inventories& inv) {};
+
+  virtual cyc::Inventories SnapshotInv() {return cyc::Inventories();}
+
+  virtual cyc::Model* Clone();
 
   /**
      initialize members from a different model
@@ -146,8 +144,8 @@ class SourceFacility : public cyclus::FacilityModel,
   /// @brief Responds to each request for this source facility's commodity.
   /// If a given request is more than this facility's capacity, it will offer
   /// its capacity.
-  virtual std::set<cyclus::BidPortfolio<cyclus::Material>::Ptr>
-      GetMatlBids(const cyclus::CommodMap<cyclus::Material>::type&
+  virtual std::set<cyc::BidPortfolio<cyc::Material>::Ptr>
+      GetMatlBids(const cyc::CommodMap<cyc::Material>::type&
                   commod_requests);
   
   /// @brief respond to each trade with a material made from this facility's
@@ -156,9 +154,9 @@ class SourceFacility : public cyclus::FacilityModel,
   /// @param trades all trades in which this trader is the supplier
   /// @param responses a container to populate with responses to each trade
   virtual void GetMatlTrades(
-    const std::vector< cyclus::Trade<cyclus::Material> >& trades,
-    std::vector<std::pair<cyclus::Trade<cyclus::Material>,
-    cyclus::Material::Ptr> >& responses);
+    const std::vector< cyc::Trade<cyc::Material> >& trades,
+    std::vector<std::pair<cyc::Trade<cyc::Material>,
+    cyc::Material::Ptr> >& responses);
   /* --- */
 
   /* --- SourceFacility Members --- */
@@ -166,7 +164,7 @@ class SourceFacility : public cyclus::FacilityModel,
      @brief creates a material object to offer to a requester
      @param target the material target a request desires
    */
-  cyclus::Material::Ptr GetOffer(const cyclus::Material::Ptr target) const;
+  cyc::Material::Ptr GetOffer(const cyc::Material::Ptr target) const;
 
   /**
      sets the output commodity name
@@ -224,11 +222,6 @@ class SourceFacility : public cyclus::FacilityModel,
    */
   double current_capacity_;
 
-  /**
-     The price that the facility will charge for its output commodity.
-     Units vary and are in dollars per inventory unit.
-   */
-  double commod_price_;
   /* --- */
 };
 

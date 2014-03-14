@@ -53,7 +53,7 @@ std::string GrowthRegion::schema() {
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 void GrowthRegion::InitFrom(cyclus::QueryEngine* qe) {
   cyclus::RegionModel::InitFrom(qe);
-  qe = qe->QueryElement("model/" + ModelImpl());
+  qe = qe->QueryElement("model/" + model_impl());
   LOG(cyclus::LEV_DEBUG2, "greg") << "A Growth Region is being initialized";
 
   std::string query = "commodity";
@@ -62,7 +62,7 @@ void GrowthRegion::InitFrom(cyclus::QueryEngine* qe) {
   for (int i = 0; i < nCommodities; i++) {
     cyclus::QueryEngine* iqe = qe->QueryElement(query, i);
 
-    std::string name = iqe->GetElementContent("name");
+    std::string name = iqe->GetString("name");
     commodities_.insert(cyclus::Commodity(name));
 
     std::string query = "demand";
@@ -70,8 +70,8 @@ void GrowthRegion::InitFrom(cyclus::QueryEngine* qe) {
     for (int j = 0; j < n; j++) {
       cyclus::QueryEngine* jqe = iqe->QueryElement(query, j);
       DemandInfo di;
-      di.type = jqe->GetElementContent("type");
-      di.params = jqe->GetElementContent("parameters");
+      di.type = jqe->GetString("type");
+      di.params = jqe->GetString("parameters");
       di.time = cyclus::GetOptionalQuery<int>(jqe, "start_time", 0);
       demands_[name].push_back(di);
     }
@@ -105,16 +105,17 @@ void GrowthRegion::AddCommodityDemand(cyclus::Commodity commod) {
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 void GrowthRegion::Build(cyclus::Model* parent) {
   cyclus::RegionModel::Build(parent);
-  for (int i = 0; i != children().size(); i++) {
-    cyclus::Model* child = children().at(i);
-    RegisterCommodityProducerManager(child);
-    RegisterBuilder(child);
-  }
 
   std::set<cyclus::Commodity>::iterator it;
   for (it = commodities_.begin(); it != commodities_.end(); ++it) {
     AddCommodityDemand(*it);
   }
+}
+
+//- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+void GrowthRegion::BuildNotify(Model* m) {
+    RegisterCommodityProducerManager(m);
+    RegisterBuilder(m);
 }
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -127,7 +128,7 @@ void GrowthRegion::Tick(int time) {
     double supply = sdmanager_.Supply(commodity);
     double unmetdemand = demand - supply;
 
-    LOG(cyclus::LEV_INFO3, "greg") << "GrowthRegion: " << name()
+    LOG(cyclus::LEV_INFO3, "greg") << "GrowthRegion: " << prototype()
                                    << " at time: " << time
                                    << " has the following values regaring "
                                    << " commodity: " << commodity.name();
@@ -140,16 +141,6 @@ void GrowthRegion::Tick(int time) {
     }
   }
   cyclus::RegionModel::Tick(time);
-}
-
-//- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-void GrowthRegion::RegisterCommodity(cyclus::Commodity& commodity) {
-  if (commodities_.find(commodity) != commodities_.end()) {
-    throw cyclus::KeyError("A GrowthRegion ("
-                           + name() + " is trying to register a commodity twice.");
-  } else {
-    commodities_.insert(commodity);
-  }
 }
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -193,13 +184,13 @@ void GrowthRegion::OrderBuilds(cyclus::Commodity& commodity,
 
     LOG(cyclus::LEV_INFO3, "greg") << "A build order for " << order.number
                                    << " prototype(s) of type "
-                                   << dynamic_cast<cyclus::Model*>(modelcast)->name()
-                                   << " from builder " << instcast->name()
+                                   << dynamic_cast<cyclus::Model*>(modelcast)->prototype()
+                                   << " from builder " << instcast->prototype()
                                    << " is being placed.";
 
     for (int j = 0; j < order.number; j++) {
       LOG(cyclus::LEV_DEBUG2, "greg") << "Ordering build number: " << j + 1;
-      context()->SchedBuild(instcast, modelcast->name());
+      context()->SchedBuild(instcast, modelcast->prototype());
     }
   }
 }

@@ -41,26 +41,28 @@ class ManagerInst : public cyclus::InstModel,
     commod_producers_ = m->commod_producers_;
   }
 
+  virtual void InitFrom(cyclus::QueryEngine* qe);
+
   /**
      perform any actions required after prototype has been added to
      the list of available prototypes
      @param prototype the prototype to register
    */
-  virtual void RegisterAvailablePrototype(std::string prototype);
+  void RegisterAvailablePrototype(std::string prototype);
 
   /**
      perform any registration functionality after a clone has been
      built
      @param clone the built (cloned) prototype
    */
-  virtual void RegisterCloneAsBuilt(cyclus::Model* clone);
+  virtual void BuildNotify(cyclus::Model* clone);
 
   /**
      perform any registration functionality before a clone is
      decommissioned(deleted)
      @param clone the to-be-decommissioned prototype
    */
-  virtual void RegisterCloneAsDecommissioned(cyclus::Model* clone);
+  virtual void DecomNotify(cyclus::Model* clone);
 
   /**
      write information about a commodity producer to a stream

@@ -2,11 +2,13 @@
 #ifndef _DEPLOYINST_H
 #define _DEPLOYINST_H
 
-#include "inst_model.h"
+#include "cyclus.h"
 
 #include <utility>
 #include <set>
 #include <map>
+
+namespace cyc = cyclus;
 
 namespace cycamore {
 
@@ -20,25 +22,15 @@ typedef std::map<int, std::vector<std::string> > BuildSched;
    This model implements a simple institution model that deploys
    specific facilities as defined explicitly in the input file.
  */
-class DeployInst : public cyclus::InstModel {
-  /* --------------------
-   * all MODEL classes have these members
-   * --------------------
-   */
+class DeployInst : public cyc::InstModel {
  public:
-  /**
-     Default constructor
-   */
-  DeployInst(cyclus::Context* ctx);
+  DeployInst(cyc::Context* ctx);
 
-  /**
-     Destructor
-   */
   virtual ~DeployInst();
 
   virtual std::string schema();
 
-  virtual cyclus::Model* Clone() {
+  virtual cyc::Model* Clone() {
     DeployInst* m = new DeployInst(context());
     m->InitFrom(this);
     return m;
@@ -48,27 +40,23 @@ class DeployInst : public cyclus::InstModel {
      initialize members from a different model
   */
   void InitFrom(DeployInst* m) {
-    cyclus::InstModel::InitFrom(m);
+    cyc::InstModel::InitFrom(m);
     build_sched_ = m->build_sched_;
   };
 
-  void Build(cyclus::Model* parent);
+  void Build(cyc::Model* parent);
 
-  /**
-     Initialize members related to derived module class
-     @param qe a pointer to a cyclus::QueryEngine object containing initialization data
-   */
-  virtual void InitFrom(cyclus::QueryEngine* qe);
+  virtual void InfileToDb(cyc::QueryEngine* qe, cyc::DbInit di);
 
-  /* ------------------- */
+  virtual void InitFrom(cyc::QueryBackend* b);
+
+  virtual void Snapshot(cyc::DbInit di);
 
  protected:
   /**
      a collection of orders to build
    */
   BuildSched build_sched_;
-
-  /* ------------------- */
 
 };
 } // namespace cycamore

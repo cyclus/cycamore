@@ -180,20 +180,6 @@
     <availableprototype>LWR_Reactor</availableprototype>
     <availableprototype>HWR_Reactor</availableprototype>
     <availableprototype>Sink</availableprototype>
-    <initialfacilitylist>
-      <entry>
-        <prototype>Source</prototype>
-        <number>1</number>
-      </entry>
-      <entry>
-        <prototype>Enrichment</prototype>
-        <number>1</number>
-      </entry>
-      <entry>
-        <prototype>Sink</prototype>
-        <number>1</number>
-      </entry>
-    </initialfacilitylist>
     <model>
       <ManagerInst/>
     </model>
@@ -208,6 +194,24 @@
     <name>inst1</name>
     <prototype>SingleInstitution</prototype>
     <parent>region1</parent>
+  </agent>
+
+  <agent>
+    <name>source</name>
+    <prototype>Sink</prototype>
+    <parent>inst1</parent>
+  </agent>
+
+  <agent>
+    <name>enrichment</name>
+    <prototype>Enrichment</prototype>
+    <parent>inst1</parent>
+  </agent>
+
+  <agent>
+    <name>sink</name>
+    <prototype>Source</prototype>
+    <parent>inst1</parent>
   </agent>
 
   <recipe>
@@ -279,10 +283,6 @@
       <id>952410000</id>
       <comp>1.234</comp>
     </nuclide>
-    <!-- <nuclide> -->
-    <!--   <id>95242m</id> -->
-    <!--   <comp>0.03</comp> -->
-    <!-- </nuclide> -->
     <nuclide>
       <id>952430000</id>
       <comp>3.607</comp>
@@ -340,10 +340,6 @@
       <id>952410000</id>
       <comp>0.195</comp>
     </nuclide>
-    <!-- <nuclide> -->
-    <!--   <id>95242m</id> -->
-    <!--   <comp>0.00</comp> -->
-    <!-- </nuclide> -->
     <nuclide>
       <id>952430000</id>
       <comp>0.167</comp>

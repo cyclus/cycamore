@@ -3,18 +3,13 @@
 
 #include "deploy_inst.h"
 
-#include "error.h"
-
 namespace cycamore {
 
-//- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-DeployInst::DeployInst(cyclus::Context* ctx)
-    : cyclus::InstModel(ctx) {}
+DeployInst::DeployInst(cyc::Context* ctx)
+    : cyc::InstModel(ctx) {}
 
-//- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 DeployInst::~DeployInst() {}
 
-//- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 std::string DeployInst::schema() {
   return
     "<oneOrMore>                               \n"
@@ -32,31 +27,51 @@ std::string DeployInst::schema() {
     "</oneOrMore>                              \n";
 }
 
-//- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-void DeployInst::InitFrom(cyclus::QueryEngine* qe) {
-  cyclus::InstModel::InitFrom(qe);
-  qe = qe->QueryElement("model/" + ModelImpl());
+void DeployInst::InfileToDb(cyc::QueryEngine* qe, cyc::DbInit di) {
+  cyc::InstModel::InfileToDb(qe, di);
+  qe = qe->QueryElement("model/" + model_impl());
 
-  using std::map;
-  using std::string;
-  using std::make_pair;
-  string query = "buildorder";
-
-  int nOrders = qe->NElementsMatchingQuery(query);
+  int nOrders = qe->NElementsMatchingQuery("buildorder");
   for (int i = 0; i < nOrders; i++) {
-    cyclus::QueryEngine* order = qe->QueryElement(query, i);
-    string name = order->GetElementContent("prototype");
-    int number = atoi(order->GetElementContent("number").c_str());
-    int time = atoi(order->GetElementContent("date").c_str());
-    for (int j = 0; j < number; ++j) {
-      build_sched_[time].push_back(name);
+    cyc::QueryEngine* order = qe->QueryElement("buildorder", i);
+    int n = order->GetInt("number");
+    for (int j = 0; j < n; ++j) {
+      di.NewDatum("BuildOrder")
+        ->AddVal("prototype", order->GetString("prototype"))
+        ->AddVal("date", order->GetInt("date"))
+        ->Record();
     }
   }
 }
 
-//- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-void DeployInst::Build(cyclus::Model* parent) {
-  cyclus::InstModel::Build(parent);
+void DeployInst::InitFrom(cyc::QueryBackend* b) {
+  cyc::InstModel::InitFrom(b);
+  cyc::QueryResult qr = b->Query("BuildOrder", NULL);
+  for (int i = 0; i < qr.rows.size(); i++) {
+    std::string proto = qr.GetVal<std::string>("prototype", i);
+    int t = qr.GetVal<int>("date", i);
+    build_sched_[t].push_back(proto);
+  }
+}
+
+void DeployInst::Snapshot(cyc::DbInit di) {
+  cyc::InstModel::Snapshot(di);
+
+  BuildSched::iterator it;
+  for (it = build_sched_.begin(); it != build_sched_.end(); ++it) {
+    int t = it->first;
+    std::vector<std::string> protos = it->second;
+    for (int i = 0; i < protos.size(); ++i) {
+      di.NewDatum("BuildOrder")
+        ->AddVal("prototype", protos[i])
+        ->AddVal("date", t)
+        ->Record();
+    }
+  }
+}
+
+void DeployInst::Build(cyc::Model* parent) {
+  cyc::InstModel::Build(parent);
   BuildSched::iterator it;
   for (it = build_sched_.begin(); it != build_sched_.end(); ++it) {
     int t = it->first;
@@ -67,18 +82,8 @@ void DeployInst::Build(cyclus::Model* parent) {
   }
 }
 
-/* ------------------- */
-
-
-/* --------------------
- * all MODEL classes have these members
- * --------------------
- */
-
-//- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-extern "C" cyclus::Model* ConstructDeployInst(cyclus::Context* ctx) {
+extern "C" cyc::Model* ConstructDeployInst(cyc::Context* ctx) {
   return new DeployInst(ctx);
 }
-/* ------------------- */
 
 } // namespace cycamore

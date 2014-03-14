@@ -13,13 +13,28 @@ ManagerInst::ManagerInst(cyclus::Context* ctx)
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 ManagerInst::~ManagerInst() {}
 
+void ManagerInst::InitFrom(cyclus::QueryEngine* qe) {
+  std::string name, query;
+  int nEntries;
+  // populate prototypes_
+  query = "availableprototype";
+  nEntries = qe->NElementsMatchingQuery(query);
+  if (nEntries > 0) {
+    // populate prototypes_
+    for (int i = 0; i < nEntries; i++) {
+      name = qe->GetString(query, i);
+      RegisterAvailablePrototype(name);
+    }
+  }
+}
+
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 void ManagerInst::RegisterAvailablePrototype(std::string prototype) {
   using cyclus::CommodityProducer;
   try {
     CommodityProducer* cast = context()->CreateModel<CommodityProducer>(prototype);
     cyclus::Builder::RegisterProducer(cast);
-    LOG(cyclus::LEV_DEBUG3, "maninst") << "ManagerInst " << name()
+    LOG(cyclus::LEV_DEBUG3, "maninst") << "ManagerInst " << this->prototype()
                                        << " has registered a producer prototype: "
                                        << prototype
                                        << " and "
@@ -29,13 +44,13 @@ void ManagerInst::RegisterAvailablePrototype(std::string prototype) {
 }
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-void ManagerInst::RegisterCloneAsBuilt(cyclus::Model* clone) {
+void ManagerInst::BuildNotify(cyclus::Model* clone) {
   cyclus::CommodityProducer* cast =
     dynamic_cast<cyclus::CommodityProducer*>(clone);
   if (cast) {
     cyclus::CommodityProducerManager::RegisterProducer(cast);
     if (cyclus::LEV_DEBUG3 >= cyclus::Logger::ReportLevel()) {
-      LOG(cyclus::LEV_DEBUG3, "maninst") << "ManagerInst " << name()
+      LOG(cyclus::LEV_DEBUG3, "maninst") << "ManagerInst " << prototype()
                                          << " has registered a producer clone:";
       WriteProducerInformation(cast);
     }
@@ -43,7 +58,7 @@ void ManagerInst::RegisterCloneAsBuilt(cyclus::Model* clone) {
 }
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-void ManagerInst::RegisterCloneAsDecommissioned(cyclus::Model* clone) {
+void ManagerInst::DecomNotify(cyclus::Model* clone) {
   cyclus::CommodityProducer* cast =
     dynamic_cast<cyclus::CommodityProducer*>(clone);
   if (cast) {
