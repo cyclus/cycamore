@@ -43,65 +43,65 @@
   <market>
     <name>fresh_PWR_uo2market</name>
     <mktcommodity>fresh_PWR_uo2</mktcommodity>
-    <model>
+    <agent>
       <GreedyMarket/>
-    </model>
+    </agent>
   </market>
 
   <market>
     <name>spent_PWR_uo2market</name>
     <mktcommodity>spent_PWR_uo2</mktcommodity>
-    <model>
+    <agent>
       <GreedyMarket/>
-    </model>
+    </agent>
   </market>
 
   <market>
     <name>fresh_BWR_uo2market</name>
     <mktcommodity>fresh_BWR_uo2</mktcommodity>
-    <model>
+    <agent>
       <GreedyMarket/>
-    </model>
+    </agent>
   </market>
 
   <market>
     <name>spent_BWR_uo2market</name>
     <mktcommodity>spent_BWR_uo2</mktcommodity>
-    <model>
+    <agent>
       <GreedyMarket/>
-    </model>
+    </agent>
   </market>
 
   <market>
     <name>fresh_r_uo2market</name>
     <mktcommodity>fresh_r_uo2</mktcommodity>
-    <model>
+    <agent>
       <GreedyMarket/>
-    </model>
+    </agent>
   </market>
 
   <market>
     <name>spent_r_uo2market</name>
     <mktcommodity>spent_r_uo2</mktcommodity>
-    <model>
+    <agent>
       <GreedyMarket/>
-    </model>
+    </agent>
   </market>
 
   <market>
     <name>fresh_moxmarket</name>
     <mktcommodity>fresh_mox</mktcommodity>
-    <model>
+    <agent>
       <GreedyMarket/>
-    </model>
+    </agent>
   </market>
 
   <market>
     <name>spent_moxmarket</name>
     <mktcommodity>spent_mox</mktcommodity>
-    <model>
+    <agent>
       <GreedyMarket/>
-    </model>
+    </agent>
   </market>
 
   <recipebook>
@@ -112,7 +112,7 @@
 
   <facility>
     <name>PWR_uo2_FuelFab</name>
-    <model>
+    <agent>
       <SourceFacility>
         <outcommodity>fresh_PWR_uo2</outcommodity>
         <capacity>1e6</capacity>
@@ -120,12 +120,12 @@
         <commodprice>0</commodprice>
         <recipe>nwtrb:fresh_PWR_uo2</recipe>
       </SourceFacility>
-    </model>
+    </agent>
   </facility>
 
   <facility>
     <name>BWR_uo2_FuelFab</name>
-    <model>
+    <agent>
       <SourceFacility>
         <outcommodity>fresh_BWR_uo2</outcommodity>
         <capacity>1e6</capacity>
@@ -133,12 +133,12 @@
         <commodprice>0</commodprice>
         <recipe>nwtrb:fresh_BWR_uo2</recipe>
       </SourceFacility>
-    </model>
+    </agent>
   </facility>
 
   <facility>
     <name>PWR_r_uo2_FuelFab</name>
-    <model>
+    <agent>
       <SourceFacility>
         <outcommodity>fresh_r_uo2</outcommodity>
         <capacity>1e6</capacity>
@@ -146,12 +146,12 @@
         <commodprice>0</commodprice>
         <recipe>fresh_50gwd</recipe>
       </SourceFacility>
-    </model>
+    </agent>
   </facility>
 
   <facility>
     <name>PWR_mox_FuelFab</name>
-    <model>
+    <agent>
       <SourceFacility>
         <outcommodity>fresh_mox</outcommodity>
         <capacity>1e6</capacity>
@@ -159,12 +159,12 @@
         <commodprice>0</commodprice>
         <recipe>fresh_50gwd</recipe>
       </SourceFacility>
-    </model>
+    </agent>
   </facility>
 
   <facility>
     <name>Storage</name>
-    <model>
+    <agent>
       <SinkFacility>
         <incommodity>spent_PWR_uo2</incommodity>
         <incommodity>spent_BWR_uo2</incommodity>
@@ -172,7 +172,7 @@
         <inventorysize>1e4</inventorysize>
         <commodprice>0</commodprice>
       </SinkFacility>
-    </model>
+    </agent>
   </facility>
 
   <facilitycatalog>
@@ -305,13 +305,13 @@
     <allowedfacility>nwtrb:Yankee_Rowe_1</allowedfacility>
     <allowedfacility>nwtrb:Zion_1</allowedfacility>
     <allowedfacility>nwtrb:Zion_2</allowedfacility>
-    <model>
+    <agent>
       <NullRegion/>
-    </model>
+    </agent>
 
     <institution>
       <name>OneInst</name>
-      <model>
+      <agent>
         <FixedInst>
           <facility>
             <type>Storage</type>
@@ -798,7 +798,7 @@
           </facility>
 
         </FixedInst>
-      </model>
+      </agent>
     </institution>
   </region>
 

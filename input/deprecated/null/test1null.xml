@@ -17,15 +17,15 @@
   <market>
     <name>commodity_market</name>
     <mktcommodity>commodity</mktcommodity>
-    <model>
+    <agent>
       <NullMarket/>
-    </model>
+    </agent>
   </market>
 
   <facility>
     <name>Source</name>
     <outcommodity>commodity</outcommodity>
-    <model>
+    <agent>
       <SourceFacility>
 	<output>
 	  <outcommodity>commodity</outcommodity>
@@ -33,29 +33,29 @@
 	  <recipe>commod_recipe</recipe>
 	</output>
       </SourceFacility>
-    </model>
+    </agent>
   </facility>
   
   <facility>
     <name>Sink</name>
     <incommodity>commodity</incommodity>
-    <model>
+    <agent>
       <SourceFacility>
 	<input>
 	  <incommodity>commodity</incommodity>
 	  <inputcapacity>1</inputcapacity>
 	</input>
       </SourceFacility>
-    </model>
+    </agent>
   </facility>
 
   <region>
     <name>SingleRegion</name>
     <allowedfacility>Source</allowedfacility>
     <allowedfacility>Sink</allowedfacility>
-    <model>
+    <agent>
       <NullRegion/>
-    </model>
+    </agent>
     <institution>
       <name>SingleInstitution</name>
       <availableprototype>Source</availableprototype>
@@ -68,9 +68,9 @@
 	<prototype>Sink</prototype>
 	<number>1</number>
       </initialfacilitylist>
-      <model>
+      <agent>
         <NullInst/>
-      </model>
+      </agent>
     </institution>
   </region>
 

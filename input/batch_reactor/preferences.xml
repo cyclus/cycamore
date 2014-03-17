@@ -23,7 +23,7 @@ commodity. -->
 
   <facility>
     <name>Source</name>
-    <model>
+    <agent>
       <SourceFacility>
         <output>
           <outcommodity>used_commodity</outcommodity>
@@ -31,13 +31,13 @@ commodity. -->
           <recipe>commod_recipe</recipe>
         </output>
       </SourceFacility>
-    </model>
+    </agent>
     <outcommodity>used_commodity</outcommodity>
   </facility>
   
   <facility>
     <name>Reactor</name>
-    <model>
+    <agent>
       <BatchReactor>
         <fuel>
          <incommodity>used_commodity</incommodity>
@@ -58,14 +58,14 @@ commodity. -->
           <preference>1.0</preference>
         </commod_pref>
       </BatchReactor>
-    </model>
+    </agent>
     <incommodity>used_commodity</incommodity>
     <outcommodity>processed_commodity</outcommodity>
   </facility>
 
   <facility>
     <name>Sink</name>
-    <model>
+    <agent>
       <SinkFacility>
         <input>
           <commodities>
@@ -75,7 +75,7 @@ commodity. -->
           <input_capacity>2</input_capacity>
         </input>
       </SinkFacility>
-    </model>
+    </agent>
     <incommodity>used_commodity</incommodity>
     <incommodity>processed_commodity</incommodity>
   </facility>
@@ -85,9 +85,9 @@ commodity. -->
     <allowedfacility>Source</allowedfacility>
     <allowedfacility>Reactor</allowedfacility>
     <allowedfacility>Sink</allowedfacility>
-    <model>
+    <agent>
       <NullRegion/>
-    </model>
+    </agent>
     <institution>
       <name>SingleInstitution</name>
       <availableprototype>Source</availableprototype>
@@ -107,9 +107,9 @@ commodity. -->
           <number>1</number>
         </entry>
       </initialfacilitylist>
-      <model>
+      <agent>
         <NullInst/>
-      </model>
+      </agent>
     </institution>
   </region>
 

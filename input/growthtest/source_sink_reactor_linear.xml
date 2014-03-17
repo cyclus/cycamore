@@ -15,7 +15,7 @@
 
   <facility>
     <name>Source</name>
-    <model>
+    <agent>
       <SourceFacility>
         <output>
           <outcommodity>incommodity</outcommodity>
@@ -23,13 +23,13 @@
           <recipe>commod_recipe</recipe>
         </output>
       </SourceFacility>
-    </model>
+    </agent>
     <outcommodity>incommodity</outcommodity>
   </facility>
 
   <facility>
     <name>Reactor</name>
-    <model>
+    <agent>
       <BatchReactor>
         <fuel>
          <incommodity>incommodity</incommodity>
@@ -46,14 +46,14 @@
           <cost>10</cost>
         </commodity_production>
       </BatchReactor>
-    </model>
+    </agent>
     <incommodity>incommodity</incommodity>
     <outcommodity>outcommodity</outcommodity>
   </facility>
   
   <facility>
     <name>Sink</name>
-    <model>
+    <agent>
       <SinkFacility>
         <input>
           <commodities>
@@ -62,7 +62,7 @@
           <input_capacity>20</input_capacity>
         </input>
       </SinkFacility>
-    </model>
+    </agent>
     <incommodity>outcommodity</incommodity>
   </facility>
 
@@ -71,7 +71,7 @@
     <allowedfacility>Source</allowedfacility>
     <allowedfacility>Reactor</allowedfacility>
     <allowedfacility>Sink</allowedfacility>
-    <model>
+    <agent>
       <GrowthRegion>
         <commodity>
           <name>power</name>
@@ -81,7 +81,7 @@
           </demand>
         </commodity>
       </GrowthRegion>
-    </model>
+    </agent>
     <institution>
       <name>SingleInstitution</name>
       <availableprototype>Source</availableprototype>
@@ -97,9 +97,9 @@
           <number>1</number>
         </entry>
       </initialfacilitylist>
-      <model>
+      <agent>
         <ManagerInst/>
-      </model>
+      </agent>
     </institution>
   </region>
 

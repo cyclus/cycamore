@@ -23,7 +23,7 @@
 
   <facility>
     <name>UOX_Source</name>
-    <model>
+    <agent>
       <SourceFacility>
         <output>
           <outcommodity>uox</outcommodity>
@@ -31,12 +31,12 @@
           <recipe>uox_fuel_recipe</recipe>
         </output>
       </SourceFacility>
-    </model>
+    </agent>
   </facility>
 
   <facility>
     <name>MOX_Source</name>
-    <model>
+    <agent>
       <SourceFacility>
         <output>
           <outcommodity>mox</outcommodity>
@@ -44,12 +44,12 @@
           <recipe>mox_fuel_recipe</recipe>
         </output>
       </SourceFacility>
-    </model>
+    </agent>
   </facility>
 
   <facility>
     <name>Reactor1</name>
-    <model>
+    <agent>
       <BatchReactor>
         <fuel>
           <incommodity>uox</incommodity>
@@ -89,12 +89,12 @@
           <time>4</time>
         </pref_change>
       </BatchReactor>
-    </model>
+    </agent>
   </facility>
 
   <facility>
     <name>Reactor2</name>
-    <model>
+    <agent>
       <BatchReactor>
         <fuel>
           <incommodity>uox</incommodity>
@@ -129,12 +129,12 @@
           <preference>1.0</preference>
         </commod_pref>
       </BatchReactor>
-    </model>
+    </agent>
   </facility>
 
   <facility>
     <name>Reactor3</name>
-    <model>
+    <agent>
       <BatchReactor>
         <fuel>
           <incommodity>uox</incommodity>
@@ -169,7 +169,7 @@
           <preference>0.5</preference>
         </commod_pref>
       </BatchReactor>
-    </model>
+    </agent>
   </facility>
 
   <region>
@@ -179,9 +179,9 @@
     <allowedfacility>Reactor1</allowedfacility>
     <allowedfacility>Reactor2</allowedfacility>
     <allowedfacility>Reactor3</allowedfacility>
-    <model>
+    <agent>
       <NullRegion/>
-    </model>
+    </agent>
     <institution>
       <name>SingleInstitution</name>
       <availableprototype>UOX_Source</availableprototype>
@@ -189,7 +189,7 @@
       <availableprototype>Reactor1</availableprototype>
       <availableprototype>Reactor2</availableprototype>
       <availableprototype>Reactor3</availableprototype>
-      <model>
+      <agent>
         <DeployInst>
           <buildorder>
             <prototype>UOX_Source</prototype>
@@ -217,7 +217,7 @@
             <date>3</date>
           </buildorder>        
         </DeployInst>
-      </model>
+      </agent>
     </institution>
   </region>
 

@@ -23,7 +23,7 @@
 
   <facility>
     <name>Source</name>
-    <model>
+    <agent>
       <SourceFacility>
         <output>
           <outcommodity>natl_u</outcommodity>
@@ -31,13 +31,13 @@
           <recipe>natl_u</recipe>
         </output>
       </SourceFacility>
-    </model>
+    </agent>
     <outcommodity>natl_u</outcommodity>
   </facility>
 
   <facility>
     <name>Enrichment</name>
-    <model>
+    <agent>
       <EnrichmentFacility>
         <input>
           <incommodity>natl_u</incommodity>
@@ -50,14 +50,14 @@
           <swu_capacity>30.0</swu_capacity>
         </output>
       </EnrichmentFacility>
-    </model>
+    </agent>
     <incommodity>natl_u</incommodity>
     <outcommodity>enriched_u</outcommodity>
   </facility>
 
   <facility>
     <name>Reactor</name>
-    <model>
+    <agent>
       <BatchReactor>
         <fuel>
          <incommodity>enriched_u</incommodity>
@@ -74,14 +74,14 @@
           <cost>10</cost>
         </commodity_production>
       </BatchReactor>
-    </model>
+    </agent>
     <incommodity>enriched_u</incommodity>
     <outcommodity>waste</outcommodity>
   </facility>
   
   <facility>
     <name>Sink</name>
-    <model>
+    <agent>
       <SinkFacility>
         <input>
           <commodities>
@@ -90,7 +90,7 @@
           <input_capacity>1000</input_capacity>
         </input>
       </SinkFacility>
-    </model>
+    </agent>
     <incommodity>waste</incommodity>
   </facility>
 
@@ -100,7 +100,7 @@
     <allowedfacility>Enrichment</allowedfacility>
     <allowedfacility>Reactor</allowedfacility>
     <allowedfacility>Sink</allowedfacility>
-    <model>
+    <agent>
       <GrowthRegion>
         <commodity>
           <name>power</name>
@@ -110,7 +110,7 @@
           </demand>
         </commodity>
       </GrowthRegion>
-    </model>
+    </agent>
     <institution>
       <name>SingleInstitution</name>
       <availableprototype>Source</availableprototype>
@@ -131,9 +131,9 @@
           <number>1</number>
         </entry>
       </initialfacilitylist>
-      <model>
+      <agent>
         <ManagerInst/>
-      </model>
+      </agent>
     </institution>
   </region>
 

@@ -23,21 +23,21 @@
 
   <facility>
     <name>Source</name>
-    <model>
+    <agent>
       <SourceFacility>
         <output>
           <outcommodity>enriched_u</outcommodity>
           <recipe>natl_u</recipe>
         </output>
       </SourceFacility>
-    </model>
+    </agent>
     <outcommodity>enriched_u</outcommodity>
   </facility>
 
   <facility>
     <name>HWR_Reactor</name>
     <lifetime>480</lifetime>
-    <model>
+    <agent>
       <InproReactor>
         <fuel_input>
          <incommodity>enriched_u</incommodity>
@@ -58,14 +58,14 @@
           <cost>600</cost>
         </commodity_production>
       </InproReactor>
-    </model>
+    </agent>
     <incommodity>enriched_u</incommodity>
     <outcommodity>waste</outcommodity>
   </facility>
   
   <facility>
     <name>Sink</name>
-    <model>
+    <agent>
       <SinkFacility>
         <input>
           <commodities>
@@ -73,7 +73,7 @@
           </commodities>
         </input>
       </SinkFacility>
-    </model>
+    </agent>
     <incommodity>waste</incommodity>
   </facility>
 
@@ -84,9 +84,9 @@
     <allowedfacility>LWR_Reactor</allowedfacility>
     <allowedfacility>HWR_Reactor</allowedfacility>
     <allowedfacility>Sink</allowedfacility>
-    <model>
+    <agent>
       <NullRegion/>
-    </model>
+    </agent>
     <institution>
       <name>SingleInstitution</name>
       <availableprototype>Source</availableprototype>
@@ -108,9 +108,9 @@
           <number>1</number>
         </entry>
       </initialfacilitylist>
-      <model>
+      <agent>
         <NullInst/>
-      </model>
+      </agent>
     </institution>
   </region>
 

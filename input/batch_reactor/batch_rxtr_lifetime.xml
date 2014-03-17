@@ -1,5 +1,5 @@
 <?xml version="1.0"?>
-<!-- This input file is used to verify the INPRO reactor model behaves 
+<!-- This input file is used to verify the INPRO reactor agent behaves 
 reasonably for its lifetime. -->
 
 <simulation>
@@ -20,7 +20,7 @@ reasonably for its lifetime. -->
 
   <facility>
     <name>Source</name>
-    <model>
+    <agent>
       <SourceFacility>
         <output>
           <outcommodity>enriched_u</outcommodity>
@@ -28,14 +28,14 @@ reasonably for its lifetime. -->
           <recipe>lwr_fuel_recipe</recipe>
         </output>
       </SourceFacility>
-    </model>
+    </agent>
     <outcommodity>enriched_u</outcommodity>
   </facility>
 
   <facility>
     <name>LWR_Reactor</name>
     <lifetime>480</lifetime>
-    <model>
+    <agent>
       <BatchReactor>
         <fuel>
          <incommodity>enriched_u</incommodity>
@@ -53,14 +53,14 @@ reasonably for its lifetime. -->
           <cost>1000</cost>
         </commodity_production>
       </BatchReactor>
-    </model>
+    </agent>
     <incommodity>enriched_u</incommodity>
     <outcommodity>waste</outcommodity>
   </facility>
   
   <facility>
     <name>Sink</name>
-    <model>
+    <agent>
       <SinkFacility>
         <input>
           <commodities>
@@ -69,7 +69,7 @@ reasonably for its lifetime. -->
           <input_capacity>1.0e10</input_capacity>
         </input>
       </SinkFacility>
-    </model>
+    </agent>
     <incommodity>waste</incommodity>
   </facility>
 
@@ -78,9 +78,9 @@ reasonably for its lifetime. -->
     <allowedfacility>Source</allowedfacility>
     <allowedfacility>LWR_Reactor</allowedfacility>
     <allowedfacility>Sink</allowedfacility>
-    <model>
+    <agent>
      <NullRegion/>
-    </model>
+    </agent>
     <institution>
       <name>SingleInstitution</name>
       <availableprototype>Source</availableprototype>
@@ -100,9 +100,9 @@ reasonably for its lifetime. -->
           <number>1</number>
         </entry>
       </initialfacilitylist>
-      <model>
+      <agent>
         <NullInst/>
-      </model>
+      </agent>
     </institution>
   </region>
 

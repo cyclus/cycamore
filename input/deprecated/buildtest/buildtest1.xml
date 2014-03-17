@@ -14,14 +14,14 @@
   <market>
     <name>uo2market</name>
     <mktcommodity>uo2</mktcommodity>
-    <model>
+    <agent>
       <GreedyMarket/>
-    </model>
+    </agent>
   </market>
 
   <facility>
     <name>FrontEnd</name>
-    <model>
+    <agent>
       <SourceFacility>
         <outcommodity>uo2</outcommodity>
         <capacity>1</capacity>
@@ -29,26 +29,26 @@
         <commodprice>0</commodprice>
         <recipe>fresh_50gwd</recipe>
       </SourceFacility>
-    </model>
+    </agent>
   </facility>
 
   <facility>
     <name>BackEnd</name>
-    <model>
+    <agent>
       <SinkFacility>
         <incommodity>uo2</incommodity>
         <capacity>1e3</capacity>
         <inventorysize>1e4</inventorysize>
         <commodprice>0</commodprice>
       </SinkFacility>
-    </model>
+    </agent>
   </facility>
 
   <region>
     <name>oneRegion</name>
     <allowedfacility>FrontEnd</allowedfacility>
     <allowedfacility>BackEnd</allowedfacility>
-    <model>
+    <agent>
       <BuildRegion>
 	<prototyperequirement>
 	  <prototypename>FrontEnd</prototypename>
@@ -69,15 +69,15 @@
 	  </demandschedule>
 	</prototyperequirement>
       </BuildRegion>
-    </model>
+    </agent>
     <institution>
       <name>oneInst</name>
-      <model>
+      <agent>
         <BuildInst>
 	  <availableprototype>FrontEnd</availableprototype>
 	  <availableprototype>BackEnd</availableprototype>
         </BuildInst>
-      </model>
+      </agent>
     </institution>
   </region>
 

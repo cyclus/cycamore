@@ -18,22 +18,22 @@
   <market>
     <name>uo2market</name>
     <mktcommodity>uo2</mktcommodity>
-    <model>
+    <agent>
       <NullMarket/>
-    </model>
+    </agent>
   </market>
 
   <market>
     <name>rodmarket</name>
     <mktcommodity>rod</mktcommodity>
-    <model>
+    <agent>
       <NullMarket/>
-    </model>
+    </agent>
   </market>
 
   <facility>
     <name>FrontEnd</name>
-    <model>
+    <agent>
       <SourceFacility>
         <outcommodity>uo2</outcommodity>
         <capacity>1</capacity>
@@ -41,31 +41,31 @@
         <commodprice>0</commodprice>
         <recipe>fresh_50gwd</recipe>
       </SourceFacility>
-    </model>
+    </agent>
   </facility>
 
   <facility>
     <name>MiddleMan</name>
-    <model>
+    <agent>
       <NullFacility>
         <incommodity>uo2</incommodity>
         <outcommodity>rod</outcommodity>
         <inventorysize>1e4</inventorysize>
         <capacity>1e3</capacity>
       </NullFacility>
-    </model>
+    </agent>
   </facility>
 
   <facility>
     <name>BackEnd</name>
-    <model>
+    <agent>
       <SinkFacility>
         <incommodity>rod</incommodity>
         <capacity>1e3</capacity>
         <inventorysize>1e4</inventorysize>
         <commodprice>0</commodprice>
       </SinkFacility>
-    </model>
+    </agent>
   </facility>
 
   <region>
@@ -73,12 +73,12 @@
     <allowedfacility>FrontEnd</allowedfacility>
     <allowedfacility>MiddleMan</allowedfacility>
     <allowedfacility>BackEnd</allowedfacility>
-    <model>
+    <agent>
       <NullRegion/>
-    </model>
+    </agent>
     <institution>
       <name>oneInst</name>
-      <model>
+      <agent>
         <FixedInst>
           <facility>
             <type>FrontEnd</type>
@@ -93,7 +93,7 @@
             <name>BackEnd</name>
           </facility>
         </FixedInst>
-      </model>
+      </agent>
     </institution>
   </region>
 

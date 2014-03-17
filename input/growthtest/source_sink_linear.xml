@@ -15,7 +15,7 @@
 
   <facility>
     <name>Source</name>
-    <model>
+    <agent>
       <SourceFacility>
 	<output>
 	  <outcommodity>commodity</outcommodity>
@@ -23,13 +23,13 @@
 	  <recipe>commod_recipe</recipe>
 	</output>
       </SourceFacility>
-    </model>
+    </agent>
     <outcommodity>commodity</outcommodity>
   </facility>
   
   <facility>
     <name>Sink</name>
-    <model>
+    <agent>
       <SinkFacility>
 	<input>
 	  <commodities>
@@ -37,7 +37,7 @@
 	  </commodities>
 	</input>
       </SinkFacility>
-    </model>
+    </agent>
     <incommodity>commodity</incommodity>
   </facility>
 
@@ -45,7 +45,7 @@
     <name>SingleRegion</name>
     <allowedfacility>Source</allowedfacility>
     <allowedfacility>Sink</allowedfacility>
-    <model>
+    <agent>
       <GrowthRegion>
         <commodity>
           <name>commodity</name>
@@ -55,7 +55,7 @@
           </demand>
         </commodity>
       </GrowthRegion>
-    </model>
+    </agent>
     <institution>
       <name>SingleInstitution</name>
       <availableprototype>Source</availableprototype>
@@ -70,9 +70,9 @@
 	  <number>1</number>
 	</entry>
       </initialfacilitylist>
-      <model>
+      <agent>
         <ManagerInst/>
-      </model>
+      </agent>
     </institution>
   </region>
 

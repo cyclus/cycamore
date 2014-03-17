@@ -17,22 +17,22 @@
   <market>
     <name>uo2market</name>
     <mktcommodity>uo2</mktcommodity>
-    <model>
+    <agent>
       <NullMarket/>
-    </model>
+    </agent>
   </market>
 
   <market>
     <name>uo2formmarket</name>
     <mktcommodity>uo2form</mktcommodity>
-    <model>
+    <agent>
       <NullMarket/>
-    </model>
+    </agent>
   </market>
 
   <facility>
     <name>FrontEnd</name>
-    <model>
+    <agent>
       <SourceFacility>
         <outcommodity>uo2</outcommodity>
         <capacity>5</capacity>
@@ -40,12 +40,12 @@
         <commodprice>0</commodprice>
         <recipe>fresh_50gwd</recipe>
       </SourceFacility>
-    </model>
+    </agent>
   </facility>
 
   <facility>
     <name>BackEnd</name>
-    <model>
+    <agent>
       <ConditioningFacility>
         <capacity>10</capacity>
         <fileformat>csv</fileformat>
@@ -56,19 +56,19 @@
           <id>1</id>
         </commodset>
       </ConditioningFacility>
-    </model>
+    </agent>
   </facility>
 
   <region>
     <name>oneRegion</name>
     <allowedfacility>FrontEnd</allowedfacility>
     <allowedfacility>BackEnd</allowedfacility>
-    <model>
+    <agent>
       <NullRegion/>
-    </model>
+    </agent>
     <institution>
       <name>oneInst</name>
-      <model>
+      <agent>
         <FixedInst>
           <facility>
             <type>FrontEnd</type>
@@ -79,7 +79,7 @@
             <name>BackEnd</name>
           </facility>
         </FixedInst>
-      </model>
+      </agent>
     </institution>
   </region>
 

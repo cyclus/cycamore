@@ -23,20 +23,20 @@
 
   <prototype>
     <name>Source</name>
-    <model>
+    <agent>
       <SourceFacility>
         <output>
           <outcommodity>natl_u</outcommodity>
           <recipe>natl_u</recipe>
         </output>
       </SourceFacility>
-    </model>
+    </agent>
     <outcommodity>natl_u</outcommodity>
   </prototype>
 
   <prototype>
     <name>Enrichment</name>
-    <model>
+    <agent>
       <EnrichmentFacility>
         <input>
           <incommodity>natl_u</incommodity>
@@ -47,7 +47,7 @@
           <tails_assay>0.003</tails_assay>
         </output>
       </EnrichmentFacility>
-    </model>
+    </agent>
     <incommodity>natl_u</incommodity>
     <outcommodity>enriched_u</outcommodity>
   </prototype>
@@ -55,7 +55,7 @@
   <prototype>
     <name>LWR_Reactor</name>
     <lifetime>480</lifetime>
-    <model>
+    <agent>
       <InproReactor>
         <fuel_input>
          <incommodity>enriched_u</incommodity>
@@ -76,7 +76,7 @@
           <cost>1000</cost>
         </commodity_production>
       </InproReactor>
-    </model>
+    </agent>
     <incommodity>enriched_u</incommodity>
     <outcommodity>waste</outcommodity>
   </prototype>
@@ -84,7 +84,7 @@
   <prototype>
     <name>HWR_Reactor</name>
     <lifetime>480</lifetime>
-    <model>
+    <agent>
       <InproReactor>
         <fuel_input>
          <incommodity>enriched_u</incommodity>
@@ -105,14 +105,14 @@
           <cost>600</cost>
         </commodity_production>
       </InproReactor>
-    </model>
+    </agent>
     <incommodity>enriched_u</incommodity>
     <outcommodity>waste</outcommodity>
   </prototype>
   
   <prototype>
     <name>Sink</name>
-    <model>
+    <agent>
       <SinkFacility>
         <input>
           <commodities>
@@ -120,7 +120,7 @@
           </commodities>
         </input>
       </SinkFacility>
-    </model>
+    </agent>
     <incommodity>waste</incommodity>
   </prototype>
 
@@ -131,7 +131,7 @@
     <allowedfacility>LWR_Reactor</allowedfacility>
     <allowedfacility>HWR_Reactor</allowedfacility>
     <allowedfacility>Sink</allowedfacility>
-    <model>
+    <agent>
       <GrowthRegion>
         <commodity>
           <name>lwr_power</name>
@@ -170,7 +170,7 @@
           </demand>
         </commodity>
       </GrowthRegion>
-    </model>
+    </agent>
   </prototype>
 
   <prototype>
@@ -180,9 +180,9 @@
     <availableprototype>LWR_Reactor</availableprototype>
     <availableprototype>HWR_Reactor</availableprototype>
     <availableprototype>Sink</availableprototype>
-    <model>
+    <agent>
       <ManagerInst/>
-    </model>
+    </agent>
   </prototype>
 
   <agent>

@@ -18,22 +18,22 @@
   <market>
     <name>snfmarket</name>
     <mktcommodity>snf</mktcommodity>
-    <model>
+    <agent>
       <GreedyMarket/>
-    </model>
+    </agent>
   </market>
 
   <market>
     <name>UPumarket</name>
     <mktcommodity>UPu</mktcommodity>
-    <model>
+    <agent>
       <GreedyMarket/>
-    </model>
+    </agent>
   </market>
 
   <facility>
     <name>FrontEnd</name>
-    <model>
+    <agent>
       <SourceFacility>
         <outcommodity>snf</outcommodity>
         <capacity>1</capacity>
@@ -41,12 +41,12 @@
         <commodprice>0</commodprice>
         <recipe>fresh_50gwd</recipe>
       </SourceFacility>
-    </model>
+    </agent>
   </facility>
 
   <facility>
     <name>MiddleMan</name>
-    <model>
+    <agent>
       <SeparationsMatrixFacility>
         <incommodity>snf</incommodity>
         <stream>
@@ -57,19 +57,19 @@
         <inventorysize>1e6</inventorysize>
         <capacity>1</capacity>
       </SeparationsMatrixFacility>
-    </model>
+    </agent>
   </facility>
 
   <facility>
     <name>BackEnd</name>
-    <model>
+    <agent>
       <SinkFacility>
         <incommodity>UPu</incommodity>
         <capacity>1</capacity>
         <inventorysize>1e5</inventorysize>
         <commodprice>0</commodprice>
       </SinkFacility>
-    </model>
+    </agent>
   </facility>
 
   <region>
@@ -77,12 +77,12 @@
     <allowedfacility>FrontEnd</allowedfacility>
     <allowedfacility>MiddleMan</allowedfacility>
     <allowedfacility>BackEnd</allowedfacility>
-    <model>
+    <agent>
       <NullRegion/>
-    </model>
+    </agent>
     <institution>
       <name>oneInst</name>
-      <model>
+      <agent>
         <FixedInst>
           <facility>
             <type>FrontEnd</type>
@@ -97,7 +97,7 @@
             <name>BackEnd</name>
           </facility>
         </FixedInst>
-      </model>
+      </agent>
     </institution>
   </region>
 

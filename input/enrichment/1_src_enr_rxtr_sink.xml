@@ -23,7 +23,7 @@
 
   <facility>
     <name>Source</name>
-    <model>
+    <agent>
       <SourceFacility>
         <output>
           <outcommodity>natl_u</outcommodity>
@@ -31,13 +31,13 @@
           <recipe>natl_u</recipe>
         </output>
       </SourceFacility>
-    </model>
+    </agent>
     <outcommodity>natl_u</outcommodity>
   </facility>
 
   <facility>
     <name>Enrichment</name>
-    <model>
+    <agent>
       <EnrichmentFacility>
         <input>
           <incommodity>natl_u</incommodity>
@@ -49,14 +49,14 @@
           <tails_assay>0.003</tails_assay>
         </output>
       </EnrichmentFacility>
-    </model>
+    </agent>
     <incommodity>natl_u</incommodity>
     <outcommodity>enriched_u</outcommodity>
   </facility>
 
   <facility>
     <name>Reactor</name>
-    <model>
+    <agent>
       <BatchReactor>
         <fuel>
          <incommodity>enriched_u</incommodity>
@@ -73,14 +73,14 @@
           <cost>10</cost>
         </commodity_production>
       </BatchReactor>
-    </model>
+    </agent>
     <incommodity>enriched_u</incommodity>
     <outcommodity>waste</outcommodity>
   </facility>
   
   <facility>
     <name>Sink</name>
-    <model>
+    <agent>
       <SinkFacility>
         <input>
           <commodities>
@@ -89,7 +89,7 @@
           <input_capacity>1</input_capacity>
         </input>
       </SinkFacility>
-    </model>
+    </agent>
     <incommodity>waste</incommodity>
   </facility>
 
@@ -99,9 +99,9 @@
     <allowedfacility>Enrichment</allowedfacility>
     <allowedfacility>Reactor</allowedfacility>
     <allowedfacility>Sink</allowedfacility>
-    <model>
+    <agent>
       <NullRegion/>
-    </model>
+    </agent>
     <institution>
       <name>SingleInstitution</name>
       <availableprototype>Source</availableprototype>
@@ -126,9 +126,9 @@
           <number>1</number>
         </entry>
       </initialfacilitylist>
-      <model>
+      <agent>
         <NullInst/>
-      </model>
+      </agent>
     </institution>
   </region>
 

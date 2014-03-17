@@ -13,32 +13,32 @@
   <market>
     <name>uo2market</name>
     <mktcommodity>uo2</mktcommodity>
-    <model>
+    <agent>
       <StubMarket/>
-    </model>
+    </agent>
   </market>
 
   <facility>
     <name>FrontEnd</name>
-    <model>
+    <agent>
       <StubFacility>
         <incommodity>uo2</incommodity>
         <outcommodity>uo2</outcommodity>
       </StubFacility>
-    </model>
+    </agent>
   </facility>
 
   <region>
     <name>oneRegion</name>
     <allowedfacility>FrontEnd</allowedfacility>
-    <model>
+    <agent>
       <StubRegion/>
-    </model>
+    </agent>
     <institution>
       <name>oneInst</name>
-      <model>
+      <agent>
         <StubInst/>
-      </model>
+      </agent>
     </institution>
   </region>
 
