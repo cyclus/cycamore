@@ -30,13 +30,8 @@ class NullRegionTest : public ::testing::Test {
 };
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-cyclus::Agent* NullRegionAgentConstructor(cyclus::Context* ctx) {
-  return dynamic_cast<cyclus::Agent*>(new FakeNullRegion(ctx));
-}
-
-//- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-cyclus::RegionAgent* NullRegionConstructor(cyclus::Context* ctx) {
-  return dynamic_cast<cyclus::RegionAgent*>(new FakeNullRegion(ctx));
+cyclus::Agent* NullRegionConstructor(cyclus::Context* ctx) {
+  return new FakeNullRegion(ctx);
 }
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -55,9 +50,9 @@ TEST_F(NullRegionTest, Print) {
 }
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-INSTANTIATE_TEST_CASE_P(NullRegion, RegionAgentTests,
+INSTANTIATE_TEST_CASE_P(NullRegion, RegionTests,
                         Values(&NullRegionConstructor));
 INSTANTIATE_TEST_CASE_P(NullRegion, AgentTests,
-                        Values(&NullRegionAgentConstructor));
+                        Values(&NullRegionConstructor));
 
 

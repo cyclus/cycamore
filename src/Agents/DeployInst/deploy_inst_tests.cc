@@ -8,12 +8,7 @@
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 cyclus::Agent* DeployInstitutionConstructor(cyclus::Context* ctx) {
-  return dynamic_cast<cyclus::Agent*>(new cycamore::DeployInst(ctx));
-}
-
-//- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-cyclus::Institution* DeployInstConstructor(cyclus::Context* ctx) {
-  return dynamic_cast<cyclus::Institution*>(new cycamore::DeployInst(ctx));
+  return new cycamore::DeployInst(ctx);
 }
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -25,10 +20,9 @@ class DeployInstTest : public ::testing::Test {
   virtual void TearDown() {}
 };
 
-
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 INSTANTIATE_TEST_CASE_P(DeployInst, InstitutionTests,
-                        Values(&DeployInstConstructor));
+                        Values(&DeployInstitutionConstructor));
 INSTANTIATE_TEST_CASE_P(DeployInst, AgentTests,
                         Values(&DeployInstitutionConstructor));
 

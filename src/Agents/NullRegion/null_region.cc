@@ -11,7 +11,7 @@ namespace cycamore {
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 NullRegion::NullRegion(cyclus::Context* ctx)
-    : cyclus::RegionAgent(ctx) {}
+    : cyclus::Region(ctx) {}
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 NullRegion::~NullRegion() {}

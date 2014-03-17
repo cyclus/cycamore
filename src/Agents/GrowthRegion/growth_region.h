@@ -20,7 +20,7 @@ class GrowthRegion;
 
 namespace cycamore {
 /**
-   The GrowthRegion class inherits from the RegionAgent class and is
+   The GrowthRegion class inherits from the Region class and is
    dynamically loaded by the Agent class when requested.
 
    This region determines if there is a need to meet a certain
@@ -36,7 +36,7 @@ struct DemandInfo {
   int time;
 };
 
-class GrowthRegion : public cyclus::RegionAgent {
+class GrowthRegion : public cyclus::Region {
   friend class GrowthRegionTests;
  public:
   /* --- Module Members --- */

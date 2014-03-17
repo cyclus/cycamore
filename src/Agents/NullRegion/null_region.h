@@ -7,10 +7,10 @@
 namespace cycamore {
 
 /**
-   The NullRegion class inherits from the RegionAgent class and is
+   The NullRegion class inherits from the Region class and is
    dynamically loaded by the Agent class when requested.
 
-   This region will do nothing. This RegionAgent never alters any
+   This region will do nothing. This Region never alters any
    messages transmitted through it or anything else.
 
    @section intro Introduction
@@ -36,7 +36,7 @@ namespace cycamore {
    the market for which it was intended or down to the appropriate
    institution on the path to the recipient.
  */
-class NullRegion : public cyclus::RegionAgent  {
+class NullRegion : public cyclus::Region  {
   /* --------------------
    * all MODEL classes have these members
    * --------------------

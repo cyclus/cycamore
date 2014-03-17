@@ -15,7 +15,7 @@ namespace cycamore {
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 GrowthRegion::GrowthRegion(cyclus::Context* ctx)
-    : cyclus::RegionAgent(ctx) {}
+    : cyclus::Region(ctx) {}
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 GrowthRegion::~GrowthRegion() {}
@@ -52,7 +52,7 @@ std::string GrowthRegion::schema() {
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 void GrowthRegion::InitFrom(cyclus::QueryEngine* qe) {
-  cyclus::RegionAgent::InitFrom(qe);
+  cyclus::Region::InitFrom(qe);
   qe = qe->QueryElement("model/" + model_impl());
   LOG(cyclus::LEV_DEBUG2, "greg") << "A Growth Region is being initialized";
 
@@ -80,7 +80,7 @@ void GrowthRegion::InitFrom(cyclus::QueryEngine* qe) {
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 void GrowthRegion::InitFrom(GrowthRegion* m) {
-  RegionAgent::InitFrom(m);
+  Region::InitFrom(m);
   commodities_ = m->commodities_;
   demands_ = m->demands_;
 }
@@ -104,7 +104,7 @@ void GrowthRegion::AddCommodityDemand(cyclus::Commodity commod) {
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 void GrowthRegion::Build(cyclus::Agent* parent) {
-  cyclus::RegionAgent::Build(parent);
+  cyclus::Region::Build(parent);
 
   std::set<cyclus::Commodity>::iterator it;
   for (it = commodities_.begin(); it != commodities_.end(); ++it) {
@@ -140,7 +140,7 @@ void GrowthRegion::Tick(int time) {
       OrderBuilds(commodity, unmetdemand);
     }
   }
-  cyclus::RegionAgent::Tick(time);
+  cyclus::Region::Tick(time);
 }
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -

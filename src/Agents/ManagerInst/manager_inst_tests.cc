@@ -39,12 +39,7 @@ void ManagerInstTests::TearDown() {
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 cyclus::Agent* ManagerInstitutionConstructor(cyclus::Context* ctx) {
-  return dynamic_cast<cyclus::Agent*>(new cycamore::ManagerInst(ctx));
-}
-
-//- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-cyclus::Institution* ManagerInstConstructor(cyclus::Context* ctx) {
-  return dynamic_cast<cyclus::Institution*>(new cycamore::ManagerInst(ctx));
+  return new cycamore::ManagerInst(ctx);
 }
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -70,7 +65,7 @@ TEST_F(ManagerInstTests, productioncapacity) {
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 INSTANTIATE_TEST_CASE_P(ManagerInst, InstitutionTests,
-                        Values(&ManagerInstConstructor));
+                        Values(&ManagerInstitutionConstructor));
 INSTANTIATE_TEST_CASE_P(ManagerInst, AgentTests,
                         Values(&ManagerInstitutionConstructor));
 

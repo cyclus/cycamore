@@ -27,13 +27,8 @@ void GrowthRegionTests::TearDown() {
 }
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-cyclus::Agent* GrowthRegionAgentConstructor(cyclus::Context* ctx) {
-  return dynamic_cast<cyclus::Agent*>(new cycamore::GrowthRegion(ctx));
-}
-
-//- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-cyclus::RegionAgent* GrowthRegionConstructor(cyclus::Context* ctx) {
-  return dynamic_cast<cyclus::RegionAgent*>(new cycamore::GrowthRegion(ctx));
+cyclus::Agent* GrowthRegionConstructor(cyclus::Context* ctx) {
+  return new cycamore::GrowthRegion(ctx);
 }
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -77,10 +72,10 @@ TEST_F(GrowthRegionTests, init) {
 }
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-INSTANTIATE_TEST_CASE_P(GrowthRegion, RegionAgentTests,
+INSTANTIATE_TEST_CASE_P(GrowthRegion, RegionTests,
                         Values(&GrowthRegionConstructor));
 INSTANTIATE_TEST_CASE_P(GrowthRegion, AgentTests,
-                        Values(&GrowthRegionAgentConstructor));
+                        Values(&GrowthRegionConstructor));
 
 } // namespace cycamore
 
