@@ -52,7 +52,7 @@ void SourceFacility::InfileToDb(cyc::QueryEngine* qe, cyc::DbInit di) {
     ->Record();
 }
 
-void SourceFacility::InitFrom(cyc::QueryBackend* b) {
+void SourceFacility::InitFrom(cyc::QueryableBackend* b) {
   cyc::Facility::InitFrom(b);
   cyc::QueryResult qr = b->Query("Info", NULL);
   recipe_name_ = qr.GetVal<std::string>("recipe");

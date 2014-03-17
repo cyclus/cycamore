@@ -103,7 +103,7 @@ class SourceFacility : public cyc::Facility,
 
   virtual void InfileToDb(cyc::QueryEngine* qe, cyc::DbInit di);
 
-  virtual void InitFrom(cyc::QueryBackend* b);
+  virtual void InitFrom(cyc::QueryableBackend* b);
 
   virtual void Snapshot(cyc::DbInit di);
 

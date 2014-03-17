@@ -66,7 +66,7 @@ void SinkFacility::InfileToDb(cyc::QueryEngine* qe, cyc::DbInit di) {
     ->Record();
 }
 
-void SinkFacility::InitFrom(cyc::QueryBackend* b) {
+void SinkFacility::InitFrom(cyc::QueryableBackend* b) {
   cyc::Facility::InitFrom(b);
 
   cyc::QueryResult qr = b->Query("Info", NULL);

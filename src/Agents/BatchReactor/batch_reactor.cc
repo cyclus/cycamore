@@ -176,7 +176,7 @@ std::string BatchReactor::schema() {
       "  </optional>                                 \n";
 }
 
-void BatchReactor::InitFrom(cyc::QueryBackend* b) {
+void BatchReactor::InitFrom(cyc::QueryableBackend* b) {
   cyc::Facility::InitFrom(b);
 
   crctx_.InitFrom(b);

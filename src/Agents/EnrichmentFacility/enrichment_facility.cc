@@ -95,7 +95,7 @@ void EnrichmentFacility::InfileToDb(cyc::QueryEngine* qe, cyc::DbInit di) {
   ->Record();
 }
 
-void EnrichmentFacility::InitFrom(cyc::QueryBackend* b) {
+void EnrichmentFacility::InitFrom(cyc::QueryableBackend* b) {
   cyc::Facility::InitFrom(b);
 
   cyc::QueryResult qr = b->Query("Info", NULL);

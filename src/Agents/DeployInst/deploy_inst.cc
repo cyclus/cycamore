@@ -44,7 +44,7 @@ void DeployInst::InfileToDb(cyc::QueryEngine* qe, cyc::DbInit di) {
   }
 }
 
-void DeployInst::InitFrom(cyc::QueryBackend* b) {
+void DeployInst::InitFrom(cyc::QueryableBackend* b) {
   cyc::Institution::InitFrom(b);
   cyc::QueryResult qr = b->Query("BuildOrder", NULL);
   for (int i = 0; i < qr.rows.size(); i++) {
