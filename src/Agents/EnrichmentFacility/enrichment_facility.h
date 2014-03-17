@@ -71,7 +71,7 @@ class NatUConverter : public cyc::Converter<cyc::Material> {
    @class EnrichmentFacility
 
    @section introduction Introduction
-   The EnrichmentFacility is a simple Agent to model the enriching of natural
+   The EnrichmentFacility is a simple Agent to agent the enriching of natural
    Uranium in a Cyclus simulation. It requests its input recipe (nominally
    natural Uranium), and produces any amount of enriched Uranium, given the its
    natural uranium inventory constraint and its SWU capacity constraint.
@@ -144,12 +144,12 @@ class EnrichmentFacility : public cyc::Facility {
   virtual cyc::Inventories SnapshotInv();
 
   /**
-     initialize members from a different model
+     initialize members from a different agent
   */
   void InitFrom(EnrichmentFacility* m);
 
   /**
-     Print information about this model
+     Print information about this agent
    */
   virtual std::string str();
   /* --- */

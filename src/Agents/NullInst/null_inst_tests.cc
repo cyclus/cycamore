@@ -2,8 +2,8 @@
 #include <gtest/gtest.h>
 
 #include "context.h"
-#include "inst_model_tests.h"
-#include "model_tests.h"
+#include "institution_tests.h"
+#include "agent_tests.h"
 #include "null_inst.h"
 
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -

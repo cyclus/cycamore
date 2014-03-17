@@ -9,8 +9,8 @@
 #include "capacity_constraint.h"
 #include "commodity_producer.h"
 #include "exchange_context.h"
-#include "facility_model.h"
-#include "facility_model.h"
+#include "facility.h"
+#include "facility.h"
 #include "material.h"
 #include "request_portfolio.h"
 #include "resource_buff.h"
@@ -47,7 +47,7 @@ class InproReactor : public cyclus::Facility,
   virtual cyclus::Agent* Clone();
 
   /**
-     initialize members from a different model
+     initialize members from a different agent
   */
   void InitFrom(InproReactor* m);
 
@@ -60,7 +60,7 @@ class InproReactor : public cyclus::Facility,
   virtual void InitFrom(cyclus::QueryEngine* qe);
 
   /**
-     Print information about this model
+     Print information about this agent
   */
   virtual std::string str();
   /* --- */

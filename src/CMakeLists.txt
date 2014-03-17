@@ -89,7 +89,7 @@ FIND_PACKAGE( HDF5 REQUIRED)
 ADD_DEFINITIONS(${HDF5_DEFINITIONS})
 set(LIBS ${LIBS} ${HDF5_LIBRARIES} )
 
-# include the model directories
+# include the agent directories
 SET(CYCAMORE_INCLUDE_DIR ${CYCAMORE_INCLUDE_DIR} Testing 
     ${CYCLUS_CORE_INCLUDE_DIR}/..)
 

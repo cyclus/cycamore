@@ -51,7 +51,7 @@ TEST_F(SourceFacilityTest, DISABLED_XMLInit) {
   std::stringstream ss;
   ss << "<start>"
      << "<name>fooname</name>"
-     << "<model>"
+     << "<agent>"
      << "<UNSPECIFIED>"
      << "<output>"
      << "  <outcommodity>" << commod << "</outcommodity>"
@@ -59,7 +59,7 @@ TEST_F(SourceFacilityTest, DISABLED_XMLInit) {
      << "  <recipe>" << recipe_name << "</recipe>"
      << "</output>"
      << "</UNSPECIFIED>"
-     << "</model>"
+     << "</agent>"
      << "</start>";
 
   cyclus::XMLParser p;

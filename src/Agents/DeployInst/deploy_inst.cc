@@ -29,7 +29,7 @@ std::string DeployInst::schema() {
 
 void DeployInst::InfileToDb(cyc::QueryEngine* qe, cyc::DbInit di) {
   cyc::Institution::InfileToDb(qe, di);
-  qe = qe->QueryElement("model/" + model_impl());
+  qe = qe->QueryElement("agent/" + agent_impl());
 
   int nOrders = qe->NElementsMatchingQuery("buildorder");
   for (int i = 0; i < nOrders; i++) {

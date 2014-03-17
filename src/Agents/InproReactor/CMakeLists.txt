@@ -1,1 +1,1 @@
-cyclus_init_model("InproReactor" "inpro_reactor")
+cyclus_init_agent("InproReactor" "inpro_reactor")

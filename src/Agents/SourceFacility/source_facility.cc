@@ -34,7 +34,7 @@ std::string SourceFacility::schema() {
 
 void SourceFacility::InfileToDb(cyc::QueryEngine* qe, cyc::DbInit di) {
   cyc::Facility::InfileToDb(qe, di);
-  qe = qe->QueryElement("model/" + model_impl());
+  qe = qe->QueryElement("agent/" + agent_impl());
   
   using std::numeric_limits;
   cyc::QueryEngine* output = qe->QueryElement("output");

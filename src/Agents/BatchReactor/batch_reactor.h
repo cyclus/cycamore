@@ -23,7 +23,7 @@ namespace cycamore {
 /// @class BatchReactor
 ///
 /// @section introduction Introduction
-/// The BatchReactor is a facility that models batch processing. It has three
+/// The BatchReactor is a facility that agents batch processing. It has three
 /// storage areas which hold batches of materials: reserves, core, and
 /// storage. Incoming material orders are placed into reserves, from which the
 /// core is provided batches during refueling. When a process has been
@@ -80,7 +80,7 @@ namespace cycamore {
 /// A BatchReactor will make as many requests as it has possible input
 /// commodities. It provides a constraint based on a total request amount
 /// determined by its batch_size, n_load, and n_reserves parameters. The
-/// n_reserves parameter allows modelers to order fuel in advance of when it is
+/// n_reserves parameter allows agenters to order fuel in advance of when it is
 /// needed. The fuel order size is batch_size * (n_load + n_reserves). These
 /// requests are made if the current simulation time is less than or equal to
 /// the reactor's current order_time(), which is determined by the ending time
@@ -178,10 +178,10 @@ class BatchReactor
 
   virtual std::string schema();
 
-  /// initialize members from a different model
+  /// initialize members from a different agent
   void InitFrom(BatchReactor* m);
 
-  /// Print information about this model
+  /// Print information about this agent
   virtual std::string str();
   /* --- */
 

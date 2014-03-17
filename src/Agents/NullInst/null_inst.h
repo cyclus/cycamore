@@ -2,7 +2,7 @@
 #ifndef CYCAMORE_SRC_NULL_INST_H_
 #define CYCAMORE_SRC_NULL_INST_H_
 
-#include "inst_model.h"
+#include "institution.h"
 
 namespace cycamore {
 
@@ -18,7 +18,7 @@ namespace cycamore {
    The NullInst starts operation at the beginning of the
    simulation and ends operation at the end of the simulation. It
    populates its list of facilities when it is initialized and
-   determines its region as all Institution models do. When it
+   determines its region as all Institution agents do. When it
    receives a message, it transmits that message immediately up to
    its region or down to the appropriate facility without making
    any changes.

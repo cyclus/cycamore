@@ -5,7 +5,7 @@
 
 #include "query_engine.h"
 #include "symbolic_function_factories.h"
-#include "inst_model.h"
+#include "institution.h"
 #include "error.h"
 
 #include <vector>
@@ -53,7 +53,7 @@ std::string GrowthRegion::schema() {
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 void GrowthRegion::InitFrom(cyclus::QueryEngine* qe) {
   cyclus::Region::InitFrom(qe);
-  qe = qe->QueryElement("model/" + model_impl());
+  qe = qe->QueryElement("agent/" + agent_impl());
   LOG(cyclus::LEV_DEBUG2, "greg") << "A Growth Region is being initialized";
 
   std::string query = "commodity";
@@ -177,20 +177,20 @@ void GrowthRegion::OrderBuilds(cyclus::Commodity& commodity,
   for (int i = 0; i < orders.size(); i++) {
     cyclus::BuildOrder order = orders.at(i);
     cyclus::Institution* instcast = dynamic_cast<cyclus::Institution*>(order.builder);
-    cyclus::Agent* modelcast = dynamic_cast<cyclus::Agent*>(order.producer);
-    if (!instcast || !modelcast) {
+    cyclus::Agent* agentcast = dynamic_cast<cyclus::Agent*>(order.producer);
+    if (!instcast || !agentcast) {
       throw cyclus::CastError("growth_region.has tried to incorrectly cast an already known entity.");
     }
 
     LOG(cyclus::LEV_INFO3, "greg") << "A build order for " << order.number
                                    << " prototype(s) of type "
-                                   << dynamic_cast<cyclus::Agent*>(modelcast)->prototype()
+                                   << dynamic_cast<cyclus::Agent*>(agentcast)->prototype()
                                    << " from builder " << instcast->prototype()
                                    << " is being placed.";
 
     for (int j = 0; j < order.number; j++) {
       LOG(cyclus::LEV_DEBUG2, "greg") << "Ordering build number: " << j + 1;
-      context()->SchedBuild(instcast, modelcast->prototype());
+      context()->SchedBuild(instcast, agentcast->prototype());
     }
   }
 }

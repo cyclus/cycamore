@@ -10,9 +10,9 @@
 
 #include "context.h"
 #include "exchange_context.h"
-#include "facility_model_tests.h"
+#include "facility_tests.h"
 #include "material.h"
-#include "model_tests.h"
+#include "agent_tests.h"
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 class SourceFacilityTest : public ::testing::Test {

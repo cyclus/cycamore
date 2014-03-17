@@ -3,8 +3,8 @@
 
 #include "null_region.h"
 #include "error.h"
-#include "region_model_tests.h"
-#include "model_tests.h"
+#include "region_tests.h"
+#include "agent_tests.h"
 #include "timer.h"
 #include "recorder.h"
 

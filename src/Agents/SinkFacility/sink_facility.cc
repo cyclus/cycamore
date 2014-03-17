@@ -40,7 +40,7 @@ std::string SinkFacility::schema() {
 
 void SinkFacility::InfileToDb(cyc::QueryEngine* qe, cyc::DbInit di) {
   cyc::Facility::InfileToDb(qe, di);
-  qe = qe->QueryElement("model/" + model_impl());
+  qe = qe->QueryElement("agent/" + agent_impl());
   
   using std::numeric_limits;
   cyc::QueryEngine* input = qe->QueryElement("input");

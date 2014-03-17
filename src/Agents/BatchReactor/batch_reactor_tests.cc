@@ -6,9 +6,9 @@
 #include "commodity.h"
 #include "composition.h"
 #include "error.h"
-#include "facility_model_tests.h"
-#include "model_tests.h"
-#include "model.h"
+#include "facility_tests.h"
+#include "agent_tests.h"
+#include "agent.h"
 #include "query_engine.h"
 
 namespace cycamore {
@@ -206,7 +206,7 @@ TEST_F(BatchReactorTest, DISABLED_XMLInit) {
   std::stringstream ss;
   ss << "<start>"
      << "<name>fooname</name>"
-     << "<model>"
+     << "<agent>"
      << "<UNSPECIFIED>"
      << "  <fuel>"
      << "    <incommodity>" << in_c1 << "</incommodity>"
@@ -273,7 +273,7 @@ TEST_F(BatchReactorTest, DISABLED_XMLInit) {
      << "    <time>" << change_time << "</time>"
      << "  </pref_change>"
      << "</UNSPECIFIED>"
-     << "</model>"
+     << "</agent>"
      << "</start>";
 
   cyclus::XMLParser p;

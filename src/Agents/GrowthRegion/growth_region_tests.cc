@@ -3,8 +3,8 @@
 
 #include <sstream>
 
-#include "region_model_tests.h"
-#include "model_tests.h"
+#include "region_tests.h"
+#include "agent_tests.h"
 #include "commodity.h"
 #include "xml_query_engine.h"
 #include "xml_parser.h"
@@ -37,7 +37,7 @@ void GrowthRegionTests::InitRegion() {
   stringstream ss("");
   ss << "<start>"
      << "<name>fooname</name>"
-     << "<model>"
+     << "<agent>"
      << "<UNSPECIFIED>"
      << "  <commodity>"
      << "    <name>" << commodity_name << "</name>"
@@ -48,7 +48,7 @@ void GrowthRegionTests::InitRegion() {
      << "    </demand>"
      << "  </commodity>"
      << "</UNSPECIFIED>"
-     << "</model>"
+     << "</agent>"
      << "</start>";
 
   cyclus::XMLParser parser;

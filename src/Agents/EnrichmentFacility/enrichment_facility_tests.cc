@@ -4,9 +4,9 @@
 #include <sstream>
 
 #include "commodity.h"
-#include "facility_model_tests.h"
+#include "facility_tests.h"
 #include "mat_query.h"
-#include "model_tests.h"
+#include "agent_tests.h"
 #include "resource_helpers.h"
 #include "query_engine.h"
 
@@ -121,7 +121,7 @@ TEST_F(EnrichmentFacilityTest, DISABLED_XMLInit) {
   std::stringstream ss;
   ss << "<start>"
      << "<name>fooname</name>"
-     << "<model>"
+     << "<agent>"
      << "<UNSPECIFIED>"
      << "  <input>"
      << "    <incommodity>" << in_commod << "</incommodity>"
@@ -137,7 +137,7 @@ TEST_F(EnrichmentFacilityTest, DISABLED_XMLInit) {
      << "    <reserves_qty>" << reserves << "</reserves_qty>"
      << "  </initial_condition>"
      << "</UNSPECIFIED>"
-     << "</model>"
+     << "</agent>"
      << "</start>";
 
   cyclus::XMLParser p;

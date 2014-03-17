@@ -2,7 +2,7 @@
 #ifndef GROWTHREGION_H
 #define GROWTHREGION_H
 
-#include "region_model.h"
+#include "region.h"
 #include "commodity.h"
 #include "supply_demand_manager.h"
 #include "building_manager.h"
@@ -107,15 +107,15 @@ class GrowthRegion : public cyclus::Region {
 
   /**
      register a child as a commodity producer manager if it is one
-     @param model the child to register
+     @param agent the child to register
    */
-  void RegisterCommodityProducerManager(cyclus::Agent* model);
+  void RegisterCommodityProducerManager(cyclus::Agent* agent);
 
   /**
      register a child as a builder if it is one
-     @param model the child to register
+     @param agent the child to register
    */
-  void RegisterBuilder(cyclus::Agent* model);
+  void RegisterBuilder(cyclus::Agent* agent);
 
   /**
      orders builds given a commodity and an unmet demand for production
@@ -127,8 +127,8 @@ class GrowthRegion : public cyclus::Region {
 
   /**
      orders builder to build a prototype
-     @param builder the model that can build buildee
-     @param prototype the model to be built
+     @param builder the agent that can build buildee
+     @param prototype the agent to be built
    */
   void OrderBuild(cyclus::Agent* builder, cyclus::Agent* prototype);
   /* --- */

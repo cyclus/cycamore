@@ -30,7 +30,7 @@ class Context;
    the appropriate market. It then receives that commodity when the
    market issues an order that the request has been matched with a
    corresponding offer.
-   @section modelparams Agent Parameters
+   @section agentparams Agent Parameters
    SinkFacility behavior is comprehensively defined by the following
    parameters:
    - double capacity: The acceptance capacity of the facility (units
@@ -110,7 +110,7 @@ class SinkFacility : public cyc::Facility  {
   virtual cyc::Inventories SnapshotInv();
 
   /**
-     initialize members from a different model
+     initialize members from a different agent
   */
   void InitFrom(SinkFacility* m);
 

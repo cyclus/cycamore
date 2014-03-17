@@ -7,14 +7,14 @@
 #include <gtest/gtest.h>
 
 // #include "commodity.h"
-#include "facility_model_tests.h"
-#include "model_tests.h"
-#include "model.h"
+#include "facility_tests.h"
+#include "agent_tests.h"
+#include "agent.h"
 #include "xml_query_engine.h"
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 void InproReactorTest::SetUp() {
-  // set up model parameters
+  // set up agent parameters
   lencycle = 3;
   in_loadcore = 10.0;
   out_loadcore = 9.0;
@@ -39,7 +39,7 @@ void InproReactorTest::InitSrcFacility() {
   std::stringstream ss("");
   ss << "<start>"
      << "<name>fooname</name>"
-     << "<model>"
+     << "<agent>"
      << "<UNSPECIFIED>"
      << "  <fuel_input>"
      << "    <incommodity>" << in_commod << "</incommodity>"
@@ -60,7 +60,7 @@ void InproReactorTest::InitSrcFacility() {
      << "    <cost>" << cost << "</cost>"
      << "  </commodity_production>"
      << "</UNSPECIFIED>"
-     << "</model>"
+     << "</agent>"
      << "</start>";
 
   cyclus::XMLParser parser;

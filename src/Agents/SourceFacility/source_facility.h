@@ -30,7 +30,7 @@ class Context;
    appropriate market. Shipments of this material are executed when the
    market issues an order that the offer has been matched with a
    request.
-   @section modelparams Agent Parameters
+   @section agentparams Agent Parameters
    SourceFacility behavior is comprehensively defined by the following
    parameters:
    -  double capacity: The production capacity of the facility (units
@@ -114,12 +114,12 @@ class SourceFacility : public cyc::Facility,
   virtual cyc::Agent* Clone();
 
   /**
-     initialize members from a different model
+     initialize members from a different agent
   */
   void InitFrom(SourceFacility* m);
 
   /**
-     Print information about this model
+     Print information about this agent
    */
   virtual std::string str();
   /* --- */

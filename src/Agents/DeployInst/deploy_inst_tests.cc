@@ -3,8 +3,8 @@
 
 #include "context.h"
 #include "deploy_inst.h"
-#include "inst_model_tests.h"
-#include "model_tests.h"
+#include "institution_tests.h"
+#include "agent_tests.h"
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 cyclus::Agent* DeployInstitutionConstructor(cyclus::Context* ctx) {

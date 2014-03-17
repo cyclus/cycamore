@@ -261,7 +261,7 @@ void BatchReactor::InitFrom(cyc::QueryBackend* b) {
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 void BatchReactor::InfileToDb(cyc::QueryEngine* qe, cyc::DbInit di) {
   cyc::Facility::InfileToDb(qe, di);
-  qe = qe->QueryElement("model/" + model_impl());
+  qe = qe->QueryElement("agent/" + agent_impl());
 
   using cyc::Commodity;
   using cyc::CommodityProducer;

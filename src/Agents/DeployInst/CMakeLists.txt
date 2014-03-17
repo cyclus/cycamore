@@ -1,1 +1,1 @@
-cyclus_init_model("DeployInst" "deploy_inst")
+cyclus_init_agent("DeployInst" "deploy_inst")

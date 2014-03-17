@@ -1,8 +1,8 @@
 // sink_facility_tests.cc
 #include <gtest/gtest.h>
 
-#include "facility_model_tests.h"
-#include "model_tests.h"
+#include "facility_tests.h"
+#include "agent_tests.h"
 #include "resource_helpers.h"
 #include "query_engine.h"
 #include "xml_parser.h"
@@ -73,7 +73,7 @@ TEST_F(SinkFacilityTest, DISABLED_XMLInit) {
   std::stringstream ss;
   ss << "<start>"
      << "<name>fooname</name>"
-     << "<model>"
+     << "<agent>"
      << "<UNSPECIFIED>"
      << "<input>"
      << "  <commodities>"
@@ -84,7 +84,7 @@ TEST_F(SinkFacilityTest, DISABLED_XMLInit) {
      << "  <inventorysize>" << inv_ << "</inventorysize>"
      << "</input>"
      << "</UNSPECIFIED>"
-     << "</model>"
+     << "</agent>"
      << "</start>";
 
   cyclus::XMLParser p;

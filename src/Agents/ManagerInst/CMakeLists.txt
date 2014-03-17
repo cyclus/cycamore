@@ -1,1 +1,1 @@
-cyclus_init_model("ManagerInst" "manager_inst")
+cyclus_init_agent("ManagerInst" "manager_inst")

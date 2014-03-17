@@ -57,7 +57,7 @@ std::string EnrichmentFacility::schema() {
 
 void EnrichmentFacility::InfileToDb(cyc::QueryEngine* qe, cyc::DbInit di) {
   cyc::Facility::InfileToDb(qe, di);
-  qe = qe->QueryElement("model/" + model_impl());
+  qe = qe->QueryElement("agent/" + agent_impl());
 
   cyc::QueryEngine* input = qe->QueryElement("input");
   cyc::QueryEngine* output = qe->QueryElement("output");

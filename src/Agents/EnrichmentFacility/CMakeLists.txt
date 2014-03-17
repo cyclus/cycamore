@@ -1,1 +1,1 @@
-cyclus_init_model("EnrichmentFacility" "enrichment_facility")
+cyclus_init_agent("EnrichmentFacility" "enrichment_facility")

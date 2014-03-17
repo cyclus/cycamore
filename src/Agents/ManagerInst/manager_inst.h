@@ -2,7 +2,7 @@
 #ifndef _MANAGERINST_H
 #define _MANAGERINST_H
 
-#include "inst_model.h"
+#include "institution.h"
 #include "builder.h"
 #include "commodity_producer_manager.h"
 #include "commodity_producer.h"

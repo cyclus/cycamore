@@ -1,1 +1,1 @@
-cyclus_init_model("GrowthRegion" "growth_region")
+cyclus_init_agent("GrowthRegion" "growth_region")

@@ -4,7 +4,7 @@
 #include "context.h"
 #include "commodity_producer.h"
 #include "recorder.h"
-#include "facility_model.h"
+#include "facility.h"
 #include "manager_inst.h"
 #include "timer.h"
 

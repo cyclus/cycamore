@@ -1,6 +1,6 @@
 #include "manager_inst_tests.h"
-#include "inst_model_tests.h"
-#include "model_tests.h"
+#include "institution_tests.h"
+#include "agent_tests.h"
 // @MJGFlag - note that I could not link to the commodity test helper
 // class here... constructor and destructor were undefined
 // for posterity -

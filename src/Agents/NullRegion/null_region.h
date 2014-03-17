@@ -2,7 +2,7 @@
 #ifndef _NULLREGION_H
 #define _NULLREGION_H
 
-#include "region_model.h"
+#include "region.h"
 
 namespace cycamore {
 
@@ -19,7 +19,7 @@ namespace cycamore {
    only those facilities. It is instantiated at the beginning of the
    simulation and persists until the end.
 
-   @section modelParams Agent Parameters
+   @section agentParams Agent Parameters
    NullRegion behavior is comprehensively defined by the following
    parameters: - vector<Agent> allowedfacilities: The facilities which
    are allowed within this region.
