@@ -16,13 +16,13 @@ typedef std::map<int, std::vector<std::string> > BuildSched;
 
 /**
    @class DeployInst
-   The DeployInst class inherits from the InstAgent
+   The DeployInst class inherits from the Institution
    class and is dynamically loaded by the Agent class when requested.
 
    This model implements a simple institution model that deploys
    specific facilities as defined explicitly in the input file.
  */
-class DeployInst : public cyc::InstAgent {
+class DeployInst : public cyc::Institution {
  public:
   DeployInst(cyc::Context* ctx);
 
@@ -40,7 +40,7 @@ class DeployInst : public cyc::InstAgent {
      initialize members from a different model
   */
   void InitFrom(DeployInst* m) {
-    cyc::InstAgent::InitFrom(m);
+    cyc::Institution::InitFrom(m);
     build_sched_ = m->build_sched_;
   };
 

@@ -11,7 +11,7 @@ namespace cycamore {
 
    @section introduction Introduction
    The NullInst is an institution type in Cyclus which performs the
-   most basic institution functionality as defined by the InstAgent
+   most basic institution functionality as defined by the Institution
    class.
 
    @section detailedBehavior Detailed Behavior
@@ -24,7 +24,7 @@ namespace cycamore {
    any changes.
  */
 
-class NullInst : public cyclus::InstAgent {
+class NullInst : public cyclus::Institution {
   /* --------------------
    * all MODEL classes have these members
    * --------------------
@@ -47,7 +47,7 @@ class NullInst : public cyclus::InstAgent {
   }
 
   void InitFrom(NullInst* m) {
-    cyclus::InstAgent::InitFrom(m);
+    cyclus::Institution::InitFrom(m);
   }
 
   /* ------------------- */

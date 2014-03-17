@@ -15,18 +15,18 @@ class NullInstTest : public ::testing::Test {
 };
 
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-cyclus::Agent* NullInstAgentConstructor(cyclus::Context* ctx) {
+cyclus::Agent* NullInstitutionConstructor(cyclus::Context* ctx) {
   return dynamic_cast<cyclus::Agent*>(new cycamore::NullInst(ctx));
 }
 
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-cyclus::InstAgent* NullInstConstructor(cyclus::Context* ctx) {
-  return dynamic_cast<cyclus::InstAgent*>(new cycamore::NullInst(ctx));
+cyclus::Institution* NullInstConstructor(cyclus::Context* ctx) {
+  return dynamic_cast<cyclus::Institution*>(new cycamore::NullInst(ctx));
 }
 
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-INSTANTIATE_TEST_CASE_P(NullInst, InstAgentTests,
+INSTANTIATE_TEST_CASE_P(NullInst, InstitutionTests,
                         Values(&NullInstConstructor));
 INSTANTIATE_TEST_CASE_P(NullInst, AgentTests,
-                        Values(&NullInstAgentConstructor));
+                        Values(&NullInstitutionConstructor));
 

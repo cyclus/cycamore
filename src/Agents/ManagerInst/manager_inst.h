@@ -16,7 +16,7 @@ namespace cycamore {
 
    @section detailedBehavior Detailed Behavior
 */
-class ManagerInst : public cyclus::InstAgent,
+class ManagerInst : public cyclus::Institution,
   public cyclus::CommodityProducerManager,
   public cyclus::Builder {
  public:
@@ -37,7 +37,7 @@ class ManagerInst : public cyclus::InstAgent,
   }
 
   void InitFrom(ManagerInst* m) {
-    InstAgent::InitFrom(m);
+    Institution::InitFrom(m);
     commod_producers_ = m->commod_producers_;
   }
 

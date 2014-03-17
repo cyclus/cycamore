@@ -176,7 +176,7 @@ void GrowthRegion::OrderBuilds(cyclus::Commodity& commodity,
 
   for (int i = 0; i < orders.size(); i++) {
     cyclus::BuildOrder order = orders.at(i);
-    cyclus::InstAgent* instcast = dynamic_cast<cyclus::InstAgent*>(order.builder);
+    cyclus::Institution* instcast = dynamic_cast<cyclus::Institution*>(order.builder);
     cyclus::Agent* modelcast = dynamic_cast<cyclus::Agent*>(order.producer);
     if (!instcast || !modelcast) {
       throw cyclus::CastError("growth_region.has tried to incorrectly cast an already known entity.");

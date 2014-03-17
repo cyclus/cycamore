@@ -6,7 +6,7 @@
 namespace cycamore {
 
 DeployInst::DeployInst(cyc::Context* ctx)
-    : cyc::InstAgent(ctx) {}
+    : cyc::Institution(ctx) {}
 
 DeployInst::~DeployInst() {}
 
@@ -28,7 +28,7 @@ std::string DeployInst::schema() {
 }
 
 void DeployInst::InfileToDb(cyc::QueryEngine* qe, cyc::DbInit di) {
-  cyc::InstAgent::InfileToDb(qe, di);
+  cyc::Institution::InfileToDb(qe, di);
   qe = qe->QueryElement("model/" + model_impl());
 
   int nOrders = qe->NElementsMatchingQuery("buildorder");
@@ -45,7 +45,7 @@ void DeployInst::InfileToDb(cyc::QueryEngine* qe, cyc::DbInit di) {
 }
 
 void DeployInst::InitFrom(cyc::QueryBackend* b) {
-  cyc::InstAgent::InitFrom(b);
+  cyc::Institution::InitFrom(b);
   cyc::QueryResult qr = b->Query("BuildOrder", NULL);
   for (int i = 0; i < qr.rows.size(); i++) {
     std::string proto = qr.GetVal<std::string>("prototype", i);
@@ -55,7 +55,7 @@ void DeployInst::InitFrom(cyc::QueryBackend* b) {
 }
 
 void DeployInst::Snapshot(cyc::DbInit di) {
-  cyc::InstAgent::Snapshot(di);
+  cyc::Institution::Snapshot(di);
 
   BuildSched::iterator it;
   for (it = build_sched_.begin(); it != build_sched_.end(); ++it) {
@@ -71,7 +71,7 @@ void DeployInst::Snapshot(cyc::DbInit di) {
 }
 
 void DeployInst::Build(cyc::Agent* parent) {
-  cyc::InstAgent::Build(parent);
+  cyc::Institution::Build(parent);
   BuildSched::iterator it;
   for (it = build_sched_.begin(); it != build_sched_.end(); ++it) {
     int t = it->first;

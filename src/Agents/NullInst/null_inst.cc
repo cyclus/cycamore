@@ -6,7 +6,7 @@
 namespace cycamore {
 
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-NullInst::NullInst(cyclus::Context* ctx) : cyclus::InstAgent(ctx) {}
+NullInst::NullInst(cyclus::Context* ctx) : cyclus::Institution(ctx) {}
 
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 NullInst::~NullInst() {}

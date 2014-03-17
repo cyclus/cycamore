@@ -7,13 +7,13 @@
 #include "model_tests.h"
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-cyclus::Agent* DeployInstAgentConstructor(cyclus::Context* ctx) {
+cyclus::Agent* DeployInstitutionConstructor(cyclus::Context* ctx) {
   return dynamic_cast<cyclus::Agent*>(new cycamore::DeployInst(ctx));
 }
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-cyclus::InstAgent* DeployInstConstructor(cyclus::Context* ctx) {
-  return dynamic_cast<cyclus::InstAgent*>(new cycamore::DeployInst(ctx));
+cyclus::Institution* DeployInstConstructor(cyclus::Context* ctx) {
+  return dynamic_cast<cyclus::Institution*>(new cycamore::DeployInst(ctx));
 }
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -27,8 +27,8 @@ class DeployInstTest : public ::testing::Test {
 
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-INSTANTIATE_TEST_CASE_P(DeployInst, InstAgentTests,
+INSTANTIATE_TEST_CASE_P(DeployInst, InstitutionTests,
                         Values(&DeployInstConstructor));
 INSTANTIATE_TEST_CASE_P(DeployInst, AgentTests,
-                        Values(&DeployInstAgentConstructor));
+                        Values(&DeployInstitutionConstructor));
 
