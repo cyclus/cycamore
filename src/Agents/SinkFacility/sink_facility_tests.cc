@@ -183,21 +183,14 @@ TEST_F(SinkFacilityTest, Print) {
 }
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-cyclus::Agent* SinkFacilityAgentConstructor(cyclus::Context* ctx) {
-  using cycamore::SinkFacility;
-  return dynamic_cast<cyclus::Agent*>(new SinkFacility(ctx));
+cyclus::Agent* SinkFacilityConstructor(cyclus::Context* ctx) {
+  return new cycamore::SinkFacility(ctx);
 }
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-cyclus::FacilityAgent* SinkFacilityConstructor(cyclus::Context* ctx) {
-  using cycamore::SinkFacility;
-  return dynamic_cast<cyclus::FacilityAgent*>(new SinkFacility(ctx));
-}
-
-//- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-INSTANTIATE_TEST_CASE_P(SinkFac, FacilityAgentTests,
+INSTANTIATE_TEST_CASE_P(SinkFac, FacilityTests,
                         Values(&SinkFacilityConstructor));
 INSTANTIATE_TEST_CASE_P(SinkFac, AgentTests,
-                        Values(&SinkFacilityAgentConstructor));
+                        Values(&SinkFacilityConstructor));
 
 

@@ -115,7 +115,7 @@ class NatUConverter : public cyc::Converter<cyc::Material> {
    How would I go about doing so? I'd likely develop an EnrichmentBuffer-type
    class that can be queried as to its SWU and natural Uranium capacity.
  */
-class EnrichmentFacility : public cyc::FacilityAgent {
+class EnrichmentFacility : public cyc::Facility {
  public:
   /* --- Module Members --- */
   /**

@@ -212,19 +212,12 @@ SourceFacilityTest::GetContext(int nreqs, std::string commod) {
 }
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-cyclus::Agent* SourceFacilityAgentConstructor(cyclus::Context* ctx) {
-  using cycamore::SourceFacility;
-  return dynamic_cast<cyclus::Agent*>(new SourceFacility(ctx));
-}
-
-//- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-cyclus::FacilityAgent* SourceFacilityConstructor(cyclus::Context* ctx) {
-  using cycamore::SourceFacility;
-  return dynamic_cast<cyclus::FacilityAgent*>(new SourceFacility(ctx));
+cyclus::Agent* SourceFacilityConstructor(cyclus::Context* ctx) {
+  return new cycamore::SourceFacility(ctx);
 }
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-INSTANTIATE_TEST_CASE_P(SourceFac, FacilityAgentTests,
+INSTANTIATE_TEST_CASE_P(SourceFac, FacilityTests,
                         Values(&SourceFacilityConstructor));
 INSTANTIATE_TEST_CASE_P(SourceFac, AgentTests,
-                        Values(&SourceFacilityAgentConstructor));
+                        Values(&SourceFacilityConstructor));

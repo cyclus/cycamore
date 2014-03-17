@@ -9,7 +9,7 @@ namespace cycamore {
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 SourceFacility::SourceFacility(cyc::Context* ctx)
-  : cyc::FacilityAgent(ctx),
+  : cyc::Facility(ctx),
     out_commod_(""),
     recipe_name_(""),
     capacity_(std::numeric_limits<double>::max()) {}
@@ -33,7 +33,7 @@ std::string SourceFacility::schema() {
 
 
 void SourceFacility::InfileToDb(cyc::QueryEngine* qe, cyc::DbInit di) {
-  cyc::FacilityAgent::InfileToDb(qe, di);
+  cyc::Facility::InfileToDb(qe, di);
   qe = qe->QueryElement("model/" + model_impl());
   
   using std::numeric_limits;
@@ -53,7 +53,7 @@ void SourceFacility::InfileToDb(cyc::QueryEngine* qe, cyc::DbInit di) {
 }
 
 void SourceFacility::InitFrom(cyc::QueryBackend* b) {
-  cyc::FacilityAgent::InitFrom(b);
+  cyc::Facility::InitFrom(b);
   cyc::QueryResult qr = b->Query("Info", NULL);
   recipe_name_ = qr.GetVal<std::string>("recipe");
   out_commod_ = qr.GetVal<std::string>("out_commod");
@@ -66,7 +66,7 @@ void SourceFacility::InitFrom(cyc::QueryBackend* b) {
 }
 
 void SourceFacility::Snapshot(cyc::DbInit di) {
-  cyc::FacilityAgent::Snapshot(di);
+  cyc::Facility::Snapshot(di);
   di.NewDatum("Info")
     ->AddVal("recipe", recipe_name_)
     ->AddVal("out_commod", out_commod_)
@@ -78,7 +78,7 @@ void SourceFacility::Snapshot(cyc::DbInit di) {
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 std::string SourceFacility::str() {
   std::stringstream ss;
-  ss << cyc::FacilityAgent::str()
+  ss << cyc::Facility::str()
      << " supplies commodity '"
      << out_commod_ << "' with recipe '"
      << recipe_name_ << "' at a capacity of "
@@ -95,7 +95,7 @@ cyc::Agent* SourceFacility::Clone() {
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 void SourceFacility::InitFrom(SourceFacility* m) {
-  FacilityAgent::InitFrom(m);
+  Facility::InitFrom(m);
   commodity(m->commodity());
   capacity(m->capacity());
   recipe(m->recipe());

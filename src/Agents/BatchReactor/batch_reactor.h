@@ -111,7 +111,7 @@ namespace cycamore {
 /// @warning the reactor uses a hackish way to input materials into its
 /// reserves. See the AddBatches_ member function.
 class BatchReactor
-    : public cyc::FacilityAgent,
+    : public cyc::Facility,
       public cyc::CommodityProducer {
  public:
   /// @brief defines all possible phases this facility can be in

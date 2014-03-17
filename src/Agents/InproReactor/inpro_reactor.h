@@ -29,7 +29,7 @@ enum Phase {INIT, BEGIN, OPERATION, REFUEL, REFUEL_DELAY, WAITING, END};
    This class is identical to the RecipeReactor, except that it
    operates in a batch-like manner, i.e. it refuels in batches.
  */
-class InproReactor : public cyclus::FacilityAgent,
+class InproReactor : public cyclus::Facility,
   public cyclus::CommodityProducer {
  public:
   /* --- Module Members --- */

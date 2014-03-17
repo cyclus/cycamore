@@ -16,7 +16,7 @@
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 TestProducer::TestProducer(cyclus::Context* ctx)
-    : cyclus::FacilityAgent(ctx) {}
+    : cyclus::Facility(ctx) {}
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 TestProducer::~TestProducer() {}

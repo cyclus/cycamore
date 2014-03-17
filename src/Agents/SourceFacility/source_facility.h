@@ -15,10 +15,10 @@ class Context;
 
 /**
    @class SourceFacility
-   This cyc::FacilityAgent provides a simple source of some capacity
+   This cyc::Facility provides a simple source of some capacity
    (possibly infinite) of some commodity/Recipe.
 
-   The SourceFacility class inherits from the cyc::FacilityAgent class and is
+   The SourceFacility class inherits from the cyc::Facility class and is
    dynamically loaded by the Agent class when requested.
 
 
@@ -87,7 +87,7 @@ class Context;
    What is the best way to allow offers of an infinite amount of
    material on a market?
  */
-class SourceFacility : public cyc::FacilityAgent,
+class SourceFacility : public cyc::Facility,
   public cyc::CommodityProducer {
  public:
   /* --- Module Members --- */

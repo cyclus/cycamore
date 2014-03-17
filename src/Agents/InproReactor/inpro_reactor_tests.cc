@@ -136,13 +136,13 @@ cyclus::Agent* InproReactorAgentConstructor(cyclus::Context* ctx) {
 }
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-cyclus::FacilityAgent* InproReactorConstructor(cyclus::Context* ctx) {
+cyclus::Facility* InproReactorConstructor(cyclus::Context* ctx) {
   using cycamore::InproReactor;
-  return dynamic_cast<cyclus::FacilityAgent*>(new InproReactor(ctx));
+  return dynamic_cast<cyclus::Facility*>(new InproReactor(ctx));
 }
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-INSTANTIATE_TEST_CASE_P(InproReactor, FacilityAgentTests,
+INSTANTIATE_TEST_CASE_P(InproReactor, FacilityTests,
                         Values(&InproReactorConstructor));
 INSTANTIATE_TEST_CASE_P(InproReactor, AgentTests,
                         Values(&InproReactorAgentConstructor));

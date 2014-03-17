@@ -21,7 +21,7 @@ std::map<Phase, std::string> InproReactor::phase_names_ = \
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 InproReactor::InproReactor(cyclus::Context* ctx)
-    : cyclus::FacilityAgent(ctx),
+    : cyclus::Facility(ctx),
       cycle_length_(1),
       refuel_delay_(0),
       batches_per_core_(1),
@@ -94,7 +94,7 @@ std::string InproReactor::schema() {
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 void InproReactor::InitFrom(cyclus::QueryEngine* qe) {
-  cyclus::FacilityAgent::InitFrom(qe);
+  cyclus::Facility::InitFrom(qe);
   qe = qe->QueryElement("model/" + model_impl());
 
   using std::string;
@@ -139,7 +139,7 @@ void InproReactor::InitFrom(cyclus::QueryEngine* qe) {
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 std::string InproReactor::str() {
   std::stringstream ss;
-  ss << cyclus::FacilityAgent::str();
+  ss << cyclus::Facility::str();
   ss << " has facility parameters {"
      << ", Cycle Length = " << cycle_length()
      << ", Refuel Delay = " << refuel_delay()
@@ -161,7 +161,7 @@ cyclus::Agent* InproReactor::Clone() {
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 void InproReactor::InitFrom(InproReactor* m) {
-  cyclus::FacilityAgent::InitFrom(m);
+  cyclus::Facility::InitFrom(m);
   set_cycle_length(m->cycle_length());
   set_refuel_delay(m->refuel_delay());
   set_in_core_loading(m->in_core_loading());
@@ -176,7 +176,7 @@ void InproReactor::InitFrom(InproReactor* m) {
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 void InproReactor::Build(cyclus::Agent* parent) {
-  FacilityAgent::Build(parent);
+  Facility::Build(parent);
   preCore_.set_capacity(in_core_loading());
   inCore_.set_capacity(in_core_loading());
   reset_cycle_timer();

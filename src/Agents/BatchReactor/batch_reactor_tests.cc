@@ -374,21 +374,14 @@ TEST_F(BatchReactorTest, BatchInOut) {
 }
 
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-cyclus::Agent* BatchReactorAgentConstructor(cyclus::Context* ctx) {
-  using cycamore::BatchReactor;
-  return dynamic_cast<cyclus::Agent*>(new BatchReactor(ctx));
+cyclus::Agent* BatchReactorConstructor(cyclus::Context* ctx) {
+  return new cycamore::BatchReactor(ctx);
 }
 
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-cyclus::FacilityAgent* BatchReactorConstructor(cyclus::Context* ctx) {
-  using cycamore::BatchReactor;
-  return dynamic_cast<cyclus::FacilityAgent*>(new BatchReactor(ctx));
-}
-
-// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-INSTANTIATE_TEST_CASE_P(BatchReactor, FacilityAgentTests,
+INSTANTIATE_TEST_CASE_P(BatchReactor, FacilityTests,
                         Values(&BatchReactorConstructor));
 INSTANTIATE_TEST_CASE_P(BatchReactor, AgentTests,
-                        Values(&BatchReactorAgentConstructor));
+                        Values(&BatchReactorConstructor));
 
 }  // namespace cycamore

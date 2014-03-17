@@ -13,7 +13,7 @@ namespace cycamore {
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 EnrichmentFacility::EnrichmentFacility(cyc::Context* ctx)
-  : cyc::FacilityAgent(ctx),
+  : cyc::Facility(ctx),
     tails_assay_(0),
     feed_assay_(0),
     swu_capacity_(0),
@@ -56,7 +56,7 @@ std::string EnrichmentFacility::schema() {
 }
 
 void EnrichmentFacility::InfileToDb(cyc::QueryEngine* qe, cyc::DbInit di) {
-  cyc::FacilityAgent::InfileToDb(qe, di);
+  cyc::Facility::InfileToDb(qe, di);
   qe = qe->QueryElement("model/" + model_impl());
 
   cyc::QueryEngine* input = qe->QueryElement("input");
@@ -96,7 +96,7 @@ void EnrichmentFacility::InfileToDb(cyc::QueryEngine* qe, cyc::DbInit di) {
 }
 
 void EnrichmentFacility::InitFrom(cyc::QueryBackend* b) {
-  cyc::FacilityAgent::InitFrom(b);
+  cyc::Facility::InitFrom(b);
 
   cyc::QueryResult qr = b->Query("Info", NULL);
 
@@ -112,7 +112,7 @@ void EnrichmentFacility::InitFrom(cyc::QueryBackend* b) {
 }
 
 void EnrichmentFacility::Snapshot(cyc::DbInit di) {
-  cyc::FacilityAgent::Snapshot(di);
+  cyc::Facility::Snapshot(di);
   di.NewDatum("Info")
   ->AddVal("in_commod", in_commod_)
   ->AddVal("in_recipe", in_recipe_)
@@ -146,7 +146,7 @@ cyc::Agent* EnrichmentFacility::Clone() {
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 void EnrichmentFacility::InitFrom(EnrichmentFacility* m) {
-  FacilityAgent::InitFrom(m);
+  Facility::InitFrom(m);
 
   initial_reserves_ = m->initial_reserves_;
   tails_assay_ = m->tails_assay_;
@@ -162,7 +162,7 @@ void EnrichmentFacility::InitFrom(EnrichmentFacility* m) {
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 std::string EnrichmentFacility::str() {
   std::stringstream ss;
-  ss << cyc::FacilityAgent::str()
+  ss << cyc::Facility::str()
      << " with enrichment facility parameters:"
      << " * SWU capacity: " << swu_capacity()
      << " * Tails assay: " << tails_assay()
@@ -176,7 +176,7 @@ std::string EnrichmentFacility::str() {
 void EnrichmentFacility::Build(cyc::Agent* parent) {
   using cyc::Material;
 
-  FacilityAgent::Build(parent);
+  Facility::Build(parent);
   if (initial_reserves_ > 0) {
     inventory_.Push(
       Material::Create(

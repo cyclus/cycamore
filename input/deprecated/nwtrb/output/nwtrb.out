@@ -2,7 +2,7 @@ Scanning dependencies of target cyclus
 [  1%] Building CXX object CMakeFiles/cyclus.dir/App.cpp.o
 [  2%] Building CXX object CMakeFiles/cyclus.dir/Material.cpp.o
 [  4%] Building CXX object CMakeFiles/cyclus.dir/Utility/BookKeeper.cpp.o
-[  5%] Building CXX object CMakeFiles/cyclus.dir/Agents/FacilityAgent.cpp.o
+[  5%] Building CXX object CMakeFiles/cyclus.dir/Agents/Facility.cpp.o
 Linking CXX executable cyclus
 [ 30%] Built target cyclus
 [ 31%] Built target StubStub
@@ -37,7 +37,7 @@ Scanning dependencies of target CyclusUnitTestDriver
 [ 66%] Building CXX object Testing/CMakeFiles/CyclusUnitTestDriver.dir/BookKeeperTests.cpp.o
 [ 68%] Building CXX object Testing/CMakeFiles/CyclusUnitTestDriver.dir/__/Material.cpp.o
 [ 69%] Building CXX object Testing/CMakeFiles/CyclusUnitTestDriver.dir/__/Utility/BookKeeper.cpp.o
-[ 70%] Building CXX object Testing/CMakeFiles/CyclusUnitTestDriver.dir/__/Agents/FacilityAgent.cpp.o
+[ 70%] Building CXX object Testing/CMakeFiles/CyclusUnitTestDriver.dir/__/Agents/Facility.cpp.o
 Linking CXX executable CyclusUnitTestDriver
 [100%] Built target CyclusUnitTestDriver
 /home/gidden/work/cyclus/input/nwtrb/nwtrb.in.xml

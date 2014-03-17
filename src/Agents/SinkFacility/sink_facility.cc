@@ -11,7 +11,7 @@ namespace cycamore {
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 SinkFacility::SinkFacility(cyc::Context* ctx)
-  : cyc::FacilityAgent(ctx),
+  : cyc::Facility(ctx),
     commod_price_(0),
     capacity_(std::numeric_limits<double>::max()) {
   SetMaxInventorySize(std::numeric_limits<double>::max());
@@ -39,7 +39,7 @@ std::string SinkFacility::schema() {
 }
 
 void SinkFacility::InfileToDb(cyc::QueryEngine* qe, cyc::DbInit di) {
-  cyc::FacilityAgent::InfileToDb(qe, di);
+  cyc::Facility::InfileToDb(qe, di);
   qe = qe->QueryElement("model/" + model_impl());
   
   using std::numeric_limits;
@@ -67,7 +67,7 @@ void SinkFacility::InfileToDb(cyc::QueryEngine* qe, cyc::DbInit di) {
 }
 
 void SinkFacility::InitFrom(cyc::QueryBackend* b) {
-  cyc::FacilityAgent::InitFrom(b);
+  cyc::Facility::InitFrom(b);
 
   cyc::QueryResult qr = b->Query("Info", NULL);
   capacity_ = qr.GetVal<double>("capacity");
@@ -80,7 +80,7 @@ void SinkFacility::InitFrom(cyc::QueryBackend* b) {
 }
 
 void SinkFacility::Snapshot(cyc::DbInit di) {
-  cyc::FacilityAgent::Snapshot(di);
+  cyc::Facility::Snapshot(di);
   di.NewDatum("Info")
     ->AddVal("capacity", capacity_)
     ->AddVal("commod_price", commod_price_)
@@ -108,7 +108,7 @@ std::string SinkFacility::str() {
   using std::string;
   using std::vector;
   std::stringstream ss;
-  ss << cyc::FacilityAgent::str();
+  ss << cyc::Facility::str();
 
   string msg = "";
   msg += "accepts commodities ";
@@ -132,7 +132,7 @@ cyc::Agent* SinkFacility::Clone() {
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 void SinkFacility::InitFrom(SinkFacility* m) {
-  FacilityAgent::InitFrom(m);
+  Facility::InitFrom(m);
   capacity(m->capacity());
   SetMaxInventorySize(m->MaxInventorySize());
   capacity_ = m->capacity_;

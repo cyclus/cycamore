@@ -10,7 +10,7 @@
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 class TestProducer :
-  public cyclus::FacilityAgent,
+  public cyclus::Facility,
   public cyclus::CommodityProducer {
  public:
   TestProducer(cyclus::Context* ctx);
@@ -23,7 +23,7 @@ class TestProducer :
   };
 
   void InitFrom(TestProducer* m) {
-    cyclus::FacilityAgent::InitFrom(m);
+    cyclus::Facility::InitFrom(m);
   };
 
   void Tock(int time) {};

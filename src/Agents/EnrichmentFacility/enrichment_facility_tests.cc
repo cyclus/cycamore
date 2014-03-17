@@ -593,21 +593,14 @@ TEST_F(EnrichmentFacilityTest, Response) {
 }
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-cyclus::Agent* EnrichmentFacilityAgentConstructor(cyclus::Context* ctx) {
-  using cycamore::EnrichmentFacility;
-  return dynamic_cast<cyclus::Agent*>(new EnrichmentFacility(ctx));
-}
-
-//- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-cyclus::FacilityAgent* EnrichmentFacilityConstructor(cyclus::Context* ctx) {
-  using cycamore::EnrichmentFacility;
-  return dynamic_cast<cyclus::FacilityAgent*>(new EnrichmentFacility(ctx));
+cyclus::Agent* EnrichmentFacilityConstructor(cyclus::Context* ctx) {
+  return new cycamore::EnrichmentFacility(ctx);
 }
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-INSTANTIATE_TEST_CASE_P(EnrichmentFac, FacilityAgentTests,
+INSTANTIATE_TEST_CASE_P(EnrichmentFac, FacilityTests,
                         Values(&EnrichmentFacilityConstructor));
 INSTANTIATE_TEST_CASE_P(EnrichmentFac, AgentTests,
-                        Values(&EnrichmentFacilityAgentConstructor));
+                        Values(&EnrichmentFacilityConstructor));
 
 } // namespace cycamore

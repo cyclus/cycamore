@@ -17,10 +17,10 @@ class Context;
   
 /**
    @class SinkFacility
-   This cyc::FacilityAgent requests a finite amount of its input commodity.
+   This cyc::Facility requests a finite amount of its input commodity.
    It offers nothing.
 
-   The SinkFacility class inherits from the cyc::FacilityAgent class and is
+   The SinkFacility class inherits from the cyc::Facility class and is
    dynamically loaded by the Agent class when requested.
 
    @section intro Introduction
@@ -81,7 +81,7 @@ class Context;
    What is the best way to allow requests of an infinite amount of
    material on a market?
  */
-class SinkFacility : public cyc::FacilityAgent  {
+class SinkFacility : public cyc::Facility  {
  public:
   /* --- Module Members --- */
   /**

@@ -13,7 +13,7 @@ std::map<BatchReactor::Phase, std::string> BatchReactor::phase_names_ =
 
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 BatchReactor::BatchReactor(cyc::Context* ctx)
-    : cyc::FacilityAgent(ctx),
+    : cyc::Facility(ctx),
       process_time_(1),
       preorder_time_(0),
       refuel_time_(0),
@@ -177,7 +177,7 @@ std::string BatchReactor::schema() {
 }
 
 void BatchReactor::InitFrom(cyc::QueryBackend* b) {
-  cyc::FacilityAgent::InitFrom(b);
+  cyc::Facility::InitFrom(b);
 
   crctx_.InitFrom(b);
 
@@ -260,7 +260,7 @@ void BatchReactor::InitFrom(cyc::QueryBackend* b) {
 
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 void BatchReactor::InfileToDb(cyc::QueryEngine* qe, cyc::DbInit di) {
-  cyc::FacilityAgent::InfileToDb(qe, di);
+  cyc::Facility::InfileToDb(qe, di);
   qe = qe->QueryElement("model/" + model_impl());
 
   using cyc::Commodity;
@@ -362,7 +362,7 @@ void BatchReactor::InfileToDb(cyc::QueryEngine* qe, cyc::DbInit di) {
 }
 
 void BatchReactor::Snapshot(cyc::DbInit di) {
-  cyc::FacilityAgent::Snapshot(di);
+  cyc::Facility::Snapshot(di);
   crctx_.Snapshot(di);
 
   std::set<cyc::Commodity, cyc::CommodityCompare>::iterator it;
@@ -484,7 +484,7 @@ cyc::Agent* BatchReactor::Clone() {
 
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 void BatchReactor::InitFrom(BatchReactor* m) {
-  FacilityAgent::InitFrom(m);
+  Facility::InitFrom(m);
 
   // in/out
   crctx_ = m->crctx_;
@@ -515,7 +515,7 @@ void BatchReactor::InitFrom(BatchReactor* m) {
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 std::string BatchReactor::str() {
   std::stringstream ss;
-  ss << cyc::FacilityAgent::str();
+  ss << cyc::Facility::str();
   ss << " has facility parameters {" << "\n"
      << "     Process Time = " << process_time() << ",\n"
      << "     Refuel Time = " << refuel_time() << ",\n"
@@ -532,7 +532,7 @@ std::string BatchReactor::str() {
 void BatchReactor::Build(cyc::Agent* parent) {
   using cyc::Material;
 
-  FacilityAgent::Build(parent);
+  Facility::Build(parent);
   phase(INITIAL);
   std::string rec = crctx_.in_recipe(*crctx_.in_commods().begin());
   spillover_ = Material::Create(this, 0.0, context()->GetRecipe(rec));
