@@ -13,14 +13,14 @@
   <market>
     <name>uo2market</name>
     <mktcommodity>uo2</mktcommodity>
-    <model>
+    <agent>
       <GreedyMarket/>
-    </model>
+    </agent>
   </market>
 
   <facility>
     <name>FrontEnd</name>
-    <model>
+    <agent>
       <SourceFacility>
         <outcommodity>uo2</outcommodity>
         <capacity>2</capacity>
@@ -28,24 +28,24 @@
         <commodprice>0</commodprice>
         <recipe>fresh_50gwd</recipe>
       </SourceFacility>
-    </model>
+    </agent>
   </facility>
 
   <facility>
     <name>BackEnd</name>
-    <model>
+    <agent>
       <SinkFacility>
         <incommodity>uo2</incommodity>
         <capacity>1</capacity>
         <inventorysize>1e4</inventorysize>
         <commodprice>0</commodprice>
       </SinkFacility>
-    </model>
+    </agent>
   </facility>
 
   <facility>
     <name>Storage</name>
-    <model>
+    <agent>
       <StorageFacility>
         <incommodity>uo2</incommodity>
         <capacity>1</capacity>
@@ -53,7 +53,7 @@
         <residencetime>100</residencetime>
 	<initialstocks/>
       </StorageFacility>
-    </model>
+    </agent>
   </facility>
   
   <region>
@@ -61,14 +61,14 @@
     <allowedfacility>FrontEnd</allowedfacility>
     <allowedfacility>BackEnd</allowedfacility>
     <allowedfacility>Storage</allowedfacility>
-    <model>
+    <agent>
       <BuildRegion>
         <input_file>/filespace/people/g/gidden/work/cyclus/trunk/input/inpro/build.in</input_file>
       </BuildRegion>
-    </model>
+    </agent>
     <institution>
       <name>oneInst</name>
-      <model>
+      <agent>
         <BuildInst>
           <facility>
             <type>FrontEnd</type>
@@ -83,7 +83,7 @@
             <name>Storage</name>
           </facility>
         </BuildInst>
-      </model>
+      </agent>
     </institution>
   </region>
   

@@ -23,15 +23,15 @@
   <market>
     <name>uUF6market</name>
     <mktcommodity>uUF6</mktcommodity>
-    <model>
+    <agent>
       <NullMarket/>
-    </model>
+    </agent>
   </market>
 
   <market>
     <name>SWUmarket</name>
     <mktcommodity>eUF6</mktcommodity>
-    <model>
+    <agent>
       <ConverterMarket>
         <offercommodity>SWUs</offercommodity>
         <reqcommodity>eUF6</reqcommodity>
@@ -40,22 +40,22 @@
           <name>SWUeUF6Converter</name>
         </converter>
       </ConverterMarket>
-    </model>
+    </agent>
   </market>
 
   <converter>
     <name>SWUeUF6Converter</name>
-    <model>
+    <agent>
       <SWUeUF6Converter>
         <incommodity>SWUs</incommodity>
         <outcommodity>eUF6</outcommodity>
       </SWUeUF6Converter>
-    </model>
+    </agent>
   </converter>
 
   <facility>
     <name>FrontEnd</name>
-    <model>
+    <agent>
       <SourceFacility>
         <outcommodity>uUF6</outcommodity>
         <capacity>1</capacity>
@@ -63,12 +63,12 @@
         <commodprice>0</commodprice>
         <recipe>natU</recipe>
       </SourceFacility>
-    </model>
+    </agent>
   </facility>
 
   <facility>
     <name>Enrichment</name>
-    <model>
+    <agent>
       <EnrichmentFacility>
         <incommodity>uUF6</incommodity>
         <outcommodity>eUF6</outcommodity>
@@ -76,19 +76,19 @@
         <capacity>1</capacity>
         <tailsassay>0</tailsassay>
       </EnrichmentFacility>
-    </model>
+    </agent>
   </facility>
 
   <facility>
     <name>BackEnd</name>
-    <model>
+    <agent>
       <SinkFacility>
         <incommodity>eUF6</incommodity>
         <capacity>5</capacity>
         <inventorysize>1e4</inventorysize>
         <commodprice>0</commodprice>
       </SinkFacility>
-    </model>
+    </agent>
   </facility>
 
 	<region>
@@ -96,12 +96,12 @@
 		<allowedfacility>FrontEnd</allowedfacility>
 		<allowedfacility>Enrichment</allowedfacility>
 		<allowedfacility>BackEnd</allowedfacility>
-		<model>
+		<agent>
 			<NullRegion/>
-		</model>
+		</agent>
 		<institution>
 			<name>oneInst</name>
-			<model>
+			<agent>
         <FixedInst>
           <facility>
             <type>FrontEnd</type>
@@ -116,7 +116,7 @@
             <name>Enrichment</name>
           </facility>
         </FixedInst>
-			</model>
+			</agent>
 		</institution>
 	</region>
 

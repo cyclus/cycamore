@@ -29,24 +29,24 @@
   <market>
     <name>freshfuel</name>
     <mktcommodity>fresh_fuel</mktcommodity>
-    <model>
+    <agent>
       <NullMarket/>
-    </model>
+    </agent>
   </market>
 
   <market>
     <name>usedfuel</name>
     <mktcommodity>used_fuel</mktcommodity>
-    <model>
+    <agent>
       <NullMarket/>
-    </model>
+    </agent>
   </market>
   <!-- end markets -->
 
   <!-- facility prototypes -->
   <facility>
     <name>FrontEnd</name>
-    <model>
+    <agent>
       <SourceFacility>
         <outcommodity>fresh_fuel</outcommodity>
         <capacity>40</capacity>
@@ -54,12 +54,12 @@
         <commodprice>0</commodprice>
         <recipe>fresh_uo2</recipe>
       </SourceFacility>
-    </model>
+    </agent>
   </facility>
 
   <facility>
     <name>Reactor</name>
-    <model>
+    <agent>
       <BatchReactor>
         <fuelpair>
           <incommodity>fresh_fuel</incommodity>
@@ -72,19 +72,19 @@
 	<coreloading>4</coreloading>
 	<batchespercore>4</batchespercore>
       </BatchReactor>
-    </model>
+    </agent>
   </facility>
 
   <facility>
     <name>BackEnd</name>
-    <model>
+    <agent>
       <SinkFacility>
         <incommodity>used_fuel</incommodity>
         <capacity>1e3</capacity>
         <inventorysize>1e4</inventorysize>
         <commodprice>0</commodprice>
       </SinkFacility>
-    </model>
+    </agent>
   </facility>
   <!-- end facility prototypes -->
 
@@ -94,7 +94,7 @@
     <allowedfacility>FrontEnd</allowedfacility>
     <allowedfacility>Reactor</allowedfacility>
     <allowedfacility>BackEnd</allowedfacility>
-    <model>
+    <agent>
       <BuildRegion>
 
 	<prototyperequirement>
@@ -128,17 +128,17 @@
 	</prototyperequirement>
 
       </BuildRegion>
-    </model>
+    </agent>
     <!-- institution definitions -->
     <institution>
       <name>oneInst</name>
-      <model>
+      <agent>
         <BuildInst>
 	  <availableprototype>FrontEnd</availableprototype>
 	  <availableprototype>Reactor</availableprototype>
 	  <availableprototype>BackEnd</availableprototype>
         </BuildInst>
-      </model>
+      </agent>
     </institution>
     <!-- end institution definitions -->
   </region>

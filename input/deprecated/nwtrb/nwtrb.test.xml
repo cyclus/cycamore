@@ -23,17 +23,17 @@
   <market>
     <name>fresh_PWR_uo2market</name>
     <mktcommodity>fresh_PWR_uo2</mktcommodity>
-    <model>
+    <agent>
       <GreedyMarket/>
-    </model>
+    </agent>
   </market>
 
   <market>
     <name>spent_PWR_uo2market</name>
     <mktcommodity>spent_PWR_uo2</mktcommodity>
-    <model>
+    <agent>
       <GreedyMarket/>
-    </model>
+    </agent>
   </market>
 
 
@@ -93,10 +93,10 @@
   </recipe>
 
 
-  <!-- General Facility Models -->
+  <!-- General Facility Agents -->
   <facility>
     <name>PWR_uo2_FuelFab</name>
-    <model>
+    <agent>
       <SourceFacility>
         <outcommodity>fresh_PWR_uo2</outcommodity>
         <capacity>1e6</capacity>
@@ -104,13 +104,13 @@
         <commodprice>0</commodprice>
         <recipe>fresh_50gwd</recipe>
       </SourceFacility>
-    </model>
+    </agent>
   </facility>
 
 
   <facility>
     <name>Reactor</name>
-    <model>
+    <agent>
       <RecipeReactor>
 
         <!-- Fresh and Spent Fuel Pairs -->
@@ -133,12 +133,12 @@
         <capacity>842</capacity>
         <elecCF>0.99</elecCF>	
       </RecipeReactor>
-    </model>
+    </agent>
   </facility>
 
   <facility>
     <name>Storage</name>
-    <model>
+    <agent>
       <StorageFacility>
         <incommodity>spent_PWR_uo2</incommodity>
         <capacity>1</capacity>
@@ -156,10 +156,10 @@
         </initialstocks>
 
       </StorageFacility>
-    </model>
+    </agent>
   </facility>
 
-  <!-- General Region Models -->
+  <!-- General Region Agents -->
   <region>
     <name>USA</name>
 
@@ -168,12 +168,12 @@
     <allowedfacility>Storage</allowedfacility>
     <allowedfacility>Reactor</allowedfacility>
 
-    <!-- Region Model -->
-    <model>
+    <!-- Region Agent -->
+    <agent>
       <NullRegion/>
-    </model>
+    </agent>
     <!--
-    <model>
+    <agent>
       <CapacityRegion>
         <input_file>/filespace/people/g/gidden/work/cyclus/trunk/input/nwtrb/build.in</input_file>
         <capacitydemand>
@@ -185,12 +185,12 @@
           </replacementlist>
         </capacitydemand>
       </CapacityRegion>
-    </model>
+    </agent>
     -->
     <!-- Institutions -->
     <institution>
       <name>OneInst</name>
-      <model>
+      <agent>
         <FixedInst>
 
           <!-- Facilities within Institution -->
@@ -210,7 +210,7 @@
           </facility>
 
         </FixedInst>
-      </model>
+      </agent>
     </institution>
 
   </region>

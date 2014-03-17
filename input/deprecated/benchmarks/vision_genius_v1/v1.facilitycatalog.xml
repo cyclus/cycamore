@@ -6,7 +6,7 @@
   <!-- Operating Reactors -->
   <facility>
     <name>ReactorA</name>
-    <model>
+    <agent>
       <BatchReactor>
         <fuelpair>
           <incommodity>fresh_PWR_uo2</incommodity>
@@ -19,11 +19,11 @@
 	<coreloading>9.9459e04</coreloading>
 	<batchespercore>5</batchespercore>
       </BatchReactor>
-    </model>
+    </agent>
   </facility>
   <facility>
     <name>ReactorB</name>
-    <model>
+    <agent>
       <BatchReactor>
         <fuelpair>
           <incommodity>fresh_PWR_uo2</incommodity>
@@ -36,11 +36,11 @@
 	<coreloading>9.9459e04</coreloading>
 	<batchespercore>5</batchespercore>
       </BatchReactor>
-    </model>
+    </agent>
   </facility>
   <facility>
     <name>ReactorC</name>
-    <model>
+    <agent>
       <BatchReactor>
         <fuelpair>
           <incommodity>fresh_PWR_uo2</incommodity>
@@ -53,11 +53,11 @@
 	<coreloading>9.9459e04</coreloading>
 	<batchespercore>5</batchespercore>
       </BatchReactor>
-    </model>
+    </agent>
   </facility>
   <facility>
     <name>ReactorD</name>
-    <model>
+    <agent>
       <BatchReactor>
         <fuelpair>
           <incommodity>fresh_PWR_uo2</incommodity>
@@ -70,11 +70,11 @@
 	<coreloading>9.9459e04</coreloading>
 	<batchespercore>5</batchespercore>
       </BatchReactor>
-    </model>
+    </agent>
   </facility>
   <facility>
     <name>ReactorE</name>
-    <model>
+    <agent>
       <BatchReactor>
         <fuelpair>
           <incommodity>fresh_PWR_uo2</incommodity>
@@ -87,11 +87,11 @@
 	<coreloading>9.9459e04</coreloading>
 	<batchespercore>5</batchespercore>
       </BatchReactor>
-    </model>
+    </agent>
   </facility>
   <facility>
     <name>ReactorF</name>
-    <model>
+    <agent>
       <BatchReactor>
         <fuelpair>
           <incommodity>fresh_PWR_uo2</incommodity>
@@ -104,11 +104,11 @@
 	<coreloading>9.9459e04</coreloading>
 	<batchespercore>5</batchespercore>
       </BatchReactor>
-    </model>
+    </agent>
   </facility>
   <facility>
     <name>ReactorG</name>
-    <model>
+    <agent>
       <BatchReactor>
         <fuelpair>
           <incommodity>fresh_PWR_uo2</incommodity>
@@ -121,11 +121,11 @@
 	<coreloading>9.9459e04</coreloading>
 	<batchespercore>5</batchespercore>
       </BatchReactor>
-    </model>
+    </agent>
   </facility>
   <facility>
     <name>ReactorH</name>
-    <model>
+    <agent>
       <BatchReactor>
         <fuelpair>
           <incommodity>fresh_PWR_uo2</incommodity>
@@ -138,11 +138,11 @@
 	<coreloading>9.9459e04</coreloading>
 	<batchespercore>5</batchespercore>
       </BatchReactor>
-    </model>
+    </agent>
   </facility>
   <facility>
     <name>ReactorI</name>
-    <model>
+    <agent>
       <BatchReactor>
         <fuelpair>
           <incommodity>fresh_PWR_uo2</incommodity>
@@ -155,11 +155,11 @@
 	<coreloading>9.9459e04</coreloading>
 	<batchespercore>5</batchespercore>
       </BatchReactor>
-    </model>
+    </agent>
   </facility>
   <facility>
     <name>ReactorJ</name>
-    <model>
+    <agent>
       <BatchReactor>
         <fuelpair>
           <incommodity>fresh_PWR_uo2</incommodity>
@@ -172,11 +172,11 @@
 	<coreloading>9.9459e04</coreloading>
 	<batchespercore>5</batchespercore>
       </BatchReactor>
-    </model>
+    </agent>
   </facility>
   <facility>
     <name>ReactorK</name>
-    <model>
+    <agent>
       <BatchReactor>
         <fuelpair>
           <incommodity>fresh_PWR_uo2</incommodity>
@@ -189,7 +189,7 @@
 	<coreloading>9.9459e04</coreloading>
 	<batchespercore>5</batchespercore>
       </BatchReactor>
-    </model>
+    </agent>
   </facility>
 
 </facilitycatalog>

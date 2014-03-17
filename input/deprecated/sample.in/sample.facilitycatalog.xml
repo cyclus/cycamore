@@ -5,29 +5,29 @@
 
   <facility>
     <name>LWR</name>
-    <model>
+    <agent>
       <NullFacility>
         <incommodity>uo2</incommodity>
         <outcommodity>snf</outcommodity>
         <inventorysize>1e4</inventorysize>
         <capacity>1e6</capacity>
       </NullFacility>
-    </model>
+    </agent>
   </facility>
   <facility>
     <name>HWR</name>
-    <model>
+    <agent>
       <NullFacility>
         <incommodity>uo2</incommodity>
         <outcommodity>snf</outcommodity>
         <inventorysize>1e4</inventorysize>
         <capacity>1e6</capacity>
       </NullFacility>
-    </model>
+    </agent>
   </facility>
   <facility>
     <name>FuelFab</name>
-    <model>
+    <agent>
       <SourceFacility>
         <outcommodity>uo2</outcommodity>
         <capacity>1e6</capacity>
@@ -35,7 +35,7 @@
         <commodprice>0</commodprice>
         <recipe>fresh_50gwd</recipe>
       </SourceFacility>
-    </model>
+    </agent>
   </facility>
 
 </facilitycatalog>

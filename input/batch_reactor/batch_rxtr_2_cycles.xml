@@ -1,5 +1,5 @@
 <?xml version="1.0"?>
-<!-- This input file is used to verify the INPRO reactor model for two cycles.
+<!-- This input file is used to verify the INPRO reactor agent for two cycles.
      The event list is as follows, based on simulation time:
      0  - enter simulation, order core, fill core
      1  - begin operation
@@ -28,7 +28,7 @@
 
   <facility>
     <name>Source</name>
-    <model>
+    <agent>
       <SourceFacility>
         <output>
           <outcommodity>enriched_u</outcommodity>
@@ -36,14 +36,14 @@
           <recipe>lwr_fuel_recipe</recipe>
         </output>
       </SourceFacility>
-    </model>
+    </agent>
     <outcommodity>enriched_u</outcommodity>
   </facility>
 
   <facility>
     <name>LWR_Reactor</name>
     <lifetime>26</lifetime>
-    <model>
+    <agent>
       <BatchReactor>
         <fuel>
          <incommodity>enriched_u</incommodity>
@@ -61,14 +61,14 @@
           <cost>1000</cost>
         </commodity_production>
       </BatchReactor>
-    </model>
+    </agent>
     <incommodity>enriched_u</incommodity>
     <outcommodity>waste</outcommodity>
   </facility>
   
   <facility>
     <name>Sink</name>
-    <model>
+    <agent>
       <SinkFacility>
         <input>
           <commodities>
@@ -77,7 +77,7 @@
           <input_capacity>1.0e10</input_capacity>
         </input>
       </SinkFacility>
-    </model>
+    </agent>
     <incommodity>waste</incommodity>
   </facility>
 
@@ -86,9 +86,9 @@
     <allowedfacility>Source</allowedfacility>
     <allowedfacility>LWR_Reactor</allowedfacility>
     <allowedfacility>Sink</allowedfacility>
-    <model>
+    <agent>
      <NullRegion/>
-    </model>
+    </agent>
     <institution>
       <name>SingleInstitution</name>
       <availableprototype>Source</availableprototype>
@@ -108,9 +108,9 @@
           <number>1</number>
         </entry>
       </initialfacilitylist>
-      <model>
+      <agent>
         <NullInst/>
-      </model>
+      </agent>
     </institution>
   </region>
 

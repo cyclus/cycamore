@@ -22,17 +22,17 @@
   <market>
     <name>fresh_PWR_uo2market</name>
     <mktcommodity>fresh_PWR_uo2</mktcommodity>
-    <model>
+    <agent>
       <NullMarket/>
-    </model>
+    </agent>
   </market>
 
   <market>
     <name>spent_PWR_uo2market</name>
     <mktcommodity>spent_PWR_uo2</mktcommodity>
-    <model>
+    <agent>
       <NullMarket/>
-    </model>
+    </agent>
   </market>
 
   <recipebook>
@@ -43,7 +43,7 @@
 
   <facility>
     <name>FrontEnd</name>
-    <model>
+    <agent>
       <SourceFacility>
         <outcommodity>fresh_PWR_uo2</outcommodity>
         <capacity>1e9</capacity>
@@ -51,12 +51,12 @@
         <commodprice>0</commodprice>
         <recipe>v1:fresh_PWR_uo2</recipe>
       </SourceFacility>
-    </model>
+    </agent>
   </facility>
 
   <facility>
     <name>Reactor</name>
-    <model>
+    <agent>
       <BatchReactor>
         <fuelpair>
           <incommodity>fresh_PWR_uo2</incommodity>
@@ -69,19 +69,19 @@
 	<coreloading>9.9459e04</coreloading>
 	<batchespercore>5</batchespercore>
       </BatchReactor>
-    </model>
+    </agent>
   </facility>
 
   <facility>
     <name>BackEnd</name>
-    <model>
+    <agent>
       <SinkFacility>
         <incommodity>spent_PWR_uo2</incommodity>
         <capacity>1e9</capacity>
         <inventorysize>1e10</inventorysize>
         <commodprice>0</commodprice>
       </SinkFacility>
-    </model>
+    </agent>
   </facility>
 
   <facilitycatalog>
@@ -105,7 +105,7 @@
     <allowedfacility>v1:ReactorJ</allowedfacility>
     <allowedfacility>v1:ReactorK</allowedfacility>
     <allowedfacility>BackEnd</allowedfacility>
-    <model>
+    <agent>
       <BuildRegion>
 	<prototyperequirement>
 	  <prototypename>FrontEnd</prototypename>
@@ -396,10 +396,10 @@
 	  </demandschedule>
 	</prototyperequirement>
       </BuildRegion>
-    </model>
+    </agent>
     <institution>
       <name>oneInst</name>
-      <model>
+      <agent>
         <BuildInst>
 	  <availableprototype>FrontEnd</availableprototype>
 	  <availableprototype>v1:ReactorA</availableprototype>
@@ -415,7 +415,7 @@
 	  <availableprototype>v1:ReactorK</availableprototype>
 	  <availableprototype>BackEnd</availableprototype>
         </BuildInst>
-      </model>
+      </agent>
     </institution>
   </region>
 

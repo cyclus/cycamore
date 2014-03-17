@@ -19,17 +19,17 @@
   <market>
     <name>fresh_PWR_uo2market</name>
     <mktcommodity>fresh_PWR_uo2</mktcommodity>
-    <model>
+    <agent>
       <GreedyMarket/>
-    </model>
+    </agent>
   </market>
 
   <market>
     <name>spent_PWR_uo2market</name>
     <mktcommodity>spent_PWR_uo2</mktcommodity>
-    <model>
+    <agent>
       <GreedyMarket/>
-    </model>
+    </agent>
   </market>
 
   <recipebook>
@@ -40,7 +40,7 @@
 
   <facility>
     <name>PWR_uo2_FuelFab</name>
-    <model>
+    <agent>
       <SourceFacility>
         <outcommodity>fresh_PWR_uo2</outcommodity>
         <capacity>2</capacity>
@@ -48,24 +48,24 @@
         <commodprice>0</commodprice>
         <recipe>nwtrb:fresh_PWR_uo2</recipe>
       </SourceFacility>
-    </model>
+    </agent>
   </facility>
 
   <facility>
     <name>Storage</name>
-    <model>
+    <agent>
       <SinkFacility>
         <incommodity>spent_PWR_uo2</incommodity>
         <capacity>483</capacity>
         <inventorysize>1e6</inventorysize>
         <commodprice>0</commodprice>
       </SinkFacility>
-    </model>
+    </agent>
   </facility>
 
   <facility>
     <name>Beaver_Valley_1</name>
-    <model>
+    <agent>
       <RecipeReactor>
         <fuelpair>
           <incommodity>fresh_PWR_uo2</incommodity>
@@ -85,7 +85,7 @@
         <capacity>892</capacity>
         <elecCF>0.92</elecCF>
       </RecipeReactor>
-    </model>
+    </agent>
   </facility>
 
   <region>
@@ -93,13 +93,13 @@
     <allowedfacility>Beaver_Valley_1</allowedfacility>
     <allowedfacility>Storage</allowedfacility>
     <allowedfacility>PWR_uo2_FuelFab</allowedfacility>
-    <model>
+    <agent>
       <NullRegion/>
-    </model>
+    </agent>
 
     <institution>
       <name>OneInst</name>
-      <model>
+      <agent>
         <FixedInst>
           <facility>
             <type>Storage</type>
@@ -145,7 +145,7 @@
           </facility>
 
         </FixedInst>
-      </model>
+      </agent>
     </institution>
   </region>
 
