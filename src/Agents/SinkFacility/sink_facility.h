@@ -140,10 +140,10 @@ class SinkFacility : public cyc::Facility  {
   virtual std::set<cyc::RequestPortfolio<cyc::Material>::Ptr>
       GetMatlRequests();
   
-  /// @brief SinkFacilities request GenericResources of their given
+  /// @brief SinkFacilities request Products of their given
   /// commodity. Note that it is assumed the SinkFacility operates on a single
   /// resource type!
-  virtual std::set<cyc::RequestPortfolio<cyc::GenericResource>::Ptr>
+  virtual std::set<cyc::RequestPortfolio<cyc::Product>::Ptr>
       GetGenRsrcRequests();
 
   /// @brief SinkFacilities place accepted trade Materials in their Inventory
@@ -153,8 +153,8 @@ class SinkFacility : public cyc::Facility  {
 
   /// @brief SinkFacilities place accepted trade Materials in their Inventory
   virtual void AcceptGenRsrcTrades(
-      const std::vector< std::pair<cyc::Trade<cyc::GenericResource>,
-      cyc::GenericResource::Ptr> >& responses);
+      const std::vector< std::pair<cyc::Trade<cyc::Product>,
+      cyc::Product::Ptr> >& responses);
   /* --- */
 
   /* --- SinkFacility Members --- */

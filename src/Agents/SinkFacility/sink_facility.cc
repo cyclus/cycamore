@@ -168,26 +168,26 @@ SinkFacility::GetMatlRequests() {
 }
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - 
-std::set<cyc::RequestPortfolio<cyc::GenericResource>::Ptr>
+std::set<cyc::RequestPortfolio<cyc::Product>::Ptr>
 SinkFacility::GetGenRsrcRequests() {
   using cyc::CapacityConstraint;
-  using cyc::GenericResource;
+  using cyc::Product;
   using cyc::RequestPortfolio;
   using cyc::Request;
   
-  std::set<RequestPortfolio<GenericResource>::Ptr> ports;
-  RequestPortfolio<GenericResource>::Ptr
-      port(new RequestPortfolio<GenericResource>());
+  std::set<RequestPortfolio<Product>::Ptr> ports;
+  RequestPortfolio<Product>::Ptr
+      port(new RequestPortfolio<Product>());
   double amt = RequestAmt();
 
   if (amt > cyc::eps()) {
-    CapacityConstraint<GenericResource> cc(amt);
+    CapacityConstraint<Product> cc(amt);
     port->AddConstraint(cc);
     
     std::vector<std::string>::const_iterator it;
     for (it = in_commods_.begin(); it != in_commods_.end(); ++it) {
       std::string quality = ""; // not clear what this should be..
-      GenericResource::Ptr rsrc = GenericResource::CreateUntracked(amt,
+      Product::Ptr rsrc = Product::CreateUntracked(amt,
                                                                    quality);
       port->AddRequest(rsrc, this, *it);
     }
@@ -211,10 +211,10 @@ void SinkFacility::AcceptMatlTrades(
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - 
 void SinkFacility::AcceptGenRsrcTrades(
-    const std::vector< std::pair<cyc::Trade<cyc::GenericResource>,
-                                 cyc::GenericResource::Ptr> >& responses) {
-  std::vector< std::pair<cyc::Trade<cyc::GenericResource>,
-                         cyc::GenericResource::Ptr> >::const_iterator it;
+    const std::vector< std::pair<cyc::Trade<cyc::Product>,
+                                 cyc::Product::Ptr> >& responses) {
+  std::vector< std::pair<cyc::Trade<cyc::Product>,
+                         cyc::Product::Ptr> >::const_iterator it;
   for (it = responses.begin(); it != responses.end(); ++it) {
     inventory_.Push(it->second);    
   }
