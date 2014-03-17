@@ -93,7 +93,7 @@
   </recipe>
 
 
-  <!-- General Facility Models -->
+  <!-- General Facility Agents -->
   <facility>
     <name>PWR_uo2_FuelFab</name>
     <model>
@@ -159,7 +159,7 @@
     </model>
   </facility>
 
-  <!-- General Region Models -->
+  <!-- General Region Agents -->
   <region>
     <name>USA</name>
 
@@ -168,7 +168,7 @@
     <allowedfacility>Storage</allowedfacility>
     <allowedfacility>Reactor</allowedfacility>
 
-    <!-- Region Model -->
+    <!-- Region Agent -->
     <model>
       <NullRegion/>
     </model>

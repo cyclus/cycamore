@@ -97,8 +97,8 @@ SET(CYCAMORE_INCLUDE_DIR ${CYCAMORE_INCLUDE_DIR} Testing
 INCLUDE_DIRECTORIES( ${CYCAMORE_INCLUDE_DIR} )
 
 
-# ------------------------- Add the Models -----------------------------------
-ADD_SUBDIRECTORY(Models)
+# ------------------------- Add the Agents -----------------------------------
+ADD_SUBDIRECTORY(Agents)
 
 # ------------------------- Google Test -----------------------------------
 
