@@ -6,7 +6,7 @@
 #include "region_tests.h"
 #include "agent_tests.h"
 #include "commodity.h"
-#include "xml_query_engine.h"
+#include "xml_infile_tree.h"
 #include "xml_parser.h"
 
 namespace cycamore {
@@ -53,7 +53,7 @@ void GrowthRegionTests::InitRegion() {
 
   cyclus::XMLParser parser;
   parser.Init(ss);
-  cyclus::XMLQueryEngine* engine = new cyclus::XMLQueryEngine(parser);
+  cyclus::XMLInfileTree* engine = new cyclus::XMLInfileTree(parser);
   region->InitFrom(engine);
   region->Build(NULL);
   delete engine;

@@ -13,7 +13,7 @@ ManagerInst::ManagerInst(cyclus::Context* ctx)
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 ManagerInst::~ManagerInst() {}
 
-void ManagerInst::InitFrom(cyclus::QueryEngine* qe) {
+void ManagerInst::InitFrom(cyclus::InfileTree* qe) {
   std::string name, query;
   int nEntries;
   // populate prototypes_

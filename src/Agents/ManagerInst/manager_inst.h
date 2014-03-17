@@ -41,7 +41,7 @@ class ManagerInst : public cyclus::Institution,
     commod_producers_ = m->commod_producers_;
   }
 
-  virtual void InitFrom(cyclus::QueryEngine* qe);
+  virtual void InitFrom(cyclus::InfileTree* qe);
 
   /**
      perform any actions required after prototype has been added to

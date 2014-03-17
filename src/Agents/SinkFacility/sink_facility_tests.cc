@@ -4,7 +4,7 @@
 #include "facility_tests.h"
 #include "agent_tests.h"
 #include "resource_helpers.h"
-#include "query_engine.h"
+#include "infile_tree.h"
 #include "xml_parser.h"
 
 #include "sink_facility_tests.h"
@@ -89,7 +89,7 @@ TEST_F(SinkFacilityTest, DISABLED_XMLInit) {
 
   cyclus::XMLParser p;
   p.Init(ss);
-  cyclus::QueryEngine engine(p);
+  cyclus::InfileTree engine(p);
   cycamore::SinkFacility fac(tc_.get());
 
   //EXPECT_NO_THROW(fac.InitFrom(&engine););

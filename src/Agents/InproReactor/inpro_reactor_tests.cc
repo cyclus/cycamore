@@ -10,7 +10,7 @@
 #include "facility_tests.h"
 #include "agent_tests.h"
 #include "agent.h"
-#include "xml_query_engine.h"
+#include "xml_infile_tree.h"
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 void InproReactorTest::SetUp() {
@@ -65,7 +65,7 @@ void InproReactorTest::InitSrcFacility() {
 
   cyclus::XMLParser parser;
   parser.Init(ss);
-  cyclus::XMLQueryEngine* engine = new cyclus::XMLQueryEngine(parser);
+  cyclus::XMLInfileTree* engine = new cyclus::XMLInfileTree(parser);
   src_facility->InitFrom(engine);
   delete engine;
 }

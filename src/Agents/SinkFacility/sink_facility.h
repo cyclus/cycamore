@@ -99,7 +99,7 @@ class SinkFacility : public cyc::Facility  {
 
   virtual cyc::Agent* Clone();
 
-  virtual void InfileToDb(cyc::QueryEngine* qe, cyc::DbInit di);
+  virtual void InfileToDb(cyc::InfileTree* qe, cyc::DbInit di);
 
   virtual void InitFrom(cyc::QueryableBackend* b);
 

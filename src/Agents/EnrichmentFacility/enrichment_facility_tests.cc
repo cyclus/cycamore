@@ -8,7 +8,7 @@
 #include "mat_query.h"
 #include "agent_tests.h"
 #include "resource_helpers.h"
-#include "query_engine.h"
+#include "infile_tree.h"
 
 #include "enrichment_facility_tests.h"
 
@@ -142,7 +142,7 @@ TEST_F(EnrichmentFacilityTest, DISABLED_XMLInit) {
 
   cyclus::XMLParser p;
   p.Init(ss);
-  cyclus::QueryEngine engine(p);
+  cyclus::InfileTree engine(p);
   cycamore::EnrichmentFacility fac(tc_.get());
 
   //EXPECT_NO_THROW(fac.InitFrom(&engine););

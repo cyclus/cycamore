@@ -32,12 +32,12 @@ std::string SourceFacility::schema() {
 }
 
 
-void SourceFacility::InfileToDb(cyc::QueryEngine* qe, cyc::DbInit di) {
+void SourceFacility::InfileToDb(cyc::InfileTree* qe, cyc::DbInit di) {
   cyc::Facility::InfileToDb(qe, di);
   qe = qe->QueryElement("agent/" + agent_impl());
   
   using std::numeric_limits;
-  cyc::QueryEngine* output = qe->QueryElement("output");
+  cyc::InfileTree* output = qe->QueryElement("output");
 
   std::string recipe = output->GetString("recipe");
   std::string out_commod = output->GetString("outcommodity");

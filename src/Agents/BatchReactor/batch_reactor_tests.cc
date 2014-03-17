@@ -9,7 +9,7 @@
 #include "facility_tests.h"
 #include "agent_tests.h"
 #include "agent.h"
-#include "query_engine.h"
+#include "infile_tree.h"
 
 namespace cycamore {
 
@@ -278,7 +278,7 @@ TEST_F(BatchReactorTest, DISABLED_XMLInit) {
 
   cyclus::XMLParser p;
   p.Init(ss);
-  cyclus::QueryEngine engine(p);
+  cyclus::InfileTree engine(p);
   cycamore::BatchReactor* fac = new cycamore::BatchReactor(tc_.get());
   //fac->InitFrom(&engine);
 

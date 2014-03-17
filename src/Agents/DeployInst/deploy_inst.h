@@ -46,7 +46,7 @@ class DeployInst : public cyc::Institution {
 
   void Build(cyc::Agent* parent);
 
-  virtual void InfileToDb(cyc::QueryEngine* qe, cyc::DbInit di);
+  virtual void InfileToDb(cyc::InfileTree* qe, cyc::DbInit di);
 
   virtual void InitFrom(cyc::QueryableBackend* b);
 

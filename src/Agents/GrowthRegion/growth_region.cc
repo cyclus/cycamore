@@ -3,7 +3,7 @@
 
 #include "growth_region.h"
 
-#include "query_engine.h"
+#include "infile_tree.h"
 #include "symbolic_function_factories.h"
 #include "institution.h"
 #include "error.h"
@@ -51,7 +51,7 @@ std::string GrowthRegion::schema() {
 }
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-void GrowthRegion::InitFrom(cyclus::QueryEngine* qe) {
+void GrowthRegion::InitFrom(cyclus::InfileTree* qe) {
   cyclus::Region::InitFrom(qe);
   qe = qe->QueryElement("agent/" + agent_impl());
   LOG(cyclus::LEV_DEBUG2, "greg") << "A Growth Region is being initialized";
@@ -60,7 +60,7 @@ void GrowthRegion::InitFrom(cyclus::QueryEngine* qe) {
   int nCommodities = qe->NElementsMatchingQuery(query);
   // populate supply demand manager info for each commodity
   for (int i = 0; i < nCommodities; i++) {
-    cyclus::QueryEngine* iqe = qe->QueryElement(query, i);
+    cyclus::InfileTree* iqe = qe->QueryElement(query, i);
 
     std::string name = iqe->GetString("name");
     commodities_.insert(cyclus::Commodity(name));
@@ -68,7 +68,7 @@ void GrowthRegion::InitFrom(cyclus::QueryEngine* qe) {
     std::string query = "demand";
     int n = iqe->NElementsMatchingQuery(query);
     for (int j = 0; j < n; j++) {
-      cyclus::QueryEngine* jqe = iqe->QueryElement(query, j);
+      cyclus::InfileTree* jqe = iqe->QueryElement(query, j);
       DemandInfo di;
       di.type = jqe->GetString("type");
       di.params = jqe->GetString("parameters");

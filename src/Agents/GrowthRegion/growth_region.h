@@ -6,7 +6,7 @@
 #include "commodity.h"
 #include "supply_demand_manager.h"
 #include "building_manager.h"
-//#include "QueryEngine.h"//
+//#include "InfileTree.h"//
 
 #include <set>
 
@@ -57,9 +57,9 @@ class GrowthRegion : public cyclus::Region {
   /* --- Region Members --- */
   /**
      Initialize members related to derived module class
-     @param qe a pointer to a cyclus::QueryEngine object containing initialization data
+     @param qe a pointer to a cyclus::InfileTree object containing initialization data
    */
-  virtual void InitFrom(cyclus::QueryEngine* qe);
+  virtual void InitFrom(cyclus::InfileTree* qe);
 
   /**
      add a demand for a commodity on which this region request that

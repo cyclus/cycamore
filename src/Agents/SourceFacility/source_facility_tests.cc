@@ -5,7 +5,7 @@
 
 #include "cyc_limits.h"
 #include "resource_helpers.h"
-#include "query_engine.h"
+#include "infile_tree.h"
 #include "xml_parser.h"
 
 #include "source_facility_tests.h"
@@ -64,7 +64,7 @@ TEST_F(SourceFacilityTest, DISABLED_XMLInit) {
 
   cyclus::XMLParser p;
   p.Init(ss);
-  cyclus::QueryEngine engine(p);
+  cyclus::InfileTree engine(p);
   cycamore::SourceFacility fac(tc.get());
 
   //EXPECT_NO_THROW(fac.InitFrom(&engine););
