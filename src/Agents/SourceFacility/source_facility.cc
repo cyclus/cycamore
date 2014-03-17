@@ -34,10 +34,10 @@ std::string SourceFacility::schema() {
 
 void SourceFacility::InfileToDb(cyc::InfileTree* qe, cyc::DbInit di) {
   cyc::Facility::InfileToDb(qe, di);
-  qe = qe->QueryElement("agent/" + agent_impl());
+  qe = qe->Query("agent/" + agent_impl());
   
   using std::numeric_limits;
-  cyc::InfileTree* output = qe->QueryElement("output");
+  cyc::InfileTree* output = qe->Query("output");
 
   std::string recipe = output->GetString("recipe");
   std::string out_commod = output->GetString("outcommodity");

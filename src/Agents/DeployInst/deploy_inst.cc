@@ -29,11 +29,11 @@ std::string DeployInst::schema() {
 
 void DeployInst::InfileToDb(cyc::InfileTree* qe, cyc::DbInit di) {
   cyc::Institution::InfileToDb(qe, di);
-  qe = qe->QueryElement("agent/" + agent_impl());
+  qe = qe->Query("agent/" + agent_impl());
 
-  int nOrders = qe->NElementsMatchingQuery("buildorder");
+  int nOrders = qe->NMatches("buildorder");
   for (int i = 0; i < nOrders; i++) {
-    cyc::InfileTree* order = qe->QueryElement("buildorder", i);
+    cyc::InfileTree* order = qe->Query("buildorder", i);
     int n = order->GetInt("number");
     for (int j = 0; j < n; ++j) {
       di.NewDatum("BuildOrder")

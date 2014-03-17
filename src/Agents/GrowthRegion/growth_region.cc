@@ -53,22 +53,22 @@ std::string GrowthRegion::schema() {
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 void GrowthRegion::InitFrom(cyclus::InfileTree* qe) {
   cyclus::Region::InitFrom(qe);
-  qe = qe->QueryElement("agent/" + agent_impl());
+  qe = qe->Query("agent/" + agent_impl());
   LOG(cyclus::LEV_DEBUG2, "greg") << "A Growth Region is being initialized";
 
   std::string query = "commodity";
-  int nCommodities = qe->NElementsMatchingQuery(query);
+  int nCommodities = qe->NMatches(query);
   // populate supply demand manager info for each commodity
   for (int i = 0; i < nCommodities; i++) {
-    cyclus::InfileTree* iqe = qe->QueryElement(query, i);
+    cyclus::InfileTree* iqe = qe->Query(query, i);
 
     std::string name = iqe->GetString("name");
     commodities_.insert(cyclus::Commodity(name));
 
     std::string query = "demand";
-    int n = iqe->NElementsMatchingQuery(query);
+    int n = iqe->NMatches(query);
     for (int j = 0; j < n; j++) {
-      cyclus::InfileTree* jqe = iqe->QueryElement(query, j);
+      cyclus::InfileTree* jqe = iqe->Query(query, j);
       DemandInfo di;
       di.type = jqe->GetString("type");
       di.params = jqe->GetString("parameters");

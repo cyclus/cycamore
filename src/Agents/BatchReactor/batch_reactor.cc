@@ -261,7 +261,7 @@ void BatchReactor::InitFrom(cyc::QueryableBackend* b) {
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 void BatchReactor::InfileToDb(cyc::InfileTree* qe, cyc::DbInit di) {
   cyc::Facility::InfileToDb(qe, di);
-  qe = qe->QueryElement("agent/" + agent_impl());
+  qe = qe->Query("agent/" + agent_impl());
 
   using cyc::Commodity;
   using cyc::CommodityProducer;
@@ -280,7 +280,7 @@ void BatchReactor::InfileToDb(cyc::InfileTree* qe, cyc::DbInit di) {
   int nreload = GetOptionalQuery<int>(qe, "nreload", n_load());
   int norder = GetOptionalQuery<int>(qe, "norder", n_reserves());
 
-  InfileTree* commodity = qe->QueryElement("commodity_production");
+  InfileTree* commodity = qe->Query("commodity_production");
   std::string out_commod = commodity->GetString("commodity");
   double commod_cap = commodity->GetDouble("capacity");
   double commod_cost = commodity->GetDouble("cost");
@@ -310,10 +310,10 @@ void BatchReactor::InfileToDb(cyc::InfileTree* qe, cyc::DbInit di) {
     int n = 0;
     std::string recipe;
     std::string commod;
-    if (qe->NElementsMatchingQuery("initial_condition") > 0) {
-      InfileTree* ic = qe->QueryElement("initial_condition");
-      if (ic->NElementsMatchingQuery(inv_names[i]) > 0) {
-        InfileTree* reserves = ic->QueryElement(inv_names[i]);
+    if (qe->NMatches("initial_condition") > 0) {
+      InfileTree* ic = qe->Query("initial_condition");
+      if (ic->NMatches(inv_names[i]) > 0) {
+        InfileTree* reserves = ic->Query(inv_names[i]);
         n = reserves->GetInt("nbatches");
         recipe = reserves->GetString("recipe");
         commod = reserves->GetString("commodity");
@@ -328,10 +328,10 @@ void BatchReactor::InfileToDb(cyc::InfileTree* qe, cyc::DbInit di) {
   }
 
   // trade preferences
-  int nprefs = qe->NElementsMatchingQuery("commod_pref");
+  int nprefs = qe->NMatches("commod_pref");
   std::string c;
   for (int i = 0; i < nprefs; i++) {
-    InfileTree* cp = qe->QueryElement("commod_pref", i);
+    InfileTree* cp = qe->Query("commod_pref", i);
     di.NewDatum("CommodPrefs")
       ->AddVal("incommodity", cp->GetString("incommodity"))
       ->AddVal("preference", cp->GetDouble("preference"))
@@ -339,9 +339,9 @@ void BatchReactor::InfileToDb(cyc::InfileTree* qe, cyc::DbInit di) {
   }
 
   // pref changes
-  int nchanges = qe->NElementsMatchingQuery("pref_change");
+  int nchanges = qe->NMatches("pref_change");
   for (int i = 0; i < nchanges; i++) {
-    InfileTree* cp = qe->QueryElement("pref_change", i);
+    InfileTree* cp = qe->Query("pref_change", i);
     di.NewDatum("PrefChanges")
       ->AddVal("incommodity", cp->GetString("incommodity"))
       ->AddVal("new_pref", cp->GetDouble("new_pref"))
@@ -350,9 +350,9 @@ void BatchReactor::InfileToDb(cyc::InfileTree* qe, cyc::DbInit di) {
   }
 
   // recipe changes
-  nchanges = qe->NElementsMatchingQuery("recipe_change");
+  nchanges = qe->NMatches("recipe_change");
   for (int i = 0; i < nchanges; i++) {
-    InfileTree* cp = qe->QueryElement("recipe_change", i);
+    InfileTree* cp = qe->Query("recipe_change", i);
     di.NewDatum("RecipeChanges")
       ->AddVal("incommodity", cp->GetString("incommodity"))
       ->AddVal("new_recipe", cp->GetString("new_recipe"))

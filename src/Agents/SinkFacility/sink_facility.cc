@@ -40,13 +40,13 @@ std::string SinkFacility::schema() {
 
 void SinkFacility::InfileToDb(cyc::InfileTree* qe, cyc::DbInit di) {
   cyc::Facility::InfileToDb(qe, di);
-  qe = qe->QueryElement("agent/" + agent_impl());
+  qe = qe->Query("agent/" + agent_impl());
   
   using std::numeric_limits;
-  cyc::InfileTree* input = qe->QueryElement("input");
+  cyc::InfileTree* input = qe->Query("input");
 
-  cyc::InfileTree* commodities = input->QueryElement("commodities");
-  int n = commodities->NElementsMatchingQuery("incommodity");
+  cyc::InfileTree* commodities = input->Query("commodities");
+  int n = commodities->NMatches("incommodity");
   for (int i = 0; i < n; i++) {
     di.NewDatum("InCommods")
       ->AddVal("commod", commodities->GetString("incommodity", i))

@@ -18,7 +18,7 @@ void ManagerInst::InitFrom(cyclus::InfileTree* qe) {
   int nEntries;
   // populate prototypes_
   query = "availableprototype";
-  nEntries = qe->NElementsMatchingQuery(query);
+  nEntries = qe->NMatches(query);
   if (nEntries > 0) {
     // populate prototypes_
     for (int i = 0; i < nEntries; i++) {

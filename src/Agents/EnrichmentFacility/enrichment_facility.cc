@@ -57,10 +57,10 @@ std::string EnrichmentFacility::schema() {
 
 void EnrichmentFacility::InfileToDb(cyc::InfileTree* qe, cyc::DbInit di) {
   cyc::Facility::InfileToDb(qe, di);
-  qe = qe->QueryElement("agent/" + agent_impl());
+  qe = qe->Query("agent/" + agent_impl());
 
-  cyc::InfileTree* input = qe->QueryElement("input");
-  cyc::InfileTree* output = qe->QueryElement("output");
+  cyc::InfileTree* input = qe->Query("input");
+  cyc::InfileTree* output = qe->Query("output");
 
   std::string in_commod = input->GetString("incommodity");
   std::string in_recipe = input->GetString("inrecipe");

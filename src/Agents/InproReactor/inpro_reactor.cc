@@ -95,15 +95,15 @@ std::string InproReactor::schema() {
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 void InproReactor::InitFrom(cyclus::InfileTree* qe) {
   cyclus::Facility::InitFrom(qe);
-  qe = qe->QueryElement("agent/" + agent_impl());
+  qe = qe->Query("agent/" + agent_impl());
 
   using std::string;
   using boost::lexical_cast;
-  cyclus::InfileTree* input = qe->QueryElement("fuel_input");
+  cyclus::InfileTree* input = qe->Query("fuel_input");
   set_in_commodity(input->GetString("incommodity"));
   set_in_recipe(input->GetString("inrecipe"));
 
-  cyclus::InfileTree* output = qe->QueryElement("fuel_output");
+  cyclus::InfileTree* output = qe->Query("fuel_output");
   set_out_commodity(output->GetString("outcommodity"));
   set_out_recipe(output->GetString("outrecipe"));
 
@@ -125,7 +125,7 @@ void InproReactor::InitFrom(cyclus::InfileTree* qe) {
   data = qe->GetString("batchespercore");
   set_batches_per_core(lexical_cast<int>(data));
 
-  cyclus::InfileTree* commodity = qe->QueryElement("commodity_production");
+  cyclus::InfileTree* commodity = qe->Query("commodity_production");
   cyclus::Commodity commod(commodity->GetString("commodity"));
   AddCommodity(commod);
   data = commodity->GetString("capacity");
