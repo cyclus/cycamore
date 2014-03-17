@@ -1,6 +1,6 @@
 // source_facility.h
-#ifndef CYCAMORE_MODELS__SOURCE_FACILITY_H_
-#define CYCAMORE_MODELS__SOURCE_FACILITY_H_
+#ifndef CYCAMORE_MODELS_SOURCE_FACILITY_H_
+#define CYCAMORE_MODELS_SOURCE_FACILITY_H_
 
 #include <set>
 #include <vector>
@@ -87,9 +87,10 @@ class Context;
    What is the best way to allow offers of an infinite amount of
    material on a market?
  */
-class SourceFacility : public cyc::FacilityModel,
-  public cyc::CommodityProducer {
- public:
+class SourceFacility
+    : public cyc::FacilityModel,
+      public cyc::CommodityProducer {
+  public:
   /* --- Module Members --- */
   /**
      Constructor for the SourceFacility class
@@ -107,9 +108,11 @@ class SourceFacility : public cyc::FacilityModel,
 
   virtual void Snapshot(cyc::DbInit di);
 
-  virtual void InitInv(cyc::Inventories& inv) {};
+  virtual void InitInv(cyc::Inventories& inv) {}
 
-  virtual cyc::Inventories SnapshotInv() {return cyc::Inventories();}
+  virtual cyc::Inventories SnapshotInv() {
+    return cyc::Inventories();
+  }
 
   virtual cyc::Model* Clone();
 
@@ -140,14 +143,14 @@ class SourceFacility : public cyc::FacilityModel,
      @param time is the time to perform the tock
    */
   virtual void Tock(int time);
-  
+
   /// @brief Responds to each request for this source facility's commodity.
   /// If a given request is more than this facility's capacity, it will offer
   /// its capacity.
   virtual std::set<cyc::BidPortfolio<cyc::Material>::Ptr>
       GetMatlBids(const cyc::CommodMap<cyc::Material>::type&
-                  commod_requests);
-  
+                      commod_requests);
+
   /// @brief respond to each trade with a material made from this facility's
   /// recipe
   ///
@@ -156,7 +159,7 @@ class SourceFacility : public cyc::FacilityModel,
   virtual void GetMatlTrades(
     const std::vector< cyc::Trade<cyc::Material> >& trades,
     std::vector<std::pair<cyc::Trade<cyc::Material>,
-    cyc::Material::Ptr> >& responses);
+                          cyc::Material::Ptr> >& responses);
   /* --- */
 
   /* --- SourceFacility Members --- */
@@ -170,34 +173,46 @@ class SourceFacility : public cyc::FacilityModel,
      sets the output commodity name
      @param name the commodity name
    */
-  inline void commodity(std::string name) { out_commod_ = name; }
+  inline void commodity(std::string name) {
+    out_commod_ = name;
+  }
 
   /// @return the output commodity
-  inline std::string commodity() const { return out_commod_; }
+  inline std::string commodity() const {
+    return out_commod_;
+  }
 
   /**
-     sets the capacity of a material generated at any given time step
-     @param capacity the production capacity
-   */
+    sets the capacity of a material generated at any given time step
+    @param capacity the production capacity
+  */
   inline void capacity(double capacity) {
     capacity_ = capacity;
     current_capacity_ = capacity_;
   }
 
   /// @return the production capacity at any given time step
-  inline double capacity() const { return capacity_; }
+  inline double capacity() const {
+    return capacity_;
+  }
 
   /**
-     sets the name of the recipe to be produced
-     @param name the recipe name
-   */
-  inline void recipe(std::string name) { recipe_name_ = name; }
+    sets the name of the recipe to be produced
+    @param name the recipe name
+  */
+  inline void recipe(std::string name) {
+    recipe_name_ = name;
+  }
 
   /// @return the name of the output recipe
-  inline std::string recipe() const { return recipe_name_; }
+  inline std::string recipe() const {
+    return recipe_name_;
+  }
 
   /// @return the current timestep's capacity
-  inline double current_capacity() const { return current_capacity_; }
+  inline double current_capacity() const {
+    return current_capacity_;
+  }
 
  private:
   /**
@@ -225,7 +240,6 @@ class SourceFacility : public cyc::FacilityModel,
   /* --- */
 };
 
-} // namespace cycamore
+}  // namespace cycamore
 
-#endif // CYCAMORE_MODELS__SOURCE_FACILITY_H_
-
+#endif  // CYCAMORE_MODELS_SOURCE_FACILITY_H_
