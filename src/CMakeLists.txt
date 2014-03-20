@@ -58,7 +58,7 @@ SET( CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${CMAKE_DIR}/share/cmake-2.8/Module
 SET( CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} ${CYCAMORE_SOURCE_DIR}/CMake )
 
 # Include macros
-INCLUDE(CycamoreModuleMacros)
+INCLUDE(UseCyclus)
 
 # Find cycluscore
 FIND_PACKAGE( cycluscore REQUIRED )
@@ -137,6 +137,8 @@ ADD_EXECUTABLE( cycamore_unit_tests
   Testing/cycamore_unit_test_driver.cc ${TestSource}
   ${GENERATED_TEST_SOURCE}
 )
+
+MESSAGE(STATUS "Cycamore Libs: ${CYCAMORE_LIBRARIES}")
 TARGET_LINK_LIBRARIES( cycamore_unit_tests dl ${CYCAMORE_LIBRARIES} 
   dl ${LIBS} ${CYCLUS_GTEST_LIBRARIES})
 
