@@ -29,16 +29,16 @@ std::string DeployInst::schema() {
 
 void DeployInst::InfileToDb(cyc::InfileTree* qe, cyc::DbInit di) {
   cyc::Institution::InfileToDb(qe, di);
-  qe = qe->Query("agent/" + agent_impl());
+  qe = qe->SubTree("agent/" + agent_impl());
 
   int nOrders = qe->NMatches("buildorder");
   for (int i = 0; i < nOrders; i++) {
-    cyc::InfileTree* order = qe->Query("buildorder", i);
-    int n = order->GetInt("number");
+    cyc::InfileTree* order = qe->SubTree("buildorder", i);
+    int n = cyc::Query<int>(order, "number");
     for (int j = 0; j < n; ++j) {
       di.NewDatum("BuildOrder")
         ->AddVal("prototype", order->GetString("prototype"))
-        ->AddVal("date", order->GetInt("date"))
+        ->AddVal("date", cyc::Query<int>(order, "date"))
         ->Record();
     }
   }

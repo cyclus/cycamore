@@ -53,14 +53,14 @@ std::string GrowthRegion::schema() {
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 void GrowthRegion::InitFrom(cyclus::InfileTree* qe) {
   cyclus::Region::InitFrom(qe);
-  qe = qe->Query("agent/" + agent_impl());
+  qe = qe->SubTree("agent/" + agent_impl());
   LOG(cyclus::LEV_DEBUG2, "greg") << "A Growth Region is being initialized";
 
   std::string query = "commodity";
   int nCommodities = qe->NMatches(query);
   // populate supply demand manager info for each commodity
   for (int i = 0; i < nCommodities; i++) {
-    cyclus::InfileTree* iqe = qe->Query(query, i);
+    cyclus::InfileTree* iqe = qe->SubTree(query, i);
 
     std::string name = iqe->GetString("name");
     commodities_.insert(cyclus::Commodity(name));
@@ -68,11 +68,11 @@ void GrowthRegion::InitFrom(cyclus::InfileTree* qe) {
     std::string query = "demand";
     int n = iqe->NMatches(query);
     for (int j = 0; j < n; j++) {
-      cyclus::InfileTree* jqe = iqe->Query(query, j);
+      cyclus::InfileTree* jqe = iqe->SubTree(query, j);
       DemandInfo di;
       di.type = jqe->GetString("type");
       di.params = jqe->GetString("parameters");
-      di.time = cyclus::GetOptionalQuery<int>(jqe, "start_time", 0);
+      di.time = cyclus::OptionalQuery<int>(qe, jqe, "start_time", 0);
       demands_[name].push_back(di);
     }
   }
