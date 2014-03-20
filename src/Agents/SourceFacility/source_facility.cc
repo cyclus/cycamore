@@ -34,16 +34,16 @@ std::string SourceFacility::schema() {
 
 void SourceFacility::InfileToDb(cyc::InfileTree* qe, cyc::DbInit di) {
   cyc::Facility::InfileToDb(qe, di);
-  qe = qe->Query("agent/" + agent_impl());
+  qe = qe->SubTree("agent/" + agent_impl());
   
   using std::numeric_limits;
-  cyc::InfileTree* output = qe->Query("output");
+  cyc::InfileTree* output = qe->SubTree("output");
 
   std::string recipe = output->GetString("recipe");
   std::string out_commod = output->GetString("outcommodity");
-  double cap = cyc::GetOptionalQuery<double>(output,
-                                             "output_capacity",
-                                             numeric_limits<double>::max());
+  double cap = cyc::OptionalQuery<double>(output,
+                                          "output_capacity",
+                                          numeric_limits<double>::max());
   di.NewDatum("Info")
     ->AddVal("recipe", recipe)
     ->AddVal("out_commod", out_commod)

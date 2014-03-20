@@ -95,15 +95,15 @@ std::string InproReactor::schema() {
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 void InproReactor::InitFrom(cyclus::InfileTree* qe) {
   cyclus::Facility::InitFrom(qe);
-  qe = qe->Query("agent/" + agent_impl());
+  qe = qe->SubTree("agent/" + agent_impl());
 
   using std::string;
   using boost::lexical_cast;
-  cyclus::InfileTree* input = qe->Query("fuel_input");
+  cyclus::InfileTree* input = qe->SubTree("fuel_input");
   set_in_commodity(input->GetString("incommodity"));
   set_in_recipe(input->GetString("inrecipe"));
 
-  cyclus::InfileTree* output = qe->Query("fuel_output");
+  cyclus::InfileTree* output = qe->SubTree("fuel_output");
   set_out_commodity(output->GetString("outcommodity"));
   set_out_recipe(output->GetString("outrecipe"));
 
@@ -112,20 +112,20 @@ void InproReactor::InitFrom(cyclus::InfileTree* qe) {
   set_cycle_length(lexical_cast<int>(data));
 
   int delay =
-      cyclus::GetOptionalQuery<int>(qe, "refueldelay", refuel_delay());
+      cyclus::OptionalQuery<int>(qe, "refueldelay", refuel_delay());
   set_refuel_delay(delay);
 
   data = qe->GetString("incoreloading");
   set_in_core_loading(lexical_cast<double>(data));
 
   double loading = 
-      cyclus::GetOptionalQuery<double>(qe, "outcoreloading", in_core_loading());
+      cyclus::OptionalQuery<double>(qe, "outcoreloading", in_core_loading());
   set_out_core_loading(loading);
 
   data = qe->GetString("batchespercore");
   set_batches_per_core(lexical_cast<int>(data));
 
-  cyclus::InfileTree* commodity = qe->Query("commodity_production");
+  cyclus::InfileTree* commodity = qe->SubTree("commodity_production");
   cyclus::Commodity commod(commodity->GetString("commodity"));
   AddCommodity(commod);
   data = commodity->GetString("capacity");

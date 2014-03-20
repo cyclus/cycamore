@@ -57,30 +57,30 @@ std::string EnrichmentFacility::schema() {
 
 void EnrichmentFacility::InfileToDb(cyc::InfileTree* qe, cyc::DbInit di) {
   cyc::Facility::InfileToDb(qe, di);
-  qe = qe->Query("agent/" + agent_impl());
+  qe = qe->SubTree("agent/" + agent_impl());
 
-  cyc::InfileTree* input = qe->Query("input");
-  cyc::InfileTree* output = qe->Query("output");
+  cyc::InfileTree* input = qe->SubTree("input");
+  cyc::InfileTree* output = qe->SubTree("output");
 
   std::string in_commod = input->GetString("incommodity");
   std::string in_recipe = input->GetString("inrecipe");
   std::string out_commod = output->GetString("outcommodity");
-  double tails_assay = output->GetDouble("tails_assay");
+  double tails_assay = cyc::Query<double>(output, "tails_assay");
 
-  double inv_size = cyc::GetOptionalQuery<double>(input,
-                                                  "inventorysize",
-                                                  std::numeric_limits<double>::max());
+  double inv_size = cyc::OptionalQuery<double>(input,
+                                               "inventorysize",
+                                               std::numeric_limits<double>::max());
 
   cyc::Material::Ptr feed = cyc::Material::CreateUntracked(0,
                                                            context()->GetRecipe(in_recipe));
   double feed_assay = cyc::enrichment::UraniumAssay(feed);
 
-  double swu_cap = cyc::GetOptionalQuery<double>(output,
-                                                 "swu_capacity",
-                                                 std::numeric_limits<double>::max());
-
-  double initial_reserves = cyc::GetOptionalQuery<double>(qe,
-                                                          "initial_condition/reserves_qty",
+  double swu_cap = cyc::OptionalQuery<double>(output,
+                                              "swu_capacity",
+                                              std::numeric_limits<double>::max());
+  
+  double initial_reserves = cyc::OptionalQuery<double>(qe,
+                                                       "initial_condition/reserves_qty",
                                                           0);
   di.NewDatum("Info")
   ->AddVal("in_commod", in_commod)

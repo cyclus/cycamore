@@ -261,29 +261,30 @@ void BatchReactor::InitFrom(cyc::QueryableBackend* b) {
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 void BatchReactor::InfileToDb(cyc::InfileTree* qe, cyc::DbInit di) {
   cyc::Facility::InfileToDb(qe, di);
-  qe = qe->Query("agent/" + agent_impl());
+  qe = qe->SubTree("agent/" + agent_impl());
 
   using cyc::Commodity;
   using cyc::CommodityProducer;
-  using cyc::GetOptionalQuery;
+  using cyc::OptionalQuery;
+  using cyc::Query;
   using cyc::InfileTree;
   using std::string;
 
   crctx_.InfileToDb(qe, di);
 
   // facility data
-  int processtime = qe->GetInt("processtime");
-  int nbatches = qe->GetInt("nbatches");
-  double batchsize = qe->GetDouble("batchsize");
-  int refuel_t = GetOptionalQuery<int>(qe, "refueltime", refuel_time());
-  int preorder_t = GetOptionalQuery<int>(qe, "orderlookahead", preorder_time());
-  int nreload = GetOptionalQuery<int>(qe, "nreload", n_load());
-  int norder = GetOptionalQuery<int>(qe, "norder", n_reserves());
+  int processtime = Query<int>(qe, "processtime");
+  int nbatches = Query<int>(qe, "nbatches");
+  double batchsize = Query<double>(qe, "batchsize");
+  int refuel_t = OptionalQuery<int>(qe, "refueltime", refuel_time());
+  int preorder_t = OptionalQuery<int>(qe, "orderlookahead", preorder_time());
+  int nreload = OptionalQuery<int>(qe, "nreload", n_load());
+  int norder = OptionalQuery<int>(qe, "norder", n_reserves());
 
-  InfileTree* commodity = qe->Query("commodity_production");
+  InfileTree* commodity = qe->SubTree("commodity_production");
   std::string out_commod = commodity->GetString("commodity");
-  double commod_cap = commodity->GetDouble("capacity");
-  double commod_cost = commodity->GetDouble("cost");
+  double commod_cap = Query<double>(commodity, "capacity");
+  double commod_cost = Query<double>(commodity, "cost");
 
   di.NewDatum("Info")
     ->AddVal("processtime", processtime)
@@ -311,10 +312,10 @@ void BatchReactor::InfileToDb(cyc::InfileTree* qe, cyc::DbInit di) {
     std::string recipe;
     std::string commod;
     if (qe->NMatches("initial_condition") > 0) {
-      InfileTree* ic = qe->Query("initial_condition");
+      InfileTree* ic = qe->SubTree("initial_condition");
       if (ic->NMatches(inv_names[i]) > 0) {
-        InfileTree* reserves = ic->Query(inv_names[i]);
-        n = reserves->GetInt("nbatches");
+        InfileTree* reserves = ic->SubTree(inv_names[i]);
+        n = Query<int>(reserves, "nbatches");
         recipe = reserves->GetString("recipe");
         commod = reserves->GetString("commodity");
       }
@@ -331,32 +332,32 @@ void BatchReactor::InfileToDb(cyc::InfileTree* qe, cyc::DbInit di) {
   int nprefs = qe->NMatches("commod_pref");
   std::string c;
   for (int i = 0; i < nprefs; i++) {
-    InfileTree* cp = qe->Query("commod_pref", i);
+    InfileTree* cp = qe->SubTree("commod_pref", i);
     di.NewDatum("CommodPrefs")
       ->AddVal("incommodity", cp->GetString("incommodity"))
-      ->AddVal("preference", cp->GetDouble("preference"))
+      ->AddVal("preference", Query<double>(cp, "preference"))
       ->Record();
   }
 
   // pref changes
   int nchanges = qe->NMatches("pref_change");
   for (int i = 0; i < nchanges; i++) {
-    InfileTree* cp = qe->Query("pref_change", i);
+    InfileTree* cp = qe->SubTree("pref_change", i);
     di.NewDatum("PrefChanges")
       ->AddVal("incommodity", cp->GetString("incommodity"))
-      ->AddVal("new_pref", cp->GetDouble("new_pref"))
-      ->AddVal("time", cp->GetInt("time"))
+      ->AddVal("new_pref", Query<double>(cp, "new_pref"))
+      ->AddVal("time", Query<int>(cp, "time"))
       ->Record();
   }
 
   // recipe changes
   nchanges = qe->NMatches("recipe_change");
   for (int i = 0; i < nchanges; i++) {
-    InfileTree* cp = qe->Query("recipe_change", i);
+    InfileTree* cp = qe->SubTree("recipe_change", i);
     di.NewDatum("RecipeChanges")
       ->AddVal("incommodity", cp->GetString("incommodity"))
       ->AddVal("new_recipe", cp->GetString("new_recipe"))
-      ->AddVal("time", cp->GetInt("time"))
+      ->AddVal("time", Query<int>(cp, "time"))
       ->Record();
   }
 }

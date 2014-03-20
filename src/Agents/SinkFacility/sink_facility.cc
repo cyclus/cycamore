@@ -40,12 +40,12 @@ std::string SinkFacility::schema() {
 
 void SinkFacility::InfileToDb(cyc::InfileTree* qe, cyc::DbInit di) {
   cyc::Facility::InfileToDb(qe, di);
-  qe = qe->Query("agent/" + agent_impl());
+  qe = qe->SubTree("agent/" + agent_impl());
   
   using std::numeric_limits;
-  cyc::InfileTree* input = qe->Query("input");
+  cyc::InfileTree* input = qe->SubTree("input");
 
-  cyc::InfileTree* commodities = input->Query("commodities");
+  cyc::InfileTree* commodities = input->SubTree("commodities");
   int n = commodities->NMatches("incommodity");
   for (int i = 0; i < n; i++) {
     di.NewDatum("InCommods")
@@ -53,12 +53,12 @@ void SinkFacility::InfileToDb(cyc::InfileTree* qe, cyc::DbInit di) {
       ->Record();
   }
 
-  double cap = cyc::GetOptionalQuery<double>(input,
-                                             "input_capacity",
-                                             numeric_limits<double>::max());
-  double size = cyc::GetOptionalQuery<double>(input,
-                                              "inventorysize",
-                                              numeric_limits<double>::max());
+  double cap = cyc::OptionalQuery<double>(input,
+                                          "input_capacity",
+                                          numeric_limits<double>::max());
+  double size = cyc::OptionalQuery<double>(input,
+                                           "inventorysize",
+                                           numeric_limits<double>::max());
   di.NewDatum("Info")
     ->AddVal("capacity", cap)
     ->AddVal("commod_price", 0)
