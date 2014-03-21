@@ -1,13 +1,16 @@
-USE_CYCLUS("BatchReactor" "batch_reactor")
+SET(LIB_ROOT "BatchReactor")
+SET(SRC_ROOT "batch_reactor") 
+
+USE_CYCLUS(${LIB_ROOT} ${SRC_ROOT})
 
 SET(
   CYCAMORE_LIBRARIES ${CYCAMORE_LIBRARIES}
-  ${LibBatchReactor}
+  ${LIB_ROOT}_LIB
   PARENT_SCOPE
   )
 
 SET(
   TestSource ${TestSource}
-  ${BatchReactorTestSource} 
+  ${${LIB_ROOT}_TEST_CC}
   PARENT_SCOPE
   )

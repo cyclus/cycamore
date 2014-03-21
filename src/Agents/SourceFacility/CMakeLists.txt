@@ -1,13 +1,16 @@
-USE_CYCLUS("SourceFacility" "source_facility")
+SET(LIB_ROOT "SourceFacility")
+SET(SRC_ROOT "source_facility") 
+
+USE_CYCLUS(${LIB_ROOT} ${SRC_ROOT})
 
 SET(
   CYCAMORE_LIBRARIES ${CYCAMORE_LIBRARIES}
-  ${LibSourceFacility}
+  ${LIB_ROOT}_LIB
   PARENT_SCOPE
   )
 
 SET(
   TestSource ${TestSource}
-  ${SourceFacilityTestSource} 
+  ${${LIB_ROOT}_TEST_CC}
   PARENT_SCOPE
   )

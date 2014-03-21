@@ -1,13 +1,16 @@
-USE_CYCLUS("SinkFacility" "sink_facility")
+SET(LIB_ROOT "SinkFacility")
+SET(SRC_ROOT "sink_facility") 
+
+USE_CYCLUS(${LIB_ROOT} ${SRC_ROOT})
 
 SET(
   CYCAMORE_LIBRARIES ${CYCAMORE_LIBRARIES}
-  ${LibSinkFacility}
+  ${LIB_ROOT}_LIB
   PARENT_SCOPE
   )
 
 SET(
   TestSource ${TestSource}
-  ${SinkFacilityTestSource} 
+  ${${LIB_ROOT}_TEST_CC}
   PARENT_SCOPE
   )

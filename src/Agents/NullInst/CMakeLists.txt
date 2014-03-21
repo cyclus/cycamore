@@ -1,13 +1,16 @@
-USE_CYCLUS("NullInst" "null_inst")
+SET(LIB_ROOT "NullInst")
+SET(SRC_ROOT "null_inst") 
+
+USE_CYCLUS(${LIB_ROOT} ${SRC_ROOT})
 
 SET(
   CYCAMORE_LIBRARIES ${CYCAMORE_LIBRARIES}
-  ${LibNullInst}
+  ${LIB_ROOT}_LIB
   PARENT_SCOPE
   )
 
 SET(
   TestSource ${TestSource}
-  ${NullInstTestSource} 
+  ${${LIB_ROOT}_TEST_CC}
   PARENT_SCOPE
   )

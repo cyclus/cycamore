@@ -1,13 +1,16 @@
-USE_CYCLUS("DeployInst" "deploy_inst")
+SET(LIB_ROOT "DeployInst")
+SET(SRC_ROOT "deploy_inst") 
+
+USE_CYCLUS(${LIB_ROOT} ${SRC_ROOT})
 
 SET(
   CYCAMORE_LIBRARIES ${CYCAMORE_LIBRARIES}
-  ${LibDeployInst}
+  ${LIB_ROOT}_LIB
   PARENT_SCOPE
   )
 
 SET(
   TestSource ${TestSource}
-  ${DeployInstTestSource} 
+  ${${LIB_ROOT}_TEST_CC}
   PARENT_SCOPE
   )
