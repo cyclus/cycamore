@@ -183,8 +183,8 @@ MACRO(USE_CYCLUS lib_root src_root)
       )
 
     ADD_LIBRARY(${lib_root}Tests ${${lib_root}_TEST_CC})
-    TARGET_LINK_LIBRARIES(${lib_root}Tests dl cycluscore ${CYCLUS_GTEST_LIBRARIES})
-    SET_TARGET_PROPERTIES(${lib_root}Tests PROPERTIES LINKER_LANGUAGE C)
+    TARGET_LINK_LIBRARIES(${lib_root}Tests dl ${LIBS} ${CYCLUS_GTEST_LIBRARIES})
+    SET_TARGET_PROPERTIES(${lib_root}Tests PROPERTIES LINKER_LANGUAGE CXX)
     SET(
       "${lib_root}_TEST_LIB"
       "${lib_root}Tests"
