@@ -90,7 +90,7 @@ MACRO(USE_CYCLUS lib_root src_root)
 
   # add library
   ADD_LIBRARY(${lib_root} ${CCOUT})
-  TARGET_LINK_LIBRARIES(${lib_root} dl cycluscore)
+  TARGET_LINK_LIBRARIES(${lib_root} dl ${LIBS})
   SET(CYCLUS_LIBRARIES ${CYCLUS_LIBRARIES} ${lib_root})
   ADD_DEPENDENCIES(${lib_root} ${HIN} ${HOUT} ${CCIN} ${CCOUT})
 
