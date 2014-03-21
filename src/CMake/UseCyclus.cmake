@@ -181,7 +181,6 @@ MACRO(USE_CYCLUS lib_root src_root)
       "${CCTOUT}"
       CACHE INTERNAL "Agent test source" FORCE
       )
-    MESSAGE("Use Test Src ${lib_root}_Test_CC: ${${lib_root}_Test_CC}")
 
     ADD_LIBRARY(${lib_root}Tests ${${lib_root}_Test_CC})
     TARGET_LINK_LIBRARIES(${lib_root}Tests dl cycluscore ${CYCLUS_GTEST_LIBRARIES})
