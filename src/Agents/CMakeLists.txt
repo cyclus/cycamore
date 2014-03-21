@@ -16,10 +16,8 @@ ADD_SUBDIRECTORY(SourceFacility)
 
 ADD_SUBDIRECTORY(DeployInst)
 # #ADD_SUBDIRECTORY(ManagerInst)
-ADD_SUBDIRECTORY(NullInst)
 
 # #ADD_SUBDIRECTORY(GrowthRegion)
-ADD_SUBDIRECTORY(NullRegion)
 
 SET( TestSource ${TestSource} PARENT_SCOPE)
 

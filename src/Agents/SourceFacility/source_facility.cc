@@ -8,8 +8,8 @@
 namespace cycamore {
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-SourceFacility::SourceFacility(cyc::Context* ctx)
-  : cyc::Facility(ctx),
+SourceFacility::SourceFacility(cyclus::Context* ctx)
+  : cyclus::Facility(ctx),
     out_commod_(""),
     recipe_name_(""),
     capacity_(std::numeric_limits<double>::max()) {}
@@ -17,68 +17,26 @@ SourceFacility::SourceFacility(cyc::Context* ctx)
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 SourceFacility::~SourceFacility() {}
 
-//- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-std::string SourceFacility::schema() {
-  return
-    "  <element name =\"output\">          \n"
-    "    <ref name=\"outcommodity\"/>      \n"
-    "    <optional>                        \n"
-    "      <ref name=\"output_capacity\"/> \n"
-    "    </optional>                       \n"
-    "    <element name=\"recipe\">         \n"
-    "      <data type=\"string\"/>         \n"
-    "    </element>                        \n"
-    "  </element>                          \n";
+#pragma cyclus def schema cycamore::SourceFacility
+
+#pragma cyclus def infiletodb cycamore::SourceFacility
+
+
+
+void SourceFacility::InitFrom(cyclus::QueryableBackend* b) {
+  #pragma cyclus impl initfromdb cycamore::SourceFacility
+
+  cyclus::Commodity commod(out_commod_);
+  cyclus::CommodityProducer::AddCommodity(commod);
+  cyclus::CommodityProducer::SetCapacity(commod, capacity_);
 }
 
-
-void SourceFacility::InfileToDb(cyc::InfileTree* qe, cyc::DbInit di) {
-  cyc::Facility::InfileToDb(qe, di);
-  qe = qe->SubTree("agent/" + agent_impl());
-  
-  using std::numeric_limits;
-  cyc::InfileTree* output = qe->SubTree("output");
-
-  std::string recipe = output->GetString("recipe");
-  std::string out_commod = output->GetString("outcommodity");
-  double cap = cyc::OptionalQuery<double>(output,
-                                          "output_capacity",
-                                          numeric_limits<double>::max());
-  di.NewDatum("Info")
-    ->AddVal("recipe", recipe)
-    ->AddVal("out_commod", out_commod)
-    ->AddVal("capacity", cap)
-    ->AddVal("curr_capacity", cap)
-    ->Record();
-}
-
-void SourceFacility::InitFrom(cyc::QueryableBackend* b) {
-  cyc::Facility::InitFrom(b);
-  cyc::QueryResult qr = b->Query("Info", NULL);
-  recipe_name_ = qr.GetVal<std::string>("recipe");
-  out_commod_ = qr.GetVal<std::string>("out_commod");
-  capacity_ = qr.GetVal<double>("capacity");
-  current_capacity_ = qr.GetVal<double>("curr_capacity");
-
-  cyc::Commodity commod(out_commod_);
-  cyc::CommodityProducer::AddCommodity(commod);
-  cyc::CommodityProducer::SetCapacity(commod, capacity_);
-}
-
-void SourceFacility::Snapshot(cyc::DbInit di) {
-  cyc::Facility::Snapshot(di);
-  di.NewDatum("Info")
-    ->AddVal("recipe", recipe_name_)
-    ->AddVal("out_commod", out_commod_)
-    ->AddVal("capacity", capacity_)
-    ->AddVal("curr_capacity", current_capacity_)
-    ->Record();
-}
+#pragma cyclus def snapshot cycamore::SourceFacility
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 std::string SourceFacility::str() {
   std::stringstream ss;
-  ss << cyc::Facility::str()
+  ss << cyclus::Facility::str()
      << " supplies commodity '"
      << out_commod_ << "' with recipe '"
      << recipe_name_ << "' at a capacity of "
@@ -86,56 +44,47 @@ std::string SourceFacility::str() {
   return ss.str();
 }
 
-//- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-cyc::Agent* SourceFacility::Clone() {
-  SourceFacility* m = new SourceFacility(context());
-  m->InitFrom(this);
-  return m;
-}
+#pragma cyclus def clone cycamore::SourceFacility
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 void SourceFacility::InitFrom(SourceFacility* m) {
-  Facility::InitFrom(m);
-  commodity(m->commodity());
-  capacity(m->capacity());
-  recipe(m->recipe());
+  #pragma cyclus impl initfromcopy cycamore::SourceFacility
   CopyProducedCommoditiesFrom(m);
-  current_capacity_ = capacity();  
 }
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 void SourceFacility::Tick(int time) {
-  LOG(cyc::LEV_INFO3, "SrcFac") << prototype() << " is ticking {";
-  LOG(cyc::LEV_INFO4, "SrcFac") << "will offer " << capacity_
+  LOG(cyclus::LEV_INFO3, "SrcFac") << prototype() << " is ticking {";
+  LOG(cyclus::LEV_INFO4, "SrcFac") << "will offer " << capacity_
                                    << " kg of "
                                    << out_commod_ << ".";
-  LOG(cyc::LEV_INFO3, "SrcFac") << "}";
+  LOG(cyclus::LEV_INFO3, "SrcFac") << "}";
   current_capacity_ = capacity_; // reset capacity
 }
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 void SourceFacility::Tock(int time) {
-  LOG(cyc::LEV_INFO3, "SrcFac") << prototype() << " is tocking {";
-  LOG(cyc::LEV_INFO3, "SrcFac") << "}";
+  LOG(cyclus::LEV_INFO3, "SrcFac") << prototype() << " is tocking {";
+  LOG(cyclus::LEV_INFO3, "SrcFac") << "}";
 }
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-cyc::Material::Ptr SourceFacility::GetOffer(
-    const cyc::Material::Ptr target) const {
-  using cyc::Material;
+cyclus::Material::Ptr SourceFacility::GetOffer(
+    const cyclus::Material::Ptr target) const {
+  using cyclus::Material;
   double qty = std::min(target->quantity(), capacity_);
   return Material::CreateUntracked(qty, context()->GetRecipe(recipe_name_));
 }
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-std::set<cyc::BidPortfolio<cyc::Material>::Ptr>
+std::set<cyclus::BidPortfolio<cyclus::Material>::Ptr>
 SourceFacility::GetMatlBids(
-    const cyc::CommodMap<cyc::Material>::type& commod_requests) {
-  using cyc::Bid;
-  using cyc::BidPortfolio;
-  using cyc::CapacityConstraint;
-  using cyc::Material;
-  using cyc::Request;
+    const cyclus::CommodMap<cyclus::Material>::type& commod_requests) {
+  using cyclus::Bid;
+  using cyclus::BidPortfolio;
+  using cyclus::CapacityConstraint;
+  using cyclus::Material;
+  using cyclus::Request;
   
   std::set<BidPortfolio<Material>::Ptr> ports;
   
@@ -161,14 +110,14 @@ SourceFacility::GetMatlBids(
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 void SourceFacility::GetMatlTrades(
-    const std::vector< cyc::Trade<cyc::Material> >& trades,
-    std::vector<std::pair<cyc::Trade<cyc::Material>,
-                          cyc::Material::Ptr> >& responses) {
-  using cyc::Material;
-  using cyc::Trade;
+    const std::vector< cyclus::Trade<cyclus::Material> >& trades,
+    std::vector<std::pair<cyclus::Trade<cyclus::Material>,
+                          cyclus::Material::Ptr> >& responses) {
+  using cyclus::Material;
+  using cyclus::Trade;
 
   double provided = 0;
-  std::vector< cyc::Trade<cyc::Material> >::const_iterator it;
+  std::vector< cyclus::Trade<cyclus::Material> >::const_iterator it;
   for (it = trades.begin(); it != trades.end(); ++it) {
     double qty = it->amt;
     current_capacity_ -= qty;
@@ -178,20 +127,20 @@ void SourceFacility::GetMatlTrades(
                                               qty,
                                               context()->GetRecipe(recipe_name_));
     responses.push_back(std::make_pair(*it, response));
-    LOG(cyc::LEV_INFO5, "SrcFac") << prototype() << " just received an order"
+    LOG(cyclus::LEV_INFO5, "SrcFac") << prototype() << " just received an order"
                                      << " for " << qty
                                      << " of " << out_commod_;
   }
-  if (cyc::IsNegative(current_capacity_)) {
+  if (cyclus::IsNegative(current_capacity_)) {
     std::stringstream ss;
     ss << "is being asked to provide " << provided
        << " but its capacity is " << capacity_ << "."; 
-    throw cyc::ValueError(Agent::InformErrorMsg(ss.str()));
+    throw cyclus::ValueError(Agent::InformErrorMsg(ss.str()));
   }
 }
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-extern "C" cyc::Agent* ConstructSourceFacility(cyc::Context* ctx) {
+extern "C" cyclus::Agent* ConstructSourceFacility(cyclus::Context* ctx) {
   return new SourceFacility(ctx);
 }
 
