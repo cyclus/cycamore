@@ -33,6 +33,10 @@ void SourceFacility::InitFrom(cyclus::QueryableBackend* b) {
 
 #pragma cyclus def snapshot cycamore::SourceFacility
 
+#pragma cyclus def snapshotinv cycamore::SourceFacility
+
+#pragma cyclus def initinv cycamore::SourceFacility
+
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 std::string SourceFacility::str() {
   std::stringstream ss;
