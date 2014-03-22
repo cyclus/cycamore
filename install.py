@@ -57,6 +57,13 @@ def install_cycamore(args):
     make_cmd += ['install']
     rtn = subprocess.check_call(make_cmd, cwd=absexpanduser(args.build_dir), shell=(os.name=='nt'))
 
+def uninstall_cycamore(args):
+    makefile = os.path.join(args.build_dir, 'Makefile')
+    if not os.path.exists(args.build_dir) or not os.path.exists(makefile):
+        sys.exist("May not uninstall cycamore since it has not yet been built.")
+    rtn = subprocess.check_call(['make', 'uninstall'], cwd=args.build_dir,
+                                shell=(os.name == 'nt'))
+
 def main():
     localdir = absexpanduser('~/.local')
 
@@ -67,6 +74,9 @@ def main():
 
     build_dir = 'where to place the build directory'
     parser.add_argument('--build_dir', help=build_dir, default='build')
+
+    uninst = 'uninstall'
+    parser.add_argument('--uninstall', action='store_true', help=uninst, default=False)
 
     replace = 'whether or not to remove the build directory if it exists'
     parser.add_argument('--replace', type=bool, help=replace, default=False)
@@ -91,7 +101,11 @@ def main():
     parser.add_argument('--cmake_prefix_path', help=cmake_prefix_path)
 
 
-    install_cycamore(parser.parse_args())
+    args = parser.parse_args()
+    if args.uninstall:
+        uninstall_cyclus(args)
+    else:
+        install_cycamore(args)
 
 if __name__ == "__main__":
     main()

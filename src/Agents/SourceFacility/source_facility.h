@@ -97,7 +97,7 @@ class SourceFacility : public cyclus::Facility,
 
   virtual ~SourceFacility();
 
-  #pragma cyclus
+  #pragma cyclus decl
 
   /**
      Print information about this agent
