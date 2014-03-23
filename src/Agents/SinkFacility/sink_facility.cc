@@ -10,8 +10,8 @@
 namespace cycamore {
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-SinkFacility::SinkFacility(cyc::Context* ctx)
-  : cyc::Facility(ctx),
+SinkFacility::SinkFacility(cyclus::Context* ctx)
+  : cyclus::Facility(ctx),
     commod_price_(0),
     capacity_(std::numeric_limits<double>::max()) {
   SetMaxInventorySize(std::numeric_limits<double>::max());
@@ -32,7 +32,7 @@ SinkFacility::~SinkFacility() {}
 
 #pragma cyclus def clone cycamore::SinkFacility
 
-void SinkFacility::InitFrom(cyc::QueryableBackend* b) {
+void SinkFacility::InitFrom(cyclus::QueryableBackend* b) {
   #pragma cyclus impl initfromdb cycamore::SinkFacility
   SetMaxInventorySize(qr.GetVal<double>("max_inv_size_"));
 }
@@ -47,7 +47,7 @@ std::string SinkFacility::str() {
   using std::string;
   using std::vector;
   std::stringstream ss;
-  ss << cyc::Facility::str();
+  ss << cyclus::Facility::str();
 
   string msg = "";
   msg += "accepts commodities ";
@@ -63,19 +63,19 @@ std::string SinkFacility::str() {
 }
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - 
-std::set<cyc::RequestPortfolio<cyc::Material>::Ptr>
+std::set<cyclus::RequestPortfolio<cyclus::Material>::Ptr>
 SinkFacility::GetMatlRequests() {
-  using cyc::CapacityConstraint;
-  using cyc::Material;
-  using cyc::RequestPortfolio;
-  using cyc::Request;
+  using cyclus::CapacityConstraint;
+  using cyclus::Material;
+  using cyclus::RequestPortfolio;
+  using cyclus::Request;
   
   std::set<RequestPortfolio<Material>::Ptr> ports;
   RequestPortfolio<Material>::Ptr port(new RequestPortfolio<Material>());
   double amt = RequestAmt();
-  Material::Ptr mat = cyc::NewBlankMaterial(amt);
+  Material::Ptr mat = cyclus::NewBlankMaterial(amt);
 
-  if (amt > cyc::eps()) {
+  if (amt > cyclus::eps()) {
     CapacityConstraint<Material> cc(amt);
     port->AddConstraint(cc);
     
@@ -91,19 +91,19 @@ SinkFacility::GetMatlRequests() {
 }
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - 
-std::set<cyc::RequestPortfolio<cyc::Product>::Ptr>
+std::set<cyclus::RequestPortfolio<cyclus::Product>::Ptr>
 SinkFacility::GetGenRsrcRequests() {
-  using cyc::CapacityConstraint;
-  using cyc::Product;
-  using cyc::RequestPortfolio;
-  using cyc::Request;
+  using cyclus::CapacityConstraint;
+  using cyclus::Product;
+  using cyclus::RequestPortfolio;
+  using cyclus::Request;
   
   std::set<RequestPortfolio<Product>::Ptr> ports;
   RequestPortfolio<Product>::Ptr
       port(new RequestPortfolio<Product>());
   double amt = RequestAmt();
 
-  if (amt > cyc::eps()) {
+  if (amt > cyclus::eps()) {
     CapacityConstraint<Product> cc(amt);
     port->AddConstraint(cc);
     
@@ -123,10 +123,10 @@ SinkFacility::GetGenRsrcRequests() {
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - 
 void SinkFacility::AcceptMatlTrades(
-    const std::vector< std::pair<cyc::Trade<cyc::Material>,
-                                 cyc::Material::Ptr> >& responses) {
-  std::vector< std::pair<cyc::Trade<cyc::Material>,
-                         cyc::Material::Ptr> >::const_iterator it;
+    const std::vector< std::pair<cyclus::Trade<cyclus::Material>,
+                                 cyclus::Material::Ptr> >& responses) {
+  std::vector< std::pair<cyclus::Trade<cyclus::Material>,
+                         cyclus::Material::Ptr> >::const_iterator it;
   for (it = responses.begin(); it != responses.end(); ++it) {
     inventory_.Push(it->second);    
   }
@@ -134,10 +134,10 @@ void SinkFacility::AcceptMatlTrades(
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - 
 void SinkFacility::AcceptGenRsrcTrades(
-    const std::vector< std::pair<cyc::Trade<cyc::Product>,
-                                 cyc::Product::Ptr> >& responses) {
-  std::vector< std::pair<cyc::Trade<cyc::Product>,
-                         cyc::Product::Ptr> >::const_iterator it;
+    const std::vector< std::pair<cyclus::Trade<cyclus::Product>,
+                                 cyclus::Product::Ptr> >& responses) {
+  std::vector< std::pair<cyclus::Trade<cyclus::Product>,
+                         cyclus::Product::Ptr> >::const_iterator it;
   for (it = responses.begin(); it != responses.end(); ++it) {
     inventory_.Push(it->second);    
   }
@@ -147,37 +147,37 @@ void SinkFacility::AcceptGenRsrcTrades(
 void SinkFacility::Tick(int time) {
   using std::string;
   using std::vector;
-  LOG(cyc::LEV_INFO3, "SnkFac") << prototype() << " is ticking {";
+  LOG(cyclus::LEV_INFO3, "SnkFac") << prototype() << " is ticking {";
 
   double requestAmt = RequestAmt();
   // inform the simulation about what the sink facility will be requesting
-  if (requestAmt > cyc::eps()) {
+  if (requestAmt > cyclus::eps()) {
     for (vector<string>::iterator commod = in_commods_.begin();
          commod != in_commods_.end();
          commod++) {
-      LOG(cyc::LEV_INFO4, "SnkFac") << " will request " << requestAmt
+      LOG(cyclus::LEV_INFO4, "SnkFac") << " will request " << requestAmt
                                        << " kg of " << *commod << ".";
     }
   }
-  LOG(cyc::LEV_INFO3, "SnkFac") << "}";
+  LOG(cyclus::LEV_INFO3, "SnkFac") << "}";
 }
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 void SinkFacility::Tock(int time) {
-  LOG(cyc::LEV_INFO3, "SnkFac") << prototype() << " is tocking {";
+  LOG(cyclus::LEV_INFO3, "SnkFac") << prototype() << " is tocking {";
 
   // On the tock, the sink facility doesn't really do much.
   // Maybe someday it will record things.
   // For now, lets just print out what we have at each timestep.
-  LOG(cyc::LEV_INFO4, "SnkFac") << "SinkFacility " << this->id()
+  LOG(cyclus::LEV_INFO4, "SnkFac") << "SinkFacility " << this->id()
                                    << " is holding " << inventory_.quantity()
                                    << " units of material at the close of month "
                                    << time << ".";
-  LOG(cyc::LEV_INFO3, "SnkFac") << "}";
+  LOG(cyclus::LEV_INFO3, "SnkFac") << "}";
 }
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-extern "C" cyc::Agent* ConstructSinkFacility(cyc::Context* ctx) {
+extern "C" cyclus::Agent* ConstructSinkFacility(cyclus::Context* ctx) {
   return new SinkFacility(ctx);
 }
 } // namespace cycamore
