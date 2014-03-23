@@ -6,24 +6,22 @@
 
 #include "cyclus.h"
 
-namespace cyc = cyclus;
-
 namespace cycamore {
   
 /// @class SWUConverter
 ///
 /// @brief The SWUConverter is a simple Converter class for material to
 /// determine the amount of SWU required for their proposed enrichment
-class SWUConverter : public cyc::Converter<cyc::Material> { 
+class SWUConverter : public cyclus::Converter<cyclus::Material> { 
  public:
   SWUConverter(double feed, double tails) : feed_(feed), tails_(tails) {}
   virtual ~SWUConverter() {}
 
   /// @brief provides a conversion for the SWU required
-  inline virtual double convert(cyc::Material::Ptr m) {
-    cyc::enrichment::Assays a(feed_,
-                                 cyc::enrichment::UraniumAssay(m), tails_);
-    return cyc::enrichment::SwuRequired(m->quantity(), a);
+  inline virtual double convert(cyclus::Material::Ptr m) {
+    cyclus::enrichment::Assays a(feed_,
+                                 cyclus::enrichment::UraniumAssay(m), tails_);
+    return cyclus::enrichment::SwuRequired(m->quantity(), a);
   }
 
   /// @returns true if Converter is a SWUConverter and feed and tails equal
@@ -43,16 +41,16 @@ class SWUConverter : public cyc::Converter<cyc::Material> {
 /// @brief The NatUConverter is a simple Converter class for material to
 /// determine the amount of natural uranium required for their proposed
 /// enrichment
-class NatUConverter : public cyc::Converter<cyc::Material> { 
+class NatUConverter : public cyclus::Converter<cyclus::Material> { 
  public:
   NatUConverter(double feed, double tails) : feed_(feed), tails_(tails) {}
   virtual ~NatUConverter() {}
 
   /// @brief provides a conversion for the amount of natural Uranium required
-  inline virtual double convert(cyc::Material::Ptr m) {
-    cyc::enrichment::Assays a(feed_,
-                                 cyc::enrichment::UraniumAssay(m), tails_);
-    return cyc::enrichment::FeedQty(m->quantity(), a);
+  inline virtual double convert(cyclus::Material::Ptr m) {
+    cyclus::enrichment::Assays a(feed_,
+                                 cyclus::enrichment::UraniumAssay(m), tails_);
+    return cyclus::enrichment::FeedQty(m->quantity(), a);
   }
 
   /// @returns true if Converter is a NatUConverter and feed and tails equal
@@ -77,8 +75,8 @@ class NatUConverter : public cyc::Converter<cyc::Material> {
    natural uranium inventory constraint and its SWU capacity constraint.
 
    @section requests Requests   
-   The EnrichmentFacility will request from the cyc::ResourceExchange a
-   cyc::Material whose quantity is its remaining inventory capacity and whose
+   The EnrichmentFacility will request from the cyclus::ResourceExchange a
+   cyclus::Material whose quantity is its remaining inventory capacity and whose
    composition is that of its input recipe.
 
    @section acctrade Accepting Trades
@@ -100,8 +98,8 @@ class NatUConverter : public cyc::Converter<cyc::Material> {
    
    @section gotchas Gotchas
    #. In its current form, the EnrichmentFacility can only accept
-   cyc::Material having the composition of its input recipe. If a
-   cyc::Material of a different composition is sent to it, an exception will
+   cyclus::Material having the composition of its input recipe. If a
+   cyclus::Material of a different composition is sent to it, an exception will
    be thrown.
 
    #. During the trading phase, an exception will be thrown if either the
@@ -115,14 +113,14 @@ class NatUConverter : public cyc::Converter<cyc::Material> {
    How would I go about doing so? I'd likely develop an EnrichmentBuffer-type
    class that can be queried as to its SWU and natural Uranium capacity.
  */
-class EnrichmentFacility : public cyc::Facility {
+class EnrichmentFacility : public cyclus::Facility {
  public:
   /* --- Module Members --- */
   /**
      Constructor for the EnrichmentFacility class
      @param ctx the cyclus context for access to simulation-wide parameters
    */
-  EnrichmentFacility(cyc::Context* ctx);
+  EnrichmentFacility(cyclus::Context* ctx);
 
   /**
      Destructor for the EnrichmentFacility class
@@ -139,7 +137,7 @@ class EnrichmentFacility : public cyc::Facility {
 
   /* --- Facility Members --- */
   /// perform module-specific tasks when entering the simulation 
-  virtual void Build(cyc::Agent* parent);
+  virtual void Build(cyclus::Agent* parent);
   /* --- */
   
   /* --- Agent Members --- */
@@ -161,20 +159,20 @@ class EnrichmentFacility : public cyc::Facility {
 
   /// @brief The EnrichmentFacility request Materials of its given
   /// commodity. 
-  virtual std::set<cyc::RequestPortfolio<cyc::Material>::Ptr>
+  virtual std::set<cyclus::RequestPortfolio<cyclus::Material>::Ptr>
       GetMatlRequests();
 
   /// @brief The EnrichmentFacility place accepted trade Materials in their
   /// Inventory
   virtual void AcceptMatlTrades(
-      const std::vector< std::pair<cyc::Trade<cyc::Material>,
-      cyc::Material::Ptr> >& responses);
+      const std::vector< std::pair<cyclus::Trade<cyclus::Material>,
+      cyclus::Material::Ptr> >& responses);
   
   /// @brief Responds to each request for this facility's commodity.  If a given
   /// request is more than this facility's inventory or SWU capacity, it will
   /// offer its minimum of its capacities.
-  virtual std::set<cyc::BidPortfolio<cyc::Material>::Ptr>
-      GetMatlBids(const cyc::CommodMap<cyc::Material>::type&
+  virtual std::set<cyclus::BidPortfolio<cyclus::Material>::Ptr>
+      GetMatlBids(const cyclus::CommodMap<cyclus::Material>::type&
                   commod_requests);
   
   /// @brief respond to each trade with a material enriched to the appropriate
@@ -183,9 +181,9 @@ class EnrichmentFacility : public cyc::Facility {
   /// @param trades all trades in which this trader is the supplier
   /// @param responses a container to populate with responses to each trade
   virtual void GetMatlTrades(
-    const std::vector< cyc::Trade<cyc::Material> >& trades,
-    std::vector<std::pair<cyc::Trade<cyc::Material>,
-    cyc::Material::Ptr> >& responses);
+    const std::vector< cyclus::Trade<cyclus::Material> >& trades,
+    std::vector<std::pair<cyclus::Trade<cyclus::Material>,
+    cyclus::Material::Ptr> >& responses);
   /* --- */
 
   /* --- EnrichmentFacility Members --- */
@@ -195,7 +193,7 @@ class EnrichmentFacility : public cyc::Facility {
      U235-to-U238 ratio less than this facility's tails_assay().
      @return true if the above description is met by the material
   */
-  bool ValidReq(const cyc::Material::Ptr mat);
+  bool ValidReq(const cyclus::Material::Ptr mat);
 
   inline void in_commodity(std::string in_commod) { in_commod_ = in_commod; }
 
@@ -246,13 +244,13 @@ class EnrichmentFacility : public cyc::Facility {
      @brief adds a material into the natural uranium inventory
      @throws if the material is not the same composition as the in_recipe
    */
-  void AddMat_(cyc::Material::Ptr mat);
+  void AddMat_(cyclus::Material::Ptr mat);
 
   /**
      @brief generates a request for this facility given its current state. The
      quantity of the material will be equal to the remaining inventory size.
    */
-  cyc::Material::Ptr Request_();
+  cyclus::Material::Ptr Request_();
   
   /**
      @brief Generates a material offer for a given request. The response
@@ -262,14 +260,14 @@ class EnrichmentFacility : public cyc::Facility {
 
      @param req the requested material being responded to
    */
-  cyc::Material::Ptr Offer_(cyc::Material::Ptr req);
+  cyclus::Material::Ptr Offer_(cyclus::Material::Ptr req);
 
   /**
    */
-  cyc::Material::Ptr Enrich_(cyc::Material::Ptr mat, double qty);
+  cyclus::Material::Ptr Enrich_(cyclus::Material::Ptr mat, double qty);
 
   /**
-     @brief records and enrichment with the cyc::Recorder
+     @brief records and enrichment with the cyclus::Recorder
    */
   void RecordEnrichment_(double natural_u, double swu);
 
@@ -292,7 +290,7 @@ class EnrichmentFacility : public cyc::Facility {
   double max_inv_size_;
   
   double current_swu_capacity_;
-  cyc::ResourceBuff inventory_; // of natl u
+  cyclus::ResourceBuff inventory_; // of natl u
   
   friend class EnrichmentFacilityTest;
 /* --- */
