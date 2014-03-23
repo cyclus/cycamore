@@ -25,138 +25,26 @@ EnrichmentFacility::EnrichmentFacility(cyc::Context* ctx)
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 EnrichmentFacility::~EnrichmentFacility() {}
 
-//- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-std::string EnrichmentFacility::schema() {
-  return
-    "  <element name =\"input\">                  \n"
-    "    <ref name=\"incommodity\"/>              \n"
-    "    <ref name=\"inrecipe\"/>                 \n"
-    "    <optional>                               \n"
-    "      <ref name=\"inventorysize\"/>          \n"
-    "    </optional>                              \n"
-    "  </element>                                 \n"
-    "  <element name =\"output\">                 \n"
-    "    <ref name=\"outcommodity\"/>             \n"
-    "     <element name =\"tails_assay\">         \n"
-    "       <data type=\"double\"/>               \n"
-    "     </element>                              \n"
-    "    <optional>                               \n"
-    "      <element name =\"swu_capacity\">       \n"
-    "        <data type=\"double\"/>              \n"
-    "      </element>                             \n"
-    "    </optional>                              \n"
-    "  </element>                                 \n"
-    "  <optional>                                 \n"
-    "    <element name =\"initial_condition\">    \n"
-    "       <element name =\"reserves_qty\">      \n"
-    "         <data type=\"double\"/>             \n"
-    "       </element>                            \n"
-    "    </element>                               \n"
-    "  </optional>                                \n";
-}
+#pragma cyclus def schema cycamore::EnrichmentFacility
 
-void EnrichmentFacility::InfileToDb(cyc::InfileTree* qe, cyc::DbInit di) {
-  cyc::Facility::InfileToDb(qe, di);
-  qe = qe->SubTree("agent/" + agent_impl());
+#pragma cyclus def infiletodb cycamore::EnrichmentFacility
 
-  cyc::InfileTree* input = qe->SubTree("input");
-  cyc::InfileTree* output = qe->SubTree("output");
+#pragma cyclus def snapshot cycamore::EnrichmentFacility
 
-  std::string in_commod = input->GetString("incommodity");
-  std::string in_recipe = input->GetString("inrecipe");
-  std::string out_commod = output->GetString("outcommodity");
-  double tails_assay = cyc::Query<double>(output, "tails_assay");
+#pragma cyclus def snapshotinv cycamore::EnrichmentFacility
 
-  double inv_size = cyc::OptionalQuery<double>(input,
-                                               "inventorysize",
-                                               std::numeric_limits<double>::max());
+#pragma cyclus def initinv cycamore::EnrichmentFacility
 
-  cyc::Material::Ptr feed = cyc::Material::CreateUntracked(0,
-                                                           context()->GetRecipe(in_recipe));
-  double feed_assay = cyc::enrichment::UraniumAssay(feed);
-
-  double swu_cap = cyc::OptionalQuery<double>(output,
-                                              "swu_capacity",
-                                              std::numeric_limits<double>::max());
-  
-  double initial_reserves = cyc::OptionalQuery<double>(qe,
-                                                       "initial_condition/reserves_qty",
-                                                          0);
-  di.NewDatum("Info")
-  ->AddVal("in_commod", in_commod)
-  ->AddVal("in_recipe", in_recipe)
-  ->AddVal("out_commod", out_commod)
-  ->AddVal("tails_assay", tails_assay)
-  ->AddVal("inv_size", inv_size)
-  ->AddVal("feed_assay", feed_assay)
-  ->AddVal("swu_cap", swu_cap)
-  ->AddVal("initial_reserves", initial_reserves)
-  ->AddVal("current_swu_capacity", static_cast<double>(0))
-  ->Record();
-}
+#pragma cyclus def clone cycamore::EnrichmentFacility
 
 void EnrichmentFacility::InitFrom(cyc::QueryableBackend* b) {
-  cyc::Facility::InitFrom(b);
-
-  cyc::QueryResult qr = b->Query("Info", NULL);
-
-  in_commod_ = qr.GetVal<std::string>("in_commod");
-  in_recipe_ = qr.GetVal<std::string>("in_recipe");
-  out_commod_ = qr.GetVal<std::string>("out_commod");
-  tails_assay_ = qr.GetVal<double>("tails_assay");
-  feed_assay_ = qr.GetVal<double>("feed_assay");
-  swu_capacity_ = qr.GetVal<double>("swu_cap");
-  current_swu_capacity_ = qr.GetVal<double>("current_swu_capacity");
-  initial_reserves_ = qr.GetVal<double>("initial_reserves");
-  inventory_.set_capacity(qr.GetVal<double>("inv_size"));
+  #pragma cyclus impl initfromdb cycamore::EnrichmentFacility
+  SetMaxInventorySize(qr.GetVal<double>("max_inv_size_"));
 }
 
-void EnrichmentFacility::Snapshot(cyc::DbInit di) {
-  cyc::Facility::Snapshot(di);
-  di.NewDatum("Info")
-  ->AddVal("in_commod", in_commod_)
-  ->AddVal("in_recipe", in_recipe_)
-  ->AddVal("out_commod", out_commod_)
-  ->AddVal("tails_assay", tails_assay_)
-  ->AddVal("inv_size", inventory_.capacity())
-  ->AddVal("feed_assay", feed_assay_)
-  ->AddVal("swu_cap", swu_capacity_)
-  ->AddVal("initial_reserves", initial_reserves_)
-  ->AddVal("current_swu_capacity", current_swu_capacity_)
-  ->Record();
-}
-
-void EnrichmentFacility::InitInv(cyc::Inventories& inv) {
-  inventory_.PushAll(inv["inventory"]);
-}
-
-cyc::Inventories EnrichmentFacility::SnapshotInv() {
-  cyc::Inventories invs;
-  invs["inventory"] = inventory_.PopN(inventory_.count());
-  return invs;
-}
-
-//- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-cyc::Agent* EnrichmentFacility::Clone() {
-  EnrichmentFacility* m = new EnrichmentFacility(context());
-  m->InitFrom(this);
-  LOG(cyc::LEV_DEBUG1, "EnrFac") << "Cloned - " << str();
-  return m;
-}
-
-//- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 void EnrichmentFacility::InitFrom(EnrichmentFacility* m) {
-  Facility::InitFrom(m);
-
-  initial_reserves_ = m->initial_reserves_;
-  tails_assay_ = m->tails_assay_;
-  feed_assay_ = m->feed_assay_;
-  in_commod_ = m->in_commod_;
-  in_recipe_ = m->in_recipe_;
-  out_commod_ = m->out_commod_;
-  current_swu_capacity_ = m->current_swu_capacity_;
-  inventory_.set_capacity(m->inventory_.capacity());
-  swu_capacity_ = m->swu_capacity_;
+  #pragma cyclus impl initfromcopy cycamore::EnrichmentFacility
+  SetMaxInventorySize(m->max_inv_size_);
 }
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -

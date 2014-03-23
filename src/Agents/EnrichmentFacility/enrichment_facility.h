@@ -129,24 +129,7 @@ class EnrichmentFacility : public cyc::Facility {
    */
   virtual ~EnrichmentFacility();
 
-  virtual std::string schema();
-
-  virtual cyc::Agent* Clone();
-
-  virtual void InfileToDb(cyc::InfileTree* qe, cyc::DbInit di);
-
-  virtual void InitFrom(cyc::QueryableBackend* b);
-
-  virtual void Snapshot(cyc::DbInit di);
-
-  virtual void InitInv(cyc::Inventories& invs);
-
-  virtual cyc::Inventories SnapshotInv();
-
-  /**
-     initialize members from a different agent
-  */
-  void InitFrom(EnrichmentFacility* m);
+  #pragma cyclus decl
 
   /**
      Print information about this agent
@@ -229,6 +212,7 @@ class EnrichmentFacility : public cyc::Facility {
   inline std::string in_recipe() const { return in_recipe_; }
 
   inline void SetMaxInventorySize(double size) {
+    max_inv_size_ = size;
     inventory_.set_capacity(size);
   }
 
@@ -290,14 +274,24 @@ class EnrichmentFacility : public cyc::Facility {
   void RecordEnrichment_(double natural_u, double swu);
 
 
+  #pragma cyclus var {}
   std::string in_commod_;
+  #pragma cyclus var {}
   std::string out_commod_;
+  #pragma cyclus var {}
   std::string in_recipe_;
+  #pragma cyclus var {"default": 0.71}
   double feed_assay_;
+  #pragma cyclus var {"default": 0.03}
   double tails_assay_;
+  #pragma cyclus var {"default": 1e299}
   double swu_capacity_;
-  double current_swu_capacity_;
+  #pragma cyclus var {"default": 0}
   double initial_reserves_;
+  #pragma cyclus var {"default": 1e299}
+  double max_inv_size_;
+  
+  double current_swu_capacity_;
   cyc::ResourceBuff inventory_; // of natl u
   
   friend class EnrichmentFacilityTest;
