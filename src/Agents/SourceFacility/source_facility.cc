@@ -21,6 +21,11 @@ SourceFacility::~SourceFacility() {}
 
 #pragma cyclus def infiletodb cycamore::SourceFacility
 
+#pragma cyclus def snapshot cycamore::SourceFacility
+
+#pragma cyclus def snapshotinv cycamore::SourceFacility
+
+#pragma cyclus def initinv cycamore::SourceFacility
 
 
 void SourceFacility::InitFrom(cyclus::QueryableBackend* b) {
@@ -30,12 +35,6 @@ void SourceFacility::InitFrom(cyclus::QueryableBackend* b) {
   cyclus::CommodityProducer::AddCommodity(commod);
   cyclus::CommodityProducer::SetCapacity(commod, capacity_);
 }
-
-#pragma cyclus def snapshot cycamore::SourceFacility
-
-#pragma cyclus def snapshotinv cycamore::SourceFacility
-
-#pragma cyclus def initinv cycamore::SourceFacility
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 std::string SourceFacility::str() {
