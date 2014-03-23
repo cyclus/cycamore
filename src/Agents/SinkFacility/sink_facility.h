@@ -95,24 +95,7 @@ class SinkFacility : public cyc::Facility  {
   */
   virtual ~SinkFacility();
 
-  virtual std::string schema();
-
-  virtual cyc::Agent* Clone();
-
-  virtual void InfileToDb(cyc::InfileTree* qe, cyc::DbInit di);
-
-  virtual void InitFrom(cyc::QueryableBackend* b);
-
-  virtual void Snapshot(cyc::DbInit di);
-
-  virtual void InitInv(cyc::Inventories& inv);
-
-  virtual cyc::Inventories SnapshotInv();
-
-  /**
-     initialize members from a different agent
-  */
-  void InitFrom(SinkFacility* m);
+  #pragma cyclus decl
 
   /**
      A verbose printer for the Sink Facility.
@@ -168,7 +151,10 @@ class SinkFacility : public cyc::Facility  {
      sets the size of the storage inventory for received material
      @param size the storage size
    */
-  inline void SetMaxInventorySize(double size) { inventory_.set_capacity(size); }
+  inline void SetMaxInventorySize(double size) {
+    max_inv_size_ = size;
+    inventory_.set_capacity(size);
+  }
 
   /// @return the maximum inventory storage size
   inline double MaxInventorySize() const { return inventory_.capacity(); }
@@ -200,17 +186,26 @@ class SinkFacility : public cyc::Facility  {
   /**
      all facilities must have at least one input commodity
    */
+  #pragma cyclus var {}
   std::vector<std::string> in_commods_;
 
   /**
      monthly acceptance capacity
    */
+  #pragma cyclus var {"default": 1e299}
   double capacity_;
 
   /**
      commodity price
    */
+  #pragma cyclus var {}
   double commod_price_;
+
+  /**
+     max inventory size
+   */
+  #pragma cyclus var {"default": 1e299}
+  double max_inv_size_;
 
   /**
      this facility holds material in storage.

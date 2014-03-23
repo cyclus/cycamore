@@ -27,6 +27,14 @@ SourceFacility::~SourceFacility() {}
 
 #pragma cyclus def initinv cycamore::SourceFacility
 
+#pragma cyclus def clone cycamore::SourceFacility
+
+//- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+void SourceFacility::InitFrom(SourceFacility* m) {
+  #pragma cyclus impl initfromcopy cycamore::SourceFacility
+  current_capacity_ = m->capacity_;
+  CopyProducedCommoditiesFrom(m);
+}
 
 void SourceFacility::InitFrom(cyclus::QueryableBackend* b) {
   #pragma cyclus impl initfromdb cycamore::SourceFacility
@@ -45,15 +53,6 @@ std::string SourceFacility::str() {
      << recipe_name_ << "' at a capacity of "
      << capacity_ << " kg per time step ";
   return ss.str();
-}
-
-#pragma cyclus def clone cycamore::SourceFacility
-
-//- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-void SourceFacility::InitFrom(SourceFacility* m) {
-  #pragma cyclus impl initfromcopy cycamore::SourceFacility
-  current_capacity_ = m->capacity_;
-  CopyProducedCommoditiesFrom(m);
 }
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -

@@ -20,88 +20,36 @@ SinkFacility::SinkFacility(cyc::Context* ctx)
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 SinkFacility::~SinkFacility() {}
 
-//- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-std::string SinkFacility::schema() {
-  return
-    "  <element name =\"input\">          \n"
-    "    <element name = \"commodities\"> \n"
-    "      <oneOrMore>                    \n"
-    "        <ref name=\"incommodity\"/>  \n"
-    "      </oneOrMore>                   \n"
-    "    </element>                       \n"
-    "     <optional>                      \n"
-    "      <ref name=\"input_capacity\"/> \n"
-    "    </optional>                      \n"
-    "    <optional>                       \n"
-    "      <ref name=\"inventorysize\"/>  \n"
-    "    </optional>                      \n"
-    "  </element>                         \n";
-}
+#pragma cyclus def schema cycamore::SinkFacility
 
-void SinkFacility::InfileToDb(cyc::InfileTree* qe, cyc::DbInit di) {
-  cyc::Facility::InfileToDb(qe, di);
-  qe = qe->SubTree("agent/" + agent_impl());
-  
-  using std::numeric_limits;
-  cyc::InfileTree* input = qe->SubTree("input");
+#pragma cyclus def infiletodb cycamore::SinkFacility
 
-  cyc::InfileTree* commodities = input->SubTree("commodities");
-  int n = commodities->NMatches("incommodity");
-  for (int i = 0; i < n; i++) {
-    di.NewDatum("InCommods")
-      ->AddVal("commod", commodities->GetString("incommodity", i))
-      ->Record();
-  }
+#pragma cyclus def snapshot cycamore::SinkFacility
 
-  double cap = cyc::OptionalQuery<double>(input,
-                                          "input_capacity",
-                                          numeric_limits<double>::max());
-  double size = cyc::OptionalQuery<double>(input,
-                                           "inventorysize",
-                                           numeric_limits<double>::max());
-  di.NewDatum("Info")
-    ->AddVal("capacity", cap)
-    ->AddVal("commod_price", 0)
-    ->AddVal("max_inv_size", size)
-    ->Record();
-}
+#pragma cyclus def snapshotinv cycamore::SinkFacility
+
+#pragma cyclus def initinv cycamore::SinkFacility
+
+#pragma cyclus def clone cycamore::SinkFacility
 
 void SinkFacility::InitFrom(cyc::QueryableBackend* b) {
-  cyc::Facility::InitFrom(b);
-
-  cyc::QueryResult qr = b->Query("Info", NULL);
-  capacity_ = qr.GetVal<double>("capacity");
-  commod_price_ = qr.GetVal<double>("commod_price");
-  inventory_.set_capacity(qr.GetVal<double>("max_inv_size"));
-  qr = b->Query("InCommods", NULL);
-  for (int i = 0; i < qr.rows.size(); ++i) {
-    in_commods_.push_back(qr.GetVal<std::string>("commod", i));
-  }
+  #pragma cyclus impl initfromdb cycamore::SinkFacility
+  SetMaxInventorySize(qr.GetVal<double>("max_inv_size_"));
 }
 
-void SinkFacility::Snapshot(cyc::DbInit di) {
-  cyc::Facility::Snapshot(di);
-  di.NewDatum("Info")
-    ->AddVal("capacity", capacity_)
-    ->AddVal("commod_price", commod_price_)
-    ->AddVal("max_inv_size", inventory_.capacity())
-    ->Record();
-  for (int i = 0; i < in_commods_.size(); ++i) {
-    di.NewDatum("InCommods")
-      ->AddVal("commod", in_commods_[i])
-      ->Record();
-  }
+void SinkFacility::InitFrom(SinkFacility* m) {
+  #pragma cyclus impl initfromcopy cycamore::SinkFacility
+  SetMaxInventorySize(m->max_inv_size_);
 }
 
-void SinkFacility::InitInv(cyc::Inventories& inv) {
-  inventory_.PushAll(inv["inventory"]);
-}
-
-cyc::Inventories SinkFacility::SnapshotInv() {
-  cyc::Inventories invs;
-  invs["inventory"] = inventory_.PopN(inventory_.count());
-  return invs;
-}
+// //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+// void SinkFacility::InitFrom(SinkFacility* m) {
+//   Facility::InitFrom(m);
+//   capacity(m->capacity());
+//   SetMaxInventorySize(m->MaxInventorySize());
+//   capacity_ = m->capacity_;
+//   in_commods_ = m->in_commods_;
+// }
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 std::string SinkFacility::str() {
@@ -121,22 +69,6 @@ std::string SinkFacility::str() {
   msg += "} until its inventory is full at ";
   ss << msg << inventory_.capacity() << " kg.";
   return "" + ss.str();
-}
-
-//- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-cyc::Agent* SinkFacility::Clone() {
-  SinkFacility* m = new SinkFacility(context());
-  m->InitFrom(this);
-  return m;
-}
-
-//- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-void SinkFacility::InitFrom(SinkFacility* m) {
-  Facility::InitFrom(m);
-  capacity(m->capacity());
-  SetMaxInventorySize(m->MaxInventorySize());
-  capacity_ = m->capacity_;
-  in_commods_ = m->in_commods_;
 }
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - 
