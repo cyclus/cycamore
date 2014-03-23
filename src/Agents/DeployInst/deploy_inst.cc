@@ -5,48 +5,50 @@
 
 namespace cycamore {
 
-DeployInst::DeployInst(cyc::Context* ctx)
-    : cyc::Institution(ctx) {}
+DeployInst::DeployInst(cyclus::Context* ctx)
+    : cyclus::Institution(ctx) {}
 
 DeployInst::~DeployInst() {}
 
+#pragma cyclus def clone cycamore::DeployInst
+
 std::string DeployInst::schema() {
-  return
-    "<oneOrMore>                               \n"
-    "	<element name=\"buildorder\">            \n"
-    "	  <element name=\"prototype\">           \n"
-    "	    <data type=\"string\"/>              \n"
-    "	  </element>                             \n"
-    "	  <element name=\"number\">              \n"
-    "	    <data type=\"nonNegativeInteger\"/>  \n"
-    "	  </element>                             \n"
-    "	  <element name=\"date\">                \n"
-    "	    <data type=\"nonNegativeInteger\"/>  \n"
-    "	  </element>                             \n"
-    "	</element>                               \n"
-    "</oneOrMore>                              \n";
+    return
+        "<oneOrMore>                               \n"
+        "<element name=\"buildorder\">            \n"
+        "  <element name=\"prototype\">           \n"
+        "    <data type=\"string\"/>              \n"
+        "  </element>                             \n"
+        "  <element name=\"number\">              \n"
+        "    <data type=\"nonNegativeInteger\"/>  \n"
+        "  </element>                             \n"
+        "  <element name=\"date\">                \n"
+        "    <data type=\"nonNegativeInteger\"/>  \n"
+        "  </element>                             \n"
+        "</element>                               \n"
+        "</oneOrMore>                              \n";
 }
 
-void DeployInst::InfileToDb(cyc::InfileTree* qe, cyc::DbInit di) {
-  cyc::Institution::InfileToDb(qe, di);
+void DeployInst::InfileToDb(cyclus::InfileTree* qe, cyclus::DbInit di) {
+  cyclus::Institution::InfileToDb(qe, di);
   qe = qe->SubTree("agent/" + agent_impl());
 
   int nOrders = qe->NMatches("buildorder");
   for (int i = 0; i < nOrders; i++) {
-    cyc::InfileTree* order = qe->SubTree("buildorder", i);
-    int n = cyc::Query<int>(order, "number");
+    cyclus::InfileTree* order = qe->SubTree("buildorder", i);
+    int n = cyclus::Query<int>(order, "number");
     for (int j = 0; j < n; ++j) {
       di.NewDatum("BuildOrder")
-        ->AddVal("prototype", order->GetString("prototype"))
-        ->AddVal("date", cyc::Query<int>(order, "date"))
-        ->Record();
+          ->AddVal("prototype", order->GetString("prototype"))
+          ->AddVal("date", cyclus::Query<int>(order, "date"))
+          ->Record();
     }
   }
 }
 
-void DeployInst::InitFrom(cyc::QueryableBackend* b) {
-  cyc::Institution::InitFrom(b);
-  cyc::QueryResult qr = b->Query("BuildOrder", NULL);
+void DeployInst::InitFrom(cyclus::QueryableBackend* b) {
+  cyclus::Institution::InitFrom(b);
+  cyclus::QueryResult qr = b->Query("BuildOrder", NULL);
   for (int i = 0; i < qr.rows.size(); i++) {
     std::string proto = qr.GetVal<std::string>("prototype", i);
     int t = qr.GetVal<int>("date", i);
@@ -54,8 +56,13 @@ void DeployInst::InitFrom(cyc::QueryableBackend* b) {
   }
 }
 
-void DeployInst::Snapshot(cyc::DbInit di) {
-  cyc::Institution::Snapshot(di);
+void DeployInst::InitFrom(DeployInst* m) {
+  cyclus::Institution::InitFrom(m);
+  build_sched_ = m->build_sched_;
+}
+
+void DeployInst::Snapshot(cyclus::DbInit di) {
+  cyclus::Institution::Snapshot(di);
 
   BuildSched::iterator it;
   for (it = build_sched_.begin(); it != build_sched_.end(); ++it) {
@@ -63,15 +70,15 @@ void DeployInst::Snapshot(cyc::DbInit di) {
     std::vector<std::string> protos = it->second;
     for (int i = 0; i < protos.size(); ++i) {
       di.NewDatum("BuildOrder")
-        ->AddVal("prototype", protos[i])
-        ->AddVal("date", t)
-        ->Record();
+          ->AddVal("prototype", protos[i])
+          ->AddVal("date", t)
+          ->Record();
     }
   }
 }
 
-void DeployInst::Build(cyc::Agent* parent) {
-  cyc::Institution::Build(parent);
+void DeployInst::Build(cyclus::Agent* parent) {
+  cyclus::Institution::Build(parent);
   BuildSched::iterator it;
   for (it = build_sched_.begin(); it != build_sched_.end(); ++it) {
     int t = it->first;
@@ -82,7 +89,7 @@ void DeployInst::Build(cyc::Agent* parent) {
   }
 }
 
-extern "C" cyc::Agent* ConstructDeployInst(cyc::Context* ctx) {
+extern "C" cyclus::Agent* ConstructDeployInst(cyclus::Context* ctx) {
   return new DeployInst(ctx);
 }
 
