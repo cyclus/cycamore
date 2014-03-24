@@ -32,7 +32,6 @@ SourceFacility::~SourceFacility() {}
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 void SourceFacility::InitFrom(SourceFacility* m) {
   #pragma cyclus impl initfromcopy cycamore::SourceFacility
-  current_capacity_ = m->capacity_;
   CopyProducedCommoditiesFrom(m);
 }
 

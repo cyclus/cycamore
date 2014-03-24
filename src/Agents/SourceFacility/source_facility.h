@@ -204,6 +204,7 @@ class SourceFacility : public cyclus::Facility,
   /**
      The capacity at the current time step
    */
+  #pragma cyclus var {'derivation': 'current_capacity_ = capacity_;'}
   double current_capacity_;
 
   /* --- */
