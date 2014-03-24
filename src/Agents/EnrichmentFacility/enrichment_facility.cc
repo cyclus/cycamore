@@ -99,12 +99,12 @@ void EnrichmentFacility::Snapshot(cyclus::DbInit di) {
 }
 
 void EnrichmentFacility::InitInv(cyclus::Inventories& inv) {
-  inventory_.PushAll(inv["inventory"]);
+  inventory_.PushAll(inv["inventory_"]);
 }
 
 cyclus::Inventories EnrichmentFacility::SnapshotInv() {
   cyclus::Inventories invs;
-  invs["inventory"] = inventory_.PopN(inventory_.count());
+  invs["inventory_"] = inventory_.PopN(inventory_.count());
   return invs;
 }
 
