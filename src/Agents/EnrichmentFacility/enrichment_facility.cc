@@ -33,57 +33,11 @@ EnrichmentFacility::~EnrichmentFacility() {}
 
 #pragma cyclus def snapshotinv cycamore::EnrichmentFacility
 
-void EnrichmentFacility::InitFrom(cyclus::QueryableBackend* b) {
-  #pragma cyclus impl initfromdb cycamore::EnrichmentFacility
-  feed_assay_ = qr.GetVal<double>("feed_assay_");
-  current_swu_capacity_ = qr.GetVal<double>("current_swu_capacity_");
-  inventory_.set_capacity(qr.GetVal<double>("max_inv_size_"));
-}
+#pragma cyclus def initfromdb cycamore::EnrichmentFacility
 
-//- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-void EnrichmentFacility::InitFrom(EnrichmentFacility* m) {
-  #pragma cyclus impl initfromcopy cycamore::EnrichmentFacility
-  feed_assay_ = m->feed_assay_;
-  current_swu_capacity_ = m->current_swu_capacity_;
-  inventory_.set_capacity(m->inventory_.capacity());
-}
+#pragma cyclus def initfromcopy cycamore::EnrichmentFacility
 
 #pragma cyclus def infiletodb cycamore::EnrichmentFacility
-
-// void EnrichmentFacility::InfileToDb(cyclus::InfileTree* qe, cyclus::DbInit di) {
-//   cyclus::Facility::InfileToDb(qe, di);
-//   qe = qe->SubTree("agent/" + agent_impl());
-
-//   std::string in_commod = qe->GetString("in_commod_");
-//   std::string in_recipe = qe->GetString("in_recipe_");
-//   std::string out_commod = qe->GetString("out_commod_");
-//   double tails_assay = cyclus::Query<double>(qe, "tails_assay_");
-
-//   double inv_size = cyclus::OptionalQuery<double>(
-//       qe, "max_inv_size_", std::numeric_limits<double>::max());
-  
-//   cyclus::Material::Ptr feed = cyclus::Material::CreateUntracked(
-//       0, context()->GetRecipe(in_recipe));
-//   double feed_assay = cyclus::enrichment::UraniumAssay(feed);
-
-//   double swu_cap = cyclus::OptionalQuery<double>(
-//       qe, "swu_capacity_", std::numeric_limits<double>::max());
-  
-//   double initial_reserves = cyclus::OptionalQuery<double>(
-//       qe, "initial_reserves_", 0);
-  
-//   di.NewDatum("Info")
-//   ->AddVal("in_commod_", in_commod)
-//   ->AddVal("in_recipe_", in_recipe)
-//   ->AddVal("out_commod_", out_commod)
-//   ->AddVal("tails_assay_", tails_assay)
-//   ->AddVal("max_inv_size_", inv_size)
-//   ->AddVal("feed_assay_", feed_assay)
-//   ->AddVal("swu_capacity_", swu_cap)
-//   ->AddVal("initial_reserves_", initial_reserves)
-//   ->AddVal("current_swu_capacity_", static_cast<double>(0))
-//   ->Record();
-// }
 
 void EnrichmentFacility::Snapshot(cyclus::DbInit di) {
   cyclus::Facility::Snapshot(di);

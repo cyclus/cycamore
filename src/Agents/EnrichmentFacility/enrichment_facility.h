@@ -210,6 +210,7 @@ class EnrichmentFacility : public cyclus::Facility {
   inline std::string in_recipe() const { return in_recipe_; }
 
   inline void SetMaxInventorySize(double size) {
+    max_inv_size_ = size;
     inventory_.set_capacity(size);
   }
 
@@ -292,7 +293,7 @@ class EnrichmentFacility : public cyclus::Facility {
     "cyclus::Material::CreateUntracked(0, context()->GetRecipe(in_recipe_)); "\
     "feed_assay_ = cyclus::enrichment::UraniumAssay(feed);"}
   double feed_assay_;
-  #pragma cyclus var {}
+  #pragma cyclus var {'capacity': 'max_inv_size_'}
   cyclus::ResourceBuff inventory_; // of natl u
   
   friend class EnrichmentFacilityTest;
