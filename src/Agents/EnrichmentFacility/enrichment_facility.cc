@@ -38,25 +38,15 @@ void EnrichmentFacility::InitFrom(cyclus::QueryableBackend* b) {
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 void EnrichmentFacility::InitFrom(EnrichmentFacility* m) {
-  Facility::InitFrom(m);
-
-  initial_reserves_ = m->initial_reserves_;
-  tails_assay_ = m->tails_assay_;
+  #pragma cyclus impl initfromcopy cycamore::EnrichmentFacility
   feed_assay_ = m->feed_assay_;
-  in_commod_ = m->in_commod_;
-  in_recipe_ = m->in_recipe_;
-  out_commod_ = m->out_commod_;
   current_swu_capacity_ = m->current_swu_capacity_;
   inventory_.set_capacity(m->inventory_.capacity());
-  swu_capacity_ = m->swu_capacity_;
 }
 
 void EnrichmentFacility::InfileToDb(cyclus::InfileTree* qe, cyclus::DbInit di) {
   cyclus::Facility::InfileToDb(qe, di);
   qe = qe->SubTree("agent/" + agent_impl());
-
-  // cyclus::InfileTree* input = qe->SubTree("input");
-  // cyclus::InfileTree* output = qe->SubTree("output");
 
   std::string in_commod = qe->GetString("in_commod_");
   std::string in_recipe = qe->GetString("in_recipe_");
