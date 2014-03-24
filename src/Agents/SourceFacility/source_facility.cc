@@ -17,6 +17,8 @@ SourceFacility::SourceFacility(cyclus::Context* ctx)
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 SourceFacility::~SourceFacility() {}
 
+#pragma cyclus def clone cycamore::SourceFacility
+
 #pragma cyclus def schema cycamore::SourceFacility
 
 #pragma cyclus def infiletodb cycamore::SourceFacility
@@ -26,8 +28,6 @@ SourceFacility::~SourceFacility() {}
 #pragma cyclus def snapshotinv cycamore::SourceFacility
 
 #pragma cyclus def initinv cycamore::SourceFacility
-
-#pragma cyclus def clone cycamore::SourceFacility
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 void SourceFacility::InitFrom(SourceFacility* m) {

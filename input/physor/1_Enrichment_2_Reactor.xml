@@ -25,18 +25,12 @@
     <name>Enrichment</name>
     <agent>
       <EnrichmentFacility>
-        <input>
-          <incommodity>natl_u</incommodity>
-          <inrecipe>natl_u</inrecipe>
-        </input>
-        <output>
-          <outcommodity>enriched_u</outcommodity>
-          <tails_assay>0.003</tails_assay>
-          <swu_capacity>10</swu_capacity>
-        </output>
-        <initial_condition>
-          <reserves_qty>1e5</reserves_qty>
-        </initial_condition>
+        <in_commod_>natl_u</in_commod_>
+        <in_recipe_>natl_u</in_recipe_>
+        <out_commod_>enriched_u</out_commod_>
+        <tails_assay_>0.003</tails_assay_>
+        <swu_capacity_>10</swu_capacity_>
+        <initial_reserves_>1e5</initial_reserves_>
       </EnrichmentFacility>
     </agent>
   </facility>

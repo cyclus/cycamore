@@ -270,15 +270,22 @@ class EnrichmentFacility : public cyclus::Facility {
    */
   void RecordEnrichment_(double natural_u, double swu);
 
-
+  #pragma cyclus var {}
   std::string in_commod_;
+  #pragma cyclus var {}
   std::string out_commod_;
+  #pragma cyclus var {}
   std::string in_recipe_;
-  double feed_assay_;
+
+  #pragma cyclus var {"default": 0.03}
   double tails_assay_;
+  #pragma cyclus var {"default": 1e299}
   double swu_capacity_;
-  double current_swu_capacity_;
+  #pragma cyclus var {"default": 0}
   double initial_reserves_;
+
+  double current_swu_capacity_;
+  double feed_assay_;
   cyclus::ResourceBuff inventory_; // of natl u
   
   friend class EnrichmentFacilityTest;

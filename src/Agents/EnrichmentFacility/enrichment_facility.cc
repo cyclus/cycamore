@@ -25,63 +25,35 @@ EnrichmentFacility::EnrichmentFacility(cyclus::Context* ctx)
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 EnrichmentFacility::~EnrichmentFacility() {}
 
-//- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-std::string EnrichmentFacility::schema() {
-  return
-    "  <element name =\"input\">                  \n"
-    "    <ref name=\"incommodity\"/>              \n"
-    "    <ref name=\"inrecipe\"/>                 \n"
-    "    <optional>                               \n"
-    "      <ref name=\"inventorysize\"/>          \n"
-    "    </optional>                              \n"
-    "  </element>                                 \n"
-    "  <element name =\"output\">                 \n"
-    "    <ref name=\"outcommodity\"/>             \n"
-    "     <element name =\"tails_assay\">         \n"
-    "       <data type=\"double\"/>               \n"
-    "     </element>                              \n"
-    "    <optional>                               \n"
-    "      <element name =\"swu_capacity\">       \n"
-    "        <data type=\"double\"/>              \n"
-    "      </element>                             \n"
-    "    </optional>                              \n"
-    "  </element>                                 \n"
-    "  <optional>                                 \n"
-    "    <element name =\"initial_condition\">    \n"
-    "       <element name =\"reserves_qty\">      \n"
-    "         <data type=\"double\"/>             \n"
-    "       </element>                            \n"
-    "    </element>                               \n"
-    "  </optional>                                \n";
-}
+#pragma cyclus def clone cycamore::EnrichmentFacility
+
+#pragma cyclus def schema cycamore::EnrichmentFacility
 
 void EnrichmentFacility::InfileToDb(cyclus::InfileTree* qe, cyclus::DbInit di) {
   cyclus::Facility::InfileToDb(qe, di);
   qe = qe->SubTree("agent/" + agent_impl());
 
-  cyclus::InfileTree* input = qe->SubTree("input");
-  cyclus::InfileTree* output = qe->SubTree("output");
+  // cyclus::InfileTree* input = qe->SubTree("input");
+  // cyclus::InfileTree* output = qe->SubTree("output");
 
-  std::string in_commod = input->GetString("incommodity");
-  std::string in_recipe = input->GetString("inrecipe");
-  std::string out_commod = output->GetString("outcommodity");
-  double tails_assay = cyclus::Query<double>(output, "tails_assay");
+  std::string in_commod = qe->GetString("in_commod_");
+  std::string in_recipe = qe->GetString("in_recipe_");
+  std::string out_commod = qe->GetString("out_commod_");
+  double tails_assay = cyclus::Query<double>(qe, "tails_assay_");
 
-  double inv_size = cyclus::OptionalQuery<double>(input,
-                                               "inventorysize",
-                                               std::numeric_limits<double>::max());
-
-  cyclus::Material::Ptr feed = cyclus::Material::CreateUntracked(0,
-                                                           context()->GetRecipe(in_recipe));
+  double inv_size = cyclus::OptionalQuery<double>(
+      qe, "max_inv_size_", std::numeric_limits<double>::max());
+  
+  cyclus::Material::Ptr feed = cyclus::Material::CreateUntracked(
+      0, context()->GetRecipe(in_recipe));
   double feed_assay = cyclus::enrichment::UraniumAssay(feed);
 
-  double swu_cap = cyclus::OptionalQuery<double>(output,
-                                              "swu_capacity",
-                                              std::numeric_limits<double>::max());
+  double swu_cap = cyclus::OptionalQuery<double>(
+      qe, "swu_capacity_", std::numeric_limits<double>::max());
   
-  double initial_reserves = cyclus::OptionalQuery<double>(qe,
-                                                       "initial_condition/reserves_qty",
-                                                          0);
+  double initial_reserves = cyclus::OptionalQuery<double>(
+      qe, "initial_reserves_", 0);
+  
   di.NewDatum("Info")
   ->AddVal("in_commod", in_commod)
   ->AddVal("in_recipe", in_recipe)
@@ -134,14 +106,6 @@ cyclus::Inventories EnrichmentFacility::SnapshotInv() {
   cyclus::Inventories invs;
   invs["inventory"] = inventory_.PopN(inventory_.count());
   return invs;
-}
-
-//- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-cyclus::Agent* EnrichmentFacility::Clone() {
-  EnrichmentFacility* m = new EnrichmentFacility(context());
-  m->InitFrom(this);
-  LOG(cyclus::LEV_DEBUG1, "EnrFac") << "Cloned - " << str();
-  return m;
 }
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
