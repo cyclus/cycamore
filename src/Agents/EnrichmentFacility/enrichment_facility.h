@@ -288,6 +288,7 @@ class EnrichmentFacility : public cyclus::Facility {
 
   double current_swu_capacity_;
   double feed_assay_;
+  #pragma cyclus var {}
   cyclus::ResourceBuff inventory_; // of natl u
   
   friend class EnrichmentFacilityTest;

@@ -54,7 +54,7 @@ def install_cycamore(args):
     make_cmd = ['make']
     if args.threads:
         make_cmd += ['-j' + str(args.threads)]
-    rtn = subprocess.check_call(make_cmd, cwd=args.build_dir,
+    rtn = subprocess.call(make_cmd, cwd=args.build_dir,
                                 shell=(os.name == 'nt'))
 
     if args.test:

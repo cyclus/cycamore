@@ -29,6 +29,10 @@ EnrichmentFacility::~EnrichmentFacility() {}
 
 #pragma cyclus def schema cycamore::EnrichmentFacility
 
+#pragma cyclus def initinv cycamore::EnrichmentFacility
+
+#pragma cyclus def snapshotinv cycamore::EnrichmentFacility
+
 void EnrichmentFacility::InitFrom(cyclus::QueryableBackend* b) {
   #pragma cyclus impl initfromdb cycamore::EnrichmentFacility
   feed_assay_ = qr.GetVal<double>("feed_assay_");
@@ -92,16 +96,6 @@ void EnrichmentFacility::Snapshot(cyclus::DbInit di) {
   ->AddVal("initial_reserves_", initial_reserves_)
   ->AddVal("current_swu_capacity_", current_swu_capacity_)
   ->Record();
-}
-
-void EnrichmentFacility::InitInv(cyclus::Inventories& inv) {
-  inventory_.PushAll(inv["inventory_"]);
-}
-
-cyclus::Inventories EnrichmentFacility::SnapshotInv() {
-  cyclus::Inventories invs;
-  invs["inventory_"] = inventory_.PopN(inventory_.count());
-  return invs;
 }
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -

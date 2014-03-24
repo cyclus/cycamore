@@ -42,15 +42,6 @@ void SinkFacility::InitFrom(SinkFacility* m) {
   SetMaxInventorySize(m->max_inv_size_);
 }
 
-// //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-// void SinkFacility::InitFrom(SinkFacility* m) {
-//   Facility::InitFrom(m);
-//   capacity(m->capacity());
-//   SetMaxInventorySize(m->MaxInventorySize());
-//   capacity_ = m->capacity_;
-//   in_commods_ = m->in_commods_;
-// }
-
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 std::string SinkFacility::str() {
   using std::string;
