@@ -29,6 +29,28 @@ EnrichmentFacility::~EnrichmentFacility() {}
 
 #pragma cyclus def schema cycamore::EnrichmentFacility
 
+void EnrichmentFacility::InitFrom(cyclus::QueryableBackend* b) {
+  #pragma cyclus impl initfromdb cycamore::EnrichmentFacility
+  feed_assay_ = qr.GetVal<double>("feed_assay_");
+  current_swu_capacity_ = qr.GetVal<double>("current_swu_capacity_");
+  inventory_.set_capacity(qr.GetVal<double>("max_inv_size_"));
+}
+
+//- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+void EnrichmentFacility::InitFrom(EnrichmentFacility* m) {
+  Facility::InitFrom(m);
+
+  initial_reserves_ = m->initial_reserves_;
+  tails_assay_ = m->tails_assay_;
+  feed_assay_ = m->feed_assay_;
+  in_commod_ = m->in_commod_;
+  in_recipe_ = m->in_recipe_;
+  out_commod_ = m->out_commod_;
+  current_swu_capacity_ = m->current_swu_capacity_;
+  inventory_.set_capacity(m->inventory_.capacity());
+  swu_capacity_ = m->swu_capacity_;
+}
+
 void EnrichmentFacility::InfileToDb(cyclus::InfileTree* qe, cyclus::DbInit di) {
   cyclus::Facility::InfileToDb(qe, di);
   qe = qe->SubTree("agent/" + agent_impl());
@@ -55,46 +77,30 @@ void EnrichmentFacility::InfileToDb(cyclus::InfileTree* qe, cyclus::DbInit di) {
       qe, "initial_reserves_", 0);
   
   di.NewDatum("Info")
-  ->AddVal("in_commod", in_commod)
-  ->AddVal("in_recipe", in_recipe)
-  ->AddVal("out_commod", out_commod)
-  ->AddVal("tails_assay", tails_assay)
-  ->AddVal("inv_size", inv_size)
-  ->AddVal("feed_assay", feed_assay)
-  ->AddVal("swu_cap", swu_cap)
-  ->AddVal("initial_reserves", initial_reserves)
-  ->AddVal("current_swu_capacity", static_cast<double>(0))
+  ->AddVal("in_commod_", in_commod)
+  ->AddVal("in_recipe_", in_recipe)
+  ->AddVal("out_commod_", out_commod)
+  ->AddVal("tails_assay_", tails_assay)
+  ->AddVal("max_inv_size_", inv_size)
+  ->AddVal("feed_assay_", feed_assay)
+  ->AddVal("swu_capacity_", swu_cap)
+  ->AddVal("initial_reserves_", initial_reserves)
+  ->AddVal("current_swu_capacity_", static_cast<double>(0))
   ->Record();
-}
-
-void EnrichmentFacility::InitFrom(cyclus::QueryableBackend* b) {
-  cyclus::Facility::InitFrom(b);
-
-  cyclus::QueryResult qr = b->Query("Info", NULL);
-
-  in_commod_ = qr.GetVal<std::string>("in_commod");
-  in_recipe_ = qr.GetVal<std::string>("in_recipe");
-  out_commod_ = qr.GetVal<std::string>("out_commod");
-  tails_assay_ = qr.GetVal<double>("tails_assay");
-  feed_assay_ = qr.GetVal<double>("feed_assay");
-  swu_capacity_ = qr.GetVal<double>("swu_cap");
-  current_swu_capacity_ = qr.GetVal<double>("current_swu_capacity");
-  initial_reserves_ = qr.GetVal<double>("initial_reserves");
-  inventory_.set_capacity(qr.GetVal<double>("inv_size"));
 }
 
 void EnrichmentFacility::Snapshot(cyclus::DbInit di) {
   cyclus::Facility::Snapshot(di);
   di.NewDatum("Info")
-  ->AddVal("in_commod", in_commod_)
-  ->AddVal("in_recipe", in_recipe_)
-  ->AddVal("out_commod", out_commod_)
-  ->AddVal("tails_assay", tails_assay_)
-  ->AddVal("inv_size", inventory_.capacity())
-  ->AddVal("feed_assay", feed_assay_)
-  ->AddVal("swu_cap", swu_capacity_)
-  ->AddVal("initial_reserves", initial_reserves_)
-  ->AddVal("current_swu_capacity", current_swu_capacity_)
+  ->AddVal("in_commod_", in_commod_)
+  ->AddVal("in_recipe_", in_recipe_)
+  ->AddVal("out_commod_", out_commod_)
+  ->AddVal("tails_assay_", tails_assay_)
+  ->AddVal("max_inv_size_", inventory_.capacity())
+  ->AddVal("feed_assay_", feed_assay_)
+  ->AddVal("swu_capacity_", swu_capacity_)
+  ->AddVal("initial_reserves_", initial_reserves_)
+  ->AddVal("current_swu_capacity_", current_swu_capacity_)
   ->Record();
 }
 
@@ -106,21 +112,6 @@ cyclus::Inventories EnrichmentFacility::SnapshotInv() {
   cyclus::Inventories invs;
   invs["inventory_"] = inventory_.PopN(inventory_.count());
   return invs;
-}
-
-//- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-void EnrichmentFacility::InitFrom(EnrichmentFacility* m) {
-  Facility::InitFrom(m);
-
-  initial_reserves_ = m->initial_reserves_;
-  tails_assay_ = m->tails_assay_;
-  feed_assay_ = m->feed_assay_;
-  in_commod_ = m->in_commod_;
-  in_recipe_ = m->in_recipe_;
-  out_commod_ = m->out_commod_;
-  current_swu_capacity_ = m->current_swu_capacity_;
-  inventory_.set_capacity(m->inventory_.capacity());
-  swu_capacity_ = m->swu_capacity_;
 }
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -

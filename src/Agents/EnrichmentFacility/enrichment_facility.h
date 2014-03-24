@@ -281,6 +281,8 @@ class EnrichmentFacility : public cyclus::Facility {
   double tails_assay_;
   #pragma cyclus var {"default": 1e299}
   double swu_capacity_;
+  #pragma cyclus var {"default": 1e299}
+  double max_inv_size_;
   #pragma cyclus var {"default": 0}
   double initial_reserves_;
 
