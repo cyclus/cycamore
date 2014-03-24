@@ -48,40 +48,42 @@ void EnrichmentFacility::InitFrom(EnrichmentFacility* m) {
   inventory_.set_capacity(m->inventory_.capacity());
 }
 
-void EnrichmentFacility::InfileToDb(cyclus::InfileTree* qe, cyclus::DbInit di) {
-  cyclus::Facility::InfileToDb(qe, di);
-  qe = qe->SubTree("agent/" + agent_impl());
+#pragma cyclus def infiletodb cycamore::EnrichmentFacility
 
-  std::string in_commod = qe->GetString("in_commod_");
-  std::string in_recipe = qe->GetString("in_recipe_");
-  std::string out_commod = qe->GetString("out_commod_");
-  double tails_assay = cyclus::Query<double>(qe, "tails_assay_");
+// void EnrichmentFacility::InfileToDb(cyclus::InfileTree* qe, cyclus::DbInit di) {
+//   cyclus::Facility::InfileToDb(qe, di);
+//   qe = qe->SubTree("agent/" + agent_impl());
 
-  double inv_size = cyclus::OptionalQuery<double>(
-      qe, "max_inv_size_", std::numeric_limits<double>::max());
-  
-  cyclus::Material::Ptr feed = cyclus::Material::CreateUntracked(
-      0, context()->GetRecipe(in_recipe));
-  double feed_assay = cyclus::enrichment::UraniumAssay(feed);
+//   std::string in_commod = qe->GetString("in_commod_");
+//   std::string in_recipe = qe->GetString("in_recipe_");
+//   std::string out_commod = qe->GetString("out_commod_");
+//   double tails_assay = cyclus::Query<double>(qe, "tails_assay_");
 
-  double swu_cap = cyclus::OptionalQuery<double>(
-      qe, "swu_capacity_", std::numeric_limits<double>::max());
+//   double inv_size = cyclus::OptionalQuery<double>(
+//       qe, "max_inv_size_", std::numeric_limits<double>::max());
   
-  double initial_reserves = cyclus::OptionalQuery<double>(
-      qe, "initial_reserves_", 0);
+//   cyclus::Material::Ptr feed = cyclus::Material::CreateUntracked(
+//       0, context()->GetRecipe(in_recipe));
+//   double feed_assay = cyclus::enrichment::UraniumAssay(feed);
+
+//   double swu_cap = cyclus::OptionalQuery<double>(
+//       qe, "swu_capacity_", std::numeric_limits<double>::max());
   
-  di.NewDatum("Info")
-  ->AddVal("in_commod_", in_commod)
-  ->AddVal("in_recipe_", in_recipe)
-  ->AddVal("out_commod_", out_commod)
-  ->AddVal("tails_assay_", tails_assay)
-  ->AddVal("max_inv_size_", inv_size)
-  ->AddVal("feed_assay_", feed_assay)
-  ->AddVal("swu_capacity_", swu_cap)
-  ->AddVal("initial_reserves_", initial_reserves)
-  ->AddVal("current_swu_capacity_", static_cast<double>(0))
-  ->Record();
-}
+//   double initial_reserves = cyclus::OptionalQuery<double>(
+//       qe, "initial_reserves_", 0);
+  
+//   di.NewDatum("Info")
+//   ->AddVal("in_commod_", in_commod)
+//   ->AddVal("in_recipe_", in_recipe)
+//   ->AddVal("out_commod_", out_commod)
+//   ->AddVal("tails_assay_", tails_assay)
+//   ->AddVal("max_inv_size_", inv_size)
+//   ->AddVal("feed_assay_", feed_assay)
+//   ->AddVal("swu_capacity_", swu_cap)
+//   ->AddVal("initial_reserves_", initial_reserves)
+//   ->AddVal("current_swu_capacity_", static_cast<double>(0))
+//   ->Record();
+// }
 
 void EnrichmentFacility::Snapshot(cyclus::DbInit di) {
   cyclus::Facility::Snapshot(di);

@@ -285,8 +285,12 @@ class EnrichmentFacility : public cyclus::Facility {
   double max_inv_size_;
   #pragma cyclus var {"default": 0}
   double initial_reserves_;
-
+  #pragma cyclus var {'derivation': 'current_swu_capacity_ = swu_capacity_;'}
   double current_swu_capacity_;
+  #pragma cyclus var {\
+    'derivation': "cyclus::Material::Ptr feed = "                       \
+    "cyclus::Material::CreateUntracked(0, context()->GetRecipe(in_recipe_)); "\
+    "feed_assay_ = cyclus::enrichment::UraniumAssay(feed);"}
   double feed_assay_;
   #pragma cyclus var {}
   cyclus::ResourceBuff inventory_; // of natl u
