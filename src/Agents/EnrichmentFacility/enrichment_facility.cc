@@ -39,20 +39,7 @@ EnrichmentFacility::~EnrichmentFacility() {}
 
 #pragma cyclus def infiletodb cycamore::EnrichmentFacility
 
-void EnrichmentFacility::Snapshot(cyclus::DbInit di) {
-  cyclus::Facility::Snapshot(di);
-  di.NewDatum("Info")
-  ->AddVal("in_commod_", in_commod_)
-  ->AddVal("in_recipe_", in_recipe_)
-  ->AddVal("out_commod_", out_commod_)
-  ->AddVal("tails_assay_", tails_assay_)
-  ->AddVal("max_inv_size_", inventory_.capacity())
-  ->AddVal("feed_assay_", feed_assay_)
-  ->AddVal("swu_capacity_", swu_capacity_)
-  ->AddVal("initial_reserves_", initial_reserves_)
-  ->AddVal("current_swu_capacity_", current_swu_capacity_)
-  ->Record();
-}
+#pragma cyclus def snapshot cycamore::EnrichmentFacility
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 std::string EnrichmentFacility::str() {
