@@ -32,15 +32,9 @@ SinkFacility::~SinkFacility() {}
 
 #pragma cyclus def clone cycamore::SinkFacility
 
-void SinkFacility::InitFrom(cyclus::QueryableBackend* b) {
-  #pragma cyclus impl initfromdb cycamore::SinkFacility
-  SetMaxInventorySize(qr.GetVal<double>("max_inv_size_"));
-}
+#pragma cyclus def initfromdb cycamore::SinkFacility
 
-void SinkFacility::InitFrom(SinkFacility* m) {
-  #pragma cyclus impl initfromcopy cycamore::SinkFacility
-  SetMaxInventorySize(m->max_inv_size_);
-}
+#pragma cyclus def initfromcopy cycamore::SinkFacility
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 std::string SinkFacility::str() {

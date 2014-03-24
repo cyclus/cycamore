@@ -208,7 +208,7 @@ class SinkFacility : public cyclus::Facility  {
   /**
      this facility holds material in storage.
    */
-  #pragma cyclus var {}
+  #pragma cyclus var {'capacity': 'max_inv_size_'}
   cyclus::ResourceBuff inventory_;
 };
 
