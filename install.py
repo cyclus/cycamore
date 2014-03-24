@@ -37,7 +37,7 @@ def install_cycamore(args):
     makefile = os.path.join(args.build_dir, 'Makefile')
 
     if not os.path.exists(makefile):
-        cmake_cmd = ['cmake', absexpanduser(src_dir)]
+        cmake_cmd = ['cmake', absexpanduser(root_dir)]
         if args.prefix:
             cmake_cmd += ['-DCMAKE_INSTALL_PREFIX=' + absexpanduser(args.prefix)]
         if args.cmake_prefix_path:
