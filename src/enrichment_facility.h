@@ -6,6 +6,9 @@
 
 #include "cyclus.h"
 
+class Arc;
+class ExchangeTranslationContext;
+
 namespace cycamore {
   
 /// @class SWUConverter
@@ -18,9 +21,12 @@ class SWUConverter : public cyclus::Converter<cyclus::Material> {
   virtual ~SWUConverter() {}
 
   /// @brief provides a conversion for the SWU required
-  inline virtual double convert(cyclus::Material::Ptr m) {
+  inline virtual double convert(
+      cyclus::Material::Ptr m
+      cyclus::Arc const * a = NULL,
+      cyclus::ExchangeTranslationContext<Material> const * ctx = NULL) const {
     cyclus::enrichment::Assays a(feed_,
-                                 cyclus::enrichment::UraniumAssay(m), tails_);
+                              cyclus::enrichment::UraniumAssay(m), tails_);
     return cyclus::enrichment::SwuRequired(m->quantity(), a);
   }
 
@@ -47,7 +53,10 @@ class NatUConverter : public cyclus::Converter<cyclus::Material> {
   virtual ~NatUConverter() {}
 
   /// @brief provides a conversion for the amount of natural Uranium required
-  inline virtual double convert(cyclus::Material::Ptr m) {
+  inline virtual double convert(
+      cyclus::Material::Ptr m
+      cyclus::Arc const * a = NULL,
+      cyclus::ExchangeTranslationContext<Material> const * ctx = NULL) const {
     cyclus::enrichment::Assays a(feed_,
                                  cyclus::enrichment::UraniumAssay(m), tails_);
     return cyclus::enrichment::FeedQty(m->quantity(), a);
