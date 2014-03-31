@@ -141,8 +141,7 @@ ADD_EXECUTABLE( cycamore_unit_tests
   ${GENERATED_TEST_SOURCE}
 )
 
-MESSAGE(STATUS "Cycamore Libs: ${CYCAMORE_LIBRARIES}")
-TARGET_LINK_LIBRARIES( cycamore_unit_tests dl ${CYCAMORE_LIBRARIES} 
+TARGET_LINK_LIBRARIES( cycamore_unit_tests
   dl ${LIBS} ${CYCLUS_GTEST_LIBRARIES})
 
 INSTALL(TARGETS cycamore_unit_tests
