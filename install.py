@@ -37,7 +37,7 @@ def install_cycamore(args):
     makefile = os.path.join(args.build_dir, 'Makefile')
 
     if not os.path.exists(makefile):
-        cmake_cmd = ['cmake', absexpanduser(src_dir)]
+        cmake_cmd = ['cmake', absexpanduser(root_dir)]
         if args.prefix:
             cmake_cmd += ['-DCMAKE_INSTALL_PREFIX=' + absexpanduser(args.prefix)]
         if args.cmake_prefix_path:
@@ -54,8 +54,16 @@ def install_cycamore(args):
     make_cmd = ['make']
     if args.threads:
         make_cmd += ['-j' + str(args.threads)]
-    make_cmd += ['install']
-    rtn = subprocess.check_call(make_cmd, cwd=absexpanduser(args.build_dir), shell=(os.name=='nt'))
+    rtn = subprocess.call(make_cmd, cwd=args.build_dir,
+                                shell=(os.name == 'nt'))
+
+    if args.test:
+        make_cmd += ['test']
+    elif not args.build_only:
+        make_cmd += ['install']
+    
+    rtn = subprocess.check_call(make_cmd, cwd=args.build_dir,
+                                shell=(os.name == 'nt'))
 
 def uninstall_cycamore(args):
     makefile = os.path.join(args.build_dir, 'Makefile')
@@ -86,6 +94,12 @@ def main():
 
     install = "the relative path to the installation directory"
     parser.add_argument('--prefix', help=install, default=localdir)
+
+    test = 'run tests after building'
+    parser.add_argument('--test', action='store_true', help=test)
+
+    build_only = 'only build the package, do not install'
+    parser.add_argument('--build-only', action='store_true', help=build_only)
 
     coin = "the relative path to the Coin-OR libraries directory"
     parser.add_argument('--coin_root', help=coin)
