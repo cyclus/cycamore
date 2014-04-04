@@ -84,3 +84,12 @@ class TestRegression(object):
                     else:         
                         nondeterm = compare_nondeterm(sim_files[f], tmp_file)
                         assert_true(nondeterm)
+
+                if os.path.isfile(tmp_file):
+                    os.remove(tmp_file)
+                
+                tmp_file = tmp_file.split('.')[0] + '.sqlite'
+                
+                if os.path.isfile(tmp_file):
+                    os.remove(tmp_file)
+                    

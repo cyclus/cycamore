@@ -9,18 +9,16 @@
 
 #include "cyclus.h"
 
-namespace cyc = cyclus;
-
 namespace cycamore {
 
 class Context;
   
 /**
    @class SinkFacility
-   This cyc::Facility requests a finite amount of its input commodity.
+   This cyclus::Facility requests a finite amount of its input commodity.
    It offers nothing.
 
-   The SinkFacility class inherits from the cyc::Facility class and is
+   The SinkFacility class inherits from the cyclus::Facility class and is
    dynamically loaded by the Agent class when requested.
 
    @section intro Introduction
@@ -81,38 +79,21 @@ class Context;
    What is the best way to allow requests of an infinite amount of
    material on a market?
  */
-class SinkFacility : public cyc::Facility  {
+class SinkFacility : public cyclus::Facility  {
  public:
   /* --- Module Members --- */
   /**
      Constructor for the SinkFacility class.
      @param ctx the cyclus context for access to simulation-wide parameters
   */
-  SinkFacility(cyc::Context* ctx);
+  SinkFacility(cyclus::Context* ctx);
 
   /**
      Destructor for the SinkFacility class.
   */
   virtual ~SinkFacility();
 
-  virtual std::string schema();
-
-  virtual cyc::Agent* Clone();
-
-  virtual void InfileToDb(cyc::InfileTree* qe, cyc::DbInit di);
-
-  virtual void InitFrom(cyc::QueryableBackend* b);
-
-  virtual void Snapshot(cyc::DbInit di);
-
-  virtual void InitInv(cyc::Inventories& inv);
-
-  virtual cyc::Inventories SnapshotInv();
-
-  /**
-     initialize members from a different agent
-  */
-  void InitFrom(SinkFacility* m);
+  #pragma cyclus decl
 
   /**
      A verbose printer for the Sink Facility.
@@ -137,24 +118,24 @@ class SinkFacility : public cyc::Facility  {
 
   /// @brief SinkFacilities request Materials of their given commodity. Note
   /// that it is assumed the SinkFacility operates on a single resource type!
-  virtual std::set<cyc::RequestPortfolio<cyc::Material>::Ptr>
+  virtual std::set<cyclus::RequestPortfolio<cyclus::Material>::Ptr>
       GetMatlRequests();
   
   /// @brief SinkFacilities request Products of their given
   /// commodity. Note that it is assumed the SinkFacility operates on a single
   /// resource type!
-  virtual std::set<cyc::RequestPortfolio<cyc::Product>::Ptr>
+  virtual std::set<cyclus::RequestPortfolio<cyclus::Product>::Ptr>
       GetGenRsrcRequests();
 
   /// @brief SinkFacilities place accepted trade Materials in their Inventory
   virtual void AcceptMatlTrades(
-      const std::vector< std::pair<cyc::Trade<cyc::Material>,
-      cyc::Material::Ptr> >& responses);
+      const std::vector< std::pair<cyclus::Trade<cyclus::Material>,
+      cyclus::Material::Ptr> >& responses);
 
   /// @brief SinkFacilities place accepted trade Materials in their Inventory
   virtual void AcceptGenRsrcTrades(
-      const std::vector< std::pair<cyc::Trade<cyc::Product>,
-      cyc::Product::Ptr> >& responses);
+      const std::vector< std::pair<cyclus::Trade<cyclus::Product>,
+      cyclus::Product::Ptr> >& responses);
   /* --- */
 
   /* --- SinkFacility Members --- */
@@ -168,7 +149,10 @@ class SinkFacility : public cyc::Facility  {
      sets the size of the storage inventory for received material
      @param size the storage size
    */
-  inline void SetMaxInventorySize(double size) { inventory_.set_capacity(size); }
+  inline void SetMaxInventorySize(double size) {
+    max_inv_size_ = size;
+    inventory_.set_capacity(size);
+  }
 
   /// @return the maximum inventory storage size
   inline double MaxInventorySize() const { return inventory_.capacity(); }
@@ -200,22 +184,32 @@ class SinkFacility : public cyc::Facility  {
   /**
      all facilities must have at least one input commodity
    */
+  #pragma cyclus var {}
   std::vector<std::string> in_commods_;
 
   /**
      monthly acceptance capacity
    */
+  #pragma cyclus var {"default": 1e299}
   double capacity_;
 
   /**
      commodity price
    */
+  #pragma cyclus var {}
   double commod_price_;
+
+  /**
+     max inventory size
+   */
+  #pragma cyclus var {"default": 1e299}
+  double max_inv_size_;
 
   /**
      this facility holds material in storage.
    */
-  cyc::ResourceBuff inventory_;
+  #pragma cyclus var {'capacity': 'max_inv_size_'}
+  cyclus::ResourceBuff inventory_;
 };
 
 } // namespace cycamore
