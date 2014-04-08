@@ -784,8 +784,8 @@ BatchReactor::GetMatlBids(const cyc::CommodMap<cyc::Material>::type&
 
   std::set<BidPortfolio<Material>::Ptr> ports;
 
-  const std::vector<std::string>& commods = crctx_.out_commods();
-  std::vector<std::string>::const_iterator it;
+  const std::set<std::string>& commods = crctx_.out_commods();
+  std::set<std::string>::const_iterator it;
   for (it = commods.begin(); it != commods.end(); ++it) {
     BidPortfolio<Material>::Ptr port = GetBids_(commod_requests,
                                                 *it,
@@ -902,8 +902,8 @@ BatchReactor::GetOrder_(double size) {
 
   RequestPortfolio<Material>::Ptr port(new RequestPortfolio<Material>());
 
-  const std::vector<std::string>& commods = crctx_.in_commods();
-  std::vector<std::string>::const_iterator it;
+  const std::set<std::string>& commods = crctx_.in_commods();
+  std::set<std::string>::const_iterator it;
   std::string recipe;
   Material::Ptr mat;
   for (it = commods.begin(); it != commods.end(); ++it) {
