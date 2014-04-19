@@ -26,7 +26,7 @@ def test_dynamic_capacitated():
     facilities being the constraint.
     """
     # Cyclus simulation input for dynamic capacitated
-    sim_inputs = ["../input/dynamic_capacitated/dynamic_capacitated.xml"]
+    sim_inputs = ["./Inputs/dynamic_capacitated.xml"]
 
     for sim_input in sim_inputs:
         holdsrtn = [1]  # needed because nose does not send() to test generator
