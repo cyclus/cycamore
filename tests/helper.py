@@ -70,4 +70,3 @@ def create_sim_input(ref_input, k_factor_in, k_factor_out):
     fw.close()
 
     return fw_path
-

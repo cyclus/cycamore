@@ -3,7 +3,7 @@
 
 <simulation>
   <control>
-    <duration>3</duration>
+    <duration>4</duration>
     <startmonth>1</startmonth>
     <startyear>2000</startyear>
     <decay>0</decay>
@@ -26,6 +26,7 @@
 
   <facility>
     <name>Sink</name>
+    <lifetime>1</lifetime>
     <agent>
       <Sink>
         <in_commods_>
