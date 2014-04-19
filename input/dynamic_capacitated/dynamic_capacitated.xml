@@ -3,10 +3,9 @@
 
 <simulation>
   <control>
-    <duration>2</duration>
+    <duration>3</duration>
     <startmonth>1</startmonth>
     <startyear>2000</startyear>
-    <simstart>0</simstart>
     <decay>0</decay>
   </control>
 
@@ -19,8 +18,8 @@
     <agent>
       <Source>
         <commod_>commodity</commod_>
-        <recipe_name>commod_recipe</recipe_name>
-        <capacity>1.0</capacity>
+        <recipe_name_>commod_recipe</recipe_name_>
+        <capacity_>1.0</capacity_>
       </Source>
     </agent>
   </facility>
@@ -29,10 +28,10 @@
     <name>Sink</name>
     <agent>
       <Sink>
-        <incommods_>
+        <in_commods_>
           <val>commodity</val>
-        </incommods_>
-        <capacity>1.0</capacity>
+        </in_commods_>
+        <capacity_>1.0</capacity_>
       </Sink>
     </agent>
   </facility>
@@ -41,14 +40,14 @@
     <name>SingleRegion</name>
     <allowedfacility>Source</allowedfacility>
     <allowedfacility>Sink</allowedfacility>
-    <model>
+    <agent>
       <NullRegion/>
-    </model>
+    </agent>
     <institution>
       <name>SingleInstitution</name>
       <availableprototype>Source</availableprototype>
       <availableprototype>Sink</availableprototype>
-      <model>
+      <agent>
         <DeployInst>
           <buildorder>
             <prototype>Source</prototype>
@@ -56,17 +55,17 @@
             <date>1</date>
           </buildorder>
           <buildorder>
-            <prototype>Sink</prototype>        
+            <prototype>Sink</prototype>
             <number>2</number>
             <date>1</date>
           </buildorder>
           <buildorder>
             <prototype>Sink</prototype>
-            <number>2</number>        
+            <number>2</number>
             <date>2</date>
           </buildorder>
         </DeployInst>
-      </model>
+      </agent>
     </institution>
   </region>
 
