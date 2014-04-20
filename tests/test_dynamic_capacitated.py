@@ -35,9 +35,6 @@ def test_dynamic_capacitated():
         yield check_cmd, cmd, '.', holdsrtn
         rtn = holdsrtn[0]
         if rtn != 0:
-            os.remove("./output_temp.h5")
-            # This is a starter sqlite db created implicitly
-            os.remove("./output_temp.sqlite")
             return  # don't execute further commands
 
         output = tables.open_file("./output_temp.h5", mode = "r")
@@ -101,10 +98,10 @@ def test_dynamic_capacitated():
 
         # Check that transactions are between sources and sinks only
         for s in sender_ids:
-            yield assert_equal, len(np.where(source_id == s)), 1
+            yield assert_equal, len(np.where(source_id == s)[0]), 1
 
         for r in receiver_ids:
-            yield assert_equal, len(np.where(sink_id == s)), 1
+            yield assert_equal, len(np.where(sink_id == r)[0]), 1
 
         # Total expected number of transactions
         yield assert_equal, len(trans_time), 7
