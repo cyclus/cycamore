@@ -22,7 +22,10 @@ New Releases
 On each new release (major, minor, micro), the release manager is responsible
 for updating the regression test databases updated.
 
-First, generate the new databases:
+First, add the actual releases as tags (this can be done through the GitHub
+interface).
+
+Next, generate the new databases:
 
 .. code-block:: bash
 

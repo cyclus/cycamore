@@ -95,7 +95,7 @@ def build_cyclus(build_path, install_path, prefix_path = '', boost = '', coin = 
     os.chdir(cwd)
 
 def build_cycamore(build_path, install_path, prefix_path = '', boost = '', coin = ''):
-    cmd = ['cmake', '../src', '-DCMAKE_INSTALL_PREFIX=' + os.path.abspath(install_path), '-DCYCLUS_ROOT_DIR=' + install_path]
+    cmd = ['cmake', '..', '-DCMAKE_INSTALL_PREFIX=' + os.path.abspath(install_path), '-DCYCLUS_ROOT_DIR=' + install_path]
     if prefix_path != '':
         cmd.append('-DCMAKE_PREFIX_PATH=' + os.path.abspath(prefix_path))
     if boost != '':
