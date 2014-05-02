@@ -11,10 +11,7 @@ _invar_table_names = {"agents": "AgentEntry",
 _agent_key = "AgentId"
 _agent_schema = ["Kind", "Implementation", "Prototype", "ParentId", "EnterTime"]
 
-_agent_deaths_key = "AgentId"
-_agent_deaths_schema = ["ExitTime"]
-
-_simulation_time_info_schema = ["InitialYear", "InitialMonth", "Start",
+_simulation_time_info_schema = ["InitialYear", "InitialMonth", 
                                 "Duration", "DecayInterval"]
 
 _xaction_schema = ["SenderId", "ReceiverId", "ResourceId", "Commodity", 
@@ -88,14 +85,16 @@ class HDF5RegressionVisitor(object):
         """
         ret = set()
         for table in self._db.walk_nodes(classname = "Table"):
-            methname = 'visit' + re.sub('([A-Z]+)', r'_\1', table._v_name).lower()
+            tblname = re.sub('([A-Z]+)', r'\1', table._v_name).lower()
+            methname = 'visit_' + tblname
             if hasattr(self, methname):
+                print("visiting ", tblname)
                 meth = getattr(self, methname)
                 obj = meth(table)
                 ret.add(obj)
         return ret
 
-    def visit_agents(self, table):
+    def visit_agententry(self, table):
         d = {self.agent_invariants[row[_agent_key]]:
                  tuple(row[i] if i not in _agent_id_names
                        else self.agent_invariants[row[_agent_key]] 
@@ -103,15 +102,7 @@ class HDF5RegressionVisitor(object):
              for row in table.iterrows()}
         return tuple((k, d[k]) for k in sorted(d.keys()))
 
-    def visit_agent_deaths(self, table):
-        d = {self.agent_invariants[row[_agent_deaths_key]]:
-                 tuple(row[i] if i not in _agent_id_names
-                       else self.agent_invariants[row[i]] 
-                       for i in _agent_deaths_schema)
-             for row in table.iterrows()}
-        return tuple((k, d[k]) for k in sorted(d.keys()))
-
-    def visit_simulation_time_info(self, table):
+    def visit_info(self, table):
         return tuple(row[i] for i in _simulation_time_info_schema
                      for row in table.iterrows())
 
