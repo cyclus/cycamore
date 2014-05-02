@@ -9,20 +9,16 @@
     <decay>2</decay>
   </control>
 
-  <commodity>
-    <name>natl_u</name>
-  </commodity>
-
-  <commodity>
-    <name>enriched_u</name>
-  </commodity>
-
-  <commodity>
-    <name>waste</name>
-  </commodity>
+  <commodity> <name>natl_u</name> </commodity>
+  <commodity> <name>enriched_u</name> </commodity>
+  <commodity> <name>waste</name> </commodity>
 
   <facility>
     <name>Enrichment</name>
+    <module>
+      <path>EnrichmentFacility</path>
+      <agent>EnrichmentFacility</agent>
+    </module>
     <agent>
       <EnrichmentFacility>
         <in_commod_>natl_u</in_commod_>
@@ -37,6 +33,10 @@
 
   <facility>
     <name>Reactor1</name>
+    <module>
+      <path>BatchReactor</path>
+      <agent>BatchReactor</agent>
+    </module>
     <agent>
       <BatchReactor>
         <fuel>         
@@ -81,6 +81,10 @@
 
   <facility>
     <name>Reactor2</name>
+    <module>
+      <path>BatchReactor</path>
+      <agent>BatchReactor</agent>
+    </module>
     <agent>
       <BatchReactor>
         <fuel>
@@ -115,13 +119,19 @@
 
   <region>
     <name>SingleRegion</name>
+    <module>
+      <path>NullRegion</path>
+      <agent>NullRegion</agent>
+    </module>
     <allowedfacility>Enrichment</allowedfacility>
     <allowedfacility>LWR_Reactor</allowedfacility>
-    <agent>
-      <NullRegion/>
-    </agent>
+    <agent><NullRegion/></agent>
     <institution>
       <name>SingleInstitution</name>
+      <module>
+        <path>NullInst</path>
+        <agent>NullInst</agent>
+      </module>
       <availableprototype>Enrichment</availableprototype>
       <availableprototype>Reactor1</availableprototype>
       <availableprototype>Reactor2</availableprototype>
@@ -139,110 +149,48 @@
           <number>1</number>
         </entry>        
       </initialfacilitylist>
-      <agent>
-        <NullInst/>
-      </agent>
+      <agent><NullInst/></agent>
     </institution>
   </region>
 
   <recipe>
     <name>natl_u</name>
     <basis>mass</basis>
-    <nuclide>
-      <id>922350000</id>
-      <comp>0.711</comp>
-    </nuclide>
-    <nuclide>
-      <id>922380000</id>
-      <comp>99.289</comp>
-    </nuclide>
+    <nuclide> <id>922350000</id> <comp>0.711</comp> </nuclide>
+    <nuclide> <id>922380000</id> <comp>99.289</comp> </nuclide>
   </recipe>
 
   <recipe>
     <name>lwr_fuel_recipe</name>
     <basis>mass</basis>
-    <nuclide>
-      <id>922350000</id>
-      <comp>3.0</comp>
-    </nuclide>
-    <nuclide>
-      <id>922380000</id>
-      <comp>97.0</comp>
-    </nuclide>
+    <nuclide> <id>922350000</id> <comp>3.0</comp> </nuclide>
+    <nuclide> <id>922380000</id> <comp>97.0</comp> </nuclide>
   </recipe>
 
   <recipe>
     <name>lwr_fuel_recipe2</name>
     <basis>mass</basis>
-    <nuclide>
-      <id>922350000</id>
-      <comp>5.0</comp>
-    </nuclide>
-    <nuclide>
-      <id>922380000</id>
-      <comp>95.0</comp>
-    </nuclide>
+    <nuclide> <id>922350000</id> <comp>5.0</comp> </nuclide>
+    <nuclide> <id>922380000</id> <comp>95.0</comp> </nuclide>
   </recipe>
 
   <recipe>
     <name>lwr_used_fuel_recipe</name>
     <basis>mass</basis>
-    <nuclide>
-      <id>922350000</id>
-      <comp>156.729</comp>
-    </nuclide>
-    <nuclide>
-      <id>922360000</id>
-      <comp>102.103</comp>
-    </nuclide>
-    <nuclide>
-      <id>922380000</id>
-      <comp>18280.324</comp>
-    </nuclide>
-    <nuclide>
-      <id>932370000</id>
-      <comp>13.656</comp>
-    </nuclide>
-    <nuclide>
-      <id>942380000</id>
-      <comp>5.043</comp>
-    </nuclide>
-    <nuclide>
-      <id>942390000</id>
-      <comp>106.343</comp>
-    </nuclide>
-    <nuclide>
-      <id>942400000</id>
-      <comp>41.357</comp>
-    </nuclide>
-    <nuclide>
-      <id>942410000</id>
-      <comp>36.477</comp>
-    </nuclide>
-    <nuclide>
-      <id>942420000</id>
-      <comp>15.387</comp>
-    </nuclide>
-    <nuclide>
-      <id>952410000</id>
-      <comp>1.234</comp>
-    </nuclide>
-    <!-- <nuclide> -->
-      <!--   <id>95242m</id> -->
-      <!--   <comp>0.03</comp> -->
-      <!-- </nuclide> -->
-    <nuclide>
-      <id>952430000</id>
-      <comp>3.607</comp>
-    </nuclide>
-    <nuclide>
-      <id>962440000</id>
-      <comp>0.431</comp>
-    </nuclide>
-    <nuclide>
-      <id>962450000</id>
-      <comp>1.263</comp>
-    </nuclide>
+    <nuclide> <id>922350000</id> <comp>156.729</comp> </nuclide>
+    <nuclide> <id>922360000</id> <comp>102.103</comp> </nuclide>
+    <nuclide> <id>922380000</id> <comp>18280.324</comp> </nuclide>
+    <nuclide> <id>932370000</id> <comp>13.656</comp> </nuclide>
+    <nuclide> <id>942380000</id> <comp>5.043</comp> </nuclide>
+    <nuclide> <id>942390000</id> <comp>106.343</comp> </nuclide>
+    <nuclide> <id>942400000</id> <comp>41.357</comp> </nuclide>
+    <nuclide> <id>942410000</id> <comp>36.477</comp> </nuclide>
+    <nuclide> <id>942420000</id> <comp>15.387</comp> </nuclide>
+    <nuclide> <id>952410000</id> <comp>1.234</comp> </nuclide>
+    <!-- <nuclide> --> <!--   <id>95242m</id> --> <!--   <comp>0.03</comp> --> <!-- </nuclide> -->
+    <nuclide> <id>952430000</id> <comp>3.607</comp> </nuclide>
+    <nuclide> <id>962440000</id> <comp>0.431</comp> </nuclide>
+    <nuclide> <id>962450000</id> <comp>1.263</comp> </nuclide>
   </recipe>
 
 </simulation>

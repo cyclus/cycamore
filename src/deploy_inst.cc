@@ -31,7 +31,7 @@ std::string DeployInst::schema() {
 
 void DeployInst::InfileToDb(cyclus::InfileTree* qe, cyclus::DbInit di) {
   cyclus::Institution::InfileToDb(qe, di);
-  qe = qe->SubTree("agent/" + agent_impl());
+  qe = qe->SubTree("agent/*");
 
   int nOrders = qe->NMatches("buildorder");
   for (int i = 0; i < nOrders; i++) {
