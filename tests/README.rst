@@ -16,6 +16,14 @@ To run the regression tests from the cycamore/tests:
 
   $ nosetests
 
+Regression Test Coverage
+========================
+
+Regression tests currently cover the ``AgentEntry``, ``Info``, and
+``Transaction`` tables for the cases in ``input/physor``. ``AgentId``s are not
+checked directly against each database, rather a tuple of uniquely identifying
+(from the ``AgentEntry`` table) information is used.
+
 New Releases
 ------------
 
