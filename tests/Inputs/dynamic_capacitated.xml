@@ -1,0 +1,82 @@
+<?xml version="1.0"?>
+<!-- Dynamic Capacitated -->
+
+<simulation>
+  <control>
+    <duration>4</duration>
+    <startmonth>1</startmonth>
+    <startyear>2000</startyear>
+    <decay>0</decay>
+  </control>
+
+  <commodity>
+    <name>commodity</name>
+  </commodity>
+
+  <facility>
+    <name>Source</name>
+    <agent>
+      <Source>
+        <commod_>commodity</commod_>
+        <recipe_name_>commod_recipe</recipe_name_>
+        <capacity_>1.0</capacity_>
+      </Source>
+    </agent>
+  </facility>
+
+  <facility>
+    <name>Sink</name>
+    <lifetime>1</lifetime>
+    <agent>
+      <Sink>
+        <in_commods_>
+          <val>commodity</val>
+        </in_commods_>
+        <capacity_>1.0</capacity_>
+      </Sink>
+    </agent>
+  </facility>
+
+  <region>
+    <name>SingleRegion</name>
+    <allowedfacility>Source</allowedfacility>
+    <allowedfacility>Sink</allowedfacility>
+    <agent>
+      <NullRegion/>
+    </agent>
+    <institution>
+      <name>SingleInstitution</name>
+      <availableprototype>Source</availableprototype>
+      <availableprototype>Sink</availableprototype>
+      <agent>
+        <DeployInst>
+          <buildorder>
+            <prototype>Source</prototype>
+            <number>3</number>
+            <date>1</date>
+          </buildorder>
+          <buildorder>
+            <prototype>Sink</prototype>
+            <number>2</number>
+            <date>1</date>
+          </buildorder>
+          <buildorder>
+            <prototype>Sink</prototype>
+            <number>2</number>
+            <date>2</date>
+          </buildorder>
+        </DeployInst>
+      </agent>
+    </institution>
+  </region>
+
+  <recipe>
+    <name>commod_recipe</name>
+    <basis>mass</basis>
+    <nuclide>
+      <id>010010000</id>
+      <comp>1</comp>
+    </nuclide>
+  </recipe>
+
+</simulation>
