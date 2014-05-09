@@ -48,6 +48,8 @@ def install_cycamore(args):
             cmake_cmd += ['-DBOOST_ROOT=' + absexpanduser(args.boost_root)]
         if args.cyclus_root:
             cmake_cmd += ['-DCYCLUS_ROOT_DIR='+absexpanduser(args.cyclus_root)]
+        if args.build_type:
+            cmake_cmd += ['-DCMAKE_BUILD_TYPE=' + args.build_type]
         check_windows_cmake(cmake_cmd)
         rtn = subprocess.check_call(cmake_cmd, cwd=absexpanduser(args.build_dir), shell=(os.name=='nt'))
 
@@ -114,10 +116,12 @@ def main():
         "FIND_PATH, FIND_PROGRAM, or FIND_LIBRARY macros"
     parser.add_argument('--cmake_prefix_path', help=cmake_prefix_path)
 
+    build_type = "the CMAKE_BUILD_TYPE" 
+    parser.add_argument('--build_type', help=build_type)
 
     args = parser.parse_args()
     if args.uninstall:
-        uninstall_cyclus(args)
+        uninstall_cycamore(args)
     else:
         install_cycamore(args)
 
