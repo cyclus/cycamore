@@ -3,6 +3,7 @@ from __future__ import print_function
 import re
 from collections import defaultdict
 
+import numpy as np
 import tables
 
 _invar_table_names = {"agents": "AgentEntry",
@@ -44,8 +45,8 @@ class HDF5RegressionVisitor(object):
     def _populate_agent_invariants(self):
         invars = {}
         table = self._db.get_node(self._db.root,
-                                  name = _invar_table_names["agents"], 
-                                  classname = "Table")
+                                  name=_invar_table_names["agents"], 
+                                  classname="Table")
         for row in table.iterrows():
             a_id = row["AgentId"]
             p_id = row["ParentId"]
@@ -57,17 +58,31 @@ class HDF5RegressionVisitor(object):
                                        " not previously registered.")
                 else:
                     p_invar = invars[p_id]
-            invars[a_id] = tuple(row[i] if i not in _agent_id_names else p_invar 
-                                 for i in _agent_schema)
+            newrow = []
+            for i in _agent_schema:
+                if i in _agent_id_names:
+                    newrow.append(p_invar)
+                elif isinstance(row[i], np.ndarray):
+                    newrow.append(tuple(row[i]))
+                else:
+                    newrow.append(row[i])
+            invars[a_id] = tuple(newrow)
         return invars
     
     def _populate_rsrc_invariants(self):
         table = self._db.get_node(self._db.root,
                                   name = _invar_table_names["rsrcs"], 
                                   classname = "Table")
-        return {row[_rsrc_key]: 
-                tuple(row[item] for item in _rsrc_schema) 
-                for row in table.iterrows()}
+        d = {}
+        for row in table.iterrows():
+            entry = []
+            for item in _rsrc_schema:
+                if isinstance(row[item], np.ndarray):
+                    entry.append(tuple(row[item]))
+                else:
+                    entry.append(row[item])
+            d[row[_rsrc_key]] = tuple(entry)
+        return d
 
     def _xaction_entry(self, row):
         entry = []
@@ -78,7 +93,7 @@ class HDF5RegressionVisitor(object):
                 entry.append(self.rsrc_invariants[row[item]])
             else:
                 entry.append(row[item])
-        return tuple(i for i in entry)
+        return tuple(tuple(i) if isinstance(i, np.ndarray) else i for i in entry)
     
     def walk(self):
         """Visits all tables, populating an equality-comparable object
@@ -95,11 +110,17 @@ class HDF5RegressionVisitor(object):
         return ret
 
     def visit_agententry(self, table):
-        d = {self.agent_invariants[row[_agent_key]]:
-                 tuple(row[i] if i not in _agent_id_names
-                       else self.agent_invariants[row[_agent_key]] 
-                       for i in _agent_schema)
-             for row in table.iterrows()}
+        d = {}
+        for row in table.iterrows():
+            entry = []
+            for i in _agent_schema:
+                if i in _agent_id_names:
+                    entry.append(self.agent_invariants[row[_agent_key]])
+                elif isinstance(row[i], np.ndarray):
+                    entry.append(tuple(row[i]))
+                else:
+                    entry.append(row[i])
+            d[self.agent_invariants[row[_agent_key]]] = tuple(entry)
         return tuple((k, d[k]) for k in sorted(d.keys()))
 
     def visit_info(self, table):
@@ -110,9 +131,10 @@ class HDF5RegressionVisitor(object):
         xactions = []
         tmin = table[0]["Time"]
         tmax = table[-1]["Time"]
-        xactions = tuple(
-            frozenset(
-                self._xaction_entry(row) 
-                for row in table.where('Time ==' + str(i)) 
-                ) for i in range(tmin, tmax + 1))
-        return xactions
+        xactions = []
+        for i in range(tmin, tmax + 1):
+            entry = set()
+            for row in table.where('Time ==' + str(i)):
+                entry.add(self._xaction_entry(row))
+            xactions.append(frozenset(entry))
+        return tuple(xactions)
