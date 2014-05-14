@@ -28,7 +28,7 @@ def compare_nondeterm(path1, path2):
     v2 = visitors.HDF5RegressionVisitor(path2)
     return v1.walk() == v2.walk()
                     
-def compare_determ(path1, path2, verbose=False):
+def compare_determ(path1, path2, verbose=True):
     """Compares two Cyclus HDF5 databases assuming deterministic AgentIDs and
     TransactionIDs
 
