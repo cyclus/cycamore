@@ -95,7 +95,7 @@ std::string InproReactor::schema() {
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 void InproReactor::InitFrom(cyclus::InfileTree* qe) {
   cyclus::Facility::InitFrom(qe);
-  qe = qe->SubTree("agent/" + agent_impl());
+  qe = qe->SubTree("agent/*");
 
   using std::string;
   using boost::lexical_cast;
