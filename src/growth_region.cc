@@ -53,7 +53,7 @@ std::string GrowthRegion::schema() {
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 void GrowthRegion::InitFrom(cyclus::InfileTree* qe) {
   cyclus::Region::InitFrom(qe);
-  qe = qe->SubTree("agent/" + agent_impl());
+  qe = qe->SubTree("agent/*");
   LOG(cyclus::LEV_DEBUG2, "greg") << "A Growth Region is being initialized";
 
   std::string query = "commodity";
