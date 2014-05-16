@@ -4,7 +4,7 @@ from nose.tools import assert_equal, assert_true
 import os
 import tables
 import numpy as np
-from tools import check_cmd
+from tools import check_cmd, cleanfs
 from helper import table_exist, find_ids
 
 def test_dynamic_capacitated():
@@ -44,9 +44,9 @@ def test_dynamic_capacitated():
         yield assert_true, table_exist(output, paths)
         if not table_exist(output, paths):
             output.close()
-            os.remove("./output_temp.h5")
+            cleanfs(["./output_temp.h5"])
             # This is a starter sqlite db created implicitly
-            os.remove("./output_temp.sqlite")
+            cleanfs(["./output_temp.sqlite"])
             return  # don't execute further commands
 
         # Get specific tables and columns
@@ -134,6 +134,6 @@ def test_dynamic_capacitated():
         yield assert_equal, quantity, 2
 
         output.close()
-        os.remove("./output_temp.h5")
+        cleanfs(["./output_temp.h5"])
         # This is a starter sqlite db created implicitly
-        os.remove("./output_temp.sqlite")
+        cleanfs(["./output_temp.sqlite"])
