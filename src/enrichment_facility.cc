@@ -29,6 +29,8 @@ EnrichmentFacility::~EnrichmentFacility() {}
 
 #pragma cyclus def schema cycamore::EnrichmentFacility
 
+#pragma cyclus def annotations cycamore::EnrichmentFacility
+
 #pragma cyclus def initinv cycamore::EnrichmentFacility
 
 #pragma cyclus def snapshotinv cycamore::EnrichmentFacility

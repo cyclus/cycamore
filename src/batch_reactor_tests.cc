@@ -325,6 +325,7 @@ TEST_F(BatchReactorTest, StartProcess) {
 
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 TEST_F(BatchReactorTest, InitCond) {
+  cyclus::Env::SetNucDataPath();
   src_facility->Build();
   TestBuffs(rsrv_n, core_n, stor_n);
 }
