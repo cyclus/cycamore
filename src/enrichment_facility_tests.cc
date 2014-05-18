@@ -306,6 +306,7 @@ TEST_F(EnrichmentFacilityTest, AddRequests) {
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 TEST_F(EnrichmentFacilityTest, Extract) {
   using cyclus::Material;
+  cyclus::Env::SetNucDataPath();
   double qty = 1000; // 5 kg
   Material::Ptr base = GetMat(qty);
   double time = tc_.get()->time();
@@ -366,7 +367,7 @@ TEST_F(EnrichmentFacilityTest, AddBids) {
   using cyclus::Converter;
   using cyclus::ExchangeContext;
   using cyclus::Material;
-
+  cyclus::Env::SetNucDataPath();
   // an enrichment facility bids on nreqs requests
   // note that bid response is covered by Bid tests  
   // note that validity of requests is covered by ValidReq tests 

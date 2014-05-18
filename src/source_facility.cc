@@ -21,6 +21,8 @@ SourceFacility::~SourceFacility() {}
 
 #pragma cyclus def schema cycamore::SourceFacility
 
+#pragma cyclus def annotations cycamore::SourceFacility
+
 #pragma cyclus def infiletodb cycamore::SourceFacility
 
 #pragma cyclus def snapshot cycamore::SourceFacility

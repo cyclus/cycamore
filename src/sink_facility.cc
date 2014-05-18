@@ -22,6 +22,8 @@ SinkFacility::~SinkFacility() {}
 
 #pragma cyclus def schema cycamore::SinkFacility
 
+#pragma cyclus def annotations cycamore::SinkFacility
+
 #pragma cyclus def infiletodb cycamore::SinkFacility
 
 #pragma cyclus def snapshot cycamore::SinkFacility
