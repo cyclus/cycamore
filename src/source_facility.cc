@@ -40,9 +40,9 @@ void SourceFacility::InitFrom(SourceFacility* m) {
 void SourceFacility::InitFrom(cyclus::QueryableBackend* b) {
   #pragma cyclus impl initfromdb cycamore::SourceFacility
 
-  cyclus::Commodity commod(out_commod_);
-  cyclus::CommodityProducer::AddCommodity(commod);
-  cyclus::CommodityProducer::SetCapacity(commod, capacity_);
+  cyclus::toolkit::Commodity commod(out_commod_);
+  cyclus::toolkit::CommodityProducer::AddCommodity(commod);
+  cyclus::toolkit::CommodityProducer::SetCapacity(commod, capacity_);
 }
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -

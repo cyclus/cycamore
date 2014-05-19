@@ -20,7 +20,7 @@ class BatchReactorTest : public ::testing::Test {
   // init params
   std::string in_c1, in_c2, out_c1, out_c2;
   std::string in_r1, in_r2, out_r1, out_r2;
-  cyclus::CommodityRecipeContext crctx;
+  cyclus::toolkit::CommodityRecipeContext crctx;
 
   int n_batches, n_load, n_reserves;
   int process_time, refuel_time, preorder_time;
