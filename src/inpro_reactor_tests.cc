@@ -32,6 +32,7 @@ void InproReactorTest::SetUp() {
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 void InproReactorTest::TearDown() {
+  delete src_facility;
 }
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -109,6 +110,7 @@ TEST_F(InproReactorTest, clone) {
   EXPECT_EQ(capacity, cloned_fac->ProductionCapacity(commod));
   EXPECT_EQ(cost, cloned_fac->ProductionCost(commod));
 
+  delete cloned_fac;
 }
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -

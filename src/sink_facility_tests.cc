@@ -11,12 +11,15 @@
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 void SinkFacilityTest::SetUp() {
+  src_facility = new cycamore::SinkFacility(tc_.get());
+  trader = tc_.trader();
   InitParameters();
   SetUpSinkFacility();
 }
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 void SinkFacilityTest::TearDown() {
+  delete src_facility;
 }
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -32,8 +35,6 @@ void SinkFacilityTest::InitParameters() {
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 void SinkFacilityTest::SetUpSinkFacility() {
-  using cycamore::SinkFacility;
-  src_facility = new SinkFacility(tc_.get());
   src_facility->AddCommodity(commod1_);
   src_facility->AddCommodity(commod2_);
   src_facility->capacity(capacity_);
@@ -66,6 +67,7 @@ TEST_F(SinkFacilityTest, Clone) {
   std::vector<std::string> vexp (arr, arr + sizeof(arr) / sizeof(arr[0]) );
   EXPECT_EQ(vexp, cloned_fac->input_commodities());
 
+  delete cloned_fac;
 }
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -151,7 +153,6 @@ TEST_F(SinkFacilityTest, Accept) {
   using cyclus::Material;
   using cyclus::Request;
   using cyclus::Trade;
-  using test_helpers::trader;
   using test_helpers::get_mat;
 
   double qty = qty_ * 2;

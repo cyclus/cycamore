@@ -18,13 +18,14 @@ namespace cycamore {
 void EnrichmentFacilityTest::SetUp() {
   cyclus::Context* ctx = tc_.get();
   src_facility = new EnrichmentFacility(ctx);
-
+  trader = tc_.trader();
   InitParameters();
   SetUpSourceFacility();
 }
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 void EnrichmentFacilityTest::TearDown() {
+  delete src_facility;
 }
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -64,11 +65,8 @@ void EnrichmentFacilityTest::SetUpSourceFacility() {
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 cyclus::Material::Ptr EnrichmentFacilityTest::GetMat(double qty) {
-  using test_helpers::trader;
-  // return cyclus::Material::Create(trader, qty,
-  //                                 tc_.get()->GetRecipe(in_recipe));
   return cyclus::Material::CreateUntracked(qty,
-                                  tc_.get()->GetRecipe(in_recipe));
+                                           tc_.get()->GetRecipe(in_recipe));
 }
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -174,6 +172,7 @@ TEST_F(EnrichmentFacilityTest, Clone) {
   EXPECT_DOUBLE_EQ(swu_capacity, cloned_fac->swu_capacity());
   EXPECT_EQ(reserves, cloned_fac->initial_reserves());
   
+  delete cloned_fac;
 }
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -330,7 +329,6 @@ TEST_F(EnrichmentFacilityTest, Accept) {
   using cyclus::Material;
   using cyclus::Request;
   using cyclus::Trade;
-  using test_helpers::trader;
 
   // an enrichment facility gets two trades, each for 1/3 of its inv size
   // note that comp != recipe is covered by AddMat tests
@@ -357,6 +355,11 @@ TEST_F(EnrichmentFacilityTest, Accept) {
   EXPECT_DOUBLE_EQ(0.0, src_facility->InventorySize());
   src_facility->AcceptMatlTrades(responses);  
   EXPECT_DOUBLE_EQ(qty * 2, src_facility->InventorySize());
+
+  delete bid2;
+  delete bid1;
+  delete req2;
+  delete req1;
 }
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -407,7 +410,6 @@ EnrichmentFacilityTest::GetContext(int nreqs, int nvalid) {
   using cyclus::ExchangeContext;
   using cyclus::Material;
   using cyclus::Request;
-  using test_helpers::trader;
   using test_helpers::get_mat;
   
   boost::shared_ptr< ExchangeContext<Material> >
@@ -527,7 +529,6 @@ TEST_F(EnrichmentFacilityTest, Response) {
   using cyclus::enrichment::SwuRequired;
   using cyclus::enrichment::UraniumAssay;
   using test_helpers::get_mat;
-  using test_helpers::trader;
 
   // problem set up
   std::vector< cyclus::Trade<cyclus::Material> > trades;
