@@ -263,7 +263,7 @@ InproReactor::GetMatlRequests() {
   
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 std::set<cyclus::BidPortfolio<cyclus::Material>::Ptr>
-InproReactor::GetMatlBids(const cyclus::CommodMap<cyclus::Material>::type&
+InproReactor::GetMatlBids(cyclus::CommodMap<cyclus::Material>::type&
                           commod_requests) {
   using cyclus::BidPortfolio;
   using cyclus::Material;
@@ -574,7 +574,7 @@ InproReactor::GetOrder_(double size) {
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 cyclus::BidPortfolio<cyclus::Material>::Ptr InproReactor::GetBids_(
-    const cyclus::CommodMap<cyclus::Material>::type& commod_requests,
+    cyclus::CommodMap<cyclus::Material>::type& commod_requests,
     std::string commod,
     cyclus::ResourceBuff* buffer) {
   using cyclus::Bid;
@@ -590,17 +590,16 @@ cyclus::BidPortfolio<cyclus::Material>::Ptr InproReactor::GetBids_(
   BidPortfolio<Material>::Ptr port(new BidPortfolio<Material>());
   
   if (commod_requests.count(commod) > 0 && buffer->quantity() > 0) {
-    const std::vector<Request<Material>::Ptr>& requests =
-        commod_requests.at(commod);
+    std::vector<Request<Material>*>& requests = commod_requests[commod];
 
     // get offer composition
     Material::Ptr back = ResCast<Material>(buffer->Pop(ResourceBuff::BACK));
     Composition::Ptr comp = back->comp();
     buffer->Push(back);
     
-    std::vector<Request<Material>::Ptr>::const_iterator it;
+    std::vector<Request<Material>*>::iterator it;
     for (it = requests.begin(); it != requests.end(); ++it) {
-      const Request<Material>::Ptr req = *it;
+      Request<Material>* req = *it;
       double qty = std::min(req->target()->quantity(), buffer->quantity());
       Material::Ptr offer =
           Material::CreateUntracked(qty, comp);
