@@ -22,7 +22,8 @@ class EnrichmentFacilityTest : public ::testing::Test {
   EnrichmentFacility* src_facility;
   std::string in_commod, out_commod, in_recipe;
   cyclus::Composition::Ptr recipe;
-
+  TestFacility* trader;
+  
   double tails_assay, feed_assay, inv_size, commodity_price, swu_capacity;
 
   double reserves;
