@@ -151,47 +151,47 @@ class SourceFacility : public cyclus::Facility,
      sets the output commodity name
      @param name the commodity name
    */
-  inline void commodity(std::string name) { out_commod_ = name; }
+  inline void commodity(std::string name) { out_commod = name; }
 
   /// @return the output commodity
-  inline std::string commodity() const { return out_commod_; }
+  inline std::string commodity() const { return out_commod; }
 
   /**
      sets the capacity of a material generated at any given time step
      @param capacity the production capacity
    */
-  inline void capacity(double capacity) {
-    capacity_ = capacity;
-    current_capacity_ = capacity_;
+  inline void Capacity(double cap) {
+    capacity = cap;
+    current_capacity = capacity;
   }
 
   /// @return the production capacity at any given time step
-  inline double capacity() const { return capacity_; }
+  inline double Capacity() const { return capacity; }
 
   /**
      sets the name of the recipe to be produced
      @param name the recipe name
    */
-  inline void recipe(std::string name) { recipe_name_ = name; }
+  inline void recipe(std::string name) { recipe_name = name; }
 
   /// @return the name of the output recipe
-  inline std::string recipe() const { return recipe_name_; }
+  inline std::string recipe() const { return recipe_name; }
 
   /// @return the current timestep's capacity
-  inline double current_capacity() const { return current_capacity_; }
+  inline double CurrentCapacity() const { return current_capacity; }
 
  private:
   /**
      This facility has only one output commodity
    */
   #pragma cyclus var {}
-  std::string out_commod_;
+  std::string out_commod;
 
   /**
      Name of the recipe this facility uses.
    */
   #pragma cyclus var {}
-  std::string recipe_name_;
+  std::string recipe_name;
 
   /**
      The capacity is defined in terms of the number of units of the
@@ -199,13 +199,13 @@ class SourceFacility : public cyclus::Facility,
      can be provided to represent infinte capacity.
    */
   #pragma cyclus var {"default": 1e299}
-  double capacity_;
+  double capacity;
 
   /**
      The capacity at the current time step
    */
-  #pragma cyclus var {'derived_init': 'current_capacity_ = capacity_;'}
-  double current_capacity_;
+  #pragma cyclus var {'derived_init': 'current_capacity = capacity;'}
+  double current_capacity;
 
   /* --- */
 };

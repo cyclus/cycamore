@@ -43,7 +43,7 @@ class Context;
    optional parameters which have default values listed here.
    - double capacityFactor: The ratio of actual acceptance capacity to
    the rated acceptance capacity. Default is 1 (actual/rated).
-   - double availFactor: The percent of time the facility operates at
+   - double AvailFactor: The percent of time the facility operates at
    its capacity factor. Default is 100%.
    - double capitalCost: The cost of constructing and commissioning this
    facility. Default is 0 ($).
@@ -143,73 +143,73 @@ class SinkFacility : public cyclus::Facility  {
      add a commodity to the set of input commodities
      @param name the commodity name
    */
-  inline void AddCommodity(std::string name) { in_commods_.push_back(name); }
+  inline void AddCommodity(std::string name) { in_commods.push_back(name); }
 
   /**
      sets the size of the storage inventory for received material
      @param size the storage size
    */
   inline void SetMaxInventorySize(double size) {
-    max_inv_size_ = size;
-    inventory_.set_capacity(size);
+    max_inv_size = size;
+    inventory.set_capacity(size);
   }
 
   /// @return the maximum inventory storage size
-  inline double MaxInventorySize() const { return inventory_.capacity(); }
+  inline double MaxInventorySize() const { return inventory.capacity(); }
 
   /// @return the current inventory storage size
-  inline double InventorySize() const { return inventory_.quantity(); }
+  inline double InventorySize() const { return inventory.quantity(); }
 
   /**
      determines the amount to request
    */
   inline double RequestAmt() const {
-    return std::min(capacity_, std::max(0.0, inventory_.space()));
+    return std::min(capacity, std::max(0.0, inventory.space()));
   }
     
   /**
      sets the capacity of a material generated at any given time step
      @param capacity the reception capacity
    */
-  inline void capacity(double capacity) { capacity_ = capacity; }
+  inline void Capacity(double cap) { capacity = cap; }
 
   /// @return the reception capacity at any given time step
-  inline double capacity() const { return capacity_; }
+  inline double Capacity() const { return capacity; }
 
   /// @return the input commodities
   inline const std::vector<std::string>&
-      input_commodities() const { return in_commods_; }
+      input_commodities() const { return in_commods; }
 
  private: 
   /**
      all facilities must have at least one input commodity
    */
   #pragma cyclus var {}
-  std::vector<std::string> in_commods_;
+  std::vector<std::string> in_commods;
 
   /**
      monthly acceptance capacity
    */
   #pragma cyclus var {"default": 1e299}
-  double capacity_;
+  double capacity;
 
   /**
      commodity price
    */
   #pragma cyclus var {}
-  double commod_price_;
+  double commod_price;
 
   /**
      max inventory size
    */
   #pragma cyclus var {"default": 1e299}
-  double max_inv_size_;
+  double max_inv_size;
 
   /**
      this facility holds material in storage.
    */
-  #pragma cyclus var {'capacity': 'max_inv_size_'}
-  cyclus::ResourceBuff inventory_;
+  #pragma cyclus var {'capacity': 'max_inv_size'}
+  cyclus::ResourceBuff inventory;
 };
 
 } // namespace cycamore
