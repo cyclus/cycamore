@@ -176,11 +176,12 @@ boost::shared_ptr< cyclus::ExchangeContext<cyclus::Material> >
 SourceFacilityTest::GetContext(int nreqs, std::string commod) {
   using cyclus::Material;
   using cyclus::Request;
+  using cyclus::ExchangeContext;
   using test_helpers::get_mat;
   
   double qty = 3;
-  boost::shared_ptr< cyclus::ExchangeContext<cyclus::Material> >
-                     ec(new cyclus::ExchangeContext<cyclus::Material>());
+  boost::shared_ptr< ExchangeContext<Material> >
+      ec(new ExchangeContext<Material>());
   for (int i = 0; i < nreqs; i++) {
     ec->AddRequest(Request<Material>::Create(get_mat(), trader, commod));
   }
