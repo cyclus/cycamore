@@ -288,11 +288,11 @@ TEST_F(EnrichmentFacilityTest, AddRequests) {
   ASSERT_EQ(ports.size(), 1);
   ASSERT_EQ(ports.begin()->get()->qty(), inv_size);
 
-  const std::vector<Request<Material>::Ptr>& requests =
+  const std::vector<Request<Material>*>& requests =
       ports.begin()->get()->requests();
   ASSERT_EQ(requests.size(), 1);
 
-  Request<Material>::Ptr req = *requests.begin();
+  Request<Material>* req = *requests.begin();
   EXPECT_EQ(req->requester(), src_facility);
   EXPECT_EQ(req->commodity(), in_commod);
 
@@ -340,14 +340,14 @@ TEST_F(EnrichmentFacilityTest, Accept) {
   std::vector< std::pair<cyclus::Trade<cyclus::Material>,
                          cyclus::Material::Ptr> > responses;
 
-  Request<Material>::Ptr req1 =
+  Request<Material>* req1 =
       Request<Material>::Create(DoRequest(), src_facility, in_commod);
-  Bid<Material>::Ptr bid1 =
+  Bid<Material>* bid1 =
       Bid<Material>::Create(req1, GetMat(qty), trader);
 
-  Request<Material>::Ptr req2 =
+  Request<Material>* req2 =
       Request<Material>::Create(DoRequest(), src_facility, in_commod);
-  Bid<Material>::Ptr bid2 = Bid<Material>::Create(req2, GetMat(qty), trader);
+  Bid<Material>* bid2 = Bid<Material>::Create(req2, GetMat(qty), trader);
 
   Trade<Material> trade1(req1, bid1, qty);
   responses.push_back(std::make_pair(trade1, GetMat(qty)));
@@ -559,9 +559,9 @@ TEST_F(EnrichmentFacilityTest, Response) {
   // set up state
   DoAddMat(GetMat(natu_req * 2));
   
-  Request<Material>::Ptr req =
+  Request<Material>* req =
       Request<Material>::Create(target, trader, out_commod);
-  Bid<Material>::Ptr bid = Bid<Material>::Create(req, target, src_facility);
+  Bid<Material>* bid = Bid<Material>::Create(req, target, src_facility);
   Trade<Material> trade(req, bid, trade_qty);
   trades.push_back(trade);
   

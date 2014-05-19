@@ -117,12 +117,12 @@ TEST_F(SinkFacilityTest, Requests) {
 
   ASSERT_EQ(ports.size(), 1);
   ASSERT_EQ(ports.begin()->get()->qty(), capacity_);
-  const std::vector<typename Request<Material>::Ptr>& requests =
+  const std::vector<Request<Material>*>& requests =
       ports.begin()->get()->requests();
   ASSERT_EQ(requests.size(), 2);
 
   for (int i = 0; i < ncommods_; ++i) {
-    Request<Material>::Ptr req = *(requests.begin() + i);
+    Request<Material>* req = *(requests.begin() + i);
     EXPECT_EQ(req->requester(), src_facility);
     EXPECT_EQ(req->commodity(), commods[i]);
   }
@@ -158,13 +158,13 @@ TEST_F(SinkFacilityTest, Accept) {
   std::vector< std::pair<cyclus::Trade<cyclus::Material>,
                          cyclus::Material::Ptr> > responses;
 
-  Request<Material>::Ptr req1 =
+  Request<Material>* req1 =
       Request<Material>::Create(get_mat(922350000, qty_), src_facility, commod1_);
-  Bid<Material>::Ptr bid1 = Bid<Material>::Create(req1, get_mat(), trader);
+  Bid<Material>* bid1 = Bid<Material>::Create(req1, get_mat(), trader);
 
-  Request<Material>::Ptr req2 =
+  Request<Material>* req2 =
       Request<Material>::Create(get_mat(922350000, qty_), src_facility, commod2_);
-  Bid<Material>::Ptr bid2 =
+  Bid<Material>* bid2 =
       Bid<Material>::Create(req2, get_mat(922350000, qty_), trader);
 
   Trade<Material> trade1(req1, bid1, qty_);

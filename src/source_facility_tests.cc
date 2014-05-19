@@ -162,9 +162,9 @@ TEST_F(SourceFacilityTest, Response) {
   EXPECT_EQ(responses.size(), 0);
 
   double qty = capacity / 3;
-  Request<Material>::Ptr request =
+  Request<Material>* request =
       Request<Material>::Create(get_mat(), trader, commod);
-  Bid<Material>::Ptr bid =
+  Bid<Material>* bid =
       Bid<Material>::Create(request, get_mat(), src_facility);
 
   Trade<Material> trade(request, bid, qty);

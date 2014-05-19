@@ -96,7 +96,7 @@ class InproReactor : public cyclus::Facility,
   /// request is more than this facility's inventory or SWU capacity, it will
   /// offer its minimum of its capacities.
   virtual std::set<cyclus::BidPortfolio<cyclus::Material>::Ptr>
-      GetMatlBids(const cyclus::CommodMap<cyclus::Material>::type&
+      GetMatlBids(cyclus::CommodMap<cyclus::Material>::type&
                   commod_requests);
   
   /// @brief respond to each trade with a material enriched to the appropriate

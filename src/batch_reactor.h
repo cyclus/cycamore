@@ -214,7 +214,7 @@ class BatchReactor
   /// request is more than this facility's inventory or SWU capacity, it will
   /// offer its minimum of its capacities.
   virtual std::set<cyc::BidPortfolio<cyc::Material>::Ptr>
-      GetMatlBids(const cyc::CommodMap<cyc::Material>::type&
+      GetMatlBids(cyc::CommodMap<cyc::Material>::type&
                   commod_requests);
 
   /// @brief respond to each trade with a material enriched to the appropriate
@@ -356,7 +356,7 @@ class BatchReactor
 
   /// @brief gets bids for a commodity from a buffer
   cyc::BidPortfolio<cyc::Material>::Ptr GetBids_(
-      const cyc::CommodMap<cyc::Material>::type& commod_requests,
+      cyc::CommodMap<cyc::Material>::type& commod_requests,
       std::string commod,
       cyc::ResourceBuff* buffer);
 

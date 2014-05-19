@@ -126,7 +126,7 @@ void EnrichmentFacility::AcceptMatlTrades(
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 std::set<cyclus::BidPortfolio<cyclus::Material>::Ptr>
 EnrichmentFacility::GetMatlBids(
-  const cyclus::CommodMap<cyclus::Material>::type& commod_requests) {
+  cyclus::CommodMap<cyclus::Material>::type& commod_requests) {
   using cyclus::Bid;
   using cyclus::BidPortfolio;
   using cyclus::CapacityConstraint;
@@ -139,12 +139,12 @@ EnrichmentFacility::GetMatlBids(
   if (commod_requests.count(out_commod_) > 0 && inventory_.quantity() > 0) {
     BidPortfolio<Material>::Ptr port(new BidPortfolio<Material>());
 
-    const std::vector<Request<Material>::Ptr>& requests = commod_requests.at(
-                                                            out_commod_);
+    std::vector<Request<Material>*>& requests =
+        commod_requests[out_commod_];
 
-    std::vector<Request<Material>::Ptr>::const_iterator it;
+    std::vector<Request<Material>*>::iterator it;
     for (it = requests.begin(); it != requests.end(); ++it) {
-      const Request<Material>::Ptr req = *it;
+      Request<Material>* req = *it;
       if (ValidReq(req->target())) {
         Material::Ptr offer = Offer_(req->target());
         port->AddBid(req, offer, this);

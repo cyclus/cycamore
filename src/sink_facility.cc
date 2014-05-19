@@ -76,7 +76,7 @@ SinkFacility::GetMatlRequests() {
     port->AddConstraint(cc);
     
     std::vector<std::string>::const_iterator it;
-    std::vector<Request<Material>::Ptr> mutuals;
+    std::vector<Request<Material>*> mutuals;
     for (it = in_commods_.begin(); it != in_commods_.end(); ++it) {
       mutuals.push_back(port->AddRequest(mat, this, *it));
     }
