@@ -464,7 +464,9 @@ void BatchReactor::InitInv(cyclus::Inventories& invs) {
 cyclus::Inventories BatchReactor::SnapshotInv() {
   cyclus::Inventories invs;
   invs["reserves"] = reserves_.PopN(reserves_.count());
+  reserves_.PushAll(invs["reserves"]);
   invs["core"] = core_.PopN(core_.count());
+  core_.PushAll(invs["core"]);
   std::vector<cyclus::Resource::Ptr> v;
   v.push_back(spillover_);
   invs["spillover"] = v;
@@ -472,6 +474,7 @@ cyclus::Inventories BatchReactor::SnapshotInv() {
   for (it = storage_.begin(); it != storage_.end(); ++it) {
     std::string name = it->first;
     invs["storage-" + name] = it->second.PopN(it->second.count());
+    it->second.PushAll(invs["storage-" + name]);
   }
   return invs;
 }
