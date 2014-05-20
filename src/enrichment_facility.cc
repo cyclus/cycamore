@@ -14,13 +14,13 @@ namespace cycamore {
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 EnrichmentFacility::EnrichmentFacility(cyclus::Context* ctx)
   : cyclus::Facility(ctx),
-    tails_assay_(0),
-    feed_assay_(0),
-    swu_capacity_(0),
-    initial_reserves_(0),
-    in_commod_(""),
-    in_recipe_(""),
-    out_commod_("") {}
+    tails_assay(0),
+    feed_assay(0),
+    swu_capacity(0),
+    initial_reserves(0),
+    in_commod(""),
+    in_recipe(""),
+    out_commod("") {}
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 EnrichmentFacility::~EnrichmentFacility() {}
@@ -48,9 +48,9 @@ std::string EnrichmentFacility::str() {
   std::stringstream ss;
   ss << cyclus::Facility::str()
      << " with enrichment facility parameters:"
-     << " * SWU capacity: " << swu_capacity()
-     << " * Tails assay: " << tails_assay()
-     << " * Feed assay: " << feed_assay()
+     << " * SWU capacity: " << SwuCapacity()
+     << " * Tails assay: " << TailsAssay()
+     << " * Feed assay: " << FeedAssay()
      << " * Input cyclus::Commodity: " << in_commodity()
      << " * Output cyclus::Commodity: " << out_commodity();
   return ss.str();
@@ -61,10 +61,10 @@ void EnrichmentFacility::Build(cyclus::Agent* parent) {
   using cyclus::Material;
 
   Facility::Build(parent);
-  if (initial_reserves_ > 0) {
-    inventory_.Push(
+  if (initial_reserves > 0) {
+    inventory.Push(
       Material::Create(
-        this, initial_reserves_, context()->GetRecipe(in_recipe_)));
+        this, initial_reserves, context()->GetRecipe(in_recipe)));
   }
 
   LOG(cyclus::LEV_DEBUG2, "EnrFac") << "EnrichmentFacility "
@@ -76,7 +76,7 @@ void EnrichmentFacility::Build(cyclus::Agent* parent) {
 void EnrichmentFacility::Tick(int time) {
   LOG(cyclus::LEV_INFO3, "EnrFac") << prototype() << " is ticking {";
   LOG(cyclus::LEV_INFO3, "EnrFac") << "}";
-  current_swu_capacity_ = swu_capacity();
+  current_swu_capacity = SwuCapacity();
 }
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -102,7 +102,7 @@ EnrichmentFacility::GetMatlRequests() {
     CapacityConstraint<Material> cc(amt);
     port->AddConstraint(cc);
 
-    port->AddRequest(mat, this, in_commod_);
+    port->AddRequest(mat, this, in_commod);
 
     ports.insert(port);
   } // if amt > eps
@@ -136,11 +136,11 @@ EnrichmentFacility::GetMatlBids(
 
   std::set<BidPortfolio<Material>::Ptr> ports;
 
-  if (commod_requests.count(out_commod_) > 0 && inventory_.quantity() > 0) {
+  if (commod_requests.count(out_commod) > 0 && inventory.quantity() > 0) {
     BidPortfolio<Material>::Ptr port(new BidPortfolio<Material>());
 
     std::vector<Request<Material>*>& requests =
-        commod_requests[out_commod_];
+        commod_requests[out_commod];
 
     std::vector<Request<Material>*>::iterator it;
     for (it = requests.begin(); it != requests.end(); ++it) {
@@ -151,10 +151,10 @@ EnrichmentFacility::GetMatlBids(
       }
     }
 
-    Converter<Material>::Ptr sc(new SWUConverter(feed_assay_, tails_assay_));
-    Converter<Material>::Ptr nc(new NatUConverter(feed_assay_, tails_assay_));
-    CapacityConstraint<Material> swu(swu_capacity_, sc);
-    CapacityConstraint<Material> natu(inventory_.quantity(), nc);
+    Converter<Material>::Ptr sc(new SWUConverter(feed_assay, tails_assay));
+    Converter<Material>::Ptr nc(new NatUConverter(feed_assay, tails_assay));
+    CapacityConstraint<Material> swu(swu_capacity, sc);
+    CapacityConstraint<Material> natu(inventory.quantity(), nc);
     port->AddConstraint(swu);
     port->AddConstraint(natu);
 
@@ -175,7 +175,7 @@ bool EnrichmentFacility::ValidReq(const cyclus::Material::Ptr mat) {
   cyclus::toolkit::MatQuery q(mat);
   double u235 = q.atom_frac(922350000);
   double u238 = q.atom_frac(922380000);
-  return (u238 > 0 && u235 / (u235 + u238) > tails_assay());
+  return (u238 > 0 && u235 / (u235 + u238) > TailsAssay());
 }
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -195,10 +195,10 @@ void EnrichmentFacility::GetMatlTrades(
     LOG(cyclus::LEV_INFO5, "EnrFac") << prototype()
                                   << " just received an order"
                                   << " for " << it->amt
-                                  << " of " << out_commod_;
+                                  << " of " << out_commod;
   }
 
-  if (cyclus::IsNegative(current_swu_capacity_)) {
+  if (cyclus::IsNegative(current_swu_capacity)) {
     throw cyclus::ValueError(
       "EnrFac " + prototype()
       + " is being asked to provide more than its SWU capacity.");
@@ -207,25 +207,25 @@ void EnrichmentFacility::GetMatlTrades(
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 void EnrichmentFacility::AddMat_(cyclus::Material::Ptr mat) {
-  if (mat->comp() != context()->GetRecipe(in_recipe_)) {
+  if (mat->comp() != context()->GetRecipe(in_recipe)) {
     throw cyclus::ValueError(
       "EnrichmentFacility recipe and material composition not the same.");
   }
 
   LOG(cyclus::LEV_INFO5, "EnrFac") << prototype() << " is initially holding "
-                                << inventory_.quantity() << " total.";
+                                << inventory.quantity() << " total.";
 
   try {
-    inventory_.Push(mat);
+    inventory.Push(mat);
   } catch (cyclus::Error& e) {
     e.msg(Agent::InformErrorMsg(e.msg()));
     throw e;
   }
 
   LOG(cyclus::LEV_INFO5, "EnrFac") << prototype() << " added " << mat->quantity()
-                                << " of " << in_commod_
+                                << " of " << in_commod
                                 << " to its inventory, which is holding "
-                                << inventory_.quantity() << " total.";
+                                << inventory.quantity() << " total.";
 
 }
 
@@ -233,7 +233,7 @@ void EnrichmentFacility::AddMat_(cyclus::Material::Ptr mat) {
 cyclus::Material::Ptr EnrichmentFacility::Request_() {
   double qty = std::max(0.0, MaxInventorySize() - InventorySize());
   return cyclus::Material::CreateUntracked(qty,
-                                        context()->GetRecipe(in_recipe_));
+                                        context()->GetRecipe(in_recipe));
 }
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -259,7 +259,7 @@ cyclus::Material::Ptr EnrichmentFacility::Enrich_(
   using cyclus::toolkit::TailsQty;
 
   // get enrichment parameters
-  Assays assays(feed_assay(), UraniumAssay(mat), tails_assay());
+  Assays assays(FeedAssay(), UraniumAssay(mat), TailsAssay());
   double swu_req = SwuRequired(qty, assays);
   double natu_req = FeedQty(qty, assays);
 
@@ -267,16 +267,16 @@ cyclus::Material::Ptr EnrichmentFacility::Enrich_(
   std::vector<Material::Ptr> manifest;
   try {
     // required so popping doesn't take out too much
-    if (cyclus::AlmostEq(natu_req, inventory_.quantity())) {
-      manifest = ResCast<Material>(inventory_.PopN(inventory_.count()));
+    if (cyclus::AlmostEq(natu_req, inventory.quantity())) {
+      manifest = ResCast<Material>(inventory.PopN(inventory.count()));
     } else {
-      manifest = ResCast<Material>(inventory_.PopQty(natu_req));
+      manifest = ResCast<Material>(inventory.PopQty(natu_req));
     }
   } catch (cyclus::Error& e) {
-    NatUConverter nc(feed_assay_, tails_assay_);
+    NatUConverter nc(feed_assay, tails_assay);
     std::stringstream ss;
     ss << " tried to remove " << natu_req
-       << " from its inventory of size " << inventory_.quantity()
+       << " from its inventory of size " << inventory.quantity()
        << " and the conversion of the material into natu is " << nc.convert(mat);
     throw cyclus::ValueError(Agent::InformErrorMsg(ss.str()));
   }
@@ -290,7 +290,7 @@ cyclus::Material::Ptr EnrichmentFacility::Enrich_(
   cyclus::Composition::Ptr comp = mat->comp();
   Material::Ptr response = r->ExtractComp(qty, comp);
 
-  current_swu_capacity_ -= swu_req;
+  current_swu_capacity -= swu_req;
 
   RecordEnrichment_(natu_req, swu_req);
 
@@ -311,7 +311,7 @@ cyclus::Material::Ptr EnrichmentFacility::Enrich_(
   LOG(cyclus::LEV_INFO5, "EnrFac") << "   * SWU: "
                                 << swu_req;
   LOG(cyclus::LEV_INFO5, "EnrFac") << "   * Current SWU capacity: "
-                                << current_swu_capacity_;
+                                << CurrentSwuCapacity();
 
   return response;
 }

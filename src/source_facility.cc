@@ -10,9 +10,9 @@ namespace cycamore {
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 SourceFacility::SourceFacility(cyclus::Context* ctx)
   : cyclus::Facility(ctx),
-    out_commod_(""),
-    recipe_name_(""),
-    capacity_(std::numeric_limits<double>::max()) {}
+    out_commod(""),
+    recipe_name(""),
+    capacity(std::numeric_limits<double>::max()) {}
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 SourceFacility::~SourceFacility() {}
@@ -40,9 +40,9 @@ void SourceFacility::InitFrom(SourceFacility* m) {
 void SourceFacility::InitFrom(cyclus::QueryableBackend* b) {
   #pragma cyclus impl initfromdb cycamore::SourceFacility
 
-  cyclus::toolkit::Commodity commod(out_commod_);
+  cyclus::toolkit::Commodity commod(out_commod);
   cyclus::toolkit::CommodityProducer::AddCommodity(commod);
-  cyclus::toolkit::CommodityProducer::SetCapacity(commod, capacity_);
+  cyclus::toolkit::CommodityProducer::SetCapacity(commod, capacity);
 }
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -50,20 +50,20 @@ std::string SourceFacility::str() {
   std::stringstream ss;
   ss << cyclus::Facility::str()
      << " supplies commodity '"
-     << out_commod_ << "' with recipe '"
-     << recipe_name_ << "' at a capacity of "
-     << capacity_ << " kg per time step ";
+     << out_commod << "' with recipe '"
+     << recipe_name << "' at a capacity of "
+     << capacity << " kg per time step ";
   return ss.str();
 }
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 void SourceFacility::Tick(int time) {
   LOG(cyclus::LEV_INFO3, "SrcFac") << prototype() << " is ticking {";
-  LOG(cyclus::LEV_INFO4, "SrcFac") << "will offer " << capacity_
+  LOG(cyclus::LEV_INFO4, "SrcFac") << "will offer " << capacity
                                    << " kg of "
-                                   << out_commod_ << ".";
+                                   << out_commod << ".";
   LOG(cyclus::LEV_INFO3, "SrcFac") << "}";
-  current_capacity_ = capacity_; // reset capacity
+  current_capacity = capacity; // reset capacity
 }
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -76,8 +76,8 @@ void SourceFacility::Tock(int time) {
 cyclus::Material::Ptr SourceFacility::GetOffer(
     const cyclus::Material::Ptr target) const {
   using cyclus::Material;
-  double qty = std::min(target->quantity(), capacity_);
-  return Material::CreateUntracked(qty, context()->GetRecipe(recipe_name_));
+  double qty = std::min(target->quantity(), capacity);
+  return Material::CreateUntracked(qty, context()->GetRecipe(recipe_name));
 }
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -92,11 +92,11 @@ SourceFacility::GetMatlBids(
   
   std::set<BidPortfolio<Material>::Ptr> ports;
   
-  if (commod_requests.count(out_commod_) > 0) {
+  if (commod_requests.count(out_commod) > 0) {
     BidPortfolio<Material>::Ptr port(new BidPortfolio<Material>());
   
     std::vector<Request<Material>*>& requests =
-        commod_requests[out_commod_];
+        commod_requests[out_commod];
 
     std::vector<Request<Material>*>::iterator it;
     for (it = requests.begin(); it != requests.end(); ++it) {
@@ -105,7 +105,7 @@ SourceFacility::GetMatlBids(
       port->AddBid(req, offer, this);
     }
 
-    CapacityConstraint<Material> cc(capacity_);
+    CapacityConstraint<Material> cc(capacity);
     port->AddConstraint(cc);
     ports.insert(port);
   }
@@ -124,21 +124,21 @@ void SourceFacility::GetMatlTrades(
   std::vector< cyclus::Trade<cyclus::Material> >::const_iterator it;
   for (it = trades.begin(); it != trades.end(); ++it) {
     double qty = it->amt;
-    current_capacity_ -= qty;
+    current_capacity -= qty;
     provided += qty;
     // @TODO we need a policy on negatives..
     Material::Ptr response = Material::Create(this,
                                               qty,
-                                              context()->GetRecipe(recipe_name_));
+                                              context()->GetRecipe(recipe_name));
     responses.push_back(std::make_pair(*it, response));
     LOG(cyclus::LEV_INFO5, "SrcFac") << prototype() << " just received an order"
                                      << " for " << qty
-                                     << " of " << out_commod_;
+                                     << " of " << out_commod;
   }
-  if (cyclus::IsNegative(current_capacity_)) {
+  if (cyclus::IsNegative(current_capacity)) {
     std::stringstream ss;
     ss << "is being asked to provide " << provided
-       << " but its capacity is " << capacity_ << "."; 
+       << " but its capacity is " << capacity << "."; 
     throw cyclus::ValueError(Agent::InformErrorMsg(ss.str()));
   }
 }
