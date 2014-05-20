@@ -123,7 +123,7 @@ void BatchReactorTest::SetUpSourceFacility() {
   src_facility->batch_size(batch_size);
   src_facility->ics(ics);
 
-  src_facility->AddCommodity(commodity);
+  src_facility->Add(commodity);
   src_facility->cyclus::toolkit::CommodityProducer::SetCapacity(commodity, capacity);
   src_facility->cyclus::toolkit::CommodityProducer::SetCost(commodity, capacity);
 
@@ -188,9 +188,9 @@ void BatchReactorTest::TestInitState(BatchReactor* fac) {
   EXPECT_EQ(ics, fac->ics());
 
   cyclus::toolkit::Commodity commod(commodity);
-  EXPECT_TRUE(fac->ProducesCommodity(commod));
-  EXPECT_EQ(capacity, fac->ProductionCapacity(commod));
-  EXPECT_EQ(cost, fac->ProductionCost(commod));
+  EXPECT_TRUE(fac->Produces(commod));
+  EXPECT_EQ(capacity, fac->Capacity(commod));
+  EXPECT_EQ(cost, fac->Cost(commod));
 
   EXPECT_EQ(commod_prefs, fac->commod_prefs());
 
