@@ -3,13 +3,14 @@
 
 #include <sstream>
 
-#include "commodity.h"
 #include "composition.h"
 #include "error.h"
 #include "facility_tests.h"
 #include "agent_tests.h"
 #include "agent.h"
 #include "infile_tree.h"
+
+#include "toolkit/commodity.h"
 
 namespace cycamore {
 

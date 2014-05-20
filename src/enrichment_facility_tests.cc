@@ -3,9 +3,8 @@
 
 #include <sstream>
 
-#include "commodity.h"
 #include "facility_tests.h"
-#include "mat_query.h"
+#include "toolkit/mat_query.h"
 #include "agent_tests.h"
 #include "resource_helpers.h"
 #include "infile_tree.h"
