@@ -8,8 +8,6 @@
 
 #include "cyclus.h"
 
-namespace cyc = cyclus;
-
 // forward declarations
 namespace cycamore {
 class BatchReactor;
@@ -49,7 +47,7 @@ namespace cycamore {
 ///   #. refuel_time : the number of timesteps required to reload the core after
 ///   a process has finished
 ///
-/// The BatchReactor also maintains a cyc::CommodityRecipeContext, which
+/// The BatchReactor also maintains a cyclus::CommodityRecipeContext, which
 /// allows it to track incommodity-inrecipe/outcommodity-outrecipe groupings.
 ///
 /// @section operation Operation
@@ -104,15 +102,15 @@ namespace cycamore {
 /// @warning preference time changing is based on *full simulation time*, not
 /// relative time
 /// @warning the reactor's commodity context *can not* currently remove
-/// resources reliably because of ResourceBuff::PopQty()'s implementation.
+/// resources reliably because of toolkit::ResourceBuff::PopQty()'s implementation.
 /// Resource removal from the context requires pointer equality
 /// in order to remove material, and PopQty will split resources, making new
 /// pointers.
 /// @warning the reactor uses a hackish way to input materials into its
 /// reserves. See the AddBatches_ member function.
 class BatchReactor
-    : public cyc::Facility,
-      public cyc::CommodityProducer {
+    : public cyclus::Facility,
+      public cyclus::toolkit::CommodityProducer {
  public:
   /// @brief defines all possible phases this facility can be in
   enum Phase {
@@ -160,21 +158,21 @@ class BatchReactor
 
   /* --- Module Members --- */
   /// @param ctx the cyclus context for access to simulation-wide parameters
-  BatchReactor(cyc::Context* ctx);
+  BatchReactor(cyclus::Context* ctx);
 
   virtual ~BatchReactor();
 
-  virtual cyc::Agent* Clone();
+  virtual cyclus::Agent* Clone();
 
-  virtual void InfileToDb(cyc::InfileTree* qe, cyc::DbInit di);
+  virtual void InfileToDb(cyclus::InfileTree* qe, cyclus::DbInit di);
 
-  virtual void InitFrom(cyc::QueryableBackend* b);
+  virtual void InitFrom(cyclus::QueryableBackend* b);
 
-  virtual void Snapshot(cyc::DbInit di);
+  virtual void Snapshot(cyclus::DbInit di);
 
-  virtual void InitInv(cyc::Inventories& invs);
+  virtual void InitInv(cyclus::Inventories& invs);
 
-  virtual cyc::Inventories SnapshotInv();
+  virtual cyclus::Inventories SnapshotInv();
 
   virtual std::string schema();
 
@@ -187,7 +185,7 @@ class BatchReactor
 
   /* --- Facility Members --- */
   /// perform module-specific tasks when entering the simulation 
-  virtual void Build(cyc::Agent* parent = NULL);
+  virtual void Build(cyclus::Agent* parent = NULL);
   /* --- */
 
   /* --- Agent Members --- */
@@ -201,20 +199,20 @@ class BatchReactor
   
   /// @brief The EnrichmentFacility request Materials of its given
   /// commodity.
-  virtual std::set<cyc::RequestPortfolio<cyc::Material>::Ptr>
+  virtual std::set<cyclus::RequestPortfolio<cyclus::Material>::Ptr>
       GetMatlRequests();
 
   /// @brief The EnrichmentFacility place accepted trade Materials in their
   /// Inventory
   virtual void AcceptMatlTrades(
-      const std::vector< std::pair<cyc::Trade<cyc::Material>,
-      cyc::Material::Ptr> >& responses);
+      const std::vector< std::pair<cyclus::Trade<cyclus::Material>,
+      cyclus::Material::Ptr> >& responses);
 
   /// @brief Responds to each request for this facility's commodity.  If a given
   /// request is more than this facility's inventory or SWU capacity, it will
   /// offer its minimum of its capacities.
-  virtual std::set<cyc::BidPortfolio<cyc::Material>::Ptr>
-      GetMatlBids(cyc::CommodMap<cyc::Material>::type&
+  virtual std::set<cyclus::BidPortfolio<cyclus::Material>::Ptr>
+      GetMatlBids(cyclus::CommodMap<cyclus::Material>::type&
                   commod_requests);
 
   /// @brief respond to each trade with a material enriched to the appropriate
@@ -223,9 +221,9 @@ class BatchReactor
   /// @param trades all trades in which this trader is the supplier
   /// @param responses a container to populate with responses to each trade
   virtual void GetMatlTrades(
-    const std::vector< cyc::Trade<cyc::Material> >& trades,
-    std::vector<std::pair<cyc::Trade<cyc::Material>,
-    cyc::Material::Ptr> >& responses);
+    const std::vector< cyclus::Trade<cyclus::Material> >& trades,
+    std::vector<std::pair<cyclus::Trade<cyclus::Material>,
+    cyclus::Material::Ptr> >& responses);
   /* --- */
 
   /* --- BatchReactor Members --- */
@@ -321,10 +319,10 @@ class BatchReactor
   }
 
   /// @brief this facility's commodity-recipe context
-  inline void crctx(const cyc::CommodityRecipeContext& crctx) {
+  inline void crctx(const cyclus::toolkit::CommodityRecipeContext& crctx) {
     crctx_ = crctx;
   }
-  inline cyc::CommodityRecipeContext crctx() const {
+  inline cyclus::toolkit::CommodityRecipeContext crctx() const {
     return crctx_;
   }
 
@@ -355,24 +353,24 @@ class BatchReactor
   virtual void MoveBatchOut_();
 
   /// @brief gets bids for a commodity from a buffer
-  cyc::BidPortfolio<cyc::Material>::Ptr GetBids_(
-      cyc::CommodMap<cyc::Material>::type& commod_requests,
+  cyclus::BidPortfolio<cyclus::Material>::Ptr GetBids_(
+      cyclus::CommodMap<cyclus::Material>::type& commod_requests,
       std::string commod,
-      cyc::ResourceBuff* buffer);
+      cyclus::toolkit::ResourceBuff* buffer);
 
   /// @brief returns a qty of material from a buffer
-  cyc::Material::Ptr TradeResponse_(double qty,
-                                       cyc::ResourceBuff* buffer);
+  cyclus::Material::Ptr TradeResponse_(double qty,
+                                       cyclus::toolkit::ResourceBuff* buffer);
 
-  /// @brief a cyc::ResourceBuff for material while they are inside the core,
+  /// @brief a cyclus::toolkit::ResourceBuff for material while they are inside the core,
   /// with all materials guaranteed to be of batch_size_
-  cyc::ResourceBuff core_;
+  cyclus::toolkit::ResourceBuff core_;
 
-  /// @brief a cyc::ResourceBuff for material once they leave the core.
+  /// @brief a cyclus::toolkit::ResourceBuff for material once they leave the core.
   /// there is one storage for each outcommodity
   /// @warning no guarantee can be made to the size of each item in storage_, as
   /// requests can be met that are larger or smaller than batch_size_
-  std::map<std::string, cyc::ResourceBuff> storage_;
+  std::map<std::string, cyclus::toolkit::ResourceBuff> storage_;
 
  private:
   /// @brief refuels the reactor until it is full or reserves_ is out of
@@ -383,7 +381,7 @@ class BatchReactor
   void MoveBatchIn_();
 
   /// @brief construct a request portfolio for an order of a given size
-  cyc::RequestPortfolio<cyc::Material>::Ptr GetOrder_(double size);
+  cyclus::RequestPortfolio<cyclus::Material>::Ptr GetOrder_(double size);
 
   /// @brief Add a blob of incoming material to reserves_
   ///
@@ -391,7 +389,7 @@ class BatchReactor
   /// of batch_size_. If not, material from mat is added to it and it is
   /// returned to reserves_. If more material remains, chunks of batch_size_ are
   /// removed and added to reserves_. The final chunk may be <= batch_size_.
-  void AddBatches_(std::string commod, cyc::Material::Ptr mat);
+  void AddBatches_(std::string commod, cyclus::Material::Ptr mat);
 
   /// @brief adds phase names to phase_names_ map
   void SetUpPhaseNames_();
@@ -410,7 +408,7 @@ class BatchReactor
 
   InitCond ics_;
 
-  cyc::CommodityRecipeContext crctx_;
+  cyclus::toolkit::CommodityRecipeContext crctx_;
 
   /// @warning as is, the int key is **simulation time**, i.e., context()->time
   /// == key. This should be fixed for future use!
@@ -425,11 +423,11 @@ class BatchReactor
   std::map<int, std::vector< std::pair< std::string, double > > > pref_changes_;
 
   /// @brief allows only batches to enter reserves_
-  cyc::Material::Ptr spillover_;
+  cyclus::Material::Ptr spillover_;
 
-  /// @brief a cyc::ResourceBuff for material before they enter the core,
+  /// @brief a cyclus::toolkit::ResourceBuff for material before they enter the core,
   /// with all materials guaranteed to be of batch_size_
-  cyc::ResourceBuff reserves_;
+  cyclus::toolkit::ResourceBuff reserves_;
 
   friend class BatchReactorTest;
   /* --- */

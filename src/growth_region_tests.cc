@@ -23,6 +23,7 @@ void GrowthRegionTests::SetUp() {
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 void GrowthRegionTests::TearDown() {
+  delete region;
   delete ctx;
 }
 

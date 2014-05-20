@@ -18,6 +18,7 @@
 class SourceFacilityTest : public ::testing::Test {
  public:
   cyclus::TestContext tc;
+  TestFacility* trader;
   cycamore::SourceFacility* src_facility;
   std::string commod, recipe_name;
   double capacity;

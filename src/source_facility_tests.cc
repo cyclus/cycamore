@@ -5,19 +5,21 @@
 
 #include "cyc_limits.h"
 #include "resource_helpers.h"
-#include "infile_tree.h"
-#include "xml_parser.h"
+#include "test_context.h"
 
 #include "source_facility_tests.h"
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 void SourceFacilityTest::SetUp() {
+  src_facility = new cycamore::SourceFacility(tc.get());
+  trader = tc.trader();
   InitParameters();
   SetUpSourceFacility();
 }
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 void SourceFacilityTest::TearDown() {
+  delete src_facility;
 }
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -32,7 +34,6 @@ void SourceFacilityTest::InitParameters() {
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 void SourceFacilityTest::SetUpSourceFacility() {
-  src_facility = new cycamore::SourceFacility(tc.get());
   src_facility->commodity(commod);
   src_facility->recipe(recipe_name);
   src_facility->Capacity(capacity);
@@ -47,34 +48,6 @@ TEST_F(SourceFacilityTest, InitialState) {
 }
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-TEST_F(SourceFacilityTest, DISABLED_XMLInit) {
-  std::stringstream ss;
-  ss << "<start>"
-     << "<name>fooname</name>"
-     << "<agent>"
-     << "<UNSPECIFIED>"
-     << "<output>"
-     << "  <outcommodity>" << commod << "</outcommodity>"
-     << "  <output_capacity>" << capacity << "</output_capacity>"
-     << "  <recipe>" << recipe_name << "</recipe>"
-     << "</output>"
-     << "</UNSPECIFIED>"
-     << "</agent>"
-     << "</start>";
-
-  cyclus::XMLParser p;
-  p.Init(ss);
-  cyclus::InfileTree engine(p);
-  cycamore::SourceFacility fac(tc.get());
-
-  //EXPECT_NO_THROW(fac.InitFrom(&engine););
-  EXPECT_EQ(fac.Capacity(), capacity);
-  EXPECT_EQ(fac.commodity(), commod);
-  EXPECT_EQ(fac.recipe(), recipe_name);
-  EXPECT_EQ(fac.CurrentCapacity(), capacity);
-}
-
-//- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 TEST_F(SourceFacilityTest, Clone) {
   cyclus::Context* ctx = tc.get();
   cycamore::SourceFacility* cloned_fac = dynamic_cast<cycamore::SourceFacility*>
@@ -85,6 +58,7 @@ TEST_F(SourceFacilityTest, Clone) {
   EXPECT_EQ(src_facility->recipe(), cloned_fac->recipe());
   EXPECT_EQ(src_facility->Capacity(), cloned_fac->CurrentCapacity());
 
+  delete cloned_fac;
 }
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -150,9 +124,8 @@ TEST_F(SourceFacilityTest, Response) {
   using cyclus::Material;
   using cyclus::Request;
   using cyclus::Trade;
-  using test_helpers::trader;
   using test_helpers::get_mat;
-
+  
   std::vector< cyclus::Trade<cyclus::Material> > trades;
   std::vector<std::pair<cyclus::Trade<cyclus::Material>,
                         cyclus::Material::Ptr> > responses;
@@ -193,19 +166,23 @@ TEST_F(SourceFacilityTest, Response) {
   // reset!
   src_facility->Tick(1);
   ASSERT_DOUBLE_EQ(src_facility->CurrentCapacity(), capacity);
+
+  delete request;
+  delete bid;
 }
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 boost::shared_ptr< cyclus::ExchangeContext<cyclus::Material> >
 SourceFacilityTest::GetContext(int nreqs, std::string commod) {
+  using cyclus::Material;
+  using cyclus::Request;
+  using cyclus::ExchangeContext;
+  using test_helpers::get_mat;
+  
   double qty = 3;
-  boost::shared_ptr< cyclus::ExchangeContext<cyclus::Material> >
-                     ec(new cyclus::ExchangeContext<cyclus::Material>());
+  boost::shared_ptr< ExchangeContext<Material> >
+      ec(new ExchangeContext<Material>());
   for (int i = 0; i < nreqs; i++) {
-    using cyclus::Material;
-    using cyclus::Request;
-    using test_helpers::trader;
-    using test_helpers::get_mat;
     ec->AddRequest(Request<Material>::Create(get_mat(), trader, commod));
   }
   return ec;

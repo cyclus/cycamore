@@ -22,10 +22,10 @@ class SWUConverter : public cyclus::Converter<cyclus::Material> {
       cyclus::Material::Ptr m,
       cyclus::Arc const * a = NULL,
       cyclus::ExchangeTranslationContext<cyclus::Material> const * ctx = NULL) const {
-    cyclus::enrichment::Assays assays(feed_,
-                                      cyclus::enrichment::UraniumAssay(m),
-                                      tails_);
-    return cyclus::enrichment::SwuRequired(m->quantity(), assays);
+    cyclus::toolkit::Assays assays(feed_,
+                                   cyclus::toolkit::UraniumAssay(m),
+                                   tails_);
+    return cyclus::toolkit::SwuRequired(m->quantity(), assays);
   }
 
   /// @returns true if Converter is a SWUConverter and feed and tails equal
@@ -55,10 +55,10 @@ class NatUConverter : public cyclus::Converter<cyclus::Material> {
       cyclus::Material::Ptr m,
       cyclus::Arc const * a = NULL,
       cyclus::ExchangeTranslationContext<cyclus::Material> const * ctx = NULL) const {
-    cyclus::enrichment::Assays assays(feed_,
-                                      cyclus::enrichment::UraniumAssay(m),
-                                      tails_);
-    return cyclus::enrichment::FeedQty(m->quantity(), assays);
+    cyclus::toolkit::Assays assays(feed_,
+                                   cyclus::toolkit::UraniumAssay(m),
+                                   tails_);
+    return cyclus::toolkit::FeedQty(m->quantity(), assays);
   }
 
   /// @returns true if Converter is a NatUConverter and feed and tails equal
@@ -299,10 +299,10 @@ class EnrichmentFacility : public cyclus::Facility {
   #pragma cyclus var {\
     'derived_init': "cyclus::Material::Ptr feed = "\
     "cyclus::Material::CreateUntracked(0, context()->GetRecipe(in_recipe)); "\
-    "feed_assay = cyclus::enrichment::UraniumAssay(feed);"}
+    "feed_assay = cyclus::toolkit::UraniumAssay(feed);"}
   double feed_assay;
   #pragma cyclus var {'capacity': 'max_inv_size'}
-  cyclus::ResourceBuff inventory; // of natl u
+  cyclus::toolkit::ResourceBuff inventory; // of natl u
   
   friend class EnrichmentFacilityTest;
 /* --- */

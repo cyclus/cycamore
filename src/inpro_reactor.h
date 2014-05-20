@@ -253,12 +253,12 @@ class InproReactor : public cyclus::Facility,
   cyclus::BidPortfolio<cyclus::Material>::Ptr GetBids_(
       const cyclus::CommodMap<cyclus::Material>::type& commod_requests,
       std::string commod,
-      cyclus::ResourceBuff* buffer);
+      cyclus::toolkit::ResourceBuff* buffer);
   
   /// @brief returns a qty of material from the a buffer
   cyclus::Material::Ptr TradeResponse_(
       double qty,
-      cyclus::ResourceBuff* buffer);
+      cyclus::toolkit::ResourceBuff* buffer);
   /* --- */
 
  private:
@@ -305,13 +305,13 @@ class InproReactor : public cyclus::Facility,
   Phase phase_;
 
   /// a matbuff for material before they enter the core
-  cyclus::ResourceBuff preCore_;
+  cyclus::toolkit::ResourceBuff preCore_;
 
   /// a matbuff for material while they are inside the core
-  cyclus::ResourceBuff inCore_;
+  cyclus::toolkit::ResourceBuff inCore_;
 
   /// a matbuff for material after they exit the core
-  cyclus::ResourceBuff postCore_;
+  cyclus::toolkit::ResourceBuff postCore_;
 
   /**
      populate the phase name map

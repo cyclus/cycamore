@@ -576,7 +576,7 @@ InproReactor::GetOrder_(double size) {
 cyclus::BidPortfolio<cyclus::Material>::Ptr InproReactor::GetBids_(
     cyclus::CommodMap<cyclus::Material>::type& commod_requests,
     std::string commod,
-    cyclus::ResourceBuff* buffer) {
+    cyclus::toolkit::ResourceBuff* buffer) {
   using cyclus::Bid;
   using cyclus::BidPortfolio;
   using cyclus::CapacityConstraint;
@@ -585,7 +585,7 @@ cyclus::BidPortfolio<cyclus::Material>::Ptr InproReactor::GetBids_(
   using cyclus::Material;
   using cyclus::Request;
   using cyclus::ResCast;
-  using cyclus::ResourceBuff;
+  using cyclus::toolkit::ResourceBuff;
     
   BidPortfolio<Material>::Ptr port(new BidPortfolio<Material>());
   
@@ -593,7 +593,7 @@ cyclus::BidPortfolio<cyclus::Material>::Ptr InproReactor::GetBids_(
     std::vector<Request<Material>*>& requests = commod_requests[commod];
 
     // get offer composition
-    Material::Ptr back = ResCast<Material>(buffer->Pop(ResourceBuff::BACK));
+    Material::Ptr back = ResCast<Material>(buffer->Pop(toolkit::ResourceBuff::BACK));
     Composition::Ptr comp = back->comp();
     buffer->Push(back);
     
@@ -616,7 +616,7 @@ cyclus::BidPortfolio<cyclus::Material>::Ptr InproReactor::GetBids_(
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 cyclus::Material::Ptr InproReactor::TradeResponse_(
     double qty,
-    cyclus::ResourceBuff* buffer) {
+    cyclus::toolkit::ResourceBuff* buffer) {
   using cyclus::Material;
   using cyclus::ResCast;
 
