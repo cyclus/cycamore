@@ -1,17 +1,6 @@
 #include "manager_inst_tests.h"
 #include "institution_tests.h"
 #include "agent_tests.h"
-// @MJGFlag - note that I could not link to the commodity test helper
-// class here... constructor and destructor were undefined
-// for posterity -
-// CMakeFiles/CycamoreUnitTestDriver.dir/Agents/Inst/ManagerInst/manager_inst_tests.cc.o: In function `TestProducer::TestProducer()':
-// manager_inst_tests.cc:(.text+0x80): undefined reference to `cyclus::CommodityTestHelper::cyclus::CommodityTestHelper()'
-//   manager_inst_tests.cc:(.text+0xd1): undefined reference to `cyclus::CommodityTestHelper::~cyclus::CommodityTestHelper()'
-// manager_inst_tests.cc:(.text+0xe2): undefined reference to `cyclus::CommodityTestHelper::~cyclus::CommodityTestHelper()'
-//                                      CMakeFiles/CycamoreUnitTestDriver.dir/Agents/Inst/ManagerInst/manager_inst_tests.cc.o: In function `ManagerInstTests::SetUp()':
-// manager_inst_tests.cc:(.text+0x259): undefined reference to `cyclus::CommodityTestHelper::cyclus::CommodityTestHelper()'
-//                                        CMakeFiles/CycamoreUnitTestDriver.dir/Agents/Inst/ManagerInst/manager_inst_tests.cc.o: In function `ManagerInstTests::TearDown()':
-// manager_inst_tests.cc:(.text+0x344): undefined reference to `cyclus::CommodityTestHelper::~cyclus::CommodityTestHelper()'
 
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -34,6 +23,8 @@ void ManagerInstTests::SetUp() {
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 void ManagerInstTests::TearDown() {
+  delete producer;
+  delete src_inst;
   delete ctx_;
 }
 
