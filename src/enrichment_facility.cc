@@ -172,7 +172,7 @@ EnrichmentFacility::GetMatlBids(
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 bool EnrichmentFacility::ValidReq(const cyclus::Material::Ptr mat) {
-  cyclus::MatQuery q(mat);
+  cyclus::toolkit::MatQuery q(mat);
   double u235 = q.atom_frac(922350000);
   double u238 = q.atom_frac(922380000);
   return (u238 > 0 && u235 / (u235 + u238) > tails_assay());
@@ -238,7 +238,7 @@ cyclus::Material::Ptr EnrichmentFacility::Request_() {
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 cyclus::Material::Ptr EnrichmentFacility::Offer_(cyclus::Material::Ptr mat) {
-  cyclus::MatQuery q(mat);
+  cyclus::toolkit::MatQuery q(mat);
   cyclus::CompMap comp;
   comp[922350000] = q.atom_frac(922350000);
   comp[922380000] = q.atom_frac(922380000);
@@ -251,12 +251,12 @@ cyclus::Material::Ptr EnrichmentFacility::Enrich_(
   cyclus::Material::Ptr mat,
   double qty) {
   using cyclus::Material;
-  using cyclus::ResCast;
-  using cyclus::enrichment::Assays;
-  using cyclus::enrichment::UraniumAssay;
-  using cyclus::enrichment::SwuRequired;
-  using cyclus::enrichment::FeedQty;
-  using cyclus::enrichment::TailsQty;
+  using cyclus::toolkit::ResCast;
+  using cyclus::toolkit::Assays;
+  using cyclus::toolkit::UraniumAssay;
+  using cyclus::toolkit::SwuRequired;
+  using cyclus::toolkit::FeedQty;
+  using cyclus::toolkit::TailsQty;
 
   // get enrichment parameters
   Assays assays(feed_assay(), UraniumAssay(mat), tails_assay());

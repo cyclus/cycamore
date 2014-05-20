@@ -3,13 +3,14 @@
 
 #include <sstream>
 
-#include "commodity.h"
 #include "composition.h"
 #include "error.h"
 #include "facility_tests.h"
 #include "agent_tests.h"
 #include "agent.h"
 #include "infile_tree.h"
+
+#include "toolkit/commodity.h"
 
 namespace cycamore {
 
@@ -123,8 +124,8 @@ void BatchReactorTest::SetUpSourceFacility() {
   src_facility->ics(ics);
 
   src_facility->AddCommodity(commodity);
-  src_facility->cyclus::CommodityProducer::SetCapacity(commodity, capacity);
-  src_facility->cyclus::CommodityProducer::SetCost(commodity, capacity);
+  src_facility->cyclus::toolkit::CommodityProducer::SetCapacity(commodity, capacity);
+  src_facility->cyclus::toolkit::CommodityProducer::SetCost(commodity, capacity);
 
   src_facility->commod_prefs(commod_prefs);
 
@@ -152,8 +153,8 @@ void BatchReactorTest::TestReserveBatches(cyclus::Material::Ptr mat,
   EXPECT_EQ(n, src_facility->reserves_.count());
   EXPECT_DOUBLE_EQ(qty, src_facility->spillover_->quantity());
 
-  cyclus::Material::Ptr back = cyclus::ResCast<cyclus::Material>(
-      src_facility->reserves_.Pop(cyclus::ResourceBuff::BACK));
+  cyclus::Material::Ptr back = cyclus::toolkit::ResCast<cyclus::Material>(
+      src_facility->reserves_.Pop(cyclus::toolkit::ResourceBuff::BACK));
   EXPECT_EQ(commod, src_facility->crctx_.commod(back));
   src_facility->reserves_.Push(back);
 }
@@ -186,7 +187,7 @@ void BatchReactorTest::TestInitState(BatchReactor* fac) {
   EXPECT_EQ(BatchReactor::INITIAL, fac->phase());
   EXPECT_EQ(ics, fac->ics());
 
-  cyclus::Commodity commod(commodity);
+  cyclus::toolkit::Commodity commod(commodity);
   EXPECT_TRUE(fac->ProducesCommodity(commod));
   EXPECT_EQ(capacity, fac->ProductionCapacity(commod));
   EXPECT_EQ(cost, fac->ProductionCost(commod));
