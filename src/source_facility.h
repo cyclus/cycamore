@@ -86,7 +86,7 @@ class Context;
    material on a market?
  */
 class SourceFacility : public cyclus::Facility,
-  public cyclus::CommodityProducer {
+  public cyclus::toolkit::CommodityProducer {
  public:
   /* --- Module Members --- */
   /**

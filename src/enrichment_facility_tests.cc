@@ -3,9 +3,8 @@
 
 #include <sstream>
 
-#include "commodity.h"
 #include "facility_tests.h"
-#include "mat_query.h"
+#include "toolkit/mat_query.h"
 #include "agent_tests.h"
 #include "resource_helpers.h"
 #include "infile_tree.h"
@@ -211,7 +210,7 @@ TEST_F(EnrichmentFacilityTest, Offer) {
   using cyclus::CompMap;
   using cyclus::Composition;
   using cyclus::Material;
-  using cyclus::MatQuery;
+  using cyclus::toolkit::MatQuery;
   
   double qty = 4.5;
   double u234 = 1.0;
@@ -332,7 +331,7 @@ TEST_F(EnrichmentFacilityTest, Accept) {
 
   // an enrichment facility gets two trades, each for 1/3 of its inv size
   // note that comp != recipe is covered by AddMat tests
-  // note that qty >= inv capacity is covered by ResourceBuff tests
+  // note that qty >= inv capacity is covered by toolkit::ResourceBuff tests
   
   double qty = inv_size / 3;
   std::vector< std::pair<cyclus::Trade<cyclus::Material>,
@@ -433,12 +432,12 @@ TEST_F(EnrichmentFacilityTest, BidConverters) {
   // converter behavior.
   using cyclus::CompMap;
   using cyclus::Material;
-  using cyclus::MatQuery;
+  using cyclus::toolkit::MatQuery;
   using cyclus::Composition;
-  using cyclus::enrichment::Assays;
-  using cyclus::enrichment::UraniumAssay;
-  using cyclus::enrichment::SwuRequired;
-  using cyclus::enrichment::FeedQty;
+  using cyclus::toolkit::Assays;
+  using cyclus::toolkit::UraniumAssay;
+  using cyclus::toolkit::SwuRequired;
+  using cyclus::toolkit::FeedQty;
   cyclus::Env::SetNucDataPath();
 
   double qty = 5; // 5 kg
@@ -467,12 +466,12 @@ TEST_F(EnrichmentFacilityTest, Enrich) {
   // strategy employed in Enrich_.
   using cyclus::CompMap;
   using cyclus::Material;
-  using cyclus::MatQuery;
+  using cyclus::toolkit::MatQuery;
   using cyclus::Composition;
-  using cyclus::enrichment::Assays;
-  using cyclus::enrichment::UraniumAssay;
-  using cyclus::enrichment::SwuRequired;
-  using cyclus::enrichment::FeedQty;
+  using cyclus::toolkit::Assays;
+  using cyclus::toolkit::UraniumAssay;
+  using cyclus::toolkit::SwuRequired;
+  using cyclus::toolkit::FeedQty;
 
   double qty = 5; // 5 kg
   double product_assay = 0.05; // of 5 w/o enriched U
@@ -519,15 +518,14 @@ TEST_F(EnrichmentFacilityTest, Response) {
   using cyclus::Bid;
   using cyclus::CompMap;
   using cyclus::Composition;
-  using cyclus::MatQuery;
-  using cyclus::Material;
   using cyclus::Material;
   using cyclus::Request;
   using cyclus::Trade;
-  using cyclus::enrichment::Assays;
-  using cyclus::enrichment::FeedQty;
-  using cyclus::enrichment::SwuRequired;
-  using cyclus::enrichment::UraniumAssay;
+  using cyclus::toolkit::MatQuery;
+  using cyclus::toolkit::Assays;
+  using cyclus::toolkit::FeedQty;
+  using cyclus::toolkit::SwuRequired;
+  using cyclus::toolkit::UraniumAssay;
   using test_helpers::get_mat;
 
   // problem set up
