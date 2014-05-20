@@ -34,14 +34,14 @@ SourceFacility::~SourceFacility() {}
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 void SourceFacility::InitFrom(SourceFacility* m) {
   #pragma cyclus impl initfromcopy cycamore::SourceFacility
-  CopyProducedCommoditiesFrom(m);
+  cyclus::toolkit::CommodityProducer::Copy(m);
 }
 
 void SourceFacility::InitFrom(cyclus::QueryableBackend* b) {
   #pragma cyclus impl initfromdb cycamore::SourceFacility
 
   cyclus::toolkit::Commodity commod(out_commod);
-  cyclus::toolkit::CommodityProducer::AddCommodity(commod);
+  cyclus::toolkit::CommodityProducer::Add(commod);
   cyclus::toolkit::CommodityProducer::SetCapacity(commod, capacity);
 }
 
