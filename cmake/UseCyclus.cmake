@@ -1,11 +1,34 @@
 #
-# The USE_CYCLUS macro builds agent libraries for Cyclus given some source
-# files.
+# The USE_CYCLUS, INSTALL_CYCLUS_STANDALONE, INSTALL_CYCLUS_MODULE macros builds
+# agent libraries for Cyclus given some source files.
+#
+# INSTALL_CYCLUS_STANDALONE is meant to build a single agent into its own
+# module.  It implicitly calls USE_CYCLUS.  For example,
+#
+#   install_cyclus_standalone("TestFacility" "test_facility" "tests")
+#
+# INSTALL_CYCLUS_MODULE meanwhile is meant to be able to build many agents into
+# the same module.  To do this the environment must first be prepared with
+# USE_CYCLUS on all of the agents that will go into this module.  Then this macro
+# need only be called once.  For example,
+#
+#   use_cyclus("agents" "sink")
+#   use_cyclus("agents" "source")
+#   use_cyclus("agents" "k_facility")
+#   use_cyclus("agents" "prey")
+#   use_cyclus("agents" "predator")
+#   install_cyclus_module("agents" "")
+#
+# Signtaures:
+#   use_cyclus(lib_root src_root)
+#   install_cyclus_standalone(lib_root src_root lib_dir)
+#   install_cyclus_module(lib_root lib_dir)
 #
 # Arguments:
 #   lib_root : the root library name, e.g., MyAgent
 #   src_root : the root name of source files, e.g., my_agent for my_agent.h 
 #              and my_agent.cc
+#   lib_dir : the directory to install the module or agent into.
 #
 # The following vars are updated.
 #
@@ -69,7 +92,7 @@ MACRO(USE_CYCLUS lib_root src_root)
     ENDIF(NOT EXISTS ${HOUT})
     SET(
       "${lib_root}_H" 
-      "${HOUT}"
+      "${${lib_root}_H}" "${HOUT}"
       CACHE INTERNAL "Agent header" FORCE
       )
   ENDIF(EXISTS "${HIN}")
@@ -82,11 +105,21 @@ MACRO(USE_CYCLUS lib_root src_root)
     MESSAGE(STATUS "Executing ${CYCPP} ${CCIN} ${PREPROCESSOR} ${CCFLAG} ${ORIG} ${INCL_ARGS}")
     EXECUTE_PROCESS(COMMAND ${CYCPP} ${CCIN} ${PREPROCESSOR} ${CCFLAG} ${ORIG} ${INCL_ARGS})
   ENDIF(NOT EXISTS ${CCOUT})
-  SET(
-    "${lib_root}_CC" 
-    "${CCOUT}"
-    CACHE INTERNAL "Agent source" FORCE
-    )
+
+  SET("${lib_root}_CC" "${${lib_root}_CC}" "${CCOUT}" CACHE INTERNAL "Agent source" FORCE)
+ENDMACRO()
+
+MACRO(INSTALL_CYCLUS_STANDALONE lib_root src_root lib_dir)
+  # clear variables before starting
+  SET("${lib_root}_H" "" CACHE INTERNAL "Agent header" FORCE)
+  SET("${lib_root}_CC" "" CACHE INTERNAL "Agent source" FORCE)
+  SET("${lib_root}_LIB" "" CACHE INTERNAL "Agent library alias." FORCE)
+  SET("${lib_root}_Test_H" "" CACHE INTERNAL "Agent test headers" FORCE)
+  SET("${lib_root}_TEST_CC" "" CACHE INTERNAL "Agent test source" FORCE)
+  SET("${lib_root}_TEST_LIB" "" CACHE INTERNAL "Agent test library alias." FORCE)
+
+  # setup
+  USE_CYCLUS("${lib_root}" "${src_root}")
 
   # add library
   ADD_LIBRARY(${lib_root} ${CCOUT})
@@ -119,7 +152,7 @@ MACRO(USE_CYCLUS lib_root src_root)
   # install library
   install(
     TARGETS ${lib_root}
-    LIBRARY DESTINATION lib/cyclus/${lib_root}
+    LIBRARY DESTINATION lib/cyclus/${lib_dir}
     COMPONENT ${lib_root}
     )
   SET(
@@ -161,10 +194,10 @@ MACRO(USE_CYCLUS lib_root src_root)
 	COMMENT "Copying ${CCTIN} to ${CCTOUT}."
 	)
       SET(
-	"${lib_root}_Test_H" 
-	"${HTOUT}"
-	CACHE INTERNAL "Agent test headers" FORCE
-	)
+    "${lib_root}_Test_H"
+    "${HTOUT}"
+    CACHE INTERNAL "Agent test headers" FORCE
+    )
     ENDIF(EXISTS "${HTIN}")
 
     # install test impl
@@ -197,3 +230,39 @@ MACRO(USE_CYCLUS lib_root src_root)
 
   MESSAGE(STATUS "Finished construction of build files for agent: ${lib_root}")
 ENDMACRO()
+
+MACRO(INSTALL_CYCLUS_MODULE lib_root lib_dir)
+  # add library
+  ADD_LIBRARY("${lib_root}" ${${lib_root}_CC})
+  TARGET_LINK_LIBRARIES(${lib_root} dl ${LIBS})
+  SET(CYCLUS_LIBRARIES ${CYCLUS_LIBRARIES} ${lib_root})
+  ADD_DEPENDENCIES(${lib_root} "${${lib_root}_H}" "${${lib_root}_CC}")
+
+  # install library
+  install(TARGETS ${lib_root} LIBRARY DESTINATION lib/cyclus/${lib_dir} COMPONENT ${lib_root})
+  SET("${lib_root}_LIB" "${lib_root}" CACHE INTERNAL "Agent library alias." FORCE)
+
+  # install headers
+  SET(HOUT "${lib_root}.h")
+  IF(EXISTS "${HOUT}")
+    INSTALL(FILES ${HOUT} DESTINATION include/cyclus COMPONENT ${lib_root})
+  ENDIF(EXISTS "${HOUT}")
+
+  # clear variables before returning
+  SET("${lib_root}_H" "" CACHE INTERNAL "Agent header" FORCE)
+  SET("${lib_root}_CC" "" CACHE INTERNAL "Agent source" FORCE)
+  SET("${lib_root}_Test_H" "" CACHE INTERNAL "Agent test headers" FORCE)
+  SET("${lib_root}_TEST_CC" "" CACHE INTERNAL "Agent test source" FORCE)
+  SET("${lib_root}_TEST_LIB" "" CACHE INTERNAL "Agent test library alias." FORCE)
+ENDMACRO()
+
+macro(add_all_subdirs)
+  file(GLOB all_valid_subdirs RELATIVE ${CMAKE_CURRENT_SOURCE_DIR} "*/CMakeLists.txt")
+
+  foreach(dir ${all_valid_subdirs})
+      if(${dir} MATCHES "^([^/]*)//CMakeLists.txt")
+          string(REGEX REPLACE "^([^/]*)//CMakeLists.txt" "\\1" dir_trimmed ${dir})
+          add_subdirectory(${dir_trimmed})
+      endif()
+  endforeach(dir)
+endmacro()

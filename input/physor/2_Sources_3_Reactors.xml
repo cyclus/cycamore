@@ -16,7 +16,7 @@
   <facility>
     <name>UOX_Source</name>
     <module>
-      <path>SourceFacility</path>
+      <lib>cycamore</lib>
       <agent>SourceFacility</agent>
     </module>
     <agent>
@@ -31,7 +31,7 @@
   <facility>
     <name>MOX_Source</name>
     <module>
-      <path>SourceFacility</path>
+      <lib>cycamore</lib>
       <agent>SourceFacility</agent>
     </module>
     <agent>
@@ -46,7 +46,7 @@
   <facility>
     <name>Reactor1</name>
     <module>
-      <path>BatchReactor</path>
+      <lib>cycamore</lib>
       <agent>BatchReactor</agent>
     </module>
     <agent>
@@ -95,7 +95,7 @@
   <facility>
     <name>Reactor2</name>
     <module>
-      <path>BatchReactor</path>
+      <lib>cycamore</lib>
       <agent>BatchReactor</agent>
     </module>
     <agent>
@@ -139,7 +139,7 @@
   <facility>
     <name>Reactor3</name>
     <module>
-      <path>BatchReactor</path>
+      <lib>cycamore</lib>
       <agent>BatchReactor</agent>
     </module>
     <agent>
@@ -183,7 +183,7 @@
   <region>
     <name>SingleRegion</name>
     <module>
-      <path>NullRegion</path>
+      <lib>agents</lib>
       <agent>NullRegion</agent>
     </module>
     <allowedfacility>UOX_Source</allowedfacility>
@@ -197,7 +197,7 @@
     <institution>
       <name>SingleInstitution</name>
       <module>
-        <path>DeployInst</path>
+        <lib>cycamore</lib>
         <agent>DeployInst</agent>
       </module>
       <availableprototype>UOX_Source</availableprototype>
