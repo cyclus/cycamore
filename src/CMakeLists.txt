@@ -31,3 +31,7 @@ ADD_AGENT("cycamore" "deploy_inst")
 INSTALL_CYCLUS_MODULE("cycamore" "")
 
 SET( TestSource ${TestSource} PARENT_SCOPE)
+
+# install header files
+FILE(GLOB h_files "${CMAKE_CURRENT_SOURCE_DIR}/*.h")
+INSTALL(FILES ${h_files} DESTINATION include/cycamore COMPONENT cycamore)
