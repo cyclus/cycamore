@@ -23,15 +23,16 @@
 
   <facility>
     <name>Source</name>
+    <module>
+      <path>SourceFacility</path>
+      <agent>SourceFacility</agent>
+    </module>
     <agent>
       <SourceFacility>
-        <output>
-          <outcommodity>enriched_u</outcommodity>
-          <recipe>natl_u</recipe>
-        </output>
+        <out_commod>enriched_u</out_commod>
+        <recipe_name>natl_u</recipe_name>
       </SourceFacility>
     </agent>
-    <outcommodity>enriched_u</outcommodity>
   </facility>
 
   <facility>
@@ -65,16 +66,17 @@
   
   <facility>
     <name>Sink</name>
+    <module>
+      <path>SinkFacility</path>
+      <agent>SinkFacility</agent>
+    </module>
     <agent>
       <SinkFacility>
-        <input>
-          <commodities>
-            <incommodity>waste</incommodity>
-          </commodities>
-        </input>
+        <in_commods>
+          <val>waste</val>
+        </in_commods>
       </SinkFacility>
     </agent>
-    <incommodity>waste</incommodity>
   </facility>
 
   <region>
