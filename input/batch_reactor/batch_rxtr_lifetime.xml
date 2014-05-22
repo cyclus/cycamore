@@ -20,28 +20,33 @@ reasonably for its lifetime. -->
 
   <facility>
     <name>Source</name>
+    <module>
+      <path>SourceFacility</path>
+      <agent>SourceFacility</agent>
+    </module>
     <agent>
       <SourceFacility>
-        <output>
-          <outcommodity>enriched_u</outcommodity>
-          <output_capacity>1.0e10</output_capacity>
-          <recipe>lwr_fuel_recipe</recipe>
-        </output>
+        <out_commod>enriched_u</out_commod>
+        <capacity>1.0e10</capacity>
+        <recipe_name>lwr_fuel_recipe</recipe_name>
       </SourceFacility>
     </agent>
-    <outcommodity>enriched_u</outcommodity>
   </facility>
 
   <facility>
     <name>LWR_Reactor</name>
+    <module>
+      <path>BatchReactor</path>
+      <agent>BatchReactor</agent>
+    </module>
     <lifetime>480</lifetime>
     <agent>
       <BatchReactor>
         <fuel>
-         <incommodity>enriched_u</incommodity>
-         <inrecipe>lwr_fuel_recipe</inrecipe>
-         <outcommodity>waste</outcommodity>
-         <outrecipe>lwr_used_fuel_recipe</outrecipe>
+          <incommodity>enriched_u</incommodity>
+          <inrecipe>lwr_fuel_recipe</inrecipe>
+          <outcommodity>waste</outcommodity>
+          <outrecipe>lwr_used_fuel_recipe</outrecipe>
         </fuel>
         <processtime>10</processtime>
         <refueltime>2</refueltime>
@@ -54,35 +59,40 @@ reasonably for its lifetime. -->
         </commodity_production>
       </BatchReactor>
     </agent>
-    <incommodity>enriched_u</incommodity>
-    <outcommodity>waste</outcommodity>
   </facility>
   
   <facility>
     <name>Sink</name>
+    <module>
+      <path>SinkFacility</path>
+      <agent>SinkFacility</agent>
+    </module>
     <agent>
       <SinkFacility>
-        <input>
-          <commodities>
-            <incommodity>waste</incommodity>
-          </commodities>
-          <input_capacity>1.0e10</input_capacity>
-        </input>
+        <in_commods>
+          <val>waste</val>
+        </in_commods>
+        <capacity>1.0e10</capacity>
       </SinkFacility>
     </agent>
-    <incommodity>waste</incommodity>
   </facility>
 
   <region>
     <name>SingleRegion</name>
+    <module>
+      <path>NullRegion</path>
+      <agent>NullRegion</agent>
+    </module>
     <allowedfacility>Source</allowedfacility>
     <allowedfacility>LWR_Reactor</allowedfacility>
     <allowedfacility>Sink</allowedfacility>
-    <agent>
-     <NullRegion/>
-    </agent>
+    <agent><NullRegion/></agent>
     <institution>
       <name>SingleInstitution</name>
+      <module>
+        <path>NullInst</path>
+        <agent>NullInst</agent>
+      </module>
       <availableprototype>Source</availableprototype>
       <availableprototype>LWR_Reactor</availableprototype>
       <availableprototype>Sink</availableprototype>
@@ -100,9 +110,7 @@ reasonably for its lifetime. -->
           <number>1</number>
         </entry>
       </initialfacilitylist>
-      <agent>
-        <NullInst/>
-      </agent>
+      <agent><NullInst/></agent>
     </institution>
   </region>
 

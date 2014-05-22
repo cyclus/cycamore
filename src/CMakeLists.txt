@@ -16,8 +16,6 @@ ADD_AGENT("cycamore" "batch_reactor")
 
 ADD_AGENT("cycamore" "enrichment_facility")
 
-#ADD_AGENT("cycamore" "inpro_reactor")
-
 ADD_AGENT("cycamore" "sink_facility")
 
 ADD_AGENT("cycamore" "source_facility")
@@ -25,8 +23,6 @@ ADD_AGENT("cycamore" "source_facility")
 ADD_AGENT("cycamore" "deploy_inst")
 
 #ADD_AGENT("cycamore" "manager_inst")
-
-#ADD_AGENT("cycamore" "growth_region")
 
 INSTALL_CYCLUS_MODULE("cycamore" "")
 
