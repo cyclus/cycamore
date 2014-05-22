@@ -121,6 +121,9 @@ class SourceFacility : public cyclus::Facility,
      @param time is the time to perform the tock
    */
   virtual void Tock(int time);
+
+  /// notify commodity producer parent of entrance
+  virtual void EnterNotify();
   
   /// @brief Responds to each request for this source facility's commodity.
   /// If a given request is more than this facility's capacity, it will offer
