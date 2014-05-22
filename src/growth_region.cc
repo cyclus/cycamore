@@ -114,6 +114,7 @@ void GrowthRegion::Build(cyclus::Agent* parent) {
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 void GrowthRegion::BuildNotify(Agent* m) {
+    // dyncast
     RegisterCommodityProducerManager(m);
     RegisterBuilder(m);
 }
