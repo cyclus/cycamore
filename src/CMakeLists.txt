@@ -22,8 +22,6 @@ ADD_AGENT("cycamore" "source_facility")
 
 ADD_AGENT("cycamore" "deploy_inst")
 
-#ADD_AGENT("cycamore" "manager_inst")
-
 INSTALL_CYCLUS_MODULE("cycamore" "")
 
 SET( TestSource ${TestSource} PARENT_SCOPE)
