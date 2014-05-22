@@ -195,7 +195,7 @@ void BatchReactor::InitFrom(cyclus::QueryableBackend* b) {
   phase_ = static_cast<Phase>(qr.GetVal<int>("phase"));
 
   std::string out_commod = qr.GetVal<std::string>("out_commod");
-  cyclus::toolkit::CommodityProducer::AddCommodity(out_commod);
+  cyclus::toolkit::CommodityProducer::Add(out_commod);
   cyclus::toolkit::CommodityProducer::SetCapacity(out_commod, qr.GetVal<double>("out_commod_cap"));
   cyclus::toolkit::CommodityProducer::SetCost(out_commod, qr.GetVal<double>("out_commod_cap"));
 
@@ -369,8 +369,8 @@ void BatchReactor::Snapshot(cyclus::DbInit di) {
   std::set<cyclus::toolkit::Commodity, cyclus::toolkit::CommodityCompare>::iterator it;
   it = cyclus::toolkit::CommodityProducer::ProducedCommodities().begin();
   std::string out_commod = it->name();
-  double cost = cyclus::toolkit::CommodityProducer::ProductionCost(out_commod);
-  double cap = cyclus::toolkit::CommodityProducer::ProductionCapacity(out_commod);
+  double cost = cyclus::toolkit::CommodityProducer::Cost(out_commod);
+  double cap = cyclus::toolkit::CommodityProducer::Capacity(out_commod);
   di.NewDatum("Info")
     ->AddVal("processtime", process_time_)
     ->AddVal("nbatches", n_batches_)
@@ -503,7 +503,7 @@ void BatchReactor::InitFrom(BatchReactor* m) {
   batch_size(m->batch_size());
 
   // commodity production
-  CopyProducedCommoditiesFrom(m);
+  cyclus::toolkit::CommodityProducer::Copy(m);
 
   // ics
   ics(m->ics());

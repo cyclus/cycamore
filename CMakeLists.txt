@@ -1,6 +1,17 @@
-# This project name is cycamore
-PROJECT(cycamore)
 CMAKE_MINIMUM_REQUIRED(VERSION 2.8)
+#taken from http://geant4.cern.ch/support/source/geant4/CMakeLists.txt
+IF(${CMAKE_SOURCE_DIR} STREQUAL ${CMAKE_BINARY_DIR})
+    message(STATUS "Cycamore requires an out-of-source build.")
+    message(STATUS "Please remove these files from ${CMAKE_BINARY_DIR} first:")
+    message(STATUS "CMakeCache.txt")
+    message(STATUS "CMakeFiles")
+    message(STATUS "Once these files are removed, create a separate directory")
+    message(STATUS "and run CMake from there")
+    message(FATAL_ERROR "in-source build detected")
+ENDIF()
+
+# This project name is cycamore.
+PROJECT( CYCAMORE )
 
 # quiets fortify_source warnings when not compiling with optimizations
 # in linux distros where compilers were compiled with fortify_source enabled by
@@ -10,6 +21,8 @@ STRING(TOLOWER "${CMAKE_BUILD_TYPE}" BUILD_TYPE)
 IF(NOT ${BUILD_TYPE} STREQUAL "release")
   SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -U_FORTIFY_SOURCE -D_FORTIFY_SOURCE=0")
 ENDIF()
+# no overflow warnings because of silly coin-ness
+SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wno-overflow")
 
 # Direct any out-of-source builds to this directory
 SET( CYCAMORE_SOURCE_DIR ${CMAKE_SOURCE_DIR} )
@@ -92,12 +105,17 @@ FIND_PACKAGE( HDF5 REQUIRED)
 ADD_DEFINITIONS(${HDF5_DEFINITIONS})
 set(LIBS ${LIBS} ${HDF5_LIBRARIES} )
 
+# find coin and link to it
+FIND_PACKAGE( COIN REQUIRED )
+set(LIBS ${LIBS} ${COIN_LIBRARIES})
+
 # include the agent directories
 SET(CYCAMORE_INCLUDE_DIR ${CYCAMORE_INCLUDE_DIR} tests 
     ${CYCLUS_CORE_INCLUDE_DIR}/..)
 
 # include all the directories we just found
-INCLUDE_DIRECTORIES( ${CYCAMORE_INCLUDE_DIR} )
+INCLUDE_DIRECTORIES(${CYCAMORE_INCLUDE_DIR} 
+                    ${COIN_INCLUDE_DIRS})
 
 
 # ------------------------- Add the Agents -----------------------------------

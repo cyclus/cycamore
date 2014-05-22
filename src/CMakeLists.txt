@@ -12,20 +12,26 @@ MACRO(ADD_AGENT LIB_ROOT SRC_ROOT)
 
 ENDMACRO()
 
-ADD_AGENT("BatchReactor" "batch_reactor")
+ADD_AGENT("cycamore" "batch_reactor")
 
-ADD_AGENT("EnrichmentFacility" "enrichment_facility")
+ADD_AGENT("cycamore" "enrichment_facility")
 
-#ADD_AGENT("InproReactor" "inpro_reactor")
+#ADD_AGENT("cycamore" "inpro_reactor")
 
-ADD_AGENT("SinkFacility" "sink_facility")
+ADD_AGENT("cycamore" "sink_facility")
 
-ADD_AGENT("SourceFacility" "source_facility")
+ADD_AGENT("cycamore" "source_facility")
 
-ADD_AGENT("DeployInst" "deploy_inst")
+ADD_AGENT("cycamore" "deploy_inst")
 
-#ADD_AGENT("ManagerInst" "manager_inst")
+#ADD_AGENT("cycamore" "manager_inst")
 
-#ADD_AGENT("GrowthRegion" "growth_region")
+#ADD_AGENT("cycamore" "growth_region")
+
+INSTALL_CYCLUS_MODULE("cycamore" "")
 
 SET( TestSource ${TestSource} PARENT_SCOPE)
+
+# install header files
+FILE(GLOB h_files "${CMAKE_CURRENT_SOURCE_DIR}/*.h")
+INSTALL(FILES ${h_files} DESTINATION include/cycamore COMPONENT cycamore)

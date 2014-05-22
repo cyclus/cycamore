@@ -16,7 +16,7 @@
   <facility>
     <name>Source</name>
     <module>
-      <path>Source</path>
+      <lib>agents</lib>
       <agent>Source</agent>
     </module>
     <agent>
@@ -31,7 +31,7 @@
   <facility>
     <name>Sink</name>
     <module>
-      <path>Sink</path>
+      <lib>agents</lib>
       <agent>Sink</agent>
     </module>
     <lifetime>1</lifetime>
@@ -48,7 +48,7 @@
   <region>
     <name>SingleRegion</name>
     <module>
-      <path>NullRegion</path>
+      <lib>agents</lib>
       <agent>NullRegion</agent>
     </module>
     <allowedfacility>Source</allowedfacility>
@@ -59,7 +59,7 @@
     <institution>
       <name>SingleInstitution</name>
       <module>
-        <path>DeployInst</path>
+        <lib>cycamore</lib>
         <agent>DeployInst</agent>
       </module>
       <availableprototype>Source</availableprototype>
