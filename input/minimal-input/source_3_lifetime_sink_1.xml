@@ -15,43 +15,52 @@
 
   <facility>
     <name>Source</name>
+    <module>
+      <path>SourceFacility</path>
+      <agent>SourceFacility</agent>
+    </module>
     <lifetime>5</lifetime>
     <agent>
       <SourceFacility>
-        <output>
-          <outcommodity>commodity</outcommodity>
-          <output_capacity>1</output_capacity>
-          <recipe>commod_recipe</recipe>
-        </output>
+        <out_commod_>commodity</out_commod_>
+        <capacity_>1</capacity_>
+        <recipe_name_>commod_recipe</recipe_name_>
       </SourceFacility>
     </agent>
-    <outcommodity>commodity</outcommodity>
   </facility>
   
   <facility>
     <name>Sink</name>
+    <module>
+      <path>SinkFacility</path>
+      <agent>SinkFacility</agent>
+    </module>
     <agent>
       <SinkFacility>
-        <input>
-          <commodities>
-            <incommodity>commodity</incommodity>
-          </commodities>
-          <input_capacity>3</input_capacity>
-        </input>
+        <in_commods_>
+            <val>commodity</val>
+        </in_commods_>
+        <capacity_>3</capacity_>
+        <commod_price_>1.0</commod_price_>
       </SinkFacility>
     </agent>
-    <incommodity>commodity</incommodity>
   </facility>
 
   <region>
     <name>SingleRegion</name>
+    <module>
+      <path>NullRegion</path>
+      <agent>NullRegion</agent>
+    </module>
     <allowedfacility>Source</allowedfacility>
     <allowedfacility>Sink</allowedfacility>
-    <agent>
-      <NullRegion/>
-    </agent>
+    <agent><NullRegion/></agent>
     <institution>
       <name>SingleInstitution</name>
+      <module>
+        <path>NullInst</path>
+        <agent>NullInst</agent>
+      </module>
       <availableprototype>Source</availableprototype>
       <availableprototype>Sink</availableprototype>
       <initialfacilitylist>
@@ -64,9 +73,7 @@
           <number>1</number>
         </entry>
       </initialfacilitylist>
-      <agent>
-        <NullInst/>
-      </agent>
+      <agent><NullInst/></agent>
     </institution>
   </region>
 
