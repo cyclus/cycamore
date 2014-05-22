@@ -23,8 +23,8 @@ INSTALL(FILES run_inputs.py
 # To add a new file, just add it to this list.  Any GoogleTests inside will be
 # automatically added to ctest.
 set ( CYCAMORE_TEST_CORE 
-  ${CYCLUS_CORE_SHARE_DIR}/cyclus/facility_tests.cc
-  ${CYCLUS_CORE_SHARE_DIR}/cyclus/institution_tests.cc
-  ${CYCLUS_CORE_SHARE_DIR}/cyclus/agent_tests.cc
-  ${CYCLUS_CORE_SHARE_DIR}/cyclus/region_tests.cc
+  ${CYCLUS_CORE_SHARE_DIR}/facility_tests.cc 
+  ${CYCLUS_CORE_SHARE_DIR}/institution_tests.cc 
+  ${CYCLUS_CORE_SHARE_DIR}/agent_tests.cc
+  ${CYCLUS_CORE_SHARE_DIR}/region_tests.cc 
   PARENT_SCOPE)
