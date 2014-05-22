@@ -16,8 +16,6 @@ ADD_AGENT("cycamore" "batch_reactor")
 
 ADD_AGENT("cycamore" "enrichment_facility")
 
-#ADD_AGENT("cycamore" "inpro_reactor")
-
 ADD_AGENT("cycamore" "sink_facility")
 
 ADD_AGENT("cycamore" "source_facility")
