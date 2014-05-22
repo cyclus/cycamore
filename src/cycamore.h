@@ -1,6 +1,8 @@
 #ifndef CYCAMORE_SRC_CYCAMORE_H_
 #define CYCAMORE_SRC_CYCAMORE_H_
 
+#include "version.h"
+
 #include "batch_reactor.h"
 #include "batch_reactor_tests.h"
 #include "deploy_inst.h"
