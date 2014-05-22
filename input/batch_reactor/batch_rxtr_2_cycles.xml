@@ -29,7 +29,7 @@
   <facility>
     <name>Source</name>
     <module>
-      <path>SourceFacility</path>
+      <lib>cycamore</lib>
       <agent>SourceFacility</agent>
     </module>
     <agent>
@@ -44,7 +44,7 @@
   <facility>
     <name>LWR_Reactor</name>
     <module>
-      <path>BatchReactor</path>
+      <lib>cycamore</lib>
       <agent>BatchReactor</agent>
     </module>
     <lifetime>26</lifetime>
@@ -72,7 +72,7 @@
   <facility>
     <name>Sink</name>
     <module>
-      <path>SinkFacility</path>
+      <lib>cycamore</lib>
       <agent>SinkFacility</agent>
     </module>
     <agent>
@@ -88,7 +88,7 @@
   <region>
     <name>SingleRegion</name>
     <module>
-      <path>NullRegion</path>
+      <lib>agents</lib>
       <agent>NullRegion</agent>
     </module>
     <allowedfacility>Source</allowedfacility>
@@ -98,7 +98,7 @@
     <institution>
       <name>SingleInstitution</name>
       <module>
-        <path>NullInst</path>
+        <lib>agents</lib>
         <agent>NullInst</agent>
       </module>
       <availableprototype>Source</availableprototype>
