@@ -197,6 +197,9 @@ class BatchReactor
   /// @param time the time of the tock
   virtual void Tock(int time);
   
+  /// notify commodity producer parent of entrance
+  virtual void EnterNotify();
+
   /// @brief The EnrichmentFacility request Materials of its given
   /// commodity.
   virtual std::set<cyclus::RequestPortfolio<cyclus::Material>::Ptr>
