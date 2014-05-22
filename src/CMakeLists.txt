@@ -1,34 +1,24 @@
 # ------------------- Add all Concrete Agents ----------------------------
 
-MACRO(ADD_AGENT LIB_ROOT SRC_ROOT)
-  
-  USE_CYCLUS(${LIB_ROOT} ${SRC_ROOT})
+USE_CYCLUS("cycamore" "batch_reactor")
 
-  SET(
-    TestSource ${TestSource}
-    ${${LIB_ROOT}_TEST_CC}
-    ${${LIB_ROOT}_CC}
-    )
+USE_CYCLUS("cycamore" "enrichment_facility")
 
-ENDMACRO()
+#USE_CYCLUS("cycamore" "inpro_reactor")
 
-ADD_AGENT("cycamore" "batch_reactor")
+USE_CYCLUS("cycamore" "sink_facility")
 
-ADD_AGENT("cycamore" "enrichment_facility")
+USE_CYCLUS("cycamore" "source_facility")
 
-ADD_AGENT("cycamore" "sink_facility")
+USE_CYCLUS("cycamore" "deploy_inst")
 
-ADD_AGENT("cycamore" "source_facility")
+#USE_CYCLUS("cycamore" "manager_inst")
 
-ADD_AGENT("cycamore" "deploy_inst")
+#USE_CYCLUS("cycamore" "growth_region")
 
-#ADD_AGENT("cycamore" "manager_inst")
+INSTALL_CYCLUS_MODULE("cycamore" "" "NONE")
 
-#ADD_AGENT("cycamore" "growth_region")
-
-INSTALL_CYCLUS_MODULE("cycamore" "")
-
-SET( TestSource ${TestSource} PARENT_SCOPE)
+SET( TestSource ${cycamore_TEST_CC} PARENT_SCOPE)
 
 # install header files
 FILE(GLOB h_files "${CMAKE_CURRENT_SOURCE_DIR}/*.h")
