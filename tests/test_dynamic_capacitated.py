@@ -62,8 +62,8 @@ def test_dynamic_capacitated():
         exit_time = agent_exit["ExitTime"]
         exit_ids = agent_exit["AgentId"]
 
-        source_id = find_ids("Source", agent_impl, agent_ids)
-        sink_id = find_ids("Sink", agent_impl, agent_ids)
+        source_id = find_ids(":agents:Source", agent_impl, agent_ids)
+        sink_id = find_ids(":agents:Sink", agent_impl, agent_ids)
 
         # Test for 3 sources and 4 sinks are deployed in the simulation
         yield assert_equal, len(source_id), 3
