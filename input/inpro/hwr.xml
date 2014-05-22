@@ -37,12 +37,16 @@
 
   <facility>
     <name>HWR_Reactor</name>
+    <module>
+      <path>InproReactor</path>
+      <agent>InproReactor</agent>
+    </module>
     <lifetime>480</lifetime>
     <agent>
       <InproReactor>
         <fuel_input>
-         <incommodity>enriched_u</incommodity>
-         <inrecipe>natl_u</inrecipe>
+          <incommodity>enriched_u</incommodity>
+          <inrecipe>natl_u</inrecipe>
         </fuel_input>
         <fuel_output>
          <outcommodity>waste</outcommodity>
@@ -81,16 +85,22 @@
 
   <region>
     <name>SingleRegion</name>
+    <module>
+      <path>NullRegion</path>
+      <agent>NullRegion</agent>
+    </module>
     <allowedfacility>Source</allowedfacility>
     <allowedfacility>Enrichment</allowedfacility>
     <allowedfacility>LWR_Reactor</allowedfacility>
     <allowedfacility>HWR_Reactor</allowedfacility>
     <allowedfacility>Sink</allowedfacility>
-    <agent>
-      <NullRegion/>
-    </agent>
+    <agent><NullRegion/></agent>
     <institution>
       <name>SingleInstitution</name>
+      <module>
+        <path>NullInst</path>
+        <agent>NullInst</agent>
+      </module>
       <availableprototype>Source</availableprototype>
       <availableprototype>Enrichment</availableprototype>
       <availableprototype>LWR_Reactor</availableprototype>
@@ -110,9 +120,7 @@
           <number>1</number>
         </entry>
       </initialfacilitylist>
-      <agent>
-        <NullInst/>
-      </agent>
+      <agent><NullInst/></agent>
     </institution>
   </region>
 
