@@ -196,7 +196,7 @@ class SinkFacility : public cyclus::Facility  {
   /**
      commodity price
    */
-  #pragma cyclus var {}
+  #pragma cyclus var {"defaul": 1e299}
   double commod_price;
 
   /**

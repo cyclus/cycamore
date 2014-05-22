@@ -41,7 +41,6 @@
           <val>commodity</val>
         </in_commods_>
         <capacity_>1</capacity_>
-        <commod_price_>1.0</commod_price_>
       </SinkFacility>
     </agent>
   </facility>
