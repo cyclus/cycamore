@@ -12,9 +12,9 @@ USE_CYCLUS("cycamore" "source_facility")
 
 USE_CYCLUS("cycamore" "deploy_inst")
 
-#USE_CYCLUS("cycamore" "manager_inst")
+USE_CYCLUS("cycamore" "manager_inst")
 
-#USE_CYCLUS("cycamore" "growth_region")
+USE_CYCLUS("cycamore" "growth_region")
 
 INSTALL_CYCLUS_MODULE("cycamore" "" "NONE")
 
