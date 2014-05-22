@@ -21,9 +21,9 @@
     </module>
     <agent>
       <SourceFacility>
-          <out_commod_>uox</out_commod_>
-          <recipe_name_>uox_fuel_recipe</recipe_name_>
-          <capacity_>2.5</capacity_>
+          <out_commod>uox</out_commod>
+          <recipe_name>uox_fuel_recipe</recipe_name>
+          <capacity>2.5</capacity>
       </SourceFacility>
     </agent>
   </facility>
@@ -36,9 +36,9 @@
     </module>
     <agent>
       <SourceFacility>
-        <out_commod_>mox</out_commod_>
-        <recipe_name_>mox_fuel_recipe</recipe_name_>
-        <capacity_>2.5</capacity_>
+        <out_commod>mox</out_commod>
+        <recipe_name>mox_fuel_recipe</recipe_name>
+        <capacity>2.5</capacity>
       </SourceFacility>
     </agent>
   </facility>

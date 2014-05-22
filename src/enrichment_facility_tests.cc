@@ -52,14 +52,14 @@ void EnrichmentFacilityTest::InitParameters() {
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 void EnrichmentFacilityTest::SetUpSourceFacility() {
-  src_facility->in_recipe(in_recipe);
+  src_facility->InRecipe(in_recipe);
   src_facility->in_commodity(in_commod);
   src_facility->out_commodity(out_commod);
-  src_facility->tails_assay(tails_assay);
-  src_facility->feed_assay(feed_assay);
+  src_facility->TailsAssay(tails_assay);
+  src_facility->FeedAssay(feed_assay);
   src_facility->SetMaxInventorySize(inv_size);
-  src_facility->swu_capacity(swu_capacity);
-  src_facility->initial_reserves(reserves);
+  src_facility->SwuCapacity(swu_capacity);
+  src_facility->InitialReserves(reserves);
 }
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -102,15 +102,15 @@ EnrichmentFacilityTest::DoEnrich(cyclus::Material::Ptr mat, double qty) {
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 TEST_F(EnrichmentFacilityTest, InitialState) {
-  EXPECT_EQ(in_recipe, src_facility->in_recipe());
+  EXPECT_EQ(in_recipe, src_facility->InRecipe());
   EXPECT_EQ(in_commod, src_facility->in_commodity());
   EXPECT_EQ(out_commod, src_facility->out_commodity());
-  EXPECT_DOUBLE_EQ(tails_assay, src_facility->tails_assay());
-  EXPECT_DOUBLE_EQ(feed_assay, src_facility->feed_assay());
+  EXPECT_DOUBLE_EQ(tails_assay, src_facility->TailsAssay());
+  EXPECT_DOUBLE_EQ(feed_assay, src_facility->FeedAssay());
   EXPECT_DOUBLE_EQ(inv_size, src_facility->MaxInventorySize());
   EXPECT_DOUBLE_EQ(0.0, src_facility->InventorySize());
-  EXPECT_DOUBLE_EQ(swu_capacity, src_facility->swu_capacity());
-  EXPECT_EQ(reserves, src_facility->initial_reserves());
+  EXPECT_DOUBLE_EQ(swu_capacity, src_facility->SwuCapacity());
+  EXPECT_EQ(reserves, src_facility->InitialReserves());
 }
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -143,15 +143,15 @@ TEST_F(EnrichmentFacilityTest, DISABLED_XMLInit) {
   cycamore::EnrichmentFacility fac(tc_.get());
 
   //EXPECT_NO_THROW(fac.InitFrom(&engine););
-  EXPECT_EQ(in_recipe, fac.in_recipe());
+  EXPECT_EQ(in_recipe, fac.InRecipe());
   EXPECT_EQ(in_commod, fac.in_commodity());
   EXPECT_EQ(out_commod, fac.out_commodity());
-  EXPECT_DOUBLE_EQ(tails_assay, fac.tails_assay());
-  EXPECT_DOUBLE_EQ(feed_assay, fac.feed_assay());
+  EXPECT_DOUBLE_EQ(tails_assay, fac.TailsAssay());
+  EXPECT_DOUBLE_EQ(feed_assay, fac.FeedAssay());
   EXPECT_DOUBLE_EQ(inv_size, fac.MaxInventorySize());
   EXPECT_DOUBLE_EQ(0.0, fac.InventorySize());
-  EXPECT_DOUBLE_EQ(swu_capacity, fac.swu_capacity());
-  EXPECT_EQ(reserves, fac.initial_reserves());
+  EXPECT_DOUBLE_EQ(swu_capacity, fac.SwuCapacity());
+  EXPECT_EQ(reserves, fac.InitialReserves());
 }
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -161,15 +161,15 @@ TEST_F(EnrichmentFacilityTest, Clone) {
   cycamore::EnrichmentFacility* cloned_fac =
     dynamic_cast<cycamore::EnrichmentFacility*>(src_facility->Clone());
 
-  EXPECT_EQ(in_recipe, cloned_fac->in_recipe());
+  EXPECT_EQ(in_recipe, cloned_fac->InRecipe());
   EXPECT_EQ(in_commod, cloned_fac->in_commodity());
   EXPECT_EQ(out_commod, cloned_fac->out_commodity());
-  EXPECT_DOUBLE_EQ(tails_assay, cloned_fac->tails_assay());
-  EXPECT_DOUBLE_EQ(feed_assay, cloned_fac->feed_assay());
+  EXPECT_DOUBLE_EQ(tails_assay, cloned_fac->TailsAssay());
+  EXPECT_DOUBLE_EQ(feed_assay, cloned_fac->FeedAssay());
   EXPECT_DOUBLE_EQ(inv_size, cloned_fac->MaxInventorySize());
   EXPECT_DOUBLE_EQ(0.0, cloned_fac->InventorySize());
-  EXPECT_DOUBLE_EQ(swu_capacity, cloned_fac->swu_capacity());
-  EXPECT_EQ(reserves, cloned_fac->initial_reserves());
+  EXPECT_DOUBLE_EQ(swu_capacity, cloned_fac->SwuCapacity());
+  EXPECT_EQ(reserves, cloned_fac->InitialReserves());
   
   delete cloned_fac;
 }
@@ -487,14 +487,14 @@ TEST_F(EnrichmentFacilityTest, Enrich) {
   double natu_req = FeedQty(qty, assays);
 
   double swu_cap = swu_req * 5;
-  src_facility->swu_capacity(swu_cap);
+  src_facility->SwuCapacity(swu_cap);
   src_facility->SetMaxInventorySize(natu_req);
   DoAddMat(GetMat(natu_req / 2));
   DoAddMat(GetMat(natu_req / 2));
 
   Material::Ptr response;
   EXPECT_NO_THROW(response = DoEnrich(target, qty));
-  EXPECT_DOUBLE_EQ(src_facility->current_swu_capacity(), swu_cap - swu_req);
+  EXPECT_DOUBLE_EQ(src_facility->CurrentSwuCapacity(), swu_cap - swu_req);
   
   MatQuery q(response);
   EXPECT_EQ(response->quantity(), qty);
@@ -548,7 +548,7 @@ TEST_F(EnrichmentFacilityTest, Response) {
   double natu_req = FeedQty(qty, assays);
 
   src_facility->SetMaxInventorySize(natu_req * 4); // not capacitated by nat u
-  src_facility->swu_capacity(swu_req); // swu capacitated
+  src_facility->SwuCapacity(swu_req); // swu capacitated
 
   // Null response
   src_facility->GetMatlTrades(trades, responses);
@@ -565,20 +565,20 @@ TEST_F(EnrichmentFacilityTest, Response) {
   trades.push_back(trade);
   
   // 1 trade, SWU < SWU cap
-  ASSERT_DOUBLE_EQ(src_facility->current_swu_capacity(), swu_req);
+  ASSERT_DOUBLE_EQ(src_facility->CurrentSwuCapacity(), swu_req);
   src_facility->GetMatlTrades(trades, responses);
   ASSERT_EQ(responses.size(), 1);
-  EXPECT_DOUBLE_EQ(src_facility->current_swu_capacity(),
+  EXPECT_DOUBLE_EQ(src_facility->CurrentSwuCapacity(),
                    swu_req - SwuRequired(trade_qty, assays));
 
   // 2 trades, SWU = SWU cap
-  ASSERT_GT(src_facility->current_swu_capacity() - 2 * swu_req / 3,
+  ASSERT_GT(src_facility->CurrentSwuCapacity() - 2 * swu_req / 3,
             -1 * cyclus::eps());
   trades.push_back(trade);
   responses.clear();
   EXPECT_NO_THROW(src_facility->GetMatlTrades(trades, responses));
   EXPECT_EQ(responses.size(), 2);
-  EXPECT_TRUE(cyclus::AlmostEq(src_facility->current_swu_capacity(), 0));
+  EXPECT_TRUE(cyclus::AlmostEq(src_facility->CurrentSwuCapacity(), 0));
   
   // too much qty, capn!
   trade = Trade<Material>(req, bid, 1); // a small number
@@ -589,7 +589,7 @@ TEST_F(EnrichmentFacilityTest, Response) {
   
   // reset!
   src_facility->Tick(1);
-  EXPECT_DOUBLE_EQ(src_facility->current_swu_capacity(), swu_req);
+  EXPECT_DOUBLE_EQ(src_facility->CurrentSwuCapacity(), swu_req);
 }
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -

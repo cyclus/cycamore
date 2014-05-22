@@ -37,14 +37,14 @@ void SinkFacilityTest::InitParameters() {
 void SinkFacilityTest::SetUpSinkFacility() {
   src_facility->AddCommodity(commod1_);
   src_facility->AddCommodity(commod2_);
-  src_facility->capacity(capacity_);
+  src_facility->Capacity(capacity_);
   src_facility->SetMaxInventorySize(inv_);
 }
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 TEST_F(SinkFacilityTest, InitialState) {
   EXPECT_DOUBLE_EQ(0.0, src_facility->InventorySize());
-  EXPECT_DOUBLE_EQ(capacity_, src_facility->capacity());
+  EXPECT_DOUBLE_EQ(capacity_, src_facility->Capacity());
   EXPECT_DOUBLE_EQ(inv_, src_facility->MaxInventorySize());
   EXPECT_DOUBLE_EQ(capacity_, src_facility->RequestAmt());
   EXPECT_DOUBLE_EQ(0.0, src_facility->InventorySize());
@@ -60,7 +60,7 @@ TEST_F(SinkFacilityTest, Clone) {
                              (src_facility->Clone());
 
   EXPECT_DOUBLE_EQ(0.0, cloned_fac->InventorySize());
-  EXPECT_DOUBLE_EQ(capacity_, cloned_fac->capacity());
+  EXPECT_DOUBLE_EQ(capacity_, cloned_fac->Capacity());
   EXPECT_DOUBLE_EQ(inv_, cloned_fac->MaxInventorySize());
   EXPECT_DOUBLE_EQ(capacity_, cloned_fac->RequestAmt());
   std::string arr[] = {commod1_, commod2_};
@@ -98,7 +98,7 @@ TEST_F(SinkFacilityTest, DISABLED_XMLInit) {
   std::string arr[] = {commod1_, commod2_};
   std::vector<std::string> vexp (arr, arr + sizeof(arr) / sizeof(arr[0]) );
   EXPECT_EQ(vexp, fac.input_commodities());
-  EXPECT_DOUBLE_EQ(capacity_, fac.capacity());
+  EXPECT_DOUBLE_EQ(capacity_, fac.Capacity());
   EXPECT_DOUBLE_EQ(inv_, fac.MaxInventorySize());
   EXPECT_DOUBLE_EQ(capacity_, fac.RequestAmt());
   EXPECT_DOUBLE_EQ(0.0, fac.InventorySize());
@@ -141,7 +141,7 @@ TEST_F(SinkFacilityTest, EmptyRequests) {
   using cyclus::Material;
   using cyclus::RequestPortfolio;
 
-  src_facility->capacity(0);
+  src_facility->Capacity(0);
   std::set<RequestPortfolio<Material>::Ptr> ports =
       src_facility->GetMatlRequests();
   EXPECT_TRUE(ports.empty());

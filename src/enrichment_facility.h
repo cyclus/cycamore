@@ -203,49 +203,49 @@ class EnrichmentFacility : public cyclus::Facility {
   */
   bool ValidReq(const cyclus::Material::Ptr mat);
 
-  inline void in_commodity(std::string in_commod) { in_commod_ = in_commod; }
+  inline void in_commodity(std::string in_com) { in_commod = in_com; }
 
-  inline std::string in_commodity() const { return in_commod_; }
+  inline std::string in_commodity() const { return in_commod; }
 
-  inline void out_commodity(std::string out_commod) { 
-    out_commod_ = out_commod;
+  inline void out_commodity(std::string out_com) { 
+    out_commod = out_com;
   }
 
-  inline std::string out_commodity() const { return out_commod_; }
+  inline std::string out_commodity() const { return out_commod; }
 
-  inline void in_recipe(std::string in_recipe) { in_recipe_ = in_recipe; }
+  inline void InRecipe(std::string in_rec) { in_recipe = in_rec; }
 
-  inline std::string in_recipe() const { return in_recipe_; }
+  inline std::string InRecipe() const { return in_recipe; }
 
   inline void SetMaxInventorySize(double size) {
-    max_inv_size_ = size;
-    inventory_.set_capacity(size);
+    max_inv_size = size;
+    inventory.set_capacity(size);
   }
 
-  inline double MaxInventorySize() const { return inventory_.capacity(); }
+  inline double MaxInventorySize() const { return inventory.capacity(); }
 
-  inline double InventorySize() const { return inventory_.quantity(); }
+  inline double InventorySize() const { return inventory.quantity(); }
 
-  inline void feed_assay(double assay) { feed_assay_ = assay; }
+  inline void FeedAssay(double assay) { feed_assay = assay; }
 
-  inline double feed_assay() const { return feed_assay_; }
+  inline double FeedAssay() const { return feed_assay; }
 
-  inline void tails_assay(double assay) { tails_assay_ = assay; }
+  inline void TailsAssay(double assay) { tails_assay = assay; }
 
-  inline double tails_assay() const { return tails_assay_; }
+  inline double TailsAssay() const { return tails_assay; }
 
-  inline void swu_capacity(double capacity) {
-    swu_capacity_ = capacity;
-    current_swu_capacity_ = swu_capacity_;
+  inline void SwuCapacity(double capacity) {
+    swu_capacity = capacity;
+    current_swu_capacity = swu_capacity;
   }
 
-  inline double swu_capacity() const { return swu_capacity_; }
+  inline double SwuCapacity() const { return swu_capacity; }
 
-  inline double current_swu_capacity() const { return current_swu_capacity_; }
+  inline double CurrentSwuCapacity() const { return current_swu_capacity; }
 
   /// @brief this facility's initial conditions
-  inline void  initial_reserves(double qty) { initial_reserves_ = qty; }
-  inline double initial_reserves() const { return initial_reserves_; }
+  inline void  InitialReserves(double qty) { initial_reserves = qty; }
+  inline double InitialReserves() const { return initial_reserves; }
 
  private:
   /**
@@ -280,29 +280,29 @@ class EnrichmentFacility : public cyclus::Facility {
   void RecordEnrichment_(double natural_u, double swu);
 
   #pragma cyclus var {}
-  std::string in_commod_;
+  std::string in_commod;
   #pragma cyclus var {}
-  std::string out_commod_;
+  std::string out_commod;
   #pragma cyclus var {}
-  std::string in_recipe_;
+  std::string in_recipe;
 
   #pragma cyclus var {"default": 0.03}
-  double tails_assay_;
+  double tails_assay;
   #pragma cyclus var {"default": 1e299}
-  double swu_capacity_;
+  double swu_capacity;
   #pragma cyclus var {"default": 1e299}
-  double max_inv_size_;
+  double max_inv_size;
   #pragma cyclus var {"default": 0}
-  double initial_reserves_;
-  #pragma cyclus var {'derived_init': 'current_swu_capacity_ = swu_capacity_;'}
-  double current_swu_capacity_;
+  double initial_reserves;
+  #pragma cyclus var {'derived_init': 'current_swu_capacity = swu_capacity;'}
+  double current_swu_capacity;
   #pragma cyclus var {\
     'derived_init': "cyclus::Material::Ptr feed = "\
-    "cyclus::Material::CreateUntracked(0, context()->GetRecipe(in_recipe_)); "\
-    "feed_assay_ = cyclus::toolkit::UraniumAssay(feed);"}
-  double feed_assay_;
-  #pragma cyclus var {'capacity': 'max_inv_size_'}
-  cyclus::toolkit::ResourceBuff inventory_; // of natl u
+    "cyclus::Material::CreateUntracked(0, context()->GetRecipe(in_recipe)); "\
+    "feed_assay = cyclus::toolkit::UraniumAssay(feed);"}
+  double feed_assay;
+  #pragma cyclus var {'capacity': 'max_inv_size'}
+  cyclus::toolkit::ResourceBuff inventory; // of natl u
   
   friend class EnrichmentFacilityTest;
 /* --- */

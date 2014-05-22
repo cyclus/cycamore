@@ -21,9 +21,9 @@
     </module>
     <agent>
       <Source>
-        <commod_>commodity</commod_>
-        <recipe_name_>commod_recipe</recipe_name_>
-        <capacity_>1.0</capacity_>
+        <commod>commodity</commod>
+        <recipe_name>commod_recipe</recipe_name>
+        <capacity>1.0</capacity>
       </Source>
     </agent>
   </facility>
@@ -37,10 +37,10 @@
     <lifetime>1</lifetime>
     <agent>
       <Sink>
-        <in_commods_>
+        <in_commods>
           <val>commodity</val>
-        </in_commods_>
-        <capacity_>1.0</capacity_>
+        </in_commods>
+        <capacity>1.0</capacity>
       </Sink>
     </agent>
   </facility>

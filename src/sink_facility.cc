@@ -12,8 +12,8 @@ namespace cycamore {
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 SinkFacility::SinkFacility(cyclus::Context* ctx)
   : cyclus::Facility(ctx),
-    commod_price_(0),
-    capacity_(std::numeric_limits<double>::max()) {
+    commod_price(0),
+    capacity(std::numeric_limits<double>::max()) {
   SetMaxInventorySize(std::numeric_limits<double>::max());
 }
 
@@ -47,14 +47,14 @@ std::string SinkFacility::str() {
 
   string msg = "";
   msg += "accepts commodities ";
-  for (vector<string>::iterator commod = in_commods_.begin();
-       commod != in_commods_.end();
+  for (vector<string>::iterator commod = in_commods.begin();
+       commod != in_commods.end();
        commod++) {
-    msg += (commod == in_commods_.begin() ? "{" : ", ");
+    msg += (commod == in_commods.begin() ? "{" : ", ");
     msg += (*commod);
   }
   msg += "} until its inventory is full at ";
-  ss << msg << inventory_.capacity() << " kg.";
+  ss << msg << inventory.capacity() << " kg.";
   return "" + ss.str();
 }
 
@@ -77,7 +77,7 @@ SinkFacility::GetMatlRequests() {
     
     std::vector<std::string>::const_iterator it;
     std::vector<Request<Material>*> mutuals;
-    for (it = in_commods_.begin(); it != in_commods_.end(); ++it) {
+    for (it = in_commods.begin(); it != in_commods.end(); ++it) {
       mutuals.push_back(port->AddRequest(mat, this, *it));
     }
     port->AddMutualReqs(mutuals);
@@ -105,7 +105,7 @@ SinkFacility::GetGenRsrcRequests() {
     port->AddConstraint(cc);
     
     std::vector<std::string>::const_iterator it;
-    for (it = in_commods_.begin(); it != in_commods_.end(); ++it) {
+    for (it = in_commods.begin(); it != in_commods.end(); ++it) {
       std::string quality = ""; // not clear what this should be..
       Product::Ptr rsrc = Product::CreateUntracked(amt,
                                                                    quality);
@@ -125,7 +125,7 @@ void SinkFacility::AcceptMatlTrades(
   std::vector< std::pair<cyclus::Trade<cyclus::Material>,
                          cyclus::Material::Ptr> >::const_iterator it;
   for (it = responses.begin(); it != responses.end(); ++it) {
-    inventory_.Push(it->second);    
+    inventory.Push(it->second);    
   }
 }
 
@@ -136,7 +136,7 @@ void SinkFacility::AcceptGenRsrcTrades(
   std::vector< std::pair<cyclus::Trade<cyclus::Product>,
                          cyclus::Product::Ptr> >::const_iterator it;
   for (it = responses.begin(); it != responses.end(); ++it) {
-    inventory_.Push(it->second);    
+    inventory.Push(it->second);    
   }
 }
 
@@ -149,8 +149,8 @@ void SinkFacility::Tick(int time) {
   double requestAmt = RequestAmt();
   // inform the simulation about what the sink facility will be requesting
   if (requestAmt > cyclus::eps()) {
-    for (vector<string>::iterator commod = in_commods_.begin();
-         commod != in_commods_.end();
+    for (vector<string>::iterator commod = in_commods.begin();
+         commod != in_commods.end();
          commod++) {
       LOG(cyclus::LEV_INFO4, "SnkFac") << " will request " << requestAmt
                                        << " kg of " << *commod << ".";
@@ -167,7 +167,7 @@ void SinkFacility::Tock(int time) {
   // Maybe someday it will record things.
   // For now, lets just print out what we have at each timestep.
   LOG(cyclus::LEV_INFO4, "SnkFac") << "SinkFacility " << this->id()
-                                   << " is holding " << inventory_.quantity()
+                                   << " is holding " << inventory.quantity()
                                    << " units of material at the close of month "
                                    << time << ".";
   LOG(cyclus::LEV_INFO3, "SnkFac") << "}";
