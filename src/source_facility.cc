@@ -77,7 +77,7 @@ void SourceFacility::EnterNotify() {
   cyclus::CommodityProducer* cast =
       dynamic_cast<cyclus::CommodityProducerManager*>(parent());
   if (cast != NULL)
-    parent()->Unregister(this);
+    parent()->Register(this);
 }
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
