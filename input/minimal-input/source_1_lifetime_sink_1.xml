@@ -22,9 +22,9 @@
     <lifetime>5</lifetime>
     <agent>
       <SourceFacility>
-        <out_commod_>commodity</out_commod_>
-        <recipe_name_>commod_recipe</recipe_name_>
-        <capacity_>1</capacity_>
+        <out_commod>commodity</out_commod>
+        <recipe_name>commod_recipe</recipe_name>
+        <capacity>1</capacity>
       </SourceFacility>
     </agent>
   </facility>
@@ -37,10 +37,10 @@
     </module>
     <agent>
       <SinkFacility>
-        <in_commods_>
+        <in_commods>
           <val>commodity</val>
-        </in_commods_>
-        <capacity_>1</capacity_>
+        </in_commods>
+        <capacity>1</capacity>
       </SinkFacility>
     </agent>
   </facility>
