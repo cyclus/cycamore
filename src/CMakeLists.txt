@@ -22,9 +22,9 @@ ADD_AGENT("cycamore" "source_facility")
 
 ADD_AGENT("cycamore" "deploy_inst")
 
-#ADD_AGENT("cycamore" "manager_inst")
+ADD_AGENT("cycamore" "manager_inst")
 
-#ADD_AGENT("cycamore" "growth_region")
+ADD_AGENT("cycamore" "growth_region")
 
 INSTALL_CYCLUS_MODULE("cycamore" "")
 

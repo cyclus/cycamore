@@ -2,53 +2,24 @@
 // Implements the ManagerInst class
 
 #include "manager_inst.h"
-#include "logger.h"
 
 namespace cycamore {
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 ManagerInst::ManagerInst(cyclus::Context* ctx)
-    : cyclus::Institution(ctx) {}
+    : cyclus::Institution(ctx) {
+  cyclus::Warn<cyclus::EXPERIMENTAL_WARNING>("the ManagerInst agent is experimental.");
+}
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 ManagerInst::~ManagerInst() {}
 
-void ManagerInst::InitFrom(cyclus::InfileTree* qe) {
-  std::string name, query;
-  int nEntries;
-  // populate prototypes_
-  query = "availableprototype";
-  nEntries = qe->NMatches(query);
-  if (nEntries > 0) {
-    // populate prototypes_
-    for (int i = 0; i < nEntries; i++) {
-      name = qe->GetString(query, i);
-      RegisterAvailablePrototype(name);
-    }
-  }
-}
-
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-void ManagerInst::RegisterAvailablePrototype(std::string prototype) {
-  using cyclus::CommodityProducer;
-  try {
-    CommodityProducer* cast = context()->CreateAgent<CommodityProducer>(prototype);
-    cyclus::Builder::RegisterProducer(cast);
-    LOG(cyclus::LEV_DEBUG3, "maninst") << "ManagerInst " << this->prototype()
-                                       << " has registered a producer prototype: "
-                                       << prototype
-                                       << " and "
-                                       << " now has " << NBuildingPrototypes()
-                                       << " registered total.";
-  } catch (cyclus::CastError err) {}
-}
-
-//- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 void ManagerInst::BuildNotify(cyclus::Agent* clone) {
-  cyclus::CommodityProducer* cast =
-    dynamic_cast<cyclus::CommodityProducer*>(clone);
+  cyclus::toolkit::CommodityProducer* cast =
+    dynamic_cast<cyclus::toolkit::CommodityProducer*>(clone);
   if (cast) {
-    cyclus::CommodityProducerManager::RegisterProducer(cast);
+    cyclus::toolkit::CommodityProducerManager::Register(cast);
     if (cyclus::LEV_DEBUG3 >= cyclus::Logger::ReportLevel()) {
       LOG(cyclus::LEV_DEBUG3, "maninst") << "ManagerInst " << prototype()
                                          << " has registered a producer clone:";
@@ -59,29 +30,29 @@ void ManagerInst::BuildNotify(cyclus::Agent* clone) {
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 void ManagerInst::DecomNotify(cyclus::Agent* clone) {
-  cyclus::CommodityProducer* cast =
-    dynamic_cast<cyclus::CommodityProducer*>(clone);
+  cyclus::toolkit::CommodityProducer* cast =
+    dynamic_cast<cyclus::toolkit::CommodityProducer*>(clone);
   if (cast) {
-    cyclus::CommodityProducerManager::UnRegisterProducer(cast);
+    cyclus::toolkit::CommodityProducerManager::Unregister(cast);
   }
 }
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 void ManagerInst::WriteProducerInformation(
-  cyclus::CommodityProducer* producer) {
+  cyclus::toolkit::CommodityProducer* producer) {
   using std::set;
-  set<cyclus::Commodity, cyclus::CommodityCompare> commodities =
+  set<cyclus::toolkit::Commodity, cyclus::toolkit::CommodityCompare> commodities =
     producer->ProducedCommodities();
-  set<cyclus::Commodity, cyclus::CommodityCompare>::iterator it;
+  set<cyclus::toolkit::Commodity, cyclus::toolkit::CommodityCompare>::iterator it;
 
   LOG(cyclus::LEV_DEBUG3, "maninst") << " Clone produces " << commodities.size()
                                      << " commodities.";
   for (it = commodities.begin(); it != commodities.end(); it++) {
     LOG(cyclus::LEV_DEBUG3, "maninst") << " Commodity produced: " << it->name();
     LOG(cyclus::LEV_DEBUG3, "maninst") << "           capacity: " <<
-                                       producer->ProductionCapacity(*it);
+                                       producer->Capacity(*it);
     LOG(cyclus::LEV_DEBUG3, "maninst") << "               cost: " <<
-                                       producer->ProductionCost(*it);
+                                       producer->Cost(*it);
   }
 }
 
