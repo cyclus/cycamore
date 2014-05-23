@@ -3,8 +3,12 @@
 
 #include "cyclus.h"
 #include "timer.h"
+#include "test_context.h"
+#include "institution_tests.h"
+#include "agent_tests.h"
 
 #include "manager_inst.h"
+
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 class TestProducer :
