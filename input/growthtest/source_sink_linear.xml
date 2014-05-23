@@ -47,8 +47,7 @@
     <allowedfacility>Sink</allowedfacility>
     <agent>
       <GrowthRegion>
-        <commodity>
-          <name>commodity</name>
+        <commodity_name>commodity</commodity_name>
           <demand>
             <type>linear</type>
             <parameters>1 1</parameters>

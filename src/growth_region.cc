@@ -21,6 +21,7 @@ void GrowthRegion::AddCommodityDemand(cyclus::toolkit::Commodity commod) {
 
   // instantiate demand function
   cyclus::toolkit::PiecewiseFunctionFactory pff;
+  int ndemands = demand_types.size();
   for (int i = 0; i < ndemands; i++) {
     cyclus::toolkit::BasicFunctionFactory bff;
     bool continuous = (i != 0); // the first entry is not continuous
@@ -36,10 +37,8 @@ void GrowthRegion::AddCommodityDemand(cyclus::toolkit::Commodity commod) {
 void GrowthRegion::Build(cyclus::Agent* parent) {
   cyclus::Region::Build(parent);
 
-  std::set<cyclus::toolkit::Commodity>::iterator it;
-  for (it = commodities_.begin(); it != commodities_.end(); ++it) {
-    AddCommodityDemand(*it);
-  }
+  cyclus::toolkit::Commodity commod(commodity_name);
+  AddCommodityDemand(commod);
 }
 
 void GrowthRegion::EnterNotify() {
@@ -91,25 +90,21 @@ void GrowthRegion::Unregister_(cyclus::Agent* agent) {
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 void GrowthRegion::Tick(int time) {
-  using std::set;
-  set<cyclus::toolkit::Commodity>::iterator it;
-  for (it = commodities_.begin(); it != commodities_.end(); it++) {
-    cyclus::toolkit::Commodity commodity = *it;
-    double demand = sdmanager_.Demand(commodity, time);
-    double supply = sdmanager_.Supply(commodity);
-    double unmetdemand = demand - supply;
-
-    LOG(cyclus::LEV_INFO3, "greg") << "GrowthRegion: " << prototype()
-                                   << " at time: " << time
-                                   << " has the following values regaring "
-                                   << " commodity: " << commodity.name();
-    LOG(cyclus::LEV_INFO3, "greg") << "  *demand = " << demand;
-    LOG(cyclus::LEV_INFO3, "greg") << "  *supply = " << supply;
-    LOG(cyclus::LEV_INFO3, "greg") << "  * unmetdemand = " << unmetdemand;
-
-    if (unmetdemand > 0) {
-      OrderBuilds(commodity, unmetdemand);
-    }
+  cyclus::toolkit::Commodity commodity(commodity_name);
+  double demand = sdmanager_.Demand(commodity, time);
+  double supply = sdmanager_.Supply(commodity);
+  double unmetdemand = demand - supply;
+  
+  LOG(cyclus::LEV_INFO3, "greg") << "GrowthRegion: " << prototype()
+                                 << " at time: " << time
+                                 << " has the following values regaring "
+                                 << " commodity: " << commodity.name();
+  LOG(cyclus::LEV_INFO3, "greg") << "  *demand = " << demand;
+  LOG(cyclus::LEV_INFO3, "greg") << "  *supply = " << supply;
+  LOG(cyclus::LEV_INFO3, "greg") << "  * unmetdemand = " << unmetdemand;
+  
+  if (unmetdemand > 0) {
+    OrderBuilds(commodity, unmetdemand);
   }
   cyclus::Region::Tick(time);
 }
