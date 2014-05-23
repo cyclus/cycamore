@@ -1,21 +1,19 @@
 #include "manager_inst_tests.h"
-#include "institution_tests.h"
-#include "agent_tests.h"
 
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 TestProducer::TestProducer(cyclus::Context* ctx)
-    : cyclus::Facility(ctx) {}
+    : cyclus::Facility(ctx) {};
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-TestProducer::~TestProducer() {}
+TestProducer::~TestProducer() {};
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 void ManagerInstTests::SetUp() {
   ctx_ = new cyclus::Context(&ti_, &rec_);
   src_inst = new cycamore::ManagerInst(ctx_);
   producer = new TestProducer(ctx_);
-  commodity = cyclus::Commodity("commod");
+  commodity = cyclus::toolkit::Commodity("commod");
   capacity = 5;
   producer->AddCommodity(commodity);
   producer->SetCapacity(commodity, capacity);
@@ -38,7 +36,7 @@ TEST_F(ManagerInstTests, producerexists) {
   using std::set;
   ctx_->AddPrototype("foop", producer);
   src_inst->RegisterAvailablePrototype("foop");
-  set<cyclus::CommodityProducer*>::iterator it;
+  set<cyclus::toolkit::CommodityProducer*>::iterator it;
   for (it = src_inst->BeginningProducer(); it != src_inst->EndingProducer();
        it++) {
     EXPECT_EQ(dynamic_cast<TestProducer*>(*it)->prototype(), producer->prototype());
