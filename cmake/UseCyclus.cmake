@@ -226,7 +226,7 @@ ENDMACRO()
 MACRO(INSTALL_AGENT_LIB_ lib_name lib_src lib_h inst_dir)
   # add lib
   ADD_LIBRARY(${lib_name} ${lib_src})
-  TARGET_LINK_LIBRARIES(${lib_name} dl ${LIBS})
+  TARGET_LINK_LIBRARIES(${lib_name} dl ${LIBS} ${CYCLUS_AGENT_TEST_LIBRARIES})
   SET(CYCLUS_LIBRARIES ${CYCLUS_LIBRARIES} ${lib_root})
   ADD_DEPENDENCIES(${lib_name} ${lib_src} ${lib_h})
 
@@ -268,7 +268,7 @@ MACRO(INSTALL_AGENT_TESTS_ lib_name test_src test_h driver inst_dir)
     TARGET_LINK_LIBRARIES( 
       ${TGT} dl
       ${LIBS}
-      ${CYCLUS_GTEST_LIBRARIES}
+      ${CYCLUS_TEST_LIBRARIES}
       )
     INSTALL(
       TARGETS ${TGT}
