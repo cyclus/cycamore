@@ -9,6 +9,11 @@
 #include "recorder.h"
 #include "timer.h"
 
+#include "test_context.h"
+#include "region_tests.h"
+#include "agent_tests.h"
+
+
 namespace cycamore {
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -22,8 +27,7 @@ class GrowthRegionTests : public ::testing::Test {
 
   virtual void SetUp();
   virtual void TearDown();
-  void InitRegion();
-  bool ManagesCommodity(cyclus::Commodity& commodity);
+  bool ManagesCommodity(cyclus::toolkit::Commodity& commodity);
 };
 
 } // namespace cycamore

@@ -9,6 +9,7 @@ namespace cycamore {
 /// @class ManagerInst
 /// @section introduction Introduction
 /// @section detailedBehavior Detailed Behavior
+/// @warning The ManagerInst is experimental
 class ManagerInst : public cyclus::Institution,
   public cyclus::toolkit::CommodityProducerManager,
   public cyclus::toolkit::Builder {
