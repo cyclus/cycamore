@@ -57,7 +57,7 @@ FIND_LIBRARY(CYCLUS_CORE_LIBRARY NAMES cyclus
   PATH_SUFFIXES cyclus/lib lib)
 
 # Look for the library
-FIND_LIBRARY(CYCLUS_AGENT_TEST_LIBRARY NAMES agenttests
+FIND_LIBRARY(CYCLUS_AGENT_TEST_LIBRARY NAMES baseagentunittests
   HINTS "${CYCLUS_ROOT_DIR}" "${CYCLUS_ROOT_DIR}/cyclus" 
   /usr/local/cyclus/lib /usr/local/cyclus
   /opt/local /opt/local/cyclus
