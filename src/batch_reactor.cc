@@ -691,15 +691,6 @@ void BatchReactor::Tock(int time) {
   LOG(cyclus::LEV_INFO3, "BReact") << "}";
 }
 
-//- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-void BatchReactor::EnterNotify() {
-  cyclus::toolkit::CommodityProducerManager* cast =
-      dynamic_cast<cyclus::toolkit::CommodityProducerManager*>(parent());
-  if (cast != NULL)
-    cast->Register(this);
-}
-
-
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 std::set<cyclus::RequestPortfolio<cyclus::Material>::Ptr>
 BatchReactor::GetMatlRequests() {

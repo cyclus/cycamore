@@ -72,14 +72,6 @@ void SourceFacility::Tock(int time) {
   LOG(cyclus::LEV_INFO3, "SrcFac") << "}";
 }
 
-//- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-void SourceFacility::EnterNotify() {
-  cyclus::toolkit::CommodityProducerManager* cast =
-      dynamic_cast<cyclus::toolkit::CommodityProducerManager*>(parent());
-  if (cast != NULL)
-    cast->Register(this);
-}
-
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 cyclus::Material::Ptr SourceFacility::GetOffer(
     const cyclus::Material::Ptr target) const {
