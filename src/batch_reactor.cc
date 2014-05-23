@@ -693,10 +693,10 @@ void BatchReactor::Tock(int time) {
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 void BatchReactor::EnterNotify() {
-  cyclus::CommodityProducer* cast =
+  cyclus::toolkit::CommodityProducerManager* cast =
       dynamic_cast<cyclus::toolkit::CommodityProducerManager*>(parent());
   if (cast != NULL)
-    parent()->Register(this);
+    cast->Register(this);
 }
 
 
