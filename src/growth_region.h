@@ -17,21 +17,18 @@ class GrowthRegion;
 #include "growth_region_tests.h"
 
 namespace cycamore {
-/// The GrowthRegion class inherits from the Region class and is
-/// dynamically loaded by the Agent class when requested.
-///
 /// This region determines if there is a need to meet a certain
 /// capacity (as defined via input) at each time step. If there is
 /// such a need, the region will determine how many of each facility
 /// type are required and then determine, facility by facility, which
 /// of its institutions are available to build each facility.
-//struct DemandInfo {
-//  std::string type;
-//  std::string params;
-//  int time;
-//};
-
-
+///
+/// @TODO In order to make GrowthRegion copacetic with init/restart, its input
+/// parameter space was simplified. For now it can only provide growth support
+/// for a single demanded commodity. A relatively simple next step will be to
+/// determin an input API and corresponding implementation that again supports
+/// multiple commodities being demanded.
+///
 /// @warning The growth region is experimental
 class GrowthRegion : public cyclus::Region {
   friend class GrowthRegionTests;
@@ -70,13 +67,8 @@ class GrowthRegion : public cyclus::Region {
   inline cyclus::toolkit::SupplyDemandManager* sdmanager() { return &sdmanager_; };
 
  protected:
-  /// a container of all commodities managed by region
-  std::set<cyclus::toolkit::Commodity, cyclus::toolkit::CommodityCompare> commodities_;
-
-  //std::map<std::string, std::vector<DemandInfo> > demands_;
-
   #pragma cyclus var {}
-  int ndemands;
+  std::string commodity_name;
 
   #pragma cyclus var {}
   std::vector<std::string> demand_types;
