@@ -75,7 +75,7 @@ void SourceFacility::Tock(int time) {
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 void SourceFacility::EnterNotify() {
   cyclus::CommodityProducer* cast =
-      dynamic_cast<cyclus::CommodityProducerManager*>(parent());
+      dynamic_cast<cyclus::toolkit::CommodityProducerManager*>(parent());
   if (cast != NULL)
     parent()->Register(this);
 }
