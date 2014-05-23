@@ -143,6 +143,7 @@ IF( USE_TESTING )
 ENDIF()
 
 ADD_SUBDIRECTORY(tests)
+
 SET(TestSource 
   ${TestSource} 
   ${CYCAMORE_TEST_CORE}
