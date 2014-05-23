@@ -42,11 +42,51 @@ void GrowthRegion::Build(cyclus::Agent* parent) {
   }
 }
 
-//- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-void GrowthRegion::BuildNotify(Agent* m) {
-    // dyncast
-    RegisterCommodityProducerManager(m);
-    RegisterBuilder(m);
+void GrowthRegion::EnterNotify() {
+  cyclus::Region::EnterNotify();
+  std::set<cyclus::Agent*>::iterator it;
+  for (it = cyclus::Agent::children().begin();
+       it != cyclus::Agent::children().end();
+       ++it) {
+    Agent* a = *it;
+    Register_(a);
+  }
+}
+
+void GrowthRegion::BuildNotify(Agent* a) {
+  Register_(a);
+}
+
+void GrowthRegion::DecomNotify(Agent* a) {
+  Unregister_(a);
+}
+
+void GrowthRegion::Register_(cyclus::Agent* agent) {
+  using cyclus::toolkit::CommodityProducerManager;
+  using cyclus::toolkit::Builder;
+  
+  CommodityProducerManager* cpm_cast =
+      dynamic_cast<CommodityProducerManager*>(agent);
+  if (cpm_cast != NULL)
+    sdmanager_.RegisterProducerManager(cpm_cast);
+
+  Builder* b_cast = dynamic_cast<Builder*>(agent);
+  if (b_cast != NULL)
+    buildmanager_.Register(b_cast);
+}
+
+void GrowthRegion::Unregister_(cyclus::Agent* agent) {
+  using cyclus::toolkit::CommodityProducerManager;
+  using cyclus::toolkit::Builder;
+  
+  CommodityProducerManager* cpm_cast =
+    dynamic_cast<CommodityProducerManager*>(agent);
+  if (cpm_cast != NULL)
+    sdmanager_.UnregisterProducerManager(cpm_cast);
+
+  Builder* b_cast = dynamic_cast<Builder*>(agent);
+  if (b_cast != NULL)
+    buildmanager_.Unregister(b_cast);
 }
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -72,26 +112,6 @@ void GrowthRegion::Tick(int time) {
     }
   }
   cyclus::Region::Tick(time);
-}
-
-//- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-void GrowthRegion::RegisterCommodityProducerManager(cyclus::Agent* child) {
-  cyclus::toolkit::CommodityProducerManager* cast =
-    dynamic_cast<cyclus::toolkit::CommodityProducerManager*>(child);
-  if (!cast) {
-    throw cyclus::CastError("Failed to cast to CommodityProducerManager");
-  }
-  sdmanager_.RegisterProducerManager(cast);
-}
-
-//- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-void GrowthRegion::RegisterBuilder(cyclus::Agent* child) {
-  cyclus::toolkit::Builder* cast =
-    dynamic_cast<cyclus::toolkit::Builder*>(child);
-  if (!cast) {
-    throw cyclus::CastError("Failed to cast to Builder");
-  }
-  buildmanager_.Register(cast);
 }
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -

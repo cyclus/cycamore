@@ -14,27 +14,41 @@ ManagerInst::ManagerInst(cyclus::Context* ctx)
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 ManagerInst::~ManagerInst() {}
 
-//- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-void ManagerInst::BuildNotify(cyclus::Agent* clone) {
-  cyclus::toolkit::CommodityProducer* cast =
-    dynamic_cast<cyclus::toolkit::CommodityProducer*>(clone);
-  if (cast) {
-    cyclus::toolkit::CommodityProducerManager::Register(cast);
-    if (cyclus::LEV_DEBUG3 >= cyclus::Logger::ReportLevel()) {
-      LOG(cyclus::LEV_DEBUG3, "maninst") << "ManagerInst " << prototype()
-                                         << " has registered a producer clone:";
-      WriteProducerInformation(cast);
-    }
+void ManagerInst::BuildNotify(Agent* a) {
+  Register_(a);
+}
+
+void ManagerInst::DecomNotify(Agent* a) {
+  Unregister_(a);
+}
+
+void ManagerInst::EnterNotify() {
+  cyclus::Institution::EnterNotify();
+  std::set<cyclus::Agent*>::iterator it;
+  for (it = cyclus::Agent::children().begin();
+       it != cyclus::Agent::children().end();
+       ++it) {
+    Agent* a = *it;
+    Register_(a);
   }
 }
 
-//- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-void ManagerInst::DecomNotify(cyclus::Agent* clone) {
-  cyclus::toolkit::CommodityProducer* cast =
-    dynamic_cast<cyclus::toolkit::CommodityProducer*>(clone);
-  if (cast) {
-    cyclus::toolkit::CommodityProducerManager::Unregister(cast);
-  }
+void ManagerInst::Register_(Agent* a) {
+  using cyclus::toolkit::CommodityProducer;
+  using cyclus::toolkit::CommodityProducerManager;
+  
+  CommodityProducer* cp_cast = dynamic_cast<CommodityProducer*>(a);
+  if (cp_cast != NULL)
+    CommodityProducerManager::Register(cp_cast);
+}
+
+void ManagerInst::Unregister_(Agent* a) {
+  using cyclus::toolkit::CommodityProducer;
+  using cyclus::toolkit::CommodityProducerManager;
+  
+  CommodityProducer* cp_cast = dynamic_cast<CommodityProducer*>(a);
+  if (cp_cast != NULL)
+    CommodityProducerManager::Unregister(cp_cast);
 }
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -

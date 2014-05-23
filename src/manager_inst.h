@@ -22,20 +22,26 @@ class ManagerInst : public cyclus::Institution,
 
   #pragma cyclus
 
-  /// perform any registration functionality after a clone has been
-  /// built
-  /// @param clone the built (cloned) prototype
-  virtual void BuildNotify(cyclus::Agent* clone);
+  /// enter the simulation and register any children present
+  virtual void EnterNotify();
 
-  /// perform any registration functionality before a clone is
-  /// decommissioned(deleted)
-  /// @param clone the to-be-decommissioned prototype
-  virtual void DecomNotify(cyclus::Agent* clone);
+  /// register a new child
+  virtual void BuildNotify(Agent* m);
+
+  /// unregister a child
+  virtual void DecomNotify(Agent* m);
 
   /// write information about a commodity producer to a stream
   /// @param producer the producer
   void WriteProducerInformation(cyclus::toolkit::CommodityProducer*
                                 producer);
+
+ private:  
+  /// register a child 
+  void Register_(cyclus::Agent* agent);
+
+  /// unregister a child 
+  void Unregister_(cyclus::Agent* agent);
 };
 } // namespace cycamore 
 

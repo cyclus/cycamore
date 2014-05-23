@@ -58,7 +58,14 @@ class GrowthRegion : public cyclus::Region {
   /// @param time is the time to perform the tick
   virtual void Tick(int time);
 
+  /// enter the simulation and register any children present
+  virtual void EnterNotify();
+
+  /// register a new child
   virtual void BuildNotify(Agent* m);
+
+  /// unregister a child
+  virtual void DecomNotify(Agent* m);
 
   inline cyclus::toolkit::SupplyDemandManager* sdmanager() { return &sdmanager_; };
 
@@ -80,20 +87,17 @@ class GrowthRegion : public cyclus::Region {
   #pragma cyclus var {}
   std::vector<int> demand_times;
 
-
   /// manager for building things
   cyclus::toolkit::BuildingManager buildmanager_;
 
   /// manager for Supply and demand
   cyclus::toolkit::SupplyDemandManager sdmanager_;
 
-  /// register a child as a commodity producer manager if it is one
-  /// @param agent the child to register
-  void RegisterCommodityProducerManager(cyclus::Agent* agent);
+  /// register a child 
+  void Register_(cyclus::Agent* agent);
 
-  /// register a child as a builder if it is one
-  /// @param agent the child to register
-  void RegisterBuilder(cyclus::Agent* agent);
+  /// unregister a child 
+  void Unregister_(cyclus::Agent* agent);
 
   /// orders builds given a commodity and an unmet demand for production
   /// capacity of that commodity
