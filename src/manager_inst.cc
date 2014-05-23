@@ -7,7 +7,9 @@ namespace cycamore {
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 ManagerInst::ManagerInst(cyclus::Context* ctx)
-    : cyclus::Institution(ctx) {}
+    : cyclus::Institution(ctx) {
+  cyclus::Warn<cyclus::EXPERIMENTAL_WARNING>("the ManagerInst agent is experimental.");
+}
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 ManagerInst::~ManagerInst() {}
@@ -40,7 +42,7 @@ void ManagerInst::WriteProducerInformation(
   cyclus::toolkit::CommodityProducer* producer) {
   using std::set;
   set<cyclus::toolkit::Commodity, cyclus::toolkit::CommodityCompare> commodities =
-    producer->Commodities();
+    producer->ProducedCommodities();
   set<cyclus::toolkit::Commodity, cyclus::toolkit::CommodityCompare>::iterator it;
 
   LOG(cyclus::LEV_DEBUG3, "maninst") << " Clone produces " << commodities.size()
