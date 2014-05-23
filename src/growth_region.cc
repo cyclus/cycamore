@@ -15,84 +15,17 @@ GrowthRegion::GrowthRegion(cyclus::Context* ctx)
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 GrowthRegion::~GrowthRegion() {}
 
-//- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-/*
-std::string GrowthRegion::schema() {
-  return
-    "<oneOrMore>                                       \n"
-    "  <element name = \"commodity\">                  \n"
-    "                                                  \n"
-    "    <element name = \"name\">                     \n"
-    "      <text/>                                     \n"
-    "    </element>                                    \n"
-    "                                                  \n"
-    "    <oneOrMore>                                   \n"
-    "      <element name = \"demand\">                 \n"
-    "        <element name=\"type\">                   \n"
-    "          <text/>                                 \n"
-    "        </element>                                \n"
-    "        <element name=\"parameters\">             \n"
-    "          <text/>                                 \n"
-    "        </element>                                \n"
-    "        <optional>                                \n"
-    "          <element name=\"start_time\">           \n"
-    "            <data type=\"nonNegativeInteger\"/>   \n"
-    "          </element>                              \n"
-    "        </optional>                               \n"
-    "      </element>                                  \n"
-    "    </oneOrMore>                                  \n"
-    "                                                  \n"
-    "  </element>                                      \n"
-    "</oneOrMore>                                      \n";
-}
-
-//- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-void GrowthRegion::InitFrom(cyclus::InfileTree* qe) {
-  cyclus::Region::InitFrom(qe);
-  qe = qe->SubTree("agent/*");
-  LOG(cyclus::LEV_DEBUG2, "greg") << "A Growth Region is being initialized";
-
-  std::string query = "commodity";
-  int nCommodities = qe->NMatches(query);
-  // populate supply demand manager info for each commodity
-  for (int i = 0; i < nCommodities; i++) {
-    cyclus::InfileTree* iqe = qe->SubTree(query, i);
-
-    std::string name = iqe->GetString("name");
-    commodities_.insert(cyclus::toolkit::Commodity(name));
-
-    std::string query = "demand";
-    int n = iqe->NMatches(query);
-    for (int j = 0; j < n; j++) {
-      cyclus::InfileTree* jqe = iqe->SubTree(query, j);
-      DemandInfo di;
-      di.type = jqe->GetString("type");
-      di.params = jqe->GetString("parameters");
-      di.time = cyclus::OptionalQuery<int>(qe, jqe, "start_time", 0);
-      demands_[name].push_back(di);
-    }
-  }
-}
-
-//- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-void GrowthRegion::InitFrom(GrowthRegion* m) {
-  Region::InitFrom(m);
-  commodities_ = m->commodities_;
-  demands_ = m->demands_;
-}
-*/
-
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 void GrowthRegion::AddCommodityDemand(cyclus::toolkit::Commodity commod) {
   std::string name = commod.name();
 
-  // instantiatedemand
+  // instantiate demand function
   cyclus::toolkit::PiecewiseFunctionFactory pff;
-  for (int i = 0; i < demands_[name].size(); i++) {
-    DemandInfo di = demands_[name][i];
+  for (int i = 0; i < ndemands; i++) {
     cyclus::toolkit::BasicFunctionFactory bff;
     bool continuous = (i != 0); // the first entry is not continuous
-    pff.AddFunction(bff.GetFunctionPtr(di.type, di.params), di.time, continuous);
+    pff.AddFunction(bff.GetFunctionPtr(demand_types[i], demand_params[i]), 
+                                       demand_times[i], continuous);
   }
 
   // register the commodity anddemand
