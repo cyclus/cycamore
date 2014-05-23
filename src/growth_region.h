@@ -25,11 +25,11 @@ namespace cycamore {
 /// such a need, the region will determine how many of each facility
 /// type are required and then determine, facility by facility, which
 /// of its institutions are available to build each facility.
-struct DemandInfo {
-  std::string type;
-  std::string params;
-  int time;
-};
+//struct DemandInfo {
+//  std::string type;
+//  std::string params;
+//  int time;
+//};
 
 
 /// @warning The growth region is experimental
@@ -60,13 +60,26 @@ class GrowthRegion : public cyclus::Region {
 
   virtual void BuildNotify(Agent* m);
 
-  inline cyclus::toolkit::SupplyDemandManager sdmanager() { return sdmanager_; };
+  inline cyclus::toolkit::SupplyDemandManager* sdmanager() { return &sdmanager_; };
 
  protected:
   /// a container of all commodities managed by region
   std::set<cyclus::toolkit::Commodity, cyclus::toolkit::CommodityCompare> commodities_;
 
-  std::map<std::string, std::vector<DemandInfo> > demands_;
+  //std::map<std::string, std::vector<DemandInfo> > demands_;
+
+  #pragma cyclus var {}
+  int ndemands;
+
+  #pragma cyclus var {}
+  std::vector<std::string> demand_types;
+
+  #pragma cyclus var {}
+  std::vector<std::string> demand_params;
+
+  #pragma cyclus var {}
+  std::vector<int> demand_times;
+
 
   /// manager for building things
   cyclus::toolkit::BuildingManager buildmanager_;
