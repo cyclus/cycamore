@@ -79,6 +79,8 @@ class GrowthRegion : public cyclus::Region {
   #pragma cyclus var {}
   std::vector<int> demand_times;
 
+  cyclus::toolkit::Commodity commod_;
+  
   /// manager for building things
   cyclus::toolkit::BuildingManager buildmanager_;
 
