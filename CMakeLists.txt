@@ -156,12 +156,12 @@ ENDIF()
 
 # Build cycamore_unit_tests
 ADD_EXECUTABLE( cycamore_unit_tests
-  tests/cycamore_unit_test_driver.cc ${TestSource}
-  ${GENERATED_TEST_SOURCE}
+  tests/cycamore_unit_test_driver.cc 
+  ${TestSource}
 )
 
 TARGET_LINK_LIBRARIES( cycamore_unit_tests
-  dl ${LIBS} ${CYCLUS_GTEST_LIBRARIES})
+  dl ${LIBS} ${CYCLUS_TEST_LIBRARIES})
 
 INSTALL(TARGETS cycamore_unit_tests
   RUNTIME DESTINATION bin

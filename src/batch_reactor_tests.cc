@@ -383,8 +383,8 @@ cyclus::Agent* BatchReactorConstructor(cyclus::Context* ctx) {
 }
 
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-INSTANTIATE_TEST_CASE_P(BatchReactor, FacilityTests,
-                        Values(&BatchReactorConstructor));
+// INSTANTIATE_TEST_CASE_P(BatchReactor, FacilityTests,
+//                         Values(&BatchReactorConstructor));
 INSTANTIATE_TEST_CASE_P(BatchReactor, AgentTests,
                         Values(&BatchReactorConstructor));
 
