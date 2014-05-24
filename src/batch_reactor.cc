@@ -24,6 +24,8 @@ BatchReactor::BatchReactor(cyclus::Context* ctx)
       n_reserves_(0),
       batch_size_(1),
       phase_(INITIAL) {
+  cyclus::Warn<cyclus::EXPERIMENTAL_WARNING>("the BatchReactor agent "
+                                             "is considered experimental.");
   if (phase_names_.empty()) {
     SetUpPhaseNames_();
   }

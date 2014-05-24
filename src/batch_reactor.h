@@ -99,6 +99,7 @@ namespace cycamore {
 ///
 /// @todo add decommissioning behavior if material is still in storage
 ///
+/// @warning The BatchReactor is considered experimental.
 /// @warning preference time changing is based on *full simulation time*, not
 /// relative time
 /// @warning the reactor's commodity context *can not* currently remove
