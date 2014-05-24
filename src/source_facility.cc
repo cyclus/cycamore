@@ -40,19 +40,33 @@ void SourceFacility::InitFrom(SourceFacility* m) {
 void SourceFacility::InitFrom(cyclus::QueryableBackend* b) {
   #pragma cyclus impl initfromdb cycamore::SourceFacility
 
-  cyclus::toolkit::Commodity commod(out_commod);
-  cyclus::toolkit::CommodityProducer::Add(commod);
-  cyclus::toolkit::CommodityProducer::SetCapacity(commod, capacity);
+  commod_ = cyclus::toolkit::Commodity(out_commod);
+  cyclus::toolkit::CommodityProducer::Add(commod_);
+  cyclus::toolkit::CommodityProducer::SetCapacity(commod_, capacity);
+  cyclus::toolkit::CommodityProducer::SetCost(commod_, capacity);
+}
+
+void SourceFacility::EnterNotify() {
+  Facility::EnterNotify();
+  commod_ = cyclus::toolkit::Commodity(out_commod);
+  cyclus::toolkit::CommodityProducer::Add(commod_);
+  cyclus::toolkit::CommodityProducer::SetCapacity(commod_, capacity);
+  cyclus::toolkit::CommodityProducer::SetCost(commod_, capacity);
 }
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 std::string SourceFacility::str() {
   std::stringstream ss;
+  std::string ans = std::string(cyclus::toolkit::CommodityProducer::Produces(cyclus::toolkit::Commodity(out_commod)) ? "yes" : "no");
   ss << cyclus::Facility::str()
      << " supplies commodity '"
      << out_commod << "' with recipe '"
      << recipe_name << "' at a capacity of "
-     << capacity << " kg per time step ";
+     << capacity << " kg per time step "
+     << " commod producer members: "
+                                                                 << " produces " << out_commod << "?: " <<  ans
+     << " capacity: " << cyclus::toolkit::CommodityProducer::Capacity(commod_)
+     << " cost: " << cyclus::toolkit::CommodityProducer::Cost(commod_);
   return ss.str();
 }
 
@@ -62,6 +76,7 @@ void SourceFacility::Tick(int time) {
   LOG(cyclus::LEV_INFO4, "SrcFac") << "will offer " << capacity
                                    << " kg of "
                                    << out_commod << ".";
+  LOG(cyclus::LEV_INFO3, "SrcFac") << "Stats: " << str();
   LOG(cyclus::LEV_INFO3, "SrcFac") << "}";
   current_capacity = capacity; // reset capacity
 }

@@ -17,8 +17,6 @@ GrowthRegion::~GrowthRegion() {}
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 void GrowthRegion::AddCommodityDemand(cyclus::toolkit::Commodity commod) {
-  std::string name = commod.name();
-
   // instantiate demand function
   cyclus::toolkit::PiecewiseFunctionFactory pff;
   int ndemands = demand_types.size();
@@ -36,9 +34,8 @@ void GrowthRegion::AddCommodityDemand(cyclus::toolkit::Commodity commod) {
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 void GrowthRegion::Build(cyclus::Agent* parent) {
   cyclus::Region::Build(parent);
-
-  cyclus::toolkit::Commodity commod(commodity_name);
-  AddCommodityDemand(commod);
+  commod_ = cyclus::toolkit::Commodity(commodity_name);
+  AddCommodityDemand(commod_);
 }
 
 void GrowthRegion::EnterNotify() {
@@ -50,6 +47,9 @@ void GrowthRegion::EnterNotify() {
     Agent* a = *it;
     Register_(a);
   }
+  
+  commod_ = cyclus::toolkit::Commodity(commodity_name);
+  AddCommodityDemand(commod_);
 }
 
 void GrowthRegion::BuildNotify(Agent* a) {
@@ -66,12 +66,20 @@ void GrowthRegion::Register_(cyclus::Agent* agent) {
   
   CommodityProducerManager* cpm_cast =
       dynamic_cast<CommodityProducerManager*>(agent);
-  if (cpm_cast != NULL)
+  if (cpm_cast != NULL) {
+    LOG(cyclus::LEV_INFO3, "greg") << "Registering agent "
+                                   << agent->prototype() << agent->id()
+                                   << " as a commodity producer manager.";
     sdmanager_.RegisterProducerManager(cpm_cast);
+  }
 
   Builder* b_cast = dynamic_cast<Builder*>(agent);
-  if (b_cast != NULL)
+  if (b_cast != NULL) {
+    LOG(cyclus::LEV_INFO3, "greg") << "Registering agent "
+                                   << agent->prototype() << agent->id()
+                                   << " as a builder.";
     buildmanager_.Register(b_cast);
+  }
 }
 
 void GrowthRegion::Unregister_(cyclus::Agent* agent) {
@@ -90,21 +98,20 @@ void GrowthRegion::Unregister_(cyclus::Agent* agent) {
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 void GrowthRegion::Tick(int time) {
-  cyclus::toolkit::Commodity commodity(commodity_name);
-  double demand = sdmanager_.Demand(commodity, time);
-  double supply = sdmanager_.Supply(commodity);
+  double demand = sdmanager_.Demand(commod_, time);
+  double supply = sdmanager_.Supply(commod_);
   double unmetdemand = demand - supply;
   
   LOG(cyclus::LEV_INFO3, "greg") << "GrowthRegion: " << prototype()
                                  << " at time: " << time
                                  << " has the following values regaring "
-                                 << " commodity: " << commodity.name();
+                                 << " commodity: " << commod_.name();
   LOG(cyclus::LEV_INFO3, "greg") << "  *demand = " << demand;
   LOG(cyclus::LEV_INFO3, "greg") << "  *supply = " << supply;
   LOG(cyclus::LEV_INFO3, "greg") << "  * unmetdemand = " << unmetdemand;
   
   if (unmetdemand > 0) {
-    OrderBuilds(commodity, unmetdemand);
+    OrderBuilds(commod_, unmetdemand);
   }
   cyclus::Region::Tick(time);
 }

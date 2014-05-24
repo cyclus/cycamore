@@ -106,6 +106,8 @@ class SourceFacility : public cyclus::Facility,
   /* --- */
 
   /* --- Agent Members --- */
+  virtual void EnterNotify();
+  
   /**
      Each facility is prompted to do its beginning-of-time-step
      stuff at the tick of the timer.
@@ -181,6 +183,8 @@ class SourceFacility : public cyclus::Facility,
   inline double CurrentCapacity() const { return current_capacity; }
 
  private:
+  cyclus::toolkit::Commodity commod_;
+  
   /**
      This facility has only one output commodity
    */

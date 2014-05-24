@@ -36,10 +36,16 @@ void ManagerInst::EnterNotify() {
 void ManagerInst::Register_(Agent* a) {
   using cyclus::toolkit::CommodityProducer;
   using cyclus::toolkit::CommodityProducerManager;
+  using cyclus::toolkit::Builder;
   
   CommodityProducer* cp_cast = dynamic_cast<CommodityProducer*>(a);
-  if (cp_cast != NULL)
+  if (cp_cast != NULL) {
+    LOG(cyclus::LEV_INFO3, "mani") << "Registering agent "
+                                   << a->prototype() << a->id()
+                                   << " as a commodity producer.";
     CommodityProducerManager::Register(cp_cast);
+    Builder::Register(cp_cast);
+  }
 }
 
 void ManagerInst::Unregister_(Agent* a) {
