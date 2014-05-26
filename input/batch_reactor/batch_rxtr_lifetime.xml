@@ -7,7 +7,6 @@ reasonably for its lifetime. -->
     <duration>482</duration>
     <startmonth>1</startmonth>
     <startyear>2000</startyear>
-    <decay>0</decay>
   </control>
 
   <commodity>

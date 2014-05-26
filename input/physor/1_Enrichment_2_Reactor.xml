@@ -6,7 +6,6 @@
     <duration>4</duration>
     <startmonth>1</startmonth>
     <startyear>2000</startyear>
-    <decay>2</decay>
   </control>
 
   <commodity> <name>natl_u</name> </commodity>
