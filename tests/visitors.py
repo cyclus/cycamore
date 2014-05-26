@@ -13,7 +13,7 @@ _agent_key = "AgentId"
 _agent_schema = ["Kind", "Implementation", "Prototype", "ParentId", "EnterTime"]
 
 _simulation_time_info_schema = ["InitialYear", "InitialMonth", 
-                                "Duration", "DecayInterval"]
+                                "Duration"]
 
 _xaction_schema = ["SenderId", "ReceiverId", "ResourceId", "Commodity", 
                    "Time"]
