@@ -19,7 +19,7 @@ void EnrichmentFacilityTest::SetUp() {
   src_facility = new EnrichmentFacility(ctx);
   trader = tc_.trader();
   InitParameters();
-  SetUpSourceFacility();
+  SetUpSource();
 }
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -51,7 +51,7 @@ void EnrichmentFacilityTest::InitParameters() {
 }
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-void EnrichmentFacilityTest::SetUpSourceFacility() {
+void EnrichmentFacilityTest::SetUpSource() {
   src_facility->InRecipe(in_recipe);
   src_facility->in_commodity(in_commod);
   src_facility->out_commodity(out_commod);

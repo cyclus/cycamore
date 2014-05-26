@@ -31,7 +31,7 @@ class EnrichmentFacilityTest : public ::testing::Test {
   virtual void SetUp();
   virtual void TearDown();
   void InitParameters();
-  void SetUpSourceFacility();
+  void SetUpSource();
   cyclus::Material::Ptr GetMat(double qty);
   /// @param enr the enrichment percent, i.e. for 5 w/o, enr = 0.05
   cyclus::Material::Ptr GetReqMat(double qty, double enr);

@@ -45,7 +45,7 @@ class BatchReactorTest : public ::testing::Test {
   virtual void SetUp();
   virtual void TearDown();
   void InitParameters();
-  void SetUpSourceFacility();
+  void SetUpSource();
 
   /// @brief tests the initial state of a facility
   void TestInitState(BatchReactor* fac);

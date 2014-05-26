@@ -1,4 +1,4 @@
-// sink_facility_tests.cc
+// sink_tests.cc
 #include <gtest/gtest.h>
 
 #include "facility_tests.h"
@@ -7,23 +7,23 @@
 #include "infile_tree.h"
 #include "xml_parser.h"
 
-#include "sink_facility_tests.h"
+#include "sink_tests.h"
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-void SinkFacilityTest::SetUp() {
-  src_facility = new cycamore::SinkFacility(tc_.get());
+void SinkTest::SetUp() {
+  src_facility = new cycamore::Sink(tc_.get());
   trader = tc_.trader();
   InitParameters();
-  SetUpSinkFacility();
+  SetUpSink();
 }
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-void SinkFacilityTest::TearDown() {
+void SinkTest::TearDown() {
   delete src_facility;
 }
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-void SinkFacilityTest::InitParameters() {
+void SinkTest::InitParameters() {
   commod1_ = "acommod";
   commod2_ = "bcommod";
   commod3_ = "ccommod";
@@ -34,7 +34,7 @@ void SinkFacilityTest::InitParameters() {
 }
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-void SinkFacilityTest::SetUpSinkFacility() {
+void SinkTest::SetUpSink() {
   src_facility->AddCommodity(commod1_);
   src_facility->AddCommodity(commod2_);
   src_facility->Capacity(capacity_);
@@ -42,7 +42,7 @@ void SinkFacilityTest::SetUpSinkFacility() {
 }
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-TEST_F(SinkFacilityTest, InitialState) {
+TEST_F(SinkTest, InitialState) {
   EXPECT_DOUBLE_EQ(0.0, src_facility->InventorySize());
   EXPECT_DOUBLE_EQ(capacity_, src_facility->Capacity());
   EXPECT_DOUBLE_EQ(inv_, src_facility->MaxInventorySize());
@@ -54,9 +54,9 @@ TEST_F(SinkFacilityTest, InitialState) {
 }
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-TEST_F(SinkFacilityTest, Clone) {
-  using cycamore::SinkFacility;
-  SinkFacility* cloned_fac = dynamic_cast<cycamore::SinkFacility*>
+TEST_F(SinkTest, Clone) {
+  using cycamore::Sink;
+  Sink* cloned_fac = dynamic_cast<cycamore::Sink*>
                              (src_facility->Clone());
 
   EXPECT_DOUBLE_EQ(0.0, cloned_fac->InventorySize());
@@ -71,7 +71,7 @@ TEST_F(SinkFacilityTest, Clone) {
 }
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-TEST_F(SinkFacilityTest, DISABLED_XMLInit) {
+TEST_F(SinkTest, DISABLED_XMLInit) {
   std::stringstream ss;
   ss << "<start>"
      << "<name>fooname</name>"
@@ -92,7 +92,7 @@ TEST_F(SinkFacilityTest, DISABLED_XMLInit) {
   cyclus::XMLParser p;
   p.Init(ss);
   cyclus::InfileTree engine(p);
-  cycamore::SinkFacility fac(tc_.get());
+  cycamore::Sink fac(tc_.get());
 
   //EXPECT_NO_THROW(fac.InitFrom(&engine););
   std::string arr[] = {commod1_, commod2_};
@@ -105,7 +105,7 @@ TEST_F(SinkFacilityTest, DISABLED_XMLInit) {
 }
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-TEST_F(SinkFacilityTest, Requests) {
+TEST_F(SinkTest, Requests) {
   using cyclus::Request;
   using cyclus::RequestPortfolio;
   using cyclus::CapacityConstraint;
@@ -137,7 +137,7 @@ TEST_F(SinkFacilityTest, Requests) {
 }
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-TEST_F(SinkFacilityTest, EmptyRequests) {
+TEST_F(SinkTest, EmptyRequests) {
   using cyclus::Material;
   using cyclus::RequestPortfolio;
 
@@ -148,7 +148,7 @@ TEST_F(SinkFacilityTest, EmptyRequests) {
 }
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-TEST_F(SinkFacilityTest, Accept) {
+TEST_F(SinkTest, Accept) {
   using cyclus::Bid;
   using cyclus::Material;
   using cyclus::Request;
@@ -179,19 +179,19 @@ TEST_F(SinkFacilityTest, Accept) {
 }
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-TEST_F(SinkFacilityTest, Print) {
+TEST_F(SinkTest, Print) {
   EXPECT_NO_THROW(std::string s = src_facility->str());
 }
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-cyclus::Agent* SinkFacilityConstructor(cyclus::Context* ctx) {
-  return new cycamore::SinkFacility(ctx);
+cyclus::Agent* SinkConstructor(cyclus::Context* ctx) {
+  return new cycamore::Sink(ctx);
 }
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 INSTANTIATE_TEST_CASE_P(SinkFac, FacilityTests,
-                        Values(&SinkFacilityConstructor));
+                        Values(&SinkConstructor));
 INSTANTIATE_TEST_CASE_P(SinkFac, AgentTests,
-                        Values(&SinkFacilityConstructor));
+                        Values(&SinkConstructor));
 
 

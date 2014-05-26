@@ -3,42 +3,42 @@
 
 #include <boost/lexical_cast.hpp>
 
-#include "source_facility.h"
+#include "source.h"
 
 namespace cycamore {
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-SourceFacility::SourceFacility(cyclus::Context* ctx)
+Source::Source(cyclus::Context* ctx)
   : cyclus::Facility(ctx),
     out_commod(""),
     recipe_name(""),
     capacity(std::numeric_limits<double>::max()) {}
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-SourceFacility::~SourceFacility() {}
+Source::~Source() {}
 
-#pragma cyclus def clone cycamore::SourceFacility
+#pragma cyclus def clone cycamore::Source
 
-#pragma cyclus def schema cycamore::SourceFacility
+#pragma cyclus def schema cycamore::Source
 
-#pragma cyclus def annotations cycamore::SourceFacility
+#pragma cyclus def annotations cycamore::Source
 
-#pragma cyclus def infiletodb cycamore::SourceFacility
+#pragma cyclus def infiletodb cycamore::Source
 
-#pragma cyclus def snapshot cycamore::SourceFacility
+#pragma cyclus def snapshot cycamore::Source
 
-#pragma cyclus def snapshotinv cycamore::SourceFacility
+#pragma cyclus def snapshotinv cycamore::Source
 
-#pragma cyclus def initinv cycamore::SourceFacility
+#pragma cyclus def initinv cycamore::Source
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-void SourceFacility::InitFrom(SourceFacility* m) {
-  #pragma cyclus impl initfromcopy cycamore::SourceFacility
+void Source::InitFrom(Source* m) {
+  #pragma cyclus impl initfromcopy cycamore::Source
   cyclus::toolkit::CommodityProducer::Copy(m);
 }
 
-void SourceFacility::InitFrom(cyclus::QueryableBackend* b) {
-  #pragma cyclus impl initfromdb cycamore::SourceFacility
+void Source::InitFrom(cyclus::QueryableBackend* b) {
+  #pragma cyclus impl initfromdb cycamore::Source
 
   commod_ = cyclus::toolkit::Commodity(out_commod);
   cyclus::toolkit::CommodityProducer::Add(commod_);
@@ -46,7 +46,7 @@ void SourceFacility::InitFrom(cyclus::QueryableBackend* b) {
   cyclus::toolkit::CommodityProducer::SetCost(commod_, capacity);
 }
 
-void SourceFacility::EnterNotify() {
+void Source::EnterNotify() {
   Facility::EnterNotify();
   commod_ = cyclus::toolkit::Commodity(out_commod);
   cyclus::toolkit::CommodityProducer::Add(commod_);
@@ -55,7 +55,7 @@ void SourceFacility::EnterNotify() {
 }
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-std::string SourceFacility::str() {
+std::string Source::str() {
   std::stringstream ss;
   std::string ans = std::string(cyclus::toolkit::CommodityProducer::Produces(cyclus::toolkit::Commodity(out_commod)) ? "yes" : "no");
   ss << cyclus::Facility::str()
@@ -71,7 +71,7 @@ std::string SourceFacility::str() {
 }
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-void SourceFacility::Tick(int time) {
+void Source::Tick(int time) {
   LOG(cyclus::LEV_INFO3, "SrcFac") << prototype() << " is ticking {";
   LOG(cyclus::LEV_INFO4, "SrcFac") << "will offer " << capacity
                                    << " kg of "
@@ -82,13 +82,13 @@ void SourceFacility::Tick(int time) {
 }
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-void SourceFacility::Tock(int time) {
+void Source::Tock(int time) {
   LOG(cyclus::LEV_INFO3, "SrcFac") << prototype() << " is tocking {";
   LOG(cyclus::LEV_INFO3, "SrcFac") << "}";
 }
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-cyclus::Material::Ptr SourceFacility::GetOffer(
+cyclus::Material::Ptr Source::GetOffer(
     const cyclus::Material::Ptr target) const {
   using cyclus::Material;
   double qty = std::min(target->quantity(), capacity);
@@ -97,7 +97,7 @@ cyclus::Material::Ptr SourceFacility::GetOffer(
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 std::set<cyclus::BidPortfolio<cyclus::Material>::Ptr>
-SourceFacility::GetMatlBids(
+Source::GetMatlBids(
     cyclus::CommodMap<cyclus::Material>::type& commod_requests) {
   using cyclus::Bid;
   using cyclus::BidPortfolio;
@@ -128,7 +128,7 @@ SourceFacility::GetMatlBids(
 }
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-void SourceFacility::GetMatlTrades(
+void Source::GetMatlTrades(
     const std::vector< cyclus::Trade<cyclus::Material> >& trades,
     std::vector<std::pair<cyclus::Trade<cyclus::Material>,
                           cyclus::Material::Ptr> >& responses) {
@@ -159,8 +159,8 @@ void SourceFacility::GetMatlTrades(
 }
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-extern "C" cyclus::Agent* ConstructSourceFacility(cyclus::Context* ctx) {
-  return new SourceFacility(ctx);
+extern "C" cyclus::Agent* ConstructSource(cyclus::Context* ctx) {
+  return new Source(ctx);
 }
 
 } // namespace cycamore
