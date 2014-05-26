@@ -6,7 +6,6 @@
     <duration>12</duration>
     <startmonth>1</startmonth>
     <startyear>2000</startyear>
-    <decay>2</decay>
   </control>
 
   <commodity>
