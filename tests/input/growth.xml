@@ -1,0 +1,114 @@
+<?xml version="1.0"?>
+<!-- 1 Source Source, 1 Sink Sink -->
+
+<simulation>
+  <control>
+    <duration>4</duration>
+    <startmonth>1</startmonth>
+    <startyear>2000</startyear>
+  </control>
+
+  <commodity>
+    <name>commodity</name>
+  </commodity>
+
+  <facility>
+    <name>Source1</name>
+    <module>
+      <lib>cycamore</lib>
+      <agent>Source</agent>
+    </module>
+    <agent>
+      <Source>
+          <out_commod>commodity</out_commod>
+          <recipe_name>commod_recipe</recipe_name>
+          <capacity>1.1</capacity>
+      </Source>
+    </agent>
+  </facility>
+
+  <facility>
+    <name>Source2</name>
+    <module>
+      <lib>cycamore</lib>
+      <agent>Source</agent>
+    </module>
+    <agent>
+      <Source>
+          <out_commod>commodity</out_commod>
+          <recipe_name>commod_recipe</recipe_name>
+          <capacity>2</capacity>
+      </Source>
+    </agent>
+  </facility>
+
+  <facility>
+    <name>Sink</name>
+    <module>
+      <lib>cycamore</lib>
+      <agent>Sink</agent>
+    </module>
+    <agent>
+      <Sink>
+        <in_commods>
+          <val>commodity</val>
+        </in_commods>
+      </Sink>
+    </agent>
+  </facility>
+
+  <region>
+    <name>SingleRegion</name>
+    <module>
+      <lib>cycamore</lib>
+      <agent>GrowthRegion</agent>
+    </module>
+    <allowedfacility>Source1</allowedfacility>
+    <allowedfacility>Source2</allowedfacility>
+    <allowedfacility>Sink</allowedfacility>
+    <agent>
+      <GrowthRegion>
+        <commodity_name>commodity</commodity_name>
+        <demand_types>
+          <val>linear</val>
+        </demand_types>
+        <demand_params>
+          <val>1 2</val>
+        </demand_params>
+        <demand_times>
+          <val>0</val>
+        </demand_times>
+      </GrowthRegion>
+    </agent>
+    <institution>
+      <name>SingleInstitution</name>
+      <module>
+        <lib>cycamore</lib>
+        <agent>ManagerInst</agent>
+      </module>
+      <initialfacilitylist>
+	<entry>
+	  <prototype>Sink</prototype>
+	  <number>1</number>
+	</entry>
+      </initialfacilitylist>
+      <agent>
+        <ManagerInst>
+          <prototypes>
+            <val>Sink</val>
+            <val>Source1</val>
+            <val>Source2</val>
+          </prototypes>
+        </ManagerInst>
+      </agent>
+    </institution>
+  </region>
+
+  <recipe>
+    <name>commod_recipe</name>
+    <basis>mass</basis>
+    <nuclide> <id>922350000</id> <comp>0.711</comp> </nuclide>
+    <nuclide> <id>922380000</id> <comp>99.289</comp> </nuclide>
+  </recipe>
+  
+</simulation>

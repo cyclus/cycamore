@@ -42,6 +42,9 @@ class ManagerInst : public cyclus::Institution,
 
   /// unregister a child 
   void Unregister_(cyclus::Agent* agent);
+
+  #pragma cyclus var {}
+  std::vector<std::string> prototypes;
 };
 } // namespace cycamore 
 
