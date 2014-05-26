@@ -1,4 +1,4 @@
-// sink_facility.h
+// sink.h
 #ifndef CYCAMORE_MODELS_SINK_FACILITY_H_
 #define CYCAMORE_MODELS_SINK_FACILITY_H_
 
@@ -14,22 +14,22 @@ namespace cycamore {
 class Context;
   
 /**
-   @class SinkFacility
+   @class Sink
    This cyclus::Facility requests a finite amount of its input commodity.
    It offers nothing.
 
-   The SinkFacility class inherits from the cyclus::Facility class and is
+   The Sink class inherits from the cyclus::Facility class and is
    dynamically loaded by the Agent class when requested.
 
    @section intro Introduction
-   The SinkFacility is a facility type in *Cyclus* capable of accepting
+   The Sink is a facility type in *Cyclus* capable of accepting
    a finite or infinite quantity of some commodity produced in the
-   simulation. A SinkFacility requests an amount of that commodity from
+   simulation. A Sink requests an amount of that commodity from
    the appropriate market. It then receives that commodity when the
    market issues an order that the request has been matched with a
    corresponding offer.
    @section agentparams Agent Parameters
-   SinkFacility behavior is comprehensively defined by the following
+   Sink behavior is comprehensively defined by the following
    parameters:
    - double capacity: The acceptance capacity of the facility (units
    vary, but typically kg/month). Capacity is infinite if a positive
@@ -39,7 +39,7 @@ class Context;
    operates (months). - std::string inCommod: The commodity type this
    facility accepts.
    @section optionalparams Optional Parameters
-   SinkFacility behavior may also be specified with the following
+   Sink behavior may also be specified with the following
    optional parameters which have default values listed here.
    - double capacityFactor: The ratio of actual acceptance capacity to
    the rated acceptance capacity. Default is 1 (actual/rated).
@@ -58,20 +58,20 @@ class Context;
 
    @section detailed Detailed Behavior
    @subsection finite If Finite Capacity:
-   The SinkFacility starts operation when the simulation reaches the
+   The Sink starts operation when the simulation reaches the
    month specified as the startDate. It immediately begins to request
-   the inCommod commodity type at the rate defined by the SinkFacility
+   the inCommod commodity type at the rate defined by the Sink
    capacity. If a request is matched with an offer from another
-   facility, the SinkFacility executes that order by adding that
+   facility, the Sink executes that order by adding that
    quantity to its stocks. When the simulation time equals the startDate
    plus the lifeTime, the facility ceases to operate.
 
    @subsection infinite If Infinite Capacity:
-   The SinkFacility starts operation when the simulation reaches the
-   month specified as the startDate. Each month the SinkFacility
+   The Sink starts operation when the simulation reaches the
+   month specified as the startDate. Each month the Sink
    requests an infinite amount of the inCommod commodity from the
    appropriate market. If there is a corresponding offer for that
-   commodity type from another facility, the SinkFacility executes that
+   commodity type from another facility, the Sink executes that
    order by adding that quantity to its stocks. When the simulation time
    equals the startDate plus the lifeTime, the facility ceases to
    operate.
@@ -79,19 +79,19 @@ class Context;
    What is the best way to allow requests of an infinite amount of
    material on a market?
  */
-class SinkFacility : public cyclus::Facility  {
+class Sink : public cyclus::Facility  {
  public:
   /* --- Module Members --- */
   /**
-     Constructor for the SinkFacility class.
+     Constructor for the Sink class.
      @param ctx the cyclus context for access to simulation-wide parameters
   */
-  SinkFacility(cyclus::Context* ctx);
+  Sink(cyclus::Context* ctx);
 
   /**
-     Destructor for the SinkFacility class.
+     Destructor for the Sink class.
   */
-  virtual ~SinkFacility();
+  virtual ~Sink();
 
   #pragma cyclus decl
 
@@ -103,26 +103,26 @@ class SinkFacility : public cyclus::Facility  {
 
   /* --- Agent Members --- */
   /**
-     The SinkFacility can handle the Tick.
+     The Sink can handle the Tick.
 
      @param time the current simulation time.
    */
   virtual void Tick(int time);
 
   /**
-     The SinkFacility can handle the Tock.
+     The Sink can handle the Tock.
 
      @param time the current simulation time.
    */
   virtual void Tock(int time);
 
   /// @brief SinkFacilities request Materials of their given commodity. Note
-  /// that it is assumed the SinkFacility operates on a single resource type!
+  /// that it is assumed the Sink operates on a single resource type!
   virtual std::set<cyclus::RequestPortfolio<cyclus::Material>::Ptr>
       GetMatlRequests();
   
   /// @brief SinkFacilities request Products of their given
-  /// commodity. Note that it is assumed the SinkFacility operates on a single
+  /// commodity. Note that it is assumed the Sink operates on a single
   /// resource type!
   virtual std::set<cyclus::RequestPortfolio<cyclus::Product>::Ptr>
       GetGenRsrcRequests();
@@ -138,7 +138,7 @@ class SinkFacility : public cyclus::Facility  {
       cyclus::Product::Ptr> >& responses);
   /* --- */
 
-  /* --- SinkFacility Members --- */
+  /* --- Sink Members --- */
   /**
      add a commodity to the set of input commodities
      @param name the commodity name

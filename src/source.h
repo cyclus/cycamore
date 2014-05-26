@@ -1,4 +1,4 @@
-// source_facility.h
+// source.h
 #ifndef CYCAMORE_MODELS__SOURCE_FACILITY_H_
 #define CYCAMORE_MODELS__SOURCE_FACILITY_H_
 
@@ -12,24 +12,24 @@ namespace cycamore {
 class Context;
 
 /**
-   @class SourceFacility
+   @class Source
    This cyclus::Facility provides a simple source of some capacity
    (possibly infinite) of some commodity/Recipe.
 
-   The SourceFacility class inherits from the cyclus::Facility class and is
+   The Source class inherits from the cyclus::Facility class and is
    dynamically loaded by the Agent class when requested.
 
 
    @section introduction Introduction
-   The SourceFacility is a facility type in Cyclus capable of providing
+   The Source is a facility type in Cyclus capable of providing
    a finite or infinite.Supply of a particular material to the
-   simulation.  A SourceFacility generates material of a certain
+   simulation.  A Source generates material of a certain
    composition and commodity type, then offers that material on the
    appropriate market. Shipments of this material are executed when the
    market issues an order that the offer has been matched with a
    request.
    @section agentparams Agent Parameters
-   SourceFacility behavior is comprehensively defined by the following
+   Source behavior is comprehensively defined by the following
    parameters:
    -  double capacity: The production capacity of the facility (units
    vary, but typically kg/month). Capacity is infinite if a negative
@@ -44,7 +44,7 @@ class Context;
    -  map<Nucs, NumDens> outComp
 
    @section optionalparams Optional Parameters
-   SourceFacility behavior may also be specified with the following
+   Source behavior may also be specified with the following
    optional parameters which have default values listed here.
    -  double capacityFactor: The ratio of actual production capacity to
    the rated production capacity. Default is 1 (actual/rated).
@@ -63,21 +63,21 @@ class Context;
 
    @section detailed Detailed Behavior
    @subsection finite If Finite Capacity:
-   The SourceFacility starts operation when the simulation reaches the
+   The Source starts operation when the simulation reaches the
    month specified as the startDate. It immediately begins to produce
    material at the rate defined by its capacity. Each month the
-   SourceFacility adds the amount it has produced to its inventory. It
+   Source adds the amount it has produced to its inventory. It
    then offers to the appropriate market exactly as much material as it
    has in its inventory. If an offer is matched with a request, the
-   SourceFacility executes that order by subtracting the quantity from
+   Source executes that order by subtracting the quantity from
    its inventory and sending that amount to the requesting facility.
    When the simulation time equals the startDate plus the lifeTime, the
    facility ceases to operate.
    @subsection infinite If Infinite Capacity:
-   The SourceFacility starts operation when the simulation reaches the
-   month specified as the startDate. Each month the SourceFacility
+   The Source starts operation when the simulation reaches the
+   month specified as the startDate. Each month the Source
    offers an infinite amount of material to the appropriate market. If
-   there is a request for that material, the SourceFacility executes
+   there is a request for that material, the Source executes
    that order by sending that amount to the requesting facility. When
    the simulation time equals the startDate plus the lifeTime, the
    facility ceases to operate.
@@ -85,17 +85,17 @@ class Context;
    What is the best way to allow offers of an infinite amount of
    material on a market?
  */
-class SourceFacility : public cyclus::Facility,
+class Source : public cyclus::Facility,
   public cyclus::toolkit::CommodityProducer {
  public:
   /* --- Module Members --- */
   /**
-     Constructor for the SourceFacility class
+     Constructor for the Source class
      @param ctx the cyclus context for access to simulation-wide parameters
    */
-  SourceFacility(cyclus::Context* ctx);
+  Source(cyclus::Context* ctx);
 
-  virtual ~SourceFacility();
+  virtual ~Source();
 
   #pragma cyclus decl
 
@@ -142,7 +142,7 @@ class SourceFacility : public cyclus::Facility,
     cyclus::Material::Ptr> >& responses);
   /* --- */
 
-  /* --- SourceFacility Members --- */
+  /* --- Source Members --- */
   /**
      @brief creates a material object to offer to a requester
      @param target the material target a request desires

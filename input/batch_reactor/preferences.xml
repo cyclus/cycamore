@@ -24,14 +24,14 @@ commodity. -->
     <name>Source</name>
     <module>
       <lib>cycamore</lib>
-      <agent>SourceFacility</agent>
+      <agent>Source</agent>
     </module>
     <agent>
-      <SourceFacility>
+      <Source>
         <out_commod>used_commodity</out_commod>
         <capacity>1</capacity>
         <recipe_name>commod_recipe</recipe_name>
-      </SourceFacility>
+      </Source>
     </agent>
   </facility>
   
@@ -69,16 +69,16 @@ commodity. -->
     <name>Sink</name>
     <module>
       <lib>cycamore</lib>
-      <agent>SinkFacility</agent>
+      <agent>Sink</agent>
     </module>
     <agent>
-      <SinkFacility>
+      <Sink>
         <in_commods>
           <val>used_commodity</val>
           <val>processed_commodity</val>
         </in_commods>
         <capacity>2</capacity>
-      </SinkFacility>
+      </Sink>
     </agent>
   </facility>
 

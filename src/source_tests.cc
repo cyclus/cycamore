@@ -1,4 +1,4 @@
-// source_facility_tests.cc
+// source_tests.cc
 #include <gtest/gtest.h>
 
 #include <sstream>
@@ -7,23 +7,23 @@
 #include "resource_helpers.h"
 #include "test_context.h"
 
-#include "source_facility_tests.h"
+#include "source_tests.h"
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-void SourceFacilityTest::SetUp() {
-  src_facility = new cycamore::SourceFacility(tc.get());
+void SourceTest::SetUp() {
+  src_facility = new cycamore::Source(tc.get());
   trader = tc.trader();
   InitParameters();
-  SetUpSourceFacility();
+  SetUpSource();
 }
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-void SourceFacilityTest::TearDown() {
+void SourceTest::TearDown() {
   delete src_facility;
 }
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-void SourceFacilityTest::InitParameters() {
+void SourceTest::InitParameters() {
   commod = "commod";
   recipe_name = "recipe";
   capacity = 5; // some magic number..
@@ -33,14 +33,14 @@ void SourceFacilityTest::InitParameters() {
 }
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-void SourceFacilityTest::SetUpSourceFacility() {
+void SourceTest::SetUpSource() {
   src_facility->commodity(commod);
   src_facility->recipe(recipe_name);
   src_facility->Capacity(capacity);
 }
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-TEST_F(SourceFacilityTest, InitialState) {
+TEST_F(SourceTest, InitialState) {
   EXPECT_EQ(src_facility->Capacity(), capacity);
   EXPECT_EQ(src_facility->commodity(), commod);
   EXPECT_EQ(src_facility->recipe(), recipe_name);
@@ -48,9 +48,9 @@ TEST_F(SourceFacilityTest, InitialState) {
 }
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-TEST_F(SourceFacilityTest, Clone) {
+TEST_F(SourceTest, Clone) {
   cyclus::Context* ctx = tc.get();
-  cycamore::SourceFacility* cloned_fac = dynamic_cast<cycamore::SourceFacility*>
+  cycamore::Source* cloned_fac = dynamic_cast<cycamore::Source*>
                                          (src_facility->Clone());
 
   EXPECT_EQ(src_facility->commodity(), cloned_fac->commodity());
@@ -62,12 +62,12 @@ TEST_F(SourceFacilityTest, Clone) {
 }
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-TEST_F(SourceFacilityTest, Print) {
+TEST_F(SourceTest, Print) {
   EXPECT_NO_THROW(std::string s = src_facility->str());
 }
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-TEST_F(SourceFacilityTest, GetOffer) {
+TEST_F(SourceTest, GetOffer) {
   using cyclus::Material;
   
   double qty = capacity - 1;
@@ -90,7 +90,7 @@ TEST_F(SourceFacilityTest, GetOffer) {
 }
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-TEST_F(SourceFacilityTest, AddBids) {
+TEST_F(SourceTest, AddBids) {
   using cyclus::Bid;
   using cyclus::BidPortfolio;
   using cyclus::CapacityConstraint;
@@ -119,7 +119,7 @@ TEST_F(SourceFacilityTest, AddBids) {
 }
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-TEST_F(SourceFacilityTest, Response) {
+TEST_F(SourceTest, Response) {
   using cyclus::Bid;
   using cyclus::Material;
   using cyclus::Request;
@@ -173,7 +173,7 @@ TEST_F(SourceFacilityTest, Response) {
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 boost::shared_ptr< cyclus::ExchangeContext<cyclus::Material> >
-SourceFacilityTest::GetContext(int nreqs, std::string commod) {
+SourceTest::GetContext(int nreqs, std::string commod) {
   using cyclus::Material;
   using cyclus::Request;
   using cyclus::ExchangeContext;
@@ -189,12 +189,12 @@ SourceFacilityTest::GetContext(int nreqs, std::string commod) {
 }
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-cyclus::Agent* SourceFacilityConstructor(cyclus::Context* ctx) {
-  return new cycamore::SourceFacility(ctx);
+cyclus::Agent* SourceConstructor(cyclus::Context* ctx) {
+  return new cycamore::Source(ctx);
 }
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 INSTANTIATE_TEST_CASE_P(SourceFac, FacilityTests,
-                        Values(&SourceFacilityConstructor));
+                        Values(&SourceConstructor));
 INSTANTIATE_TEST_CASE_P(SourceFac, AgentTests,
-                        Values(&SourceFacilityConstructor));
+                        Values(&SourceConstructor));

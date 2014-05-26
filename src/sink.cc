@@ -1,16 +1,16 @@
-// sink_facility.cc
-// Implements the SinkFacility class
+// sink.cc
+// Implements the Sink class
 #include <algorithm>
 #include <sstream>
 
 #include <boost/lexical_cast.hpp>
 
-#include "sink_facility.h"
+#include "sink.h"
 
 namespace cycamore {
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-SinkFacility::SinkFacility(cyclus::Context* ctx)
+Sink::Sink(cyclus::Context* ctx)
   : cyclus::Facility(ctx),
     commod_price(0),
     capacity(std::numeric_limits<double>::max()) {
@@ -18,28 +18,28 @@ SinkFacility::SinkFacility(cyclus::Context* ctx)
 }
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-SinkFacility::~SinkFacility() {}
+Sink::~Sink() {}
 
-#pragma cyclus def schema cycamore::SinkFacility
+#pragma cyclus def schema cycamore::Sink
 
-#pragma cyclus def annotations cycamore::SinkFacility
+#pragma cyclus def annotations cycamore::Sink
 
-#pragma cyclus def infiletodb cycamore::SinkFacility
+#pragma cyclus def infiletodb cycamore::Sink
 
-#pragma cyclus def snapshot cycamore::SinkFacility
+#pragma cyclus def snapshot cycamore::Sink
 
-#pragma cyclus def snapshotinv cycamore::SinkFacility
+#pragma cyclus def snapshotinv cycamore::Sink
 
-#pragma cyclus def initinv cycamore::SinkFacility
+#pragma cyclus def initinv cycamore::Sink
 
-#pragma cyclus def clone cycamore::SinkFacility
+#pragma cyclus def clone cycamore::Sink
 
-#pragma cyclus def initfromdb cycamore::SinkFacility
+#pragma cyclus def initfromdb cycamore::Sink
 
-#pragma cyclus def initfromcopy cycamore::SinkFacility
+#pragma cyclus def initfromcopy cycamore::Sink
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-std::string SinkFacility::str() {
+std::string Sink::str() {
   using std::string;
   using std::vector;
   std::stringstream ss;
@@ -60,7 +60,7 @@ std::string SinkFacility::str() {
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - 
 std::set<cyclus::RequestPortfolio<cyclus::Material>::Ptr>
-SinkFacility::GetMatlRequests() {
+Sink::GetMatlRequests() {
   using cyclus::CapacityConstraint;
   using cyclus::Material;
   using cyclus::RequestPortfolio;
@@ -89,7 +89,7 @@ SinkFacility::GetMatlRequests() {
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - 
 std::set<cyclus::RequestPortfolio<cyclus::Product>::Ptr>
-SinkFacility::GetGenRsrcRequests() {
+Sink::GetGenRsrcRequests() {
   using cyclus::CapacityConstraint;
   using cyclus::Product;
   using cyclus::RequestPortfolio;
@@ -119,7 +119,7 @@ SinkFacility::GetGenRsrcRequests() {
 }
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - 
-void SinkFacility::AcceptMatlTrades(
+void Sink::AcceptMatlTrades(
     const std::vector< std::pair<cyclus::Trade<cyclus::Material>,
                                  cyclus::Material::Ptr> >& responses) {
   std::vector< std::pair<cyclus::Trade<cyclus::Material>,
@@ -130,7 +130,7 @@ void SinkFacility::AcceptMatlTrades(
 }
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - 
-void SinkFacility::AcceptGenRsrcTrades(
+void Sink::AcceptGenRsrcTrades(
     const std::vector< std::pair<cyclus::Trade<cyclus::Product>,
                                  cyclus::Product::Ptr> >& responses) {
   std::vector< std::pair<cyclus::Trade<cyclus::Product>,
@@ -141,7 +141,7 @@ void SinkFacility::AcceptGenRsrcTrades(
 }
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - 
-void SinkFacility::Tick(int time) {
+void Sink::Tick(int time) {
   using std::string;
   using std::vector;
   LOG(cyclus::LEV_INFO3, "SnkFac") << prototype() << " is ticking {";
@@ -160,13 +160,13 @@ void SinkFacility::Tick(int time) {
 }
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-void SinkFacility::Tock(int time) {
+void Sink::Tock(int time) {
   LOG(cyclus::LEV_INFO3, "SnkFac") << prototype() << " is tocking {";
 
   // On the tock, the sink facility doesn't really do much.
   // Maybe someday it will record things.
   // For now, lets just print out what we have at each timestep.
-  LOG(cyclus::LEV_INFO4, "SnkFac") << "SinkFacility " << this->id()
+  LOG(cyclus::LEV_INFO4, "SnkFac") << "Sink " << this->id()
                                    << " is holding " << inventory.quantity()
                                    << " units of material at the close of month "
                                    << time << ".";
@@ -174,8 +174,8 @@ void SinkFacility::Tock(int time) {
 }
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-extern "C" cyclus::Agent* ConstructSinkFacility(cyclus::Context* ctx) {
-  return new SinkFacility(ctx);
+extern "C" cyclus::Agent* ConstructSink(cyclus::Context* ctx) {
+  return new Sink(ctx);
 }
 } // namespace cycamore
 

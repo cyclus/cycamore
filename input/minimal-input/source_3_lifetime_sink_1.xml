@@ -1,5 +1,5 @@
 <?xml version="1.0"?>
-<!-- 1 SourceFacility Source, 1 SinkFacility Sink -->
+<!-- 1 Source Source, 1 Sink Sink -->
 
 <simulation>
   <control>
@@ -16,15 +16,15 @@
     <name>Source</name>
     <module>
       <lib>cycamore</lib>
-      <agent>SourceFacility</agent>
+      <agent>Source</agent>
     </module>
     <lifetime>5</lifetime>
     <agent>
-      <SourceFacility>
+      <Source>
         <out_commod>commodity</out_commod>
         <capacity>1</capacity>
         <recipe_name>commod_recipe</recipe_name>
-      </SourceFacility>
+      </Source>
     </agent>
   </facility>
   
@@ -32,15 +32,15 @@
     <name>Sink</name>
     <module>
       <lib>cycamore</lib>
-      <agent>SinkFacility</agent>
+      <agent>Sink</agent>
     </module>
     <agent>
-      <SinkFacility>
+      <Sink>
         <in_commods>
             <val>commodity</val>
         </in_commods>
         <capacity>3</capacity>
-      </SinkFacility>
+      </Sink>
     </agent>
   </facility>
 

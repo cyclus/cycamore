@@ -36,7 +36,7 @@ bool operator==(const BatchReactor::InitCond& l,
 void BatchReactorTest::SetUp() {
   src_facility = new BatchReactor(tc_.get());
   InitParameters();
-  SetUpSourceFacility();
+  SetUpSource();
 }
 
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -112,7 +112,7 @@ void BatchReactorTest::InitParameters() {
 }
 
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-void BatchReactorTest::SetUpSourceFacility() {
+void BatchReactorTest::SetUpSource() {
   src_facility->crctx(crctx);
   src_facility->n_batches(n_batches);
   src_facility->n_load(n_load);

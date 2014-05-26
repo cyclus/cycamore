@@ -1,10 +1,10 @@
-// source_facility_tests.cc
+// source_tests.cc
 #ifndef CYCAMORE_MODELS_SOURCE_FACILITY_SOURCE_FACILITY_TESTS_
 #define CYCAMORE_MODELS_SOURCE_FACILITY_SOURCE_FACILITY_TESTS_
 
 #include <gtest/gtest.h>
 
-#include "source_facility.h"
+#include "source.h"
 
 #include <boost/shared_ptr.hpp>
 
@@ -15,11 +15,11 @@
 #include "agent_tests.h"
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-class SourceFacilityTest : public ::testing::Test {
+class SourceTest : public ::testing::Test {
  public:
   cyclus::TestContext tc;
   TestFacility* trader;
-  cycamore::SourceFacility* src_facility;
+  cycamore::Source* src_facility;
   std::string commod, recipe_name;
   double capacity;
   cyclus::Composition::Ptr recipe;
@@ -27,7 +27,7 @@ class SourceFacilityTest : public ::testing::Test {
   virtual void SetUp();
   virtual void TearDown();
   void InitParameters();
-  void SetUpSourceFacility();
+  void SetUpSource();
 
   boost::shared_ptr< cyclus::ExchangeContext<cyclus::Material> >
       GetContext(int nreqs, std::string commodity);

@@ -1,5 +1,5 @@
 <?xml version="1.0"?>
-<!-- 1 SourceFacility Source, 1 SinkFacility Sink -->
+<!-- 1 Source Source, 1 Sink Sink -->
 
 <simulation>
   <control>
@@ -27,11 +27,11 @@
       <agent>EnrichmentFacility</agent>
     </module>
     <agent>
-      <SourceFacility>
+      <Source>
         <out_commod>natl_u</out_commod>
         <capacity>1000</capacity>
         <recipe_name>natl_u</recipe_name>
-      </SourceFacility>
+      </Source>
     </agent>
   </facility>
 
@@ -82,16 +82,16 @@
   <facility>
     <name>Sink</name>
     <module>
-      <path>SinkFacility</path>
-      <agent>SinkFacility</agent>
+      <path>Sink</path>
+      <agent>Sink</agent>
     </module>
     <agent>
-      <SinkFacility>
+      <Sink>
           <in_commods>
             <val>waste</val>
           </in_commods>
           <capacity>1000</capacity>
-      </SinkFacility>
+      </Sink>
     </agent>
   </facility>
 

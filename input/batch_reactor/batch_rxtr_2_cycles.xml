@@ -29,14 +29,14 @@
     <name>Source</name>
     <module>
       <lib>cycamore</lib>
-      <agent>SourceFacility</agent>
+      <agent>Source</agent>
     </module>
     <agent>
-      <SourceFacility>
+      <Source>
         <out_commod>enriched_u</out_commod>
         <capacity>1.0e10</capacity>
         <recipe_name>lwr_fuel_recipe</recipe_name>
-      </SourceFacility>
+      </Source>
     </agent>
   </facility>
 
@@ -72,15 +72,15 @@
     <name>Sink</name>
     <module>
       <lib>cycamore</lib>
-      <agent>SinkFacility</agent>
+      <agent>Sink</agent>
     </module>
     <agent>
-      <SinkFacility>
+      <Sink>
         <in_commods>
           <val>waste</val>
         </in_commods>
         <capacity>1.0e10</capacity>
-      </SinkFacility>
+      </Sink>
     </agent>
   </facility>
 
