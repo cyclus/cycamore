@@ -4,7 +4,8 @@ from nose.tools import assert_equal, assert_true
 import os
 import tables
 import numpy as np
-from tools import check_cmd, cleanfs
+import uuid
+from tools import check_cmd
 from helper import table_exist, find_ids
 
 def test_dynamic_capacitated():
@@ -31,22 +32,23 @@ def test_dynamic_capacitated():
 
     for sim_input in sim_inputs:
         holdsrtn = [1]  # needed because nose does not send() to test generator
-        cmd = ["cyclus", "-o", "./output_temp.h5", "--input-file", sim_input]
+        tmp_file = str(uuid.uuid4()) + ".h5"
+        cmd = ["cyclus", "-o", tmp_file, "--input-file", sim_input]
         yield check_cmd, cmd, '.', holdsrtn
         rtn = holdsrtn[0]
         if rtn != 0:
             return  # don't execute further commands
-
-        output = tables.open_file("./output_temp.h5", mode = "r")
+        
+        output = tables.open_file(tmp_file, mode = "r")
         # Tables of interest
         paths = ["/AgentEntry", "/Resources", "/Transactions", "/AgentExit"]
         # Check if these tables exist
         yield assert_true, table_exist(output, paths)
         if not table_exist(output, paths):
             output.close()
-            cleanfs(["./output_temp.h5"])
-            # This is a starter sqlite db created implicitly
-            cleanfs(["./output_temp.sqlite"])
+            if os.path.isfile(tmp_file):
+                print("removing {0}".format(tmp_file))
+                os.remove(tmp_file)
             return  # don't execute further commands
 
         # Get specific tables and columns
@@ -134,6 +136,6 @@ def test_dynamic_capacitated():
         yield assert_equal, quantity, 2
 
         output.close()
-        cleanfs(["./output_temp.h5"])
-        # This is a starter sqlite db created implicitly
-        cleanfs(["./output_temp.sqlite"])
+        if os.path.isfile(tmp_file):
+            print("removing {0}".format(tmp_file))
+            os.remove(tmp_file)

@@ -50,11 +50,13 @@ class TestRegression(object):
     def __del__(self):
         for inf, outf in self.tmp_files_.items():
             if os.path.isfile(outf):
+                print("removing {0}".format(outf))
                 os.remove(outf)
                 
     def teardown(self):
         for inf, outf in self.tmp_files_.items():
             if os.path.isfile(outf):
+                print("removing {0}".format(outf))
                 os.remove(outf)
 
     def test_regression(self, check_deterministic=False):
@@ -86,10 +88,12 @@ class TestRegression(object):
                         assert_true(nondeterm)
 
                 if os.path.isfile(tmp_file):
+                    print("removing {0}".format(tmp_file))
                     os.remove(tmp_file)
                 
                 tmp_file = tmp_file.split('.')[0] + '.sqlite'
                 
                 if os.path.isfile(tmp_file):
+                    print("removing {0}".format(tmp_file))
                     os.remove(tmp_file)
                     
