@@ -377,15 +377,22 @@ TEST_F(BatchReactorTest, BatchInOut) {
   EXPECT_THROW(TestBatchOut(1, 0), cyclus::Error);
 }
 
+}  // namespace cycamore
+
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 cyclus::Agent* BatchReactorConstructor(cyclus::Context* ctx) {
   return new cycamore::BatchReactor(ctx);
 }
+
+// required to get functionality in cyclus agent unit tests library
+#ifndef CYCLUS_AGENT_TESTS_CONNECTED
+int ConnectAgentTests();
+static int cyclus_agent_tests_connected = ConnectAgentTests();
+#define CYCLUS_AGENT_TESTS_CONNECTED cyclus_agent_tests_connected
+#endif // CYCLUS_AGENT_TESTS_CONNECTED
 
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 // INSTANTIATE_TEST_CASE_P(BatchReactor, FacilityTests,
 //                         Values(&BatchReactorConstructor));
 INSTANTIATE_TEST_CASE_P(BatchReactor, AgentTests,
                         Values(&BatchReactorConstructor));
-
-}  // namespace cycamore
