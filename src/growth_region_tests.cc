@@ -22,12 +22,6 @@ void GrowthRegionTests::TearDown() {
   delete ctx;
 }
 
-//- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-cyclus::Agent* GrowthRegionConstructor(cyclus::Context* ctx) {
-  return new cycamore::GrowthRegion(ctx);
-}
-
-
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 bool GrowthRegionTests::ManagesCommodity(cyclus::toolkit::Commodity& commodity) {
   return region->sdmanager()->ManagesCommodity(commodity);
@@ -41,11 +35,22 @@ TEST_F(GrowthRegionTests, init) {
   EXPECT_TRUE(ManagesCommodity(commodity));
 }
 
+} // namespace cycamore
+
+//- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+cyclus::Agent* GrowthRegionConstructor(cyclus::Context* ctx) {
+  return new cycamore::GrowthRegion(ctx);
+}
+
+// required to get functionality in cyclus agent unit tests library
+#ifndef CYCLUS_AGENT_TESTS_CONNECTED
+int ConnectAgentTests();
+static int cyclus_agent_tests_connected = ConnectAgentTests();
+#define CYCLUS_AGENT_TESTS_CONNECTED cyclus_agent_tests_connected
+#endif // CYCLUS_AGENT_TESTS_CONNECTED
+
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 INSTANTIATE_TEST_CASE_P(GrowthRegion, RegionTests,
                         Values(&GrowthRegionConstructor));
 INSTANTIATE_TEST_CASE_P(GrowthRegion, AgentTests,
                         Values(&GrowthRegionConstructor));
-
-} // namespace cycamore
-

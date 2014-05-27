@@ -592,15 +592,22 @@ TEST_F(EnrichmentFacilityTest, Response) {
   EXPECT_DOUBLE_EQ(src_facility->CurrentSwuCapacity(), swu_req);
 }
 
+} // namespace cycamore
+
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 cyclus::Agent* EnrichmentFacilityConstructor(cyclus::Context* ctx) {
   return new cycamore::EnrichmentFacility(ctx);
 }
+
+// required to get functionality in cyclus agent unit tests library
+#ifndef CYCLUS_AGENT_TESTS_CONNECTED
+int ConnectAgentTests();
+static int cyclus_agent_tests_connected = ConnectAgentTests();
+#define CYCLUS_AGENT_TESTS_CONNECTED cyclus_agent_tests_connected
+#endif // CYCLUS_AGENT_TESTS_CONNECTED
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 INSTANTIATE_TEST_CASE_P(EnrichmentFac, FacilityTests,
                         Values(&EnrichmentFacilityConstructor));
 INSTANTIATE_TEST_CASE_P(EnrichmentFac, AgentTests,
                         Values(&EnrichmentFacilityConstructor));
-
-} // namespace cycamore
