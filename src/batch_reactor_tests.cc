@@ -305,6 +305,7 @@ TEST_F(BatchReactorTest, Tick) {
   EXPECT_EQ(src_facility->commod_prefs().at(in_c1), frompref1);
   EXPECT_EQ(src_facility->commod_prefs().at(in_c2), frompref2);
   EXPECT_EQ(src_facility->crctx().in_recipe(in_c1), in_r1);
+  tc_.get()->time(change_time);
   EXPECT_NO_THROW(src_facility->Tick(););
   EXPECT_EQ(src_facility->commod_prefs().at(in_c1), topref1);
   EXPECT_EQ(src_facility->commod_prefs().at(in_c2), topref2);
