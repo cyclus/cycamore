@@ -10,7 +10,7 @@ _invar_table_names = {"agents": "AgentEntry",
                       "rsrcs": "Resources"}
 
 _agent_key = "AgentId"
-_agent_schema = ["Kind", "Implementation", "Prototype", "ParentId", "EnterTime"]
+_agent_schema = ["Kind", "Spec", "Prototype", "ParentId", "EnterTime"]
 
 _simulation_time_info_schema = ["InitialYear", "InitialMonth", 
                                 "Duration"]
