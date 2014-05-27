@@ -155,7 +155,7 @@ class EnrichmentFacility : public cyclus::Facility {
 
      @param time is the time to perform the tick
    */
-  virtual void Tick(int time);
+  virtual void Tick();
 
   /**
      Each facility is prompted to its end-of-time-step
@@ -163,7 +163,7 @@ class EnrichmentFacility : public cyclus::Facility {
 
      @param time is the time to perform the tock
    */
-  virtual void Tock(int time);
+  virtual void Tock();
 
   /// @brief The EnrichmentFacility request Materials of its given
   /// commodity. 

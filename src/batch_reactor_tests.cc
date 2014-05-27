@@ -305,7 +305,7 @@ TEST_F(BatchReactorTest, Tick) {
   EXPECT_EQ(src_facility->commod_prefs().at(in_c1), frompref1);
   EXPECT_EQ(src_facility->commod_prefs().at(in_c2), frompref2);
   EXPECT_EQ(src_facility->crctx().in_recipe(in_c1), in_r1);
-  EXPECT_NO_THROW(src_facility->Tick(change_time););
+  EXPECT_NO_THROW(src_facility->Tick(););
   EXPECT_EQ(src_facility->commod_prefs().at(in_c1), topref1);
   EXPECT_EQ(src_facility->commod_prefs().at(in_c2), topref2);
   EXPECT_EQ(src_facility->crctx().in_recipe(in_c1), in_r2);
@@ -314,7 +314,7 @@ TEST_F(BatchReactorTest, Tick) {
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 TEST_F(BatchReactorTest, Tock) {
   int time = 1;
-  EXPECT_NO_THROW(src_facility->Tock(time));
+  EXPECT_NO_THROW(src_facility->Tock());
 }
 
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -

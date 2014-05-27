@@ -53,7 +53,7 @@ class GrowthRegion : public cyclus::Region {
   /// commodity exists, then the correct build order for that demand
   /// is constructed and executed.
   /// @param time is the time to perform the tick
-  virtual void Tick(int time);
+  virtual void Tick();
 
   /// enter the simulation and register any children present
   virtual void EnterNotify();
