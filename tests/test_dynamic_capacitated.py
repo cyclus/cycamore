@@ -59,7 +59,7 @@ def test_dynamic_capacitated():
 
         # Find agent ids of source and sink facilities
         agent_ids = agent_entry["AgentId"]
-        agent_impl = agent_entry["Implementation"]
+        agent_impl = agent_entry["Spec"]
         depl_time = agent_entry["EnterTime"]
         exit_time = agent_exit["ExitTime"]
         exit_ids = agent_exit["AgentId"]
