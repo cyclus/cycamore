@@ -35,7 +35,7 @@ void ManagerInst::EnterNotify() {
   using cyclus::toolkit::CommodityProducer;
   std::vector<std::string>::iterator vit;
   for (vit = prototypes.begin(); vit != prototypes.end(); ++vit) {
-    Agent* a = context()->prototype(*vit);
+    Agent* a = context()->CreateAgent<Agent>(*vit);
     CommodityProducer* cp_cast = dynamic_cast<CommodityProducer*>(a);
     if (cp_cast != NULL) {
       LOG(cyclus::LEV_INFO3, "mani") << "Registering prototype "
