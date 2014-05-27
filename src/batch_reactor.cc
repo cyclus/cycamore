@@ -574,7 +574,8 @@ void BatchReactor::Build(cyclus::Agent* parent) {
 }
 
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-void BatchReactor::Tick(int time) {
+void BatchReactor::Tick() {
+  int time = context()->time();
   LOG(cyclus::LEV_INFO3, "BReact") << prototype() << " is ticking at time "
                                    << time << " {";
 
@@ -650,7 +651,8 @@ void BatchReactor::Tick(int time) {
 }
 
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-void BatchReactor::Tock(int time) {
+void BatchReactor::Tock() {
+  int time = context()->time();
   LOG(cyclus::LEV_INFO3, "BReact") << prototype() << " is tocking {";
   LOG(cyclus::LEV_DEBUG4, "BReact") << "Current facility parameters for "
                                     << prototype()

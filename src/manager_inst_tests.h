@@ -32,8 +32,8 @@ class TestProducer :
 
   cyclus::Inventories SnapshotInv() {};
 
-  void Tock(int time) {};
-  void Tick(int time) {};
+  void Tock() {};
+  void Tick() {};
 };
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -

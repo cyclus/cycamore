@@ -97,7 +97,8 @@ void GrowthRegion::Unregister_(cyclus::Agent* agent) {
 }
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-void GrowthRegion::Tick(int time) {
+void GrowthRegion::Tick() {
+  int time = context()->time();
   double demand = sdmanager_.Demand(commod_, time);
   double supply = sdmanager_.Supply(commod_);
   double unmetdemand = demand - supply;
@@ -113,7 +114,7 @@ void GrowthRegion::Tick(int time) {
   if (unmetdemand > 0) {
     OrderBuilds(commod_, unmetdemand);
   }
-  cyclus::Region::Tick(time);
+  cyclus::Region::Tick();
 }
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -

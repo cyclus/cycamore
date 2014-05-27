@@ -107,14 +107,14 @@ class Sink : public cyclus::Facility  {
 
      @param time the current simulation time.
    */
-  virtual void Tick(int time);
+  virtual void Tick();
 
   /**
      The Sink can handle the Tock.
 
      @param time the current simulation time.
    */
-  virtual void Tock(int time);
+  virtual void Tock();
 
   /// @brief SinkFacilities request Materials of their given commodity. Note
   /// that it is assumed the Sink operates on a single resource type!

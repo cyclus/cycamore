@@ -73,14 +73,14 @@ void EnrichmentFacility::Build(cyclus::Agent* parent) {
 }
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-void EnrichmentFacility::Tick(int time) {
+void EnrichmentFacility::Tick() {
   LOG(cyclus::LEV_INFO3, "EnrFac") << prototype() << " is ticking {";
   LOG(cyclus::LEV_INFO3, "EnrFac") << "}";
   current_swu_capacity = SwuCapacity();
 }
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-void EnrichmentFacility::Tock(int time) {
+void EnrichmentFacility::Tock() {
   LOG(cyclus::LEV_INFO3, "EnrFac") << prototype() << " is tocking {";
   LOG(cyclus::LEV_INFO3, "EnrFac") << "}";
 }
