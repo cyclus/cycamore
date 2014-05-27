@@ -28,7 +28,7 @@ def test_dynamic_capacitated():
     the constraint, resulting in the same transaction amount as in time step 1.
     """
     # Cyclus simulation input for dynamic capacitated
-    sim_inputs = ["./Inputs/dynamic_capacitated.xml"]
+    sim_inputs = ["./input/dynamic_capacitated.xml"]
 
     for sim_input in sim_inputs:
         holdsrtn = [1]  # needed because nose does not send() to test generator

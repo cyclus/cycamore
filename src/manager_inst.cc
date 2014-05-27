@@ -24,19 +24,31 @@ void ManagerInst::DecomNotify(Agent* a) {
 
 void ManagerInst::EnterNotify() {
   cyclus::Institution::EnterNotify();
-  std::set<cyclus::Agent*>::iterator it;
-  for (it = cyclus::Agent::children().begin();
-       it != cyclus::Agent::children().end();
-       ++it) {
-    Agent* a = *it;
+  std::set<cyclus::Agent*>::iterator sit;
+  for (sit = cyclus::Agent::children().begin();
+       sit != cyclus::Agent::children().end();
+       ++sit) {
+    Agent* a = *sit;
     Register_(a);
+  }
+
+  using cyclus::toolkit::CommodityProducer;
+  std::vector<std::string>::iterator vit;
+  for (vit = prototypes.begin(); vit != prototypes.end(); ++vit) {
+    Agent* a = context()->CreateAgent<Agent>(*vit);
+    CommodityProducer* cp_cast = dynamic_cast<CommodityProducer*>(a);
+    if (cp_cast != NULL) {
+      LOG(cyclus::LEV_INFO3, "mani") << "Registering prototype "
+                                     << a->prototype() << a->id()
+                                     << " with the Builder interface.";
+      Builder::Register(cp_cast);
+    }
   }
 }
 
 void ManagerInst::Register_(Agent* a) {
   using cyclus::toolkit::CommodityProducer;
   using cyclus::toolkit::CommodityProducerManager;
-  using cyclus::toolkit::Builder;
   
   CommodityProducer* cp_cast = dynamic_cast<CommodityProducer*>(a);
   if (cp_cast != NULL) {
@@ -44,7 +56,6 @@ void ManagerInst::Register_(Agent* a) {
                                    << a->prototype() << a->id()
                                    << " as a commodity producer.";
     CommodityProducerManager::Register(cp_cast);
-    Builder::Register(cp_cast);
   }
 }
 
