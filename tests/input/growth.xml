@@ -1,4 +1,3 @@
-<?xml version="1.0"?>
 <!-- 1 Source Source, 1 Sink Sink -->
 
 <simulation>
@@ -8,65 +7,65 @@
     <startyear>2000</startyear>
   </control>
 
-  <commodity>
-    <name>commodity</name>
-  </commodity>
+  <archetypes>
+    <spec>
+      <lib>cycamore</lib>
+      <name>Source</name>
+    </spec>
+    <spec>
+      <lib>cycamore</lib>
+      <name>Sink</name>
+    </spec>
+    <spec>
+      <lib>cycamore</lib>
+      <name>GrowthRegion</name>
+    </spec>
+    <spec>
+      <lib>cycamore</lib>
+      <name>ManagerInst</name>
+    </spec>
+  </archetypes>
 
   <facility>
     <name>Source1</name>
-    <module>
-      <lib>cycamore</lib>
-      <agent>Source</agent>
-    </module>
-    <agent>
+    <name>Source</name>
+    <config>
       <Source>
           <out_commod>commodity</out_commod>
           <recipe_name>commod_recipe</recipe_name>
           <capacity>1.1</capacity>
       </Source>
-    </agent>
+    </config>
   </facility>
 
   <facility>
     <name>Source2</name>
-    <module>
-      <lib>cycamore</lib>
-      <agent>Source</agent>
-    </module>
-    <agent>
+    <name>Source</name>
+    <config>
       <Source>
           <out_commod>commodity</out_commod>
           <recipe_name>commod_recipe</recipe_name>
           <capacity>2</capacity>
       </Source>
-    </agent>
+    </config>
   </facility>
 
   <facility>
     <name>Sink</name>
-    <module>
-      <lib>cycamore</lib>
-      <agent>Sink</agent>
-    </module>
-    <agent>
+    <name>Sink</name>
+    <config>
       <Sink>
         <in_commods>
           <val>commodity</val>
         </in_commods>
       </Sink>
-    </agent>
+    </config>
   </facility>
 
   <region>
     <name>SingleRegion</name>
-    <module>
-      <lib>cycamore</lib>
-      <agent>GrowthRegion</agent>
-    </module>
-    <allowedfacility>Source1</allowedfacility>
-    <allowedfacility>Source2</allowedfacility>
-    <allowedfacility>Sink</allowedfacility>
-    <agent>
+    <name>GrowthRegion</name>
+    <config>
       <GrowthRegion>
         <commodity_name>commodity</commodity_name>
         <demand_types>
@@ -79,20 +78,17 @@
           <val>0</val>
         </demand_times>
       </GrowthRegion>
-    </agent>
+    </config>
     <institution>
       <name>SingleInstitution</name>
-      <module>
-        <lib>cycamore</lib>
-        <agent>ManagerInst</agent>
-      </module>
+      <name>ManagerInst</name>
       <initialfacilitylist>
 	<entry>
 	  <prototype>Sink</prototype>
 	  <number>1</number>
 	</entry>
       </initialfacilitylist>
-      <agent>
+      <config>
         <ManagerInst>
           <prototypes>
             <val>Sink</val>
@@ -100,7 +96,7 @@
             <val>Source2</val>
           </prototypes>
         </ManagerInst>
-      </agent>
+      </config>
     </institution>
   </region>
 

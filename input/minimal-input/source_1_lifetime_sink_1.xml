@@ -1,4 +1,3 @@
-<?xml version="1.0"?>
 <!-- 1 Source Source, 1 Sink Sink -->
 
 <simulation>
@@ -8,59 +7,54 @@
     <startyear>2000</startyear>
   </control>
 
-  <commodity>
-    <name>commodity</name>
-  </commodity>
+  <archetypes>
+    <spec>
+      <lib>cycamore</lib>
+      <name>Source</name>
+    </spec>
+    <spec>
+      <lib>cycamore</lib>
+      <name>Sink</name>
+    </spec>
+    <spec>
+      <lib>agents</lib>
+      <name>NullRegion</name>
+    </spec>
+    <spec>
+      <lib>agents</lib>
+      <name>NullInst</name>
+    </spec>
+  </archetypes>
 
   <facility>
     <name>Source</name>
-    <module>
-      <lib>cycamore</lib>
-      <agent>Source</agent>
-    </module>
     <lifetime>5</lifetime>
-    <agent>
+    <config>
       <Source>
         <out_commod>commodity</out_commod>
         <recipe_name>commod_recipe</recipe_name>
         <capacity>1</capacity>
       </Source>
-    </agent>
+    </config>
   </facility>
   
   <facility>
     <name>Sink</name>
-    <module>
-      <lib>cycamore</lib>
-      <agent>Sink</agent>
-    </module>
-    <agent>
+    <config>
       <Sink>
         <in_commods>
           <val>commodity</val>
         </in_commods>
         <capacity>1</capacity>
       </Sink>
-    </agent>
+    </config>
   </facility>
 
   <region>
     <name>SingleRegion</name>
-    <module>
-      <lib>agents</lib>
-      <agent>NullRegion</agent>
-    </module>
-    <allowedfacility>Source</allowedfacility>
-    <allowedfacility>Sink</allowedfacility>
-    <agent><NullRegion/></agent>
+    <config><NullRegion/></config>
     <institution>
       <name>SingleInstitution</name>
-      <module>
-        <lib>agents</lib>
-        <agent>NullInst</agent>
-      </module>
-      <availableprototype>Source</availableprototype>
-      <availableprototype>Sink</availableprototype>
       <initialfacilitylist>
         <entry>
           <prototype>Source</prototype>
@@ -71,7 +65,7 @@
           <number>1</number>
         </entry>
       </initialfacilitylist>
-      <agent><NullInst/></agent>
+      <config><NullInst/></config>
     </institution>
   </region>
 

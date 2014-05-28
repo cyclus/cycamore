@@ -1,4 +1,3 @@
-<?xml version="1.0"?>
 <!-- 1 Source Source, 1 Sink Sink -->
 
 <simulation>
@@ -8,40 +7,29 @@
     <startyear>2000</startyear>
   </control>
 
-  <commodity>
-    <name>natl_u</name>
-  </commodity>
-
-  <commodity>
-    <name>enriched_u</name>
-  </commodity>
-
-  <commodity>
-    <name>waste</name>
-  </commodity>
+  <archetypes>
+    <spec><lib>cycamore</lib><name>Sink</name></spec>
+    <spec><lib>cycamore</lib><name>Source</name></spec>
+    <spec><lib>cycamore</lib><name>EnrichmentFacility</name></spec>
+    <spec><lib>cycamore</lib><name>BatchReactor</name></spec>
+    <spec><lib>cycamore</lib><name>GrowthRegion</name></spec>
+    <spec><lib>cycamore</lib><name>ManagerInst</name></spec>
+  </archetypes>
 
   <facility>
     <name>Source</name>
-    <module>
-      <path>Source</path>
-      <agent>Source</agent>
-    </module>
-    <agent>
+    <config>
       <Source>
         <out_commod>natl_u</out_commod>
         <capacity>1000</capacity>
         <recipe_name>natl_u</recipe_name>
       </Source>
-    </agent>
+    </config>
   </facility>
 
   <facility>
     <name>Enrichment</name>
-    <module>
-      <path>EnrichmentFacility</path>
-      <agent>EnrichmentFacility</agent>
-    </module>
-    <agent>
+    <config>
       <EnrichmentFacility>
         <in_commod>natl_u</in_commod>
         <in_recipe>natl_u</in_recipe>
@@ -49,16 +37,12 @@
         <out_commod>enriched_u</out_commod>
         <tails_assay>0.003</tails_assay>
       </EnrichmentFacility>
-    </agent>
+    </config>
   </facility>
 
   <facility>
     <name>Reactor</name>
-    <module>
-      <path>BatchReactor</path>
-      <agent>BatchReactor</agent>
-    </module>
-    <agent>
+    <config>
       <BatchReactor>
         <fuel>
           <incommodity>enriched_u</incommodity>
@@ -75,36 +59,24 @@
           <cost>10</cost>
         </commodity_production>
       </BatchReactor>
-    </agent>
+    </config>
   </facility>
   
   <facility>
     <name>Sink</name>
-    <module>
-      <path>Sink</path>
-      <agent>Sink</agent>
-    </module>
-    <agent>
+    <config>
       <Sink>
         <in_commods>
           <val>waste</val>
         </in_commods>
         <capacity>1000</capacity>
       </Sink>
-    </agent>
+    </config>
   </facility>
 
   <region>
     <name>SingleRegion</name>
-    <module>
-      <path>GrowthRegion</path>
-      <agent>GrowthRegion</agent>
-    </module>
-    <allowedfacility>Source</allowedfacility>
-    <allowedfacility>Enrichment</allowedfacility>
-    <allowedfacility>Reactor</allowedfacility>
-    <allowedfacility>Sink</allowedfacility>
-    <agent>
+    <config>
       <GrowthRegion>
         <commodity>
           <name>power</name>
@@ -114,17 +86,9 @@
           </demand>
         </commodity>
       </GrowthRegion>
-    </agent>
+    </config>
     <institution>
       <name>SingleInstitution</name>
-      <module>
-        <path>ManagerInst</path>
-        <agent>ManagerInst</agent>
-      </module>
-      <availableprototype>Source</availableprototype>
-      <availableprototype>Enrichment</availableprototype>
-      <availableprototype>Reactor</availableprototype>
-      <availableprototype>Sink</availableprototype>
       <initialfacilitylist>
         <entry>
           <prototype>Source</prototype>
@@ -139,7 +103,7 @@
           <number>1</number>
         </entry>
       </initialfacilitylist>
-      <agent><ManagerInst/></agent>
+      <config><ManagerInst/></config>
     </institution>
   </region>
 

@@ -1,4 +1,3 @@
-<?xml version="1.0"?>
 <!-- Dynamic Capacitated -->
 
 <simulation>
@@ -8,62 +7,49 @@
     <startyear>2000</startyear>
   </control>
 
-  <commodity>
-    <name>commodity</name>
-  </commodity>
+  <archetypes>
+    <spec><lib>agents</lib><name>Sink</name></spec>
+    <spec><lib>agents</lib><name>Source</name></spec>
+    <spec><lib>agents</lib><name>NullRegion</name></spec>
+    <spec><lib>cycamore</lib><name>DeployInst</name></spec>
+  </archetypes>
 
   <facility>
     <name>Source</name>
-    <module>
-      <lib>agents</lib>
-      <agent>Source</agent>
-    </module>
-    <agent>
+    <name>Source</name>
+    <config>
       <Source>
         <commod>commodity</commod>
         <recipe_name>commod_recipe</recipe_name>
         <capacity>1.0</capacity>
       </Source>
-    </agent>
+    </config>
   </facility>
 
   <facility>
     <name>Sink</name>
-    <module>
-      <lib>agents</lib>
-      <agent>Sink</agent>
-    </module>
+    <name>Sink</name>
     <lifetime>1</lifetime>
-    <agent>
+    <config>
       <Sink>
         <in_commods>
           <val>commodity</val>
         </in_commods>
         <capacity>1.0</capacity>
       </Sink>
-    </agent>
+    </config>
   </facility>
 
   <region>
     <name>SingleRegion</name>
-    <module>
-      <lib>agents</lib>
-      <agent>NullRegion</agent>
-    </module>
-    <allowedfacility>Source</allowedfacility>
-    <allowedfacility>Sink</allowedfacility>
-    <agent>
+    <name>NullRegion</name>
+    <config>
       <NullRegion/>
-    </agent>
+    </config>
     <institution>
       <name>SingleInstitution</name>
-      <module>
-        <lib>cycamore</lib>
-        <agent>DeployInst</agent>
-      </module>
-      <availableprototype>Source</availableprototype>
-      <availableprototype>Sink</availableprototype>
-      <agent>
+      <name>DeployInst</name>
+      <config>
         <DeployInst>
           <buildorder>
             <prototype>Source</prototype>
@@ -81,7 +67,7 @@
             <date>2</date>
           </buildorder>
         </DeployInst>
-      </agent>
+      </config>
     </institution>
   </region>
 

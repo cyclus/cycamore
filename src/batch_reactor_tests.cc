@@ -208,7 +208,7 @@ TEST_F(BatchReactorTest, DISABLED_XMLInit) {
   std::stringstream ss;
   ss << "<start>"
      << "<name>fooname</name>"
-     << "<agent>"
+     << "<config>"
      << "<UNSPECIFIED>"
      << "  <fuel>"
      << "    <incommodity>" << in_c1 << "</incommodity>"
@@ -275,7 +275,7 @@ TEST_F(BatchReactorTest, DISABLED_XMLInit) {
      << "    <time>" << change_time << "</time>"
      << "  </pref_change>"
      << "</UNSPECIFIED>"
-     << "</agent>"
+     << "</config>"
      << "</start>";
 
   cyclus::XMLParser p;

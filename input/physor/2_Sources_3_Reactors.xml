@@ -1,4 +1,3 @@
-<?xml version="1.0"?>
 <!-- 2 Sources 3 Reactors -->
 
 <simulation>
@@ -8,47 +7,50 @@
     <startyear>2000</startyear>
   </control>
 
-  <commodity> <name>uox</name> </commodity>
-  <commodity> <name>mox</name> </commodity>
-  <commodity> <name>waste</name> </commodity> 
+  <archetypes>
+    <spec>
+      <lib>cycamore</lib>
+      <name>Source</name>
+    </spec>
+    <spec>
+      <lib>cycamore</lib>
+      <name>BatchReactor</name>
+    </spec>
+    <spec>
+      <lib>agents</lib>
+      <name>NullRegion</name>
+    </spec>
+    <spec>
+      <lib>cycamore</lib>
+      <name>DeployInst</name>
+    </spec>
+  </archetypes>
 
   <facility>
     <name>UOX_Source</name>
-    <module>
-      <lib>cycamore</lib>
-      <agent>Source</agent>
-    </module>
-    <agent>
+    <config>
       <Source>
           <out_commod>uox</out_commod>
           <recipe_name>uox_fuel_recipe</recipe_name>
           <capacity>2.5</capacity>
       </Source>
-    </agent>
+    </config>
   </facility>
 
   <facility>
     <name>MOX_Source</name>
-    <module>
-      <lib>cycamore</lib>
-      <agent>Source</agent>
-    </module>
-    <agent>
+    <config>
       <Source>
         <out_commod>mox</out_commod>
         <recipe_name>mox_fuel_recipe</recipe_name>
         <capacity>2.5</capacity>
       </Source>
-    </agent>
+    </config>
   </facility>
 
   <facility>
     <name>Reactor1</name>
-    <module>
-      <lib>cycamore</lib>
-      <agent>BatchReactor</agent>
-    </module>
-    <agent>
+    <config>
       <BatchReactor>
         <fuel>
           <incommodity>uox</incommodity>
@@ -88,16 +90,12 @@
           <time>4</time>
         </pref_change>
       </BatchReactor>
-    </agent>
+    </config>
   </facility>
 
   <facility>
     <name>Reactor2</name>
-    <module>
-      <lib>cycamore</lib>
-      <agent>BatchReactor</agent>
-    </module>
-    <agent>
+    <config>
       <BatchReactor>
         <fuel>
           <incommodity>uox</incommodity>
@@ -132,16 +130,12 @@
           <preference>1.0</preference>
         </commod_pref>
       </BatchReactor>
-    </agent>
+    </config>
   </facility>
 
   <facility>
     <name>Reactor3</name>
-    <module>
-      <lib>cycamore</lib>
-      <agent>BatchReactor</agent>
-    </module>
-    <agent>
+    <config>
       <BatchReactor>
         <fuel>
           <incommodity>uox</incommodity>
@@ -176,35 +170,17 @@
           <preference>0.5</preference>
         </commod_pref>
       </BatchReactor>
-    </agent>
+    </config>
   </facility>
 
   <region>
     <name>SingleRegion</name>
-    <module>
-      <lib>agents</lib>
-      <agent>NullRegion</agent>
-    </module>
-    <allowedfacility>UOX_Source</allowedfacility>
-    <allowedfacility>MOX_Source</allowedfacility>
-    <allowedfacility>Reactor1</allowedfacility>
-    <allowedfacility>Reactor2</allowedfacility>
-    <allowedfacility>Reactor3</allowedfacility>
-    <agent>
+    <config>
       <NullRegion/>
-    </agent>
+    </config>
     <institution>
       <name>SingleInstitution</name>
-      <module>
-        <lib>cycamore</lib>
-        <agent>DeployInst</agent>
-      </module>
-      <availableprototype>UOX_Source</availableprototype>
-      <availableprototype>MOX_Source</availableprototype>
-      <availableprototype>Reactor1</availableprototype>
-      <availableprototype>Reactor2</availableprototype>
-      <availableprototype>Reactor3</availableprototype>
-      <agent>
+      <config>
         <DeployInst>
           <buildorder>
             <prototype>UOX_Source</prototype>
@@ -232,7 +208,7 @@
             <date>3</date>
           </buildorder>        
         </DeployInst>
-      </agent>
+      </config>
     </institution>
   </region>
 

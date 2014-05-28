@@ -1,4 +1,3 @@
-<?xml version="1.0"?>
 <!-- This input file is used to verify the INPRO reactor agent behaves 
 reasonably for its lifetime. -->
 
@@ -9,37 +8,44 @@ reasonably for its lifetime. -->
     <startyear>2000</startyear>
   </control>
 
-  <commodity>
-    <name>enriched_u</name>
-  </commodity>
-
-  <commodity>
-    <name>waste</name>
-  </commodity>
+  <archetypes>
+    <spec>
+      <lib>cycamore</lib>
+      <name>Source</name>
+    </spec>
+    <spec>
+      <lib>cycamore</lib>
+      <name>BatchReactor</name>
+    </spec>
+    <spec>
+      <lib>agents</lib>
+      <name>NullRegion</name>
+    </spec>
+    <spec>
+      <lib>agents</lib>
+      <name>NullInst</name>
+    </spec>
+    <spec>
+      <lib>cycamore</lib>
+      <name>Sink</name>
+    </spec>
+  </archetypes>
 
   <facility>
     <name>Source</name>
-    <module>
-      <lib>cycamore</lib>
-      <agent>Source</agent>
-    </module>
-    <agent>
+    <config>
       <Source>
         <out_commod>enriched_u</out_commod>
         <capacity>1.0e10</capacity>
         <recipe_name>lwr_fuel_recipe</recipe_name>
       </Source>
-    </agent>
+    </config>
   </facility>
 
   <facility>
     <name>LWR_Reactor</name>
-    <module>
-      <lib>cycamore</lib>
-      <agent>BatchReactor</agent>
-    </module>
     <lifetime>480</lifetime>
-    <agent>
+    <config>
       <BatchReactor>
         <fuel>
           <incommodity>enriched_u</incommodity>
@@ -57,44 +63,26 @@ reasonably for its lifetime. -->
           <cost>1000</cost>
         </commodity_production>
       </BatchReactor>
-    </agent>
+    </config>
   </facility>
   
   <facility>
     <name>Sink</name>
-    <module>
-      <lib>cycamore</lib>
-      <agent>Sink</agent>
-    </module>
-    <agent>
+    <config>
       <Sink>
         <in_commods>
           <val>waste</val>
         </in_commods>
         <capacity>1.0e10</capacity>
       </Sink>
-    </agent>
+    </config>
   </facility>
 
   <region>
     <name>SingleRegion</name>
-    <module>
-      <lib>agents</lib>
-      <agent>NullRegion</agent>
-    </module>
-    <allowedfacility>Source</allowedfacility>
-    <allowedfacility>LWR_Reactor</allowedfacility>
-    <allowedfacility>Sink</allowedfacility>
-    <agent><NullRegion/></agent>
+    <config><NullRegion/></config>
     <institution>
       <name>SingleInstitution</name>
-      <module>
-        <lib>agents</lib>
-        <agent>NullInst</agent>
-      </module>
-      <availableprototype>Source</availableprototype>
-      <availableprototype>LWR_Reactor</availableprototype>
-      <availableprototype>Sink</availableprototype>
       <initialfacilitylist>
         <entry>
           <prototype>Source</prototype>
@@ -109,7 +97,7 @@ reasonably for its lifetime. -->
           <number>1</number>
         </entry>
       </initialfacilitylist>
-      <agent><NullInst/></agent>
+      <config><NullInst/></config>
     </institution>
   </region>
 
