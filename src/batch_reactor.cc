@@ -263,7 +263,7 @@ void BatchReactor::InitFrom(cyclus::QueryableBackend* b) {
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 void BatchReactor::InfileToDb(cyclus::InfileTree* qe, cyclus::DbInit di) {
   cyclus::Facility::InfileToDb(qe, di);
-  qe = qe->SubTree("agent/*");
+  qe = qe->SubTree("config/*");
 
   using cyclus::toolkit::Commodity;
   using cyclus::toolkit::CommodityProducer;
