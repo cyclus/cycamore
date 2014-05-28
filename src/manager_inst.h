@@ -22,6 +22,10 @@ class ManagerInst : public cyclus::Institution,
 
   #pragma cyclus
 
+  #pragma cyclus note {"doc": "An institution that owns and operates a " \
+                              "manually entered list of facilities in " \
+                              "the input file"}
+
   /// enter the simulation and register any children present
   virtual void EnterNotify();
 
@@ -43,7 +47,8 @@ class ManagerInst : public cyclus::Institution,
   /// unregister a child 
   void Unregister_(cyclus::Agent* agent);
 
-  #pragma cyclus var {}
+  #pragma cyclus var {"tooltip": "facility prototypes", \
+                      "doc": "a facility to be managed by the institution"}
   std::vector<std::string> prototypes;
 };
 } // namespace cycamore 

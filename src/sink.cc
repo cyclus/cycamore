@@ -12,7 +12,6 @@ namespace cycamore {
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 Sink::Sink(cyclus::Context* ctx)
   : cyclus::Facility(ctx),
-    commod_price(0),
     capacity(std::numeric_limits<double>::max()) {
   SetMaxInventorySize(std::numeric_limits<double>::max());
 }

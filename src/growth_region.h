@@ -41,6 +41,9 @@ class GrowthRegion : public cyclus::Region {
 
   #pragma cyclus
 
+  #pragma cyclus note {"doc": "A region that governs a scenario in which " \
+                              "there is growth in demand for a commodity. "}
+
   /// add a demand for a commodity on which this region request that
   /// facilities be built
   void AddCommodityDemand(cyclus::toolkit::Commodity commod);
@@ -67,16 +70,24 @@ class GrowthRegion : public cyclus::Region {
   inline cyclus::toolkit::SupplyDemandManager* sdmanager() { return &sdmanager_; };
 
  protected:
-  #pragma cyclus var {}
+  #pragma cyclus var {"tooltip": "commodity in demand", \
+                      "doc": "name of the commodity experiencing a " \
+                             "growth in demand"}
   std::string commodity_name;
 
-  #pragma cyclus var {}
+  #pragma cyclus var {"tooltip": "demand type", \
+                      "doc": "mathematical description of demand growth " \
+                             "(i.e., linear, exponential, piecewise)"}
   std::vector<std::string> demand_types;
 
-  #pragma cyclus var {}
+  #pragma cyclus var {"tooltip": "demand parameters", \
+                      "doc": "parameters that define the behavior of the " \
+                             "demand type function"}
   std::vector<std::string> demand_params;
 
-  #pragma cyclus var {}
+  #pragma cyclus var {"tooltip": "demand times", \
+                      "doc": "vector describing the length of times " \
+                             "regarding the piecewise demand type"}
   std::vector<int> demand_times;
 
   cyclus::toolkit::Commodity commod_;
