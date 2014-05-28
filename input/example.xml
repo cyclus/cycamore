@@ -1,55 +1,47 @@
-<?xml version="1.0"?>
-<!-- 1 StubFacility, 1 StubRegion, 1 StubInst, and 1 StubMarket -->
 <simulation>
   <control>
     <duration>10</duration>
     <startmonth>1</startmonth>
     <startyear>2000</startyear>
-    <simstart>0</simstart>
-    <decay>2</decay>
   </control>
 
   <commodity>
-    <name>uo2</name>
+    <name>commodity</name>
   </commodity>
 
-  <market>
-    <name>uo2market</name>
-    <mktcommodity>uo2</mktcommodity>
-    <model>
-      <StubMarket>
-        <input/>
-      </StubMarket>
-    </model>
-  </market>
-
   <facility>
-    <name>FrontEnd</name>
-    <model>
-      <StubFacility>
-        <input>
-          <incommodity>uo2</incommodity>
-          <outcommodity>uo2</outcommodity>
-        </input>
-      </StubFacility>
-    </model>
+    <name>OneFacility</name>
+    <module>
+      <path>stubs</path>
+      <lib>StubFacility</lib>
+      <agent>StubFacility</agent>
+    </module>
+    <agent>
+      <StubFacility />
+    </agent>
   </facility>
 
   <region>
-    <name>oneRegion</name>
-    <allowedfacility>FrontEnd</allowedfacility>
-    <model>
-      <StubRegion>
-        <input/>
-      </StubRegion>
-    </model>
+    <name>OneRegion</name>
+    <module>
+      <path>stubs</path>
+      <lib>StubRegion</lib>
+      <agent>StubRegion</agent>
+    </module>
+    <allowedfacility>OneFacility</allowedfacility>
+    <agent>
+      <StubRegion />
+    </agent>
     <institution>
-      <name>oneInst</name>
-      <model>
-        <StubInst>
-          <input/>
-        </StubInst>
-      </model>
+      <name>OneInst</name>
+      <module>
+        <path>stubs</path>
+        <lib>StubInst</lib>
+        <agent>StubInst</agent>
+      </module>
+      <agent>
+        <StubInst />
+      </agent>
     </institution>
   </region>
 
