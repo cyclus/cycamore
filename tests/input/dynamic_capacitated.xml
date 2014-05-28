@@ -8,8 +8,8 @@
   </control>
 
   <archetypes>
-    <spec><lib>cycamore</lib><archetype>Sink</archetype></spec>
-    <spec><lib>cycamore</lib><archetype>Source</archetype></spec>
+    <spec><lib>agents</lib><archetype>Sink</archetype></spec>
+    <spec><lib>agents</lib><archetype>Source</archetype></spec>
     <spec><lib>agents</lib><archetype>NullRegion</archetype></spec>
     <spec><lib>cycamore</lib><archetype>DeployInst</archetype></spec>
   </archetypes>
