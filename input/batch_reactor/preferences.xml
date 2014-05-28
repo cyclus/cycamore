@@ -88,9 +88,6 @@ commodity. -->
       <lib>agents</lib>
       <agent>NullRegion</agent>
     </module>
-    <allowedfacility>Source</allowedfacility>
-    <allowedfacility>Reactor</allowedfacility>
-    <allowedfacility>Sink</allowedfacility>
     <agent><NullRegion/></agent>
     <institution>
       <name>SingleInstitution</name>
@@ -98,9 +95,6 @@ commodity. -->
         <lib>agents</lib>
         <agent>NullInst</agent>
       </module>
-      <availableprototype>Source</availableprototype>
-      <availableprototype>Reactor</availableprototype>
-      <availableprototype>Sink</availableprototype>
       <initialfacilitylist>
         <entry>
           <prototype>Source</prototype>

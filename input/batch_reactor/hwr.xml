@@ -83,11 +83,6 @@
       <lib>agents</lib>
       <agent>NullRegion</agent>
     </module>
-    <allowedfacility>Source</allowedfacility>
-    <allowedfacility>Enrichment</allowedfacility>
-    <allowedfacility>LWR_Reactor</allowedfacility>
-    <allowedfacility>HW_Reactor</allowedfacility>
-    <allowedfacility>Sink</allowedfacility>
     <agent><NullRegion/></agent>
     <institution>
       <name>SingleInstitution</name>
@@ -95,11 +90,6 @@
         <lib>agents</lib>
         <agent>NullInst</agent>
       </module>
-      <availableprototype>Source</availableprototype>
-      <availableprototype>Enrichment</availableprototype>
-      <availableprototype>LWR_Reactor</availableprototype>
-      <availableprototype>HW_Reactor</availableprototype>
-      <availableprototype>Sink</availableprototype>
       <initialfacilitylist>
         <entry>
           <prototype>Source</prototype>

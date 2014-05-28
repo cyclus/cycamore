@@ -63,9 +63,6 @@
       <lib>cycamore</lib>
       <agent>GrowthRegion</agent>
     </module>
-    <allowedfacility>Source1</allowedfacility>
-    <allowedfacility>Source2</allowedfacility>
-    <allowedfacility>Sink</allowedfacility>
     <agent>
       <GrowthRegion>
         <commodity_name>commodity</commodity_name>

@@ -100,10 +100,6 @@
       <path>GrowthRegion</path>
       <agent>GrowthRegion</agent>
     </module>
-    <allowedfacility>Source</allowedfacility>
-    <allowedfacility>Enrichment</allowedfacility>
-    <allowedfacility>Reactor</allowedfacility>
-    <allowedfacility>Sink</allowedfacility>
     <agent>
       <GrowthRegion>
         <commodity>
@@ -121,10 +117,6 @@
         <path>ManagerInst</path>
         <agent>ManagerInst</agent>
       </module>
-      <availableprototype>Source</availableprototype>
-      <availableprototype>Enrichment</availableprototype>
-      <availableprototype>Reactor</availableprototype>
-      <availableprototype>Sink</availableprototype>
       <initialfacilitylist>
         <entry>
           <prototype>Source</prototype>
