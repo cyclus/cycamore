@@ -10,7 +10,7 @@ absexpanduser = lambda x: os.path.abspath(os.path.expanduser(x))
 
 def main():
     description = ("This script renames all instances of stub, Stub, and STUB "
-                   "to the value given on the command line."
+                   "to the value given on the command line.")
     parser = ap.ArgumentParser(description=description)
     parser.add_argument('name', help="replacement for stub", default='name')
     ns = parser.parse_args()
