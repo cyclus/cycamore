@@ -8,12 +8,12 @@
   </control>
 
   <archetypes>
-    <spec><lib>cycamore</lib><archetype>Sink</archetype></spec>
-    <spec><lib>cycamore</lib><archetype>Source</archetype></spec>
-    <spec><lib>cycamore</lib><archetype>EnrichmentFacility</archetype></spec>
-    <spec><lib>cycamore</lib><archetype>BatchReactor</archetype></spec>
-    <spec><lib>cycamore</lib><archetype>GrowthRegion</archetype></spec>
-    <spec><lib>cycamore</lib><archetype>ManagerInst</archetype></spec>
+    <spec><lib>cycamore</lib><name>Sink</name></spec>
+    <spec><lib>cycamore</lib><name>Source</name></spec>
+    <spec><lib>cycamore</lib><name>EnrichmentFacility</name></spec>
+    <spec><lib>cycamore</lib><name>BatchReactor</name></spec>
+    <spec><lib>cycamore</lib><name>GrowthRegion</name></spec>
+    <spec><lib>cycamore</lib><name>ManagerInst</name></spec>
   </archetypes>
 
   <facility>

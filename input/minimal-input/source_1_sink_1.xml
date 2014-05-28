@@ -10,19 +10,19 @@
   <archetypes>
     <spec>
       <lib>cycamore</lib>
-      <archetype>Source</archetype>
+      <name>Source</name>
     </spec>
     <spec>
       <lib>cycamore</lib>
-      <archetype>Sink</archetype>
+      <name>Sink</name>
     </spec>
     <spec>
       <lib>agents</lib>
-      <archetype>NullRegion</archetype>
+      <name>NullRegion</name>
     </spec>
     <spec>
       <lib>agents</lib>
-      <archetype>NullInst</archetype>
+      <name>NullInst</name>
     </spec>
   </archetypes>
 

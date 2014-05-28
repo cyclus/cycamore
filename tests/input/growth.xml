@@ -10,25 +10,25 @@
   <archetypes>
     <spec>
       <lib>cycamore</lib>
-      <archetype>Source</archetype>
+      <name>Source</name>
     </spec>
     <spec>
       <lib>cycamore</lib>
-      <archetype>Sink</archetype>
+      <name>Sink</name>
     </spec>
     <spec>
       <lib>cycamore</lib>
-      <archetype>GrowthRegion</archetype>
+      <name>GrowthRegion</name>
     </spec>
     <spec>
       <lib>cycamore</lib>
-      <archetype>ManagerInst</archetype>
+      <name>ManagerInst</name>
     </spec>
   </archetypes>
 
   <facility>
     <name>Source1</name>
-    <archetype>Source</archetype>
+    <name>Source</name>
     <config>
       <Source>
           <out_commod>commodity</out_commod>
@@ -40,7 +40,7 @@
 
   <facility>
     <name>Source2</name>
-    <archetype>Source</archetype>
+    <name>Source</name>
     <config>
       <Source>
           <out_commod>commodity</out_commod>
@@ -52,7 +52,7 @@
 
   <facility>
     <name>Sink</name>
-    <archetype>Sink</archetype>
+    <name>Sink</name>
     <config>
       <Sink>
         <in_commods>
@@ -64,7 +64,7 @@
 
   <region>
     <name>SingleRegion</name>
-    <archetype>GrowthRegion</archetype>
+    <name>GrowthRegion</name>
     <config>
       <GrowthRegion>
         <commodity_name>commodity</commodity_name>
@@ -81,7 +81,7 @@
     </config>
     <institution>
       <name>SingleInstitution</name>
-      <archetype>ManagerInst</archetype>
+      <name>ManagerInst</name>
       <initialfacilitylist>
 	<entry>
 	  <prototype>Sink</prototype>

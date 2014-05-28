@@ -8,15 +8,15 @@
   </control>
 
   <archetypes>
-    <spec><lib>agents</lib><archetype>Sink</archetype></spec>
-    <spec><lib>agents</lib><archetype>Source</archetype></spec>
-    <spec><lib>agents</lib><archetype>NullRegion</archetype></spec>
-    <spec><lib>cycamore</lib><archetype>DeployInst</archetype></spec>
+    <spec><lib>agents</lib><name>Sink</name></spec>
+    <spec><lib>agents</lib><name>Source</name></spec>
+    <spec><lib>agents</lib><name>NullRegion</name></spec>
+    <spec><lib>cycamore</lib><name>DeployInst</name></spec>
   </archetypes>
 
   <facility>
     <name>Source</name>
-    <archetype>Source</archetype>
+    <name>Source</name>
     <config>
       <Source>
         <commod>commodity</commod>
@@ -28,7 +28,7 @@
 
   <facility>
     <name>Sink</name>
-    <archetype>Sink</archetype>
+    <name>Sink</name>
     <lifetime>1</lifetime>
     <config>
       <Sink>
@@ -42,13 +42,13 @@
 
   <region>
     <name>SingleRegion</name>
-    <archetype>NullRegion</archetype>
+    <name>NullRegion</name>
     <config>
       <NullRegion/>
     </config>
     <institution>
       <name>SingleInstitution</name>
-      <archetype>DeployInst</archetype>
+      <name>DeployInst</name>
       <config>
         <DeployInst>
           <buildorder>

@@ -10,25 +10,25 @@
   <archetypes>
     <spec>
       <lib>cycamore</lib>
-      <archetype>Source</archetype>
+      <name>Source</name>
     </spec>
     <spec>
       <lib>cycamore</lib>
-      <archetype>BatchReactor</archetype>
+      <name>BatchReactor</name>
     </spec>
     <spec>
       <lib>agents</lib>
-      <archetype>NullRegion</archetype>
+      <name>NullRegion</name>
     </spec>
     <spec>
       <lib>cycamore</lib>
-      <archetype>DeployInst</archetype>
+      <name>DeployInst</name>
     </spec>
   </archetypes>
 
   <facility>
     <name>UOX_Source</name>
-    <archetype>Source</archetype>
+    <name>Source</name>
     <config>
       <Source>
           <out_commod>uox</out_commod>
@@ -136,7 +136,7 @@
 
   <facility>
     <name>Reactor3</name>
-    <archetype>BatchReactor</archetype>
+    <name>BatchReactor</name>
     <config>
       <BatchReactor>
         <fuel>
