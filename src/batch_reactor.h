@@ -163,6 +163,8 @@ class BatchReactor
 
   virtual ~BatchReactor();
 
+  #pragma cyclus note {"doc": "A facility that performs as a batch processor"}
+
   virtual cyclus::Agent* Clone();
 
   virtual void InfileToDb(cyclus::InfileTree* qe, cyclus::DbInit di);
