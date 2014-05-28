@@ -452,7 +452,7 @@ void BatchReactor::Snapshot(cyclus::DbInit di) {
 void BatchReactor::InitInv(cyclus::Inventories& invs) {
   reserves_.PushAll(invs["reserves"]);
   core_.PushAll(invs["core"]);
-  spillover_ = cyclus::toolkit::ResCast<cyclus::Material>(invs["spillover"][0]);
+  spillover_ = cyclus::ResCast<cyclus::Material>(invs["spillover"][0]);
 
   cyclus::Inventories::iterator it;
   for (it = invs.begin(); it != invs.end(); ++it) {
@@ -574,7 +574,8 @@ void BatchReactor::Build(cyclus::Agent* parent) {
 }
 
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-void BatchReactor::Tick(int time) {
+void BatchReactor::Tick() {
+  int time = context()->time();
   LOG(cyclus::LEV_INFO3, "BReact") << prototype() << " is ticking at time "
                                    << time << " {";
 
@@ -650,7 +651,8 @@ void BatchReactor::Tick(int time) {
 }
 
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-void BatchReactor::Tock(int time) {
+void BatchReactor::Tock() {
+  int time = context()->time();
   LOG(cyclus::LEV_INFO3, "BReact") << prototype() << " is tocking {";
   LOG(cyclus::LEV_DEBUG4, "BReact") << "Current facility parameters for "
                                     << prototype()
@@ -876,7 +878,7 @@ void BatchReactor::MoveBatchIn_() {
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 void BatchReactor::MoveBatchOut_() {
   using cyclus::Material;
-  using cyclus::toolkit::ResCast;
+  using cyclus::ResCast;
   
   LOG(cyclus::LEV_DEBUG2, "BReact") << "BatchReactor " << prototype() << " removed"
                                     <<  " a batch from its core.";
@@ -934,7 +936,7 @@ BatchReactor::GetOrder_(double size) {
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 void BatchReactor::AddBatches_(std::string commod, cyclus::Material::Ptr mat) {
   using cyclus::Material;
-  using cyclus::toolkit::ResCast;
+  using cyclus::ResCast;
 
   LOG(cyclus::LEV_DEBUG3, "BReact") << "BatchReactor " << prototype()
                                     << " is adding " << mat->quantity()
@@ -971,7 +973,7 @@ cyclus::BidPortfolio<cyclus::Material>::Ptr BatchReactor::GetBids_(
   using cyclus::Converter;
   using cyclus::Material;
   using cyclus::Request;
-  using cyclus::toolkit::ResCast;
+  using cyclus::ResCast;
   using cyclus::toolkit::ResourceBuff;
 
   BidPortfolio<Material>::Ptr port(new BidPortfolio<Material>());
@@ -1004,7 +1006,7 @@ cyclus::Material::Ptr BatchReactor::TradeResponse_(
     double qty,
     cyclus::toolkit::ResourceBuff* buffer) {
   using cyclus::Material;
-  using cyclus::toolkit::ResCast;
+  using cyclus::ResCast;
 
   std::vector<Material::Ptr> manifest;
   try {

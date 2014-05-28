@@ -111,13 +111,13 @@ class Source : public cyclus::Facility,
 ///     stuff at the tick of the timer.
 
 ///     @param time is the time to perform the tick
-  virtual void Tick(int time);
+  virtual void Tick();
 
 ///     Each facility is prompted to its end-of-time-step
 ///     stuff on the tock of the timer.
 
 ///     @param time is the time to perform the tock
-  virtual void Tock(int time);
+  virtual void Tock();
   
   /// @brief Responds to each request for this source facility's commodity.
   /// If a given request is more than this facility's capacity, it will offer

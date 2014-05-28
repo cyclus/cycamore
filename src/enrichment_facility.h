@@ -145,17 +145,21 @@ class EnrichmentFacility : public cyclus::Facility {
   /* --- */
   
   /* --- Agent Members --- */
-///    Each facility is prompted to do its beginning-of-time-step
-///    stuff at the tick of the timer.
-///
-///    @param time is the time to perform the tick
-  virtual void Tick(int time);
+  /**
+     Each facility is prompted to do its beginning-of-time-step
+     stuff at the tick of the timer.
 
-///    Each facility is prompted to its end-of-time-step
-///    stuff on the tock of the timer.
-///
-///    @param time is the time to perform the tock
-  virtual void Tock(int time);
+     @param time is the time to perform the tick
+   */
+  virtual void Tick();
+
+  /**
+     Each facility is prompted to its end-of-time-step
+     stuff on the tock of the timer.
+
+     @param time is the time to perform the tock
+   */
+  virtual void Tock();
 
   /// @brief The EnrichmentFacility request Materials of its given
   /// commodity. 

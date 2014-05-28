@@ -164,7 +164,7 @@ TEST_F(SourceTest, Response) {
                cyclus::ValueError);
   
   // reset!
-  src_facility->Tick(1);
+  src_facility->Tick();
   ASSERT_DOUBLE_EQ(src_facility->CurrentCapacity(), capacity);
 
   delete request;

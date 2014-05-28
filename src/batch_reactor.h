@@ -194,11 +194,11 @@ class BatchReactor
   /* --- Agent Members --- */
   /// The Tick function specific to the BatchReactor.
   /// @param time the time of the tick
-  virtual void Tick(int time);
+  virtual void Tick();
 
   /// The Tick function specific to the BatchReactor.
   /// @param time the time of the tock
-  virtual void Tock(int time);
+  virtual void Tock();
   
   /// @brief The EnrichmentFacility request Materials of its given
   /// commodity.

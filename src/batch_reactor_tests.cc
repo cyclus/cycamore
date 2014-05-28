@@ -153,7 +153,7 @@ void BatchReactorTest::TestReserveBatches(cyclus::Material::Ptr mat,
   EXPECT_EQ(n, src_facility->reserves_.count());
   EXPECT_DOUBLE_EQ(qty, src_facility->spillover_->quantity());
 
-  cyclus::Material::Ptr back = cyclus::toolkit::ResCast<cyclus::Material>(
+  cyclus::Material::Ptr back = cyclus::ResCast<cyclus::Material>(
       src_facility->reserves_.Pop(cyclus::toolkit::ResourceBuff::BACK));
   EXPECT_EQ(commod, src_facility->crctx_.commod(back));
   src_facility->reserves_.Push(back);
@@ -305,7 +305,8 @@ TEST_F(BatchReactorTest, Tick) {
   EXPECT_EQ(src_facility->commod_prefs().at(in_c1), frompref1);
   EXPECT_EQ(src_facility->commod_prefs().at(in_c2), frompref2);
   EXPECT_EQ(src_facility->crctx().in_recipe(in_c1), in_r1);
-  EXPECT_NO_THROW(src_facility->Tick(change_time););
+  tc_.get()->time(change_time);
+  EXPECT_NO_THROW(src_facility->Tick(););
   EXPECT_EQ(src_facility->commod_prefs().at(in_c1), topref1);
   EXPECT_EQ(src_facility->commod_prefs().at(in_c2), topref2);
   EXPECT_EQ(src_facility->crctx().in_recipe(in_c1), in_r2);
@@ -314,7 +315,7 @@ TEST_F(BatchReactorTest, Tick) {
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 TEST_F(BatchReactorTest, Tock) {
   int time = 1;
-  EXPECT_NO_THROW(src_facility->Tock(time));
+  EXPECT_NO_THROW(src_facility->Tock());
 }
 
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
