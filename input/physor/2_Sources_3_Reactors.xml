@@ -1,4 +1,3 @@
-<?xml version="1.0"?>
 <!-- 2 Sources 3 Reactors -->
 
 <simulation>
@@ -8,16 +7,28 @@
     <startyear>2000</startyear>
   </control>
 
-  <commodity> <name>uox</name> </commodity>
-  <commodity> <name>mox</name> </commodity>
-  <commodity> <name>waste</name> </commodity> 
+  <archetypes>
+    <spec>
+      <lib>cycamore</lib>
+      <archetype>Source</archetype>
+    </spec>
+    <spec>
+      <lib>cycamore</lib>
+      <archetype>BatchReactor</archetype>
+    </spec>
+    <spec>
+      <lib>agents</lib>
+      <archetype>NullRegion</archetype>
+    </spec>
+    <spec>
+      <lib>cycamore</lib>
+      <archetype>DeployInst</archetype>
+    </spec>
+  </archetypes>
 
   <facility>
     <name>UOX_Source</name>
-    <spec>
-      <lib>cycamore</lib>
-      <agent>Source</agent>
-    </spec>
+    <archetype>Source</archetype>
     <agent>
       <Source>
           <out_commod>uox</out_commod>
@@ -29,10 +40,7 @@
 
   <facility>
     <name>MOX_Source</name>
-    <spec>
-      <lib>cycamore</lib>
-      <agent>Source</agent>
-    </spec>
+    <archetype>Source</archetype>
     <agent>
       <Source>
         <out_commod>mox</out_commod>
@@ -44,10 +52,7 @@
 
   <facility>
     <name>Reactor1</name>
-    <spec>
-      <lib>cycamore</lib>
-      <agent>BatchReactor</agent>
-    </spec>
+    <archetype>BatchReactor</archetype>
     <agent>
       <BatchReactor>
         <fuel>
@@ -93,10 +98,7 @@
 
   <facility>
     <name>Reactor2</name>
-    <spec>
-      <lib>cycamore</lib>
-      <agent>BatchReactor</agent>
-    </spec>
+    <archetype>BatchReactor</archetype>
     <agent>
       <BatchReactor>
         <fuel>
@@ -137,10 +139,7 @@
 
   <facility>
     <name>Reactor3</name>
-    <spec>
-      <lib>cycamore</lib>
-      <agent>BatchReactor</agent>
-    </spec>
+    <archetype>BatchReactor</archetype>
     <agent>
       <BatchReactor>
         <fuel>
@@ -181,19 +180,13 @@
 
   <region>
     <name>SingleRegion</name>
-    <spec>
-      <lib>agents</lib>
-      <agent>NullRegion</agent>
-    </spec>
+    <archetype>NullRegion</archetype>
     <agent>
       <NullRegion/>
     </agent>
     <institution>
       <name>SingleInstitution</name>
-      <spec>
-        <lib>cycamore</lib>
-        <agent>DeployInst</agent>
-      </spec>
+      <archetype>DeployInst</archetype>
       <agent>
         <DeployInst>
           <buildorder>
