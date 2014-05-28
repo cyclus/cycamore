@@ -28,7 +28,6 @@
 
   <facility>
     <name>UOX_Source</name>
-    <name>Source</name>
     <config>
       <Source>
           <out_commod>uox</out_commod>
@@ -136,7 +135,6 @@
 
   <facility>
     <name>Reactor3</name>
-    <name>BatchReactor</name>
     <config>
       <BatchReactor>
         <fuel>
