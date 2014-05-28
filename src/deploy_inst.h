@@ -42,10 +42,10 @@ class DeployInst : public cyclus::Institution {
                               "deploys facilities manually defined in " \
                               "the input file."}
 
-  void Build(cyclus::Agent* parent);
+  virtual void Build(cyclus::Agent* parent);
 
  protected:
-///     a collection of orders to build
+  /// a collection of orders to build
   BuildSched build_sched_;
 };
 
