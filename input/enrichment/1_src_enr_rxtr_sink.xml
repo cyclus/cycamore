@@ -18,7 +18,6 @@
 
   <facility>
     <name>Source</name>
-    <archetype>Sink</archetype>
     <agent>
       <Source>
         <out_commod>natl_u</out_commod>
@@ -30,7 +29,6 @@
 
   <facility>
     <name>Enrichment</name>
-    <archetype>EnrichmentFacility</archetype>
     <agent>
       <EnrichmentFacility>
         <in_commod>natl_u</in_commod>
@@ -44,7 +42,6 @@
 
   <facility>
     <name>Reactor</name>
-    <archetype>BatchReactor</archetype>
     <agent>
       <BatchReactor>
         <fuel>
@@ -67,7 +64,6 @@
   
   <facility>
     <name>Sink</name>
-    <archetype>Sink</archetype>
     <agent>
       <Sink>
         <in_commods>
@@ -80,11 +76,9 @@
 
   <region>
     <name>SingleRegion</name>
-    <archetype>NullRegion</archetype>
     <agent><NullRegion/></agent>
     <institution>
       <name>SingleInstitution</name>
-      <archetype>NullInst</archetype>
       <initialfacilitylist>
         <entry>
           <prototype>Source</prototype>
