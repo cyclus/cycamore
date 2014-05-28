@@ -39,6 +39,12 @@
         <lib>StubInst</lib>
         <agent>StubInst</agent>
       </module>
+      <initialfacilitylist>
+        <entry>
+          <prototype>OneFacility</prototype>
+          <number>1</number>
+        </entry>
+      </initialfacilitylist>
       <agent>
         <StubInst />
       </agent>
