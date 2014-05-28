@@ -22,6 +22,7 @@ def main():
     for f in files:
         with open(f, 'r') as inp:
             s = inp.read()
+        s = s.replace('stubs', low)
         s = s.replace(stublow, low)
         s = s.replace(stubcap, cap)
         s = s.replace(stubupp, upp)
