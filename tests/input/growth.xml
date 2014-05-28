@@ -29,43 +29,43 @@
   <facility>
     <name>Source1</name>
     <archetype>Source</archetype>
-    <agent>
+    <config>
       <Source>
           <out_commod>commodity</out_commod>
           <recipe_name>commod_recipe</recipe_name>
           <capacity>1.1</capacity>
       </Source>
-    </agent>
+    </config>
   </facility>
 
   <facility>
     <name>Source2</name>
     <archetype>Source</archetype>
-    <agent>
+    <config>
       <Source>
           <out_commod>commodity</out_commod>
           <recipe_name>commod_recipe</recipe_name>
           <capacity>2</capacity>
       </Source>
-    </agent>
+    </config>
   </facility>
 
   <facility>
     <name>Sink</name>
     <archetype>Sink</archetype>
-    <agent>
+    <config>
       <Sink>
         <in_commods>
           <val>commodity</val>
         </in_commods>
       </Sink>
-    </agent>
+    </config>
   </facility>
 
   <region>
     <name>SingleRegion</name>
     <archetype>GrowthRegion</archetype>
-    <agent>
+    <config>
       <GrowthRegion>
         <commodity_name>commodity</commodity_name>
         <demand_types>
@@ -78,7 +78,7 @@
           <val>0</val>
         </demand_times>
       </GrowthRegion>
-    </agent>
+    </config>
     <institution>
       <name>SingleInstitution</name>
       <archetype>ManagerInst</archetype>
@@ -88,7 +88,7 @@
 	  <number>1</number>
 	</entry>
       </initialfacilitylist>
-      <agent>
+      <config>
         <ManagerInst>
           <prototypes>
             <val>Sink</val>
@@ -96,7 +96,7 @@
             <val>Source2</val>
           </prototypes>
         </ManagerInst>
-      </agent>
+      </config>
     </institution>
   </region>
 

@@ -29,29 +29,29 @@
   <facility>
     <name>UOX_Source</name>
     <archetype>Source</archetype>
-    <agent>
+    <config>
       <Source>
           <out_commod>uox</out_commod>
           <recipe_name>uox_fuel_recipe</recipe_name>
           <capacity>2.5</capacity>
       </Source>
-    </agent>
+    </config>
   </facility>
 
   <facility>
     <name>MOX_Source</name>
-    <agent>
+    <config>
       <Source>
         <out_commod>mox</out_commod>
         <recipe_name>mox_fuel_recipe</recipe_name>
         <capacity>2.5</capacity>
       </Source>
-    </agent>
+    </config>
   </facility>
 
   <facility>
     <name>Reactor1</name>
-    <agent>
+    <config>
       <BatchReactor>
         <fuel>
           <incommodity>uox</incommodity>
@@ -91,12 +91,12 @@
           <time>4</time>
         </pref_change>
       </BatchReactor>
-    </agent>
+    </config>
   </facility>
 
   <facility>
     <name>Reactor2</name>
-    <agent>
+    <config>
       <BatchReactor>
         <fuel>
           <incommodity>uox</incommodity>
@@ -131,13 +131,13 @@
           <preference>1.0</preference>
         </commod_pref>
       </BatchReactor>
-    </agent>
+    </config>
   </facility>
 
   <facility>
     <name>Reactor3</name>
     <archetype>BatchReactor</archetype>
-    <agent>
+    <config>
       <BatchReactor>
         <fuel>
           <incommodity>uox</incommodity>
@@ -172,17 +172,17 @@
           <preference>0.5</preference>
         </commod_pref>
       </BatchReactor>
-    </agent>
+    </config>
   </facility>
 
   <region>
     <name>SingleRegion</name>
-    <agent>
+    <config>
       <NullRegion/>
-    </agent>
+    </config>
     <institution>
       <name>SingleInstitution</name>
-      <agent>
+      <config>
         <DeployInst>
           <buildorder>
             <prototype>UOX_Source</prototype>
@@ -210,7 +210,7 @@
             <date>3</date>
           </buildorder>        
         </DeployInst>
-      </agent>
+      </config>
     </institution>
   </region>
 

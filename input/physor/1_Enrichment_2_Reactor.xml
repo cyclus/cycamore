@@ -28,7 +28,7 @@
 
   <facility>
     <name>Enrichment</name>
-    <agent>
+    <config>
       <EnrichmentFacility>
         <in_commod>natl_u</in_commod>
         <in_recipe>natl_u</in_recipe>
@@ -37,12 +37,12 @@
         <swu_capacity>10</swu_capacity>
         <initial_reserves>1e5</initial_reserves>
       </EnrichmentFacility>
-    </agent>
+    </config>
   </facility>
 
   <facility>
     <name>Reactor1</name>
-    <agent>
+    <config>
       <BatchReactor>
         <fuel>         
           <incommodity>enriched_u</incommodity>
@@ -81,12 +81,12 @@
           <preference>1.0</preference>
         </commod_pref>
       </BatchReactor>
-    </agent>
+    </config>
   </facility>
 
   <facility>
     <name>Reactor2</name>
-    <agent>
+    <config>
       <BatchReactor>
         <fuel>
           <incommodity>enriched_u</incommodity>
@@ -115,12 +115,12 @@
           <preference>0.5</preference>
         </commod_pref>
       </BatchReactor>
-    </agent>
+    </config>
   </facility>
 
   <region>
     <name>SingleRegion</name>
-    <agent><NullRegion/></agent>
+    <config><NullRegion/></config>
     <institution>
       <name>SingleInstitution</name>
       <initialfacilitylist>
@@ -137,7 +137,7 @@
           <number>1</number>
         </entry>        
       </initialfacilitylist>
-      <agent><NullInst/></agent>
+      <config><NullInst/></config>
     </institution>
   </region>
 

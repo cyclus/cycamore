@@ -75,7 +75,7 @@ TEST_F(SinkTest, DISABLED_XMLInit) {
   std::stringstream ss;
   ss << "<start>"
      << "<name>fooname</name>"
-     << "<agent>"
+     << "<config>"
      << "<UNSPECIFIED>"
      << "<input>"
      << "  <commodities>"
@@ -86,7 +86,7 @@ TEST_F(SinkTest, DISABLED_XMLInit) {
      << "  <inventorysize>" << inv_ << "</inventorysize>"
      << "</input>"
      << "</UNSPECIFIED>"
-     << "</agent>"
+     << "</config>"
      << "</start>";
 
   cyclus::XMLParser p;

@@ -118,7 +118,7 @@ TEST_F(EnrichmentFacilityTest, DISABLED_XMLInit) {
   std::stringstream ss;
   ss << "<start>"
      << "<name>fooname</name>"
-     << "<agent>"
+     << "<config>"
      << "<UNSPECIFIED>"
      << "  <input>"
      << "    <incommodity>" << in_commod << "</incommodity>"
@@ -134,7 +134,7 @@ TEST_F(EnrichmentFacilityTest, DISABLED_XMLInit) {
      << "    <reserves_qty>" << reserves << "</reserves_qty>"
      << "  </initial_condition>"
      << "</UNSPECIFIED>"
-     << "</agent>"
+     << "</config>"
      << "</start>";
 
   cyclus::XMLParser p;

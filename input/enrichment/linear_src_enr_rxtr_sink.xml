@@ -18,18 +18,18 @@
 
   <facility>
     <name>Source</name>
-    <agent>
+    <config>
       <Source>
         <out_commod>natl_u</out_commod>
         <capacity>1000</capacity>
         <recipe_name>natl_u</recipe_name>
       </Source>
-    </agent>
+    </config>
   </facility>
 
   <facility>
     <name>Enrichment</name>
-    <agent>
+    <config>
       <EnrichmentFacility>
         <in_commod>natl_u</in_commod>
         <in_recipe>natl_u</in_recipe>
@@ -37,12 +37,12 @@
         <out_commod>enriched_u</out_commod>
         <tails_assay>0.003</tails_assay>
       </EnrichmentFacility>
-    </agent>
+    </config>
   </facility>
 
   <facility>
     <name>Reactor</name>
-    <agent>
+    <config>
       <BatchReactor>
         <fuel>
           <incommodity>enriched_u</incommodity>
@@ -59,24 +59,24 @@
           <cost>10</cost>
         </commodity_production>
       </BatchReactor>
-    </agent>
+    </config>
   </facility>
   
   <facility>
     <name>Sink</name>
-    <agent>
+    <config>
       <Sink>
         <in_commods>
           <val>waste</val>
         </in_commods>
         <capacity>1000</capacity>
       </Sink>
-    </agent>
+    </config>
   </facility>
 
   <region>
     <name>SingleRegion</name>
-    <agent>
+    <config>
       <GrowthRegion>
         <commodity>
           <name>power</name>
@@ -86,7 +86,7 @@
           </demand>
         </commodity>
       </GrowthRegion>
-    </agent>
+    </config>
     <institution>
       <name>SingleInstitution</name>
       <initialfacilitylist>
@@ -103,7 +103,7 @@
           <number>1</number>
         </entry>
       </initialfacilitylist>
-      <agent><ManagerInst/></agent>
+      <config><ManagerInst/></config>
     </institution>
   </region>
 

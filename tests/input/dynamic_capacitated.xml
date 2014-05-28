@@ -17,39 +17,39 @@
   <facility>
     <name>Source</name>
     <archetype>Source</archetype>
-    <agent>
+    <config>
       <Source>
         <commod>commodity</commod>
         <recipe_name>commod_recipe</recipe_name>
         <capacity>1.0</capacity>
       </Source>
-    </agent>
+    </config>
   </facility>
 
   <facility>
     <name>Sink</name>
     <archetype>Sink</archetype>
     <lifetime>1</lifetime>
-    <agent>
+    <config>
       <Sink>
         <in_commods>
           <val>commodity</val>
         </in_commods>
         <capacity>1.0</capacity>
       </Sink>
-    </agent>
+    </config>
   </facility>
 
   <region>
     <name>SingleRegion</name>
     <archetype>NullRegion</archetype>
-    <agent>
+    <config>
       <NullRegion/>
-    </agent>
+    </config>
     <institution>
       <name>SingleInstitution</name>
       <archetype>DeployInst</archetype>
-      <agent>
+      <config>
         <DeployInst>
           <buildorder>
             <prototype>Source</prototype>
@@ -67,7 +67,7 @@
             <date>2</date>
           </buildorder>
         </DeployInst>
-      </agent>
+      </config>
     </institution>
   </region>
 

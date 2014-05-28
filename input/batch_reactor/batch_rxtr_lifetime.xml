@@ -33,19 +33,19 @@ reasonably for its lifetime. -->
 
   <facility>
     <name>Source</name>
-    <agent>
+    <config>
       <Source>
         <out_commod>enriched_u</out_commod>
         <capacity>1.0e10</capacity>
         <recipe_name>lwr_fuel_recipe</recipe_name>
       </Source>
-    </agent>
+    </config>
   </facility>
 
   <facility>
     <name>LWR_Reactor</name>
     <lifetime>480</lifetime>
-    <agent>
+    <config>
       <BatchReactor>
         <fuel>
           <incommodity>enriched_u</incommodity>
@@ -63,24 +63,24 @@ reasonably for its lifetime. -->
           <cost>1000</cost>
         </commodity_production>
       </BatchReactor>
-    </agent>
+    </config>
   </facility>
   
   <facility>
     <name>Sink</name>
-    <agent>
+    <config>
       <Sink>
         <in_commods>
           <val>waste</val>
         </in_commods>
         <capacity>1.0e10</capacity>
       </Sink>
-    </agent>
+    </config>
   </facility>
 
   <region>
     <name>SingleRegion</name>
-    <agent><NullRegion/></agent>
+    <config><NullRegion/></config>
     <institution>
       <name>SingleInstitution</name>
       <initialfacilitylist>
@@ -97,7 +97,7 @@ reasonably for its lifetime. -->
           <number>1</number>
         </entry>
       </initialfacilitylist>
-      <agent><NullInst/></agent>
+      <config><NullInst/></config>
     </institution>
   </region>
 
