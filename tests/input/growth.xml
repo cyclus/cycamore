@@ -28,7 +28,6 @@
 
   <facility>
     <name>Source1</name>
-    <name>Source</name>
     <config>
       <Source>
           <out_commod>commodity</out_commod>
@@ -40,7 +39,6 @@
 
   <facility>
     <name>Source2</name>
-    <name>Source</name>
     <config>
       <Source>
           <out_commod>commodity</out_commod>
@@ -51,7 +49,6 @@
   </facility>
 
   <facility>
-    <name>Sink</name>
     <name>Sink</name>
     <config>
       <Sink>
@@ -64,7 +61,6 @@
 
   <region>
     <name>SingleRegion</name>
-    <name>GrowthRegion</name>
     <config>
       <GrowthRegion>
         <commodity_name>commodity</commodity_name>
@@ -81,7 +77,6 @@
     </config>
     <institution>
       <name>SingleInstitution</name>
-      <name>ManagerInst</name>
       <initialfacilitylist>
 	<entry>
 	  <prototype>Sink</prototype>

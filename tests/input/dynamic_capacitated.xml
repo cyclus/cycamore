@@ -16,7 +16,6 @@
 
   <facility>
     <name>Source</name>
-    <name>Source</name>
     <config>
       <Source>
         <commod>commodity</commod>
@@ -27,7 +26,6 @@
   </facility>
 
   <facility>
-    <name>Sink</name>
     <name>Sink</name>
     <lifetime>1</lifetime>
     <config>
@@ -42,13 +40,11 @@
 
   <region>
     <name>SingleRegion</name>
-    <name>NullRegion</name>
     <config>
       <NullRegion/>
     </config>
     <institution>
       <name>SingleInstitution</name>
-      <name>DeployInst</name>
       <config>
         <DeployInst>
           <buildorder>
