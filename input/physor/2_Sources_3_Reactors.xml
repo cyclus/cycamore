@@ -40,7 +40,6 @@
 
   <facility>
     <name>MOX_Source</name>
-    <archetype>Source</archetype>
     <agent>
       <Source>
         <out_commod>mox</out_commod>
@@ -52,7 +51,6 @@
 
   <facility>
     <name>Reactor1</name>
-    <archetype>BatchReactor</archetype>
     <agent>
       <BatchReactor>
         <fuel>
@@ -98,7 +96,6 @@
 
   <facility>
     <name>Reactor2</name>
-    <archetype>BatchReactor</archetype>
     <agent>
       <BatchReactor>
         <fuel>
@@ -180,13 +177,11 @@
 
   <region>
     <name>SingleRegion</name>
-    <archetype>NullRegion</archetype>
     <agent>
       <NullRegion/>
     </agent>
     <institution>
       <name>SingleInstitution</name>
-      <archetype>DeployInst</archetype>
       <agent>
         <DeployInst>
           <buildorder>
