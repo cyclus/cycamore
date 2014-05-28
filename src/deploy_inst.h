@@ -36,11 +36,12 @@ class DeployInst : public cyclus::Institution {
 
   #pragma cyclus decl snapshot
 
-///  #pragma cyclus decl annotations
+  #pragma cyclus def annotations
 
   #pragma cyclus note {"doc": "An institution that owns, operates, and " \
                               "deploys facilities manually defined in " \
                               "the input file."}
+
   void Build(cyclus::Agent* parent);
 
  protected:

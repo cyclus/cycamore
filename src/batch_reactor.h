@@ -163,9 +163,12 @@ class BatchReactor
 
   virtual ~BatchReactor();
 
-///  #pragma cyclus decl annotations
+  #pragma cyclus def annotations
 
-///  #pragma cyclus note {"doc": "A facility that performs as a batch processor"}
+  #pragma cyclus note {"doc": "A reactor facility that has three storage " \
+                              "areas that hold batches of materials: " \
+                              "reserves, core, and storage. It can manage " \
+                              "multiple input-output commodity pairs."}
 
   virtual cyclus::Agent* Clone();
 
