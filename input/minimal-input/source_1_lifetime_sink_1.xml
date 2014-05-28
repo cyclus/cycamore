@@ -28,7 +28,6 @@
 
   <facility>
     <name>Source</name>
-    <archetype>Source</archetype>
     <lifetime>5</lifetime>
     <agent>
       <Source>
@@ -41,7 +40,6 @@
   
   <facility>
     <name>Sink</name>
-    <archetype>Sink</archetype>
     <agent>
       <Sink>
         <in_commods>
@@ -54,11 +52,9 @@
 
   <region>
     <name>SingleRegion</name>
-    <archetype>NullRegion</archetype>
     <agent><NullRegion/></agent>
     <institution>
       <name>SingleInstitution</name>
-      <archetype>NullInst</archetype>
       <initialfacilitylist>
         <entry>
           <prototype>Source</prototype>
