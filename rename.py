@@ -17,7 +17,7 @@ def main():
 
     low, cap, upp = ns.name.lower(), ns.name.capitalize(), ns.name.upper()
     stublow, stubcap, stubupp = 'stub', 'Stub', 'STUB'
-    files = ['input/example.xml'] + glob('src/stub*')
+    files = ['CMakeLists.txt', 'input/example.xml'] + glob('src/*')
     files = [os.path.abspath(f) for f in files]
     for f in files:
         with open(f, 'r') as inp:
