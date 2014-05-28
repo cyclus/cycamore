@@ -1,4 +1,3 @@
-<?xml version="1.0"?>
 <!-- 1 Source Source, 1 Sink Sink -->
 
 <simulation>
@@ -8,16 +7,28 @@
     <startyear>2000</startyear>
   </control>
 
-  <commodity>
-    <name>commodity</name>
-  </commodity>
+  <archetypes>
+    <spec>
+      <lib>cycamore</lib>
+      <archetype>Source</archetype>
+    </spec>
+    <spec>
+      <lib>cycamore</lib>
+      <archetype>Sink</archetype>
+    </spec>
+    <spec>
+      <lib>cycamore</lib>
+      <archetype>GrowthRegion</archetype>
+    </spec>
+    <spec>
+      <lib>cycamore</lib>
+      <archetype>ManagerInst</archetype>
+    </spec>
+  </archetypes>
 
   <facility>
     <name>Source1</name>
-    <spec>
-      <lib>cycamore</lib>
-      <agent>Source</agent>
-    </spec>
+    <archetype>Source</archetype>
     <agent>
       <Source>
           <out_commod>commodity</out_commod>
@@ -29,10 +40,7 @@
 
   <facility>
     <name>Source2</name>
-    <spec>
-      <lib>cycamore</lib>
-      <agent>Source</agent>
-    </spec>
+    <archetype>Source</archetype>
     <agent>
       <Source>
           <out_commod>commodity</out_commod>
@@ -44,10 +52,7 @@
 
   <facility>
     <name>Sink</name>
-    <spec>
-      <lib>cycamore</lib>
-      <agent>Sink</agent>
-    </spec>
+    <archetype>Sink</archetype>
     <agent>
       <Sink>
         <in_commods>
@@ -59,10 +64,7 @@
 
   <region>
     <name>SingleRegion</name>
-    <spec>
-      <lib>cycamore</lib>
-      <agent>GrowthRegion</agent>
-    </spec>
+    <archetype>GrowthRegion</archetype>
     <agent>
       <GrowthRegion>
         <commodity_name>commodity</commodity_name>
@@ -79,10 +81,7 @@
     </agent>
     <institution>
       <name>SingleInstitution</name>
-      <spec>
-        <lib>cycamore</lib>
-        <agent>ManagerInst</agent>
-      </spec>
+      <archetype>ManagerInst</archetype>
       <initialfacilitylist>
 	<entry>
 	  <prototype>Sink</prototype>
