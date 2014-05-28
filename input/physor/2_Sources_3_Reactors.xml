@@ -14,10 +14,10 @@
 
   <facility>
     <name>UOX_Source</name>
-    <module>
+    <spec>
       <lib>cycamore</lib>
       <agent>Source</agent>
-    </module>
+    </spec>
     <agent>
       <Source>
           <out_commod>uox</out_commod>
@@ -29,10 +29,10 @@
 
   <facility>
     <name>MOX_Source</name>
-    <module>
+    <spec>
       <lib>cycamore</lib>
       <agent>Source</agent>
-    </module>
+    </spec>
     <agent>
       <Source>
         <out_commod>mox</out_commod>
@@ -44,10 +44,10 @@
 
   <facility>
     <name>Reactor1</name>
-    <module>
+    <spec>
       <lib>cycamore</lib>
       <agent>BatchReactor</agent>
-    </module>
+    </spec>
     <agent>
       <BatchReactor>
         <fuel>
@@ -93,10 +93,10 @@
 
   <facility>
     <name>Reactor2</name>
-    <module>
+    <spec>
       <lib>cycamore</lib>
       <agent>BatchReactor</agent>
-    </module>
+    </spec>
     <agent>
       <BatchReactor>
         <fuel>
@@ -137,10 +137,10 @@
 
   <facility>
     <name>Reactor3</name>
-    <module>
+    <spec>
       <lib>cycamore</lib>
       <agent>BatchReactor</agent>
-    </module>
+    </spec>
     <agent>
       <BatchReactor>
         <fuel>
@@ -181,19 +181,19 @@
 
   <region>
     <name>SingleRegion</name>
-    <module>
+    <spec>
       <lib>agents</lib>
       <agent>NullRegion</agent>
-    </module>
+    </spec>
     <agent>
       <NullRegion/>
     </agent>
     <institution>
       <name>SingleInstitution</name>
-      <module>
+      <spec>
         <lib>cycamore</lib>
         <agent>DeployInst</agent>
-      </module>
+      </spec>
       <agent>
         <DeployInst>
           <buildorder>
