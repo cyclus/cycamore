@@ -15,7 +15,7 @@ def main():
     parser.add_argument('name', help="replacement for stub", default='name')
     ns = parser.parse_args()
 
-    low, cap, upp = name.lower(), name.capitalize(), name.upper()
+    low, cap, upp = ns.name.lower(), ns.name.capitalize(), ns.name.upper()
     stublow, stubcap, stubupp = 'stub', 'Stub', 'STUB'
     files = ['input/example.xml'] + glob('src/stub*')
     files = [os.path.abspath(f) for f in files]
