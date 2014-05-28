@@ -27,25 +27,24 @@ SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wno-overflow")
 # Direct any out-of-source builds to this directory
 SET( STUB_SOURCE_DIR ${CMAKE_SOURCE_DIR} )
 
-IF(NOT CYCLUS_DOC_ONLY)
 # Direct any binary installation paths to this directory
-SET( CYCAMORE_BINARY_DIR ${CMAKE_BINARY_DIR} )
+SET( STUB_BINARY_DIR ${CMAKE_BINARY_DIR} )
 
 # This makes all the libraries build as SHARED
 SET(BUILD_SHARED_LIBS true)
 
 # Setup build locations.
 IF(NOT CMAKE_RUNTIME_OUTPUT_DIRECTORY)
-  SET(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CYCAMORE_BINARY_DIR}/bin)
+  SET(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${STUB_BINARY_DIR}/bin)
 endif()
 IF(NOT CMAKE_LIBRARY_OUTPUT_DIRECTORY)
-  SET(CMAKE_LIBRARY_OUTPUT_DIRECTORY ${CYCAMORE_BINARY_DIR}/lib)
+  SET(CMAKE_LIBRARY_OUTPUT_DIRECTORY ${STUB_BINARY_DIR}/lib)
 endif()
 IF(NOT CMAKE_ARCHIVE_OUTPUT_DIRECTORY)
-  SET(CMAKE_ARCHIVE_OUTPUT_DIRECTORY ${CYCAMORE_BINARY_DIR}/lib)
+  SET(CMAKE_ARCHIVE_OUTPUT_DIRECTORY ${STUB_BINARY_DIR}/lib)
 ENDIF()
 
-SET(CYCAMORE_EXECUTABLE_DIR ${CMAKE_RUNTIME_OUTPUT_DIRECTORY})
+SET(STUB_EXECUTABLE_DIR ${CMAKE_RUNTIME_OUTPUT_DIRECTORY})
 
 # use, i.e. don't skip the full RPATH for the build tree
 SET(CMAKE_SKIP_BUILD_RPATH  FALSE)
@@ -68,7 +67,7 @@ ENDIF("${isSystemDir}" STREQUAL "-1")
 
 # Tell CMake where the modules are
 SET( CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${CMAKE_DIR}/share/cmake-2.8/Modules")
-SET( CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} ${CYCAMORE_SOURCE_DIR}/cmake )
+SET( CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} ${STUB_SOURCE_DIR}/cmake )
 MESSAGE("CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH}")
 
 # Include macros
@@ -76,12 +75,12 @@ INCLUDE(UseCyclus)
 
 # Find cyclus
 FIND_PACKAGE( Cyclus REQUIRED )
-SET(CYCAMORE_INCLUDE_DIR ${CYCAMORE_INCLUDE_DIR} ${CYCLUS_CORE_INCLUDE_DIR})
+SET(STUB_INCLUDE_DIR ${STUB_INCLUDE_DIR} ${CYCLUS_CORE_INCLUDE_DIR})
 SET(LIBS ${LIBS} ${CYCLUS_CORE_LIBRARIES})
 
 # Find LibXML++ and dependencies
 FIND_PACKAGE( LibXML++ REQUIRED )
-SET(CYCAMORE_INCLUDE_DIR ${CYCAMORE_INCLUDE_DIR} ${LibXML++_INCLUDE_DIR} ${Glibmm_INCLUDE_DIRS} ${LibXML++Config_INCLUDE_DIR})
+SET(STUB_INCLUDE_DIR ${STUB_INCLUDE_DIR} ${LibXML++_INCLUDE_DIR} ${Glibmm_INCLUDE_DIRS} ${LibXML++Config_INCLUDE_DIR})
 SET(LIBS ${LIBS} ${LibXML++_LIBRARIES})
 MESSAGE("--LIBS: ${LIBS}")
 
@@ -91,7 +90,7 @@ MESSAGE("--LD_LIBRARY_PATH: $ENV{LD_LIBRARY_PATH}")
 SET(Boost_USE_STATIC_LIBS       OFF)
 SET(Boost_USE_STATIC_RUNTIME    OFF)
 FIND_PACKAGE( Boost COMPONENTS filesystem system REQUIRED)
-SET(CYCAMORE_INCLUDE_DIR ${CYCAMORE_INCLUDE_DIR} ${Boost_INCLUDE_DIR})
+SET(STUB_INCLUDE_DIR ${STUB_INCLUDE_DIR} ${Boost_INCLUDE_DIR})
 SET(LIBS ${LIBS} ${Boost_FILESYSTEM_LIBRARY})
 SET(LIBS ${LIBS} ${Boost_SYSTEM_LIBRARY})
 
@@ -110,11 +109,11 @@ FIND_PACKAGE( COIN REQUIRED )
 set(LIBS ${LIBS} ${COIN_LIBRARIES})
 
 # include the agent directories
-SET(CYCAMORE_INCLUDE_DIR ${CYCAMORE_INCLUDE_DIR} tests 
+SET(STUB_INCLUDE_DIR ${STUB_INCLUDE_DIR} tests 
     ${CYCLUS_CORE_INCLUDE_DIR}/..)
 
 # include all the directories we just found
-INCLUDE_DIRECTORIES(${CYCAMORE_INCLUDE_DIR} 
+INCLUDE_DIRECTORIES(${STUB_INCLUDE_DIR} 
                     ${COIN_INCLUDE_DIRS})
 
 
@@ -129,7 +128,7 @@ SET( GENERATED_FILTER_LIST "" CACHE INTERNAL "" )
 SET( GENERATED_TEST_SOURCE_LIST "" CACHE INTERNAL "" )
 
 # The gtest include file directories.
-SET(GTEST_INCLUDE_DIRS "${CYCAMORE_INCLUDE_DIR}")
+SET(GTEST_INCLUDE_DIRS "${STUB_INCLUDE_DIR}")
 
 # Alerts CMake to any tests we need to worry about
 INCLUDE_DIRECTORIES(${GTEST_INCLUDE_DIRS})
@@ -142,13 +141,6 @@ IF( USE_TESTING )
   INCLUDE(CTest)
 ENDIF()
 
-ADD_SUBDIRECTORY(tests)
-
-SET(TestSource 
-  ${TestSource} 
-  ${CYCAMORE_TEST_CORE}
-  )
-
 FIND_PACKAGE(Threads)
 IF(CMAKE_USE_PTHREADS_INIT)  # The pthreads library is available.
   SET(cxx_base_flags "${cxx_base_flags} -DGTEST_HAS_PTHREAD=1")
@@ -156,7 +148,7 @@ ENDIF()
 
 # Build stub_unit_tests
 ADD_EXECUTABLE( stub_unit_tests
-  tests/stub_unit_test_driver.cc 
+  src/stub_unit_test_driver.cc 
   ${TestSource}
 )
 
@@ -170,9 +162,9 @@ INSTALL(TARGETS stub_unit_tests
 
 # read tests after building the driver, and add them to ctest
 set( tgt "stub_unit_tests")
-set( script "${CYCAMORE_SOURCE_DIR}/config/generate_test_macros.py")
+set( script "${STUB_SOURCE_DIR}/cmake/generate_test_macros.py")
 set( exec "--executable=${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/${tgt}")
-set( reg_dir "--reg_dir=${CYCAMORE_SOURCE_DIR}/../${test_dir}")
+set( reg_dir "--reg_dir=${STUB_SOURCE_DIR}/../${test_dir}")
 set( out "--output=${CMAKE_BINARY_DIR}/CTestTestfile.cmake")
 add_custom_command(TARGET ${tgt}
   POST_BUILD
@@ -184,70 +176,19 @@ add_custom_command(TARGET ${tgt}
 
 # for post test commands
 configure_file(
-    "${CMAKE_CURRENT_SOURCE_DIR}/config/CTestCustom.cmake"
+    "${CMAKE_CURRENT_SOURCE_DIR}/cmake/CTestCustom.cmake"
     "${CMAKE_CURRENT_BINARY_DIR}/CTestCustom.cmake"
     IMMEDIATE @ONLY)
 
-# for printing regression tests
-configure_file(
-    "${CMAKE_CURRENT_SOURCE_DIR}/config/print_regs.py"
-    "${CMAKE_CURRENT_BINARY_DIR}/print_regs.py"
-    IMMEDIATE @ONLY)
-
-# AMS: I don't believe that this is needed anymore.
-# This just copies the shared dir from cyclus to stub.
-# However, the 'share/' dir should now be the same.  So this 
-# was failing because you can't copy a file to itself.
-#FILE(GLOB cyclus_shared "${CYCLUS_CORE_SHARE_DIR}/*")
-#INSTALL(FILES ${cyclus_shared} 
-#  DESTINATION share
-#  COMPONENT data
-#  )
-
-# Here we set some components for installation with cpack
-SET(CPACK_COMPONENTS_ALL stub testing libraries data core)
-
-# Here's where we package it with CPack
-SET(CPACK_PACKAGE_DESCRIPTION_SUMMARY "Stub : A Cyclus Module Repository.")
-SET(CPACK_DEBIAN_PACKAGE_MAINTAINER "CNERG, UW-Madison") #required
-SET(CPACK_PACKAGE_VENDOR "CNERG, UW-Madison")
-SET(CPACK_PACKAGE_DESCRIPTION_FILE "${CMAKE_CURRENT_SOURCE_DIR}/README.rst")
-SET(CPACK_RESOURCE_FILE_LICENSE "${CMAKE_CURRENT_SOURCE_DIR}/LICENSE.rst")
-SET(CPACK_PACKAGE_VERSION_MAJOR "1")
-SET(CPACK_PACKAGE_VERSION_MINOR "0")
-#SET(CPACK_PACKAGE_VERSION_PATCH "0") # should use commit number here  ?
-SET(CPACK_PACKAGE_INSTALL_DIRECTORY "stub${CPACK_VERSION_MAJOR}.${CPACK_VERSION_MINOR}")
-SET(CPACK_PACKAGE_NAME "${CMAKE_PROJECT_NAME}")
- 
-CONFIGURE_FILE("${CYCAMORE_SOURCE_DIR}/cmake/StubCPackOptions.cmake.in"
-  "${CYCAMORE_BINARY_DIR}/cmake/StubCPackOptions.cmake" @ONLY)
-SET(CPACK_PROJECT_CONFIG_FILE "${CYCAMORE_BINARY_DIR}/cmake/StubCPackOptions.cmake")
-SET(CPACK_PACKAGE_EXECUTABLES "stub" "stub_unit_tests")
-
-
-INCLUDE(CPack)
 
 SET(ROOT_DIR ${CYCLUS_ROOT_DIR})  
 SET(PROJ_DIR ${PROJECT_BINARY_DIR}) 
 SET(CORE_SHARE_DIR ${CYCLUS_CORE_SHARE_DIR}) 
 
-ENDIF(NOT CYCLUS_DOC_ONLY)
-
-# This is the directory that holds the doxygen doxyfile template (doxy.conf.in)
-SET( DOC_INPUT_DIR ${CYCAMORE_SOURCE_DIR}/doc)
-
-# If doxygen exists, use the doc/CMakeLists.txt file for further instructions. 
-FIND_PACKAGE(Doxygen)
-IF (DOXYGEN_FOUND)
-  ADD_SUBDIRECTORY(doc)
-  SET( DOC_OUTPUT_DIR ${CMAKE_BINARY_DIR}/doc )
-ELSE (DOXYGEN_FOUND)
-  MESSAGE(STATUS "WARNING: Doxygen not found - doc won't be created")
-ENDIF (DOXYGEN_FOUND)
 
 # uninstall target
 configure_file(
-    "${CMAKE_CURRENT_SOURCE_DIR}/config/cmake_uninstall.cmake.in"
+    "${CMAKE_CURRENT_SOURCE_DIR}/cmake/cmake_uninstall.cmake.in"
     "${CMAKE_CURRENT_BINARY_DIR}/cmake_uninstall.cmake"
     IMMEDIATE @ONLY)
 
