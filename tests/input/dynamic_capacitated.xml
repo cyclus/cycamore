@@ -1,4 +1,3 @@
-<?xml version="1.0"?>
 <!-- Dynamic Capacitated -->
 
 <simulation>
@@ -8,16 +7,16 @@
     <startyear>2000</startyear>
   </control>
 
-  <commodity>
-    <name>commodity</name>
-  </commodity>
+  <archetypes>
+    <spec><lib>cycamore</lib><archetype>Sink</archetype></spec>
+    <spec><lib>cycamore</lib><archetype>Source</archetype></spec>
+    <spec><lib>agents</lib><archetype>NullRegion</archetype></spec>
+    <spec><lib>cycamore</lib><archetype>DeployInst</archetype></spec>
+  </archetypes>
 
   <facility>
     <name>Source</name>
-    <spec>
-      <lib>agents</lib>
-      <agent>Source</agent>
-    </spec>
+    <archetype>Source</archetype>
     <agent>
       <Source>
         <commod>commodity</commod>
@@ -29,10 +28,7 @@
 
   <facility>
     <name>Sink</name>
-    <spec>
-      <lib>agents</lib>
-      <agent>Sink</agent>
-    </spec>
+    <archetype>Sink</archetype>
     <lifetime>1</lifetime>
     <agent>
       <Sink>
@@ -46,19 +42,13 @@
 
   <region>
     <name>SingleRegion</name>
-    <spec>
-      <lib>agents</lib>
-      <agent>NullRegion</agent>
-    </spec>
+    <archetype>NullRegion</archetype>
     <agent>
       <NullRegion/>
     </agent>
     <institution>
       <name>SingleInstitution</name>
-      <spec>
-        <lib>cycamore</lib>
-        <agent>DeployInst</agent>
-      </spec>
+      <archetype>DeployInst</archetype>
       <agent>
         <DeployInst>
           <buildorder>
