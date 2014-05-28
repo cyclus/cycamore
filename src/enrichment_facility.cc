@@ -251,7 +251,7 @@ cyclus::Material::Ptr EnrichmentFacility::Enrich_(
   cyclus::Material::Ptr mat,
   double qty) {
   using cyclus::Material;
-  using cyclus::toolkit::ResCast;
+  using cyclus::ResCast;
   using cyclus::toolkit::Assays;
   using cyclus::toolkit::UraniumAssay;
   using cyclus::toolkit::SwuRequired;

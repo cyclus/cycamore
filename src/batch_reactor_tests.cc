@@ -153,7 +153,7 @@ void BatchReactorTest::TestReserveBatches(cyclus::Material::Ptr mat,
   EXPECT_EQ(n, src_facility->reserves_.count());
   EXPECT_DOUBLE_EQ(qty, src_facility->spillover_->quantity());
 
-  cyclus::Material::Ptr back = cyclus::toolkit::ResCast<cyclus::Material>(
+  cyclus::Material::Ptr back = cyclus::ResCast<cyclus::Material>(
       src_facility->reserves_.Pop(cyclus::toolkit::ResourceBuff::BACK));
   EXPECT_EQ(commod, src_facility->crctx_.commod(back));
   src_facility->reserves_.Push(back);
