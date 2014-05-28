@@ -100,23 +100,23 @@ class Source : public cyclus::Facility,
   #pragma cyclus note {"doc": "A source facility that provides a " \
                               "commodity with a given capacity"}
 
-///     Print information about this agent
+  ///   Print information about this agent
   virtual std::string str();
   /* --- */
 
   /* --- Agent Members --- */
   virtual void EnterNotify();
   
-///     Each facility is prompted to do its beginning-of-time-step
-///     stuff at the tick of the timer.
-
-///     @param time is the time to perform the tick
+  ///   Each facility is prompted to do its beginning-of-time-step
+  ///   stuff at the tick of the timer.
+ 
+  ///   @param time is the time to perform the tick
   virtual void Tick();
 
-///     Each facility is prompted to its end-of-time-step
-///     stuff on the tock of the timer.
-
-///     @param time is the time to perform the tock
+  ///   Each facility is prompted to its end-of-time-step
+  ///   stuff on the tock of the timer.
+  
+  ///   @param time is the time to perform the tock
   virtual void Tock();
   
   /// @brief Responds to each request for this source facility's commodity.
@@ -138,19 +138,19 @@ class Source : public cyclus::Facility,
   /* --- */
 
   /* --- Source Members --- */
-///     @brief creates a material object to offer to a requester
-///     @param target the material target a request desires
+  ///   @brief creates a material object to offer to a requester
+  ///   @param target the material target a request desires
   cyclus::Material::Ptr GetOffer(const cyclus::Material::Ptr target) const;
 
-///     sets the output commodity name
-///     @param name the commodity name
+  ///   sets the output commodity name
+  ///   @param name the commodity name
   inline void commodity(std::string name) { out_commod = name; }
 
   /// @return the output commodity
   inline std::string commodity() const { return out_commod; }
 
-///     sets the capacity of a material generated at any given time step
-///     @param capacity the production capacity
+  ///   sets the capacity of a material generated at any given time step
+  ///   @param capacity the production capacity
   inline void Capacity(double cap) {
     capacity = cap;
     current_capacity = capacity;
@@ -159,8 +159,8 @@ class Source : public cyclus::Facility,
   /// @return the production capacity at any given time step
   inline double Capacity() const { return capacity; }
 
-///     sets the name of the recipe to be produced
-///     @param name the recipe name
+  ///   sets the name of the recipe to be produced
+  ///   @param name the recipe name
   inline void recipe(std::string name) { recipe_name = name; }
 
   /// @return the name of the output recipe
@@ -172,26 +172,26 @@ class Source : public cyclus::Facility,
  private:
   cyclus::toolkit::Commodity commod_;
   
-///     This facility has only one output commodity
+  ///   This facility has only one output commodity
   #pragma cyclus var {"tooltip": "source output commodity", \
                       "doc": "output commodity that the source facility " \
                              "supplies"}
   std::string out_commod;
 
-///     Name of the recipe this facility uses.
+  ///   Name of the recipe this facility uses.
   #pragma cyclus var {"tooltip": "commodity recipe name", \
                       "doc": "recipe name for source facility's commodity"}
   std::string recipe_name;
 
-///     The capacity is defined in terms of the number of units of the
-///     recipe that can be provided each time step.  A very large number
-///     can be provided to represent infinte capacity.
+  ///   The capacity is defined in terms of the number of units of the
+  ///   recipe that can be provided each time step.  A very large number
+  ///   can be provided to represent infinte capacity.
   #pragma cyclus var {"default": 1e299, "tooltip": "source capacity", \
                       "doc": "amount of commodity that can be supplied " \
                              "at each time step"}
   double capacity;
 
-///     The capacity at the current time step
+  ///   The capacity at the current time step
   #pragma cyclus var {'derived_init': 'current_capacity = capacity;'}
   double current_capacity;
 

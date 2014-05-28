@@ -35,6 +35,8 @@ BatchReactor::BatchReactor(cyclus::Context* ctx)
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 BatchReactor::~BatchReactor() {}
 
+///#pragma cyclus def annotations
+
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 std::string BatchReactor::schema() {
   return

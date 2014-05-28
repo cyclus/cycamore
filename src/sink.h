@@ -80,11 +80,11 @@ class Context;
 class Sink : public cyclus::Facility  {
  public:
   /* --- Module Members --- */
-///    Constructor for the Sink class.
-///    @param ctx the cyclus context for access to simulation-wide parameters
+  ///  Constructor for the Sink class.
+  ///  @param ctx the cyclus context for access to simulation-wide parameters
   Sink(cyclus::Context* ctx);
 
-///     Destructor for the Sink class.
+  ///   Destructor for the Sink class.
   virtual ~Sink();
 
   #pragma cyclus decl
@@ -92,23 +92,19 @@ class Sink : public cyclus::Facility  {
   #pragma cyclus note {"doc": "A sink facility that accepts specified " \
                               "amounts of commodities from other agents"}
 
-///     A verbose printer for the Sink Facility.
+  ///   A verbose printer for the Sink Facility.
   virtual std::string str();
   /* --- */
 
   /* --- Agent Members --- */
-  /**
-     The Sink can handle the Tick.
+  /// The Sink can handle the Tick.
 
-     @param time the current simulation time.
-   */
+  /// @param time the current simulation time.
   virtual void Tick();
 
-  /**
-     The Sink can handle the Tock.
+  /// The Sink can handle the Tock.
 
-     @param time the current simulation time.
-   */
+  /// @param time the current simulation time.
   virtual void Tock();
 
   /// @brief SinkFacilities request Materials of their given commodity. Note
@@ -134,12 +130,12 @@ class Sink : public cyclus::Facility  {
   /* --- */
 
   /* --- Sink Members --- */
-///    add a commodity to the set of input commodities
-///    @param name the commodity name
+  ///  add a commodity to the set of input commodities
+  ///  @param name the commodity name
   inline void AddCommodity(std::string name) { in_commods.push_back(name); }
 
-///    sets the size of the storage inventory for received material
-///    @param size the storage size
+  ///  sets the size of the storage inventory for received material
+  ///  @param size the storage size
   inline void SetMaxInventorySize(double size) {
     max_inv_size = size;
     inventory.set_capacity(size);
@@ -151,13 +147,13 @@ class Sink : public cyclus::Facility  {
   /// @return the current inventory storage size
   inline double InventorySize() const { return inventory.quantity(); }
 
-///     determines the amount to request
+  /// determines the amount to request
   inline double RequestAmt() const {
     return std::min(capacity, std::max(0.0, inventory.space()));
   }
     
-///     sets the capacity of a material generated at any given time step
-///     @param capacity the reception capacity
+  /// sets the capacity of a material generated at any given time step
+  /// @param capacity the reception capacity
   inline void Capacity(double cap) { capacity = cap; }
 
   /// @return the reception capacity at any given time step
@@ -168,24 +164,24 @@ class Sink : public cyclus::Facility  {
       input_commodities() const { return in_commods; }
 
  private: 
-///     all facilities must have at least one input commodity
+  /// all facilities must have at least one input commodity
   #pragma cyclus var {"tooltip": "input commodities", \
                       "doc": "commodities that the sink facility accepts"}
   std::vector<std::string> in_commods;
 
-///     monthly acceptance capacity
+  /// monthly acceptance capacity
   #pragma cyclus var {"default": 1e299, "tooltip": "sink capacity", \
                       "doc": "capacity the sink facility can " \
                              "accept at each time step"}
   double capacity;
 
-///     max inventory size
+  /// max inventory size
   #pragma cyclus var {"default": 1e299, \
                       "tooltip": "sink maximum inventory size", \
                       "doc": "total maximum inventory size of sink facility"}
   double max_inv_size;
 
-///     this facility holds material in storage.
+  /// this facility holds material in storage.
   #pragma cyclus var {'capacity': 'max_inv_size'}
   cyclus::toolkit::ResourceBuff inventory;
 };

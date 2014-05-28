@@ -145,20 +145,16 @@ class EnrichmentFacility : public cyclus::Facility {
   /* --- */
   
   /* --- Agent Members --- */
-  /**
-     Each facility is prompted to do its beginning-of-time-step
-     stuff at the tick of the timer.
+  ///  Each facility is prompted to do its beginning-of-time-step
+  ///  stuff at the tick of the timer.
 
-     @param time is the time to perform the tick
-   */
+  ///  @param time is the time to perform the tick
   virtual void Tick();
 
-  /**
-     Each facility is prompted to its end-of-time-step
-     stuff on the tock of the timer.
+  ///  Each facility is prompted to its end-of-time-step
+  ///  stuff on the tock of the timer.
 
-     @param time is the time to perform the tock
-   */
+  ///  @param time is the time to perform the tock
   virtual void Tock();
 
   /// @brief The EnrichmentFacility request Materials of its given
@@ -191,10 +187,10 @@ class EnrichmentFacility : public cyclus::Facility {
   /* --- */
 
   /* --- EnrichmentFacility Members --- */
-///    @brief Determines if a particular material is a valid request to respond
-///    to.  Valid requests must contain U235 and U238 and must have a relative
-///    U235-to-U238 ratio less than this facility's tails_assay().
-///    @return true if the above description is met by the material
+  ///  @brief Determines if a particular material is a valid request to respond
+  ///  to.  Valid requests must contain U235 and U238 and must have a relative
+  ///  U235-to-U238 ratio less than this facility's tails_assay().
+  ///  @return true if the above description is met by the material
   bool ValidReq(const cyclus::Material::Ptr mat);
 
   inline void in_commodity(std::string in_com) { in_commod = in_com; }
@@ -242,25 +238,25 @@ class EnrichmentFacility : public cyclus::Facility {
   inline double InitialReserves() const { return initial_reserves; }
 
  private:
-///     @brief adds a material into the natural uranium inventory
-///     @throws if the material is not the same composition as the in_recipe
+  ///   @brief adds a material into the natural uranium inventory
+  ///   @throws if the material is not the same composition as the in_recipe
   void AddMat_(cyclus::Material::Ptr mat);
 
-///     @brief generates a request for this facility given its current state. The
-///     quantity of the material will be equal to the remaining inventory size.
+  ///   @brief generates a request for this facility given its current state. The
+  ///   quantity of the material will be equal to the remaining inventory size.
   cyclus::Material::Ptr Request_();
   
-///    @brief Generates a material offer for a given request. The response
-///    composition will be comprised only of U235 and U238 at their relative ratio
-///    in the requested material. The response quantity will be the same as the
-///    requested commodity.
-///
-///    @param req the requested material being responded to
+  ///  @brief Generates a material offer for a given request. The response
+  ///  composition will be comprised only of U235 and U238 at their relative ratio
+  ///  in the requested material. The response quantity will be the same as the
+  ///  requested commodity.
+  ///
+  ///  @param req the requested material being responded to
   cyclus::Material::Ptr Offer_(cyclus::Material::Ptr req);
 
   cyclus::Material::Ptr Enrich_(cyclus::Material::Ptr mat, double qty);
 
-///     @brief records and enrichment with the cyclus::Recorder
+  ///   @brief records and enrichment with the cyclus::Recorder
   void RecordEnrichment_(double natural_u, double swu);
 
   #pragma cyclus var {"tooltip": "input commodity", \

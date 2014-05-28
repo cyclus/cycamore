@@ -12,7 +12,7 @@ DeployInst::~DeployInst() {}
 
 #pragma cyclus def clone cycamore::DeployInst
 
-#pragma cyclus def annotations
+///#pragma cyclus def annotations
 
 std::string DeployInst::schema() {
     return
