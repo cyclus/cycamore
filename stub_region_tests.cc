@@ -45,14 +45,14 @@ TEST_F(StubRegionTest, ReceiveMessage) {
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 TEST_F(StubRegionTest, Tick) {
   int time = 1;
-  EXPECT_NO_THROW(src_region_->Tick(time));
+  EXPECT_NO_THROW(src_region_->Tick());
   // Test StubRegion specific behaviors of the handleTick function here
 }
 
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 TEST_F(StubRegionTest, Tock) {
   int time = 1;
-  EXPECT_NO_THROW(src_region_->Tick(time));
+  EXPECT_NO_THROW(src_region_->Tock());
   // Test StubRegion specific behaviors of the handleTock function here
 }
 
@@ -60,6 +60,13 @@ TEST_F(StubRegionTest, Tock) {
 cyclus::Agent* StubRegionConstructor(cyclus::Context* ctx) {
   return new StubRegion(ctx);
 }
+
+// required to get functionality in cyclus agent unit tests library
+#ifndef CYCLUS_AGENT_TESTS_CONNECTED
+int ConnectAgentTests();
+static int cyclus_agent_tests_connected = ConnectAgentTests();
+#define CYCLUS_AGENT_TESTS_CONNECTED cyclus_agent_tests_connected
+#endif // CYCLUS_AGENT_TESTS_CONNECTED
 
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 INSTANTIATE_TEST_CASE_P(StubRegion, RegionTests,
