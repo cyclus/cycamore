@@ -1,4 +1,3 @@
-
 from  __future__ import print_function
 
 import os
@@ -36,8 +35,10 @@ def check_cmd(args, cwd, holdsrtn):
     if not isinstance(args, basestring):
         args = " ".join(args)
     print("TESTING: running command in {0}:\n\n{1}\n".format(cwd, args))
+    env = dict(os.environ)
+    env['_'] = subprocess.check_output(['which', 'cyclus'], cwd=cwd).strip()
     f = tempfile.NamedTemporaryFile()
-    rtn = subprocess.call(args, shell=True, cwd=cwd, stdout=f, stderr=f)
+    rtn = subprocess.call(args, shell=True, cwd=cwd, stdout=f, stderr=f, env=env)
     if rtn != 0:
         f.seek(0)
         print("STDOUT + STDERR:\n\n" + f.read().decode())
