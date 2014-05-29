@@ -5,49 +5,35 @@
     <startyear>2000</startyear>
   </control>
 
-  <commodity>
-    <name>commodity</name>
-  </commodity>
+  <archetypes>
+    <spec><path>stubs</path><lib>StubFacility</lib><name>StubFacility</name></spec>
+    <spec><path>stubs</path><lib>StubRegion</lib><name>StubRegion</name></spec>
+    <spec><path>stubs</path><lib>StubInst</lib><name>StubInst</name></spec>
+  </archetypes>
 
   <facility>
     <name>OneFacility</name>
-    <module>
-      <path>stubs</path>
-      <lib>StubFacility</lib>
-      <agent>StubFacility</agent>
-    </module>
-    <agent>
+    <config>
       <StubFacility />
-    </agent>
+    </config>
   </facility>
 
   <region>
     <name>OneRegion</name>
-    <module>
-      <path>stubs</path>
-      <lib>StubRegion</lib>
-      <agent>StubRegion</agent>
-    </module>
-    <allowedfacility>OneFacility</allowedfacility>
-    <agent>
+    <config>
       <StubRegion />
-    </agent>
+    </config>
     <institution>
       <name>OneInst</name>
-      <module>
-        <path>stubs</path>
-        <lib>StubInst</lib>
-        <agent>StubInst</agent>
-      </module>
       <initialfacilitylist>
         <entry>
           <prototype>OneFacility</prototype>
           <number>1</number>
         </entry>
       </initialfacilitylist>
-      <agent>
+      <config>
         <StubInst />
-      </agent>
+      </config>
     </institution>
   </region>
 
