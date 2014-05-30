@@ -20,11 +20,12 @@ def collect(args):
     rtn = subprocess.Popen(
         ["python", "-c", 
          "import test_regression as t; " +
-         "t.setup(); t.test_regression(check_deterministic=True)"], 
+         "t.setup(); obj = t.TestRegression();" +
+         "obj.test_regression(check_deterministic=True)"], 
         stdout=subprocess.PIPE, stderr=subprocess.PIPE)
     out, err = rtn.communicate()
-    #print(out, err)
-    
+    #print out, err
+
     for line in out.split("\n"):
         line = line.strip()
         if diff_tbl in line.strip():
@@ -43,7 +44,7 @@ def proxy_lst_to_dict(lst):
         col_freq[tbl][col] += 1
     return col_freq
 
-def determ_analysis(niter=1000, fname="report"):
+def determ_analysis(niter=1000):
     """
     Calls deterministic regression tests for a number of iterations and reports
     findings of nondeterminism to a file.
@@ -55,6 +56,13 @@ def determ_analysis(niter=1000, fname="report"):
          
     fname : str
           The output filename to report to
+
+    Returns
+    -------
+    tbl_freq, col_freq : 2-tuple of dicts
+                       tbl_freq is a frequency map of nondeterministic tables
+                       col_freq is a frequency map of nondeterminisitc columns, 
+                       per table
     """
     m = Manager()
 
@@ -73,6 +81,8 @@ def determ_analysis(niter=1000, fname="report"):
         print('{0:.1%} of jobs left to start.'.format(
                 jobs._number_left / niter))
         time.sleep(5.0)
+    if not jobs.successful():
+        raise ValueError("At least one job failed.")
     pool.close()
     pool.join()
     print("Finished iterations.")
@@ -87,8 +97,24 @@ def determ_analysis(niter=1000, fname="report"):
             dic[col] = "{0:.2f}".format(float(freq) / tbl_freq[tbl])    
     for k, v in tbl_freq.iteritems():
         tbl_freq[k] = "{0:.2f}".format(float(v) / niter)
-    
-    # report
+
+    return tbl_freq, col_freq
+
+def report(tbl_freq, col_freq, fname="report"):
+    """
+    Prints the results of determ_analysis to a file
+
+    Parameters
+    ----------
+    tbl_freq : dict
+             the table frequency output from determ_analysis
+         
+    col_freq : dict
+             the column frequency output from determ_analysis
+
+    fname : str
+          the output file name to print to
+    """
     lines = []
     lines.append("Table values are reported as percent nondeterministic" + 
                  " of total runs.\n\n")
@@ -103,8 +129,9 @@ def determ_analysis(niter=1000, fname="report"):
     with open(fname, "w") as f:
         f.writelines(lines)
 
+
 def main():
-    description = "A module for analyzing the determinism of Cyclus output." 
+    description = "A module for analyzing the (non)determinism of Cyclus output."
 
     parser = ap.ArgumentParser(description=description)
 
@@ -112,11 +139,12 @@ def main():
     parser.add_argument('-n', '--niterations', type=int, help=niter, 
                         default=100)
 
-    report = 'the file to write the report to'
-    parser.add_argument('--report', help=report, default='report')
+    out = 'the file to write the report to'
+    parser.add_argument('--out', help=out, default='report')
     
     args = parser.parse_args()
-    determ_analysis(args.niterations, args.report)
+    tbl_freq, col_freq = determ_analysis(args.niterations)
+    report(tbl_freq, col_freq, args.out)
 
 if __name__ == "__main__":
     main()

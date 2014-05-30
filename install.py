@@ -37,7 +37,7 @@ def install_cycamore(args):
     makefile = os.path.join(args.build_dir, 'Makefile')
 
     if not os.path.exists(makefile):
-        cmake_cmd = ['cmake', absexpanduser(src_dir)]
+        cmake_cmd = ['cmake', absexpanduser(root_dir)]
         if args.prefix:
             cmake_cmd += ['-DCMAKE_INSTALL_PREFIX=' + absexpanduser(args.prefix)]
         if args.cmake_prefix_path:
@@ -48,14 +48,31 @@ def install_cycamore(args):
             cmake_cmd += ['-DBOOST_ROOT=' + absexpanduser(args.boost_root)]
         if args.cyclus_root:
             cmake_cmd += ['-DCYCLUS_ROOT_DIR='+absexpanduser(args.cyclus_root)]
+        if args.build_type:
+            cmake_cmd += ['-DCMAKE_BUILD_TYPE=' + args.build_type]
         check_windows_cmake(cmake_cmd)
         rtn = subprocess.check_call(cmake_cmd, cwd=absexpanduser(args.build_dir), shell=(os.name=='nt'))
 
     make_cmd = ['make']
     if args.threads:
         make_cmd += ['-j' + str(args.threads)]
-    make_cmd += ['install']
-    rtn = subprocess.check_call(make_cmd, cwd=absexpanduser(args.build_dir), shell=(os.name=='nt'))
+    rtn = subprocess.call(make_cmd, cwd=args.build_dir,
+                                shell=(os.name == 'nt'))
+
+    if args.test:
+        make_cmd += ['test']
+    elif not args.build_only:
+        make_cmd += ['install']
+    
+    rtn = subprocess.check_call(make_cmd, cwd=args.build_dir,
+                                shell=(os.name == 'nt'))
+
+def uninstall_cycamore(args):
+    makefile = os.path.join(args.build_dir, 'Makefile')
+    if not os.path.exists(args.build_dir) or not os.path.exists(makefile):
+        sys.exist("May not uninstall cycamore since it has not yet been built.")
+    rtn = subprocess.check_call(['make', 'uninstall'], cwd=args.build_dir,
+                                shell=(os.name == 'nt'))
 
 def main():
     localdir = absexpanduser('~/.local')
@@ -68,6 +85,9 @@ def main():
     build_dir = 'where to place the build directory'
     parser.add_argument('--build_dir', help=build_dir, default='build')
 
+    uninst = 'uninstall'
+    parser.add_argument('--uninstall', action='store_true', help=uninst, default=False)
+
     replace = 'whether or not to remove the build directory if it exists'
     parser.add_argument('--replace', type=bool, help=replace, default=False)
 
@@ -76,6 +96,12 @@ def main():
 
     install = "the relative path to the installation directory"
     parser.add_argument('--prefix', help=install, default=localdir)
+
+    test = 'run tests after building'
+    parser.add_argument('--test', action='store_true', help=test)
+
+    build_only = 'only build the package, do not install'
+    parser.add_argument('--build-only', action='store_true', help=build_only)
 
     coin = "the relative path to the Coin-OR libraries directory"
     parser.add_argument('--coin_root', help=coin)
@@ -90,8 +116,14 @@ def main():
         "FIND_PATH, FIND_PROGRAM, or FIND_LIBRARY macros"
     parser.add_argument('--cmake_prefix_path', help=cmake_prefix_path)
 
+    build_type = "the CMAKE_BUILD_TYPE" 
+    parser.add_argument('--build_type', help=build_type)
 
-    install_cycamore(parser.parse_args())
+    args = parser.parse_args()
+    if args.uninstall:
+        uninstall_cycamore(args)
+    else:
+        install_cycamore(args)
 
 if __name__ == "__main__":
     main()

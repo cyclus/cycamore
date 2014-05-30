@@ -1,70 +1,55 @@
-<?xml version="1.0"?>
-<!-- 1 SourceFacility Source, 1 SinkFacility Sink -->
+<!-- 1 Source Source, 1 Sink Sink -->
 
 <simulation>
   <control>
     <duration>12</duration>
     <startmonth>1</startmonth>
     <startyear>2000</startyear>
-    <simstart>0</simstart>
-    <decay>2</decay>
   </control>
 
-  <commodity>
-    <name>natl_u</name>
-  </commodity>
-
-  <commodity>
-    <name>enriched_u</name>
-  </commodity>
-
-  <commodity>
-    <name>waste</name>
-  </commodity>
+  <archetypes>
+    <spec><lib>cycamore</lib><name>Sink</name></spec>
+    <spec><lib>cycamore</lib><name>Source</name></spec>
+    <spec><lib>cycamore</lib><name>EnrichmentFacility</name></spec>
+    <spec><lib>cycamore</lib><name>BatchReactor</name></spec>
+    <spec><lib>cycamore</lib><name>GrowthRegion</name></spec>
+    <spec><lib>cycamore</lib><name>ManagerInst</name></spec>
+  </archetypes>
 
   <facility>
     <name>Source</name>
-    <model>
-      <SourceFacility>
-        <output>
-          <outcommodity>natl_u</outcommodity>
-          <output_capacity>1000</output_capacity>
-          <recipe>natl_u</recipe>
-        </output>
-      </SourceFacility>
-    </model>
-    <outcommodity>natl_u</outcommodity>
+    <config>
+      <Source>
+        <out_commod>natl_u</out_commod>
+        <capacity>1000</capacity>
+        <recipe_name>natl_u</recipe_name>
+      </Source>
+    </config>
   </facility>
 
   <facility>
     <name>Enrichment</name>
-    <model>
+    <config>
       <EnrichmentFacility>
-        <input>
-          <incommodity>natl_u</incommodity>
-          <inrecipe>natl_u</inrecipe>
-          <inventorysize>100</inventorysize>
-        </input>
-        <output>
-          <outcommodity>enriched_u</outcommodity>
-          <tails_assay>0.003</tails_assay>
-          <swu_capacity>30.0</swu_capacity>
-        </output>
+        <in_commod>natl_u</in_commod>
+        <in_recipe>natl_u</in_recipe>
+        <max_inv_size>100</max_inv_size>
+        <out_commod>enriched_u</out_commod>
+        <tails_assay>0.003</tails_assay>
+        <swu_capacity>30.0</swu_capacity>
       </EnrichmentFacility>
-    </model>
-    <incommodity>natl_u</incommodity>
-    <outcommodity>enriched_u</outcommodity>
+    </config>
   </facility>
 
   <facility>
     <name>Reactor</name>
-    <model>
+    <config>
       <BatchReactor>
         <fuel>
-         <incommodity>enriched_u</incommodity>
-         <inrecipe>fuel_recipe</inrecipe>
-         <outcommodity>waste</outcommodity>
-         <outrecipe>used_fuel_recipe</outrecipe>
+          <incommodity>enriched_u</incommodity>
+          <inrecipe>fuel_recipe</inrecipe>
+          <outcommodity>waste</outcommodity>
+          <outrecipe>used_fuel_recipe</outrecipe>
         </fuel>
         <processtime>1</processtime>
         <nbatches>1</nbatches>
@@ -75,33 +60,24 @@
           <cost>10</cost>
         </commodity_production>
       </BatchReactor>
-    </model>
-    <incommodity>enriched_u</incommodity>
-    <outcommodity>waste</outcommodity>
+    </config>
   </facility>
   
   <facility>
     <name>Sink</name>
-    <model>
-      <SinkFacility>
-        <input>
-          <commodities>
-            <incommodity>waste</incommodity>
-          </commodities>
-          <input_capacity>1000</input_capacity>
-        </input>
-      </SinkFacility>
-    </model>
-    <incommodity>waste</incommodity>
+    <config>
+      <Sink>
+          <in_commods>
+            <val>waste</val>
+          </in_commods>
+          <capacity>1000</capacity>
+      </Sink>
+    </config>
   </facility>
 
   <region>
     <name>SingleRegion</name>
-    <allowedfacility>Source</allowedfacility>
-    <allowedfacility>Enrichment</allowedfacility>
-    <allowedfacility>Reactor</allowedfacility>
-    <allowedfacility>Sink</allowedfacility>
-    <model>
+    <config>
       <GrowthRegion>
         <commodity>
           <name>power</name>
@@ -111,13 +87,9 @@
           </demand>
         </commodity>
       </GrowthRegion>
-    </model>
+    </config>
     <institution>
       <name>SingleInstitution</name>
-      <availableprototype>Source</availableprototype>
-      <availableprototype>Enrichment</availableprototype>
-      <availableprototype>Reactor</availableprototype>
-      <availableprototype>Sink</availableprototype>
       <initialfacilitylist>
         <entry>
           <prototype>Source</prototype>
@@ -132,45 +104,43 @@
           <number>1</number>
         </entry>
       </initialfacilitylist>
-      <model>
-        <ManagerInst/>
-      </model>
+      <config><ManagerInst/></config>
     </institution>
   </region>
 
   <recipe>
     <name>natl_u</name>
     <basis>atom</basis>
-    <isotope>
-      <id>92235</id>
+    <nuclide>
+      <id>922350000</id>
       <comp>0.7</comp>
-    </isotope>
-    <isotope>
-      <id>92238</id>
+    </nuclide>
+    <nuclide>
+      <id>922380000</id>
       <comp>99.3</comp>
-    </isotope>
+    </nuclide>
   </recipe>
 
   <recipe>
     <name>fuel_recipe</name>
     <basis>atom</basis>
-    <isotope>
-      <id>92235</id>
+    <nuclide>
+      <id>922350000</id>
       <comp>4.5</comp>
-    </isotope>
-    <isotope>
-      <id>92238</id>
+    </nuclide>
+    <nuclide>
+      <id>922380000</id>
       <comp>95.5</comp>
-    </isotope>
+    </nuclide>
   </recipe>
 
   <recipe>
     <name>used_fuel_recipe</name>
     <basis>atom</basis>
-    <isotope>
-      <id>1001</id>
+    <nuclide>
+      <id>10010000</id>
       <comp>100</comp>
-    </isotope>
+    </nuclide>
   </recipe>
 
 </simulation>

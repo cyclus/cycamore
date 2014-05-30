@@ -1,0 +1,93 @@
+<!-- 1 Source Source, 1 Sink Sink -->
+
+<simulation>
+  <control>
+    <duration>4</duration>
+    <startmonth>1</startmonth>
+    <startyear>2000</startyear>
+  </control>
+
+  <archetypes>
+    <spec><lib>cycamore</lib><name>Sink</name></spec>
+    <spec><lib>cycamore</lib><name>Source</name></spec>
+    <spec><lib>cycamore</lib><name>GrowthRegion</name></spec>
+    <spec><lib>cycamore</lib><name>ManagerInst</name></spec>
+  </archetypes>
+
+  <facility>
+    <name>Source1</name>
+    <config>
+      <Source>
+          <out_commod>commodity</out_commod>
+          <recipe_name>commod_recipe</recipe_name>
+          <capacity>1.1</capacity>
+      </Source>
+    </config>
+  </facility>
+
+  <facility>
+    <name>Source2</name>
+    <config>
+      <Source>
+          <out_commod>commodity</out_commod>
+          <recipe_name>commod_recipe</recipe_name>
+          <capacity>2</capacity>
+      </Source>
+    </config>
+  </facility>
+
+  <facility>
+    <name>Sink</name>
+    <config>
+      <Sink>
+        <in_commods>
+          <val>commodity</val>
+        </in_commods>
+      </Sink>
+    </config>
+  </facility>
+
+  <region>
+    <name>SingleRegion</name>
+    <config>
+      <GrowthRegion>
+        <commodity_name>commodity</commodity_name>
+        <demand_types>
+          <val>linear</val>
+        </demand_types>
+        <demand_params>
+          <val>1 2</val>
+        </demand_params>
+        <demand_times>
+          <val>0</val>
+        </demand_times>
+      </GrowthRegion>
+    </config>
+    <institution>
+      <name>SingleInstitution</name>
+      <initialfacilitylist>
+	<entry>
+	  <prototype>Sink</prototype>
+	  <number>1</number>
+	</entry>
+      </initialfacilitylist>
+      <config>
+        <ManagerInst>
+          <prototypes>
+            <val>Sink</val>
+            <val>Source1</val>
+            <val>Source2</val>
+          </prototypes>
+        </ManagerInst>
+      </config>
+    </institution>
+  </region>
+
+  <recipe>
+    <name>commod_recipe</name>
+    <basis>mass</basis>
+    <nuclide> <id>922350000</id> <comp>0.711</comp> </nuclide>
+    <nuclide> <id>922380000</id> <comp>99.289</comp> </nuclide>
+  </recipe>
+  
+</simulation>

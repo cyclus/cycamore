@@ -1,4 +1,3 @@
-<?xml version="1.0"?>
 <!-- 2 Sources 3 Reactors -->
 
 <simulation>
@@ -6,51 +5,52 @@
     <duration>5</duration>
     <startmonth>1</startmonth>
     <startyear>2000</startyear>
-    <simstart>0</simstart>
-    <decay>0</decay>
   </control>
 
-  <commodity>
-    <name>uox</name>
-  </commodity>
-
-  <commodity>
-    <name>mox</name>
-  </commodity>
-
-  <commodity>
-    <name>waste</name>
-  </commodity>
+  <archetypes>
+    <spec>
+      <lib>cycamore</lib>
+      <name>Source</name>
+    </spec>
+    <spec>
+      <lib>cycamore</lib>
+      <name>BatchReactor</name>
+    </spec>
+    <spec>
+      <lib>agents</lib>
+      <name>NullRegion</name>
+    </spec>
+    <spec>
+      <lib>cycamore</lib>
+      <name>DeployInst</name>
+    </spec>
+  </archetypes>
 
   <facility>
     <name>UOX_Source</name>
-    <model>
-      <SourceFacility>
-        <output>
-          <outcommodity>uox</outcommodity>
-          <output_capacity>2.5</output_capacity>
-          <recipe>uox_fuel_recipe</recipe>
-        </output>
-      </SourceFacility>
-    </model>
+    <config>
+      <Source>
+          <out_commod>uox</out_commod>
+          <recipe_name>uox_fuel_recipe</recipe_name>
+          <capacity>2.5</capacity>
+      </Source>
+    </config>
   </facility>
 
   <facility>
     <name>MOX_Source</name>
-    <model>
-      <SourceFacility>
-        <output>
-          <outcommodity>mox</outcommodity>
-          <output_capacity>2.5</output_capacity>
-          <recipe>mox_fuel_recipe</recipe>
-        </output>
-      </SourceFacility>
-    </model>
+    <config>
+      <Source>
+        <out_commod>mox</out_commod>
+        <recipe_name>mox_fuel_recipe</recipe_name>
+        <capacity>2.5</capacity>
+      </Source>
+    </config>
   </facility>
 
   <facility>
     <name>Reactor1</name>
-    <model>
+    <config>
       <BatchReactor>
         <fuel>
           <incommodity>uox</incommodity>
@@ -90,12 +90,12 @@
           <time>4</time>
         </pref_change>
       </BatchReactor>
-    </model>
+    </config>
   </facility>
 
   <facility>
     <name>Reactor2</name>
-    <model>
+    <config>
       <BatchReactor>
         <fuel>
           <incommodity>uox</incommodity>
@@ -130,12 +130,12 @@
           <preference>1.0</preference>
         </commod_pref>
       </BatchReactor>
-    </model>
+    </config>
   </facility>
 
   <facility>
     <name>Reactor3</name>
-    <model>
+    <config>
       <BatchReactor>
         <fuel>
           <incommodity>uox</incommodity>
@@ -170,27 +170,17 @@
           <preference>0.5</preference>
         </commod_pref>
       </BatchReactor>
-    </model>
+    </config>
   </facility>
 
   <region>
     <name>SingleRegion</name>
-    <allowedfacility>UOX_Source</allowedfacility>
-    <allowedfacility>MOX_Source</allowedfacility>
-    <allowedfacility>Reactor1</allowedfacility>
-    <allowedfacility>Reactor2</allowedfacility>
-    <allowedfacility>Reactor3</allowedfacility>
-    <model>
+    <config>
       <NullRegion/>
-    </model>
+    </config>
     <institution>
       <name>SingleInstitution</name>
-      <availableprototype>UOX_Source</availableprototype>
-      <availableprototype>MOX_Source</availableprototype>
-      <availableprototype>Reactor1</availableprototype>
-      <availableprototype>Reactor2</availableprototype>
-      <availableprototype>Reactor3</availableprototype>
-      <model>
+      <config>
         <DeployInst>
           <buildorder>
             <prototype>UOX_Source</prototype>
@@ -218,164 +208,66 @@
             <date>3</date>
           </buildorder>        
         </DeployInst>
-      </model>
+      </config>
     </institution>
   </region>
 
   <recipe>
     <name>natl_u</name>
     <basis>mass</basis>
-    <isotope>
-      <id>92235</id>
-      <comp>0.711</comp>
-    </isotope>
-    <isotope>
-      <id>92238</id>
-      <comp>99.289</comp>
-    </isotope>
+    <nuclide> <id>922350000</id> <comp>0.711</comp> </nuclide>
+    <nuclide> <id>922380000</id> <comp>99.289</comp> </nuclide>
   </recipe>
 
   <recipe>
     <name>uox_fuel_recipe</name>
     <basis>mass</basis>
-    <isotope>
-      <id>92235</id>
-      <comp>4.0</comp>
-    </isotope>
-    <isotope>
-      <id>92238</id>
-      <comp>96.0</comp>
-    </isotope>
+    <nuclide> <id>922350000</id> <comp>4.0</comp> </nuclide>
+    <nuclide> <id>922380000</id> <comp>96.0</comp> </nuclide>
   </recipe>
 
   <recipe>
     <name>uox_used_fuel_recipe</name>
     <basis>mass</basis>
-    <isotope>
-      <id>92235</id>
-      <comp>156.729</comp>
-    </isotope>
-    <isotope>
-      <id>92236</id>
-      <comp>102.103</comp>
-    </isotope>
-    <isotope>
-      <id>92238</id>
-      <comp>18280.324</comp>
-    </isotope>
-    <isotope>
-      <id>93237</id>
-      <comp>13.656</comp>
-    </isotope>
-    <isotope>
-      <id>94238</id>
-      <comp>5.043</comp>
-    </isotope>
-    <isotope>
-      <id>94239</id>
-      <comp>106.343</comp>
-    </isotope>
-    <isotope>
-      <id>94240</id>
-      <comp>41.357</comp>
-    </isotope>
-    <isotope>
-      <id>94241</id>
-      <comp>36.477</comp>
-    </isotope>
-    <isotope>
-      <id>94242</id>
-      <comp>15.387</comp>
-    </isotope>
-    <isotope>
-      <id>95241</id>
-      <comp>1.234</comp>
-    </isotope>
-    <!-- <isotope> -->
-      <!--   <id>95242m</id> -->
-      <!--   <comp>0.03</comp> -->
-      <!-- </isotope> -->
-    <isotope>
-      <id>95243</id>
-      <comp>3.607</comp>
-    </isotope>
-    <isotope>
-      <id>96244</id>
-      <comp>0.431</comp>
-    </isotope>
-    <isotope>
-      <id>96245</id>
-      <comp>1.263</comp>
-    </isotope>
+    <nuclide> <id>922350000</id> <comp>156.729</comp> </nuclide>
+    <nuclide> <id>922360000</id> <comp>102.103</comp> </nuclide>
+    <nuclide> <id>922380000</id> <comp>18280.324</comp> </nuclide>
+    <nuclide> <id>932370000</id> <comp>13.656</comp> </nuclide>
+    <nuclide> <id>942380000</id> <comp>5.043</comp> </nuclide>
+    <nuclide> <id>942390000</id> <comp>106.343</comp> </nuclide>
+    <nuclide> <id>942400000</id> <comp>41.357</comp> </nuclide>
+    <nuclide> <id>942410000</id> <comp>36.477</comp> </nuclide>
+    <nuclide> <id>942420000</id> <comp>15.387</comp> </nuclide>
+    <nuclide> <id>952410000</id> <comp>1.234</comp> </nuclide>
+    <!-- <nuclide> --> <!--   <id>95242m</id> --> <!--   <comp>0.03</comp> --> <!-- </nuclide> -->
+    <nuclide> <id>952430000</id> <comp>3.607</comp> </nuclide>
+    <nuclide> <id>962440000</id> <comp>0.431</comp> </nuclide>
+    <nuclide> <id>962450000</id> <comp>1.263</comp> </nuclide>
   </recipe>
 
   <recipe>
     <name>mox_fuel_recipe</name>
     <basis>mass</basis>
-    <isotope>
-      <id>92234</id>
-      <comp>0.0002</comp>
-    </isotope>
-    <isotope>
-      <id>92235</id>
-      <comp>0.0018</comp>
-    </isotope>
-    <isotope>
-      <id>92236</id>
-      <comp>0.01</comp>
-    </isotope>
-    <isotope>
-      <id>92238</id><comp>0.8973</comp>
-    </isotope>
-    <isotope>
-      <id>94238</id>
-      <comp>0.0032</comp>
-    </isotope>
-    <isotope>
-      <id>94239</id>
-      <comp>0.0507</comp>
-    </isotope>
-    <isotope>
-      <id>94240</id>
-      <comp>0.0247</comp>
-    </isotope>
-    <isotope>
-      <id>94241</id>
-      <comp>0.0134</comp>
-    </isotope>
-    <isotope>
-      <id>94242</id>
-      <comp>0.0085</comp>
-    </isotope>    
-    <isotope>
-      <id>08016</id>
-      <comp>0.13</comp>
-    </isotope>
+    <nuclide> <id>922340000</id> <comp>0.0002</comp> </nuclide>
+    <nuclide> <id>922350000</id> <comp>0.0018</comp> </nuclide>
+    <nuclide> <id>922360000</id> <comp>0.01</comp> </nuclide>
+    <nuclide> <id>922380000</id><comp>0.8973</comp> </nuclide>
+    <nuclide> <id>942380000</id> <comp>0.0032</comp> </nuclide>
+    <nuclide> <id>942390000</id> <comp>0.0507</comp> </nuclide>
+    <nuclide> <id>942400000</id> <comp>0.0247</comp> </nuclide>
+    <nuclide> <id>942410000</id> <comp>0.0134</comp> </nuclide>
+    <nuclide> <id>942420000</id> <comp>0.0085</comp> </nuclide>
+    <nuclide> <id>080160000</id> <comp>0.13</comp> </nuclide>
   </recipe>
 
   <recipe>
     <name>mox_used_fuel_recipe</name>
     <basis>mass</basis>
-    <isotope>
-      <id>92235</id>
-      <comp>0.01</comp>
-    </isotope>
-    <isotope>
-      <id>92238</id>
-      <comp>0.94</comp>
-    </isotope>
-    <isotope>
-      <id>92236</id>
-      <comp>0.03</comp>
-    </isotope>
-    <isotope>
-      <id>08016</id>
-      <comp>0.13</comp>
-    </isotope>
-    <isotope>
-      <id>94239</id>
-      <comp>0.02</comp>
-    </isotope>
+    <nuclide> <id>922350000</id> <comp>0.01</comp> </nuclide>
+    <nuclide> <id>922380000</id> <comp>0.94</comp> </nuclide>
+    <nuclide> <id>922360000</id> <comp>0.03</comp> </nuclide>
+    <nuclide> <id>080160000</id> <comp>0.13</comp> </nuclide>
+    <nuclide> <id>942390000</id> <comp>0.02</comp> </nuclide>
   </recipe>
 
 </simulation>
