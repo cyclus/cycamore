@@ -8,6 +8,7 @@
 #include "agent_tests.h"
 #include "resource_helpers.h"
 #include "infile_tree.h"
+#include "env.h"
 
 #include "enrichment_facility_tests.h"
 
@@ -15,6 +16,7 @@ namespace cycamore {
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 void EnrichmentFacilityTest::SetUp() {
+  cyclus::Env::SetNucDataPath();
   cyclus::Context* ctx = tc_.get();
   src_facility = new EnrichmentFacility(ctx);
   trader = tc_.trader();
