@@ -75,12 +75,12 @@ INCLUDE(UseCyclus)
 
 # Find cyclus
 FIND_PACKAGE( Cyclus REQUIRED )
-SET(STUB_INCLUDE_DIR ${STUB_INCLUDE_DIR} ${CYCLUS_CORE_INCLUDE_DIR})
+SET(STUB_INCLUDE_DIRS ${STUB_INCLUDE_DIRS} ${CYCLUS_CORE_INCLUDE_DIR})
 SET(LIBS ${LIBS} ${CYCLUS_CORE_LIBRARIES})
 
 # Find LibXML++ and dependencies
 FIND_PACKAGE( LibXML++ REQUIRED )
-SET(STUB_INCLUDE_DIR ${STUB_INCLUDE_DIR} ${LibXML++_INCLUDE_DIR} ${Glibmm_INCLUDE_DIRS} ${LibXML++Config_INCLUDE_DIR})
+SET(STUB_INCLUDE_DIRS ${STUB_INCLUDE_DIRS} ${LibXML++_INCLUDE_DIR} ${Glibmm_INCLUDE_DIRS} ${LibXML++Config_INCLUDE_DIR})
 SET(LIBS ${LIBS} ${LibXML++_LIBRARIES})
 MESSAGE("--LIBS: ${LIBS}")
 
@@ -90,7 +90,7 @@ MESSAGE("--LD_LIBRARY_PATH: $ENV{LD_LIBRARY_PATH}")
 SET(Boost_USE_STATIC_LIBS       OFF)
 SET(Boost_USE_STATIC_RUNTIME    OFF)
 FIND_PACKAGE( Boost COMPONENTS filesystem system REQUIRED)
-SET(STUB_INCLUDE_DIR ${STUB_INCLUDE_DIR} ${Boost_INCLUDE_DIR})
+SET(STUB_INCLUDE_DIRS ${STUB_INCLUDE_DIRS} ${Boost_INCLUDE_DIR})
 SET(LIBS ${LIBS} ${Boost_FILESYSTEM_LIBRARY})
 SET(LIBS ${LIBS} ${Boost_SYSTEM_LIBRARY})
 
@@ -107,84 +107,14 @@ set(LIBS ${LIBS} ${HDF5_LIBRARIES} )
 # find coin and link to it
 FIND_PACKAGE( COIN REQUIRED )
 set(LIBS ${LIBS} ${COIN_LIBRARIES})
-
-# include the agent directories
-SET(STUB_INCLUDE_DIR ${STUB_INCLUDE_DIR} tests 
-    ${CYCLUS_CORE_INCLUDE_DIR}/..)
+SET(STUB_INCLUDE_DIRS ${STUB_INCLUDE_DIRS} ${COIN_INCLUDE_DIRS})
 
 # include all the directories we just found
-INCLUDE_DIRECTORIES(${STUB_INCLUDE_DIR} 
-                    ${COIN_INCLUDE_DIRS})
+INCLUDE_DIRECTORIES(${STUB_INCLUDE_DIRS})
 
 
-# ------------------------- Add the Agents -----------------------------------
+# add the agents
 ADD_SUBDIRECTORY(src)
-
-# ------------------------- Google Test -----------------------------------
-
-# Be sure to clear these each time
-SET( GENERATED_TEST_LIST "" CACHE INTERNAL "" )
-SET( GENERATED_FILTER_LIST "" CACHE INTERNAL "" )
-SET( GENERATED_TEST_SOURCE_LIST "" CACHE INTERNAL "" )
-
-# The gtest include file directories.
-SET(GTEST_INCLUDE_DIRS "${STUB_INCLUDE_DIR}")
-
-# Alerts CMake to any tests we need to worry about
-INCLUDE_DIRECTORIES(${GTEST_INCLUDE_DIRS})
-
-# Create an executable for all the gtests
-# Options for testing
-OPTION( USE_TESTING "Build testing" ON )
-IF( USE_TESTING )
-  enable_testing()
-  INCLUDE(CTest)
-ENDIF()
-
-FIND_PACKAGE(Threads)
-IF(CMAKE_USE_PTHREADS_INIT)  # The pthreads library is available.
-  SET(cxx_base_flags "${cxx_base_flags} -DGTEST_HAS_PTHREAD=1")
-ENDIF()
-
-# Build stub_unit_tests
-ADD_EXECUTABLE( stub_unit_tests
-  src/stub_unit_test_driver.cc 
-  ${TestSource}
-)
-
-TARGET_LINK_LIBRARIES( stub_unit_tests
-  dl ${LIBS} ${CYCLUS_TEST_LIBRARIES})
-
-INSTALL(TARGETS stub_unit_tests
-  RUNTIME DESTINATION bin
-  COMPONENT testing
-  )
-
-# read tests after building the driver, and add them to ctest
-set( tgt "stub_unit_tests")
-set( script "${STUB_SOURCE_DIR}/cmake/generate_test_macros.py")
-set( exec "--executable=${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/${tgt}")
-set( reg_dir "--reg_dir=${STUB_SOURCE_DIR}/../${test_dir}")
-set( out "--output=${CMAKE_BINARY_DIR}/CTestTestfile.cmake")
-add_custom_command(TARGET ${tgt}
-  POST_BUILD
-  COMMAND python ${script} ${exec} ${reg_dir} ${out}
-  COMMENT "adding tests from ${tgt}"
-  DEPENDS
-  VERBATIM
-  )
-
-# for post test commands
-configure_file(
-    "${CMAKE_CURRENT_SOURCE_DIR}/cmake/CTestCustom.cmake"
-    "${CMAKE_CURRENT_BINARY_DIR}/CTestCustom.cmake"
-    IMMEDIATE @ONLY)
-
-
-SET(ROOT_DIR ${CYCLUS_ROOT_DIR})  
-SET(PROJ_DIR ${PROJECT_BINARY_DIR}) 
-SET(CORE_SHARE_DIR ${CYCLUS_CORE_SHARE_DIR}) 
-
 
 # uninstall target
 configure_file(
