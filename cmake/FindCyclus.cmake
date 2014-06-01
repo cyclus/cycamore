@@ -40,10 +40,16 @@ FIND_PATH(CYCLUS_CORE_TEST_INCLUDE_DIR agent_tests.h
   /usr/local/cyclus /opt/local/cyclus  
   PATH_SUFFIXES cyclus/include include include/cyclus include/cyclus/tests cyclus/include/tests)
 
-SET(
-  CYCLUS_CORE_TEST_INCLUDE_DIR ${CYCLUS_CORE_TEST_INCLUDE_DIR}
-  ${CYCLUS_CORE_TEST_INCLUDE_DIR}/../gtest
-  )
+# find the directory containing gtest
+FIND_PATH(CYCLUS_GTEST_INCLUDE_DIR gtest/gtest.h
+  HINTS "${CYCLUS_ROOT_DIR}" "${CYCLUS_ROOT_DIR}"
+  "${CYCLUS_ROOT_DIR}/include"
+  "${CYCLUS_ROOT_DIR}/include/cyclus"
+  /usr/local/cyclus /opt/local/cyclus
+  PATH_SUFFIXES cyclus/include include include/cyclus)
+
+SET(CYCLUS_CORE_TEST_INCLUDE_DIR ${CYCLUS_CORE_TEST_INCLUDE_DIR}
+  ${CYCLUS_GTEST_INCLUDE_DIR})
 
 # Add the root dir to the hints
 SET(CYCLUS_ROOT_DIR "${CYCLUS_CORE_INCLUDE_DIR}/../..")
