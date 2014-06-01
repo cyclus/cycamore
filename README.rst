@@ -1,387 +1,130 @@
-***********************************************************************
-Cycstub: Cyclus Stub Models 
-***********************************************************************
-
-This repository provides templates for creating modules for use with the 
-Cyclus nuclear fuel cycle simulator from the University of Wisconsin - 
-Madison. This repository is intended to support innovative fuel cycle 
-simulations with the Cyclus fuel cycle simulator. 
-
-To see user and developer documentation for the cyclus code, please visit the `Cyclus Homepage`_.
-
-------------------------------------------------------------------
-The Purpose of Cycstub
-------------------------------------------------------------------
-One important goal of the Cyclus effort is to attract a community of developers
-contributing to a vibrant ecosystem of models for use by users. In addition to the 
-wide availability of the core infrastructure, an element that is critical to the 
-success of this community is a low-barrier to adoption of the *Cyclus* framework. 
-This Cycstub repository provides a template for quick-start development of fuel 
-cycle models within the cyclus framework. 
-
-Run-time modules, or plug-ins, developed with the use of the Cycstub templates can be 
-developed and distributed under any possible licensing scheme. By providing this 
-stub repository separately from the core infrastructure, the modules developed using
-these stubs will be distributed separately from the core infrastructure.  The 
-distribution responsibility will rest with the developer of each module. This 
-system will insulate the core infrastructure from accidental “pollution” by modules
-of a sensitive nature, and similarly limit issues regarding the authorization for
-distribution to the author’s organization. Ideally, most module developers will be
-authorized for open distribution of their modules, but if not, we recommend maintaining
-a private git repository on authorized servers. 
+.. _hello_world:
 
-Finally, the community will be relied upon to provide review and curation of available 
-modules, establishing both quality assurance practices and recommendations for best use
-cases for each contributed module.
+Hello, Cyclus!
+==============
+This pages walks you through a very simple hello world example using 
+|cyclus| agents.  First make sure that you have the dependencies installed, 
+namely |Cyclus|, CMake, and a recent version of Python (2.7 or 3.3+).
 
+First, you need to get the ``cycstub`` code.  Cycstub is a skeleton code base 
+that you can use to quick-start new |cyclus| module development projects.
+You can grab cycstub either by using git to 
+`clone the repository <https://github.com/cyclus/cycstub.git>`_ or by 
+`downloading the zip file <https://github.com/cyclus/cycstub/archive/develop.zip>`_.
+Let's put this code in a ``tutorial`` directory and go into it.
 
-------------------------------------------------------------------
-How To Use Cycstub
-------------------------------------------------------------------
-Let's say you've decided to implement a new Facility model. Let's say it's a 
-one group burnup approximation of some kind, intended to generically represent 
-material transmutation in a reactor. You want to call it OneGroupReactor. A
-quick way to integrate your reactor model into a *Cyclus* simulation will be to 
-fork Cycstub, reconfigure it for your own use, and customize the StubFacility 
-template within it. During this process you can either choose to keep your code to
-yourself by keeping the code on private, authorized machines, distribute it freely 
-on the github fork you've created, or something in between. Please keep in mind 
-that module developers are solely responsible for distribution decisions of their 
-modules.
+**Getting cycstub via git:**
 
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-Forking this Repository
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-In order to download and use this repository in a way that will keep 
-track of changes in the Cyclus model interface, you'll need to *Fork* this 
-repository.  
+.. code-block:: bash
 
-First, if you're not already logged in, please 
-`log into github <https://github.com/login/>`_ .
-
-Once you're logged in and have navigated back to `this repository's page 
-<https://github.com/cyclus/cycstub/>`, there will be a button in the upper right 
-hand corner that says Fork. 
-
-You've now forked this repository, but it now exists only on github, and it has 
-the wrong name.
-
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-Renaming Your Fork
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-Your fork is, by default, called cycstub. You may rather call it 
-OneGroupReactor. To do this, go to your new fork (github should have taken you 
-there automatically, but you can find it at https://github.com/username/cycstub).
-
-In the upper right hand corner of the browser will be a button called admin. 
-Click on that button and rename your fork.
-
-
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-Cloning and Configuring Your Fork
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-
-First, make sure you've `configured git on your computer 
-<https://help.github.com/articles/set-up-git/>`.
-
-Once that's done, you can clone your repository. 
-In a terminal on your machine, run the following code, replacing username with 
-your github user name and onegroupreactor with the new name of your fork::
-
-  git clone https://github.com/username/onegroupreactor.git
- 
-
-Add a remote, read-only branch that points to the cycstub repo::
-
-  cd onegroupreactor
-  git remote add cyclus git://github.com/cyclus/cycstub.git
-
-
-
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-Modifying the Stubs 
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-
-
-Remove Unneeded Stub Files
-===========================
-
-Since, in this example, you're only building a Facility model, you should 
-delete all of the other model type directories. Note that not everyone 
-will be building Facility models.  These instructions will apply analgously 
-in your case, *mutatis mutandis*. 
-
-::
-
-  cd src/Models
-  git rm -rf Market/ Inst/ Region/ Converter/
-  git commit -am "removes unneccessary files"
-  git push origin master
-
-
-Search and Replace Stub 
-=============================
-
-Inside the files, there are references to StubFacility. 
-Your model isn't called StubFacility. It's called OneGroupReactor. 
-You should search for instances of StubFacility (and STUBFACILITY and stubfacility) 
-and replace them with analogous OneGroupReactor text. 
-
-( This task will soon be scripted.) 
-
-Commit your changes and push them to your fork.
-
-Rename Stub Files
-=============================
-
-Just as you removed references to Stub inside the files, you should now change all 
-directories and files named StubFacility to files analogously named 
-OneGroupReactor. ( This task will also soon be scripted. )
-
-::
-
-  cd src/Models/Facility
-  git mv StubFacility OneGroupReactor
-  cd OneGroupReactor
-  git mv StubFacility.h OneGroupReactor.h
-  git mv StubFacility.cpp OneGroupReactor.cpp
-  git mv StubFacilityTests.h OneGroupReactorTests.h
-  ....
-
-
-Commit your changes and push them to your fork.
-
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-Implementing Your Model
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-
-The model you've chosen to create can now be implemented within the 
-OneGroupReactor.cpp and .h files as well as any other files you generate and 
-include in the build system. 
-
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-Keeping your Model up-to-date
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-
-The Cyclus core doesn't promise to be backwards compatible, moving forward, 
-though we'll make every attempt to keep changes to our interface very minimal.
-If there are changes to the model interface, we'll make appropriate changes 
-here, to the cycstub repository. To incorporate those changes into your model 
-repository, you'll need to take just a few steps. 
-
-Create a new branch. 
-
-::
-
-  git checkout -b update
-
-Fetch the changes from our repository.
-
-::
-
-  git fetch cyclus/cycstub
-
-Then, merge
-
-::
-
-  git merge cyclus/cycstub
-
-
-Then, correct any instances of cycstub or StubFacility, or any such language, 
-with your own model names. Check this readme for changelogs addressing the 
-changes made for the interface.
-
-Then merge the update branch into your main repository. 
-
-:: 
-
-  git checkout develop
-  git merge update
-
-
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-Letting Us Know
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-
-We like to know when someone is developing a tool for Cyclus. Please send us an 
-email when you get started. We can add you to the cyclus developers list, which 
-may help you in the development process.
-
-
-------------------------------------------------------------------
-Building and Installing Your Module
-------------------------------------------------------------------
-
-The `Cyclus Homepage`_ has much more detailed guides and information.
-This Readme is intended to be a quick reference for building and installing the 
-the stub module libraries for the first time.
-
-~~~~~~~~~~~~~~~~~~~~~~~~~~~
-Dependencies
-~~~~~~~~~~~~~~~~~~~~~~~~~~~
-
-Building a module via cycstub requires Cyclus requires the most recent release of 
-`Cyclus <http://fuelcycle.org/>`_.
-
-~~~~~~~~~~~~~~~~~~~~~~~~~~~
-Building Your Module
-~~~~~~~~~~~~~~~~~~~~~~~~~~~
-
-In order to facilitate future compatibility with multiple platforms, Cyclus and 
-its modules are, by default, built using  `Cmake <http://www.cmake.org>`_. This 
-relies on CMake version 2.8 or higher and the CMakeLists.txt file in `src/`. It is
-recommended that you use CMake to build your module libraries in a directory 
-external to the source code. Now, to use your module(s) within a cyclus 
-simulation, you must already have cyclus installed . Once that is done, build your
-module libraries by the following steps::
-
-    .../onegroupreactor/$ mkdir build
-    .../onegroupreactor/$ cd build
-    .../onegroupreactor/build$ cmake ../src -DCYCLUS_ROOT_DIR=<cyclus location> 
-
-You should see output like this::
-
-    ...
-    ...
-    >> -- Configuring done
-    >> -- Generating done
-    >> -- Build files have been written to: .../onegroupreactor/build
-    /onegroupreactor/build$ make onegroupreactor
-    >> Scanning dependencies of target onegroupreactor
-    ...
-    ...
-    >> [100%] Building CXX object CMakeFiles/onegroupreactor.dir/SourceFac.cpp.o
-    >> Linking CXX executable onegroupreactor
-    >> [100%] Built target onegroupreactor
-
-~~~~~~~~~~~~~~~~~~~~~~~~~~~
-Installing Your Module
-~~~~~~~~~~~~~~~~~~~~~~~~~~~
-
-To allow cyclus to find your module libraries, you must install them within 
-the cyclus installation directory. To do so, execute :: 
-
-    .../onegroupreactor/build$ make
-    .../onegroupreactor/build$ make install
-
-If the cyclus installation directory is in a system location, you will need to 
-execute `sudo make install` instead of `make install`. 
-The `Cyclus Homepage`_ has much more detailed guides and information.  If
-you intend to develop for *Cyclus*, please visit it to learn more.
-
-
-.. _`Cyclus Homepage`: http://fuelcycle.org/
-
-
-
---------------------------------------------------------------------------
-Advanced : A Suggested Developer Workflow
---------------------------------------------------------------------------
-
-If you are working on your module with numerous developers, we recommend a
-branching workflow similar to the one described at http://progit.org/book/ch3-4.html.
-
-~~~~~~~~~~~~~~~~~~~
-Workflow Notes
-~~~~~~~~~~~~~~~~~~~
-
-  * The "develop" branch is how developers will share (generally compilable) progress
-    when we are not yet ready for the code to become 'production'.
-
-  * Keep your own "master" and "develop" branches in sync with the upstream repository's
-    "master" and "develop" branches. The master branch should always be the 'stable'
-    or 'production' release of your module.
-    
-     - Pull the most recent history from the upstream repository "master"
-       and/or "develop" branches before you merge changes into your
-       corresponding local branch. 
-       For example::
-
-         git checkout develop
-         git fetch upstream 
-         git pull upstream develop
-
-     - Only merge changes into your "master" or "develop" branch when you
-       are ready for those changes to be integrated into the upstream
-       repository's corresponding branch. 
-
-  * As you do development on topic branches in your own fork, consider rebasing
-    the topic branch onto the "master" and/or "develop"  branches after *pulls* from the upstream
-    repository rather than merging the pulled changes into your branch.  This
-    will help maintain a more linear (and clean) history.
-    For example::
-
-      git checkout [your topic branch]
-      git merge develop
-
-  * **Passing Tests**
-
-      - To check that your branch passes the tests, you must build and install your topic 
-        branch and then run the OneGroupReactorUnitTestDriver (at the moment, ```make 
-        test``` is insufficient). For example ::
-      
-          mkdir build
-          mkdir install
-          cd build
-          cmake ../src -DCMAKE_INSTALL_PREFIX=../install
-          make
-          make install
-          ../install/onegroupreactor/bin/OneGroupReactorUnitTestDriver
-
-      - There are also a suite of sample input files 
-        In addition to the \*UnitTestDriver, a suite of input files can be run and 
-        tested using the run_inputs.py script that is configured, built, and installed 
-        with your module. It relies on the input files that are part of your Cycstub 
-        repository, and only succeeds for input files that are correct (some may have 
-        known issues. See the issue list in cyclus for details.) To run the example 
-        input files, ::
-
-          python ../install/onegroupreactor/bin/run_inputs.py
-
-  * **Making a Pull Request** 
-    
-      - When you are ready to move changes from one of your topic branches into the 
-        "develop" branch, it must be reviewed and accepted by another 
-        developer. 
-
-      - You may want to review this `tutorial <https://help.github.com/articles/using-pull-requests/>`_ 
-        before you make a pull request to the develop branch.
-        
-  * **Reviewing a Pull Request** 
-
-     - Build, install, and test it. If you have added the remote repository as 
-       a remote you can check it out and merge it with the current develop 
-       branch thusly, ::
-       
-         git checkout -b remote_name/branch_name
-         git merge develop
-
-     - Look over the code. 
-
-        - You may want your code to meet `our style guidelines <http://cyclus.github.com/devdoc/style_guide.html>`_.
-
-        - Make inline review comments concerning improvements. 
-      
-     - Accept the Pull Request    
-
-        - In general, **every commit** (notice this is not 'every push') to the
-          "develop" and "master" branches should compile and pass tests. This
-          is guaranteed by using a NON-fast-forward merge during the pull request 
-          acceptance process. 
-    
-        - The green "Merge Pull Request" button does a non-fast-forward merge by 
-          default. However, if that button is unavailable, you've made minor 
-          local changes to the pulled branch, or you just want to do it from the 
-          command line, make sure your merge is a non-fast-forward merge. For example::
-          
-            git checkout develop
-            git merge --no-ff remote_name/branch_name -m "A message of acceptance."
-
-~~~~~~~~~~~~~~~~~~~
-See also
-~~~~~~~~~~~~~~~~~~~
-
-A good description of a git workflow with good graphics is available at
-http://nvie.com/posts/a-successful-git-branching-model/
-
+    $ git clone https://github.com/cyclus/cycstub.git tutorial
+    $ cd tutorial
+
+**Getting cycstub via zip:**
+
+.. code-block:: bash
+
+    $ curl -L https://api.github.com/repos/cyclus/cycstub/zipball > tutorial.zip
+    $ unzip tutorial.zip
+    $ mv cyclus-cycstub-* tutorial
+    $ cd tutorial
+
+------------
+
+Since cycstub is a template project everything is named ``stub``. We need to
+change this to reflect the name we want our new project to be called -
+``tutorial`` here.  Cycstub comes with a renaming tool to do just this! From
+the command line, run Python in the following way:
+
+.. code-block:: bash
+
+    tutorial $ python rename.py tutorial
+
+------------
+
+Let's now change the behavior of the TutorialFacility's ``Tick()`` &
+``Tock()`` member functions to print "Hello" and "World" respectively.  To do
+this, please open up the :file:`src/tutorial_facility.cc` file in your
+favorite text editor (vim, emacs, gedit, `notepad++ <http://exofrills.org>`_).
+Change the original functions to look like:
+
+**Original Tick() and Tock() in src/tutorial_facility.cc:**
+
+.. code-block:: c++
+
+    void TutorialFacility::Tick() {}
+
+    void TutorialFacility::Tock() {}
+
+**New Tick() and Tock() in src/tutorial_facility.cc:**
+
+.. code-block:: c++
+
+    void TutorialFacility::Tick() {std::cout << "Hello, ";}
+
+    void TutorialFacility::Tock() {std::cout << "World!\n";}
+
+------------
+
+Now that we have altered the behavior of the TutorialFacility, let's compile and 
+install the ``tutorial`` project.  This done with the install.py script.
+The install script puts the project into your cyclus userspace, 
+``${HOME}/.local/lib/cyclus``.
+
+.. code-block:: bash
+
+    tutorial $ python install.py
+
+------------
+
+Let's run |cyclus| with the TutorialFacility! In the input directory there is
+an :file:`example.xml`. Running |cyclus| on this file with the command
+``cyclus input/example.xml`` should produce the following output.
+
+.. code-block:: bash
+
+    tutorial $ cyclus input/example.xml
+                  :                                                               
+              .CL:CC CC             _Q     _Q  _Q_Q    _Q    _Q              _Q   
+            CC;CCCCCCCC:C;         /_\)   /_\)/_/\\)  /_\)  /_\)            /_\)  
+            CCCCCCCCCCCCCl       __O|/O___O|/O_OO|/O__O|/O__O|/O____________O|/O__
+         CCCCCCf     iCCCLCC     /////////////////////////////////////////////////
+         iCCCt  ;;;;;.  CCCC                                                      
+        CCCC  ;;;;;;;;;. CClL.                          c                         
+       CCCC ,;;       ;;: CCCC  ;                   : CCCCi                       
+        CCC ;;         ;;  CC   ;;:                CCC`   `C;                     
+      lCCC ;;              CCCC  ;;;:             :CC .;;. C;   ;    :   ;  :;;   
+      CCCC ;.              CCCC    ;;;,           CC ;    ; Ci  ;    :   ;  :  ;  
+       iCC :;               CC       ;;;,        ;C ;       CC  ;    :   ; .      
+      CCCi ;;               CCC        ;;;.      .C ;       tf  ;    :   ;  ;.    
+      CCC  ;;               CCC          ;;;;;;; fC :       lC  ;    :   ;    ;:  
+       iCf ;;               CC         :;;:      tC ;       CC  ;    :   ;     ;  
+      fCCC :;              LCCf      ;;;:         LC :.  ,: C   ;    ;   ; ;   ;  
+      CCCC  ;;             CCCC    ;;;:           CCi `;;` CC.  ;;;; :;.;.  ; ,;  
+        CCl ;;             CC    ;;;;              CCC    CCL                     
+       tCCC  ;;        ;; CCCL  ;;;                  tCCCCC.                      
+        CCCC  ;;     :;; CCCCf  ;                     ,L                          
+         lCCC   ;;;;;;  CCCL                                                      
+         CCCCCC  :;;  fCCCCC                                                      
+          . CCCC     CCCC .                                                       
+           .CCCCCCCCCCCCCi                                                        
+              iCCCCCLCf                                                           
+               .  C. ,                                                            
+                  :                                                               
+    Hello, World!
+    Hello, World!
+    Hello, World!
+    Hello, World!
+    Hello, World!
+    Hello, World!
+    Hello, World!
+    Hello, World!
+    Hello, World!
+    Hello, World!
+
+    Status: Cyclus run successful!
+    Output location: cyclus.sqlite
+    Simulation ID: 0ae730e0-a9a8-4576-afaa-d1db6399d5a2
+
+If you look in the input file you'll see that the simulation duration was set
+to 10.  This is why "Hello, World!" is printed ten times.
