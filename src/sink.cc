@@ -168,7 +168,7 @@ void Sink::Tock() {
   LOG(cyclus::LEV_INFO4, "SnkFac") << "Sink " << this->id()
                                    << " is holding " << inventory.quantity()
                                    << " units of material at the close of month "
-                                   << time << ".";
+                                   << context()->time() << ".";
   LOG(cyclus::LEV_INFO3, "SnkFac") << "}";
 }
 
