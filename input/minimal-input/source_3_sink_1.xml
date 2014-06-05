@@ -39,9 +39,9 @@
 
   <region>
     <name>SingleRegion</name>
+    <config><NullRegion/></config>
     <institution>
       <name>SingleInstitution</name>
-      <name>NullInst</name>
       <initialfacilitylist>
         <entry>
           <prototype>Source</prototype>

@@ -79,13 +79,16 @@
     <name>SingleRegion</name>
     <config>
       <GrowthRegion>
-        <commodity>
-          <name>power</name>
-          <demand>
-            <type>linear</type>
-            <parameters>10 0</parameters>
-          </demand>
-        </commodity>
+        <commodity_name>power</commodity_name>
+        <demand_types>
+          <val>linear</val>
+        </demand_types>
+        <demand_params>
+          <val>10 0</val>
+        </demand_params>
+        <demand_times>
+          <val>1</val>
+        </demand_times>
       </GrowthRegion>
     </config>
     <institution>
@@ -104,7 +107,15 @@
           <number>1</number>
         </entry>
       </initialfacilitylist>
-      <config><ManagerInst/></config>
+      <config>
+        <ManagerInst>
+          <prototypes>
+            <val>Source</val>
+            <val>Enrichment</val>
+            <val>Sink</val>
+          </prototypes>
+        </ManagerInst>
+      </config>
     </institution>
   </region>
 
