@@ -72,13 +72,13 @@ class TestRegression(object):
         """
         for root, dirs, files in os.walk(self.in_dir_):
             for f in files:
-                if f not in sim_files:
-                    continue
                 tmp_file = self.tmp_files_[f]
                 run_cyclus("cyclus", os.getcwd(), os.path.join(root, f), 
                            tmp_file)
 
                 if os.path.isfile(tmp_file):
+                    if f not in sim_files:
+                        continue # nada to do, just making sure it runs
                     if check_deterministic:
                         determ = compare_determ(sim_files[f], tmp_file, 
                                                 verbose=True)
@@ -96,4 +96,3 @@ class TestRegression(object):
                 if os.path.isfile(tmp_file):
                     print("removing {0}".format(tmp_file))
                     os.remove(tmp_file)
-                    
