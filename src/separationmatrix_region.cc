@@ -1,20 +1,20 @@
-#include "stub_region.h"
+#include "separationmatrix_region.h"
 
-using stubs::StubRegion;
+using separationmatrix::SeparationmatrixRegion;
 
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-StubRegion::StubRegion(cyclus::Context* ctx)
+SeparationmatrixRegion::SeparationmatrixRegion(cyclus::Context* ctx)
     : cyclus::Region(ctx) {};
 
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-StubRegion::~StubRegion() {}
+SeparationmatrixRegion::~SeparationmatrixRegion() {}
 
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-std::string StubRegion::str() {
+std::string SeparationmatrixRegion::str() {
   return Region::str();
 }
 
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-extern "C" cyclus::Agent* ConstructStubRegion(cyclus::Context* ctx) {
-  return new StubRegion(ctx);
+extern "C" cyclus::Agent* ConstructSeparationmatrixRegion(cyclus::Context* ctx) {
+  return new SeparationmatrixRegion(ctx);
 }

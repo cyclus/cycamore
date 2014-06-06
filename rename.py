@@ -17,6 +17,15 @@ def main():
 
     low, cap, upp = ns.name.lower(), ns.name.capitalize(), ns.name.upper()
     stublow, stubcap, stubupp = 'stub', 'Stub', 'STUB'
+    mvfiles = glob('src/stub*')
+    for f in mvfiles:
+        d = os.path.dirname(f)
+        name = os.path.basename(f)
+        newname = os.path.join(d, name.replace('stub', low))
+        subprocess.call(['git','mv',f,newname])
+        subprocess.call(['git','commit','-m',
+          '"moves stubfile '.join(name).join('->').join(newname).join('"')])
+
     files = ['CMakeLists.txt', 'input/example.xml'] + glob('src/*')
     for f in files:
         with open(f, 'r') as inp:
@@ -26,7 +35,9 @@ def main():
         s = s.replace(stubcap, cap)
         s = s.replace(stubupp, upp)
         os.remove(f)
-        with open(f.replace('stub', low), 'w') as out:
+        d = os.path.dirname(f)
+        name = os.path.basename(f)
+        with open(os.path.join(d, name.replace('stub', low)), 'w') as out:
             out.write(s)
 
 if __name__ == "__main__":

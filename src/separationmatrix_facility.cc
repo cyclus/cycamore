@@ -1,25 +1,25 @@
-#include "stub_facility.h"
+#include "separationmatrix_facility.h"
 
-namespace stubs {
+namespace separationmatrix {
 
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-StubFacility::StubFacility(cyclus::Context* ctx)
+SeparationmatrixFacility::SeparationmatrixFacility(cyclus::Context* ctx)
     : cyclus::Facility(ctx) {};
 
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-std::string StubFacility::str() {
+std::string SeparationmatrixFacility::str() {
   return Facility::str();
 }
 
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-void StubFacility::Tick() {}
+void SeparationmatrixFacility::Tick() {}
 
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-void StubFacility::Tock() {}
+void SeparationmatrixFacility::Tock() {}
 
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-extern "C" cyclus::Agent* ConstructStubFacility(cyclus::Context* ctx) {
-  return new StubFacility(ctx);
+extern "C" cyclus::Agent* ConstructSeparationmatrixFacility(cyclus::Context* ctx) {
+  return new SeparationmatrixFacility(ctx);
 }
 
 }

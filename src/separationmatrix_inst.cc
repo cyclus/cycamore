@@ -1,20 +1,20 @@
-#include "stub_inst.h"
+#include "separationmatrix_inst.h"
 
-using stubs::StubInst;
+using separationmatrix::SeparationmatrixInst;
 
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-StubInst::StubInst(cyclus::Context* ctx)
+SeparationmatrixInst::SeparationmatrixInst(cyclus::Context* ctx)
     : cyclus::Institution(ctx) {};
 
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-StubInst::~StubInst() {}
+SeparationmatrixInst::~SeparationmatrixInst() {}
 
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-std::string StubInst::str() {
+std::string SeparationmatrixInst::str() {
   return Institution::str();
 }
 
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-extern "C" cyclus::Agent* ConstructStubInst(cyclus::Context* ctx) {
-  return new StubInst(ctx);
+extern "C" cyclus::Agent* ConstructSeparationmatrixInst(cyclus::Context* ctx) {
+  return new SeparationmatrixInst(ctx);
 }

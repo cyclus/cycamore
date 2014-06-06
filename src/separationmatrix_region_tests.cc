@@ -1,57 +1,57 @@
 #include <gtest/gtest.h>
 
-#include "stub_region.h"
+#include "separationmatrix_region.h"
 
 #include "region_tests.h"
 #include "agent_tests.h"
 
-using stubs::StubRegion;
+using separationmatrix::SeparationmatrixRegion;
 
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-class StubRegionTest : public ::testing::Test {
+class SeparationmatrixRegionTest : public ::testing::Test {
  protected:
   cyclus::TestContext tc_;
-  StubRegion* src_region_;
+  SeparationmatrixRegion* src_region_;
 
   virtual void SetUp() {
-    src_region_ = new StubRegion(tc_.get());
+    src_region_ = new SeparationmatrixRegion(tc_.get());
   }
 
   virtual void TearDown() {}
 };
 
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-TEST_F(StubRegionTest, clone) {
-  StubRegion* cloned_fac =
-      dynamic_cast<StubRegion*> (src_region_->Clone());
+TEST_F(SeparationmatrixRegionTest, clone) {
+  SeparationmatrixRegion* cloned_fac =
+      dynamic_cast<SeparationmatrixRegion*> (src_region_->Clone());
 }
 
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-TEST_F(StubRegionTest, InitialState) {
+TEST_F(SeparationmatrixRegionTest, InitialState) {
   // Test things about the initial state of the region here
 }
 
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-TEST_F(StubRegionTest, Print) {
+TEST_F(SeparationmatrixRegionTest, Print) {
   EXPECT_NO_THROW(std::string s = src_region_->str());
-  // Test StubRegion specific aspects of the print method here
+  // Test SeparationmatrixRegion specific aspects of the print method here
 }
 
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-TEST_F(StubRegionTest, Tick) {
+TEST_F(SeparationmatrixRegionTest, Tick) {
   EXPECT_NO_THROW(src_region_->Tick());
-  // Test StubRegion specific behaviors of the handleTick function here
+  // Test SeparationmatrixRegion specific behaviors of the handleTick function here
 }
 
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-TEST_F(StubRegionTest, Tock) {
+TEST_F(SeparationmatrixRegionTest, Tock) {
   EXPECT_NO_THROW(src_region_->Tock());
-  // Test StubRegion specific behaviors of the handleTock function here
+  // Test SeparationmatrixRegion specific behaviors of the handleTock function here
 }
 
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-cyclus::Agent* StubRegionConstructor(cyclus::Context* ctx) {
-  return new StubRegion(ctx);
+cyclus::Agent* SeparationmatrixRegionConstructor(cyclus::Context* ctx) {
+  return new SeparationmatrixRegion(ctx);
 }
 
 // required to get functionality in cyclus agent unit tests library
@@ -62,7 +62,7 @@ static int cyclus_agent_tests_connected = ConnectAgentTests();
 #endif // CYCLUS_AGENT_TESTS_CONNECTED
 
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-INSTANTIATE_TEST_CASE_P(StubRegion, RegionTests,
-                        ::testing::Values(&StubRegionConstructor));
-INSTANTIATE_TEST_CASE_P(StubRegion, AgentTests,
-                        ::testing::Values(&StubRegionConstructor));
+INSTANTIATE_TEST_CASE_P(SeparationmatrixRegion, RegionTests,
+                        ::testing::Values(&SeparationmatrixRegionConstructor));
+INSTANTIATE_TEST_CASE_P(SeparationmatrixRegion, AgentTests,
+                        ::testing::Values(&SeparationmatrixRegionConstructor));
