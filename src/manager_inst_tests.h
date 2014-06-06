@@ -30,7 +30,7 @@ class TestProducer :
 
   void InitInv(cyclus::Inventories& inv) {};
 
-  cyclus::Inventories SnapshotInv() {};
+  cyclus::Inventories SnapshotInv() { return cyclus::Inventories(); };
 
   void Tock() {};
   void Tick() {};
