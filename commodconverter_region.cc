@@ -1,20 +1,20 @@
-#include "stub_region.h"
+#include "commodconverter_region.h"
 
-using stubs::StubRegion;
+using commodconverter::CommodconverterRegion;
 
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-StubRegion::StubRegion(cyclus::Context* ctx)
+CommodconverterRegion::CommodconverterRegion(cyclus::Context* ctx)
     : cyclus::Region(ctx) {};
 
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-StubRegion::~StubRegion() {}
+CommodconverterRegion::~CommodconverterRegion() {}
 
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-std::string StubRegion::str() {
+std::string CommodconverterRegion::str() {
   return Region::str();
 }
 
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-extern "C" cyclus::Agent* ConstructStubRegion(cyclus::Context* ctx) {
-  return new StubRegion(ctx);
+extern "C" cyclus::Agent* ConstructCommodconverterRegion(cyclus::Context* ctx) {
+  return new CommodconverterRegion(ctx);
 }

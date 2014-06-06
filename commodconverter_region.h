@@ -1,18 +1,18 @@
-#ifndef CYCLUS_STUBS_STUB_REGION_H_
-#define CYCLUS_STUBS_STUB_REGION_H_
+#ifndef CYCLUS_COMMODCONVERTERS_COMMODCONVERTER_REGION_H_
+#define CYCLUS_COMMODCONVERTERS_COMMODCONVERTER_REGION_H_
 
 #include <string>
 
 #include "cyclus.h"
 
-namespace stubs {
+namespace commodconverter {
 
-/// @class StubRegion
+/// @class CommodconverterRegion
 ///
 /// This Region is intended
 /// as a skeleton to guide the implementation of new Region agents.
 ///
-/// The StubRegion class inherits from the Region class and is
+/// The CommodconverterRegion class inherits from the Region class and is
 /// dynamically loaded by the Agent class when requested.
 ///
 /// @section intro Introduction
@@ -30,14 +30,14 @@ namespace stubs {
 /// Place a description of the detailed behavior of the agent. Consider
 /// describing the behavior at the tick and tock as well as the behavior
 /// upon sending and receiving materials and messages.
-class StubRegion : public cyclus::Region {
+class CommodconverterRegion : public cyclus::Region {
  public:
-  /// Constructor for StubRegion Class
+  /// Constructor for CommodconverterRegion Class
   /// @param ctx the cyclus context for access to simulation-wide parameters
-  explicit StubRegion(cyclus::Context* ctx);
+  explicit CommodconverterRegion(cyclus::Context* ctx);
 
   /// every agent should be destructable
-  virtual ~StubRegion();
+  virtual ~CommodconverterRegion();
 
   /// The Prime Directive
   /// Generates code that handles all input file reading and restart operations
@@ -47,15 +47,15 @@ class StubRegion : public cyclus::Region {
   
   #pragma cyclus
 
-  #pragma cyclus note {"doc": "A stub region is provided as a skeleton " \
+  #pragma cyclus note {"doc": "A commodconverter region is provided as a skeleton " \
                               "for the design of new region agents."}
 
-  /// A verbose printer for the StubRegion
+  /// A verbose printer for the CommodconverterRegion
   virtual std::string str();
 
   // and away we go!
 };
 
-}  // namespace stubs
+}  // namespace commodconverter
 
-#endif  // CYCLUS_STUBS_STUB_REGION_H_
+#endif  // CYCLUS_COMMODCONVERTERS_COMMODCONVERTER_REGION_H_

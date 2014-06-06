@@ -1,57 +1,57 @@
 #include <gtest/gtest.h>
 
-#include "stub_region.h"
+#include "commodconverter_region.h"
 
 #include "region_tests.h"
 #include "agent_tests.h"
 
-using stubs::StubRegion;
+using commodconverter::CommodconverterRegion;
 
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-class StubRegionTest : public ::testing::Test {
+class CommodconverterRegionTest : public ::testing::Test {
  protected:
   cyclus::TestContext tc_;
-  StubRegion* src_region_;
+  CommodconverterRegion* src_region_;
 
   virtual void SetUp() {
-    src_region_ = new StubRegion(tc_.get());
+    src_region_ = new CommodconverterRegion(tc_.get());
   }
 
   virtual void TearDown() {}
 };
 
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-TEST_F(StubRegionTest, clone) {
-  StubRegion* cloned_fac =
-      dynamic_cast<StubRegion*> (src_region_->Clone());
+TEST_F(CommodconverterRegionTest, clone) {
+  CommodconverterRegion* cloned_fac =
+      dynamic_cast<CommodconverterRegion*> (src_region_->Clone());
 }
 
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-TEST_F(StubRegionTest, InitialState) {
+TEST_F(CommodconverterRegionTest, InitialState) {
   // Test things about the initial state of the region here
 }
 
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-TEST_F(StubRegionTest, Print) {
+TEST_F(CommodconverterRegionTest, Print) {
   EXPECT_NO_THROW(std::string s = src_region_->str());
-  // Test StubRegion specific aspects of the print method here
+  // Test CommodconverterRegion specific aspects of the print method here
 }
 
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-TEST_F(StubRegionTest, Tick) {
+TEST_F(CommodconverterRegionTest, Tick) {
   EXPECT_NO_THROW(src_region_->Tick());
-  // Test StubRegion specific behaviors of the handleTick function here
+  // Test CommodconverterRegion specific behaviors of the handleTick function here
 }
 
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-TEST_F(StubRegionTest, Tock) {
+TEST_F(CommodconverterRegionTest, Tock) {
   EXPECT_NO_THROW(src_region_->Tock());
-  // Test StubRegion specific behaviors of the handleTock function here
+  // Test CommodconverterRegion specific behaviors of the handleTock function here
 }
 
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-cyclus::Agent* StubRegionConstructor(cyclus::Context* ctx) {
-  return new StubRegion(ctx);
+cyclus::Agent* CommodconverterRegionConstructor(cyclus::Context* ctx) {
+  return new CommodconverterRegion(ctx);
 }
 
 // required to get functionality in cyclus agent unit tests library
@@ -62,7 +62,7 @@ static int cyclus_agent_tests_connected = ConnectAgentTests();
 #endif // CYCLUS_AGENT_TESTS_CONNECTED
 
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-INSTANTIATE_TEST_CASE_P(StubRegion, RegionTests,
-                        ::testing::Values(&StubRegionConstructor));
-INSTANTIATE_TEST_CASE_P(StubRegion, AgentTests,
-                        ::testing::Values(&StubRegionConstructor));
+INSTANTIATE_TEST_CASE_P(CommodconverterRegion, RegionTests,
+                        ::testing::Values(&CommodconverterRegionConstructor));
+INSTANTIATE_TEST_CASE_P(CommodconverterRegion, AgentTests,
+                        ::testing::Values(&CommodconverterRegionConstructor));

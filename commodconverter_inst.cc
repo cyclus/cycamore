@@ -1,20 +1,20 @@
-#include "stub_inst.h"
+#include "commodconverter_inst.h"
 
-using stubs::StubInst;
+using commodconverter::CommodconverterInst;
 
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-StubInst::StubInst(cyclus::Context* ctx)
+CommodconverterInst::CommodconverterInst(cyclus::Context* ctx)
     : cyclus::Institution(ctx) {};
 
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-StubInst::~StubInst() {}
+CommodconverterInst::~CommodconverterInst() {}
 
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-std::string StubInst::str() {
+std::string CommodconverterInst::str() {
   return Institution::str();
 }
 
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-extern "C" cyclus::Agent* ConstructStubInst(cyclus::Context* ctx) {
-  return new StubInst(ctx);
+extern "C" cyclus::Agent* ConstructCommodconverterInst(cyclus::Context* ctx) {
+  return new CommodconverterInst(ctx);
 }

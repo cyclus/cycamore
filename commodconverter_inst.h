@@ -1,18 +1,18 @@
-#ifndef CYCLUS_STUBS_STUB_INST_H_
-#define CYCLUS_STUBS_STUB_INST_H_
+#ifndef CYCLUS_COMMODCONVERTERS_COMMODCONVERTER_INST_H_
+#define CYCLUS_COMMODCONVERTERS_COMMODCONVERTER_INST_H_
 
 #include <string>
 
 #include "cyclus.h"
 
-namespace stubs {
+namespace commodconverter {
 
-/// @class StubInst
+/// @class CommodconverterInst
 ///
 /// This Institution is intended as a skeleton to guide the implementation of
 /// new Institution agents.
 ///
-/// The StubInst class inherits from the Institution class and is dynamically
+/// The CommodconverterInst class inherits from the Institution class and is dynamically
 /// loaded by the Agent class when requested.
 ///
 /// @section intro Introduction
@@ -30,14 +30,14 @@ namespace stubs {
 /// Place a description of the detailed behavior of the agent. Consider
 /// describing the behavior at the tick and tock as well as the behavior
 /// upon sending and receiving materials and messages.
-class StubInst : public cyclus::Institution {
+class CommodconverterInst : public cyclus::Institution {
  public:
-  /// Constructor for StubInst Class
+  /// Constructor for CommodconverterInst Class
   /// @param ctx the cyclus context for access to simulation-wide parameters
-  explicit  StubInst(cyclus::Context* ctx);
+  explicit  CommodconverterInst(cyclus::Context* ctx);
 
   /// every agent should be destructable
-  virtual ~StubInst();
+  virtual ~CommodconverterInst();
   
   /// The Prime Directive
   /// Generates code that handles all input file reading and restart operations
@@ -47,7 +47,7 @@ class StubInst : public cyclus::Institution {
   
   #pragma cyclus
 
-  #pragma cyclus note {"doc": "A stub institution is provided as a " \
+  #pragma cyclus note {"doc": "A commodconverter institution is provided as a " \
                               "skeleton for the design of new " \
                               "institution agents."}
 
@@ -57,6 +57,6 @@ class StubInst : public cyclus::Institution {
   // and away we go!
 };
 
-}  // namespace stubs
+}  // namespace commodconverter
 
-#endif  // CYCLUS_STUBS_STUB_INST_H_
+#endif  // CYCLUS_COMMODCONVERTERS_COMMODCONVERTER_INST_H_
