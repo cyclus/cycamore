@@ -1,25 +1,25 @@
-#include "stub_facility.h"
+#include "commodconverter_facility.h"
 
-namespace stubs {
+namespace commodconverter {
 
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-StubFacility::StubFacility(cyclus::Context* ctx)
+CommodconverterFacility::CommodconverterFacility(cyclus::Context* ctx)
     : cyclus::Facility(ctx) {};
 
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-std::string StubFacility::str() {
+std::string CommodconverterFacility::str() {
   return Facility::str();
 }
 
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-void StubFacility::Tick() {}
+void CommodconverterFacility::Tick() {}
 
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-void StubFacility::Tock() {}
+void CommodconverterFacility::Tock() {}
 
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-extern "C" cyclus::Agent* ConstructStubFacility(cyclus::Context* ctx) {
-  return new StubFacility(ctx);
+extern "C" cyclus::Agent* ConstructCommodconverterFacility(cyclus::Context* ctx) {
+  return new CommodconverterFacility(ctx);
 }
 
 }
