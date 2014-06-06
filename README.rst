@@ -1,130 +1,51 @@
 .. _hello_world:
 
-Hello, Cyclus!
+StreamBlender
 ==============
-This pages walks you through a very simple hello world example using 
-|cyclus| agents.  First make sure that you have the dependencies installed, 
-namely |Cyclus|, CMake, and a recent version of Python (2.7 or 3.3+).
 
-First, you need to get the ``cycstub`` code.  Cycstub is a skeleton code base 
-that you can use to quick-start new |cyclus| module development projects.
-You can grab cycstub either by using git to 
-`clone the repository <https://github.com/cyclus/cycstub.git>`_ or by 
-`downloading the zip file <https://github.com/cyclus/cycstub/archive/develop.zip>`_.
-Let's put this code in a ``tutorial`` directory and go into it.
+This facility blends resources into a goal resource based on preferences and a 
+goal recipe. It was intended to be used as a fuel fabrication facility, but has 
+been kept very general in order to allow users to employ it for many purposes.
 
-**Getting cycstub via git:**
+Usage with Cyclus
+-----------------
+
+If you want to use this model with cyclus, then you should first install 
+cyclus. The information for that can be found at fuelcycle.org. It's pretty 
+quick, so go ahead and just install it. I'll wait here. 
+
+Installing StreamBlender
+------------------------
+
+Ok, are you done? Once you have Cyclus installed, you can use the 
+StreamBlender. Its installation is just like the installation of CycStub 
+(because it was built based on CycStub).
+
+Getting StreamBlender
+.....................
+
+First, you need to get the ``streamblender`` code.  St
+You can grab StreamBlender either by using git to 
+`clone the repository <https://github.com/katyhuff/streamblender.git>`_ or by 
+`downloading the zip file <https://github.com/katyhuff/streamblender/archive/develop.zip>`_.
+
+**Getting streamblender via git:**
 
 .. code-block:: bash
 
-    $ git clone https://github.com/cyclus/cycstub.git tutorial
-    $ cd tutorial
+    $ git clone https://github.com/katyhuff/streamblender.git streamblender
+    $ cd streamblender
 
-**Getting cycstub via zip:**
+**Getting streamblender via zip:**
 
 .. code-block:: bash
 
-    $ curl -L https://api.github.com/repos/cyclus/cycstub/zipball > tutorial.zip
-    $ unzip tutorial.zip
-    $ mv cyclus-cycstub-* tutorial
-    $ cd tutorial
+    $ curl -L https://api.github.com/repos/katyhuff/streamblender/zipball > streamblender.zip
+    $ unzip streamblender.zip
+    $ mv katyhuff-streamblender-* streamblender
+    $ cd streamblender
 
 ------------
 
-Since cycstub is a template project everything is named ``stub``. We need to
-change this to reflect the name we want our new project to be called -
-``tutorial`` here.  Cycstub comes with a renaming tool to do just this! From
-the command line, run Python in the following way:
-
-.. code-block:: bash
-
-    tutorial $ python rename.py tutorial
-
-------------
-
-Let's now change the behavior of the TutorialFacility's ``Tick()`` &
-``Tock()`` member functions to print "Hello" and "World" respectively.  To do
-this, please open up the :file:`src/tutorial_facility.cc` file in your
-favorite text editor (vim, emacs, gedit, `notepad++ <http://exofrills.org>`_).
-Change the original functions to look like:
-
-**Original Tick() and Tock() in src/tutorial_facility.cc:**
-
-.. code-block:: c++
-
-    void TutorialFacility::Tick() {}
-
-    void TutorialFacility::Tock() {}
-
-**New Tick() and Tock() in src/tutorial_facility.cc:**
-
-.. code-block:: c++
-
-    void TutorialFacility::Tick() {std::cout << "Hello, ";}
-
-    void TutorialFacility::Tock() {std::cout << "World!\n";}
-
-------------
-
-Now that we have altered the behavior of the TutorialFacility, let's compile and 
-install the ``tutorial`` project.  This done with the install.py script.
-The install script puts the project into your cyclus userspace, 
-``${HOME}/.local/lib/cyclus``.
-
-.. code-block:: bash
-
-    tutorial $ python install.py
-
-------------
-
-Let's run |cyclus| with the TutorialFacility! In the input directory there is
-an :file:`example.xml`. Running |cyclus| on this file with the command
-``cyclus input/example.xml`` should produce the following output.
-
-.. code-block:: bash
-
-    tutorial $ cyclus input/example.xml
-                  :                                                               
-              .CL:CC CC             _Q     _Q  _Q_Q    _Q    _Q              _Q   
-            CC;CCCCCCCC:C;         /_\)   /_\)/_/\\)  /_\)  /_\)            /_\)  
-            CCCCCCCCCCCCCl       __O|/O___O|/O_OO|/O__O|/O__O|/O____________O|/O__
-         CCCCCCf     iCCCLCC     /////////////////////////////////////////////////
-         iCCCt  ;;;;;.  CCCC                                                      
-        CCCC  ;;;;;;;;;. CClL.                          c                         
-       CCCC ,;;       ;;: CCCC  ;                   : CCCCi                       
-        CCC ;;         ;;  CC   ;;:                CCC`   `C;                     
-      lCCC ;;              CCCC  ;;;:             :CC .;;. C;   ;    :   ;  :;;   
-      CCCC ;.              CCCC    ;;;,           CC ;    ; Ci  ;    :   ;  :  ;  
-       iCC :;               CC       ;;;,        ;C ;       CC  ;    :   ; .      
-      CCCi ;;               CCC        ;;;.      .C ;       tf  ;    :   ;  ;.    
-      CCC  ;;               CCC          ;;;;;;; fC :       lC  ;    :   ;    ;:  
-       iCf ;;               CC         :;;:      tC ;       CC  ;    :   ;     ;  
-      fCCC :;              LCCf      ;;;:         LC :.  ,: C   ;    ;   ; ;   ;  
-      CCCC  ;;             CCCC    ;;;:           CCi `;;` CC.  ;;;; :;.;.  ; ,;  
-        CCl ;;             CC    ;;;;              CCC    CCL                     
-       tCCC  ;;        ;; CCCL  ;;;                  tCCCCC.                      
-        CCCC  ;;     :;; CCCCf  ;                     ,L                          
-         lCCC   ;;;;;;  CCCL                                                      
-         CCCCCC  :;;  fCCCCC                                                      
-          . CCCC     CCCC .                                                       
-           .CCCCCCCCCCCCCi                                                        
-              iCCCCCLCf                                                           
-               .  C. ,                                                            
-                  :                                                               
-    Hello, World!
-    Hello, World!
-    Hello, World!
-    Hello, World!
-    Hello, World!
-    Hello, World!
-    Hello, World!
-    Hello, World!
-    Hello, World!
-    Hello, World!
-
-    Status: Cyclus run successful!
-    Output location: cyclus.sqlite
-    Simulation ID: 0ae730e0-a9a8-4576-afaa-d1db6399d5a2
-
-If you look in the input file you'll see that the simulation duration was set
-to 10.  This is why "Hello, World!" is printed ten times.
+Now, you can use the StreamBlender model by including it in an xml input file 
+that you run with Cyclus, along with other modules. 
