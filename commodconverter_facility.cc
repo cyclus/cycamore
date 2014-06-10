@@ -68,10 +68,9 @@ void CommodconverterFacility::Build(cyclus::Agent* parent) {
 }
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-void CommodconverterFacility::Tick() {
+void CommodconverterFacility::Tick() { 
   LOG(cyclus::LEV_INFO3, "ComCnv") << prototype() << " is ticking {";
   LOG(cyclus::LEV_INFO3, "ComCnv") << "}";
-  current_swu_capacity = SwuCapacity();
 }
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -100,7 +99,7 @@ CommodconverterFacility::GetMatlRequests() {
     port->AddRequest(mat, this, in_commod);
 
     ports.insert(port);
-  } // if amt > eps
+  }
 
   return ports;
 }
@@ -109,8 +108,6 @@ CommodconverterFacility::GetMatlRequests() {
 void CommodconverterFacility::AcceptMatlTrades(
   const std::vector< std::pair<cyclus::Trade<cyclus::Material>,
   cyclus::Material::Ptr> >& responses) {
-  // see
-  // http://stackoverflow.com/questions/5181183/boostshared-ptr-and-inheritance
   std::vector< std::pair<cyclus::Trade<cyclus::Material>,
       cyclus::Material::Ptr> >::const_iterator it;
   for (it = responses.begin(); it != responses.end(); ++it) {
