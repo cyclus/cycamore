@@ -27,21 +27,14 @@ CommodconverterFacility::CommodconverterFacility(cyclus::Context* ctx)
 
 #pragma cyclus def clone commodconverter::CommodconverterFacility
 
-// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 std::string CommodconverterFacility::str() {
   return Facility::str();
 }
 
-// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-void CommodconverterFacility::Tick() {}
-
-// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-void CommodconverterFacility::Tock() {}
-
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 std::string CommodConverter::str() {
   std::stringstream ss;
-  ss << cyclus::FacilityModel::str();
+  ss << cyclus::Facility::str();
   ss << " has facility parameters {" << "\n"
      << "     Input Commodity = " << in_commod() << ",\n"
      << "     Output Commodity = " << out_commod() << ",\n"
@@ -143,6 +136,9 @@ CommodconverterFacility::GetMatlBids(
       }
     }
 
+    // want to add constraints based on the incoming commodity
+    // TODO, determine whether it's possible to request material 
+    // without adding a recipe constraint. Ask matt?
     Converter<Material>::Ptr sc(new SWUConverter(feed_assay, tails_assay));
     Converter<Material>::Ptr nc(new NatUConverter(feed_assay, tails_assay));
     CapacityConstraint<Material> swu(swu_capacity, sc);
@@ -164,10 +160,8 @@ CommodconverterFacility::GetMatlBids(
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 bool CommodconverterFacility::ValidReq(const cyclus::Material::Ptr mat) {
-  cyclus::toolkit::MatQuery q(mat);
-  double u235 = q.atom_frac(922350000);
-  double u238 = q.atom_frac(922380000);
-  return (u238 > 0 && u235 / (u235 + u238) > TailsAssay());
+  // TODO make this just check the commod.
+  return 1; // where is this used?
 }
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -199,10 +193,7 @@ void CommodconverterFacility::GetMatlTrades(
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 void CommodconverterFacility::AddMat_(cyclus::Material::Ptr mat) {
-  if (mat->comp() != context()->GetRecipe(in_recipe)) {
-    throw cyclus::ValueError(
-      "CommodconverterFacility recipe and material composition not the same.");
-  }
+  // Here we do not check that the recipe matches the input recipe. 
 
   LOG(cyclus::LEV_INFO5, "ComCnv") << prototype() << " is initially holding "
                                 << inventory.quantity() << " total.";

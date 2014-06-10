@@ -69,27 +69,35 @@ class CommodconverterFacility
 
   #pragma cyclus var {"tooltip":"input commodity",\
                       "doc":"commodity accepted by this facility"}
-  std::string in_commod;
+  std::string in_commod_;
   #pragma cyclus var {"tooltip":"output commodity",\
                       "doc":"commodity produced by this facility"}
-  std::string out_commod;
+  std::string out_commod_;
   #pragma cyclus var {"tooltip":"input recipe",\
                       "doc":"recipe accpeted by this facility"}
-  std::string in_recipe;
+  std::string in_recipe_;
   #pragma cyclus var {"tooltip":"output recipe",\
                       "doc":"recipe produced by this facility"}
-  std::string out_recipe;
+  std::string out_recipe_;
   #pragma cyclus var {"default": 0,\
                       "tooltip":"process time",\
                       "doc":"the time it takes to convert a received commodity."}
-  int process_time; //should be nonnegative
+  int process_time_; //should be nonnegative
   #pragma cyclus var {"default": 1e299,\
                       "tooltip":"maximum inventory size",\
                       "doc":"the amount of material that can be in storage at "\
                       "one time."}
-  double max_inv_size; //should be nonnegative
-  #pragma cyclus var{'capacity': 'max_inv_size'}
-  
+  double max_inv_size_; //should be nonnegative
+  #pragma cyclus var{'capacity_': 'max_inv_size_'}
+
+  /// @brief the processing time required for a full process
+  inline void process_time(int t) { process_time_ = t; }
+  inline int process_time() const { return process_time_; }
+
+  /// @brief the maximum amount in processing at a single time
+  inline void capacity(double c) { capacity_ = c; }
+  inline int capacity() const { return capacity_; }
+
   friend class CommodconverterFacilityTest;
 };
 
