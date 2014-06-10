@@ -32,7 +32,7 @@ std::string CommodconverterFacility::str() {
 }
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-std::string CommodConverter::str() {
+std::string CommodconverterFacility::str() {
   std::stringstream ss;
   ss << cyclus::Facility::str();
   ss << " has facility parameters {" << "\n"
