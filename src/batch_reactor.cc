@@ -913,11 +913,14 @@ BatchReactor::GetOrder_(double size) {
   std::set<std::string>::const_iterator it;
   std::string recipe;
   Material::Ptr mat;
+
+  std::vector<Request<Material>*> mreqs;
   for (it = commods.begin(); it != commods.end(); ++it) {
     recipe = crctx_.in_recipe(*it);
     assert(recipe != "");
     mat = Material::CreateUntracked(size, context()->GetRecipe(recipe));
-    port->AddRequest(mat, this, *it, commod_prefs_[*it]);
+    Request<Material>* r = port->AddRequest(mat, this, *it, commod_prefs_[*it]);
+    mreqs.push_back(r);
     
     LOG(cyclus::LEV_DEBUG3, "BReact") << "BatchReactor " << prototype()
                                       << " is making an order:";
@@ -926,9 +929,7 @@ BatchReactor::GetOrder_(double size) {
     LOG(cyclus::LEV_DEBUG3, "BReact") << "    preference: "
                                       << commod_prefs_[*it];
   }
-
-  CapacityConstraint<Material> cc(size);
-  port->AddConstraint(cc);
+  port->AddMutualReqs(mreqs);
 
   return port;
 }
