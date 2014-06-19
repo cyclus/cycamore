@@ -56,6 +56,11 @@ class CommodconverterFacility
 
   /// A verbose printer for the CommodconverterFacility
   virtual std::string str();
+
+  /* --- Facility Members --- */
+  /// performs module-specific tasks when entering the simulation.
+  virtual void Build(cyclus::Agent* parent);
+  /* --- */
   
   /// The handleTick function specific to the CommodconverterFacility.
   /// @param time the time of the tick  
@@ -86,14 +91,14 @@ class CommodconverterFacility
   std::string out_recipe_;
 
   #pragma cyclus var {"default": 0,\
-                      "tooltip":"process time",\
-                      "doc":"the time it takes to convert a received commodity."}
+                      "tooltip":"process time (timesteps)",\
+                      "doc":"the time it takes to convert a received commodity (timesteps)."}
   int process_time_; //should be nonnegative
 
   #pragma cyclus var {"default": 1e299,\
-                      "tooltip":"maximum inventory size",\
+                      "tooltip":"maximum inventory size (kg)",\
                       "doc":"the amount of material that can be in storage at "\
-                      "one time."}
+                      "one time (kg)."}
   double max_inv_size_; //should be nonnegative
 
   #pragma cyclus var{'capacity': 'max_inv_size_'}
