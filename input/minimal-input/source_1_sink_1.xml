@@ -27,7 +27,7 @@
   </archetypes>
 
   <facility>
-    <name>Source</name>
+    <name>SomeSource</name>
     <config>
       <Source>
         <out_commod>commodity</out_commod>
@@ -38,7 +38,7 @@
   </facility>
 
   <facility>
-    <name>Sink</name>
+    <name>SomeSink</name>
     <config>
       <Sink>
         <in_commods>
@@ -56,11 +56,11 @@
       <name>SingleInstitution</name>
       <initialfacilitylist>
         <entry>
-          <prototype>Source</prototype>
+          <prototype>SomeSource</prototype>
           <number>1</number>
         </entry>
         <entry>
-          <prototype>Sink</prototype>
+          <prototype>SomeSink</prototype>
           <number>1</number>
         </entry>
       </initialfacilitylist>
