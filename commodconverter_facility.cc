@@ -1,3 +1,5 @@
+// commodconverter_facility.cc
+// Implements the CommodconverterFacility class
 #include "commodconverter_facility.h"
 
 namespace commodconverter {
@@ -45,15 +47,39 @@ void CommodconverterFacility::Build(cyclus::Agent* parent) {
   using cyclus::Material;
 
   Facility::Build(parent);
-  if (initial_reserves > 0) {
-    inventory.Push(
-      Material::Create(
-        this, initial_reserves, context()->GetRecipe(in_recipe)));
+  std::string rec = crctx_.in_recipe(*crctx_.in_commods().begin());
+  spillover_ = Material::Create(this, 0.0, context()->GetRecipe(rec));
+
+  Material::Ptr mat;
+  for (int i = 0; i < ics_.n_reserves; ++i) {
+    mat = Material::Create(this,
+                           batch_size(),
+                           context()->GetRecipe(ics_.reserves_rec));
+    assert(ics_.reserves_commod != "");
+    crctx_.AddRsrc(ics_.reserves_commod, mat);
+    reserves_.Push(mat);
+  }
+  for (int i = 0; i < ics_.n_core; ++i) {
+    mat = Material::Create(this,
+                           batch_size(),
+                           context()->GetRecipe(ics_.core_rec));
+    assert(ics_.core_commod != "");
+    crctx_.AddRsrc(ics_.core_commod, mat);
+    core_.Push(mat);
+  }
+  for (int i = 0; i < ics_.n_storage; ++i) {
+    mat = Material::Create(this,
+                           batch_size(),
+                           context()->GetRecipe(ics_.storage_rec));
+    assert(ics_.storage_commod != "");
+    crctx_.AddRsrc(ics_.storage_commod, mat);
+    storage_[ics_.storage_commod].Push(mat);
   }
 
   LOG(cyclus::LEV_DEBUG2, "ComCnv") << "CommodconverterFacility "
-                                 << " entering the simuluation: ";
+                                    << "entering the simuluation: ";
   LOG(cyclus::LEV_DEBUG2, "ComCnv") << str();
+ 
 }
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
