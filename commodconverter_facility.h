@@ -70,13 +70,15 @@ class CommodconverterFacility
   #pragma cyclus var {"tooltip":"input commodity",\
                       "doc":"commodity accepted by this facility"}
   std::string in_commod_;
+  inline std::string in_commod() const {return in_commod_;};
 
   #pragma cyclus var {"tooltip":"output commodity",\
                       "doc":"commodity produced by this facility"}
   std::string out_commod_;
+  inline std::string out_commod() const {return out_commod_;};
 
   #pragma cyclus var {"tooltip":"input recipe",\
-                      "doc":"recipe accpeted by this facility"}
+                      "doc":"recipe accepted by this facility"}
   std::string in_recipe_;
 
   #pragma cyclus var {"tooltip":"output recipe",\
