@@ -27,10 +27,6 @@ CommodconverterFacility::CommodconverterFacility(cyclus::Context* ctx)
 
 #pragma cyclus def clone commodconverter::CommodconverterFacility
 
-std::string CommodconverterFacility::str() {
-  return Facility::str();
-}
-
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 std::string CommodconverterFacility::str() {
   std::stringstream ss;
