@@ -1,4 +1,4 @@
-Cycamore (Cyclus) Sample Inputs: Minimal Input
+Cycamore Sample Inputs: Minimal Input
 ===============================================
 
 This group of input files are designed to demonstrate the smallest possible
@@ -11,6 +11,9 @@ This example uses a single source facility and a single sink facility, both
 operating in the same region and institution.  In each time step, the sink
 facility will issue a request for bids for its full capacity, the source will
 make a bid to provide that much material, and the material will be traded.
+
+Although these archetypes allow for the specification of a capacity, this
+simulation relies on deafult capacities in both the source and sink, allowing
 
 Understanding the input file
 +++++++++++++++++++++++++++++
