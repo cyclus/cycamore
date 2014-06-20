@@ -58,10 +58,9 @@ class CommodconverterFacility
   virtual std::string str();
 
   /* --- Facility Members --- */
-  /// performs module-specific tasks when entering the simulation.
-  virtual void Build(cyclus::Agent* parent);
   /* --- */
   
+  /* --- Agent Members --- */
   /// The handleTick function specific to the CommodconverterFacility.
   /// @param time the time of the tick  
   virtual void Tick();
@@ -70,8 +69,50 @@ class CommodconverterFacility
   /// @param time the time of the tock
   virtual void Tock();
 
-  /* --- Module Members --- */
+  /// @brief The CommodconverterFacility request Materials of its given
+  /// commodity.
+  virtual std::set<cyclus::RequestPortfolio<cyclus::Material>::Ptr>
+      GetMatlRequests();
 
+  /// @brief The CommodconverterFacility place accepted trade Materials in their
+  /// Inventory
+  virtual void AcceptMatlTrades(
+      const std::vector< std::pair<cyclus::Trade<cyclus::Material>,
+      cyclus::Material::Ptr> >& responses);
+
+  /// @brief Responds to each request for this facility's commodity.  If a given
+  /// request is more than this facility's inventory capacity, it will
+  /// offer its minimum of its capacities.
+  virtual std::set<cyclus::BidPortfolio<cyclus::Material>::Ptr>
+      GetMatlBids(cyclus::CommodMap<cyclus::Material>::type&
+                  commod_requests);
+
+  /// @brief respond to each trade with a material enriched to the appropriate
+  /// level given this facility's inventory
+  ///
+  /// @param trades all trades in which this trader is the supplier
+  /// @param responses a container to populate with responses to each trade
+  virtual void GetMatlTrades(
+    const std::vector< cyclus::Trade<cyclus::Material> >& trades,
+    std::vector<std::pair<cyclus::Trade<cyclus::Material>,
+    cyclus::Material::Ptr> >& responses);
+
+  /* --- */
+
+  /* --- CommodconverterFacility Members --- */
+
+  /* --- */
+
+ protected:
+  ///   @brief adds a material into the incoming commodity inventory
+  ///   @throws if the material is not the same composition as the in_recipe
+  void AddMat_(cyclus::Material::Ptr mat);
+
+  ///   @brief generates a request for this facility given its current state. The
+  ///   quantity of the material will be equal to the remaining inventory size.
+  cyclus::Material::Ptr Request_();
+
+  /* --- Module Members --- */
   #pragma cyclus var {"tooltip":"input commodity",\
                       "doc":"commodity accepted by this facility"}
   std::string in_commod_;
@@ -102,14 +143,19 @@ class CommodconverterFacility
   double max_inv_size_; //should be nonnegative
 
   #pragma cyclus var{'capacity': 'max_inv_size_'}
+  cyclus::toolkit::ResourceBuff inventory;
 
   /// @brief the processing time required for a full process
   inline void process_time(int t) { process_time_ = t; }
   inline int process_time() const { return process_time_; }
 
-  /// @brief the maximum amount in processing at a single time
+  /// @brief the maximum amount allowed in inventory
   inline void capacity(double c) { max_inv_size_ = c; }
-  inline int capacity() const { return max_inv_size_; }
+  inline double capacity() const { return max_inv_size_; }
+
+  /// @brief current maximum amount that can be added to processing
+  inline double current_capacity() const { 
+    return max_inv_size_ - inventory.quantity(); }
 
   friend class CommodconverterFacilityTest;
 };

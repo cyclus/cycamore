@@ -43,46 +43,6 @@ std::string CommodconverterFacility::str() {
 }
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-void CommodconverterFacility::Build(cyclus::Agent* parent) {
-  using cyclus::Material;
-
-  Facility::Build(parent);
-  std::string rec = crctx_.in_recipe(*crctx_.in_commods().begin());
-  spillover_ = Material::Create(this, 0.0, context()->GetRecipe(rec));
-
-  Material::Ptr mat;
-  for (int i = 0; i < ics_.n_reserves; ++i) {
-    mat = Material::Create(this,
-                           batch_size(),
-                           context()->GetRecipe(ics_.reserves_rec));
-    assert(ics_.reserves_commod != "");
-    crctx_.AddRsrc(ics_.reserves_commod, mat);
-    reserves_.Push(mat);
-  }
-  for (int i = 0; i < ics_.n_core; ++i) {
-    mat = Material::Create(this,
-                           batch_size(),
-                           context()->GetRecipe(ics_.core_rec));
-    assert(ics_.core_commod != "");
-    crctx_.AddRsrc(ics_.core_commod, mat);
-    core_.Push(mat);
-  }
-  for (int i = 0; i < ics_.n_storage; ++i) {
-    mat = Material::Create(this,
-                           batch_size(),
-                           context()->GetRecipe(ics_.storage_rec));
-    assert(ics_.storage_commod != "");
-    crctx_.AddRsrc(ics_.storage_commod, mat);
-    storage_[ics_.storage_commod].Push(mat);
-  }
-
-  LOG(cyclus::LEV_DEBUG2, "ComCnv") << "CommodconverterFacility "
-                                    << "entering the simuluation: ";
-  LOG(cyclus::LEV_DEBUG2, "ComCnv") << str();
- 
-}
-
-//- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 void CommodconverterFacility::Tick() { 
   LOG(cyclus::LEV_INFO3, "ComCnv") << prototype() << " is ticking {";
   LOG(cyclus::LEV_INFO3, "ComCnv") << "}";
@@ -111,7 +71,7 @@ CommodconverterFacility::GetMatlRequests() {
     CapacityConstraint<Material> cc(amt);
     port->AddConstraint(cc);
 
-    port->AddRequest(mat, this, in_commod);
+    port->AddRequest(mat, this, in_commod());
 
     ports.insert(port);
   }
@@ -143,47 +103,30 @@ CommodconverterFacility::GetMatlBids(
 
   std::set<BidPortfolio<Material>::Ptr> ports;
 
-  if (commod_requests.count(out_commod) > 0 && inventory.quantity() > 0) {
+  if (commod_requests.count(out_commod()) > 0 && inventory.quantity() > 0) {
     BidPortfolio<Material>::Ptr port(new BidPortfolio<Material>());
 
     std::vector<Request<Material>*>& requests =
-        commod_requests[out_commod];
+        commod_requests[out_commod()];
 
     std::vector<Request<Material>*>::iterator it;
     for (it = requests.begin(); it != requests.end(); ++it) {
       Request<Material>* req = *it;
-      if (ValidReq(req->target())) {
-        Material::Ptr offer = Offer_(req->target());
-        port->AddBid(req, offer, this);
-      }
+      Material::Ptr offer = Offer_(req->target());
+      port->AddBid(req, offer, this);
     }
 
-    // want to add constraints based on the incoming commodity
-    // TODO, determine whether it's possible to request material 
-    // without adding a recipe constraint. Ask matt?
-    Converter<Material>::Ptr sc(new SWUConverter(feed_assay, tails_assay));
-    Converter<Material>::Ptr nc(new NatUConverter(feed_assay, tails_assay));
-    CapacityConstraint<Material> swu(swu_capacity, sc);
-    CapacityConstraint<Material> natu(inventory.quantity(), nc);
-    port->AddConstraint(swu);
-    port->AddConstraint(natu);
+    // want to add constraints based on the capacity for the incoming commodity
+    CapacityConstraint<Material> avail(current_capacity());
+    port->AddConstraint(avail);
 
     LOG(cyclus::LEV_INFO5, "ComCnv") << prototype()
-                                  << " adding a swu constraint of "
-                                  << swu.capacity();
-    LOG(cyclus::LEV_INFO5, "ComCnv") << prototype()
-                                  << " adding a natu constraint of "
-                                  << natu.capacity();
+                                  << " adding a capacity constraint of "
+                                  << avail.capacity();
 
     ports.insert(port);
   }
   return ports;
-}
-
-//- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-bool CommodconverterFacility::ValidReq(const cyclus::Material::Ptr mat) {
-  // TODO make this just check the commod.
-  return 1; // where is this used?
 }
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -196,21 +139,17 @@ void CommodconverterFacility::GetMatlTrades(
 
   std::vector< Trade<Material> >::const_iterator it;
   for (it = trades.begin(); it != trades.end(); ++it) {
-    Material::Ptr mat = it->bid->offer();
+    std::string commodity = it->request->commodity();
     double qty = it->amt;
-    Material::Ptr response = Enrich_(mat, qty);
+    Material::Ptr response = TradeResponse_(qty, &storage_[commodity]);
+
     responses.push_back(std::make_pair(*it, response));
     LOG(cyclus::LEV_INFO5, "ComCnv") << prototype()
                                   << " just received an order"
                                   << " for " << it->amt
-                                  << " of " << out_commod;
+                                  << " of " << out_commod();
   }
 
-  if (cyclus::IsNegative(current_swu_capacity)) {
-    throw cyclus::ValueError(
-      "ComCnv " + prototype()
-      + " is being asked to provide more than its SWU capacity.");
-  }
 }
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -228,10 +167,17 @@ void CommodconverterFacility::AddMat_(cyclus::Material::Ptr mat) {
   }
 
   LOG(cyclus::LEV_INFO5, "ComCnv") << prototype() << " added " << mat->quantity()
-                                << " of " << in_commod
+                                << " of " << in_commod()
                                 << " to its inventory, which is holding "
                                 << inventory.quantity() << " total.";
 
+}
+
+//- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+cyclus::Material::Ptr CommodconverterFacility::Request_() {
+  double qty = std::max(0.0, MaxInventorySize() - InventorySize());
+  return cyclus::Material::CreateUntracked(qty,
+                                        context()->GetRecipe(in_recipe));
 }
 
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
