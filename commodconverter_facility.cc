@@ -92,40 +92,21 @@ void CommodconverterFacility::AcceptMatlTrades(
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 std::set<cyclus::BidPortfolio<cyclus::Material>::Ptr>
-CommodconverterFacility::GetMatlBids(
-  cyclus::CommodMap<cyclus::Material>::type& commod_requests) {
-  using cyclus::Bid;
+CommodconverterFacility::GetMatlBids(cyclus::CommodMap<cyclus::Material>::type&
+                          commod_requests) {
   using cyclus::BidPortfolio;
-  using cyclus::CapacityConstraint;
-  using cyclus::Converter;
   using cyclus::Material;
-  using cyclus::Request;
 
   std::set<BidPortfolio<Material>::Ptr> ports;
 
-  if (commod_requests.count(out_commod()) > 0 && inventory.quantity() > 0) {
-    BidPortfolio<Material>::Ptr port(new BidPortfolio<Material>());
-
-    std::vector<Request<Material>*>& requests =
-        commod_requests[out_commod()];
-
-    std::vector<Request<Material>*>::iterator it;
-    for (it = requests.begin(); it != requests.end(); ++it) {
-      Request<Material>* req = *it;
-      Material::Ptr offer = Offer_(req->target());
-      port->AddBid(req, offer, this);
-    }
-
-    // want to add constraints based on the capacity for the incoming commodity
-    CapacityConstraint<Material> avail(current_capacity());
-    port->AddConstraint(avail);
-
-    LOG(cyclus::LEV_INFO5, "ComCnv") << prototype()
-                                  << " adding a capacity constraint of "
-                                  << avail.capacity();
-
+  std::set<std::string>::const_iterator it;
+  BidPortfolio<Material>::Ptr port = GetBids_(commod_requests,
+                                              out_commod(),
+                                              &stocks);
+  if (!port->bids().empty()) {
     ports.insert(port);
   }
+
   return ports;
 }
 
@@ -141,7 +122,7 @@ void CommodconverterFacility::GetMatlTrades(
   for (it = trades.begin(); it != trades.end(); ++it) {
     std::string commodity = it->request->commodity();
     double qty = it->amt;
-    Material::Ptr response = TradeResponse_(qty, &storage_[commodity]);
+    Material::Ptr response = TradeResponse_(qty, &stocks[commodity]);
 
     responses.push_back(std::make_pair(*it, response));
     LOG(cyclus::LEV_INFO5, "ComCnv") << prototype()
