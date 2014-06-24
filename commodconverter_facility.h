@@ -144,6 +144,7 @@ class CommodconverterFacility
 
   #pragma cyclus var{'capacity': 'max_inv_size_'}
   cyclus::toolkit::ResourceBuff inventory;
+  cyclus::toolkit::ResourceBuff stocks;
 
   /// @brief the processing time required for a full process
   inline void process_time(int t) { process_time_ = t; }
