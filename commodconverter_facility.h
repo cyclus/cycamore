@@ -122,6 +122,14 @@ class CommodconverterFacility
       double qty, 
       cyclus::toolkit::ResourceBuff* buffer);
 
+  /// @brief this facility's commodity-recipe context
+  inline void crctx(const cyclus::toolkit::CommodityRecipeContext& crctx) {
+    crctx_ = crctx;
+  }
+  inline cyclus::toolkit::CommodityRecipeContext crctx() const {
+    return crctx_;
+  }
+
   /* --- Module Members --- */
   #pragma cyclus var {"tooltip":"input commodity",\
                       "doc":"commodity accepted by this facility"}
@@ -155,6 +163,8 @@ class CommodconverterFacility
   #pragma cyclus var{'capacity': 'max_inv_size_'}
   cyclus::toolkit::ResourceBuff inventory;
   cyclus::toolkit::ResourceBuff stocks;
+
+  cyclus::toolkit::CommodityRecipeContext crctx_;
 
   /// @brief the processing time required for a full process
   inline void process_time(int t) { process_time_ = t; }
