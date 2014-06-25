@@ -122,6 +122,12 @@ class CommodconverterFacility
       double qty, 
       cyclus::toolkit::ResourceBuff* buffer);
 
+  /// @brief Move all unprocessed inventory to processing
+  void BeginProcessing_();
+
+  /// @brief Convert one ready resource in processing
+  void Convert_();
+
   /// @brief this facility's commodity-recipe context
   inline void crctx(const cyclus::toolkit::CommodityRecipeContext& crctx) {
     crctx_ = crctx;
@@ -129,6 +135,9 @@ class CommodconverterFacility
   inline cyclus::toolkit::CommodityRecipeContext crctx() const {
     return crctx_;
   }
+
+  /// @brief returns the time key for ready materials
+  int ready(){ return context()->time() - process_time_ ; }
 
   /* --- Module Members --- */
   #pragma cyclus var {"tooltip":"input commodity",\
@@ -163,6 +172,9 @@ class CommodconverterFacility
   #pragma cyclus var{'capacity': 'max_inv_size_'}
   cyclus::toolkit::ResourceBuff inventory;
   cyclus::toolkit::ResourceBuff stocks;
+
+  /// @brief map from ready time to resource buffers
+  std::map<int, cyclus::toolkit::ResourceBuff> processing;
 
   cyclus::toolkit::CommodityRecipeContext crctx_;
 

@@ -51,6 +51,10 @@ void CommodconverterFacility::Tick() {
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 void CommodconverterFacility::Tock() {
   LOG(cyclus::LEV_INFO3, "ComCnv") << prototype() << " is tocking {";
+  while( processing[ready()].count() > 0 ) {
+    Convert_(); // place processing into stocks
+  }
+  BeginProcessing_(); // place unprocessed inventory into processing
   LOG(cyclus::LEV_INFO3, "ComCnv") << "}";
 }
 
@@ -225,6 +229,24 @@ cyclus::Material::Ptr CommodconverterFacility::TradeResponse_(
     response->Absorb(manifest[i]);
   }
   return response;
+}
+
+//- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+void CommodconverterFacility::BeginProcessing_(){
+  LOG(cyclus::LEV_DEBUG2, "ComCnv") << "CommodConverter " << prototype() 
+                                    << " added resources to processing";
+  if( inventory.count() > 0 ){
+    
+  }
+}
+
+//- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+void CommodconverterFacility::Convert_(){
+  using cyclus::Material;
+  using cyclus::ResCast;
+  // pop one material from processing 
+  // change its commod
+  // put it in the stocks
 }
 
 
