@@ -118,17 +118,19 @@ void CommodconverterFacility::GetMatlTrades(
   using cyclus::Material;
   using cyclus::Trade;
 
+  // for each trade, respond
   std::vector< Trade<Material> >::const_iterator it;
   for (it = trades.begin(); it != trades.end(); ++it) {
     std::string commodity = it->request->commodity();
     double qty = it->amt;
-    Material::Ptr response = TradeResponse_(qty, &stocks[commodity]);
+    // create a material pointer representing what you can offer
+    Material::Ptr response = TradeResponse_(qty, &stocks);
 
     responses.push_back(std::make_pair(*it, response));
     LOG(cyclus::LEV_INFO5, "ComCnv") << prototype()
                                   << " just received an order"
                                   << " for " << it->amt
-                                  << " of " << out_commod();
+                                  << " of " << commodity;
   }
 
 }
@@ -156,10 +158,75 @@ void CommodconverterFacility::AddMat_(cyclus::Material::Ptr mat) {
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 cyclus::Material::Ptr CommodconverterFacility::Request_() {
-  double qty = std::max(0.0, MaxInventorySize() - InventorySize());
+  double qty = std::max(0.0, current_capacity());
   return cyclus::Material::CreateUntracked(qty,
-                                        context()->GetRecipe(in_recipe));
+                                        context()->GetRecipe(in_recipe_));
 }
+
+//- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+cyclus::BidPortfolio<cyclus::Material>::Ptr CommodconverterFacility::GetBids_(
+    cyclus::CommodMap<cyclus::Material>::type& commod_requests,
+    std::string commod,
+    cyclus::toolkit::ResourceBuff* buffer) {
+  using cyclus::Bid;
+  using cyclus::BidPortfolio;
+  using cyclus::CapacityConstraint;
+  using cyclus::Composition;
+  using cyclus::Converter;
+  using cyclus::Material;
+  using cyclus::Request;
+  using cyclus::ResCast;
+  using cyclus::toolkit::ResourceBuff;
+
+  BidPortfolio<Material>::Ptr port(new BidPortfolio<Material>());
+
+  if (commod_requests.count(commod) > 0 && buffer->quantity() > 0) {
+    std::vector<Request<Material>*>& requests = commod_requests.at(commod);
+
+    // get offer composition
+    Material::Ptr back = ResCast<Material>(buffer->Pop(ResourceBuff::BACK));
+    Composition::Ptr comp = back->comp();
+    buffer->Push(back);
+
+    std::vector<Request<Material>*>::iterator it;
+    for (it = requests.begin(); it != requests.end(); ++it) {
+      Request<Material>* req = *it;
+      double qty = std::min(req->target()->quantity(), buffer->quantity());
+      Material::Ptr offer = Material::CreateUntracked(qty, comp);
+      port->AddBid(req, offer, this);
+    }
+
+    CapacityConstraint<Material> cc(buffer->quantity());
+    port->AddConstraint(cc);
+  }
+
+  return port;
+}
+//- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+cyclus::Material::Ptr CommodconverterFacility::TradeResponse_(
+    double qty,
+    cyclus::toolkit::ResourceBuff* buffer) {
+  using cyclus::Material;
+  using cyclus::ResCast;
+
+  std::vector<Material::Ptr> manifest;
+  try {
+    // pop amount from inventory and blob it into one material
+    manifest = ResCast<Material>(buffer->PopQty(qty));
+  } catch(cyclus::Error& e) {
+    e.msg(Agent::InformErrorMsg(e.msg()));
+    throw e;
+  }
+
+  Material::Ptr response = manifest[0];
+  crctx_.RemoveRsrc(response);
+  for (int i = 1; i < manifest.size(); i++) {
+    crctx_.RemoveRsrc(manifest[i]);
+    response->Absorb(manifest[i]);
+  }
+  return response;
+}
+
 
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 extern "C" cyclus::Agent* ConstructCommodconverterFacility(cyclus::Context* ctx) {

@@ -71,8 +71,7 @@ class CommodconverterFacility
 
   /// @brief The CommodconverterFacility request Materials of its given
   /// commodity.
-  virtual std::set<cyclus::RequestPortfolio<cyclus::Material>::Ptr>
-      GetMatlRequests();
+  virtual std::set<cyclus::RequestPortfolio<cyclus::Material>::Ptr> GetMatlRequests();
 
   /// @brief The CommodconverterFacility place accepted trade Materials in their
   /// Inventory
@@ -111,6 +110,17 @@ class CommodconverterFacility
   ///   @brief generates a request for this facility given its current state. The
   ///   quantity of the material will be equal to the remaining inventory size.
   cyclus::Material::Ptr Request_();
+
+  /// @brief gathers information about bids
+  cyclus::BidPortfolio<cyclus::Material>::Ptr GetBids_(
+        cyclus::CommodMap<cyclus::Material>::type& commod_requests, 
+        std::string commod, 
+        cyclus::toolkit::ResourceBuff* buffer);
+
+  /// @brief suggests, based on the buffer, a material response to an offer
+  cyclus::Material::Ptr TradeResponse_(
+      double qty, 
+      cyclus::toolkit::ResourceBuff* buffer);
 
   /* --- Module Members --- */
   #pragma cyclus var {"tooltip":"input commodity",\
