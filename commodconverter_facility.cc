@@ -249,9 +249,22 @@ void CommodconverterFacility::BeginProcessing_(){
 void CommodconverterFacility::Convert_(){
   using cyclus::Material;
   using cyclus::ResCast;
-  // pop one material from processing 
-  // change its commod
-  // put it in the stocks
+  LOG(cyclus::LEV_DEBUG2, "ComCnv") << "CommodConverter " << prototype() 
+                                    << " removed a resource from processing.";
+
+  if ( processing.find(ready())->second.count() > 0 ) {
+    try {
+      // pop one material from processing 
+      Material::Ptr mat = ResCast<Material>(processing.find(ready())->second.Pop());
+      // change its commod
+      crctx_.UpdateRsrc(out_commod(), mat);
+      // put it in the stocks
+      stocks.Push(mat);
+    } catch (cyclus::Error& e) {
+      e.msg(Agent::InformErrorMsg(e.msg()));
+      throw e;
+    }
+  }
 }
 
 
