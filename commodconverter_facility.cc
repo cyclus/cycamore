@@ -236,7 +236,12 @@ void CommodconverterFacility::BeginProcessing_(){
   LOG(cyclus::LEV_DEBUG2, "ComCnv") << "CommodConverter " << prototype() 
                                     << " added resources to processing";
   if( inventory.count() > 0 ){
-    
+    try {
+      processing[context()->time()].Push(inventory.Pop());
+    } catch (cyclus::Error& e) {
+      e.msg(Agent::InformErrorMsg(e.msg()));
+      throw e;
+    }
   }
 }
 
