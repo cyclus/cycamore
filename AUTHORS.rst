@@ -13,4 +13,3 @@ This project has had contributions from the following people (in alphabetical or
 * Anthony Scopatz
 * Paul P.H. Wilson
 * Zach Welch
-

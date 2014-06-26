@@ -31,7 +31,7 @@ def install_cycamore(args):
     elif args.replace:
         shutil.rmtree(args.build_dir)
         os.mkdir(args.build_dir)
-        
+
     root_dir = os.path.split(__file__)[0]
     src_dir = os.path.join(root_dir, 'src')
     makefile = os.path.join(args.build_dir, 'Makefile')
@@ -63,7 +63,7 @@ def install_cycamore(args):
         make_cmd += ['test']
     elif not args.build_only:
         make_cmd += ['install']
-    
+
     rtn = subprocess.check_call(make_cmd, cwd=args.build_dir,
                                 shell=(os.name == 'nt'))
 
@@ -78,7 +78,7 @@ def main():
     localdir = absexpanduser('~/.local')
 
     description = "A Cycamore installation helper script. "+\
-        "For more information, please see cyclus.github.com." 
+        "For more information, please see cyclus.github.com."
 
     parser = ap.ArgumentParser(description=description)
 
@@ -116,7 +116,7 @@ def main():
         "FIND_PATH, FIND_PROGRAM, or FIND_LIBRARY macros"
     parser.add_argument('--cmake_prefix_path', help=cmake_prefix_path)
 
-    build_type = "the CMAKE_BUILD_TYPE" 
+    build_type = "the CMAKE_BUILD_TYPE"
     parser.add_argument('--build_type', help=build_type)
 
     args = parser.parse_args()

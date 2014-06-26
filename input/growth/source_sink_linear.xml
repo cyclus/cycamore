@@ -18,9 +18,9 @@
     <name>Source1</name>
     <config>
       <Source>
-          <out_commod>commodity</out_commod>
-          <recipe_name>commod_recipe</recipe_name>
-          <capacity>1.1</capacity>
+        <out_commod>commodity</out_commod>
+        <recipe_name>commod_recipe</recipe_name>
+        <capacity>1.1</capacity>
       </Source>
     </config>
   </facility>
@@ -29,9 +29,9 @@
     <name>Source2</name>
     <config>
       <Source>
-          <out_commod>commodity</out_commod>
-          <recipe_name>commod_recipe</recipe_name>
-          <capacity>2</capacity>
+        <out_commod>commodity</out_commod>
+        <recipe_name>commod_recipe</recipe_name>
+        <capacity>2</capacity>
       </Source>
     </config>
   </facility>
@@ -66,10 +66,10 @@
     <institution>
       <name>SingleInstitution</name>
       <initialfacilitylist>
-	<entry>
-	  <prototype>Sink</prototype>
-	  <number>1</number>
-	</entry>
+        <entry>
+          <prototype>Sink</prototype>
+          <number>1</number>
+        </entry>
       </initialfacilitylist>
       <config>
         <ManagerInst>
@@ -89,5 +89,5 @@
     <nuclide> <id>922350000</id> <comp>0.711</comp> </nuclide>
     <nuclide> <id>922380000</id> <comp>99.289</comp> </nuclide>
   </recipe>
-  
+
 </simulation>

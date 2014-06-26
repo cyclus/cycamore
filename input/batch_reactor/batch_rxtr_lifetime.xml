@@ -1,4 +1,4 @@
-<!-- This input file is used to verify the INPRO reactor agent behaves 
+<!-- This input file is used to verify the INPRO reactor agent behaves
 reasonably for its lifetime. -->
 
 <simulation>
@@ -65,7 +65,7 @@ reasonably for its lifetime. -->
       </BatchReactor>
     </config>
   </facility>
-  
+
   <facility>
     <name>Sink</name>
     <config>

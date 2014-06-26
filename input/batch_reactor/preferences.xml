@@ -1,7 +1,7 @@
-<!-- This input file tests the batch reactor's preference setting. The source 
-facility provides 1 unit of commodity each time period. If the batch reactor 
-is not in process, it will request one unit of commodity and trump the sink 
-facility. Otherwise, the sink facility should procure all other units of 
+<!-- This input file tests the batch reactor's preference setting. The source
+facility provides 1 unit of commodity each time period. If the batch reactor
+is not in process, it will request one unit of commodity and trump the sink
+facility. Otherwise, the sink facility should procure all other units of
 commodity. -->
 
 <simulation>
@@ -44,7 +44,7 @@ commodity. -->
       </Source>
     </config>
   </facility>
-  
+
   <facility>
     <name>Reactor</name>
     <config>

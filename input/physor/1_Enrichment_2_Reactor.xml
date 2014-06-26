@@ -44,7 +44,7 @@
     <name>Reactor1</name>
     <config>
       <BatchReactor>
-        <fuel>         
+        <fuel>
           <incommodity>enriched_u</incommodity>
           <inrecipe>lwr_fuel_recipe</inrecipe>
           <outcommodity>waste</outcommodity>
@@ -135,7 +135,7 @@
         <entry>
           <prototype>Reactor2</prototype>
           <number>1</number>
-        </entry>        
+        </entry>
       </initialfacilitylist>
       <config><NullInst/></config>
     </institution>
