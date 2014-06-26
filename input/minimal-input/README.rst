@@ -22,7 +22,7 @@ Understanding the input file
 ~~~~~~~~~~~~~~~
 This simulation starts in January 2000 and proceeds for 10 months.
 
-`acrhetypes` block
+`archetypes` block
 ~~~~~~~~~~~~~~~~~~
 This simulation uses four archetypes:
 
