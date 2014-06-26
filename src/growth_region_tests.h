@@ -1,6 +1,5 @@
-// growth_region_tests.h
-#ifndef GROWTHREGIONTESTS_H
-#define GROWTHREGIONTESTS_H
+#ifndef CYCAMORE_SRC_GROWTH_REGION_TESTS_H_
+#define CYCAMORE_SRC_GROWTH_REGION_TESTS_H_
 
 #include <gtest/gtest.h>
 
@@ -16,7 +15,7 @@
 
 namespace cycamore {
 
-//- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 class GrowthRegionTests : public ::testing::Test {
  protected:
   cyclus::Context* ctx;
@@ -30,6 +29,6 @@ class GrowthRegionTests : public ::testing::Test {
   bool ManagesCommodity(cyclus::toolkit::Commodity& commodity);
 };
 
-} // namespace cycamore
+}  // namespace cycamore
 
-#endif
+#endif  // CYCAMORE_SRC_GROWTH_REGION_TESTS_H_

@@ -17,24 +17,24 @@ def run_cyclus(cyclus, cwd, in_path, out_path):
 def compare_nondeterm(path1, path2):
     """Compares two Cyclus HDF5 databases assuming non-deterministic AgentIDs
     and TransactionIDs.
-    
+
     Returns
     -------
-    rtn : bool 
+    rtn : bool
         True if both databases are the same, taking into account
         nondeterministic id assignments.
-    """    
+    """
     v1 = visitors.HDF5RegressionVisitor(path1)
     v2 = visitors.HDF5RegressionVisitor(path2)
     return v1.walk() == v2.walk()
-                    
+
 def compare_determ(path1, path2, verbose=True):
     """Compares two Cyclus HDF5 databases assuming deterministic AgentIDs and
     TransactionIDs
 
     Returns
     -------
-    rtn : bool 
+    rtn : bool
         True if both databases are identical other than their SimIDs
     """
     dbs_same = True
@@ -48,7 +48,7 @@ def compare_determ(path1, path2, verbose=True):
 
     for node in db_two.walk_nodes(classname = "Table"):
         path_two.append(node._v_pathname)
-    
+
     # Check if databases contain the same tables
     if not np.all(path_one == path_two):
         if verbose:
@@ -81,8 +81,8 @@ def compare_determ(path1, path2, verbose=True):
         dbs_same = False
         if verbose:
             msg = ""
-            msg += path.replace("/", "") 
-            msg += " table is different in the databases.\n" 
+            msg += path.replace("/", "")
+            msg += " table is different in the databases.\n"
             msg += determ_err_msg(names, data_one, data_two)
             print(msg)
 
@@ -120,7 +120,7 @@ def determ_err_msg(names, data_one, data_two):
                 else:
                     # provide mismatch percentage
                     mismatch = 100*float(len(indices))/len(column_one)
-                    msg += " has a mismatch of" 
+                    msg += " has a mismatch of"
                     msg += " {0:.2f}".format(mismatch) + "% \n"
                     msg += "Indices of different objects are:\n"
                     msg += str(indices[0]) + "\n"

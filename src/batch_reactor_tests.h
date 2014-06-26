@@ -1,5 +1,5 @@
-#ifndef CYCAMORE_MODELS_BATCHREACTOR_BATCH_REACTOR_TESTS_H_
-#define CYCAMORE_MODELS_BATCHREACTOR_BATCH_REACTOR_TESTS_H_
+#ifndef CYCAMORE_SRC_BATCH_REACTOR_TESTS_H_
+#define CYCAMORE_SRC_BATCH_REACTOR_TESTS_H_
 
 #include <gtest/gtest.h>
 
@@ -69,4 +69,4 @@ class BatchReactorTest : public ::testing::Test {
 
 }  // namespace cycamore
 
-#endif  // CYCAMORE_MODELS_BATCHREACTOR_BATCH_REACTOR_TESTS_H_
+#endif  // CYCAMORE_SRC_BATCH_REACTOR_TESTS_H_

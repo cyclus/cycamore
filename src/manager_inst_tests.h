@@ -1,4 +1,6 @@
-// manager_inst_tests.h
+#ifndef CYCAMORE_SRC_MANAGER_INST_TESTS_H_
+#define CYCAMORE_SRC_MANAGER_INST_TESTS_H_
+
 #include <gtest/gtest.h>
 
 #include "cyclus.h"
@@ -10,10 +12,10 @@
 #include "manager_inst.h"
 
 
-//- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-class TestProducer :
-  public cyclus::Facility,
-  public cyclus::toolkit::CommodityProducer {
+// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+class TestProducer
+    : public cyclus::Facility,
+      public cyclus::toolkit::CommodityProducer {
  public:
   TestProducer(cyclus::Context* ctx);
   ~TestProducer();
@@ -22,22 +24,26 @@ class TestProducer :
     TestProducer* m = new TestProducer(context());
     m->InitFrom(this);
     return m;
-  };
+  }
 
   void InitFrom(TestProducer* m) {
     cyclus::Facility::InitFrom(m);
-  };
+  }
 
-  void InitInv(cyclus::Inventories& inv) {};
+  void InitInv(cyclus::Inventories& inv) {}
 
-  cyclus::Inventories SnapshotInv() { return cyclus::Inventories(); };
+  cyclus::Inventories SnapshotInv() { return cyclus::Inventories(); }
 
-  void Tock() {};
-  void Tick() {};
+  void Tock() {}
+  void Tick() {}
 };
 
-//- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 class ManagerInstTests : public ::testing::Test {
+ public:
+  virtual void SetUp();
+  virtual void TearDown();
+
  protected:
   cycamore::ManagerInst* src_inst;
   TestProducer* producer;
@@ -47,8 +53,6 @@ class ManagerInstTests : public ::testing::Test {
   cyclus::Context* ctx_;
   cyclus::Timer ti_;
   cyclus::Recorder rec_;
-
- public:
-  virtual void SetUp();
-  virtual void TearDown();
 };
+
+#endif  // CYCAMORE_SRC_MANAGER_INST_TESTS_H_

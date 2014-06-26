@@ -1,17 +1,14 @@
-// manager_inst.cc
 // Implements the ManagerInst class
-
 #include "manager_inst.h"
 
 namespace cycamore {
 
-//- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-ManagerInst::ManagerInst(cyclus::Context* ctx)
-    : cyclus::Institution(ctx) {
+// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+ManagerInst::ManagerInst(cyclus::Context* ctx) : cyclus::Institution(ctx) {
   cyclus::Warn<cyclus::EXPERIMENTAL_WARNING>("the ManagerInst agent is experimental.");
 }
 
-//- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 ManagerInst::~ManagerInst() {}
 
 void ManagerInst::BuildNotify(Agent* a) {
@@ -49,7 +46,7 @@ void ManagerInst::EnterNotify() {
 void ManagerInst::Register_(Agent* a) {
   using cyclus::toolkit::CommodityProducer;
   using cyclus::toolkit::CommodityProducerManager;
-  
+
   CommodityProducer* cp_cast = dynamic_cast<CommodityProducer*>(a);
   if (cp_cast != NULL) {
     LOG(cyclus::LEV_INFO3, "mani") << "Registering agent "
@@ -62,19 +59,21 @@ void ManagerInst::Register_(Agent* a) {
 void ManagerInst::Unregister_(Agent* a) {
   using cyclus::toolkit::CommodityProducer;
   using cyclus::toolkit::CommodityProducerManager;
-  
+
   CommodityProducer* cp_cast = dynamic_cast<CommodityProducer*>(a);
   if (cp_cast != NULL)
     CommodityProducerManager::Unregister(cp_cast);
 }
 
-//- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 void ManagerInst::WriteProducerInformation(
   cyclus::toolkit::CommodityProducer* producer) {
   using std::set;
-  set<cyclus::toolkit::Commodity, cyclus::toolkit::CommodityCompare> commodities =
-    producer->ProducedCommodities();
-  set<cyclus::toolkit::Commodity, cyclus::toolkit::CommodityCompare>::iterator it;
+  set<cyclus::toolkit::Commodity,
+      cyclus::toolkit::CommodityCompare> commodities =
+          producer->ProducedCommodities();
+  set<cyclus::toolkit::Commodity, cyclus::toolkit::CommodityCompare>::
+      iterator it;
 
   LOG(cyclus::LEV_DEBUG3, "maninst") << " Clone produces " << commodities.size()
                                      << " commodities.";
@@ -87,10 +86,9 @@ void ManagerInst::WriteProducerInformation(
   }
 }
 
-//- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 extern "C" cyclus::Agent* ConstructManagerInst(cyclus::Context* ctx) {
   return new ManagerInst(ctx);
 }
-} // namespace cycamore
 
-
+}  // namespace cycamore

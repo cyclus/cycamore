@@ -1,12 +1,10 @@
-// growth_region_tests.cc
-
 #include <sstream>
 
 #include "growth_region_tests.h"
 
 namespace cycamore {
 
-//- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 void GrowthRegionTests::SetUp() {
   ctx = new cyclus::Context(&ti, &rec);
   region = new cycamore::GrowthRegion(ctx);
@@ -16,18 +14,18 @@ void GrowthRegionTests::SetUp() {
   demand_start = "0";
 }
 
-//- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 void GrowthRegionTests::TearDown() {
   delete region;
   delete ctx;
 }
 
-//- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 bool GrowthRegionTests::ManagesCommodity(cyclus::toolkit::Commodity& commodity) {
   return region->sdmanager()->ManagesCommodity(commodity);
 }
 
-//- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 TEST_F(GrowthRegionTests, init) {
   cyclus::toolkit::Commodity commodity(commodity_name);
   cyclus::toolkit::ExpFunctionFactory eff;
@@ -35,9 +33,9 @@ TEST_F(GrowthRegionTests, init) {
   EXPECT_TRUE(ManagesCommodity(commodity));
 }
 
-} // namespace cycamore
+}  // namespace cycamore
 
-//- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 cyclus::Agent* GrowthRegionConstructor(cyclus::Context* ctx) {
   return new cycamore::GrowthRegion(ctx);
 }
@@ -47,9 +45,9 @@ cyclus::Agent* GrowthRegionConstructor(cyclus::Context* ctx) {
 int ConnectAgentTests();
 static int cyclus_agent_tests_connected = ConnectAgentTests();
 #define CYCLUS_AGENT_TESTS_CONNECTED cyclus_agent_tests_connected
-#endif // CYCLUS_AGENT_TESTS_CONNECTED
+#endif  // CYCLUS_AGENT_TESTS_CONNECTED
 
-//- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 INSTANTIATE_TEST_CASE_P(GrowthRegion, RegionTests,
                         Values(&GrowthRegionConstructor));
 INSTANTIATE_TEST_CASE_P(GrowthRegion, AgentTests,

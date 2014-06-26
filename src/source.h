@@ -1,6 +1,5 @@
-// source.h
-#ifndef CYCAMORE_MODELS__SOURCE_FACILITY_H_
-#define CYCAMORE_MODELS__SOURCE_FACILITY_H_
+#ifndef CYCAMORE_SRC_SOURCE_H_
+#define CYCAMORE_SRC_SOURCE_H_
 
 #include <set>
 #include <vector>
@@ -106,26 +105,26 @@ class Source : public cyclus::Facility,
 
   /* --- Agent Members --- */
   virtual void EnterNotify();
-  
+
   ///   Each facility is prompted to do its beginning-of-time-step
   ///   stuff at the tick of the timer.
- 
+
   ///   @param time is the time to perform the tick
   virtual void Tick();
 
   ///   Each facility is prompted to its end-of-time-step
   ///   stuff on the tock of the timer.
-  
+
   ///   @param time is the time to perform the tock
   virtual void Tock();
-  
+
   /// @brief Responds to each request for this source facility's commodity.
   /// If a given request is more than this facility's capacity, it will offer
   /// its capacity.
   virtual std::set<cyclus::BidPortfolio<cyclus::Material>::Ptr>
       GetMatlBids(cyclus::CommodMap<cyclus::Material>::type&
                   commod_requests);
-  
+
   /// @brief respond to each trade with a material made from this facility's
   /// recipe
   ///
@@ -171,7 +170,7 @@ class Source : public cyclus::Facility,
 
  private:
   cyclus::toolkit::Commodity commod_;
-  
+
   ///   This facility has only one output commodity
   #pragma cyclus var {"tooltip": "source output commodity", \
                       "doc": "output commodity that the source facility " \
@@ -198,7 +197,6 @@ class Source : public cyclus::Facility,
   /* --- */
 };
 
-} // namespace cycamore
+}  // namespace cycamore
 
-#endif // CYCAMORE_MODELS__SOURCE_FACILITY_H_
-
+#endif  // CYCAMORE_SRC_SOURCE_H_

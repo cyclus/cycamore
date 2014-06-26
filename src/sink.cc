@@ -1,4 +1,3 @@
-// sink.cc
 // Implements the Sink class
 #include <algorithm>
 #include <sstream>
@@ -9,14 +8,14 @@
 
 namespace cycamore {
 
-//- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 Sink::Sink(cyclus::Context* ctx)
-  : cyclus::Facility(ctx),
-    capacity(std::numeric_limits<double>::max()) {
+    : cyclus::Facility(ctx),
+      capacity(std::numeric_limits<double>::max()) {
   SetMaxInventorySize(std::numeric_limits<double>::max());
 }
 
-//- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 Sink::~Sink() {}
 
 #pragma cyclus def schema cycamore::Sink
@@ -37,7 +36,7 @@ Sink::~Sink() {}
 
 #pragma cyclus def initfromcopy cycamore::Sink
 
-//- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 std::string Sink::str() {
   using std::string;
   using std::vector;
@@ -57,14 +56,14 @@ std::string Sink::str() {
   return "" + ss.str();
 }
 
-//- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - 
+// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 std::set<cyclus::RequestPortfolio<cyclus::Material>::Ptr>
 Sink::GetMatlRequests() {
   using cyclus::CapacityConstraint;
   using cyclus::Material;
   using cyclus::RequestPortfolio;
   using cyclus::Request;
-  
+
   std::set<RequestPortfolio<Material>::Ptr> ports;
   RequestPortfolio<Material>::Ptr port(new RequestPortfolio<Material>());
   double amt = RequestAmt();
@@ -73,7 +72,7 @@ Sink::GetMatlRequests() {
   if (amt > cyclus::eps()) {
     CapacityConstraint<Material> cc(amt);
     port->AddConstraint(cc);
-    
+
     std::vector<std::string>::const_iterator it;
     std::vector<Request<Material>*> mutuals;
     for (it = in_commods.begin(); it != in_commods.end(); ++it) {
@@ -81,19 +80,19 @@ Sink::GetMatlRequests() {
     }
     port->AddMutualReqs(mutuals);
     ports.insert(port);
-  } // if amt > eps
+  }  // if amt > eps
 
   return ports;
 }
 
-//- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - 
+// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 std::set<cyclus::RequestPortfolio<cyclus::Product>::Ptr>
 Sink::GetGenRsrcRequests() {
   using cyclus::CapacityConstraint;
   using cyclus::Product;
   using cyclus::RequestPortfolio;
   using cyclus::Request;
-  
+
   std::set<RequestPortfolio<Product>::Ptr> ports;
   RequestPortfolio<Product>::Ptr
       port(new RequestPortfolio<Product>());
@@ -102,44 +101,43 @@ Sink::GetGenRsrcRequests() {
   if (amt > cyclus::eps()) {
     CapacityConstraint<Product> cc(amt);
     port->AddConstraint(cc);
-    
+
     std::vector<std::string>::const_iterator it;
     for (it = in_commods.begin(); it != in_commods.end(); ++it) {
-      std::string quality = ""; // not clear what this should be..
-      Product::Ptr rsrc = Product::CreateUntracked(amt,
-                                                                   quality);
+      std::string quality = "";  // not clear what this should be..
+      Product::Ptr rsrc = Product::CreateUntracked(amt, quality);
       port->AddRequest(rsrc, this, *it);
     }
-    
+
     ports.insert(port);
-  } // if amt > eps
-  
+  }  // if amt > eps
+
   return ports;
 }
 
-//- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - 
+// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 void Sink::AcceptMatlTrades(
     const std::vector< std::pair<cyclus::Trade<cyclus::Material>,
                                  cyclus::Material::Ptr> >& responses) {
   std::vector< std::pair<cyclus::Trade<cyclus::Material>,
                          cyclus::Material::Ptr> >::const_iterator it;
   for (it = responses.begin(); it != responses.end(); ++it) {
-    inventory.Push(it->second);    
+    inventory.Push(it->second);
   }
 }
 
-//- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - 
+// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 void Sink::AcceptGenRsrcTrades(
     const std::vector< std::pair<cyclus::Trade<cyclus::Product>,
                                  cyclus::Product::Ptr> >& responses) {
   std::vector< std::pair<cyclus::Trade<cyclus::Product>,
                          cyclus::Product::Ptr> >::const_iterator it;
   for (it = responses.begin(); it != responses.end(); ++it) {
-    inventory.Push(it->second);    
+    inventory.Push(it->second);
   }
 }
 
-//- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - 
+// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 void Sink::Tick() {
   using std::string;
   using std::vector;
@@ -158,7 +156,7 @@ void Sink::Tick() {
   LOG(cyclus::LEV_INFO3, "SnkFac") << "}";
 }
 
-//- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 void Sink::Tock() {
   LOG(cyclus::LEV_INFO3, "SnkFac") << prototype() << " is tocking {";
 
@@ -172,8 +170,9 @@ void Sink::Tock() {
   LOG(cyclus::LEV_INFO3, "SnkFac") << "}";
 }
 
-//- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 extern "C" cyclus::Agent* ConstructSink(cyclus::Context* ctx) {
   return new Sink(ctx);
 }
-} // namespace cycamore
+
+}  // namespace cycamore
