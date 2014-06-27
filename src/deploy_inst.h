@@ -1,12 +1,11 @@
-// Deployinst.h
-#ifndef _DEPLOYINST_H
-#define _DEPLOYINST_H
-
-#include "cyclus.h"
+#ifndef CYCAMORE_SRC_DEPLOY_INST_H_
+#define CYCAMORE_SRC_DEPLOY_INST_H_
 
 #include <utility>
 #include <set>
 #include <map>
+
+#include "cyclus.h"
 
 namespace cycamore {
 
@@ -49,5 +48,6 @@ class DeployInst : public cyclus::Institution {
   BuildSched build_sched_;
 };
 
-} // namespace cycamore
-#endif
+}  // namespace cycamore
+
+#endif  // CYCAMORE_SRC_DEPLOY_INST_H_

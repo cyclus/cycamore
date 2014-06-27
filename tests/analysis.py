@@ -5,7 +5,7 @@ import subprocess
 from multiprocessing import Pool, Manager, cpu_count
 from collections import defaultdict
 import argparse as ap
-import time 
+import time
 
 import test_regression as tst
 
@@ -18,10 +18,10 @@ def collect(args):
     tbl_freq, col_freq = args
 
     rtn = subprocess.Popen(
-        ["python", "-c", 
+        ["python", "-c",
          "import test_regression as t; " +
          "t.setup(); obj = t.TestRegression();" +
-         "obj.test_regression(check_deterministic=True)"], 
+         "obj.test_regression(check_deterministic=True)"],
         stdout=subprocess.PIPE, stderr=subprocess.PIPE)
     out, err = rtn.communicate()
     #print out, err
@@ -53,7 +53,7 @@ def determ_analysis(niter=1000):
     ----------
     niter : int
           The number of times to run regression tests
-         
+
     fname : str
           The output filename to report to
 
@@ -61,7 +61,7 @@ def determ_analysis(niter=1000):
     -------
     tbl_freq, col_freq : 2-tuple of dicts
                        tbl_freq is a frequency map of nondeterministic tables
-                       col_freq is a frequency map of nondeterminisitc columns, 
+                       col_freq is a frequency map of nondeterminisitc columns,
                        per table
     """
     m = Manager()
@@ -94,7 +94,7 @@ def determ_analysis(niter=1000):
     # normalize
     for tbl, dic in col_freq.iteritems():
         for col, freq in dic.iteritems():
-            dic[col] = "{0:.2f}".format(float(freq) / tbl_freq[tbl])    
+            dic[col] = "{0:.2f}".format(float(freq) / tbl_freq[tbl])
     for k, v in tbl_freq.iteritems():
         tbl_freq[k] = "{0:.2f}".format(float(v) / niter)
 
@@ -108,7 +108,7 @@ def report(tbl_freq, col_freq, fname="report"):
     ----------
     tbl_freq : dict
              the table frequency output from determ_analysis
-         
+
     col_freq : dict
              the column frequency output from determ_analysis
 
@@ -116,7 +116,7 @@ def report(tbl_freq, col_freq, fname="report"):
           the output file name to print to
     """
     lines = []
-    lines.append("Table values are reported as percent nondeterministic" + 
+    lines.append("Table values are reported as percent nondeterministic" +
                  " of total runs.\n\n")
     lines.append("Column values are reported as percent nondeterministic" +
                  " of all table nondeterminism occurrences.\n\n")
@@ -125,7 +125,7 @@ def report(tbl_freq, col_freq, fname="report"):
     for tbl, freq in tbl_freq.iteritems():
         lines.append(tbl + " " + freq + "\n")
         for col, freq in col_freq[tbl].iteritems():
-            lines.append("  " + col + " " + freq + "\n") 
+            lines.append("  " + col + " " + freq + "\n")
     with open(fname, "w") as f:
         f.writelines(lines)
 
@@ -136,12 +136,12 @@ def main():
     parser = ap.ArgumentParser(description=description)
 
     niter = 'the number of regression test runs to perform'
-    parser.add_argument('-n', '--niterations', type=int, help=niter, 
+    parser.add_argument('-n', '--niterations', type=int, help=niter,
                         default=100)
 
     out = 'the file to write the report to'
     parser.add_argument('--out', help=out, default='report')
-    
+
     args = parser.parse_args()
     tbl_freq, col_freq = determ_analysis(args.niterations)
     report(tbl_freq, col_freq, args.out)

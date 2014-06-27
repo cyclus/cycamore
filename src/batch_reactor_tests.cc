@@ -1,4 +1,3 @@
-// batch_reactor_tests.cc
 #include "batch_reactor_tests.h"
 
 #include <sstream>
@@ -124,8 +123,10 @@ void BatchReactorTest::SetUpSource() {
   src_facility->ics(ics);
 
   src_facility->Add(commodity);
-  src_facility->cyclus::toolkit::CommodityProducer::SetCapacity(commodity, capacity);
-  src_facility->cyclus::toolkit::CommodityProducer::SetCost(commodity, capacity);
+  src_facility->cyclus::toolkit::CommodityProducer::
+      SetCapacity(commodity, capacity);
+  src_facility->cyclus::toolkit::CommodityProducer::
+      SetCost(commodity, capacity);
 
   src_facility->commod_prefs(commod_prefs);
 
@@ -282,7 +283,7 @@ TEST_F(BatchReactorTest, DISABLED_XMLInit) {
   p.Init(ss);
   cyclus::InfileTree engine(p);
   cycamore::BatchReactor* fac = new cycamore::BatchReactor(tc_.get());
-  //fac->InitFrom(&engine);
+  // fac->InitFrom(&engine);
 
   TestInitState(fac);
 }
@@ -390,7 +391,7 @@ cyclus::Agent* BatchReactorConstructor(cyclus::Context* ctx) {
 int ConnectAgentTests();
 static int cyclus_agent_tests_connected = ConnectAgentTests();
 #define CYCLUS_AGENT_TESTS_CONNECTED cyclus_agent_tests_connected
-#endif // CYCLUS_AGENT_TESTS_CONNECTED
+#endif  // CYCLUS_AGENT_TESTS_CONNECTED
 
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 // INSTANTIATE_TEST_CASE_P(BatchReactor, FacilityTests,

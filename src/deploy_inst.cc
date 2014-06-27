@@ -1,12 +1,9 @@
-// deploy_inst.cc
 // Implements the DeployInst class
-
 #include "deploy_inst.h"
 
 namespace cycamore {
 
-DeployInst::DeployInst(cyclus::Context* ctx)
-    : cyclus::Institution(ctx) {}
+DeployInst::DeployInst(cyclus::Context* ctx) : cyclus::Institution(ctx) {}
 
 DeployInst::~DeployInst() {}
 
@@ -93,4 +90,4 @@ extern "C" cyclus::Agent* ConstructDeployInst(cyclus::Context* ctx) {
   return new DeployInst(ctx);
 }
 
-} // namespace cycamore
+}  // namespace cycamore

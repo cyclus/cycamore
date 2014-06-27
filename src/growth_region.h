@@ -1,4 +1,3 @@
-// growth_region.h
 #ifndef CYCAMORE_SRC_GROWTH_REGION_H_
 #define CYCAMORE_SRC_GROWTH_REGION_H_
 
@@ -11,7 +10,7 @@
 // forward declarations
 namespace cycamore {
 class GrowthRegion;
-} // namespace cycamore
+}  // namespace cycamore
 
 // forward includes
 #include "growth_region_tests.h"
@@ -67,7 +66,9 @@ class GrowthRegion : public cyclus::Region {
   /// unregister a child
   virtual void DecomNotify(Agent* m);
 
-  inline cyclus::toolkit::SupplyDemandManager* sdmanager() { return &sdmanager_; };
+  inline cyclus::toolkit::SupplyDemandManager* sdmanager() {
+    return &sdmanager_;
+  }
 
  protected:
   #pragma cyclus var {"tooltip": "commodity in demand", \
@@ -91,17 +92,17 @@ class GrowthRegion : public cyclus::Region {
   std::vector<int> demand_times;
 
   cyclus::toolkit::Commodity commod_;
-  
+
   /// manager for building things
   cyclus::toolkit::BuildingManager buildmanager_;
 
   /// manager for Supply and demand
   cyclus::toolkit::SupplyDemandManager sdmanager_;
 
-  /// register a child 
+  /// register a child
   void Register_(cyclus::Agent* agent);
 
-  /// unregister a child 
+  /// unregister a child
   void Unregister_(cyclus::Agent* agent);
 
   /// orders builds given a commodity and an unmet demand for production
@@ -115,6 +116,7 @@ class GrowthRegion : public cyclus::Region {
   /// @param prototype the agent to be built
   void OrderBuild(cyclus::Agent* builder, cyclus::Agent* prototype);
 };
-} // namespace cycamore
+
+}  // namespace cycamore
 
 #endif  // CYCAMORE_SRC_GROWTH_REGION_H_

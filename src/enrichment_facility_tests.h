@@ -1,6 +1,5 @@
-// enrichment_facility_tests.cc
-#ifndef CYCAMORE_MODELS_ENRICHMENTFACILITY_ENRICHMENT_FACILITY_TESTS_
-#define CYCAMORE_MODELS_ENRICHMENTFACILITY_ENRICHMENT_FACILITY_TESTS_
+#ifndef CYCAMORE_SRC_ENRICHMENT_FACILITY_TESTS_
+#define CYCAMORE_SRC_ENRICHMENT_FACILITY_TESTS_
 
 #include <gtest/gtest.h>
 
@@ -15,7 +14,7 @@
 
 namespace cycamore {
 
-//- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 class EnrichmentFacilityTest : public ::testing::Test {
  protected:
   cyclus::TestContext tc_;
@@ -23,11 +22,11 @@ class EnrichmentFacilityTest : public ::testing::Test {
   std::string in_commod, out_commod, in_recipe;
   cyclus::Composition::Ptr recipe;
   TestFacility* trader;
-  
+
   double tails_assay, feed_assay, inv_size, commodity_price, swu_capacity;
 
   double reserves;
-  
+
   virtual void SetUp();
   virtual void TearDown();
   void InitParameters();
@@ -46,6 +45,6 @@ class EnrichmentFacilityTest : public ::testing::Test {
       GetContext(int nreqs, int nvalid);
 };
 
-} // namespace cycamore
+}  // namespace cycamore
 
-#endif // CYCAMORE_MODELS_ENRICHMENTFACILITY_ENRICHMENT_FACILITY_TESTS_
+#endif  // CYCAMORE_SRC_ENRICHMENT_FACILITY_TESTS_

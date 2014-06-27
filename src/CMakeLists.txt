@@ -18,7 +18,7 @@ USE_CYCLUS("cycamore" "growth_region")
 
 INSTALL_CYCLUS_MODULE("cycamore" "" "NONE")
 
-SET( TestSource ${cycamore_TEST_CC} PARENT_SCOPE)
+SET(TestSource ${cycamore_TEST_CC} PARENT_SCOPE)
 
 # install header files
 FILE(GLOB h_files "${CMAKE_CURRENT_SOURCE_DIR}/*.h")

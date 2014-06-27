@@ -1,6 +1,5 @@
-// batch_reactor.h
-#ifndef CYCAMORE_MODELS_BATCHREACTOR_BATCH_REACTOR_H_
-#define CYCAMORE_MODELS_BATCHREACTOR_BATCH_REACTOR_H_
+#ifndef CYCAMORE_SRC_BATCH_REACTOR_H_
+#define CYCAMORE_SRC_BATCH_REACTOR_H_
 
 #include <map>
 #include <queue>
@@ -192,7 +191,7 @@ class BatchReactor
   /* --- */
 
   /* --- Facility Members --- */
-  /// perform module-specific tasks when entering the simulation 
+  /// perform module-specific tasks when entering the simulation
   virtual void Build(cyclus::Agent* parent);
   /* --- */
 
@@ -204,7 +203,7 @@ class BatchReactor
   /// The Tick function specific to the BatchReactor.
   /// @param time the time of the tock
   virtual void Tock();
-  
+
   /// @brief The EnrichmentFacility request Materials of its given
   /// commodity.
   virtual std::set<cyclus::RequestPortfolio<cyclus::Material>::Ptr>
@@ -443,4 +442,4 @@ class BatchReactor
 
 }  // namespace cycamore
 
-#endif  // CYCAMORE_MODELS_BATCHREACTOR_BATCH_REACTOR_H_
+#endif  // CYCAMORE_SRC_BATCH_REACTOR_H_

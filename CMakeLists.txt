@@ -11,7 +11,7 @@ IF(${CMAKE_SOURCE_DIR} STREQUAL ${CMAKE_BINARY_DIR})
 ENDIF()
 
 # This project name is cycamore.
-PROJECT( CYCAMORE )
+PROJECT(CYCAMORE)
 
 # quiets fortify_source warnings when not compiling with optimizations
 # in linux distros where compilers were compiled with fortify_source enabled by
@@ -19,230 +19,230 @@ PROJECT( CYCAMORE )
 MESSAGE("${CMAKE_BUILD_TYPE}")
 STRING(TOLOWER "${CMAKE_BUILD_TYPE}" BUILD_TYPE)
 IF(NOT ${BUILD_TYPE} STREQUAL "release")
-  SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -U_FORTIFY_SOURCE -D_FORTIFY_SOURCE=0")
+    SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -U_FORTIFY_SOURCE -D_FORTIFY_SOURCE=0")
 ENDIF()
 # no overflow warnings because of silly coin-ness
 SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wno-overflow")
 
 # Direct any out-of-source builds to this directory
-SET( CYCAMORE_SOURCE_DIR ${CMAKE_SOURCE_DIR} )
+SET(CYCAMORE_SOURCE_DIR ${CMAKE_SOURCE_DIR})
 
 IF(NOT CYCLUS_DOC_ONLY)
-# Direct any binary installation paths to this directory
-SET( CYCAMORE_BINARY_DIR ${CMAKE_BINARY_DIR} )
+    # Direct any binary installation paths to this directory
+    SET(CYCAMORE_BINARY_DIR ${CMAKE_BINARY_DIR})
 
-# This makes all the libraries build as SHARED
-SET(BUILD_SHARED_LIBS true)
+    # This makes all the libraries build as SHARED
+    SET(BUILD_SHARED_LIBS true)
 
-# Setup build locations.
-IF(NOT CMAKE_RUNTIME_OUTPUT_DIRECTORY)
-  SET(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CYCAMORE_BINARY_DIR}/bin)
-endif()
-IF(NOT CMAKE_LIBRARY_OUTPUT_DIRECTORY)
-  SET(CMAKE_LIBRARY_OUTPUT_DIRECTORY ${CYCAMORE_BINARY_DIR}/lib)
-endif()
-IF(NOT CMAKE_ARCHIVE_OUTPUT_DIRECTORY)
-  SET(CMAKE_ARCHIVE_OUTPUT_DIRECTORY ${CYCAMORE_BINARY_DIR}/lib)
-ENDIF()
+    # Setup build locations.
+    IF(NOT CMAKE_RUNTIME_OUTPUT_DIRECTORY)
+        SET(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CYCAMORE_BINARY_DIR}/bin)
+    endif()
+    IF(NOT CMAKE_LIBRARY_OUTPUT_DIRECTORY)
+        SET(CMAKE_LIBRARY_OUTPUT_DIRECTORY ${CYCAMORE_BINARY_DIR}/lib)
+    endif()
+    IF(NOT CMAKE_ARCHIVE_OUTPUT_DIRECTORY)
+        SET(CMAKE_ARCHIVE_OUTPUT_DIRECTORY ${CYCAMORE_BINARY_DIR}/lib)
+    ENDIF()
 
-SET(CYCAMORE_EXECUTABLE_DIR ${CMAKE_RUNTIME_OUTPUT_DIRECTORY})
+    SET(CYCAMORE_EXECUTABLE_DIR ${CMAKE_RUNTIME_OUTPUT_DIRECTORY})
 
-# use, i.e. don't skip the full RPATH for the build tree
-SET(CMAKE_SKIP_BUILD_RPATH  FALSE)
+    # use, i.e. don't skip the full RPATH for the build tree
+    SET(CMAKE_SKIP_BUILD_RPATH  FALSE)
 
-# when building, don't use the install RPATH already
-# (but later on when installing)
-SET(CMAKE_BUILD_WITH_INSTALL_RPATH FALSE) 
+    # when building, don't use the install RPATH already
+    # (but later on when installing)
+    SET(CMAKE_BUILD_WITH_INSTALL_RPATH FALSE)
 
-SET(CMAKE_INSTALL_RPATH "${CMAKE_INSTALL_PREFIX}/lib")
+    SET(CMAKE_INSTALL_RPATH "${CMAKE_INSTALL_PREFIX}/lib")
 
-# add the automatically determined parts of the RPATH
-# which point to directories outside the build tree to the install RPATH
-SET(CMAKE_INSTALL_RPATH_USE_LINK_PATH TRUE)
+    # add the automatically determined parts of the RPATH
+    # which point to directories outside the build tree to the install RPATH
+    SET(CMAKE_INSTALL_RPATH_USE_LINK_PATH TRUE)
 
-# the RPATH to be used when installing, but only if it's not a system directory
-LIST(FIND CMAKE_PLATFORM_IMPLICIT_LINK_DIRECTORIES "${CMAKE_INSTALL_PREFIX}/lib" isSystemDir)
-IF("${isSystemDir}" STREQUAL "-1")
-   SET(CMAKE_INSTALL_RPATH "${CMAKE_INSTALL_PREFIX}/lib")
-ENDIF("${isSystemDir}" STREQUAL "-1")
+    # the RPATH to be used when installing, but only if it's not a system directory
+    LIST(FIND CMAKE_PLATFORM_IMPLICIT_LINK_DIRECTORIES "${CMAKE_INSTALL_PREFIX}/lib" isSystemDir)
+    IF("${isSystemDir}" STREQUAL "-1")
+        SET(CMAKE_INSTALL_RPATH "${CMAKE_INSTALL_PREFIX}/lib")
+    ENDIF("${isSystemDir}" STREQUAL "-1")
 
-# Tell CMake where the modules are
-SET( CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${CMAKE_DIR}/share/cmake-2.8/Modules")
-SET( CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} ${CYCAMORE_SOURCE_DIR}/cmake )
-MESSAGE("CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH}")
+    # Tell CMake where the modules are
+    SET(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${CMAKE_DIR}/share/cmake-2.8/Modules")
+    SET(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} ${CYCAMORE_SOURCE_DIR}/cmake)
+    MESSAGE("CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH}")
 
-# Include macros
-INCLUDE(UseCyclus)
+    # Include macros
+    INCLUDE(UseCyclus)
 
-# Find cyclus
-FIND_PACKAGE( Cyclus REQUIRED )
-SET(CYCAMORE_INCLUDE_DIR ${CYCAMORE_INCLUDE_DIR} ${CYCLUS_CORE_INCLUDE_DIR})
-SET(LIBS ${LIBS} ${CYCLUS_CORE_LIBRARIES})
+    # Find cyclus
+    FIND_PACKAGE(Cyclus REQUIRED)
+    SET(CYCAMORE_INCLUDE_DIR ${CYCAMORE_INCLUDE_DIR} ${CYCLUS_CORE_INCLUDE_DIR})
+    SET(LIBS ${LIBS} ${CYCLUS_CORE_LIBRARIES})
 
-# Find LibXML++ and dependencies
-FIND_PACKAGE( LibXML++ REQUIRED )
-SET(CYCAMORE_INCLUDE_DIR ${CYCAMORE_INCLUDE_DIR} ${LibXML++_INCLUDE_DIR} ${Glibmm_INCLUDE_DIRS} ${LibXML++Config_INCLUDE_DIR})
-SET(LIBS ${LIBS} ${LibXML++_LIBRARIES})
-MESSAGE("--LIBS: ${LIBS}")
+    # Find LibXML++ and dependencies
+    FIND_PACKAGE(LibXML++ REQUIRED)
+    SET(CYCAMORE_INCLUDE_DIR ${CYCAMORE_INCLUDE_DIR} ${LibXML++_INCLUDE_DIR} ${Glibmm_INCLUDE_DIRS} ${LibXML++Config_INCLUDE_DIR})
+    SET(LIBS ${LIBS} ${LibXML++_LIBRARIES})
+    MESSAGE("--LIBS: ${LIBS}")
 
-MESSAGE("--LD_LIBRARY_PATH: $ENV{LD_LIBRARY_PATH}")
+    MESSAGE("--LD_LIBRARY_PATH: $ENV{LD_LIBRARY_PATH}")
 
-# Include the boost header files, system, and filesystem libraries
-SET(Boost_USE_STATIC_LIBS       OFF)
-SET(Boost_USE_STATIC_RUNTIME    OFF)
-FIND_PACKAGE( Boost COMPONENTS filesystem system REQUIRED)
-SET(CYCAMORE_INCLUDE_DIR ${CYCAMORE_INCLUDE_DIR} ${Boost_INCLUDE_DIR})
-SET(LIBS ${LIBS} ${Boost_FILESYSTEM_LIBRARY})
-SET(LIBS ${LIBS} ${Boost_SYSTEM_LIBRARY})
+    # Include the boost header files, system, and filesystem libraries
+    SET(Boost_USE_STATIC_LIBS       OFF)
+    SET(Boost_USE_STATIC_RUNTIME    OFF)
+    FIND_PACKAGE(Boost COMPONENTS filesystem system REQUIRED)
+    SET(CYCAMORE_INCLUDE_DIR ${CYCAMORE_INCLUDE_DIR} ${Boost_INCLUDE_DIR})
+    SET(LIBS ${LIBS} ${Boost_FILESYSTEM_LIBRARY})
+    SET(LIBS ${LIBS} ${Boost_SYSTEM_LIBRARY})
 
-# find lapack and link to it
-FIND_PACKAGE( LAPACK REQUIRED )
-set(LIBS ${LIBS} ${LAPACK_LIBRARIES})
-MESSAGE("\tFound LAPACK Libraries: ${LAPACK_LIBRARIES}")
+    # find lapack and link to it
+    FIND_PACKAGE(LAPACK REQUIRED)
+    set(LIBS ${LIBS} ${LAPACK_LIBRARIES})
+    MESSAGE("\tFound LAPACK Libraries: ${LAPACK_LIBRARIES}")
 
-# Find HDF5
-FIND_PACKAGE( HDF5 REQUIRED)
-ADD_DEFINITIONS(${HDF5_DEFINITIONS})
-set(LIBS ${LIBS} ${HDF5_LIBRARIES} )
+    # Find HDF5
+    FIND_PACKAGE(HDF5 REQUIRED)
+    ADD_DEFINITIONS(${HDF5_DEFINITIONS})
+    set(LIBS ${LIBS} ${HDF5_LIBRARIES})
 
-# find coin and link to it
-FIND_PACKAGE( COIN REQUIRED )
-set(LIBS ${LIBS} ${COIN_LIBRARIES})
+    # find coin and link to it
+    FIND_PACKAGE(COIN REQUIRED)
+    set(LIBS ${LIBS} ${COIN_LIBRARIES})
 
-# include the agent directories
-SET(CYCAMORE_INCLUDE_DIR ${CYCAMORE_INCLUDE_DIR} tests 
-    ${CYCLUS_CORE_INCLUDE_DIR}/..)
+    # include the agent directories
+    SET(CYCAMORE_INCLUDE_DIR ${CYCAMORE_INCLUDE_DIR} tests
+        ${CYCLUS_CORE_INCLUDE_DIR}/..)
 
-# include all the directories we just found
-INCLUDE_DIRECTORIES(${CYCAMORE_INCLUDE_DIR} 
-                    ${COIN_INCLUDE_DIRS})
-
-
-# ------------------------- Add the Agents -----------------------------------
-ADD_SUBDIRECTORY(src)
-
-# ------------------------- Google Test -----------------------------------
-
-# Be sure to clear these each time
-SET( GENERATED_TEST_LIST "" CACHE INTERNAL "" )
-SET( GENERATED_FILTER_LIST "" CACHE INTERNAL "" )
-SET( GENERATED_TEST_SOURCE_LIST "" CACHE INTERNAL "" )
-
-# The gtest include file directories.
-SET(GTEST_INCLUDE_DIRS "${CYCAMORE_INCLUDE_DIR}")
-
-# Alerts CMake to any tests we need to worry about
-INCLUDE_DIRECTORIES(${GTEST_INCLUDE_DIRS})
-
-# Create an executable for all the gtests
-# Options for testing
-OPTION( USE_TESTING "Build testing" ON )
-IF( USE_TESTING )
-  enable_testing()
-  INCLUDE(CTest)
-ENDIF()
-
-ADD_SUBDIRECTORY(tests)
-
-SET(TestSource 
-  ${TestSource} 
-  ${CYCAMORE_TEST_CORE}
-  )
-
-FIND_PACKAGE(Threads)
-IF(CMAKE_USE_PTHREADS_INIT)  # The pthreads library is available.
-  SET(cxx_base_flags "${cxx_base_flags} -DGTEST_HAS_PTHREAD=1")
-ENDIF()
-
-# Build cycamore_unit_tests
-ADD_EXECUTABLE( cycamore_unit_tests
-  tests/cycamore_unit_test_driver.cc 
-  ${TestSource}
-)
-
-TARGET_LINK_LIBRARIES( cycamore_unit_tests
-  dl ${LIBS} ${CYCLUS_TEST_LIBRARIES})
-
-INSTALL(TARGETS cycamore_unit_tests
-  RUNTIME DESTINATION bin
-  COMPONENT testing
-  )
-
-# read tests after building the driver, and add them to ctest
-set( tgt "cycamore_unit_tests")
-set( script "${CYCAMORE_SOURCE_DIR}/config/generate_test_macros.py")
-set( exec "--executable=${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/${tgt}")
-set( reg_dir "--reg_dir=${CYCAMORE_SOURCE_DIR}/../${test_dir}")
-set( out "--output=${CMAKE_BINARY_DIR}/CTestTestfile.cmake")
-add_custom_command(TARGET ${tgt}
-  POST_BUILD
-  COMMAND python ${script} ${exec} ${reg_dir} ${out}
-  COMMENT "adding tests from ${tgt}"
-  DEPENDS
-  VERBATIM
-  )
-
-# for post test commands
-configure_file(
-    "${CMAKE_CURRENT_SOURCE_DIR}/config/CTestCustom.cmake"
-    "${CMAKE_CURRENT_BINARY_DIR}/CTestCustom.cmake"
-    IMMEDIATE @ONLY)
-
-# for printing regression tests
-configure_file(
-    "${CMAKE_CURRENT_SOURCE_DIR}/config/print_regs.py"
-    "${CMAKE_CURRENT_BINARY_DIR}/print_regs.py"
-    IMMEDIATE @ONLY)
-
-# AMS: I don't believe that this is needed anymore.
-# This just copies the shared dir from cyclus to cycamore.
-# However, the 'share/' dir should now be the same.  So this 
-# was failing because you can't copy a file to itself.
-#FILE(GLOB cyclus_shared "${CYCLUS_CORE_SHARE_DIR}/*")
-#INSTALL(FILES ${cyclus_shared} 
-#  DESTINATION share
-#  COMPONENT data
-#  )
-
-# Here we set some components for installation with cpack
-SET(CPACK_COMPONENTS_ALL cycamore testing libraries data core)
-
-# Here's where we package it with CPack
-SET(CPACK_PACKAGE_DESCRIPTION_SUMMARY "Cycamore : The Cyclus Additional Module Repository.")
-SET(CPACK_DEBIAN_PACKAGE_MAINTAINER "CNERG, UW-Madison") #required
-SET(CPACK_PACKAGE_VENDOR "CNERG, UW-Madison")
-SET(CPACK_PACKAGE_DESCRIPTION_FILE "${CMAKE_CURRENT_SOURCE_DIR}/README.rst")
-SET(CPACK_RESOURCE_FILE_LICENSE "${CMAKE_CURRENT_SOURCE_DIR}/LICENSE.rst")
-SET(CPACK_PACKAGE_VERSION_MAJOR "1")
-SET(CPACK_PACKAGE_VERSION_MINOR "0")
-#SET(CPACK_PACKAGE_VERSION_PATCH "0") # should use commit number here  ?
-SET(CPACK_PACKAGE_INSTALL_DIRECTORY "cycamore${CPACK_VERSION_MAJOR}.${CPACK_VERSION_MINOR}")
-SET(CPACK_PACKAGE_NAME "${CMAKE_PROJECT_NAME}")
- 
-CONFIGURE_FILE("${CYCAMORE_SOURCE_DIR}/cmake/CycamoreCPackOptions.cmake.in"
-  "${CYCAMORE_BINARY_DIR}/cmake/CycamoreCPackOptions.cmake" @ONLY)
-SET(CPACK_PROJECT_CONFIG_FILE "${CYCAMORE_BINARY_DIR}/cmake/CycamoreCPackOptions.cmake")
-SET(CPACK_PACKAGE_EXECUTABLES "cycamore" "cycamore_unit_tests")
+    # include all the directories we just found
+    INCLUDE_DIRECTORIES(${CYCAMORE_INCLUDE_DIR}
+        ${COIN_INCLUDE_DIRS})
 
 
-INCLUDE(CPack)
+    # ------------------------- Add the Agents -----------------------------------
+    ADD_SUBDIRECTORY(src)
 
-SET(ROOT_DIR ${CYCLUS_ROOT_DIR})  
-SET(PROJ_DIR ${PROJECT_BINARY_DIR}) 
-SET(CORE_SHARE_DIR ${CYCLUS_CORE_SHARE_DIR}) 
+    # ------------------------- Google Test -----------------------------------
+
+    # Be sure to clear these each time
+    SET(GENERATED_TEST_LIST "" CACHE INTERNAL "")
+    SET(GENERATED_FILTER_LIST "" CACHE INTERNAL "")
+    SET(GENERATED_TEST_SOURCE_LIST "" CACHE INTERNAL "")
+
+    # The gtest include file directories.
+    SET(GTEST_INCLUDE_DIRS "${CYCAMORE_INCLUDE_DIR}")
+
+    # Alerts CMake to any tests we need to worry about
+    INCLUDE_DIRECTORIES(${GTEST_INCLUDE_DIRS})
+
+    # Create an executable for all the gtests
+    # Options for testing
+    OPTION(USE_TESTING "Build testing" ON)
+    IF(USE_TESTING)
+        enable_testing()
+        INCLUDE(CTest)
+    ENDIF()
+
+    ADD_SUBDIRECTORY(tests)
+
+    SET(TestSource
+        ${TestSource}
+        ${CYCAMORE_TEST_CORE}
+        )
+
+    FIND_PACKAGE(Threads)
+    IF(CMAKE_USE_PTHREADS_INIT)  # The pthreads library is available.
+        SET(cxx_base_flags "${cxx_base_flags} -DGTEST_HAS_PTHREAD=1")
+    ENDIF()
+
+    # Build cycamore_unit_tests
+    ADD_EXECUTABLE(cycamore_unit_tests
+        tests/cycamore_unit_test_driver.cc
+        ${TestSource}
+        )
+
+    TARGET_LINK_LIBRARIES(cycamore_unit_tests
+        dl ${LIBS} ${CYCLUS_TEST_LIBRARIES})
+
+    INSTALL(TARGETS cycamore_unit_tests
+        RUNTIME DESTINATION bin
+        COMPONENT testing
+        )
+
+    # read tests after building the driver, and add them to ctest
+    set(tgt "cycamore_unit_tests")
+    set(script "${CYCAMORE_SOURCE_DIR}/config/generate_test_macros.py")
+    set(exec "--executable=${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/${tgt}")
+    set(reg_dir "--reg_dir=${CYCAMORE_SOURCE_DIR}/../${test_dir}")
+    set(out "--output=${CMAKE_BINARY_DIR}/CTestTestfile.cmake")
+    add_custom_command(TARGET ${tgt}
+        POST_BUILD
+        COMMAND python ${script} ${exec} ${reg_dir} ${out}
+        COMMENT "adding tests from ${tgt}"
+        DEPENDS
+        VERBATIM
+        )
+
+    # for post test commands
+    configure_file(
+        "${CMAKE_CURRENT_SOURCE_DIR}/config/CTestCustom.cmake"
+        "${CMAKE_CURRENT_BINARY_DIR}/CTestCustom.cmake"
+        IMMEDIATE @ONLY)
+
+    # for printing regression tests
+    configure_file(
+        "${CMAKE_CURRENT_SOURCE_DIR}/config/print_regs.py"
+        "${CMAKE_CURRENT_BINARY_DIR}/print_regs.py"
+        IMMEDIATE @ONLY)
+
+    # AMS: I don't believe that this is needed anymore.
+    # This just copies the shared dir from cyclus to cycamore.
+    # However, the 'share/' dir should now be the same.  So this
+    # was failing because you can't copy a file to itself.
+    #FILE(GLOB cyclus_shared "${CYCLUS_CORE_SHARE_DIR}/*")
+    #INSTALL(FILES ${cyclus_shared}
+    #  DESTINATION share
+    #  COMPONENT data
+    # )
+
+    # Here we set some components for installation with cpack
+    SET(CPACK_COMPONENTS_ALL cycamore testing libraries data core)
+
+    # Here's where we package it with CPack
+    SET(CPACK_PACKAGE_DESCRIPTION_SUMMARY "Cycamore : The Cyclus Additional Module Repository.")
+    SET(CPACK_DEBIAN_PACKAGE_MAINTAINER "CNERG, UW-Madison") #required
+    SET(CPACK_PACKAGE_VENDOR "CNERG, UW-Madison")
+    SET(CPACK_PACKAGE_DESCRIPTION_FILE "${CMAKE_CURRENT_SOURCE_DIR}/README.rst")
+    SET(CPACK_RESOURCE_FILE_LICENSE "${CMAKE_CURRENT_SOURCE_DIR}/LICENSE.rst")
+    SET(CPACK_PACKAGE_VERSION_MAJOR "1")
+    SET(CPACK_PACKAGE_VERSION_MINOR "0")
+    #SET(CPACK_PACKAGE_VERSION_PATCH "0") # should use commit number here  ?
+    SET(CPACK_PACKAGE_INSTALL_DIRECTORY "cycamore${CPACK_VERSION_MAJOR}.${CPACK_VERSION_MINOR}")
+    SET(CPACK_PACKAGE_NAME "${CMAKE_PROJECT_NAME}")
+
+    CONFIGURE_FILE("${CYCAMORE_SOURCE_DIR}/cmake/CycamoreCPackOptions.cmake.in"
+        "${CYCAMORE_BINARY_DIR}/cmake/CycamoreCPackOptions.cmake" @ONLY)
+    SET(CPACK_PROJECT_CONFIG_FILE "${CYCAMORE_BINARY_DIR}/cmake/CycamoreCPackOptions.cmake")
+    SET(CPACK_PACKAGE_EXECUTABLES "cycamore" "cycamore_unit_tests")
+
+
+    INCLUDE(CPack)
+
+    SET(ROOT_DIR ${CYCLUS_ROOT_DIR})
+    SET(PROJ_DIR ${PROJECT_BINARY_DIR})
+    SET(CORE_SHARE_DIR ${CYCLUS_CORE_SHARE_DIR})
 
 ENDIF(NOT CYCLUS_DOC_ONLY)
 
 # This is the directory that holds the doxygen doxyfile template (doxy.conf.in)
-SET( DOC_INPUT_DIR ${CYCAMORE_SOURCE_DIR}/doc)
+SET(DOC_INPUT_DIR ${CYCAMORE_SOURCE_DIR}/doc)
 
-# If doxygen exists, use the doc/CMakeLists.txt file for further instructions. 
+# If doxygen exists, use the doc/CMakeLists.txt file for further instructions.
 FIND_PACKAGE(Doxygen)
 IF (DOXYGEN_FOUND)
-  ADD_SUBDIRECTORY(doc)
-  SET( DOC_OUTPUT_DIR ${CMAKE_BINARY_DIR}/doc )
+    ADD_SUBDIRECTORY(doc)
+    SET(DOC_OUTPUT_DIR ${CMAKE_BINARY_DIR}/doc)
 ELSE (DOXYGEN_FOUND)
-  MESSAGE(STATUS "WARNING: Doxygen not found - doc won't be created")
+    MESSAGE(STATUS "WARNING: Doxygen not found - doc won't be created")
 ENDIF (DOXYGEN_FOUND)
 
 # uninstall target

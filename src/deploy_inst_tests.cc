@@ -1,4 +1,3 @@
-// deploy_inst_tests.cc
 #include <gtest/gtest.h>
 
 #include "context.h"
@@ -6,15 +5,14 @@
 #include "institution_tests.h"
 #include "agent_tests.h"
 
-//- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 cyclus::Agent* DeployInstitutionConstructor(cyclus::Context* ctx) {
   return new cycamore::DeployInst(ctx);
 }
 
-//- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 class DeployInstTest : public ::testing::Test {
  protected:
-
   virtual void SetUp() {}
 
   virtual void TearDown() {}
@@ -25,11 +23,10 @@ class DeployInstTest : public ::testing::Test {
 int ConnectAgentTests();
 static int cyclus_agent_tests_connected = ConnectAgentTests();
 #define CYCLUS_AGENT_TESTS_CONNECTED cyclus_agent_tests_connected
-#endif // CYCLUS_AGENT_TESTS_CONNECTED
+#endif  // CYCLUS_AGENT_TESTS_CONNECTED
 
-//- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 INSTANTIATE_TEST_CASE_P(DeployInst, InstitutionTests,
                         Values(&DeployInstitutionConstructor));
 INSTANTIATE_TEST_CASE_P(DeployInst, AgentTests,
                         Values(&DeployInstitutionConstructor));
-

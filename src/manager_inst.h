@@ -1,4 +1,3 @@
-// manager_inst.h
 #ifndef CYCAMORE_SRC_MANAGER_INST_H_
 #define CYCAMORE_SRC_MANAGER_INST_H_
 
@@ -10,9 +9,10 @@ namespace cycamore {
 /// @section introduction Introduction
 /// @section detailedBehavior Detailed Behavior
 /// @warning The ManagerInst is experimental
-class ManagerInst : public cyclus::Institution,
-  public cyclus::toolkit::CommodityProducerManager,
-  public cyclus::toolkit::Builder {
+class ManagerInst
+    : public cyclus::Institution,
+      public cyclus::toolkit::CommodityProducerManager,
+      public cyclus::toolkit::Builder {
  public:
   /// Default constructor
   ManagerInst(cyclus::Context* ctx);
@@ -40,17 +40,18 @@ class ManagerInst : public cyclus::Institution,
   void WriteProducerInformation(cyclus::toolkit::CommodityProducer*
                                 producer);
 
- private:  
-  /// register a child 
+ private:
+  /// register a child
   void Register_(cyclus::Agent* agent);
 
-  /// unregister a child 
+  /// unregister a child
   void Unregister_(cyclus::Agent* agent);
 
   #pragma cyclus var {"tooltip": "facility prototypes", \
                       "doc": "a facility to be managed by the institution"}
   std::vector<std::string> prototypes;
 };
-} // namespace cycamore 
+
+}  // namespace cycamore
 
 #endif  // CYCAMORE_SRC_MANAGER_INST_H_

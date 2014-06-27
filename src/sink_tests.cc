@@ -1,4 +1,3 @@
-// sink_tests.cc
 #include <gtest/gtest.h>
 
 #include "facility_tests.h"
@@ -9,7 +8,7 @@
 
 #include "sink_tests.h"
 
-//- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 void SinkTest::SetUp() {
   src_facility = new cycamore::Sink(tc_.get());
   trader = tc_.trader();
@@ -17,12 +16,12 @@ void SinkTest::SetUp() {
   SetUpSink();
 }
 
-//- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 void SinkTest::TearDown() {
   delete src_facility;
 }
 
-//- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 void SinkTest::InitParameters() {
   commod1_ = "acommod";
   commod2_ = "bcommod";
@@ -33,7 +32,7 @@ void SinkTest::InitParameters() {
   ncommods_ = 2;
 }
 
-//- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 void SinkTest::SetUpSink() {
   src_facility->AddCommodity(commod1_);
   src_facility->AddCommodity(commod2_);
@@ -41,7 +40,7 @@ void SinkTest::SetUpSink() {
   src_facility->SetMaxInventorySize(inv_);
 }
 
-//- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 TEST_F(SinkTest, InitialState) {
   EXPECT_DOUBLE_EQ(0.0, src_facility->InventorySize());
   EXPECT_DOUBLE_EQ(capacity_, src_facility->Capacity());
@@ -53,7 +52,7 @@ TEST_F(SinkTest, InitialState) {
   EXPECT_EQ(vexp, src_facility->input_commodities());
 }
 
-//- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 TEST_F(SinkTest, Clone) {
   using cycamore::Sink;
   Sink* cloned_fac = dynamic_cast<cycamore::Sink*>
@@ -70,7 +69,7 @@ TEST_F(SinkTest, Clone) {
   delete cloned_fac;
 }
 
-//- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 TEST_F(SinkTest, DISABLED_XMLInit) {
   std::stringstream ss;
   ss << "<start>"
@@ -94,7 +93,7 @@ TEST_F(SinkTest, DISABLED_XMLInit) {
   cyclus::InfileTree engine(p);
   cycamore::Sink fac(tc_.get());
 
-  //EXPECT_NO_THROW(fac.InitFrom(&engine););
+  // EXPECT_NO_THROW(fac.InitFrom(&engine););
   std::string arr[] = {commod1_, commod2_};
   std::vector<std::string> vexp (arr, arr + sizeof(arr) / sizeof(arr[0]) );
   EXPECT_EQ(vexp, fac.input_commodities());
@@ -104,7 +103,7 @@ TEST_F(SinkTest, DISABLED_XMLInit) {
   EXPECT_DOUBLE_EQ(0.0, fac.InventorySize());
 }
 
-//- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 TEST_F(SinkTest, Requests) {
   using cyclus::Request;
   using cyclus::RequestPortfolio;
@@ -113,7 +112,7 @@ TEST_F(SinkTest, Requests) {
 
   std::string arr[] = {commod1_, commod2_};
   std::vector<std::string> commods (arr, arr + sizeof(arr) / sizeof(arr[0]) );
-  
+
   std::set<RequestPortfolio<Material>::Ptr> ports =
       src_facility->GetMatlRequests();
 
@@ -133,10 +132,10 @@ TEST_F(SinkTest, Requests) {
       ports.begin()->get()->constraints();
   ASSERT_TRUE(constraints.size() > 0);
   EXPECT_EQ(constraints.size(), 1);
-  EXPECT_EQ(*constraints.begin(), CapacityConstraint<Material>(capacity_));  
+  EXPECT_EQ(*constraints.begin(), CapacityConstraint<Material>(capacity_));
 }
 
-//- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 TEST_F(SinkTest, EmptyRequests) {
   using cyclus::Material;
   using cyclus::RequestPortfolio;
@@ -147,7 +146,7 @@ TEST_F(SinkTest, EmptyRequests) {
   EXPECT_TRUE(ports.empty());
 }
 
-//- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 TEST_F(SinkTest, Accept) {
   using cyclus::Bid;
   using cyclus::Material;
@@ -160,11 +159,13 @@ TEST_F(SinkTest, Accept) {
                          cyclus::Material::Ptr> > responses;
 
   Request<Material>* req1 =
-      Request<Material>::Create(get_mat(922350000, qty_), src_facility, commod1_);
+      Request<Material>::Create(get_mat(922350000, qty_), src_facility,
+                                commod1_);
   Bid<Material>* bid1 = Bid<Material>::Create(req1, get_mat(), trader);
 
   Request<Material>* req2 =
-      Request<Material>::Create(get_mat(922350000, qty_), src_facility, commod2_);
+      Request<Material>::Create(get_mat(922350000, qty_), src_facility,
+                                commod2_);
   Bid<Material>* bid2 =
       Bid<Material>::Create(req2, get_mat(922350000, qty_), trader);
 
@@ -174,16 +175,16 @@ TEST_F(SinkTest, Accept) {
   responses.push_back(std::make_pair(trade2, get_mat(922350000, qty_)));
 
   EXPECT_DOUBLE_EQ(0.0, src_facility->InventorySize());
-  src_facility->AcceptMatlTrades(responses);  
+  src_facility->AcceptMatlTrades(responses);
   EXPECT_DOUBLE_EQ(qty, src_facility->InventorySize());
 }
 
-//- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 TEST_F(SinkTest, Print) {
   EXPECT_NO_THROW(std::string s = src_facility->str());
 }
 
-//- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 cyclus::Agent* SinkConstructor(cyclus::Context* ctx) {
   return new cycamore::Sink(ctx);
 }
@@ -193,12 +194,8 @@ cyclus::Agent* SinkConstructor(cyclus::Context* ctx) {
 int ConnectAgentTests();
 static int cyclus_agent_tests_connected = ConnectAgentTests();
 #define CYCLUS_AGENT_TESTS_CONNECTED cyclus_agent_tests_connected
-#endif // CYCLUS_AGENT_TESTS_CONNECTED
+#endif  // CYCLUS_AGENT_TESTS_CONNECTED
 
-//- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-INSTANTIATE_TEST_CASE_P(SinkFac, FacilityTests,
-                        Values(&SinkConstructor));
-INSTANTIATE_TEST_CASE_P(SinkFac, AgentTests,
-                        Values(&SinkConstructor));
-
-
+// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+INSTANTIATE_TEST_CASE_P(SinkFac, FacilityTests, Values(&SinkConstructor));
+INSTANTIATE_TEST_CASE_P(SinkFac, AgentTests, Values(&SinkConstructor));

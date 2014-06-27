@@ -25,13 +25,13 @@
       </Source>
     </config>
   </facility>
-  
+
   <facility>
     <name>Sink</name>
     <config>
       <Sink>
         <in_commods>
-            <val>commodity</val>
+          <val>commodity</val>
         </in_commods>
         <capacity>3</capacity>
       </Sink>

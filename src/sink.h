@@ -1,6 +1,5 @@
-// sink.h
-#ifndef CYCAMORE_MODELS_SINK_FACILITY_H_
-#define CYCAMORE_MODELS_SINK_FACILITY_H_
+#ifndef CYCAMORE_SRC_SINK_H_
+#define CYCAMORE_SRC_SINK_H_
 
 #include <algorithm>
 #include <string>
@@ -12,7 +11,7 @@
 namespace cycamore {
 
 class Context;
-  
+
 ///   @class Sink
 ///   This cyclus::Facility requests a finite amount of its input commodity.
 ///  It offers nothing.
@@ -111,7 +110,7 @@ class Sink : public cyclus::Facility  {
   /// that it is assumed the Sink operates on a single resource type!
   virtual std::set<cyclus::RequestPortfolio<cyclus::Material>::Ptr>
       GetMatlRequests();
-  
+
   /// @brief SinkFacilities request Products of their given
   /// commodity. Note that it is assumed the Sink operates on a single
   /// resource type!
@@ -151,7 +150,7 @@ class Sink : public cyclus::Facility  {
   inline double RequestAmt() const {
     return std::min(capacity, std::max(0.0, inventory.space()));
   }
-    
+
   /// sets the capacity of a material generated at any given time step
   /// @param capacity the reception capacity
   inline void Capacity(double cap) { capacity = cap; }
@@ -163,7 +162,7 @@ class Sink : public cyclus::Facility  {
   inline const std::vector<std::string>&
       input_commodities() const { return in_commods; }
 
- private: 
+ private:
   /// all facilities must have at least one input commodity
   #pragma cyclus var {"tooltip": "input commodities", \
                       "doc": "commodities that the sink facility accepts"}
@@ -186,7 +185,6 @@ class Sink : public cyclus::Facility  {
   cyclus::toolkit::ResourceBuff inventory;
 };
 
-} // namespace cycamore
+}  // namespace cycamore
 
-#endif // CYCAMORE_MODELS_SINK_FACILITY_H_
-
+#endif  // CYCAMORE_SRC_SINK_H_

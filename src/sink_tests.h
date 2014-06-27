@@ -1,11 +1,13 @@
-// sink_tests.cc
+#ifndef CYCAMORE_SRC_SINK_TESTS_H_
+#define CYCAMORE_SRC_SINK_TESTS_H_
+
 #include <gtest/gtest.h>
 
 #include "sink.h"
 
 #include "test_context.h"
 
-//- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 class SinkTest : public ::testing::Test {
  protected:
   cyclus::TestContext tc_;
@@ -20,3 +22,5 @@ class SinkTest : public ::testing::Test {
   void InitParameters();
   void SetUpSink();
 };
+
+#endif  // CYCAMORE_SRC_SINK_TESTS_H_
