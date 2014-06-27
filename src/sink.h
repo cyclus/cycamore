@@ -78,7 +78,7 @@ class Context;
 ///  material on a market?
 class Sink : public cyclus::Facility  {
  public:
-  /* --- Module Members --- */
+  // --- Module Members ---
   ///  Constructor for the Sink class.
   ///  @param ctx the cyclus context for access to simulation-wide parameters
   Sink(cyclus::Context* ctx);
@@ -93,9 +93,9 @@ class Sink : public cyclus::Facility  {
 
   ///   A verbose printer for the Sink Facility.
   virtual std::string str();
-  /* --- */
+  // ---
 
-  /* --- Agent Members --- */
+  // --- Agent Members ---
   /// The Sink can handle the Tick.
 
   /// @param time the current simulation time.
@@ -126,9 +126,9 @@ class Sink : public cyclus::Facility  {
   virtual void AcceptGenRsrcTrades(
       const std::vector< std::pair<cyclus::Trade<cyclus::Product>,
       cyclus::Product::Ptr> >& responses);
-  /* --- */
+  // ---
 
-  /* --- Sink Members --- */
+  // --- Sink Members ---
   ///  add a commodity to the set of input commodities
   ///  @param name the commodity name
   inline void AddCommodity(std::string name) { in_commods.push_back(name); }

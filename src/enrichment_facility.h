@@ -120,7 +120,7 @@ class NatUConverter : public cyclus::Converter<cyclus::Material> {
 ///  class that can be queried as to its SWU and natural Uranium capacity.
 class EnrichmentFacility : public cyclus::Facility {
  public:
-  /* --- Module Members --- */
+  // --- Module Members ---
 ///    Constructor for the EnrichmentFacility class
 ///    @param ctx the cyclus context for access to simulation-wide parameters
   EnrichmentFacility(cyclus::Context* ctx);
@@ -136,14 +136,14 @@ class EnrichmentFacility : public cyclus::Facility {
 
 ///     Print information about this agent
   virtual std::string str();
-  /* --- */
+  // ---
 
-  /* --- Facility Members --- */
+  // --- Facility Members ---
   /// perform module-specific tasks when entering the simulation
   virtual void Build(cyclus::Agent* parent);
-  /* --- */
+  // ---
 
-  /* --- Agent Members --- */
+  // --- Agent Members ---
   ///  Each facility is prompted to do its beginning-of-time-step
   ///  stuff at the tick of the timer.
 
@@ -183,9 +183,9 @@ class EnrichmentFacility : public cyclus::Facility {
     const std::vector< cyclus::Trade<cyclus::Material> >& trades,
     std::vector<std::pair<cyclus::Trade<cyclus::Material>,
     cyclus::Material::Ptr> >& responses);
-  /* --- */
+  // ---
 
-  /* --- EnrichmentFacility Members --- */
+  // --- EnrichmentFacility Members ---
   ///  @brief Determines if a particular material is a valid request to respond
   ///  to.  Valid requests must contain U235 and U238 and must have a relative
   ///  U235-to-U238 ratio less than this facility's tails_assay().
@@ -297,7 +297,7 @@ class EnrichmentFacility : public cyclus::Facility {
   cyclus::toolkit::ResourceBuff inventory;  // of natl u
 
   friend class EnrichmentFacilityTest;
-/* --- */
+  // ---
 };
 
 }  // namespace cycamore

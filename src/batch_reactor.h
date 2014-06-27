@@ -156,7 +156,7 @@ class BatchReactor
     std::string storage_commod;
   };
 
-  /* --- Module Members --- */
+  // --- Module Members ---
   /// @param ctx the cyclus context for access to simulation-wide parameters
   BatchReactor(cyclus::Context* ctx);
 
@@ -188,14 +188,14 @@ class BatchReactor
 
   /// Print information about this agent
   virtual std::string str();
-  /* --- */
+  // ---
 
-  /* --- Facility Members --- */
+  // --- Facility Members ---
   /// perform module-specific tasks when entering the simulation
   virtual void Build(cyclus::Agent* parent);
-  /* --- */
+  // ---
 
-  /* --- Agent Members --- */
+  // --- Agent Members ---
   /// The Tick function specific to the BatchReactor.
   /// @param time the time of the tick
   virtual void Tick();
@@ -231,9 +231,9 @@ class BatchReactor
     const std::vector< cyclus::Trade<cyclus::Material> >& trades,
     std::vector<std::pair<cyclus::Trade<cyclus::Material>,
     cyclus::Material::Ptr> >& responses);
-  /* --- */
+  // ---
 
-  /* --- BatchReactor Members --- */
+  // --- BatchReactor Members ---
   /// @return the total number of batches in storage
   int StorageCount();
 
@@ -437,7 +437,7 @@ class BatchReactor
   cyclus::toolkit::ResourceBuff reserves_;
 
   friend class BatchReactorTest;
-  /* --- */
+  // ---
 };
 
 }  // namespace cycamore
