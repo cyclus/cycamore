@@ -87,9 +87,9 @@ class Context;
 class Source : public cyclus::Facility,
   public cyclus::toolkit::CommodityProducer {
  public:
-///  /* --- Module Members --- */
-///  Constructor for the Source class
-///  @param ctx the cyclus context for access to simulation-wide parameters
+  // --- Module Members ---
+  ///  Constructor for the Source class
+  ///  @param ctx the cyclus context for access to simulation-wide parameters
   Source(cyclus::Context* ctx);
 
   virtual ~Source();
@@ -101,9 +101,9 @@ class Source : public cyclus::Facility,
 
   ///   Print information about this agent
   virtual std::string str();
-  /* --- */
+  // ---
 
-  /* --- Agent Members --- */
+  // --- Agent Members ---
   virtual void EnterNotify();
 
   ///   Each facility is prompted to do its beginning-of-time-step
@@ -134,9 +134,9 @@ class Source : public cyclus::Facility,
     const std::vector< cyclus::Trade<cyclus::Material> >& trades,
     std::vector<std::pair<cyclus::Trade<cyclus::Material>,
     cyclus::Material::Ptr> >& responses);
-  /* --- */
+  // ---
 
-  /* --- Source Members --- */
+  // --- Source Members ---
   ///   @brief creates a material object to offer to a requester
   ///   @param target the material target a request desires
   cyclus::Material::Ptr GetOffer(const cyclus::Material::Ptr target) const;
@@ -194,7 +194,7 @@ class Source : public cyclus::Facility,
   #pragma cyclus var {'derived_init': 'current_capacity = capacity;'}
   double current_capacity;
 
-  /* --- */
+  // ---
 };
 
 }  // namespace cycamore
