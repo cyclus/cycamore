@@ -238,12 +238,12 @@ SET(DOC_INPUT_DIR ${CYCAMORE_SOURCE_DIR}/doc)
 
 # If doxygen exists, use the doc/CMakeLists.txt file for further instructions.
 FIND_PACKAGE(Doxygen)
-IF (DOXYGEN_FOUND)
+IF(DOXYGEN_FOUND)
     ADD_SUBDIRECTORY(doc)
     SET(DOC_OUTPUT_DIR ${CMAKE_BINARY_DIR}/doc)
-ELSE (DOXYGEN_FOUND)
+ELSE(DOXYGEN_FOUND)
     MESSAGE(STATUS "WARNING: Doxygen not found - doc won't be created")
-ENDIF (DOXYGEN_FOUND)
+ENDIF(DOXYGEN_FOUND)
 
 # uninstall target
 configure_file(
