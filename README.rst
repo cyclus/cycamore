@@ -11,46 +11,12 @@ By describing the separations process as a simple matrix of efficiencies, a
 material stream transformation can be conducted. The specific process chemistry
 for the separation at hand is treated as elemental, as representative of a
 non-laser separations process. The efficiencies must be defined to transform an
-incoming composition vector $I$ with $N$ constituent amounts, $I_n$ to an
-outgoing set of $M$ streams, $E_m$. The efficiency matrix $\eta$ is therefore
-an $N\times M$ matrix of efficiencies. The matrix of separation efficiencies
-has a default value: the identity matrix of size $N\times N$. In this context,
+incoming composition vector **I** with **N** constituent amounts, **I_n** to an
+outgoing set of **M** streams, **E_m**. The efficiency matrix **\eta** is therefore
+an **NxM** matrix of efficiencies. The matrix of separation efficiencies
+has a default value: the identity matrix of size **NxN**. In this context,
 the identity matrix represents complete and perfect elemental separation
 without losses. 
-
-    .. math::
-
-  \left[
-    \begin{array}{c c c c c c c}
-      \eta_{11} & . & . & . & . & . & \eta_{1M} \\
-      \eta_{21} & . & . & . & . & . & \eta_{2M} \\
-      . & . & . & . & . & . & . \\
-      . & . & . & . & . & . & . \\
-      . & . & . & . & . & . & . \\
-      \eta_{N1} & .  & . & . & . & . & \eta_{NM} \\
-    \end{array}
-    \right]
-  \left[
-    \begin{array}{c}
-      I_1\\
-      I_2\\
-      . \\
-      . \\
-      . \\
-      I_N\\
-    \end{array}
-    \right]
-    =
-    \left[
-      \begin{array}{ c }
-        E_1\\
-        E_2\\
-        .\\
-        .\\
-        .\\
-        E_M\\
-      \end{array}
-      \right]
 
 For realistic separations, the user is expected to produce an efficiency 
 matrix representing the separations technology of interest to them. 
