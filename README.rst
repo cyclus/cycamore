@@ -18,7 +18,8 @@ has a default value: the identity matrix of size $N\times N$. In this context,
 the identity matrix represents complete and perfect elemental separation
 without losses. 
 
-\[
+    .. math::
+
   \left[
     \begin{array}{c c c c c c c}
       \eta_{11} & . & . & . & . & . & \eta_{1M} \\
@@ -50,7 +51,6 @@ without losses.
         E_M\\
       \end{array}
       \right]
-\]
 
 For realistic separations, the user is expected to produce an efficiency 
 matrix representing the separations technology of interest to them. 
