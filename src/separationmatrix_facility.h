@@ -17,7 +17,23 @@ namespace separationmatrix {
 /// dynamically loaded by the Agent class when requested.
 ///
 /// @section intro Introduction
-/// Place an introduction to the agent here.
+///  TICK
+///  Make offers of separated material based on availabe inventory.
+///  If there are ordersWaiting, prepare and send an appropriate
+///  request for spent fuel material.
+///  Check stocks to determine if there is capacity to produce any extra material
+///  next month. If so, process as much raw (spent fuel) stock material as
+///  capacity will allow.
+///
+///  TOCK
+///  Send appropriate separated material from inventory to fill ordersWaiting.
+///
+///  RECIEVE MATERIAL
+///  Put incoming spent nuclear fuel (SNF) material into stocks
+///
+///  SEND MATERIAL
+///  Pull separated material from inventory based on Requests
+///  Decrement ordersWaiting
 ///
 /// @section agentparams Agent Parameters
 /// Place a description of the required input parameters which define the
