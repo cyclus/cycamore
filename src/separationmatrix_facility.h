@@ -17,6 +17,25 @@ namespace separationmatrix {
 /// dynamically loaded by the Agent class when requested.
 ///
 /// @section intro Introduction
+///  For realistic separations, the user is expected to produce an efficiency matrix
+///  representing the separations technology of interest to them. By requesting the
+///  feedstock from the appropriate markets, the facility acquires an unseparated
+///  feedstock stream. Based on the input parameters in Table ref{tab:sepmatrix},
+///  the separations process proceeds within the timesteps and other constraints of
+///  the simulation.
+///  
+///  Thereafter, separated streams as well as a stream of losses are offered the
+///  appropriate markets for consumption by other facilities. In the transition
+///  scenario at hand, the StreamBlender fuel fabrication facility purchases the
+///  streams it desires in order to produce SFR fuel.
+///
+/// @section agentparams Agent Parameters
+/// Input Commodity
+/// An ElementGrouping map
+/// 
+/// @section optionalparams Optional Parameters
+/// 
+/// @section detailed Detailed Behavior
 ///  TICK
 ///  Make offers of separated material based on availabe inventory.
 ///  If there are ordersWaiting, prepare and send an appropriate
@@ -34,16 +53,6 @@ namespace separationmatrix {
 ///  SEND MATERIAL
 ///  Pull separated material from inventory based on Requests
 ///  Decrement ordersWaiting
-///
-/// @section agentparams Agent Parameters
-/// Place a description of the required input parameters which define the
-/// agent implementation.
-///
-/// @section optionalparams Optional Parameters
-/// Place a description of the optional input parameters to define the
-/// agent implementation.
-///
-/// @section detailed Detailed Behavior
 /// Place a description of the detailed behavior of the agent. Consider
 /// describing the behavior at the tick and tock as well as the behavior
 /// upon sending and receiving materials and messages.
