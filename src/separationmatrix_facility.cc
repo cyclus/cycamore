@@ -88,22 +88,25 @@ void SeparationmatrixFacility::Separate_(){
 void SeparationmatrixFacility::Separate_(cyclus::toolkit::ResourceBuff buff){
   using cyclus::Material;
   using cyclus::ResCast;
+  using cyclus::toolkit::ResourceBuff;
 
   while ( !buff.empty() ){
-    Material::Ptr back = ResCast<Material>(buff.back());
-    buff.pop_back();
+    Material::Ptr back = ResCast<Material>(buff.Pop(ResourceBuff::BACK));
     Separate_(ResCast<Material>(back));
   }
 }
 
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 void SeparationmatrixFacility::Separate_(cyclus::Material::Ptr mat){
+  using cyclus::CompMap;
+  using cyclus::Composition;
 
-  std::map<std::string, cyclus::Composition> sep_streams;
-  cyclus::CompMap::iterator entry;
-  for (entry = mat.comp().begin(); entry != mat.comp().end(); ++it){
-    Element elem = Element(entry.first) 
-    double sep = entry.second*eff(elem);
+  std::map<std::string, Composition> sep_streams;
+  CompMap::iterator entry;
+  CompMap orig = mat->comp()->mass();
+  for (entry = orig.begin(); entry != orig.end(); ++entry){
+    int elem = int(entry->first/10000000.); // convert iso to element
+    double sep = entry.second*eff(elem); // access matrix
     cyclus::Commodity commod = out_commod(elem);
     sep_stream[commod][iso] = sep;
   }
@@ -111,6 +114,16 @@ void SeparationmatrixFacility::Separate_(cyclus::Material::Ptr mat){
   inventory[waste_commod].Push(mat);
 }
 
+// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+double SeparationmatrixFacility::Eff_(int element){
+  double to_ret = 0;
+  std::map< int, std::map<double, std::string> > found;
+  found = matrix.find(element);
+  if( found != matrix.end() ){
+    to_ret = found->second.first;
+  }
+  return to_ret;
+}
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 cyclus::Material::Ptr SeparationsmatrixFacility::CollapseBuff(cyclus::toolkit::ResourceBuff to_collapse){
   using cyclus::toolkit::Manifest;

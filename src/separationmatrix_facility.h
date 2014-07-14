@@ -113,6 +113,9 @@ protected:
   /// @param mat the material to separate
   void Separate_(cyclus::Material::Ptr mat);
 
+  /// @brief returns the element in the matrix
+  double Eff_(int elem);
+
   /// @brief returns the time key for ready materials
   int ready(){ return context()->time() - process_time ; }
 
@@ -142,6 +145,28 @@ protected:
   std::map<std::string, cyclus::toolkit::ResourceBuff> inventory;
   cyclus::toolkit::ResourceBuff stocks;
   cyclus::toolkit::ResourceBuff wastes;
+
+  #pragma cyclus var {"tooltip":"elements to separate",\
+                      "doc":"elements to separate"}
+  std::vector<int> elems;
+  inline std::vector<int> elems_() const {return elems;};
+
+  #pragma cyclus var {"tooltip":"separation efficiencies",\
+                      "doc":"double, in the form of a string (because of the db). "\
+                      "number from 0-1, efficiency at separating each element."}
+  std::vector<std::string> effs;
+  inline std::vector<std::string> effs_() const {return effs;};
+
+  #pragma cyclus var {"tooltip":"names of separated streams",\
+                      "doc":"string, for each separated element, name the stream it "\
+                      "belongs in. This list can contain repeated entries."}
+  std::vector<double> streams;
+  inline std::vector<std::string> streams_() const {return streams;};
+
+  #pragma cyclus var {"tooltip":"elements to separate",\
+                      "doc":"elements to separate"}
+  vector<int> elems;
+  inline vector<int> elems_() const {return elems;};
 
   /// @brief a list of preffered commodities
   std::map<int, std::set<std::string> > prefs_;
