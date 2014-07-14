@@ -160,13 +160,8 @@ protected:
   #pragma cyclus var {"tooltip":"names of separated streams",\
                       "doc":"string, for each separated element, name the stream it "\
                       "belongs in. This list can contain repeated entries."}
-  std::vector<double> streams;
+  std::vector<std::string> streams;
   inline std::vector<std::string> streams_() const {return streams;};
-
-  #pragma cyclus var {"tooltip":"elements to separate",\
-                      "doc":"elements to separate"}
-  vector<int> elems;
-  inline vector<int> elems_() const {return elems;};
 
   /// @brief a list of preffered commodities
   std::map<int, std::set<std::string> > prefs_;
