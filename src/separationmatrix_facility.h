@@ -84,6 +84,7 @@ class SeparationmatrixFacility : public cyclus::Facility  {
   /// @param time the time of the tock
   virtual void Tock();
 
+protected:
   // @brief gives current quantity of commod in inventory
   const double inventory_quantity(std::string commod) const;
 
@@ -97,6 +98,20 @@ class SeparationmatrixFacility : public cyclus::Facility  {
   inline cyclus::toolkit::CommodityRecipeContext crctx() const {
     return crctx_;
   }
+
+  /// @brief Move all unprocessed inventory to processing
+  void BeginProcessing_(); 
+
+  /// @brief Separate all the material in processing
+  void Separate_();
+
+  /// @brief Separate all the material in the buff ResourceBuff
+  /// @param buff the ResourceBuff to separate
+  void Separate_(cyclus::toolkit::ResourceBuff buff);
+
+  /// @brief Separate a single material
+  /// @param mat the material to separate
+  void Separate_(cyclus::Material::Ptr mat);
 
   /// @brief returns the time key for ready materials
   int ready(){ return context()->time() - process_time ; }
@@ -132,8 +147,7 @@ class SeparationmatrixFacility : public cyclus::Facility  {
   std::map<int, std::set<std::string> > prefs_;
 
   /// @brief map from ready time to resource buffers
-  std::map<int, std::map<std::string,
-    cyclus::toolkit::ResourceBuff> > processing;
+  std::map<int, cyclus::toolkit::ResourceBuff> processing;
 
   cyclus::toolkit::CommodityRecipeContext crctx_;
 
