@@ -147,7 +147,7 @@ double SeparationmatrixFacility::Eff_(int element){
 
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 std::string SeparationmatrixFacility::Stream_(int element){
-  double to_ret;
+  std::string to_ret;
   try {
     int idx = ElemIdx_(element);
     to_ret = streams[idx];
