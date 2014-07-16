@@ -157,36 +157,18 @@ std::string SeparationmatrixFacility::Stream_(int element){
   return to_ret;
 }
 
-// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-cyclus::Material::Ptr SeparationsmatrixFacility::CollapseBuff(cyclus::toolkit::ResourceBuff to_collapse){
-  using cyclus::toolkit::Manifest;
-  using cyclus::Material;
-  using cyclus::ResCast;
-  double qty =  to_collapse.quantity();
-  Manifest manifest = to_collapse.PopQty(qty);
-
-  Material::Ptr back = ResCast<Material>(manifest.back());
-  manifest.pop_back();
-  while ( !manifest.empty() ){
-    back->Absorb(ResCast<Material>(manifest.back()));
-    manifest.pop_back();
-  }
-  return back;
-}
-
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 void SeparationmatrixFacility::BeginProcessing_(){
-  LOG(cyclus::LEV_DEBUG2, "SBlend") << "CommodConverter " << prototype()
+  using cyclus::toolkit::ResourceBuff;
+
+  LOG(cyclus::LEV_DEBUG2, "SepMtx") << "Sepatations Matrix" << prototype()
                                     << " added resources to processing";
-  std::map<std::string, cyclus::toolkit::ResourceBuff>::iterator it;
-  for (it = inventory.begin(); it != inventory.end(); ++it){
-    while (!(*it).second.empty()){
-      try {
-        processing[context()->time()][(*it).first].Push((*it).second.Pop());
-      } catch(cyclus::Error& e) {
-        e.msg(Agent::InformErrorMsg(e.msg()));
-        throw e;
-      }
+  while (!stocks.empty()){
+    try {
+      processing[context()->time()].Push(stocks.Pop(ResourceBuff::BACK));
+    } catch(cyclus::Error& e) {
+      e.msg(Agent::InformErrorMsg(e.msg()));
+      throw e;
     }
   }
 }
