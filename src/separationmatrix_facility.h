@@ -113,8 +113,14 @@ protected:
   /// @param mat the material to separate
   void Separate_(cyclus::Material::Ptr mat);
 
+  /// @brief returns the stream name for the element
+  std::string Stream_(int elem);
+
   /// @brief returns the element in the matrix
   double Eff_(int elem);
+
+  /// @brief returns the index of the element in the vectors
+  int ElemIdx_(int elem);
 
   /// @brief returns the time key for ready materials
   int ready(){ return context()->time() - process_time ; }
@@ -129,6 +135,12 @@ protected:
                       "doc":"list of commodities produced by this facility"}
   std::vector< std::string > out_commods;
   inline std::vector< std::string > out_commods_() const {return out_commods;};
+
+  #pragma cyclus var {"default":"losses",\
+                      "tooltip":"waste (losses) stream name",\
+                      "doc":"name of the commodity containing the losses"}
+  std::string waste_stream;
+  inline std::string waste_stream_() const {return waste_stream;};
 
   #pragma cyclus var {"default": 0,\
                       "tooltip":"process time (timesteps)",\

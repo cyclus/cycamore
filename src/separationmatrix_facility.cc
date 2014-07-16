@@ -73,7 +73,7 @@ const double SeparationmatrixFacility::inventory_quantity() const {
 
   double total = 0;
   std::map<std::string, ResourceBuff>::const_iterator it;
-  for( it = inventory.begin(); it != inventory.end(); ++it) {
+  for(it=inventory.begin(); it != inventory.end(); ++it) {
     total += inventory_quantity((*it).first);
   }
   return total;
@@ -100,30 +100,67 @@ void SeparationmatrixFacility::Separate_(cyclus::toolkit::ResourceBuff buff){
 void SeparationmatrixFacility::Separate_(cyclus::Material::Ptr mat){
   using cyclus::CompMap;
   using cyclus::Composition;
+  using std::make_pair;
+  using std::string;
 
-  std::map<std::string, Composition> sep_streams;
+  std::map<string, CompMap> sep_comps;
   CompMap::iterator entry;
   CompMap orig = mat->comp()->mass();
   for (entry = orig.begin(); entry != orig.end(); ++entry){
-    int elem = int(entry->first/10000000.); // convert iso to element
-    double sep = entry.second*eff(elem); // access matrix
-    cyclus::Commodity commod = out_commod(elem);
-    sep_stream[commod][iso] = sep;
+    int iso = int(entry->first);
+    int elem = int(iso/10000000.); // convert iso to element
+    double sep = entry->second*Eff_(elem); // access matrix
+    string stream = Stream_(elem);
+    sep_comps[stream][iso] = sep;
   }
-  inventory[commod].Push(mat.Extract(sep_stream[iso]));
-  inventory[waste_commod].Push(mat);
+  std::map< string, CompMap >::iterator str;
+  for(str=sep_comps.begin(); str!=sep_comps.end(); ++str){
+    CompMap to_extract = (*str).second;
+    double qty = cyclus::compmath::Sum(to_extract);
+    Composition::Ptr c = Composition::CreateFromMass(to_extract);
+    inventory[(*str).first].Push(mat->ExtractComp(qty, c));
+  }
+  inventory[waste_stream].Push(mat);
+}
+
+// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+int SeparationmatrixFacility::ElemIdx_(int element){
+  int to_ret;
+  std::vector<int>::iterator found = 
+    std::find(elems.begin(), elems.end(), element);
+
+  if( found != matrix.end() ){
+    to_ret = found->second.first;
+  } else { 
+    throw cyclus::KeyError("The element was not found in the matrix");
+  }
+  return to_ret;
 }
 
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 double SeparationmatrixFacility::Eff_(int element){
-  double to_ret = 0;
-  std::map< int, std::map<double, std::string> > found;
-  found = matrix.find(element);
-  if( found != matrix.end() ){
-    to_ret = found->second.first;
+  double to_ret;
+  try {
+    int idx = ElemIdx_(element);
+    to_ret = effs[idx];
+  } catch (cyclus::KeyError &e) {
+    to_ret = 0;
   }
   return to_ret;
 }
+
+// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+std::string SeparationmatrixFacility::Stream_(int element){
+  double to_ret;
+  try {
+    int idx = ElemIdx_(element);
+    to_ret = streams[idx];
+  } catch (cyclus::KeyError &e) {
+    to_ret = waste_stream_();
+  }
+  return to_ret;
+}
+
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 cyclus::Material::Ptr SeparationsmatrixFacility::CollapseBuff(cyclus::toolkit::ResourceBuff to_collapse){
   using cyclus::toolkit::Manifest;
