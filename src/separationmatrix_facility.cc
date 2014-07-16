@@ -125,13 +125,9 @@ void SeparationmatrixFacility::Separate_(cyclus::Material::Ptr mat){
 
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 int SeparationmatrixFacility::ElemIdx_(int element){
-  int to_ret;
-  std::vector<int>::iterator found = 
-    std::find(elems.begin(), elems.end(), element);
+  int to_ret = find(elems.begin(), elems.end(), element) - elems.begin();
 
-  if( found != matrix.end() ){
-    to_ret = found->second.first;
-  } else { 
+  if( to_ret > elems.size() ){
     throw cyclus::KeyError("The element was not found in the matrix");
   }
   return to_ret;
@@ -142,7 +138,7 @@ double SeparationmatrixFacility::Eff_(int element){
   double to_ret;
   try {
     int idx = ElemIdx_(element);
-    to_ret = effs[idx];
+    to_ret = boost::lexical_cast<double>(effs[idx]);
   } catch (cyclus::KeyError &e) {
     to_ret = 0;
   }
