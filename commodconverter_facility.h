@@ -142,32 +142,32 @@ class CommodconverterFacility
   /* --- Module Members --- */
   #pragma cyclus var {"tooltip":"input commodity",\
                       "doc":"commodity accepted by this facility"}
-  std::string in_commod_;
+  std::string in_commod;
   inline std::string in_commod() const {return in_commod_;};
 
   #pragma cyclus var {"tooltip":"output commodity",\
                       "doc":"commodity produced by this facility"}
-  std::string out_commod_;
+  std::string out_commod;
   inline std::string out_commod() const {return out_commod_;};
 
   #pragma cyclus var {"tooltip":"input recipe",\
                       "doc":"recipe accepted by this facility"}
-  std::string in_recipe_;
+  std::string in_recipe;
 
   #pragma cyclus var {"tooltip":"output recipe",\
                       "doc":"recipe produced by this facility"}
-  std::string out_recipe_;
+  std::string out_recipe;
 
   #pragma cyclus var {"default": 0,\
                       "tooltip":"process time (timesteps)",\
                       "doc":"the time it takes to convert a received commodity (timesteps)."}
-  int process_time_; //should be nonnegative
+  int process_time; //should be nonnegative
 
   #pragma cyclus var {"default": 1e299,\
                       "tooltip":"maximum inventory size (kg)",\
                       "doc":"the amount of material that can be in storage at "\
                       "one time (kg)."}
-  double max_inv_size_; //should be nonnegative
+  double max_inv_size; //should be nonnegative
 
   #pragma cyclus var{'capacity': 'max_inv_size_'}
   cyclus::toolkit::ResourceBuff inventory;
