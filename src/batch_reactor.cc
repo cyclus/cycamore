@@ -204,21 +204,21 @@ void BatchReactor::InitFrom(cyclus::QueryableBackend* b) {
 
   // initial condition inventories
   std::vector<cyclus::Cond> conds;
-  conds.push_back(cyclus::Cond("inventory", "==", "reserves"));
+  conds.push_back(cyclus::Cond("inventory", "==", std::string("reserves")));
   qr = b->Query("InitialInv", &conds);
   ics_.AddReserves(
     qr.GetVal<int>("nbatches"),
     qr.GetVal<std::string>("recipe"),
     qr.GetVal<std::string>("commod")
     );
-  conds[0] = cyclus::Cond("inventory", "==", "core");
+  conds[0] = cyclus::Cond("inventory", "==", std::string("core"));
   qr = b->Query("InitialInv", &conds);
   ics_.AddCore(
     qr.GetVal<int>("nbatches"),
     qr.GetVal<std::string>("recipe"),
     qr.GetVal<std::string>("commod")
     );
-  conds[0] = cyclus::Cond("inventory", "==", "storage");
+  conds[0] = cyclus::Cond("inventory", "==", std::string("storage"));
   qr = b->Query("InitialInv", &conds);
   ics_.AddStorage(
     qr.GetVal<int>("nbatches"),
@@ -393,19 +393,19 @@ void BatchReactor::Snapshot(cyclus::DbInit di) {
 
   // initial condition inventories
   di.NewDatum("InitialInv")
-      ->AddVal("inventory", "reserves")
+      ->AddVal("inventory", std::string("reserves"))
       ->AddVal("nbatches", ics_.n_reserves)
       ->AddVal("recipe", ics_.reserves_rec)
       ->AddVal("commod", ics_.reserves_commod)
       ->Record();
   di.NewDatum("InitialInv")
-      ->AddVal("inventory", "core")
+      ->AddVal("inventory", std::string("core"))
       ->AddVal("nbatches", ics_.n_core)
       ->AddVal("recipe", ics_.core_rec)
       ->AddVal("commod", ics_.core_commod)
       ->Record();
   di.NewDatum("InitialInv")
-      ->AddVal("inventory", "storage")
+      ->AddVal("inventory", std::string("storage"))
       ->AddVal("nbatches", ics_.n_storage)
       ->AddVal("recipe", ics_.storage_rec)
       ->AddVal("commod", ics_.storage_commod)
