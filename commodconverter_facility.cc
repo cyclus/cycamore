@@ -34,10 +34,10 @@ std::string CommodconverterFacility::str() {
   std::stringstream ss;
   ss << cyclus::Facility::str();
   ss << " has facility parameters {" << "\n"
-     << "     Input Commodity = " << in_commod() << ",\n"
-     << "     Output Commodity = " << out_commod() << ",\n"
-     << "     Process Time = " << process_time() << ",\n"
-     << "     Capacity = " << capacity() << ",\n"
+     << "     Input Commodity = " << in_commod_() << ",\n"
+     << "     Output Commodity = " << out_commod_() << ",\n"
+     << "     Process Time = " << process_time_() << ",\n"
+     << "     Capacity = " << capacity_() << ",\n"
      << "'}";
   return ss.str();
 }
@@ -75,7 +75,7 @@ CommodconverterFacility::GetMatlRequests() {
     CapacityConstraint<Material> cc(amt);
     port->AddConstraint(cc);
 
-    port->AddRequest(mat, this, in_commod());
+    port->AddRequest(mat, this, in_commod_());
 
     ports.insert(port);
   }
@@ -105,7 +105,7 @@ CommodconverterFacility::GetMatlBids(cyclus::CommodMap<cyclus::Material>::type&
 
   std::set<std::string>::const_iterator it;
   BidPortfolio<Material>::Ptr port = GetBids_(commod_requests,
-                                              out_commod(),
+                                              out_commod_(),
                                               &stocks);
   if (!port->bids().empty()) {
     ports.insert(port);
@@ -154,7 +154,7 @@ void CommodconverterFacility::AddMat_(cyclus::Material::Ptr mat) {
   }
 
   LOG(cyclus::LEV_INFO5, "ComCnv") << prototype() << " added " << mat->quantity()
-                                << " of " << in_commod()
+                                << " of " << in_commod_()
                                 << " to its inventory, which is holding "
                                 << inventory.quantity() << " total.";
 
@@ -164,7 +164,7 @@ void CommodconverterFacility::AddMat_(cyclus::Material::Ptr mat) {
 cyclus::Material::Ptr CommodconverterFacility::Request_() {
   double qty = std::max(0.0, current_capacity());
   return cyclus::Material::CreateUntracked(qty,
-                                        context()->GetRecipe(in_recipe_));
+                                        context()->GetRecipe(in_recipe));
 }
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -257,7 +257,7 @@ void CommodconverterFacility::Convert_(){
       // pop one material from processing 
       Material::Ptr mat = ResCast<Material>(processing.find(ready())->second.Pop());
       // change its commod
-      crctx_.UpdateRsrc(out_commod(), mat);
+      crctx_.UpdateRsrc(out_commod_(), mat);
       // put it in the stocks
       stocks.Push(mat);
     } catch (cyclus::Error& e) {
