@@ -137,18 +137,18 @@ class CommodconverterFacility
   }
 
   /// @brief returns the time key for ready materials
-  int ready(){ return context()->time() - process_time_ ; }
+  int ready(){ return context()->time() - process_time ; }
 
   /* --- Module Members --- */
   #pragma cyclus var {"tooltip":"input commodity",\
                       "doc":"commodity accepted by this facility"}
   std::string in_commod;
-  inline std::string in_commod() const {return in_commod_;};
+  inline std::string in_commod_() const {return in_commod;};
 
   #pragma cyclus var {"tooltip":"output commodity",\
                       "doc":"commodity produced by this facility"}
   std::string out_commod;
-  inline std::string out_commod() const {return out_commod_;};
+  inline std::string out_commod_() const {return out_commod;};
 
   #pragma cyclus var {"tooltip":"input recipe",\
                       "doc":"recipe accepted by this facility"}
@@ -179,16 +179,16 @@ class CommodconverterFacility
   cyclus::toolkit::CommodityRecipeContext crctx_;
 
   /// @brief the processing time required for a full process
-  inline void process_time(int t) { process_time_ = t; }
-  inline int process_time() const { return process_time_; }
+  inline void process_time_(int t) { process_time = t; }
+  inline int process_time_() const { return process_time; }
 
   /// @brief the maximum amount allowed in inventory
-  inline void capacity(double c) { max_inv_size_ = c; }
-  inline double capacity() const { return max_inv_size_; }
+  inline void capacity_(double c) { max_inv_size = c; }
+  inline double capacity_() const { return max_inv_size; }
 
   /// @brief current maximum amount that can be added to processing
   inline double current_capacity() const { 
-    return max_inv_size_ - inventory.quantity(); }
+    return max_inv_size - inventory.quantity(); }
 
   friend class CommodconverterFacilityTest;
 };
