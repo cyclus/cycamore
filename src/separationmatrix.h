@@ -1,5 +1,5 @@
-#ifndef CYCLUS_SEPARATIONMATRIXS_SEPARATIONMATRIX_FACILITY_H_
-#define CYCLUS_SEPARATIONMATRIXS_SEPARATIONMATRIX_FACILITY_H_
+#ifndef CYCLUS_SEPARATIONMATRIXS_SEPARATIONMATRIX_H_
+#define CYCLUS_SEPARATIONMATRIXS_SEPARATIONMATRIX_H_
 
 #include <string>
 
@@ -8,12 +8,12 @@
 namespace separationmatrix {
 
 
-/// @class SeparationmatrixFacility
+/// @class SeparationMatrix
 ///
 /// This Facility is intended
 /// as a skeleton to guide the implementation of new Facility
 /// agents.
-/// The SeparationmatrixFacility class inherits from the Facility class and is
+/// The SeparationMatrix class inherits from the Facility class and is
 /// dynamically loaded by the Agent class when requested.
 ///
 /// @section intro Introduction
@@ -56,11 +56,11 @@ namespace separationmatrix {
 /// Place a description of the detailed behavior of the agent. Consider
 /// describing the behavior at the tick and tock as well as the behavior
 /// upon sending and receiving materials and messages.
-class SeparationmatrixFacility : public cyclus::Facility  {
+class SeparationMatrix : public cyclus::Facility  {
  public:  
-  /// Constructor for SeparationmatrixFacility Class
+  /// Constructor for SeparationMatrix Class
   /// @param ctx the cyclus context for access to simulation-wide parameters
-  explicit SeparationmatrixFacility(cyclus::Context* ctx);
+  explicit SeparationMatrix(cyclus::Context* ctx);
 
   /// The Prime Directive
   /// Generates code that handles all input file reading and restart operations
@@ -73,14 +73,14 @@ class SeparationmatrixFacility : public cyclus::Facility  {
   #pragma cyclus note {"doc": "A separationmatrix facility is provided as a skeleton " \
                               "for the design of new facility agents."}
 
-  /// A verbose printer for the SeparationmatrixFacility
+  /// A verbose printer for the SeparationMatrix
   virtual std::string str();
   
-  /// The handleTick function specific to the SeparationmatrixFacility.
+  /// The handleTick function specific to the SeparationMatrix.
   /// @param time the time of the tick  
   virtual void Tick();
 
-  /// The handleTick function specific to the SeparationmatrixFacility.
+  /// The handleTick function specific to the SeparationMatrix.
   /// @param time the time of the tock
   virtual void Tock();
 
@@ -198,4 +198,4 @@ protected:
 
 }  // namespace separationmatrix
 
-#endif  // CYCLUS_SEPARATIONMATRIXS_SEPARATIONMATRIX_FACILITY_H_
+#endif  // CYCLUS_SEPARATIONMATRIXS_SEPARATIONMATRIX_H_

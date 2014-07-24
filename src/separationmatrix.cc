@@ -1,18 +1,18 @@
-#include "separationmatrix_facility.h"
+#include "separationmatrix.h"
 
 namespace separationmatrix {
 
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-SeparationmatrixFacility::SeparationmatrixFacility(cyclus::Context* ctx)
+SeparationMatrix::SeparationMatrix(cyclus::Context* ctx)
     : cyclus::Facility(ctx) {};
 
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-std::string SeparationmatrixFacility::str() {
+std::string SeparationMatrix::str() {
   return Facility::str();
 }
 
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-void SeparationmatrixFacility::Tick() {
+void SeparationMatrix::Tick() {
 
   int time = context()->time();
   LOG(cyclus::LEV_INFO3, "SepMtx") << prototype() << " is ticking at time "
@@ -33,7 +33,7 @@ void SeparationmatrixFacility::Tick() {
 }
 
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-void SeparationmatrixFacility::Tock() {
+void SeparationMatrix::Tock() {
   int time = context()->time();
   LOG(cyclus::LEV_INFO3, "SepMtx") << prototype() << " is tocking {";
   LOG(cyclus::LEV_DEBUG4, "SepMtx") << "Current facility parameters for "
@@ -53,7 +53,7 @@ void SeparationmatrixFacility::Tock() {
 }
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-const double SeparationmatrixFacility::inventory_quantity(std::string commod)const {
+const double SeparationMatrix::inventory_quantity(std::string commod)const {
   using cyclus::toolkit::ResourceBuff;
 
   std::map<std::string, ResourceBuff>::const_iterator found;
@@ -68,7 +68,7 @@ const double SeparationmatrixFacility::inventory_quantity(std::string commod)con
 }
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-const double SeparationmatrixFacility::inventory_quantity() const {
+const double SeparationMatrix::inventory_quantity() const {
   using cyclus::toolkit::ResourceBuff;
 
   double total = 0;
@@ -80,12 +80,12 @@ const double SeparationmatrixFacility::inventory_quantity() const {
 }
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-void SeparationmatrixFacility::Separate_(){
+void SeparationMatrix::Separate_(){
   Separate_(processing[ready()]);
 }
 
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-void SeparationmatrixFacility::Separate_(cyclus::toolkit::ResourceBuff buff){
+void SeparationMatrix::Separate_(cyclus::toolkit::ResourceBuff buff){
   using cyclus::Material;
   using cyclus::ResCast;
   using cyclus::toolkit::ResourceBuff;
@@ -97,7 +97,7 @@ void SeparationmatrixFacility::Separate_(cyclus::toolkit::ResourceBuff buff){
 }
 
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-void SeparationmatrixFacility::Separate_(cyclus::Material::Ptr mat){
+void SeparationMatrix::Separate_(cyclus::Material::Ptr mat){
   using cyclus::CompMap;
   using cyclus::Composition;
   using std::make_pair;
@@ -124,7 +124,7 @@ void SeparationmatrixFacility::Separate_(cyclus::Material::Ptr mat){
 }
 
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-int SeparationmatrixFacility::ElemIdx_(int element){
+int SeparationMatrix::ElemIdx_(int element){
   int to_ret = find(elems.begin(), elems.end(), element) - elems.begin();
 
   if( to_ret > elems.size() ){
@@ -134,7 +134,7 @@ int SeparationmatrixFacility::ElemIdx_(int element){
 }
 
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-double SeparationmatrixFacility::Eff_(int element){
+double SeparationMatrix::Eff_(int element){
   double to_ret;
   try {
     int idx = ElemIdx_(element);
@@ -146,7 +146,7 @@ double SeparationmatrixFacility::Eff_(int element){
 }
 
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-std::string SeparationmatrixFacility::Stream_(int element){
+std::string SeparationMatrix::Stream_(int element){
   std::string to_ret;
   try {
     int idx = ElemIdx_(element);
@@ -158,7 +158,7 @@ std::string SeparationmatrixFacility::Stream_(int element){
 }
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-void SeparationmatrixFacility::BeginProcessing_(){
+void SeparationMatrix::BeginProcessing_(){
   using cyclus::toolkit::ResourceBuff;
 
   LOG(cyclus::LEV_DEBUG2, "SepMtx") << "Sepatations Matrix" << prototype()
@@ -174,8 +174,8 @@ void SeparationmatrixFacility::BeginProcessing_(){
 }
 
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-extern "C" cyclus::Agent* ConstructSeparationmatrixFacility(cyclus::Context* ctx) {
-  return new SeparationmatrixFacility(ctx);
+extern "C" cyclus::Agent* ConstructSeparationMatrix(cyclus::Context* ctx) {
+  return new SeparationMatrix(ctx);
 }
 
 }
