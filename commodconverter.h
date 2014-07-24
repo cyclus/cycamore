@@ -1,5 +1,5 @@
-#ifndef CYCLUS_COMMODCONVERTERS_COMMODCONVERTER_FACILITY_H_
-#define CYCLUS_COMMODCONVERTERS_COMMODCONVERTER_FACILITY_H_
+#ifndef CYCLUS_COMMODCONVERTERS_COMMODCONVERTER_H_
+#define CYCLUS_COMMODCONVERTERS_COMMODCONVERTER_H_
 
 #include <string>
 
@@ -7,17 +7,17 @@
 
 // forward declaration
 namespace commodconverter {
-class CommodconverterFacility;
+class CommodConverter;
 } // namespace commodconverter
 
 
 namespace commodconverter {
-/// @class CommodconverterFacility
+/// @class CommodConverter
 ///
 /// This Facility is intended
 /// as a skeleton to guide the implementation of new Facility
 /// agents.
-/// The CommodconverterFacility class inherits from the Facility class and is
+/// The CommodConverter class inherits from the Facility class and is
 /// dynamically loaded by the Agent class when requested.
 ///
 /// @section intro Introduction
@@ -35,13 +35,13 @@ namespace commodconverter {
 /// Place a description of the detailed behavior of the agent. Consider
 /// describing the behavior at the tick and tock as well as the behavior
 /// upon sending and receiving materials and messages.
-class CommodconverterFacility 
+class CommodConverter 
   : public cyclus::Facility,
     public cyclus::toolkit::CommodityProducer {
  public:  
-  /// Constructor for CommodconverterFacility Class
+  /// Constructor for CommodConverter Class
   /// @param ctx the cyclus context for access to simulation-wide parameters
-  CommodconverterFacility(cyclus::Context* ctx);
+  CommodConverter(cyclus::Context* ctx);
 
   /// The Prime Directive
   /// Generates code that handles all input file reading and restart operations
@@ -54,26 +54,26 @@ class CommodconverterFacility
   #pragma cyclus note {"doc": "A commodconverter facility converts from one " \
                               "commodity to another, with an optional delay."}
 
-  /// A verbose printer for the CommodconverterFacility
+  /// A verbose printer for the CommodConverter
   virtual std::string str();
 
   /* --- Facility Members --- */
   /* --- */
   
   /* --- Agent Members --- */
-  /// The handleTick function specific to the CommodconverterFacility.
+  /// The handleTick function specific to the CommodConverter.
   /// @param time the time of the tick  
   virtual void Tick();
 
-  /// The handleTick function specific to the CommodconverterFacility.
+  /// The handleTick function specific to the CommodConverter.
   /// @param time the time of the tock
   virtual void Tock();
 
-  /// @brief The CommodconverterFacility request Materials of its given
+  /// @brief The CommodConverter request Materials of its given
   /// commodity.
   virtual std::set<cyclus::RequestPortfolio<cyclus::Material>::Ptr> GetMatlRequests();
 
-  /// @brief The CommodconverterFacility place accepted trade Materials in their
+  /// @brief The CommodConverter place accepted trade Materials in their
   /// Inventory
   virtual void AcceptMatlTrades(
       const std::vector< std::pair<cyclus::Trade<cyclus::Material>,
@@ -98,7 +98,7 @@ class CommodconverterFacility
 
   /* --- */
 
-  /* --- CommodconverterFacility Members --- */
+  /* --- CommodConverter Members --- */
 
   /* --- */
 
@@ -190,9 +190,9 @@ class CommodconverterFacility
   inline double current_capacity() const { 
     return max_inv_size - inventory.quantity(); }
 
-  friend class CommodconverterFacilityTest;
+  friend class CommodConverterTest;
 };
 
 }  // namespace commodconverter
 
-#endif  // CYCLUS_COMMODCONVERTERS_COMMODCONVERTER_FACILITY_H_
+#endif  // CYCLUS_COMMODCONVERTERS_COMMODCONVERTER_H_

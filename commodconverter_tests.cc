@@ -1,58 +1,58 @@
 #include <gtest/gtest.h>
 
-#include "commodconverter_facility.h"
+#include "commodconverter.h"
 
 #include "context.h"
 #include "facility_tests.h"
 #include "agent_tests.h"
 
-using commodconverter::CommodconverterFacility;
+using commodconverter::CommodConverter;
 
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-class CommodconverterFacilityTest : public ::testing::Test {
+class CommodConverterTest : public ::testing::Test {
  protected:
   cyclus::TestContext tc_;
-  CommodconverterFacility* src_facility_;
+  CommodConverter* src_facility_;
 
   virtual void SetUp() {
-    src_facility_ = new CommodconverterFacility(tc_.get());
+    src_facility_ = new CommodConverter(tc_.get());
   }
 
   virtual void TearDown() {}
 };
 
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-TEST_F(CommodconverterFacilityTest, clone) {
-  CommodconverterFacility* cloned_fac =
-      dynamic_cast<CommodconverterFacility*> (src_facility_->Clone());
+TEST_F(CommodConverterTest, clone) {
+  CommodConverter* cloned_fac =
+      dynamic_cast<CommodConverter*> (src_facility_->Clone());
 }
 
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-TEST_F(CommodconverterFacilityTest, InitialState) {
+TEST_F(CommodConverterTest, InitialState) {
   // Test things about the initial state of the facility here
 }
 
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-TEST_F(CommodconverterFacilityTest, Print) {
+TEST_F(CommodConverterTest, Print) {
   EXPECT_NO_THROW(std::string s = src_facility_->str());
-  // Test CommodconverterFacility specific aspects of the print method here
+  // Test CommodConverter specific aspects of the print method here
 }
 
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-TEST_F(CommodconverterFacilityTest, Tick) {
+TEST_F(CommodConverterTest, Tick) {
   ASSERT_NO_THROW(src_facility_->Tick());
-  // Test CommodconverterFacility specific behaviors of the Tick function here
+  // Test CommodConverter specific behaviors of the Tick function here
 }
 
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-TEST_F(CommodconverterFacilityTest, Tock) {
+TEST_F(CommodConverterTest, Tock) {
   EXPECT_NO_THROW(src_facility_->Tock());
-  // Test CommodconverterFacility specific behaviors of the Tock function here
+  // Test CommodConverter specific behaviors of the Tock function here
 }
 
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-cyclus::Agent* CommodconverterFacilityConstructor(cyclus::Context* ctx) {
-  return new CommodconverterFacility(ctx);
+cyclus::Agent* CommodConverterConstructor(cyclus::Context* ctx) {
+  return new CommodConverter(ctx);
 }
 
 // required to get functionality in cyclus agent unit tests library
@@ -63,8 +63,8 @@ static int cyclus_agent_tests_connected = ConnectAgentTests();
 #endif // CYCLUS_AGENT_TESTS_CONNECTED
 
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-INSTANTIATE_TEST_CASE_P(CommodconverterFac, FacilityTests,
-                        ::testing::Values(&CommodconverterFacilityConstructor));
+INSTANTIATE_TEST_CASE_P(CommodConverterFac, FacilityTests,
+                        ::testing::Values(&CommodConverterConstructor));
 
-INSTANTIATE_TEST_CASE_P(CommodconverterFac, AgentTests,
-                        ::testing::Values(&CommodconverterFacilityConstructor));
+INSTANTIATE_TEST_CASE_P(CommodConverterFac, AgentTests,
+                        ::testing::Values(&CommodConverterConstructor));

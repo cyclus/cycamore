@@ -1,36 +1,36 @@
-// commodconverter_facility.cc
-// Implements the CommodconverterFacility class
-#include "commodconverter_facility.h"
+// commodconverter.cc
+// Implements the CommodConverter class
+#include "commodconverter.h"
 
 namespace commodconverter {
 
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-CommodconverterFacility::CommodconverterFacility(cyclus::Context* ctx)
+CommodConverter::CommodConverter(cyclus::Context* ctx)
     : cyclus::Facility(ctx) {};
 
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 // pragmas
 
-#pragma cyclus def schema commodconverter::CommodconverterFacility
+#pragma cyclus def schema commodconverter::CommodConverter
 
-#pragma cyclus def annotations commodconverter::CommodconverterFacility
+#pragma cyclus def annotations commodconverter::CommodConverter
 
-#pragma cyclus def initinv commodconverter::CommodconverterFacility
+#pragma cyclus def initinv commodconverter::CommodConverter
 
-#pragma cyclus def snapshotinv commodconverter::CommodconverterFacility
+#pragma cyclus def snapshotinv commodconverter::CommodConverter
 
-#pragma cyclus def initfromdb commodconverter::CommodconverterFacility
+#pragma cyclus def initfromdb commodconverter::CommodConverter
 
-#pragma cyclus def initfromcopy commodconverter::CommodconverterFacility
+#pragma cyclus def initfromcopy commodconverter::CommodConverter
 
-#pragma cyclus def infiletodb commodconverter::CommodconverterFacility
+#pragma cyclus def infiletodb commodconverter::CommodConverter
 
-#pragma cyclus def snapshot commodconverter::CommodconverterFacility
+#pragma cyclus def snapshot commodconverter::CommodConverter
 
-#pragma cyclus def clone commodconverter::CommodconverterFacility
+#pragma cyclus def clone commodconverter::CommodConverter
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-std::string CommodconverterFacility::str() {
+std::string CommodConverter::str() {
   std::stringstream ss;
   ss << cyclus::Facility::str();
   ss << " has facility parameters {" << "\n"
@@ -43,13 +43,13 @@ std::string CommodconverterFacility::str() {
 }
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-void CommodconverterFacility::Tick() { 
+void CommodConverter::Tick() { 
   LOG(cyclus::LEV_INFO3, "ComCnv") << prototype() << " is ticking {";
   LOG(cyclus::LEV_INFO3, "ComCnv") << "}";
 }
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-void CommodconverterFacility::Tock() {
+void CommodConverter::Tock() {
   LOG(cyclus::LEV_INFO3, "ComCnv") << prototype() << " is tocking {";
   while( processing[ready()].count() > 0 ) {
     Convert_(); // place processing into stocks
@@ -60,7 +60,7 @@ void CommodconverterFacility::Tock() {
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 std::set<cyclus::RequestPortfolio<cyclus::Material>::Ptr>
-CommodconverterFacility::GetMatlRequests() {
+CommodConverter::GetMatlRequests() {
   using cyclus::CapacityConstraint;
   using cyclus::Material;
   using cyclus::RequestPortfolio;
@@ -84,7 +84,7 @@ CommodconverterFacility::GetMatlRequests() {
 }
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-void CommodconverterFacility::AcceptMatlTrades(
+void CommodConverter::AcceptMatlTrades(
   const std::vector< std::pair<cyclus::Trade<cyclus::Material>,
   cyclus::Material::Ptr> >& responses) {
   std::vector< std::pair<cyclus::Trade<cyclus::Material>,
@@ -96,7 +96,7 @@ void CommodconverterFacility::AcceptMatlTrades(
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 std::set<cyclus::BidPortfolio<cyclus::Material>::Ptr>
-CommodconverterFacility::GetMatlBids(cyclus::CommodMap<cyclus::Material>::type&
+CommodConverter::GetMatlBids(cyclus::CommodMap<cyclus::Material>::type&
                           commod_requests) {
   using cyclus::BidPortfolio;
   using cyclus::Material;
@@ -115,7 +115,7 @@ CommodconverterFacility::GetMatlBids(cyclus::CommodMap<cyclus::Material>::type&
 }
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-void CommodconverterFacility::GetMatlTrades(
+void CommodConverter::GetMatlTrades(
   const std::vector< cyclus::Trade<cyclus::Material> >& trades,
   std::vector<std::pair<cyclus::Trade<cyclus::Material>,
   cyclus::Material::Ptr> >& responses) {
@@ -140,7 +140,7 @@ void CommodconverterFacility::GetMatlTrades(
 }
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-void CommodconverterFacility::AddMat_(cyclus::Material::Ptr mat) {
+void CommodConverter::AddMat_(cyclus::Material::Ptr mat) {
   // Here we do not check that the recipe matches the input recipe. 
 
   LOG(cyclus::LEV_INFO5, "ComCnv") << prototype() << " is initially holding "
@@ -161,14 +161,14 @@ void CommodconverterFacility::AddMat_(cyclus::Material::Ptr mat) {
 }
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-cyclus::Material::Ptr CommodconverterFacility::Request_() {
+cyclus::Material::Ptr CommodConverter::Request_() {
   double qty = std::max(0.0, current_capacity());
   return cyclus::Material::CreateUntracked(qty,
                                         context()->GetRecipe(in_recipe));
 }
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-cyclus::BidPortfolio<cyclus::Material>::Ptr CommodconverterFacility::GetBids_(
+cyclus::BidPortfolio<cyclus::Material>::Ptr CommodConverter::GetBids_(
     cyclus::CommodMap<cyclus::Material>::type& commod_requests,
     std::string commod,
     cyclus::toolkit::ResourceBuff* buffer) {
@@ -207,7 +207,7 @@ cyclus::BidPortfolio<cyclus::Material>::Ptr CommodconverterFacility::GetBids_(
   return port;
 }
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-cyclus::Material::Ptr CommodconverterFacility::TradeResponse_(
+cyclus::Material::Ptr CommodConverter::TradeResponse_(
     double qty,
     cyclus::toolkit::ResourceBuff* buffer) {
   using cyclus::Material;
@@ -232,7 +232,7 @@ cyclus::Material::Ptr CommodconverterFacility::TradeResponse_(
 }
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-void CommodconverterFacility::BeginProcessing_(){
+void CommodConverter::BeginProcessing_(){
   LOG(cyclus::LEV_DEBUG2, "ComCnv") << "CommodConverter " << prototype() 
                                     << " added resources to processing";
   if( inventory.count() > 0 ){
@@ -246,7 +246,7 @@ void CommodconverterFacility::BeginProcessing_(){
 }
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-void CommodconverterFacility::Convert_(){
+void CommodConverter::Convert_(){
   using cyclus::Material;
   using cyclus::ResCast;
   LOG(cyclus::LEV_DEBUG2, "ComCnv") << "CommodConverter " << prototype() 
@@ -269,8 +269,8 @@ void CommodconverterFacility::Convert_(){
 
 
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-extern "C" cyclus::Agent* ConstructCommodconverterFacility(cyclus::Context* ctx) {
-  return new CommodconverterFacility(ctx);
+extern "C" cyclus::Agent* ConstructCommodConverter(cyclus::Context* ctx) {
+  return new CommodConverter(ctx);
 }
 
 } // namespace commodconverter
