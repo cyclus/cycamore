@@ -6,7 +6,9 @@ namespace commodconverter {
 
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 CommodConverter::CommodConverter(cyclus::Context* ctx)
-    : cyclus::Facility(ctx) {};
+    : cyclus::Facility(ctx) {
+  cyclus::Warn<cyclus::EXPERIMENTAL_WARNING>("the CommodConverter is experimental.");
+    };
 
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 // pragmas
