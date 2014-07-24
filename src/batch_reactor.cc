@@ -873,7 +873,7 @@ void BatchReactor::Refuel_() {
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 void BatchReactor::MoveBatchIn_() {
   LOG(cyclus::LEV_DEBUG2, "BReact") << "BatchReactor " << prototype()
-                                    << " added a batch from its core.";
+                                    << " added a batch to its core.";
   try {
     core_.Push(reserves_.Pop());
   } catch (cyclus::Error& e) {
