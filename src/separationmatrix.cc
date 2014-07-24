@@ -4,7 +4,9 @@ namespace separationmatrix {
 
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 SeparationMatrix::SeparationMatrix(cyclus::Context* ctx)
-    : cyclus::Facility(ctx) {};
+    : cyclus::Facility(ctx) {
+  cyclus::Warn<cyclus::EXPERIMENTAL_WARNING>("the SeparationMatrix is experimental.");
+    };
 
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 std::string SeparationMatrix::str() {
