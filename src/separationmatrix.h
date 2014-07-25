@@ -89,6 +89,9 @@ class SeparationMatrix :
   /// @param time the time of the tock
   virtual void Tock();
 
+  virtual std::set<cyclus::RequestPortfolio<cyclus::Material>::Ptr> 
+    GetMatlRequests();
+
 protected:
   // @brief gives current quantity of commod in inventory
   const double inventory_quantity(std::string commod) const;

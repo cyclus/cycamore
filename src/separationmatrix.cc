@@ -102,6 +102,10 @@ void SeparationMatrix::Tick() {
   LOG(cyclus::LEV_DEBUG4, "SepMtx") << "    ProcessTime: " << process_time_();
 
   // if lifetime is up, clear self of materials??
+  if (current_capacity() > cyclus::eps()) {
+    LOG(cyclus::LEV_INFO4, "SepMtx") << " will request " << current_capacity()
+                                       << " kg of " << in_commod << ".";
+  }
 
   LOG(cyclus::LEV_DEBUG3, "SepMtx") << "Current facility parameters for "
                                     << prototype()
@@ -128,6 +132,33 @@ void SeparationMatrix::Tock() {
   LOG(cyclus::LEV_DEBUG4, "SepMtx") << "    ProcessTime: " << process_time_();
   LOG(cyclus::LEV_INFO3, "SepMtx") << "}";
 
+}
+
+// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+std::set<cyclus::RequestPortfolio<cyclus::Material>::Ptr>
+SeparationMatrix::GetMatlRequests() {
+  using cyclus::CapacityConstraint;
+  using cyclus::Material;
+  using cyclus::RequestPortfolio;
+  using cyclus::Request;
+
+  std::set<RequestPortfolio<Material>::Ptr> ports;
+  RequestPortfolio<Material>::Ptr port(new RequestPortfolio<Material>());
+  double amt = current_capacity();
+  Material::Ptr mat = cyclus::NewBlankMaterial(amt);
+
+  if (amt > cyclus::eps()) {
+    CapacityConstraint<Material> cc(amt);
+    port->AddConstraint(cc);
+
+    std::vector<std::string>::const_iterator it;
+    std::vector<Request<Material>*> mutuals;
+    mutuals.push_back(port->AddRequest(mat, this, in_commod));
+    port->AddMutualReqs(mutuals);
+    ports.insert(port);
+  }  // if amt > eps
+
+  return ports;
 }
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
