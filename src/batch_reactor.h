@@ -204,12 +204,12 @@ class BatchReactor
   /// @param time the time of the tock
   virtual void Tock();
 
-  /// @brief The EnrichmentFacility request Materials of its given
+  /// @brief The BatchReactor requests Materials of its given
   /// commodity.
   virtual std::set<cyclus::RequestPortfolio<cyclus::Material>::Ptr>
       GetMatlRequests();
 
-  /// @brief The EnrichmentFacility place accepted trade Materials in their
+  /// @brief The BatchReactor places accepted trade Materials in their
   /// Inventory
   virtual void AcceptMatlTrades(
       const std::vector< std::pair<cyclus::Trade<cyclus::Material>,
