@@ -21,10 +21,6 @@ CommodConverter::CommodConverter(cyclus::Context* ctx)
 
 #pragma cyclus def snapshotinv commodconverter::CommodConverter
 
-#pragma cyclus def initfromdb commodconverter::CommodConverter
-
-#pragma cyclus def initfromcopy commodconverter::CommodConverter
-
 #pragma cyclus def infiletodb commodconverter::CommodConverter
 
 #pragma cyclus def snapshot commodconverter::CommodConverter
@@ -32,14 +28,54 @@ CommodConverter::CommodConverter(cyclus::Context* ctx)
 #pragma cyclus def clone commodconverter::CommodConverter
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+void CommodConverter::InitFrom(CommodConverter* m) {
+
+  #pragma cyclus impl initfromcopy commodconverter::CommodConverter
+
+  cyclus::toolkit::CommodityProducer::Copy(m);
+}
+
+//- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+void CommodConverter::InitFrom(cyclus::QueryableBackend* b){
+
+  #pragma cyclus impl initfromdb commodconverter::CommodConverter
+
+  using cyclus::toolkit::Commodity;
+  Commodity commod = Commodity(out_commod);
+  cyclus::toolkit::CommodityProducer::Add(commod);
+  cyclus::toolkit::CommodityProducer::SetCapacity(commod, capacity);
+  cyclus::toolkit::CommodityProducer::SetCost(commod, capacity);
+}
+
+//- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+void CommodConverter::EnterNotify() {
+  Facility::EnterNotify();
+
+  using cyclus::toolkit::Commodity;
+  Commodity commod = Commodity(out_commod);
+  cyclus::toolkit::CommodityProducer::Add(commod);
+  cyclus::toolkit::CommodityProducer::SetCapacity(commod, capacity);
+}
+//- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 std::string CommodConverter::str() {
   std::stringstream ss;
+  std::string ans;
+  if (cyclus::toolkit::CommodityProducer::
+      Produces(cyclus::toolkit::Commodity(out_commod_()))){
+    ans = "yes";
+  } else {
+    ans = "no";
+  }
   ss << cyclus::Facility::str();
   ss << " has facility parameters {" << "\n"
      << "     Input Commodity = " << in_commod_() << ",\n"
      << "     Output Commodity = " << out_commod_() << ",\n"
      << "     Process Time = " << process_time_() << ",\n"
      << "     Capacity = " << capacity_() << ",\n"
+     << " commod producer members: " << " produces "
+     << out_commod << "?:" << ans
+     << " capacity: " << cyclus::toolkit::CommodityProducer::Capacity(out_commod_())
+     << " cost: " << cyclus::toolkit::CommodityProducer::Cost(out_commod_())
      << "'}";
   return ss.str();
 }
