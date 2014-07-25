@@ -346,13 +346,13 @@ double SeparationMatrix::Eff_(int element){
 
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 std::string SeparationMatrix::Stream_(int element){
-  std::string to_ret;
+  std::string to_ret = waste_stream_();
   try {
     int idx = ElemIdx_(element);
-    to_ret = streams[idx];
-  } catch (cyclus::KeyError &e) {
-    to_ret = waste_stream_();
-  }
+    if ( idx < streams.size() ) {
+      to_ret = streams[idx];
+    }
+  } catch (cyclus::KeyError &e) { }
   return to_ret;
 }
 
