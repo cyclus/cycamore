@@ -89,8 +89,20 @@ class SeparationMatrix :
   /// @param time the time of the tock
   virtual void Tock();
 
+  /// @brief makes requests of the in_commod
   virtual std::set<cyclus::RequestPortfolio<cyclus::Material>::Ptr> 
     GetMatlRequests();
+
+  /// @brief makes bids for a material
+  std::set<cyclus::BidPortfolio<cyclus::Material>::Ptr>
+    GetMatlBids(cyclus::CommodMap<cyclus::Material>::type&
+                                  commod_requests);
+
+  /// @brief makes bids for a commodity from a buffer
+  cyclus::BidPortfolio<cyclus::Material>::Ptr GetBids_(
+      cyclus::CommodMap<cyclus::Material>::type& commod_requests,
+      std::string commod,
+      cyclus::toolkit::ResourceBuff* buffer);  
 
   /// This facility accepts all materials of the right commodity
   virtual void AcceptMatlTrades( const std::vector< 

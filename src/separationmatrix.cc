@@ -162,6 +162,68 @@ SeparationMatrix::GetMatlRequests() {
 }
 
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+std::set<cyclus::BidPortfolio<cyclus::Material>::Ptr>
+SeparationMatrix::GetMatlBids(cyclus::CommodMap<cyclus::Material>::type&
+                          commod_requests) {
+  using cyclus::BidPortfolio;
+  using cyclus::Material;
+
+  std::set<BidPortfolio<Material>::Ptr> ports;
+
+  std::vector<std::string>::const_iterator it;
+  for (it = out_commods.begin(); it != out_commods.end(); ++it) {
+    BidPortfolio<Material>::Ptr port = GetBids_(commod_requests,
+                                                *it,
+                                                &inventory[*it]);
+    if (!port->bids().empty()) {
+      ports.insert(port);
+    }
+  }
+
+  return ports;
+}
+
+// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+cyclus::BidPortfolio<cyclus::Material>::Ptr SeparationMatrix::GetBids_(
+    cyclus::CommodMap<cyclus::Material>::type& commod_requests,
+    std::string commod,
+    cyclus::toolkit::ResourceBuff* buffer) {
+  using cyclus::Bid;
+  using cyclus::BidPortfolio;
+  using cyclus::CapacityConstraint;
+  using cyclus::Composition;
+  using cyclus::Converter;
+  using cyclus::Material;
+  using cyclus::Request;
+  using cyclus::ResCast;
+  using cyclus::toolkit::ResourceBuff;
+
+  BidPortfolio<Material>::Ptr port(new BidPortfolio<Material>());
+
+  if (commod_requests.count(commod) > 0 && buffer->quantity() > 0) {
+    std::vector<Request<Material>*>& requests = commod_requests[commod];
+
+    // get offer composition
+    Material::Ptr back = ResCast<Material>(buffer->Pop(ResourceBuff::BACK));
+    Composition::Ptr comp = back->comp();
+    buffer->Push(back);
+
+    std::vector<Request<Material>*>::iterator it;
+    for (it = requests.begin(); it != requests.end(); ++it) {
+      Request<Material>* req = *it;
+      double qty = std::min(req->target()->quantity(), buffer->quantity());
+      Material::Ptr offer = Material::CreateUntracked(qty, comp);
+      port->AddBid(req, offer, this);
+    }
+
+    CapacityConstraint<Material> cc(buffer->quantity());
+    port->AddConstraint(cc);
+  }
+
+  return port;
+}
+
+// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 void SeparationMatrix::AcceptMatlTrades(
     const std::vector< std::pair<cyclus::Trade<cyclus::Material>,
                                  cyclus::Material::Ptr> >& responses) {
