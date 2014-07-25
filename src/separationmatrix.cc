@@ -161,6 +161,20 @@ SeparationMatrix::GetMatlRequests() {
   return ports;
 }
 
+// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+void SeparationMatrix::AcceptMatlTrades(
+    const std::vector< std::pair<cyclus::Trade<cyclus::Material>,
+                                 cyclus::Material::Ptr> >& responses) {
+  // accept blindly, no judgement, any material that's been matched
+  std::vector< std::pair<cyclus::Trade<cyclus::Material>,
+                         cyclus::Material::Ptr> >::const_iterator it;
+
+  // put each in stocks.
+  for (it = responses.begin(); it != responses.end(); ++it) {
+    stocks.Push(it->second);
+  }
+}
+
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 const double SeparationMatrix::inventory_quantity(std::string commod)const {
   using cyclus::toolkit::ResourceBuff;

@@ -92,6 +92,11 @@ class SeparationMatrix :
   virtual std::set<cyclus::RequestPortfolio<cyclus::Material>::Ptr> 
     GetMatlRequests();
 
+  /// This facility accepts all materials of the right commodity
+  virtual void AcceptMatlTrades( const std::vector< 
+      std::pair<cyclus::Trade<cyclus::Material>, cyclus::Material::Ptr> >& 
+      responses);
+
 protected:
   // @brief gives current quantity of commod in inventory
   const double inventory_quantity(std::string commod) const;
