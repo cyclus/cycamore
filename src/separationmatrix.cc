@@ -276,7 +276,9 @@ void SeparationMatrix::RegisterProduction(std::string commod_str, double cap){
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 void SeparationMatrix::Separate_(){
-  Separate_(processing[ready()]);
+  if ( processing.find(ready()) != processing.end() ) {
+    Separate_(processing[ready()]);
+  }
 }
 
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -330,13 +332,15 @@ int SeparationMatrix::ElemIdx_(int element){
 
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 double SeparationMatrix::Eff_(int element){
-  double to_ret;
+  double to_ret = 0;
   try {
     int idx = ElemIdx_(element);
-    to_ret = boost::lexical_cast<double>(effs[idx]);
-  } catch (cyclus::KeyError &e) {
-    to_ret = 0;
-  }
+    if ( idx < effs.size() ) {
+      try {
+      to_ret = boost::lexical_cast<double>(std::string(effs[idx]));
+      } catch (boost::bad_lexical_cast const&) {}
+    }
+  } catch (cyclus::KeyError &e) { }
   return to_ret;
 }
 
