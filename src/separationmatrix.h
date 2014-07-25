@@ -56,7 +56,9 @@ namespace separationmatrix {
 /// Place a description of the detailed behavior of the agent. Consider
 /// describing the behavior at the tick and tock as well as the behavior
 /// upon sending and receiving materials and messages.
-class SeparationMatrix : public cyclus::Facility  {
+class SeparationMatrix : 
+  public cyclus::Facility,
+  public cyclus::toolkit::CommodityProducer {
  public:  
   /// Constructor for SeparationMatrix Class
   /// @param ctx the cyclus context for access to simulation-wide parameters
@@ -68,10 +70,13 @@ class SeparationMatrix : public cyclus::Facility  {
   /// @warning The Prime Directive must have a space before it! (A fix will be
   /// in 2.0 ^TM)
   
-  #pragma cyclus
+  #pragma cyclus decl
 
-  #pragma cyclus note {"doc": "A separationmatrix facility is provided as a skeleton " \
-                              "for the design of new facility agents."}
+  #pragma cyclus note {"doc": "A separationmatrix facility is provided to "\
+                              "separate materials into streams by element "}
+
+  /// Notify the simulation that this facility has arrived
+  void EnterNotify();
 
   /// A verbose printer for the SeparationMatrix
   virtual std::string str();
@@ -90,6 +95,11 @@ protected:
 
   /// @brief gives current quantity of all commods in inventory
   const double inventory_quantity() const;
+
+  /// @brief registers the commodity production for this facility
+  /// @param commod_str a commodity that this facility produces
+  /// @param cap the capacity of this facility to produce the commod
+  void RegisterProduction(std::string commod_str, double cap);
 
   /// @brief this facility's commodity-recipe context
   inline void crctx(const cyclus::toolkit::CommodityRecipeContext& crctx) {
@@ -153,7 +163,12 @@ protected:
                       "one time (kg)."}
   double max_inv_size; //should be nonnegative
 
-  #pragma cyclus var{'capacity': 'max_inv_size'}
+  #pragma cyclus var {"default": 1e299,\
+                      "tooltip":"maximum capacity (kg)",\
+                      "doc":"the amount of material that can be processed per "\
+                      "timestep (kg)."}
+  double capacity; //should be nonnegative
+
   std::map<std::string, cyclus::toolkit::ResourceBuff> inventory;
   cyclus::toolkit::ResourceBuff stocks;
   cyclus::toolkit::ResourceBuff wastes;
@@ -188,9 +203,13 @@ protected:
   inline int process_time_() const { return process_time; }
 
   /// @brief the maximum amount allowed in inventory
-  inline void capacity(double c) { max_inv_size = c; }
-  inline double capacity() const { return max_inv_size; }
+  inline void max_inv_size_(double c) { max_inv_size = c; }
+  inline double max_inv_size_() const { return max_inv_size; }
 
+  /// @brief maximum amount that can be processed in one timestep.
+  inline void capacity_(double c) { capacity = c; }
+  inline double capacity_() const { return capacity; }
+  
   /// @brief current maximum amount that can be added to processing
   inline double current_capacity() const {
     return (max_inv_size - inventory_quantity()); } 

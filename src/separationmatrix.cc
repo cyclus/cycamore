@@ -9,8 +9,84 @@ SeparationMatrix::SeparationMatrix(cyclus::Context* ctx)
     };
 
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+// pragmas
+
+#pragma cyclus def schema separationmatrix::SeparationMatrix
+
+#pragma cyclus def annotations separationmatrix::SeparationMatrix
+
+#pragma cyclus def initinv separationmatrix::SeparationMatrix
+
+#pragma cyclus def snapshotinv separationmatrix::SeparationMatrix
+
+#pragma cyclus def infiletodb separationmatrix::SeparationMatrix
+
+#pragma cyclus def snapshot separationmatrix::SeparationMatrix
+
+#pragma cyclus def clone separationmatrix::SeparationMatrix
+
+
+//- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+void SeparationMatrix::InitFrom(SeparationMatrix* m) {
+
+  #pragma cyclus impl initfromcopy separationmatrix::SeparationMatrix
+
+  cyclus::toolkit::CommodityProducer::Copy(m);
+}
+
+//- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+void SeparationMatrix::InitFrom(cyclus::QueryableBackend* b){
+
+  #pragma cyclus impl initfromdb separationmatrix::SeparationMatrix
+
+  std::vector<std::string>::const_iterator it;
+  for(it = out_commods.begin(); it != out_commods.end(); ++it ) {
+    RegisterProduction(*it, capacity);
+  }
+  RegisterProduction(waste_stream, capacity);
+}
+
+//- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+void SeparationMatrix::EnterNotify() {
+  Facility::EnterNotify();
+
+  std::vector<std::string>::const_iterator it;
+  for(it = out_commods.begin(); it != out_commods.end(); ++it ) {
+    RegisterProduction(*it, capacity);
+  }
+  RegisterProduction(waste_stream, capacity);
+}
+
+// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 std::string SeparationMatrix::str() {
-  return Facility::str();
+  std::stringstream ss;
+  std::string ans;
+  std::stringstream prod;
+
+  std::vector<std::string>::const_iterator it;
+  for(it = out_commods.begin(); it != out_commods.end(); ++it ) {
+    if (cyclus::toolkit::CommodityProducer::
+        Produces(cyclus::toolkit::Commodity(*it))){
+      ans = "yes";
+    } else {
+      ans = "no";
+    }
+    prod << *it << "?:" << ans
+         << " capacity: " << cyclus::toolkit::CommodityProducer::Capacity(*it)
+         << " cost: " << cyclus::toolkit::CommodityProducer::Cost(*it);
+  }
+
+
+  ss << cyclus::Facility::str();
+  ss << " has facility parameters {" << "\n"
+     << "     Input Commodity = " << in_commod_() << ",\n"
+     << "     Process Time = " << process_time_() << ",\n"
+     << "     Maximum Inventory Size = " << max_inv_size_() << ",\n"
+     << "     Capacity = " << capacity_() << ",\n"
+     << " commod producer members: " << " produces "
+     << prod.str()
+     << "'}";
+  return ss.str();
 }
 
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -79,6 +155,16 @@ const double SeparationMatrix::inventory_quantity() const {
     total += inventory_quantity((*it).first);
   }
   return total;
+}
+
+// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+void SeparationMatrix::RegisterProduction(std::string commod_str, double cap){
+  using cyclus::toolkit::Commodity;
+  Commodity commod = Commodity(commod_str); 
+
+  cyclus::toolkit::CommodityProducer::Add(commod);
+  cyclus::toolkit::CommodityProducer::SetCapacity(commod, cap);
+  cyclus::toolkit::CommodityProducer::SetCost(commod, cap);
 }
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
