@@ -57,10 +57,11 @@ class CommodConverter
   /// A verbose printer for the CommodConverter
   virtual std::string str();
 
-  /* --- Facility Members --- */
-  /* --- */
+  // --- Facility Members ---
   
-  /* --- Agent Members --- */
+  // --- Agent Members ---
+  virtual void EnterNotify();
+
   /// The handleTick function specific to the CommodConverter.
   /// @param time the time of the tick  
   virtual void Tick();
@@ -140,6 +141,7 @@ class CommodConverter
   int ready(){ return context()->time() - process_time ; }
 
   /* --- Module Members --- */
+
   #pragma cyclus var {"tooltip":"input commodity",\
                       "doc":"commodity accepted by this facility"}
   std::string in_commod;
@@ -169,7 +171,11 @@ class CommodConverter
                       "one time (kg)."}
   double max_inv_size; //should be nonnegative
 
-  #pragma cyclus var{'capacity': 'max_inv_size_'}
+  #pragma cyclus var{"default": 1e299,\
+                     "tooltip":"capacity per timestep (kg)",\
+                     "doc":"the maximumamount that can be processed per timestep (kg)"}
+  double capacity;
+
   cyclus::toolkit::ResourceBuff inventory;
   cyclus::toolkit::ResourceBuff stocks;
 
