@@ -599,7 +599,7 @@ void BatchReactor::Tick() {
     int ncore = core_.count();
     LOG(cyclus::LEV_DEBUG1, "BReact") << "lifetime reached, moving out:"
                                       << ncore << " batches.";
-    for (int i = 0; i < ncore; i++) {
+    for (int i = 0; i < ncore; ++i) {
       MoveBatchOut_();  // unload
     }
   } else {
@@ -675,7 +675,7 @@ void BatchReactor::Tock() {
   switch (phase()) {
     case PROCESS:
       if (time == end_time()) {
-        for (int i = 0; i < n_load(); i++) {
+        for (int i = 0; i < core_.count(); ++i) {
           MoveBatchOut_();  // unload
         }
         Refuel_();  // reload
