@@ -14,27 +14,54 @@ class CommodConverter;
 namespace commodconverter {
 /// @class CommodConverter
 ///
-/// This Facility is intended
-/// as a skeleton to guide the implementation of new Facility
-/// agents.
+/// This Facility is intended to convert a resource from one commodity to 
+/// another. It also has an optional delay parameter. It can therefore be used 
+/// quite easily as a storage facility. 
 /// The CommodConverter class inherits from the Facility class and is
 /// dynamically loaded by the Agent class when requested.
 ///
 /// @section intro Introduction
-/// Place an introduction to the agent here.
+/// This Agent was initially developed to support the fco code-to-code 
+/// comparsion.
+/// It's very similar to the "NullFacility" of years 
+/// past. Its purpose is to convert a commodity from one commodity to another 
+/// after some period of delay time. This facility is very good for use as a 
+/// storage facility or as a facility whose process physics will not transmute 
+/// the material composition any more than with normal, system-wide decay. 
 ///
 /// @section agentparams Agent Parameters
-/// Place a description of the required input parameters which define the
-/// agent implementation.
-///
+/// in_commod is a string naming the commodity that this facility recieves
+/// out_commod is a string naming the commodity that in_commod is converted into
+/// process_time is the number of timesteps between receiving and offering
+/// 
 /// @section optionalparams Optional Parameters
-/// Place a description of the optional input parameters to define the
-/// agent implementation.
+/// max_inv_size is the maximum capacity of the inventory storage
+/// capacity is the maximum processing capacity per timestep
 ///
 /// @section detailed Detailed Behavior
-/// Place a description of the detailed behavior of the agent. Consider
-/// describing the behavior at the tick and tock as well as the behavior
-/// upon sending and receiving materials and messages.
+/// 
+/// Tick:
+/// Nothing really happens on the tick. 
+///
+/// Tock:
+/// On the tock, any material that has been waiting for long enough (delay 
+/// time) is converted and placed in the stocks buffer.
+///
+/// Any brand new inventory that was received in this timestep is placed into 
+/// the processing queue to begin waiting. 
+/// 
+/// Making Requests:
+/// This facility requests all of the in_commod that it can.
+///
+/// Receiving Resources:
+/// Anything of the in_commod that is received by this facility goes into the 
+/// inventory.
+///
+/// Making Offers:
+/// Any converted material in the stocks buffer is offered to the market.
+///
+/// Sending Resources:
+/// Matched resources are sent immediately.
 class CommodConverter 
   : public cyclus::Facility,
     public cyclus::toolkit::CommodityProducer {
@@ -155,10 +182,6 @@ class CommodConverter
   #pragma cyclus var {"tooltip":"input recipe",\
                       "doc":"recipe accepted by this facility"}
   std::string in_recipe;
-
-  #pragma cyclus var {"tooltip":"output recipe",\
-                      "doc":"recipe produced by this facility"}
-  std::string out_recipe;
 
   #pragma cyclus var {"default": 0,\
                       "tooltip":"process time (timesteps)",\
