@@ -132,14 +132,17 @@ class CommodConverter
 
  protected:
   ///   @brief adds a material into the incoming commodity inventory
-  ///   @throws if the material is not the same composition as the in_recipe
+  ///   @param mat the material to add to the incoming inventory.
+  ///   @throws if there is trouble with pushing to the inventory buffer.
   void AddMat_(cyclus::Material::Ptr mat);
 
   ///   @brief generates a request for this facility given its current state. The
   ///   quantity of the material will be equal to the remaining inventory size.
+  ///   @return a material that this facility will request
   cyclus::Material::Ptr Request_();
 
   /// @brief gathers information about bids
+  /// @param commod_requests the materials that have been requested
   cyclus::BidPortfolio<cyclus::Material>::Ptr GetBids_(
         cyclus::CommodMap<cyclus::Material>::type& commod_requests, 
         std::string commod, 
@@ -160,6 +163,7 @@ class CommodConverter
   inline void crctx(const cyclus::toolkit::CommodityRecipeContext& crctx) {
     crctx_ = crctx;
   }
+
   inline cyclus::toolkit::CommodityRecipeContext crctx() const {
     return crctx_;
   }
