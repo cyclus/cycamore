@@ -10,9 +10,14 @@ namespace separationmatrix {
 
 /// @class SeparationMatrix
 ///
-/// This Facility is intended
-/// as a skeleton to guide the implementation of new Facility
-/// agents.
+/// This model is intended to represent a generic separations process and is based 
+/// on the separations matrix facility from years past. Based on a matrix of 
+/// incoming streams, outgoing streams, and efficiencies, its purpose is to 
+/// convert a commodity from one commodity to a few after some period of delay 
+/// time. Separations is elemental in this case. This facility is very good for 
+/// use as a separations facility in a reprocessing scenario. It was recently 
+/// re-created to run the fco code-to-code comparison.
+/// 
 /// The SeparationMatrix class inherits from the Facility class and is
 /// dynamically loaded by the Agent class when requested.
 ///
@@ -53,9 +58,6 @@ namespace separationmatrix {
 ///  SEND MATERIAL
 ///  Pull separated material from inventory based on Requests
 ///  Decrement ordersWaiting
-/// Place a description of the detailed behavior of the agent. Consider
-/// describing the behavior at the tick and tock as well as the behavior
-/// upon sending and receiving materials and messages.
 class SeparationMatrix : 
   public cyclus::Facility,
   public cyclus::toolkit::CommodityProducer {
@@ -144,12 +146,18 @@ protected:
   void Separate_(cyclus::Material::Ptr mat);
 
   /// @brief returns the stream name for the element
+  /// @param elem the integer representation of an element (e.g. 92)
+  /// @return the stream name for the elemnt
   std::string Stream_(int elem);
 
   /// @brief returns the element in the matrix
+  /// @param elem the integer representation of an element (e.g. 92)
+  /// @return the separation efficiency for the element (0 <= x <= 1)
   double Eff_(int elem);
 
   /// @brief returns the index of the element in the vectors
+  /// @param elem the integer representation of an element (e.g. 92)
+  /// @return the index of the element in the lists
   int ElemIdx_(int elem);
 
   /// @brief returns the time key for ready materials
