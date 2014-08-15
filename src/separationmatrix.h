@@ -240,7 +240,7 @@ protected:
   
   /// @brief current maximum amount that can be added to processing
   inline double current_capacity() const {
-    return (max_inv_size - inventory_quantity()); } 
+    return (std::min(capacity, max_inv_size - inventory_quantity())); } 
 };
 
 }  // namespace separationmatrix
