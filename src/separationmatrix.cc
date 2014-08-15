@@ -238,7 +238,7 @@ void SeparationMatrix::AcceptMatlTrades(
 }
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-const double SeparationMatrix::inventory_quantity(std::string commod)const {
+const double SeparationMatrix::inventory_quantity(std::string commod) const {
   using cyclus::toolkit::ResourceBuff;
 
   std::map<std::string, ResourceBuff>::const_iterator found;
