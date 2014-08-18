@@ -145,7 +145,7 @@ CommodConverter::GetMatlBids(cyclus::CommodMap<cyclus::Material>::type&
 
   std::set<std::string>::const_iterator it;
   BidPortfolio<Material>::Ptr port = GetBids_(commod_requests,
-                                              out_commod_(),
+                                              out_commod,
                                               &stocks);
   if (!port->bids().empty()) {
     ports.insert(port);
@@ -296,6 +296,10 @@ void CommodConverter::Convert_(){
     try {
       // pop one material from processing 
       Material::Ptr mat = ResCast<Material>(processing.find(ready())->second.Pop());
+      // if an out_recipe was provided, transmute it
+      if( out_recipe != "" ){
+        mat->Transmute(context()->GetRecipe(out_recipe));
+      }
       // change its commod
       crctx_.UpdateRsrc(out_commod_(), mat);
       // put it in the stocks
