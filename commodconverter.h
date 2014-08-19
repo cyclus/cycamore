@@ -207,6 +207,11 @@ class CommodConverter
                      "doc":"the maximumamount that can be processed per timestep (kg)"}
   double capacity;
 
+  #pragma cyclus var{"default": 0,\
+                     "tooltip":"cost per kg of production",\
+                     "doc":"cost per kg of produced out_commod"}
+  double cost;
+
   cyclus::toolkit::ResourceBuff inventory;
   cyclus::toolkit::ResourceBuff stocks;
 
@@ -226,6 +231,10 @@ class CommodConverter
   /// @brief the maximum amount processed per timestep
   inline void capacity_(double c) { capacity = c; }
   inline double capacity_() const { return capacity; }
+
+  /// @brief the cost per unit out_commod
+  inline void cost_(double c) { cost = c; }
+  inline double cost_() const { return cost; }
 
   /// @brief the in commodity
   inline void in_commod_(std::string c) { in_commod = c; }
