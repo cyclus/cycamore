@@ -8,6 +8,7 @@ namespace commodconverter {
 void CommodConverterTest::SetUp() {
   src_facility_ = new CommodConverter(tc_.get());
   InitParameters();
+  SetUpCommodConverter();
 }
 
 void CommodConverterTest::TearDown() {
@@ -22,21 +23,7 @@ void CommodConverterTest::InitParameters(){
   process_time = 10;
   max_inv_size = 200;
   capacity = 20;
-  //crctx.AddInCommod(in_c1, in_r1, out_c1, out_r1);
-  //crctx.AddInCommod(in_c2, in_r2, out_c2, out_r2);
-
-
-  // init conds
-  //rsrv_c = in_c1;
-  //rsrv_r = in_r1;
-  //stor_c = out_c1;
-  //stor_r = out_r1;
-  //rsrv_n = 2;
-  //core_n = 3;
-  //stor_n = 1;
-  //ics.AddReserves(rsrv_n, rsrv_r, rsrv_c);
-  //ics.AddCore(core_n, core_r, core_c);
-  //ics.AddStorage(stor_n, stor_r, stor_c);
+  cost = 1;
 
   cyclus::CompMap v;
   v[922350000] = 1;
@@ -49,6 +36,17 @@ void CommodConverterTest::InitParameters(){
   tc_.get()->AddRecipe(out_r1, recipe);
 }
 
+void CommodConverterTest::SetUpCommodConverter(){
+  src_facility_->in_commod_(in_c1);
+  src_facility_->out_commod_(out_c1);
+  src_facility_->in_recipe_(in_r1);
+  src_facility_->out_recipe_(out_r1);
+  src_facility_->process_time_(process_time);
+  src_facility_->max_inv_size_(max_inv_size);
+  src_facility_->capacity_(capacity);
+  src_facility_->cost_(cost);
+}
+
 void CommodConverterTest::TestInitState(CommodConverter* fac){
   EXPECT_EQ(process_time, fac->process_time_());
   EXPECT_EQ(max_inv_size, fac->max_inv_size_());
@@ -57,6 +55,7 @@ void CommodConverterTest::TestInitState(CommodConverter* fac){
   EXPECT_EQ(out_r1, fac->out_recipe_());
   EXPECT_EQ(in_c1, fac->in_commod_());
   EXPECT_EQ(in_r1, fac->in_recipe_());
+  EXPECT_EQ(cost, fac->cost_());
 }
 
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
