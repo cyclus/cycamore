@@ -107,6 +107,7 @@ CommodConverter::GetMatlRequests() {
   using cyclus::Request;
 
   std::set<RequestPortfolio<Material>::Ptr> ports;
+
   RequestPortfolio<Material>::Ptr port(new RequestPortfolio<Material>());
   Material::Ptr mat = Request_();
   double amt = mat->quantity();
@@ -152,6 +153,7 @@ CommodConverter::GetMatlBids(cyclus::CommodMap<cyclus::Material>::type&
   }
 
   return ports;
+
 }
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -203,6 +205,11 @@ void CommodConverter::AddMat_(cyclus::Material::Ptr mat) {
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 cyclus::Material::Ptr CommodConverter::Request_() {
   double qty = std::max(0.0, current_capacity());
+  LOG(cyclus::LEV_INFO5, "ComCnv") << prototype()
+                                  << " just requested"
+                                  << current_capacity()
+                                  << " of commodity: " << in_commod
+                                  << " with recipe: " << in_recipe;
   return cyclus::Material::CreateUntracked(qty,
                                         context()->GetRecipe(in_recipe));
 }
@@ -246,6 +253,7 @@ cyclus::BidPortfolio<cyclus::Material>::Ptr CommodConverter::GetBids_(
 
   return port;
 }
+
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 cyclus::Material::Ptr CommodConverter::TradeResponse_(
     double qty,
