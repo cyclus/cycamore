@@ -1,25 +1,63 @@
 #include <gtest/gtest.h>
 
-#include "commodconverter.h"
+#include "commodconverter_tests.h"
 
-#include "context.h"
-#include "facility_tests.h"
-#include "agent_tests.h"
-
-using commodconverter::CommodConverter;
+namespace commodconverter {
 
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-class CommodConverterTest : public ::testing::Test {
- protected:
-  cyclus::TestContext tc_;
-  CommodConverter* src_facility_;
+void CommodConverterTest::SetUp() {
+  src_facility_ = new CommodConverter(tc_.get());
+  InitParameters();
+}
 
-  virtual void SetUp() {
-    src_facility_ = new CommodConverter(tc_.get());
-  }
+void CommodConverterTest::TearDown() {
+  delete src_facility_;
+}
 
-  virtual void TearDown() {}
-};
+void CommodConverterTest::InitParameters(){
+  in_c1 = "in_c1";
+  out_c1 = "out_c1";
+  in_r1 = "in_r1";
+  out_r1 = "out_r1";
+  process_time = 10;
+  max_inv_size = 200;
+  capacity = 20;
+  //crctx.AddInCommod(in_c1, in_r1, out_c1, out_r1);
+  //crctx.AddInCommod(in_c2, in_r2, out_c2, out_r2);
+
+
+  // init conds
+  //rsrv_c = in_c1;
+  //rsrv_r = in_r1;
+  //stor_c = out_c1;
+  //stor_r = out_r1;
+  //rsrv_n = 2;
+  //core_n = 3;
+  //stor_n = 1;
+  //ics.AddReserves(rsrv_n, rsrv_r, rsrv_c);
+  //ics.AddCore(core_n, core_r, core_c);
+  //ics.AddStorage(stor_n, stor_r, stor_c);
+
+  cyclus::CompMap v;
+  v[922350000] = 1;
+  v[922380000] = 2;
+  cyclus::Composition::Ptr recipe = cyclus::Composition::CreateFromAtom(v);
+  tc_.get()->AddRecipe(in_r1, recipe);
+
+  v[94239] = 0.25;
+  recipe = cyclus::Composition::CreateFromAtom(v);
+  tc_.get()->AddRecipe(out_r1, recipe);
+}
+
+void CommodConverterTest::TestInitState(CommodConverter* fac){
+  EXPECT_EQ(process_time, fac->process_time_());
+  EXPECT_EQ(max_inv_size, fac->max_inv_size_());
+  EXPECT_EQ(capacity, fac->capacity_());
+  EXPECT_EQ(out_c1, fac->out_commod_());
+  EXPECT_EQ(out_r1, fac->out_recipe_());
+  EXPECT_EQ(in_c1, fac->in_commod_());
+  EXPECT_EQ(in_r1, fac->in_recipe_());
+}
 
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 TEST_F(CommodConverterTest, clone) {
@@ -30,6 +68,7 @@ TEST_F(CommodConverterTest, clone) {
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 TEST_F(CommodConverterTest, InitialState) {
   // Test things about the initial state of the facility here
+  TestInitState(src_facility_);
 }
 
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -50,9 +89,11 @@ TEST_F(CommodConverterTest, Tock) {
   // Test CommodConverter specific behaviors of the Tock function here
 }
 
+} // namespace commodconverter
+
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 cyclus::Agent* CommodConverterConstructor(cyclus::Context* ctx) {
-  return new CommodConverter(ctx);
+  return new commodconverter::CommodConverter(ctx);
 }
 
 // required to get functionality in cyclus agent unit tests library

@@ -113,8 +113,8 @@ CommodConverter::GetMatlRequests() {
   double amt = mat->quantity();
 
   if (amt > cyclus::eps()) {
-    CapacityConstraint<Material> cc(amt);
-    port->AddConstraint(cc);
+    //CapacityConstraint<Material> cc(amt);
+    //port->AddConstraint(cc);
 
     port->AddRequest(mat, this, in_commod_());
 
@@ -247,8 +247,8 @@ cyclus::BidPortfolio<cyclus::Material>::Ptr CommodConverter::GetBids_(
       port->AddBid(req, offer, this);
     }
 
-    CapacityConstraint<Material> cc(buffer->quantity());
-    port->AddConstraint(cc);
+    //CapacityConstraint<Material> cc(buffer->quantity());
+    //port->AddConstraint(cc);
   }
 
   return port;
