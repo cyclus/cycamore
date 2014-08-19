@@ -44,7 +44,7 @@ void CommodConverter::InitFrom(cyclus::QueryableBackend* b){
   Commodity commod = Commodity(out_commod);
   cyclus::toolkit::CommodityProducer::Add(commod);
   cyclus::toolkit::CommodityProducer::SetCapacity(commod, capacity);
-  cyclus::toolkit::CommodityProducer::SetCost(commod, capacity);
+  cyclus::toolkit::CommodityProducer::SetCost(commod, cost);
 }
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -55,7 +55,7 @@ void CommodConverter::EnterNotify() {
   Commodity commod = Commodity(out_commod);
   cyclus::toolkit::CommodityProducer::Add(commod);
   cyclus::toolkit::CommodityProducer::SetCapacity(commod, capacity);
-  cyclus::toolkit::CommodityProducer::SetCost(commod, capacity);
+  cyclus::toolkit::CommodityProducer::SetCost(commod, cost);
 }
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
