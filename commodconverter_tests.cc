@@ -75,7 +75,7 @@ TEST_F(CommodConverterTest, InitialState) {
 TEST_F(CommodConverterTest, CurrentCapacity) {
   EXPECT_EQ(capacity, src_facility_->current_capacity());
   src_facility_->max_inv_size_(1e299);
-  EXPECT_EQ(max_inv_size, src_facility_->max_inv_size_());
+  EXPECT_EQ(1e299, src_facility_->max_inv_size_());
   EXPECT_EQ(capacity, src_facility_->capacity_());
   EXPECT_EQ(capacity, src_facility_->current_capacity());
 }
