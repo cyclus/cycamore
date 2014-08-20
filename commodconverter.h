@@ -194,13 +194,12 @@ class CommodConverter
   #pragma cyclus var {"default": 0,\
                       "tooltip":"process time (timesteps)",\
                       "doc":"the time it takes to convert a received commodity (timesteps)."}
-  int process_time; //should be nonnegative
+  int process_time;
 
   #pragma cyclus var {"default": 1e299,\
                       "tooltip":"maximum inventory size (kg)",\
-                      "doc":"the amount of material that can be in storage at "\
-                      "one time (kg)."}
-  double max_inv_size; //should be nonnegative
+                      "doc":"the amount of material that can be in storage"}
+  double max_inv_size; 
 
   #pragma cyclus var{"default": 1e299,\
                      "tooltip":"capacity per timestep (kg)",\
