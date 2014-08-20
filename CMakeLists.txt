@@ -30,6 +30,9 @@ SET( SEPARATIONMATRIX_SOURCE_DIR ${CMAKE_SOURCE_DIR} )
 # Direct any binary installation paths to this directory
 SET( SEPARATIONMATRIX_BINARY_DIR ${CMAKE_BINARY_DIR} )
 
+# Direct doxygen here
+SET( SEPARATIONMATRIX_DOC_DIR ${CMAKE_CURRENT_SOURCE_DIR}/doc )
+
 # This makes all the libraries build as SHARED
 SET(BUILD_SHARED_LIBS true)
 
@@ -124,3 +127,26 @@ configure_file(
 
 add_custom_target(uninstall
     COMMAND ${CMAKE_COMMAND} -P ${CMAKE_CURRENT_BINARY_DIR}/cmake_uninstall.cmake)
+
+
+
+##############################################################################################
+###################################### begin doxygen #########################################
+##############################################################################################
+
+# This is the directory that holds the doxygen doxyfile template (doxy.conf.in)
+SET(DOC_SOURCE_DIR "${SEPARATIONMATRIX_SOURCE_DIR}")
+SET(DOC_INPUT_DIR "${SEPARATIONMATRIX_DOC_DIR}")
+SET(DOC_OUTPUT_DIR "${CMAKE_BINARY_DIR}/doc")
+
+# If doxygen exists, use the doc/CMakeLists.txt file for further instructions.
+FIND_PACKAGE(Doxygen)
+IF(DOXYGEN_FOUND)
+    ADD_SUBDIRECTORY("${SEPARATIONMATRIX_DOC_DIR}")
+ELSE(DOXYGEN_FOUND)
+    MESSAGE(STATUS "WARNING: Doxygen not found - doc won't be created")
+ENDIF(DOXYGEN_FOUND)
+
+##############################################################################################
+####################################### end doxygen ##########################################
+##############################################################################################
