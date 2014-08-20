@@ -197,19 +197,20 @@ class CommodConverter
   int process_time;
 
   #pragma cyclus var {"default": 1e299,\
+                     "tooltip":"capacity per timestep (kg)",\
+                     "doc":"the max amount that can be processed per timestep (kg)"}
+  double capacity;
+
+  #pragma cyclus var {"default": 0,\
+                     "tooltip":"cost per kg of production",\
+                     "doc":"cost per kg of produced out_commod"}
+  double cost;
+
+  #pragma cyclus var {"default": 1e299,\
                       "tooltip":"maximum inventory size (kg)",\
                       "doc":"the amount of material that can be in storage"}
   double max_inv_size; 
 
-  #pragma cyclus var{"default": 1e299,\
-                     "tooltip":"capacity per timestep (kg)",\
-                     "doc":"the maximumamount that can be processed per timestep (kg)"}
-  double capacity;
-
-  #pragma cyclus var{"default": 0,\
-                     "tooltip":"cost per kg of production",\
-                     "doc":"cost per kg of produced out_commod"}
-  double cost;
 
   cyclus::toolkit::ResourceBuff inventory;
   cyclus::toolkit::ResourceBuff stocks;
