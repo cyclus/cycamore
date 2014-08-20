@@ -72,6 +72,11 @@ TEST_F(CommodConverterTest, InitialState) {
 }
 
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+TEST_F(CommodConverterTest, CurrentCapacity) {
+  EXPECT_EQ(capacity, src_facility_->current_capacity());
+}
+
+// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 TEST_F(CommodConverterTest, Print) {
   EXPECT_NO_THROW(std::string s = src_facility_->str());
   // Test CommodConverter specific aspects of the print method here

@@ -129,6 +129,41 @@ class CommodConverter
   /* --- CommodConverter Members --- */
 
   /* --- */
+  /// @brief the processing time required for a full process
+  inline void process_time_(int t) { process_time = t; }
+  inline int process_time_() const { return process_time; }
+
+  /// @brief the maximum amount allowed in inventory
+  inline void max_inv_size_(double c) { max_inv_size = c; }
+  inline double max_inv_size_() const { return max_inv_size; }
+
+  /// @brief the maximum amount processed per timestep
+  inline void capacity_(double c) { capacity = c; }
+  inline double capacity_() const { return capacity; }
+
+  /// @brief the cost per unit out_commod
+  inline void cost_(double c) { cost = c; }
+  inline double cost_() const { return cost; }
+
+  /// @brief the in commodity
+  inline void in_commod_(std::string c) { in_commod = c; }
+  inline std::string in_commod_() const { return in_commod; }
+
+  /// @brief the out commodity
+  inline void out_commod_(std::string c) { out_commod = c; }
+  inline std::string out_commod_() const { return out_commod; }
+
+  /// @brief the in recipe
+  inline void in_recipe_(std::string c) { in_recipe = c; }
+  inline std::string in_recipe_() const { return in_recipe; }
+
+  /// @brief the out recipe
+  inline void out_recipe_(std::string c) { out_recipe = c; }
+  inline std::string out_recipe_() const { return out_recipe; }
+
+  /// @brief current maximum amount that can be added to processing
+  inline double current_capacity() const { 
+    return std::min(capacity, max_inv_size - inventory.quantity()); }
 
  protected:
   ///   @brief adds a material into the incoming commodity inventory
@@ -220,41 +255,6 @@ class CommodConverter
 
   cyclus::toolkit::CommodityRecipeContext crctx_;
 
-  /// @brief the processing time required for a full process
-  inline void process_time_(int t) { process_time = t; }
-  inline int process_time_() const { return process_time; }
-
-  /// @brief the maximum amount allowed in inventory
-  inline void max_inv_size_(double c) { max_inv_size = c; }
-  inline double max_inv_size_() const { return max_inv_size; }
-
-  /// @brief the maximum amount processed per timestep
-  inline void capacity_(double c) { capacity = c; }
-  inline double capacity_() const { return capacity; }
-
-  /// @brief the cost per unit out_commod
-  inline void cost_(double c) { cost = c; }
-  inline double cost_() const { return cost; }
-
-  /// @brief the in commodity
-  inline void in_commod_(std::string c) { in_commod = c; }
-  inline std::string in_commod_() const { return in_commod; }
-
-  /// @brief the out commodity
-  inline void out_commod_(std::string c) { out_commod = c; }
-  inline std::string out_commod_() const { return out_commod; }
-
-  /// @brief the in recipe
-  inline void in_recipe_(std::string c) { in_recipe = c; }
-  inline std::string in_recipe_() const { return in_recipe; }
-
-  /// @brief the out recipe
-  inline void out_recipe_(std::string c) { out_recipe = c; }
-  inline std::string out_recipe_() const { return out_recipe; }
-
-  /// @brief current maximum amount that can be added to processing
-  inline double current_capacity() const { 
-    return std::min(capacity, max_inv_size - inventory.quantity()); }
 
   friend class CommodConverterTest;
 };
