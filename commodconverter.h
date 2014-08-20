@@ -192,7 +192,8 @@ class CommodConverter
   void BeginProcessing_();
 
   /// @brief Convert one ready resource in processing
-  void Convert_();
+  /// @param cap current conversion capacity 
+  void Convert_(double cap);
 
   /// @brief this facility's commodity-recipe context
   inline void crctx(const cyclus::toolkit::CommodityRecipeContext& crctx) {
