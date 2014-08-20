@@ -62,6 +62,7 @@ void CommodConverterTest::TestInitState(CommodConverter* fac){
 TEST_F(CommodConverterTest, clone) {
   CommodConverter* cloned_fac =
       dynamic_cast<CommodConverter*> (src_facility_->Clone());
+  TestInitState(cloned_fac);
 }
 
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
