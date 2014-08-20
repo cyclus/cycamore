@@ -85,15 +85,24 @@ std::string CommodConverter::str() {
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 void CommodConverter::Tick() { 
   LOG(cyclus::LEV_INFO3, "ComCnv") << prototype() << " is ticking {";
+
+  if (current_capacity() > cyclus::eps()) {
+    LOG(cyclus::LEV_INFO4, "ComCnv") << " has capacity for " << current_capacity()
+                                       << " kg of " << in_commod
+                                       << " recipe: " << in_recipe << ".";
+  }
+
   LOG(cyclus::LEV_INFO3, "ComCnv") << "}";
 }
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 void CommodConverter::Tock() {
   LOG(cyclus::LEV_INFO3, "ComCnv") << prototype() << " is tocking {";
-  while( processing[ready()].count() > 0 ) {
-    Convert_(); // place processing into stocks
+
+  if( ready() > 0 ) {
+    Convert_(current_capacity()); // place processing into stocks
   }
+
   BeginProcessing_(); // place unprocessed inventory into processing
   LOG(cyclus::LEV_INFO3, "ComCnv") << "}";
 }
@@ -206,7 +215,7 @@ void CommodConverter::AddMat_(cyclus::Material::Ptr mat) {
 cyclus::Material::Ptr CommodConverter::Request_() {
   double qty = std::max(0.0, current_capacity());
   LOG(cyclus::LEV_INFO5, "ComCnv") << prototype()
-                                  << " just requested"
+                                  << " just requested "
                                   << current_capacity()
                                   << " of commodity: " << in_commod
                                   << " with recipe: " << in_recipe;
@@ -281,11 +290,11 @@ cyclus::Material::Ptr CommodConverter::TradeResponse_(
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 void CommodConverter::BeginProcessing_(){
-  LOG(cyclus::LEV_DEBUG2, "ComCnv") << "CommodConverter " << prototype() 
-                                    << " added resources to processing";
   if( inventory.count() > 0 ){
     try {
       processing[context()->time()].Push(inventory.Pop());
+      LOG(cyclus::LEV_DEBUG2, "ComCnv") << "CommodConverter " << prototype() 
+                                      << " added resources to processing";
     } catch (cyclus::Error& e) {
       e.msg(Agent::InformErrorMsg(e.msg()));
       throw e;
@@ -294,11 +303,9 @@ void CommodConverter::BeginProcessing_(){
 }
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-void CommodConverter::Convert_(){
+void CommodConverter::Convert_(double cap){
   using cyclus::Material;
   using cyclus::ResCast;
-  LOG(cyclus::LEV_DEBUG2, "ComCnv") << "CommodConverter " << prototype() 
-                                    << " removed a resource from processing.";
 
   if ( processing.find(ready())->second.count() > 0 ) {
     try {
@@ -312,6 +319,8 @@ void CommodConverter::Convert_(){
       crctx_.UpdateRsrc(out_commod_(), mat);
       // put it in the stocks
       stocks.Push(mat);
+      LOG(cyclus::LEV_DEBUG2, "ComCnv") << "CommodConverter " << prototype() 
+                                        << " removed a resource from processing.";
     } catch (cyclus::Error& e) {
       e.msg(Agent::InformErrorMsg(e.msg()));
       throw e;
