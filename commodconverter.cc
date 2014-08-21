@@ -306,19 +306,26 @@ void CommodConverter::BeginProcessing_(){
 void CommodConverter::Convert_(double cap){
   using cyclus::Material;
   using cyclus::ResCast;
+  using cyclus::toolkit::ResourceBuff;
+  using cyclus::toolkit::Manifest;
 
-  if ( processing.find(ready())->second.count() > 0 ) {
+  ResourceBuff proc = processing.find(ready())->second;
+  if ( proc.count() > 0 ) {
     try {
-      // pop one material from processing 
-      Material::Ptr mat = ResCast<Material>(processing.find(ready())->second.Pop());
+      double to_pop = std::min(current_capacity(), proc.quantity());
+      // pop appropriate amount of material from processing 
+      std::vector<Material::Ptr> to_conv = ResCast<Material>(proc.PopQty(to_pop));
       // if an out_recipe was provided, transmute it
+      std::vector<Material::Ptr>::iterator mat; 
       if( out_recipe != "" ){
-        mat->Transmute(context()->GetRecipe(out_recipe));
+        for(mat=to_conv.begin(); mat!=to_conv.end(); ++mat) {
+          (*mat)->Transmute(context()->GetRecipe(out_recipe));
+          // change its commod
+          crctx_.UpdateRsrc(out_commod_(), *mat);
+          // put it in the stocks
+          stocks.Push(*mat);
+        }
       }
-      // change its commod
-      crctx_.UpdateRsrc(out_commod_(), mat);
-      // put it in the stocks
-      stocks.Push(mat);
       LOG(cyclus::LEV_DEBUG2, "ComCnv") << "CommodConverter " << prototype() 
                                         << " removed a resource from processing.";
     } catch (cyclus::Error& e) {
