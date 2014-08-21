@@ -71,6 +71,14 @@ void CommodConverterTest::TestAddMat(CommodConverter* fac, cyclus::Material::Ptr
   EXPECT_EQ(amt, after - before);
 }
 
+void CommodConverterTest::TestBuffers(CommodConverter* fac, double inv, double proc, double stocks){
+  double t = tc_.get()->time();
+
+  EXPECT_EQ(inv, fac->inventory.quantity());
+  EXPECT_EQ(proc, fac->processing[t].quantity());
+  EXPECT_EQ(stocks, fac->stocks.quantity());
+}
+
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 TEST_F(CommodConverterTest, clone) {
   CommodConverter* cloned_fac =
@@ -106,9 +114,13 @@ TEST_F(CommodConverterTest, Request) {
 
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 TEST_F(CommodConverterTest, AddMats) { 
-  cyclus::Material::Ptr mat = cyclus::Material::Create( 
-      src_facility_, src_facility_->capacity_(), tc_.get()->GetRecipe(in_r1));
+  double cap = src_facility_->current_capacity();
+  cyclus::Material::Ptr mat = cyclus::NewBlankMaterial(0.5*cap);
   TestAddMat(src_facility_, mat);
+
+  cyclus::Composition::Ptr rec = tc_.get()->GetRecipe(in_r1);
+  cyclus::Material::Ptr recmat = cyclus::Material::CreateUntracked(0.5*cap, rec);
+  TestAddMat(src_facility_, recmat);
 }
 
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -119,8 +131,15 @@ TEST_F(CommodConverterTest, Tick) {
 
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 TEST_F(CommodConverterTest, Tock) {
+
+  double cap = src_facility_->current_capacity();
+  cyclus::Composition::Ptr rec = tc_.get()->GetRecipe(in_r1);
+  cyclus::Material::Ptr mat = cyclus::Material::CreateUntracked(cap, rec);
+  TestAddMat(src_facility_, mat);
+
   EXPECT_NO_THROW(src_facility_->Tock());
-  // Test CommodConverter specific behaviors of the Tock function here
+
+  TestBuffers(src_facility_,0,cap,0);
 }
 
 } // namespace commodconverter
