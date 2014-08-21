@@ -134,14 +134,40 @@ TEST_F(CommodConverterTest, Tick) {
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 TEST_F(CommodConverterTest, Tock) {
 
+  // initially, nothing in the buffers
+  TestBuffers(src_facility_,0,0,0);
+
   double cap = src_facility_->current_capacity();
   cyclus::Composition::Ptr rec = tc_.get()->GetRecipe(in_r1);
   cyclus::Material::Ptr mat = cyclus::Material::CreateUntracked(cap, rec);
   TestAddMat(src_facility_, mat);
 
+  // affter add, the inventory has the material
+  TestBuffers(src_facility_,cap,0,0);
+
   EXPECT_NO_THROW(src_facility_->Tock());
 
+  // after tock, the processing buffer has the material
   TestBuffers(src_facility_,0,cap,0);
+
+  EXPECT_EQ(0, tc_.get()->time());
+  for( int i = 1; i < process_time-1; ++i){
+    tc_.get()->time(i);
+    EXPECT_NO_THROW(src_facility_->Tock());
+    TestBuffers(src_facility_,0,0,0);
+  }
+  
+  tc_.get()->time(process_time);
+  EXPECT_EQ(process_time, tc_.get()->time());
+  EXPECT_EQ(0, src_facility_->ready());
+  src_facility_->Tock();
+  TestBuffers(src_facility_,0,0,cap);
+
+  tc_.get()->time(process_time+1);
+  EXPECT_EQ(1, src_facility_->ready());
+  src_facility_->Tock();
+  TestBuffers(src_facility_,0,0,cap);
+
 }
 
 } // namespace commodconverter

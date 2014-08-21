@@ -99,8 +99,8 @@ void CommodConverter::Tick() {
 void CommodConverter::Tock() {
   LOG(cyclus::LEV_INFO3, "ComCnv") << prototype() << " is tocking {";
 
-  if( ready() > 0 ) {
-    Convert_(current_capacity()); // place processing into stocks
+  if( ready() >= 0 ) {
+    Convert_(capacity_()); // place processing into stocks
   }
 
   BeginProcessing_(); // place unprocessed inventory into processing
@@ -280,9 +280,7 @@ cyclus::Material::Ptr CommodConverter::TradeResponse_(
   }
 
   Material::Ptr response = manifest[0];
-  crctx_.RemoveRsrc(response);
   for (int i = 1; i < manifest.size(); i++) {
-    crctx_.RemoveRsrc(manifest[i]);
     response->Absorb(manifest[i]);
   }
   return response;
@@ -309,12 +307,14 @@ void CommodConverter::Convert_(double cap){
   using cyclus::toolkit::ResourceBuff;
   using cyclus::toolkit::Manifest;
 
-  ResourceBuff proc = processing.find(ready())->second;
-  if ( proc.count() > 0 ) {
+  int r = ready();
+  std::map<int, ResourceBuff>::iterator proc = processing.find(r);
+  if ( proc!=processing.end() && 
+      proc->second.quantity() > 0 ) {
     try {
-      double to_pop = std::min(current_capacity(), proc.quantity());
+      double to_pop = std::min(cap, processing[r].quantity());
       // pop appropriate amount of material from processing 
-      std::vector<Material::Ptr> to_conv = ResCast<Material>(proc.PopQty(to_pop));
+      std::vector<Material::Ptr> to_conv = ResCast<Material>(processing[r].PopQty(to_pop));
       // if an out_recipe was provided, transmute it
       std::vector<Material::Ptr>::iterator mat; 
       if( out_recipe != "" ){
@@ -326,6 +326,7 @@ void CommodConverter::Convert_(double cap){
           stocks.Push(*mat);
         }
       }
+      //stocks.PushAll(to_conv);
       LOG(cyclus::LEV_DEBUG2, "ComCnv") << "CommodConverter " << prototype() 
                                         << " removed a resource from processing.";
     } catch (cyclus::Error& e) {
