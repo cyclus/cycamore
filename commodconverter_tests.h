@@ -20,6 +20,8 @@ class CommodConverterTest : public ::testing::Test {
   virtual void TearDown();
   void InitParameters();
   void TestInitState(commodconverter::CommodConverter* fac);
+  void TestRequest(commodconverter::CommodConverter* fac, double cap);
+  void TestAddMat(commodconverter::CommodConverter* fac, cyclus::Material::Ptr mat);
   void SetUpCommodConverter();
 
   std::string in_c1, out_c1;
