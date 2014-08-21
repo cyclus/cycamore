@@ -165,6 +165,9 @@ class CommodConverter
   inline double current_capacity() const { 
     return std::min(capacity, max_inv_size - inventory.quantity()); }
 
+  /// @brief returns the time key for ready materials
+  int ready(){ return context()->time() - process_time ; }
+
  protected:
   ///   @brief adds a material into the incoming commodity inventory
   ///   @param mat the material to add to the incoming inventory.
@@ -203,9 +206,6 @@ class CommodConverter
   inline cyclus::toolkit::CommodityRecipeContext crctx() const {
     return crctx_;
   }
-
-  /// @brief returns the time key for ready materials
-  int ready(){ return context()->time() - process_time ; }
 
   /* --- Module Members --- */
 
