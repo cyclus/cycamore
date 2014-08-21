@@ -58,6 +58,19 @@ void CommodConverterTest::TestInitState(CommodConverter* fac){
   EXPECT_EQ(cost, fac->cost_());
 }
 
+void CommodConverterTest::TestRequest(CommodConverter* fac, double cap){
+  cyclus::Material::Ptr req = fac->Request_();
+  EXPECT_EQ(cap, req->quantity());
+}
+
+void CommodConverterTest::TestAddMat(CommodConverter* fac, cyclus::Material::Ptr mat){
+  double amt = mat->quantity();
+  double before = fac->inventory.quantity();
+  fac->AddMat_(mat);
+  double after = fac->inventory.quantity();
+  EXPECT_EQ(amt, after - before);
+}
+
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 TEST_F(CommodConverterTest, clone) {
   CommodConverter* cloned_fac =
@@ -84,6 +97,18 @@ TEST_F(CommodConverterTest, CurrentCapacity) {
 TEST_F(CommodConverterTest, Print) {
   EXPECT_NO_THROW(std::string s = src_facility_->str());
   // Test CommodConverter specific aspects of the print method here
+}
+
+// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+TEST_F(CommodConverterTest, Request) { 
+  TestRequest(src_facility_, src_facility_->current_capacity());
+}
+
+// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+TEST_F(CommodConverterTest, AddMats) { 
+  cyclus::Material::Ptr mat = cyclus::Material::Create( 
+      src_facility_, src_facility_->capacity_(), tc_.get()->GetRecipe(in_r1));
+  TestAddMat(src_facility_, mat);
 }
 
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
