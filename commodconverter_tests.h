@@ -19,10 +19,13 @@ class CommodConverterTest : public ::testing::Test {
   virtual void SetUp();
   virtual void TearDown();
   void InitParameters();
+  void SetUpCommodConverter();
   void TestInitState(commodconverter::CommodConverter* fac);
   void TestRequest(commodconverter::CommodConverter* fac, double cap);
-  void TestAddMat(commodconverter::CommodConverter* fac, cyclus::Material::Ptr mat);
-  void SetUpCommodConverter();
+  void TestAddMat(commodconverter::CommodConverter* fac, 
+      cyclus::Material::Ptr mat);
+  void TestBuffers(commodconverter::CommodConverter* fac, double inv, double 
+      proc, double stocks);
 
   std::string in_c1, out_c1;
   std::string in_r1, out_r1;
