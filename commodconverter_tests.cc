@@ -63,7 +63,8 @@ void CommodConverterTest::TestRequest(CommodConverter* fac, double cap){
   EXPECT_EQ(cap, req->quantity());
 }
 
-void CommodConverterTest::TestAddMat(CommodConverter* fac, cyclus::Material::Ptr mat){
+void CommodConverterTest::TestAddMat(CommodConverter* fac, 
+    cyclus::Material::Ptr mat){
   double amt = mat->quantity();
   double before = fac->inventory.quantity();
   fac->AddMat_(mat);
@@ -71,7 +72,8 @@ void CommodConverterTest::TestAddMat(CommodConverter* fac, cyclus::Material::Ptr
   EXPECT_EQ(amt, after - before);
 }
 
-void CommodConverterTest::TestBuffers(CommodConverter* fac, double inv, double proc, double stocks){
+void CommodConverterTest::TestBuffers(CommodConverter* fac, double inv, 
+    double proc, double stocks){
   double t = tc_.get()->time();
 
   EXPECT_EQ(inv, fac->inventory.quantity());
