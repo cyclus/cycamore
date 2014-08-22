@@ -292,7 +292,8 @@ void CommodConverter::BeginProcessing_(){
     try {
       processing[context()->time()].Push(inventory.Pop());
       LOG(cyclus::LEV_DEBUG2, "ComCnv") << "CommodConverter " << prototype() 
-                                      << " added resources to processing";
+                                      << " added resources to processing at t= "
+                                      << context()->time();
     } catch (cyclus::Error& e) {
       e.msg(Agent::InformErrorMsg(e.msg()));
       throw e;
@@ -308,9 +309,7 @@ void CommodConverter::Convert_(double cap){
   using cyclus::toolkit::Manifest;
 
   int t = ready();
-  std::map<int, ResourceBuff>::iterator proc = processing.find(t);
-  if ( proc!=processing.end() && 
-      proc->second.quantity() > 0 ) {
+  if ( ProcessingAmt_(t) > 0 ){
     try {
       double to_pop = std::min(cap, processing[t].quantity());
       // pop appropriate amount of material from processing 
@@ -329,10 +328,41 @@ void CommodConverter::Convert_(double cap){
           stocks.Push(*mat);
         }
       }
-      LOG(cyclus::LEV_DEBUG2, "ComCnv") << "CommodConverter " << prototype() 
+      AdvanceUnconverted_(t);
+      LOG(cyclus::LEV_INFO1, "ComCnv") << "CommodConverter " << prototype() 
                                         << " converted quantity : " << to_pop 
                                         << " from " << in_commod 
                                         << " to " << out_commod;
+    } catch (cyclus::Error& e) {
+      e.msg(Agent::InformErrorMsg(e.msg()));
+      throw e;
+    }
+  }
+}
+
+//- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+double CommodConverter::ProcessingAmt_(int time) {
+  using cyclus::toolkit::ResourceBuff;
+  double to_ret = 0;
+  std::map<int, ResourceBuff>::iterator proc = processing.find(time);
+  if ( proc!=processing.end() && 
+      proc->second.quantity() > 0 ) {
+    to_ret = proc->second.quantity();
+  }
+  return to_ret;
+}
+
+//- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+void CommodConverter::AdvanceUnconverted_(int time){
+  using cyclus::Material;
+  using cyclus::ResCast;
+
+  double this_buff = ProcessingAmt_(time);
+  if ( this_buff > 0 ) {
+    try {
+      std::vector<Material::Ptr> to_advance = 
+      ResCast<Material>(processing[time].PopQty(to_pop));
+      processing[time+1].PushAll(to_advance);
     } catch (cyclus::Error& e) {
       e.msg(Agent::InformErrorMsg(e.msg()));
       throw e;
