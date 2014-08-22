@@ -99,7 +99,7 @@ void CommodConverter::Tick() {
 void CommodConverter::Tock() {
   LOG(cyclus::LEV_INFO3, "ComCnv") << prototype() << " is tocking {";
 
-  if( ready() >= 0 || process_time = 0 ) {
+  if( ready() >= 0 || process_time == 0 ) {
     Convert_(capacity_()); // place processing into stocks
   }
 
