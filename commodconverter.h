@@ -198,6 +198,14 @@ class CommodConverter
   /// @param cap current conversion capacity 
   void Convert_(double cap);
 
+  /// @brief any ready resources in processing get pushed off to next timestep
+  /// @param time the timestep whose buffer remains unprocessed 
+  void AdvanceUnconverted_(int time);
+
+  /// @brief report the resource quantity in processing at a certain time
+  /// @param time the time of interest
+  double ProcessingAmt_(int time);
+
   /// @brief this facility's commodity-recipe context
   inline void crctx(const cyclus::toolkit::CommodityRecipeContext& crctx) {
     crctx_ = crctx;
