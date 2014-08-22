@@ -307,28 +307,32 @@ void CommodConverter::Convert_(double cap){
   using cyclus::toolkit::ResourceBuff;
   using cyclus::toolkit::Manifest;
 
-  int r = ready();
-  std::map<int, ResourceBuff>::iterator proc = processing.find(r);
+  int t = ready();
+  std::map<int, ResourceBuff>::iterator proc = processing.find(t);
   if ( proc!=processing.end() && 
       proc->second.quantity() > 0 ) {
     try {
-      double to_pop = std::min(cap, processing[r].quantity());
+      double to_pop = std::min(cap, processing[t].quantity());
       // pop appropriate amount of material from processing 
-      std::vector<Material::Ptr> to_conv = ResCast<Material>(processing[r].PopQty(to_pop));
+      std::vector<Material::Ptr> to_conv = 
+        ResCast<Material>(processing[t].PopQty(to_pop));
       // if an out_recipe was provided, transmute it
       std::vector<Material::Ptr>::iterator mat; 
-      if( out_recipe != "" ){
+      if( out_recipe == "" ){
+        // if no out recipe, then no transmute needed
+        stocks.PushAll(to_conv);
+      } else { 
+        // transmute each mat
         for(mat=to_conv.begin(); mat!=to_conv.end(); ++mat) {
           (*mat)->Transmute(context()->GetRecipe(out_recipe));
-          // change its commod
-          crctx_.UpdateRsrc(out_commod_(), *mat);
           // put it in the stocks
           stocks.Push(*mat);
         }
       }
-      //stocks.PushAll(to_conv);
       LOG(cyclus::LEV_DEBUG2, "ComCnv") << "CommodConverter " << prototype() 
-                                        << " removed a resource from processing.";
+                                        << " converted quantity : " << to_pop 
+                                        << " from " << in_commod 
+                                        << " to " << out_commod;
     } catch (cyclus::Error& e) {
       e.msg(Agent::InformErrorMsg(e.msg()));
       throw e;
