@@ -357,8 +357,8 @@ void CommodConverter::AdvanceUnconverted_(int time){
   using cyclus::Material;
   using cyclus::ResCast;
 
-  double this_buff = ProcessingAmt_(time);
-  if ( this_buff > 0 ) {
+  double to_pop = ProcessingAmt_(time);
+  if ( to_pop > 0 ) {
     try {
       std::vector<Material::Ptr> to_advance = 
       ResCast<Material>(processing[time].PopQty(to_pop));
