@@ -170,6 +170,27 @@ TEST_F(CommodConverterTest, Tock) {
 
 }
 
+// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+TEST_F(CommodConverterTest, NoProcessTime) {
+  // tests what happens when the process time is zero
+  src_facility_->process_time_(0);
+  EXPECT_EQ(0, src_facility_->process_time_());
+
+  double cap = src_facility_->current_capacity();
+  cyclus::Composition::Ptr rec = tc_.get()->GetRecipe(in_r1);
+  cyclus::Material::Ptr mat = cyclus::Material::CreateUntracked(cap, rec);
+  TestAddMat(src_facility_, mat);
+
+  // affter add, the inventory has the material
+  TestBuffers(src_facility_,cap,0,0);
+
+  EXPECT_NO_THROW(src_facility_->Tock());
+
+  // affter tock, the stocks have the material
+  TestBuffers(src_facility_,0,0,cap);
+}
+
+
 } // namespace commodconverter
 
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
