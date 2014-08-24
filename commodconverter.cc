@@ -99,11 +99,12 @@ void CommodConverter::Tick() {
 void CommodConverter::Tock() {
   LOG(cyclus::LEV_INFO3, "ComCnv") << prototype() << " is tocking {";
 
-  if( ready() >= 0 || process_time == 0 ) {
+  BeginProcessing_(); // place unprocessed inventory into processing
+
+  if( ready() >= 0 || process_time_() == 0 ) {
     Convert_(capacity_()); // place processing into stocks
   }
 
-  BeginProcessing_(); // place unprocessed inventory into processing
   LOG(cyclus::LEV_INFO3, "ComCnv") << "}";
 }
 
@@ -177,7 +178,8 @@ void CommodConverter::GetMatlTrades(
   std::vector< Trade<Material> >::const_iterator it;
   for (it = trades.begin(); it != trades.end(); ++it) {
     std::string commodity = it->request->commodity();
-    double qty = it->amt;
+    //double qty = it->amt;
+    double qty = stocks.quantity();
     // create a material pointer representing what you can offer
     Material::Ptr response = TradeResponse_(qty, &stocks);
 
@@ -369,7 +371,6 @@ void CommodConverter::AdvanceUnconverted_(int time){
     }
   }
 }
-
 
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 extern "C" cyclus::Agent* ConstructCommodConverter(cyclus::Context* ctx) {
