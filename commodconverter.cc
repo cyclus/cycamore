@@ -181,9 +181,10 @@ void CommodConverter::GetMatlTrades(
     //double qty = it->amt;
     double qty = stocks.quantity();
     // create a material pointer representing what you can offer
-    Material::Ptr response = TradeResponse_(qty, &stocks);
-
-    responses.push_back(std::make_pair(*it, response));
+    if ( qty > 0 ) {
+      Material::Ptr response = TradeResponse_(qty, &stocks);
+      responses.push_back(std::make_pair(*it, response));
+    }
     LOG(cyclus::LEV_INFO5, "ComCnv") << prototype()
                                   << " just received an order"
                                   << " for " << it->amt
@@ -276,16 +277,16 @@ cyclus::Material::Ptr CommodConverter::TradeResponse_(
   try {
     // pop amount from inventory and blob it into one material
     manifest = ResCast<Material>(buffer->PopQty(qty));
+    Material::Ptr response = manifest[0];
+    for (int i = 1; i < manifest.size(); i++) {
+      response->Absorb(manifest[i]);
+    }
+    return response;
   } catch(cyclus::Error& e) {
     e.msg(Agent::InformErrorMsg(e.msg()));
     throw e;
   }
 
-  Material::Ptr response = manifest[0];
-  for (int i = 1; i < manifest.size(); i++) {
-    response->Absorb(manifest[i]);
-  }
-  return response;
 }
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -334,7 +335,8 @@ void CommodConverter::Convert_(double cap){
       LOG(cyclus::LEV_INFO1, "ComCnv") << "CommodConverter " << prototype() 
                                         << " converted quantity : " << to_pop 
                                         << " from " << in_commod 
-                                        << " to " << out_commod;
+                                        << " to " << out_commod
+                                        << " at t= " << context()->time();
     } catch (cyclus::Error& e) {
       e.msg(Agent::InformErrorMsg(e.msg()));
       throw e;
