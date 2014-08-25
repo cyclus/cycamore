@@ -83,6 +83,9 @@ std::string SeparationMatrix::str() {
      << "     Process Time = " << process_time_() << ",\n"
      << "     Maximum Inventory Size = " << max_inv_size_() << ",\n"
      << "     Capacity = " << capacity_() << ",\n"
+     << "     Current Capacity = " << current_capacity() << ",\n"
+     << "     Cost = " << cost_() << ",\n"
+     << "     Inventory Quantity = " << inventory_quantity() << ",\n"
      << " commod producer members: " << " produces "
      << prod.str()
      << "'}";
@@ -99,8 +102,7 @@ void SeparationMatrix::Tick() {
   LOG(cyclus::LEV_DEBUG4, "SepMtx") << "Current facility parameters for "
                                     << prototype()
                                     << " at the beginning of the tick are:";
-  LOG(cyclus::LEV_DEBUG4, "SepMtx") << "    ProcessTime: " << process_time_();
-
+  PrintStatus();
   // if lifetime is up, clear self of materials??
   if (current_capacity() > cyclus::eps()) {
     LOG(cyclus::LEV_INFO4, "SepMtx") << " will request " << current_capacity()
@@ -110,7 +112,7 @@ void SeparationMatrix::Tick() {
   LOG(cyclus::LEV_DEBUG3, "SepMtx") << "Current facility parameters for "
                                     << prototype()
                                     << " at the end of the tick are:";
-  LOG(cyclus::LEV_DEBUG4, "SepMtx") << "    ProcessTime: " << process_time_();
+  PrintStatus();
   LOG(cyclus::LEV_INFO3, "SepMtx") << "}";
 }
 
@@ -121,7 +123,7 @@ void SeparationMatrix::Tock() {
   LOG(cyclus::LEV_DEBUG4, "SepMtx") << "Current facility parameters for "
                                     << prototype()
                                     << " at the beginning of the tock are:";
-  LOG(cyclus::LEV_DEBUG4, "SepMtx") << "    ProcessTime: " << process_time_();
+  PrintStatus();
 
   BeginProcessing_();
   if( ready() >=0 ){
@@ -131,7 +133,7 @@ void SeparationMatrix::Tock() {
   LOG(cyclus::LEV_DEBUG3, "SepMtx") << "Current facility parameters for "
                                     << prototype()
                                     << " at the end of the tock are:";
-  LOG(cyclus::LEV_DEBUG4, "SepMtx") << "    ProcessTime: " << process_time_();
+  PrintStatus();
   LOG(cyclus::LEV_INFO3, "SepMtx") << "}";
 
 }
@@ -237,6 +239,19 @@ void SeparationMatrix::AcceptMatlTrades(
   for (it = responses.begin(); it != responses.end(); ++it) {
     stocks.Push(it->second);
   }
+}
+
+// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+void SeparationMatrix::PrintStatus() {
+  LOG(cyclus::LEV_DEBUG3, "SepMtx") << "     ProcessTime: " << process_time_();
+  LOG(cyclus::LEV_DEBUG3, "SepMtx") << "     Input Commodity = " << in_commod_();
+  LOG(cyclus::LEV_DEBUG3, "SepMtx") << "     Process Time = " << process_time_();
+  LOG(cyclus::LEV_DEBUG3, "SepMtx") << "     Maximum Inventory Size = " << max_inv_size_();
+  LOG(cyclus::LEV_DEBUG3, "SepMtx") << "     Capacity = " << capacity_();
+  LOG(cyclus::LEV_DEBUG3, "SepMtx") << "     Current Capacity = " << current_capacity();
+  LOG(cyclus::LEV_DEBUG3, "SepMtx") << "     Cost = " << cost_();
+  LOG(cyclus::LEV_DEBUG3, "SepMtx") << "     Inventory Quantity = " << inventory_quantity() ;
+
 }
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -

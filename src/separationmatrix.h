@@ -111,6 +111,9 @@ class SeparationMatrix :
       std::pair<cyclus::Trade<cyclus::Material>, cyclus::Material::Ptr> >& 
       responses);
 
+  /// Prints the status of the variables
+  void PrintStatus();
+
   /// @brief sets the in_commod variable
   inline void in_commod_(std::string c) {in_commod = c;};
   /// @brief returns the in_commod variable
