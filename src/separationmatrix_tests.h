@@ -25,7 +25,7 @@ class SeparationMatrixTest : public ::testing::Test {
   void TestAddMat(separationmatrix::SeparationMatrix* fac, 
       cyclus::Material::Ptr mat);
   void TestBuffers(separationmatrix::SeparationMatrix* fac, double inv, double 
-      proc, double stocks);
+      proc, double rawbuff);
 
   std::string in_c1, out_c1, out_c2, out_c3;
   std::vector< std::string > outs;

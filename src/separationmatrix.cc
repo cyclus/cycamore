@@ -85,7 +85,8 @@ std::string SeparationMatrix::str() {
      << "     Capacity = " << capacity_() << ",\n"
      << "     Current Capacity = " << current_capacity() << ",\n"
      << "     Cost = " << cost_() << ",\n"
-     << "     Inventory Quantity = " << inventory_quantity() << ",\n"
+     << "     Separated Quantity = " << sepbuff_quantity() << ",\n"
+     << "     Raw Quantity = " << rawbuff.quantity() << ",\n"
      << " commod producer members: " << " produces "
      << prod.str()
      << "'}";
@@ -147,6 +148,7 @@ SeparationMatrix::GetMatlRequests() {
   using cyclus::Request;
 
   std::set<RequestPortfolio<Material>::Ptr> ports;
+
   RequestPortfolio<Material>::Ptr port(new RequestPortfolio<Material>());
   double amt = current_capacity();
   Material::Ptr mat = cyclus::NewBlankMaterial(amt);
@@ -178,13 +180,54 @@ SeparationMatrix::GetMatlBids(cyclus::CommodMap<cyclus::Material>::type&
   for (it = out_commods.begin(); it != out_commods.end(); ++it) {
     BidPortfolio<Material>::Ptr port = GetBids_(commod_requests,
                                                 *it,
-                                                &inventory[*it]);
+                                                &sepbuff[*it]);
     if (!port->bids().empty()) {
       ports.insert(port);
     }
   }
 
   return ports;
+}
+
+//- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+void SeparationMatrix::GetMatlTrades(
+  const std::vector< cyclus::Trade<cyclus::Material> >& trades,
+  std::vector<std::pair<cyclus::Trade<cyclus::Material>,
+  cyclus::Material::Ptr> >& responses) {
+  using cyclus::Material;
+  using cyclus::Trade;
+
+  // for each trade, respond
+  std::vector< Trade<Material> >::const_iterator it;
+  for (it = trades.begin(); it != trades.end(); ++it) {
+    std::string commodity = it->request->commodity();
+    //double qty = it->amt;
+    double qty = sepbuff_quantity(commodity);
+    // create a material pointer representing what you can offer
+    if ( qty > 0 ) {
+      Material::Ptr response = TradeResponse_(qty, &sepbuff[commodity]);
+      responses.push_back(std::make_pair(*it, response));
+    }
+    LOG(cyclus::LEV_INFO5, "ComCnv") << prototype()
+                                  << " just received an order"
+                                  << " for " << it->amt
+                                  << " of " << commodity;
+  }
+
+}
+
+// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+void SeparationMatrix::AcceptMatlTrades(
+    const std::vector< std::pair<cyclus::Trade<cyclus::Material>,
+                                 cyclus::Material::Ptr> >& responses) {
+  // accept blindly, no judgement, any material that's been matched
+  std::vector< std::pair<cyclus::Trade<cyclus::Material>,
+                         cyclus::Material::Ptr> >::const_iterator it;
+
+  // put each in rawbuff 
+  for (it = responses.begin(); it != responses.end(); ++it) {
+    AddMat_(it->second);
+  }
 }
 
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -227,18 +270,25 @@ cyclus::BidPortfolio<cyclus::Material>::Ptr SeparationMatrix::GetBids_(
   return port;
 }
 
-// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-void SeparationMatrix::AcceptMatlTrades(
-    const std::vector< std::pair<cyclus::Trade<cyclus::Material>,
-                                 cyclus::Material::Ptr> >& responses) {
-  // accept blindly, no judgement, any material that's been matched
-  std::vector< std::pair<cyclus::Trade<cyclus::Material>,
-                         cyclus::Material::Ptr> >::const_iterator it;
+// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+void SeparationMatrix::AddMat_(cyclus::Material::Ptr mat) {
+  // Here we do not check that the recipe matches the input recipe.
 
-  // put each in stocks.
-  for (it = responses.begin(); it != responses.end(); ++it) {
-    stocks.Push(it->second);
+  LOG(cyclus::LEV_INFO5, "SepMtx") << prototype() << " is initially holding "
+                                << rawbuff.quantity() << " total.";
+
+  try {
+    rawbuff.Push(mat);
+  } catch (cyclus::Error& e) {
+    e.msg(Agent::InformErrorMsg(e.msg()));
+    throw e;
   }
+
+  LOG(cyclus::LEV_INFO5, "SepMtx") << prototype() << " added " << mat->quantity()
+                                << " of " << in_commod_()
+                                << " to its rawbuff, which is holding "
+                                << rawbuff.quantity() << " total.";
+
 }
 
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -250,18 +300,43 @@ void SeparationMatrix::PrintStatus() {
   LOG(cyclus::LEV_DEBUG3, "SepMtx") << "     Capacity = " << capacity_();
   LOG(cyclus::LEV_DEBUG3, "SepMtx") << "     Current Capacity = " << current_capacity();
   LOG(cyclus::LEV_DEBUG3, "SepMtx") << "     Cost = " << cost_();
-  LOG(cyclus::LEV_DEBUG3, "SepMtx") << "     Inventory Quantity = " << inventory_quantity() ;
+  LOG(cyclus::LEV_DEBUG3, "SepMtx") << "     Separated Quantity = " << sepbuff_quantity() ;
+  LOG(cyclus::LEV_DEBUG3, "SepMtx") << "     Raw Quantity = " << rawbuff.quantity() ;
+
+}
+
+
+//- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+cyclus::Material::Ptr SeparationMatrix::TradeResponse_(
+    double qty,
+    cyclus::toolkit::ResourceBuff* buffer) {
+  using cyclus::Material;
+  using cyclus::ResCast;
+
+  std::vector<Material::Ptr> manifest;
+  try {
+    // pop amount from rawbuff and blob it into one material
+    manifest = ResCast<Material>(buffer->PopQty(qty));
+    Material::Ptr response = manifest[0];
+    for (int i = 1; i < manifest.size(); i++) {
+      response->Absorb(manifest[i]);
+    }
+    return response;
+  } catch(cyclus::Error& e) {
+    e.msg(Agent::InformErrorMsg(e.msg()));
+    throw e;
+  }
 
 }
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-const double SeparationMatrix::inventory_quantity(std::string commod) const {
+const double SeparationMatrix::sepbuff_quantity(std::string commod) const {
   using cyclus::toolkit::ResourceBuff;
 
   std::map<std::string, ResourceBuff>::const_iterator found;
-  found = inventory.find(commod);
+  found = sepbuff.find(commod);
   double amt;
-  if ( found != inventory.end() ){
+  if ( found != sepbuff.end() ){
     amt = (*found).second.quantity();
   } else {
     amt =0;
@@ -270,13 +345,13 @@ const double SeparationMatrix::inventory_quantity(std::string commod) const {
 }
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-const double SeparationMatrix::inventory_quantity() const {
+const double SeparationMatrix::sepbuff_quantity() const {
   using cyclus::toolkit::ResourceBuff;
 
   double total = 0;
   std::map<std::string, ResourceBuff>::const_iterator it;
-  for(it=inventory.begin(); it != inventory.end(); ++it) {
-    total += inventory_quantity((*it).first);
+  for(it=sepbuff.begin(); it != sepbuff.end(); ++it) {
+    total += sepbuff_quantity((*it).first);
   }
   return total;
 }
@@ -321,10 +396,11 @@ void SeparationMatrix::Separate_(cyclus::Material::Ptr mat){
   std::map<string, CompMap> sep_comps;
   CompMap::iterator entry;
   CompMap orig = mat->comp()->mass();
+  double tot = mat->quantity();
   for (entry = orig.begin(); entry != orig.end(); ++entry){
     int iso = int(entry->first);
     int elem = int(iso/10000000.); // convert iso to element
-    double sep = entry->second*Eff_(elem); // access matrix
+    double sep = entry->second*tot*Eff_(elem); // access matrix
     string stream = Stream_(elem);
     sep_comps[stream][iso] = sep;
   }
@@ -333,9 +409,22 @@ void SeparationMatrix::Separate_(cyclus::Material::Ptr mat){
     CompMap to_extract = (*str).second;
     double qty = cyclus::compmath::Sum(to_extract);
     Composition::Ptr c = Composition::CreateFromMass(to_extract);
-    inventory[(*str).first].Push(mat->ExtractComp(qty, c));
+    sepbuff[(*str).first].Push(mat->ExtractComp(qty, c));
+    LOG(cyclus::LEV_DEBUG3, "SepMtx") << "Separations Matrix" << prototype()
+                                      << " separated quantity : "
+                                      << qty << " at t = "
+                                      << context()->time();
   }
-  inventory[waste_stream].Push(mat);
+  sepbuff[waste_stream].Push(mat);
+  LOG(cyclus::LEV_DEBUG2, "SepMtx") << "Separations Matrix" << prototype()
+                                    << " separated material at t = "
+                                    << context()->time();
+  LOG(cyclus::LEV_DEBUG2, "SepMtx") << "Separations Matrix" << prototype()
+                                    << " now has a separated quantity : "
+                                    << sepbuff_quantity()
+                                    << " and a raw quantity : "
+                                    << rawbuff.quantity();
+
 }
 
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -378,11 +467,12 @@ std::string SeparationMatrix::Stream_(int element){
 void SeparationMatrix::BeginProcessing_(){
   using cyclus::toolkit::ResourceBuff;
 
-  LOG(cyclus::LEV_DEBUG2, "SepMtx") << "Sepatations Matrix" << prototype()
-                                    << " added resources to processing";
-  while (!stocks.empty()){
+  while (!rawbuff.empty()){
     try {
-      processing[context()->time()].Push(stocks.Pop(ResourceBuff::BACK));
+      processing[context()->time()].Push(rawbuff.Pop(ResourceBuff::BACK));
+      LOG(cyclus::LEV_DEBUG2, "SepMtx") << "Separations Matrix" << prototype()
+                                        << " added resources to processing at t = "
+                                        << context()->time();
     } catch(cyclus::Error& e) {
       e.msg(Agent::InformErrorMsg(e.msg()));
       throw e;

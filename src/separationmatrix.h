@@ -24,12 +24,12 @@ namespace separationmatrix {
 /// @section intro Introduction
 ///  For realistic separations, the user is expected to produce an efficiency matrix
 ///  representing the separations technology of interest to them. By requesting the
-///  feedstock from the appropriate markets, the facility acquires an unseparated
+///  feedstock from the appropriate markets, the facility acquires an unsepbuff
 ///  feedstock stream. Based on the input parameters in Table ref{tab:sepmatrix},
 ///  the separations process proceeds within the timesteps and other constraints of
 ///  the simulation.
 ///  
-///  Thereafter, separated streams as well as a stream of losses are offered the
+///  Thereafter, sepbuff streams as well as a stream of losses are offered the
 ///  appropriate markets for consumption by other facilities. In the transition
 ///  scenario at hand, the StreamBlender fuel fabrication facility purchases the
 ///  streams it desires in order to produce SFR fuel.
@@ -42,21 +42,21 @@ namespace separationmatrix {
 /// 
 /// @section detailed Detailed Behavior
 ///  TICK
-///  Make offers of separated material based on availabe inventory.
+///  Make offers of sepbuff material based on availabe sepbuff.
 ///  If there are ordersWaiting, prepare and send an appropriate
 ///  request for spent fuel material.
-///  Check stocks to determine if there is capacity to produce any extra material
+///  Check rawbuff to determine if there is capacity to produce any extra material
 ///  next month. If so, process as much raw (spent fuel) stock material as
 ///  capacity will allow.
 ///
 ///  TOCK
-///  Send appropriate separated material from inventory to fill ordersWaiting.
+///  Send appropriate sepbuff material from sepbuff to fill ordersWaiting.
 ///
 ///  RECIEVE MATERIAL
-///  Put incoming spent nuclear fuel (SNF) material into stocks
+///  Put incoming spent nuclear fuel (SNF) material into rawbuff
 ///
 ///  SEND MATERIAL
-///  Pull separated material from inventory based on Requests
+///  Pull sepbuff material from sepbuff based on Requests
 ///  Decrement ordersWaiting
 class SeparationMatrix : 
   public cyclus::Facility,
@@ -95,7 +95,9 @@ class SeparationMatrix :
   virtual std::set<cyclus::RequestPortfolio<cyclus::Material>::Ptr> 
     GetMatlRequests();
 
-  /// @brief makes bids for a material
+  /// @brief Responds to each request for this facility's commodity.  If a given
+  /// request is more than this facility's inventory capacity, it will
+  /// offer its minimum of its capacities.
   std::set<cyclus::BidPortfolio<cyclus::Material>::Ptr>
     GetMatlBids(cyclus::CommodMap<cyclus::Material>::type&
                                   commod_requests);
@@ -110,6 +112,15 @@ class SeparationMatrix :
   virtual void AcceptMatlTrades( const std::vector< 
       std::pair<cyclus::Trade<cyclus::Material>, cyclus::Material::Ptr> >& 
       responses);
+
+  /// @brief respond to each trade with a material of out_commod and out_recipe
+  ///
+  /// @param trades all trades in which this trader is the supplier
+  /// @param responses a container to populate with responses to each trade
+  virtual void GetMatlTrades(
+    const std::vector< cyclus::Trade<cyclus::Material> >& trades,
+    std::vector<std::pair<cyclus::Trade<cyclus::Material>,
+    cyclus::Material::Ptr> >& responses);
 
   /// Prints the status of the variables
   void PrintStatus();
@@ -151,7 +162,7 @@ class SeparationMatrix :
 
   /// @brief current maximum amount that can be added to processing
   inline double current_capacity() const {
-    return (std::min(capacity, max_inv_size - inventory_quantity())); } 
+    return (std::min(capacity, max_inv_size - sepbuff_quantity())); } 
 
   /// @brief sets the elems variable
   inline void elems_(std::vector<int> c) {elems = c;};
@@ -168,16 +179,26 @@ class SeparationMatrix :
   /// @brief returns the streams variable
   inline std::vector<std::string> streams_() const {return streams;};
 
-  // @brief gives current quantity of commod in inventory
-  const double inventory_quantity(std::string commod) const;
+  // @brief gives current quantity of commod in sepbuff
+  const double sepbuff_quantity(std::string commod) const;
 
-  /// @brief gives current quantity of all commods in inventory
-  const double inventory_quantity() const;
+  /// @brief gives current quantity of all commods in sepbuff
+  const double sepbuff_quantity() const;
 
   /// @brief returns the time key for ready materials
   int ready(){ return context()->time() - process_time ; }
 
 protected:
+  ///   @brief adds a material into the incoming commodity sepbuff
+  ///   @param mat the material to add to the incoming sepbuff.
+  ///   @throws if there is trouble with pushing to the sepbuff buffer.
+  void AddMat_(cyclus::Material::Ptr mat);
+
+  /// @brief suggests, based on the buffer, a material response to an offer
+  cyclus::Material::Ptr TradeResponse_(
+      double qty,
+      cyclus::toolkit::ResourceBuff* buffer);
+  
   /// @brief registers the commodity production for this facility
   /// @param commod_str a commodity that this facility produces
   /// @param cap the capacity of this facility to produce the commod
@@ -192,7 +213,7 @@ protected:
     return crctx_;
   }
 
-  /// @brief Move all unprocessed inventory to processing
+  /// @brief Move all unprocessed sepbuff to processing
   void BeginProcessing_(); 
 
   /// @brief Separate all the material in processing
@@ -242,7 +263,7 @@ protected:
   int process_time; //should be nonnegative
 
   #pragma cyclus var {"default": 1e299,\
-                      "tooltip":"maximum inventory size (kg)",\
+                      "tooltip":"maximum sepbuff size (kg)",\
                       "doc":"the amount of material that can be in storage at "\
                       "one time (kg)."}
   double max_inv_size; //should be nonnegative
@@ -267,13 +288,13 @@ protected:
                       "number from 0-1, efficiency at separating each element."}
   std::vector<std::string> effs;
 
-  #pragma cyclus var {"tooltip":"names of separated streams",\
-                      "doc":"string, for each separated element, name the stream it "\
+  #pragma cyclus var {"tooltip":"names of sepbuff streams",\
+                      "doc":"string, for each sepbuff element, name the stream it "\
                       "belongs in. This list can contain repeated entries."}
   std::vector<std::string> streams;
 
-  std::map<std::string, cyclus::toolkit::ResourceBuff> inventory;
-  cyclus::toolkit::ResourceBuff stocks;
+  std::map<std::string, cyclus::toolkit::ResourceBuff> sepbuff;
+  cyclus::toolkit::ResourceBuff rawbuff;
   cyclus::toolkit::ResourceBuff wastes;
 
 

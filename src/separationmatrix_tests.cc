@@ -54,18 +54,18 @@ void SeparationMatrixTest::TestRequest(SeparationMatrix* fac, double cap){
 void SeparationMatrixTest::TestAddMat(SeparationMatrix* fac, 
     cyclus::Material::Ptr mat){
   double amt = mat->quantity();
-  double before = fac->inventory_quantity();
+  double before = fac->sepbuff_quantity();
   //fac->AddMat_(mat);
-  double after = fac->inventory_quantity();
+  double after = fac->sepbuff_quantity();
   EXPECT_EQ(amt, after - before);
 }
 
 void SeparationMatrixTest::TestBuffers(SeparationMatrix* fac, double inv, 
-    double proc, double stocks){
+    double proc, double rawbuff){
   double t = tc_.get()->time();
 
-  EXPECT_EQ(inv, fac->inventory_quantity());
-  EXPECT_EQ(stocks, fac->stocks.quantity());
+  EXPECT_EQ(inv, fac->sepbuff_quantity());
+  EXPECT_EQ(rawbuff, fac->rawbuff.quantity());
 }
 
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -129,7 +129,7 @@ TEST_F(SeparationMatrixTest, Tock) {
   //cyclus::Material::Ptr mat = cyclus::Material::CreateUntracked(cap, rec);
   //TestAddMat(src_facility_, mat);
 
-  // affter add, the inventory has the material
+  // affter add, the sepbuff has the material
   TestBuffers(src_facility_,cap,0,0);
 
   EXPECT_NO_THROW(src_facility_->Tock());
@@ -168,12 +168,12 @@ TEST_F(SeparationMatrixTest, NoProcessTime) {
   //cyclus::Material::Ptr mat = cyclus::Material::CreateUntracked(cap, rec);
   //TestAddMat(src_facility_, mat);
 
-  // affter add, the inventory has the material
+  // affter add, the sepbuff has the material
   TestBuffers(src_facility_,cap,0,0);
 
   EXPECT_NO_THROW(src_facility_->Tock());
 
-  // affter tock, the stocks have the material
+  // affter tock, the rawbuff have the material
   TestBuffers(src_facility_,0,0,cap);
 }
 
