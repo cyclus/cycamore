@@ -111,6 +111,37 @@ class SeparationMatrix :
       std::pair<cyclus::Trade<cyclus::Material>, cyclus::Material::Ptr> >& 
       responses);
 
+  /// @brief sets the in_commod variable
+  inline void in_commod_(std::string c) {in_commod = c;};
+  /// @brief returns the in_commod variable
+  inline std::string in_commod_() const {return in_commod;};
+
+  /// @brief sets the out_commods variable
+  inline void out_commods_(std::vector< std::string > c) {out_commods = c;};
+  /// @brief returns the out_commods variable
+  inline std::vector< std::string > out_commods_() const {return out_commods;};
+
+  /// @brief sets the waste_stream variable
+  inline void waste_stream_(std::string c) {waste_stream = c;};
+  /// @brief returns the waste_stream variable
+  inline std::string waste_stream_() const {return waste_stream;};
+
+  /// @brief sets the process_time variable
+  inline void process_time_(int c) {process_time = c;};
+  /// @brief returns the process_time variable
+  inline int process_time_() const {return process_time;};
+
+  /// @brief sets the max_inv_size variable
+  inline void max_inv_size_(double c) {max_inv_size = c;};
+  /// @brief returns the max_inv_size variable
+  inline double max_inv_size_() const {return max_inv_size;};
+
+  /// @brief sets the capacity variable
+  inline void capacity_(double c) {capacity = c;};
+  /// @brief returns the capacity variable
+  inline double capacity_() const {return capacity;};
+
+
 protected:
   // @brief gives current quantity of commod in inventory
   const double inventory_quantity(std::string commod) const;
@@ -164,21 +195,19 @@ protected:
   int ready(){ return context()->time() - process_time ; }
 
   /* --- Module Members --- */
+
   #pragma cyclus var {"tooltip":"input commodity",\
                       "doc":"commodity accepted by this facility"}
   std::string in_commod;
-  inline std::string in_commod_() const {return in_commod;};
 
   #pragma cyclus var {"tooltip":"output stream list     ",\
                       "doc":"list of commodities produced by this facility"}
   std::vector< std::string > out_commods;
-  inline std::vector< std::string > out_commods_() const {return out_commods;};
 
   #pragma cyclus var {"default":"losses",\
                       "tooltip":"waste (losses) stream name",\
                       "doc":"name of the commodity containing the losses"}
   std::string waste_stream;
-  inline std::string waste_stream_() const {return waste_stream;};
 
   #pragma cyclus var {"default": 0,\
                       "tooltip":"process time (timesteps)",\
@@ -226,18 +255,6 @@ protected:
 
   cyclus::toolkit::CommodityRecipeContext crctx_;
 
-  /// @brief the processing time required for a full process
-  inline void process_time_(int t) { process_time = t; }
-  inline int process_time_() const { return process_time; }
-
-  /// @brief the maximum amount allowed in inventory
-  inline void max_inv_size_(double c) { max_inv_size = c; }
-  inline double max_inv_size_() const { return max_inv_size; }
-
-  /// @brief maximum amount that can be processed in one timestep.
-  inline void capacity_(double c) { capacity = c; }
-  inline double capacity_() const { return capacity; }
-  
   /// @brief current maximum amount that can be added to processing
   inline double current_capacity() const {
     return (std::min(capacity, max_inv_size - inventory_quantity())); } 
