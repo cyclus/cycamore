@@ -197,7 +197,7 @@ protected:
 
   /// @brief Separate all the material in the buff ResourceBuff
   /// @param buff the ResourceBuff to separate
-  void Separate_(cyclus::toolkit::ResourceBuff buff);
+  void Separate_(cyclus::toolkit::ResourceBuff* buff);
 
   /// @brief Separate a single material
   /// @param mat the material to separate

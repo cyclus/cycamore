@@ -124,7 +124,9 @@ void SeparationMatrix::Tock() {
   LOG(cyclus::LEV_DEBUG4, "SepMtx") << "    ProcessTime: " << process_time_();
 
   BeginProcessing_();
-  Separate_();
+  if( ready() >=0 ){
+    Separate_();
+  }
 
   LOG(cyclus::LEV_DEBUG3, "SepMtx") << "Current facility parameters for "
                                     << prototype()
@@ -278,18 +280,18 @@ void SeparationMatrix::RegisterProduction(std::string commod_str, double cap,
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 void SeparationMatrix::Separate_(){
   if ( processing.find(ready()) != processing.end() ) {
-    Separate_(processing[ready()]);
+    Separate_(&processing[ready()]);
   }
 }
 
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-void SeparationMatrix::Separate_(cyclus::toolkit::ResourceBuff buff){
+void SeparationMatrix::Separate_(cyclus::toolkit::ResourceBuff* buff){
   using cyclus::Material;
   using cyclus::ResCast;
   using cyclus::toolkit::ResourceBuff;
 
-  while ( !buff.empty() ){
-    Material::Ptr back = ResCast<Material>(buff.Pop(ResourceBuff::BACK));
+  while ( !buff->empty() ){
+    Material::Ptr back = ResCast<Material>(buff->Pop(ResourceBuff::BACK));
     Separate_(ResCast<Material>(back));
   }
 }
