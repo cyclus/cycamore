@@ -18,8 +18,11 @@ void SeparationMatrixTest::TearDown() {
 void SeparationMatrixTest::InitParameters(){
   in_c1 = "in_c1";
   out_c1 = "out_c1";
-  in_r1 = "in_r1";
-  out_r1 = "out_r1";
+  out_c2 = "out_c2";
+  out_c3 = "out_c3";
+  outs.push_back(out_c1);
+  outs.push_back(out_c2);
+  outs.push_back(out_c3);
   process_time = 10;
   max_inv_size = 200;
   capacity = 20;
@@ -38,13 +41,10 @@ void SeparationMatrixTest::InitParameters(){
 
 void SeparationMatrixTest::SetUpSeparationMatrix(){
   src_facility_->in_commod_(in_c1);
-  src_facility_->out_commod_(out_c1);
-  src_facility_->in_recipe_(in_r1);
-  src_facility_->out_recipe_(out_r1);
+  src_facility_->out_commods_(outs);
   src_facility_->process_time_(process_time);
   src_facility_->max_inv_size_(max_inv_size);
   src_facility_->capacity_(capacity);
-  src_facility_->cost_(cost);
 }
 
 void SeparationMatrixTest::TestInitState(SeparationMatrix* fac){
@@ -52,10 +52,7 @@ void SeparationMatrixTest::TestInitState(SeparationMatrix* fac){
   EXPECT_EQ(max_inv_size, fac->max_inv_size_());
   EXPECT_EQ(capacity, fac->capacity_());
   EXPECT_EQ(out_c1, fac->out_commod_());
-  EXPECT_EQ(out_r1, fac->out_recipe_());
   EXPECT_EQ(in_c1, fac->in_commod_());
-  EXPECT_EQ(in_r1, fac->in_recipe_());
-  EXPECT_EQ(cost, fac->cost_());
 }
 
 void SeparationMatrixTest::TestRequest(SeparationMatrix* fac, double cap){

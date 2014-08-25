@@ -27,8 +27,8 @@ class SeparationMatrixTest : public ::testing::Test {
   void TestBuffers(separationmatrix::SeparationMatrix* fac, double inv, double 
       proc, double stocks);
 
-  std::string in_c1, out_c1;
-  std::string in_r1, out_r1;
+  std::string in_c1, out_c1, out_c2, out_c3;
+  std::vector< std::string > outs;
 
   int process_time;
   double capacity, max_inv_size, cost;
