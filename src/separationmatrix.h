@@ -141,9 +141,29 @@ class SeparationMatrix :
   /// @brief returns the capacity variable
   inline double capacity_() const {return capacity;};
 
+  /// @brief the cost per unit out_commod
+  inline void cost_(double c) { cost = c; }
+  /// @brief returns the cost variable
+  inline double cost_() const { return cost; } 
+
   /// @brief current maximum amount that can be added to processing
   inline double current_capacity() const {
     return (std::min(capacity, max_inv_size - inventory_quantity())); } 
+
+  /// @brief sets the elems variable
+  inline void elems_(std::vector<int> c) {elems = c;};
+  /// @brief returns the elems variable
+  inline std::vector<int> elems_() const {return elems;};
+
+  /// @brief sets the effs variable
+  inline void effs_(std::vector<std::string> c) {effs = c;};
+  /// @brief returns the effs variable
+  inline std::vector<std::string> effs_() const {return effs;};
+
+  /// @brief sets the streams variable
+  inline void streams_(std::vector<std::string> c) {streams = c;};
+  /// @brief returns the streams variable
+  inline std::vector<std::string> streams_() const {return streams;};
 
   // @brief gives current quantity of commod in inventory
   const double inventory_quantity(std::string commod) const;
@@ -158,7 +178,8 @@ protected:
   /// @brief registers the commodity production for this facility
   /// @param commod_str a commodity that this facility produces
   /// @param cap the capacity of this facility to produce the commod
-  void RegisterProduction(std::string commod_str, double cap);
+  /// @param cost the cost of the commods
+  void RegisterProduction(std::string commod_str, double cap, double cost);
 
   /// @brief this facility's commodity-recipe context
   inline void crctx(const cyclus::toolkit::CommodityRecipeContext& crctx) {
@@ -229,26 +250,29 @@ protected:
                       "timestep (kg)."}
   double capacity; //should be nonnegative
 
-  std::map<std::string, cyclus::toolkit::ResourceBuff> inventory;
-  cyclus::toolkit::ResourceBuff stocks;
-  cyclus::toolkit::ResourceBuff wastes;
+  #pragma cyclus var {"default": 0,\
+                     "tooltip":"cost per kg of production",\
+                     "doc":"cost per kg of produced material"}
+  double cost;
 
   #pragma cyclus var {"tooltip":"elements to separate",\
                       "doc":"elements to separate"}
   std::vector<int> elems;
-  inline std::vector<int> elems_() const {return elems;};
 
   #pragma cyclus var {"tooltip":"separation efficiencies",\
                       "doc":"double, in the form of a string (because of the db). "\
                       "number from 0-1, efficiency at separating each element."}
   std::vector<std::string> effs;
-  inline std::vector<std::string> effs_() const {return effs;};
 
   #pragma cyclus var {"tooltip":"names of separated streams",\
                       "doc":"string, for each separated element, name the stream it "\
                       "belongs in. This list can contain repeated entries."}
   std::vector<std::string> streams;
-  inline std::vector<std::string> streams_() const {return streams;};
+
+  std::map<std::string, cyclus::toolkit::ResourceBuff> inventory;
+  cyclus::toolkit::ResourceBuff stocks;
+  cyclus::toolkit::ResourceBuff wastes;
+
 
   /// @brief a list of preffered commodities
   std::map<int, std::set<std::string> > prefs_;

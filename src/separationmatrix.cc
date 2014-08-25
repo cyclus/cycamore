@@ -41,9 +41,9 @@ void SeparationMatrix::InitFrom(cyclus::QueryableBackend* b){
 
   std::vector<std::string>::const_iterator it;
   for(it = out_commods.begin(); it != out_commods.end(); ++it ) {
-    RegisterProduction(*it, capacity);
+    RegisterProduction(*it, capacity, cost);
   }
-  RegisterProduction(waste_stream, capacity);
+  RegisterProduction(waste_stream, capacity, 0);
 }
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -52,9 +52,9 @@ void SeparationMatrix::EnterNotify() {
 
   std::vector<std::string>::const_iterator it;
   for(it = out_commods.begin(); it != out_commods.end(); ++it ) {
-    RegisterProduction(*it, capacity);
+    RegisterProduction(*it, capacity, cost);
   }
-  RegisterProduction(waste_stream, capacity);
+  RegisterProduction(waste_stream, capacity, 0);
 }
 
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -265,13 +265,14 @@ const double SeparationMatrix::inventory_quantity() const {
 }
 
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-void SeparationMatrix::RegisterProduction(std::string commod_str, double cap){
+void SeparationMatrix::RegisterProduction(std::string commod_str, double cap, 
+    double cost){
   using cyclus::toolkit::Commodity;
   Commodity commod = Commodity(commod_str); 
 
   cyclus::toolkit::CommodityProducer::Add(commod);
   cyclus::toolkit::CommodityProducer::SetCapacity(commod, cap);
-  cyclus::toolkit::CommodityProducer::SetCost(commod, cap);
+  cyclus::toolkit::CommodityProducer::SetCost(commod, cost);
 }
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
