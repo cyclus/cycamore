@@ -141,14 +141,20 @@ class SeparationMatrix :
   /// @brief returns the capacity variable
   inline double capacity_() const {return capacity;};
 
+  /// @brief current maximum amount that can be added to processing
+  inline double current_capacity() const {
+    return (std::min(capacity, max_inv_size - inventory_quantity())); } 
 
-protected:
   // @brief gives current quantity of commod in inventory
   const double inventory_quantity(std::string commod) const;
 
   /// @brief gives current quantity of all commods in inventory
   const double inventory_quantity() const;
 
+  /// @brief returns the time key for ready materials
+  int ready(){ return context()->time() - process_time ; }
+
+protected:
   /// @brief registers the commodity production for this facility
   /// @param commod_str a commodity that this facility produces
   /// @param cap the capacity of this facility to produce the commod
@@ -190,9 +196,6 @@ protected:
   /// @param elem the integer representation of an element (e.g. 92)
   /// @return the index of the element in the lists
   int ElemIdx_(int elem);
-
-  /// @brief returns the time key for ready materials
-  int ready(){ return context()->time() - process_time ; }
 
   /* --- Module Members --- */
 
@@ -255,9 +258,7 @@ protected:
 
   cyclus::toolkit::CommodityRecipeContext crctx_;
 
-  /// @brief current maximum amount that can be added to processing
-  inline double current_capacity() const {
-    return (std::min(capacity, max_inv_size - inventory_quantity())); } 
+  friend class SeparationMatrixTest;
 };
 
 }  // namespace separationmatrix
