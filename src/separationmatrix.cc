@@ -201,8 +201,7 @@ void SeparationMatrix::GetMatlTrades(
   std::vector< Trade<Material> >::const_iterator it;
   for (it = trades.begin(); it != trades.end(); ++it) {
     std::string commodity = it->request->commodity();
-    //double qty = it->amt;
-    double qty = sepbuff_quantity(commodity);
+    double qty = std::min(it->amt, sepbuff_quantity(commodity));
     // create a material pointer representing what you can offer
     if ( qty > 0 ) {
       Material::Ptr response = TradeResponse_(qty, &sepbuff[commodity]);
