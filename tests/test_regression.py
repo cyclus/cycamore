@@ -72,6 +72,8 @@ class TestRegression(object):
         """
         for root, dirs, files in os.walk(self.in_dir_):
             for f in files:
+                if not f.endswith('.xml'):
+                    continue
                 tmp_file = self.tmp_files_[f]
                 run_cyclus("cyclus", os.getcwd(), os.path.join(root, f), 
                            tmp_file)
