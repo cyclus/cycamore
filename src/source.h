@@ -174,7 +174,8 @@ class Source : public cyclus::Facility,
   ///   This facility has only one output commodity
   #pragma cyclus var {"tooltip": "source output commodity", \
                       "doc": "output commodity that the source facility " \
-                             "supplies"}
+                             "supplies", \
+                      "uitype": "outcommodity"}
   std::string out_commod;
 
   ///   Name of the recipe this facility uses.

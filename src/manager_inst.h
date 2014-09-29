@@ -48,7 +48,8 @@ class ManagerInst
   void Unregister_(cyclus::Agent* agent);
 
   #pragma cyclus var {"tooltip": "facility prototypes", \
-                      "doc": "a facility to be managed by the institution"}
+                      "doc": "a facility to be managed by the institution", \
+                      "uitype": "facilitylist"}
   std::vector<std::string> prototypes;
 };
 
