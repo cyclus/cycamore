@@ -166,7 +166,7 @@ class Sink : public cyclus::Facility  {
   /// all facilities must have at least one input commodity
   #pragma cyclus var {"tooltip": "input commodities", \
                       "doc": "commodities that the sink facility accepts", \
-                      "uitype": "incommodity"}
+                      "uitype": ["oneormore", "incommodity"]}
   std::vector<std::string> in_commods;
 
   /// monthly acceptance capacity
