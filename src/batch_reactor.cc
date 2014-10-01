@@ -675,7 +675,7 @@ void BatchReactor::Tock() {
   switch (phase()) {
     case PROCESS:
       if (time == end_time()) {
-        for (int i = 0; i < core_.count(); ++i) {
+        for (int i = 0; i < std::min(n_load(), core_.count()); ++i) {
           MoveBatchOut_();  // unload
         }
         Refuel_();  // reload
