@@ -70,11 +70,11 @@ Sink::GetMatlRequests() {
   double amt = RequestAmt();
   Material::Ptr mat;
 
-  if (composition.empty()) {
+  if (recipe_name.empty()) {
     mat = cyclus::NewBlankMaterial(amt);
   } else {
-    Composition::Ptr c = this->context()->GetRecipe(composition);
-    mat = cyclus::Material::CreateUntracked(amt, c); 
+    Composition::Ptr rec = this->context()->GetRecipe(recipe_name);
+    mat = cyclus::Material::CreateUntracked(amt, rec); 
   } 
 
   if (amt > cyclus::eps()) {
