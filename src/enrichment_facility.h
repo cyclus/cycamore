@@ -259,13 +259,16 @@ class EnrichmentFacility : public cyclus::Facility {
   void RecordEnrichment_(double natural_u, double swu);
 
   #pragma cyclus var {"tooltip": "input commodity", \
-                      "doc": "commodity that the enrichment facility accepts"}
+                      "doc": "commodity that the enrichment facility accepts", \
+                      "uitype": "incommodity"}
   std::string in_commod;
   #pragma cyclus var {"tooltip": "output commodity", \
-                      "doc": "commodity that the enrichment facility supplies"}
+                      "doc": "commodity that the enrichment facility supplies", \
+                      "uitype": "outcommodity"}
   std::string out_commod;
   #pragma cyclus var {"tooltip": "input commodity recipe", \
-                      "doc": "recipe for enrichment facility's input commodity"}
+                      "doc": "recipe for enrichment facility's input commodity", \
+                      "uitype": "recipe"}
   std::string in_recipe;
 
   #pragma cyclus var {"default": 0.03, "tooltip": "tails assay", \
