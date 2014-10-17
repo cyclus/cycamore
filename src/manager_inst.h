@@ -49,7 +49,7 @@ class ManagerInst
 
   #pragma cyclus var {"tooltip": "facility prototypes", \
                       "doc": "a facility to be managed by the institution", \
-                      "uitype": "facility"}
+                      "uitype": "prototype"}
   std::vector<std::string> prototypes;
 };
 
