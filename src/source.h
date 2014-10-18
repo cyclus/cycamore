@@ -180,7 +180,7 @@ class Source : public cyclus::Facility,
 
   ///   Name of the recipe this facility uses.
   #pragma cyclus var {"tooltip": "commodity recipe name", \
-                      "doc": "recipe name for source facility's commodity" \
+                      "doc": "recipe name for source facility's commodity", \
                       "uitype": "recipe"}
   std::string recipe_name;
 
