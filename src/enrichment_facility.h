@@ -132,7 +132,8 @@ class EnrichmentFacility : public cyclus::Facility {
 
   #pragma cyclus note {"doc": "An enrichment facility that intakes a commodity " \
                               "(usually natural uranium) and supplies a user-" \
-                              "specified enriched product based on SWU capacity"}
+                              "specified enriched product based on SWU capacity", \
+                       "niche": "enrichment"}
 
 ///     Print information about this agent
   virtual std::string str();
