@@ -7,3 +7,4 @@ suffix.h
 #*
 *.pyc
 rs.cred
+*.h5
