@@ -237,6 +237,8 @@ class EnrichmentFacility : public cyclus::Facility {
   inline void  InitialReserves(double qty) { initial_reserves = qty; }
   inline double InitialReserves() const { return initial_reserves; }
 
+  inline const cyclus::toolkit::ResourceBuff& Tails() const { return tails; } 
+  
  private:
   ///   @brief adds a material into the natural uranium inventory
   ///   @throws if the material is not the same composition as the in_recipe
