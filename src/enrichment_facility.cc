@@ -288,7 +288,8 @@ cyclus::Material::Ptr EnrichmentFacility::Enrich_(
   // blob
   cyclus::Composition::Ptr comp = mat->comp();
   Material::Ptr response = r->ExtractComp(qty, comp);
-
+  tails.Push(r); // add remainder to tails buffer
+  
   current_swu_capacity -= swu_req;
 
   RecordEnrichment_(natu_req, swu_req);

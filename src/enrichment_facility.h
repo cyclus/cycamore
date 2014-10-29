@@ -299,6 +299,8 @@ class EnrichmentFacility : public cyclus::Facility {
   double feed_assay;
   #pragma cyclus var {'capacity': 'max_inv_size'}
   cyclus::toolkit::ResourceBuff inventory;  // of natl u
+  #pragma cyclus var {}
+  cyclus::toolkit::ResourceBuff tails;  // depleted u
 
   friend class EnrichmentFacilityTest;
   // ---
