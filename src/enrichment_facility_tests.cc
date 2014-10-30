@@ -485,6 +485,7 @@ TEST_F(EnrichmentFacilityTest, Enrich) {
   Assays assays(feed_assay, UraniumAssay(target), tails_assay);
   double swu_req = SwuRequired(qty, assays);
   double natu_req = FeedQty(qty, assays);
+  double tails_qty = TailsQty(qty, assays);
 
   double swu_cap = swu_req * 5;
   src_facility->SwuCapacity(swu_cap);
@@ -495,7 +496,8 @@ TEST_F(EnrichmentFacilityTest, Enrich) {
   Material::Ptr response;
   EXPECT_NO_THROW(response = DoEnrich(target, qty));
   EXPECT_DOUBLE_EQ(src_facility->CurrentSwuCapacity(), swu_cap - swu_req);
-
+  EXPECT_DOUBLE_EQ(src_facility->Tails().quantity(), tails_qty);
+  
   MatQuery q(response);
   EXPECT_EQ(response->quantity(), qty);
   EXPECT_EQ(q.mass_frac(922350000), product_assay);
