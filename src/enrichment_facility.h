@@ -237,6 +237,8 @@ class EnrichmentFacility : public cyclus::Facility {
   inline void  InitialReserves(double qty) { initial_reserves = qty; }
   inline double InitialReserves() const { return initial_reserves; }
 
+  inline const cyclus::toolkit::ResourceBuff& Tails() const { return tails; } 
+  
  private:
   ///   @brief adds a material into the natural uranium inventory
   ///   @throws if the material is not the same composition as the in_recipe
@@ -299,6 +301,8 @@ class EnrichmentFacility : public cyclus::Facility {
   double feed_assay;
   #pragma cyclus var {'capacity': 'max_inv_size'}
   cyclus::toolkit::ResourceBuff inventory;  // of natl u
+  #pragma cyclus var {}
+  cyclus::toolkit::ResourceBuff tails;  // depleted u
 
   friend class EnrichmentFacilityTest;
   // ---
