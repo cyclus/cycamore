@@ -1,4 +1,3 @@
-
 *******
 LICENSE
 *******
@@ -33,3 +32,12 @@ LICENSE
     CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE)
     ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
     POSSIBILITY OF SUCH DAMAGE.
+
+-------------
+
+The following further copyrights apply to files present in specific commits,
+based on their original authorship:
+
+Copyright (c) 2014, Kathryn Dorsey Huff All rights reserved. SeparationMatrix,
+commit hash b17d3c7.
+
