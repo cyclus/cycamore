@@ -14,6 +14,7 @@
 #include "inpro_reactor_tests.h"
 #include "manager_inst.h"
 #include "manager_inst_tests.h"
+#include "separationmatrix.h"
 #include "sink.h"
 #include "sink_tests.h"
 #include "source.h"
