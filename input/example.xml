@@ -1,0 +1,40 @@
+<simulation>
+  <control>
+    <duration>10</duration>
+    <startmonth>1</startmonth>
+    <startyear>2000</startyear>
+  </control>
+
+  <archetypes>
+    <spec><path>separationmatrix</path><lib>SeparationmatrixFacility</lib><name>SeparationmatrixFacility</name></spec>
+    <spec><path>separationmatrix</path><lib>SeparationmatrixRegion</lib><name>SeparationmatrixRegion</name></spec>
+    <spec><path>separationmatrix</path><lib>SeparationmatrixInst</lib><name>SeparationmatrixInst</name></spec>
+  </archetypes>
+
+  <facility>
+    <name>OneFacility</name>
+    <config>
+      <SeparationmatrixFacility />
+    </config>
+  </facility>
+
+  <region>
+    <name>OneRegion</name>
+    <config>
+      <SeparationmatrixRegion />
+    </config>
+    <institution>
+      <name>OneInst</name>
+      <initialfacilitylist>
+        <entry>
+          <prototype>OneFacility</prototype>
+          <number>1</number>
+        </entry>
+      </initialfacilitylist>
+      <config>
+        <SeparationmatrixInst />
+      </config>
+    </institution>
+  </region>
+
+</simulation>

@@ -330,18 +330,17 @@ or a grad student). To begin, let's update our *home's local branches*.
     .../cycamore_dir/$ git pull upstream develop
     .../cycamore_dir/$ git push origin develop
 
-    .../cycamore_dir/$ git checkout work
-    .../cycamore_dir/$ git pull origin work
-    .../cycamore_dir/$ git merge develop
-    .../cycamore_dir/$ git push origin work
+First, you need to get the ``separationmatrix`` code.  St
+You can grab SeparationMatrix either by using git to 
+`clone the repository <https://github.com/katyhuff/separationmatrix.git>`_ or by 
+`downloading the zip file <https://github.com/katyhuff/separationmatrix/archive/develop.zip>`_.
 
 Perhaps a little explanation is required. We first want to make sure that this new local copy of
 the develop branch is up-to-date with respect to the remote origin's branch and remote upstream's
 branch. If there was a change from the remote upstream's branch, we want to push that to origin.
 We then follow the same process to update the work branch, except:
 
-#. we don't need to worry about the *upstream* repo because it doesn't have a work branch, and
-#. we want to incorporate any changes which may have been introduced in the develop branch update.
+.. code-block:: bash
 
 Workflow: The End
 ^^^^^^^^^^^^^^^^^
@@ -362,8 +361,7 @@ accordingly. The pull request will be updated with those changes when you push t
 to your fork.  When you think your request is ready for another review, you can
 reopen the review yourself with the button made available to you.
 
-See also
---------
+------------
 
 A good description of a git workflow with good graphics is available at
 http://nvie.com/posts/a-successful-git-branching-agent/
