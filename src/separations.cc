@@ -1,35 +1,35 @@
 #include "separations.h"
 
-namespace separations {
+namespace cycamore {
 
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-Separations::Separations(cyclus::Context* ctx)
-    : cyclus::Facility(ctx) {
-  cyclus::Warn<cyclus::EXPERIMENTAL_WARNING>("the Separations is experimental.");
-    };
+Separations::Separations(cyclus::Context* ctx) : cyclus::Facility(ctx) {
+  cyclus::Warn<cyclus::EXPERIMENTAL_WARNING>("the Separations facility " \
+                                             "is experimental.");
+};
 
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 // pragmas
 
-#pragma cyclus def schema separations::Separations
+#pragma cyclus def schema cycamore::Separations
 
-#pragma cyclus def annotations separations::Separations
+#pragma cyclus def annotations cycamore::Separations
 
-#pragma cyclus def initinv separations::Separations
+#pragma cyclus def initinv cycamore::Separations
 
-#pragma cyclus def snapshotinv separations::Separations
+#pragma cyclus def snapshotinv cycamore::Separations
 
-#pragma cyclus def infiletodb separations::Separations
+#pragma cyclus def infiletodb cycamore::Separations
 
-#pragma cyclus def snapshot separations::Separations
+#pragma cyclus def snapshot cycamore::Separations
 
-#pragma cyclus def clone separations::Separations
+#pragma cyclus def clone cycamore::Separations
 
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 void Separations::InitFrom(Separations* m) {
 
-  #pragma cyclus impl initfromcopy separations::Separations
+  #pragma cyclus impl initfromcopy cycamore::Separations
 
   cyclus::toolkit::CommodityProducer::Copy(m);
 }
@@ -37,7 +37,7 @@ void Separations::InitFrom(Separations* m) {
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 void Separations::InitFrom(cyclus::QueryableBackend* b){
 
-  #pragma cyclus impl initfromdb separations::Separations
+  #pragma cyclus impl initfromdb cycamore::Separations
 
   std::vector<std::string>::const_iterator it;
   for(it = out_commods.begin(); it != out_commods.end(); ++it ) {
@@ -409,16 +409,16 @@ void Separations::Separate_(cyclus::Material::Ptr mat){
     double qty = cyclus::compmath::Sum(to_extract);
     Composition::Ptr c = Composition::CreateFromMass(to_extract);
     sepbuff[(*str).first].Push(mat->ExtractComp(qty, c));
-    LOG(cyclus::LEV_DEBUG3, "SepMtx") << "Separations Matrix" << prototype()
+    LOG(cyclus::LEV_DEBUG3, "SepMtx") << "Separations " << prototype()
                                       << " separated quantity : "
                                       << qty << " at t = "
                                       << context()->time();
   }
   sepbuff[waste_stream].Push(mat);
-  LOG(cyclus::LEV_DEBUG2, "SepMtx") << "Separations Matrix" << prototype()
+  LOG(cyclus::LEV_DEBUG2, "SepMtx") << "Separations " << prototype()
                                     << " separated material at t = "
                                     << context()->time();
-  LOG(cyclus::LEV_DEBUG2, "SepMtx") << "Separations Matrix" << prototype()
+  LOG(cyclus::LEV_DEBUG2, "SepMtx") << "Separations " << prototype()
                                     << " now has a separated quantity : "
                                     << sepbuff_quantity()
                                     << " and a raw quantity : "
@@ -469,7 +469,7 @@ void Separations::BeginProcessing_(){
   while (!rawbuff.empty()){
     try {
       processing[context()->time()].Push(rawbuff.Pop(ResourceBuff::BACK));
-      LOG(cyclus::LEV_DEBUG2, "SepMtx") << "Separations Matrix" << prototype()
+      LOG(cyclus::LEV_DEBUG2, "SepMtx") << "Separations " << prototype()
                                         << " added resources to processing at t = "
                                         << context()->time();
     } catch(cyclus::Error& e) {

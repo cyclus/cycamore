@@ -1,11 +1,11 @@
-#ifndef CYCLUS_SEPARATIONMATRIXS_SEPARATIONMATRIX_H_
-#define CYCLUS_SEPARATIONMATRIXS_SEPARATIONMATRIX_H_
+#ifndef CYCAMORE_SRC_SEPARATIONS_H_
+#define CYCAMORE_SRC_SEPARATIONS_H_
 
 #include <string>
 
 #include "cyclus.h"
 
-namespace separations {
+namespace cycamore {
 
 
 /// @class Separations
@@ -309,6 +309,6 @@ protected:
   friend class SeparationsTest;
 };
 
-}  // namespace separations
+}  // namespace cycamore
 
-#endif  // CYCLUS_SEPARATIONMATRIXS_SEPARATIONMATRIX_H_
+#endif  // CYCAMORE_SRC_SEPARATIONS_H_

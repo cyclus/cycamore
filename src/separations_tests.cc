@@ -2,7 +2,7 @@
 
 #include "separations_tests.h"
 
-namespace separations {
+namespace cycamore {
 
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 void SeparationsTest::SetUp() {
@@ -178,11 +178,11 @@ TEST_F(SeparationsTest, NoProcessTime) {
 }
 
 
-} // namespace separations
+} // namespace cycamore
 
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 cyclus::Agent* SeparationsConstructor(cyclus::Context* ctx) {
-  return new separations::Separations(ctx);
+  return new cycamore::Separations(ctx);
 }
 
 // required to get functionality in cyclus agent unit tests library
