@@ -5,10 +5,10 @@
 
 #include "cyclus.h"
 
-namespace separationmatrix {
+namespace separations {
 
 
-/// @class SeparationMatrix
+/// @class Separations
 ///
 /// This model is intended to represent a generic separations process and is based 
 /// on the separations matrix facility from years past. Based on a matrix of 
@@ -18,7 +18,7 @@ namespace separationmatrix {
 /// use as a separations facility in a reprocessing scenario. It was recently 
 /// re-created to run the fco code-to-code comparison.
 /// 
-/// The SeparationMatrix class inherits from the Facility class and is
+/// The Separations class inherits from the Facility class and is
 /// dynamically loaded by the Agent class when requested.
 ///
 /// @section intro Introduction
@@ -58,13 +58,13 @@ namespace separationmatrix {
 ///  SEND MATERIAL
 ///  Pull sepbuff material from sepbuff based on Requests
 ///  Decrement ordersWaiting
-class SeparationMatrix : 
+class Separations : 
   public cyclus::Facility,
   public cyclus::toolkit::CommodityProducer {
  public:  
-  /// Constructor for SeparationMatrix Class
+  /// Constructor for Separations Class
   /// @param ctx the cyclus context for access to simulation-wide parameters
-  explicit SeparationMatrix(cyclus::Context* ctx);
+  explicit Separations(cyclus::Context* ctx);
 
   /// The Prime Directive
   /// Generates code that handles all input file reading and restart operations
@@ -74,20 +74,20 @@ class SeparationMatrix :
   
   #pragma cyclus decl
 
-  #pragma cyclus note {"doc": "A separationmatrix facility is provided to "\
+  #pragma cyclus note {"doc": "A separations facility is provided to "\
                               "separate materials into streams by element "}
 
   /// Notify the simulation that this facility has arrived
   void EnterNotify();
 
-  /// A verbose printer for the SeparationMatrix
+  /// A verbose printer for the Separations
   virtual std::string str();
   
-  /// The handleTick function specific to the SeparationMatrix.
+  /// The handleTick function specific to the Separations.
   /// @param time the time of the tick  
   virtual void Tick();
 
-  /// The handleTick function specific to the SeparationMatrix.
+  /// The handleTick function specific to the Separations.
   /// @param time the time of the tock
   virtual void Tock();
 
@@ -306,9 +306,9 @@ protected:
 
   cyclus::toolkit::CommodityRecipeContext crctx_;
 
-  friend class SeparationMatrixTest;
+  friend class SeparationsTest;
 };
 
-}  // namespace separationmatrix
+}  // namespace separations
 
 #endif  // CYCLUS_SEPARATIONMATRIXS_SEPARATIONMATRIX_H_

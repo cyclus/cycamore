@@ -16,7 +16,7 @@ USE_CYCLUS("cycamore" "manager_inst")
 
 USE_CYCLUS("cycamore" "growth_region")
 
-USE_CYCLUS("cycamore" "separationmatrix")
+USE_CYCLUS("cycamore" "separations")
 
 INSTALL_CYCLUS_MODULE("cycamore" "" "NONE")
 

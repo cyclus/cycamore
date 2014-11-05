@@ -1,21 +1,21 @@
 #include <gtest/gtest.h>
 
-#include "separationmatrix_tests.h"
+#include "separations_tests.h"
 
-namespace separationmatrix {
+namespace separations {
 
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-void SeparationMatrixTest::SetUp() {
-  src_facility_ = new SeparationMatrix(tc_.get());
+void SeparationsTest::SetUp() {
+  src_facility_ = new Separations(tc_.get());
   InitParameters();
-  SetUpSeparationMatrix();
+  SetUpSeparations();
 }
 
-void SeparationMatrixTest::TearDown() {
+void SeparationsTest::TearDown() {
   delete src_facility_;
 }
 
-void SeparationMatrixTest::InitParameters(){
+void SeparationsTest::InitParameters(){
   in_c1 = "in_c1";
   out_c1 = "out_c1";
   out_c2 = "out_c2";
@@ -30,7 +30,7 @@ void SeparationMatrixTest::InitParameters(){
 
 }
 
-void SeparationMatrixTest::SetUpSeparationMatrix(){
+void SeparationsTest::SetUpSeparations(){
   src_facility_->in_commod_(in_c1);
   src_facility_->out_commods_(outs);
   src_facility_->process_time_(process_time);
@@ -38,7 +38,7 @@ void SeparationMatrixTest::SetUpSeparationMatrix(){
   src_facility_->capacity_(capacity);
 }
 
-void SeparationMatrixTest::TestInitState(SeparationMatrix* fac){
+void SeparationsTest::TestInitState(Separations* fac){
   EXPECT_EQ(process_time, fac->process_time_());
   EXPECT_EQ(max_inv_size, fac->max_inv_size_());
   EXPECT_EQ(capacity, fac->capacity_());
@@ -46,12 +46,12 @@ void SeparationMatrixTest::TestInitState(SeparationMatrix* fac){
   EXPECT_EQ(in_c1, fac->in_commod_());
 }
 
-void SeparationMatrixTest::TestRequest(SeparationMatrix* fac, double cap){
+void SeparationsTest::TestRequest(Separations* fac, double cap){
   //cyclus::Material::Ptr req = fac->Request_();
   //EXPECT_EQ(cap, req->quantity());
 }
 
-void SeparationMatrixTest::TestAddMat(SeparationMatrix* fac, 
+void SeparationsTest::TestAddMat(Separations* fac, 
     cyclus::Material::Ptr mat){
   double amt = mat->quantity();
   double before = fac->sepbuff_quantity();
@@ -60,7 +60,7 @@ void SeparationMatrixTest::TestAddMat(SeparationMatrix* fac,
   EXPECT_EQ(amt, after - before);
 }
 
-void SeparationMatrixTest::TestBuffers(SeparationMatrix* fac, double inv, 
+void SeparationsTest::TestBuffers(Separations* fac, double inv, 
     double proc, double rawbuff){
   double t = tc_.get()->time();
 
@@ -69,20 +69,20 @@ void SeparationMatrixTest::TestBuffers(SeparationMatrix* fac, double inv,
 }
 
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-TEST_F(SeparationMatrixTest, clone) {
-  SeparationMatrix* cloned_fac =
-      dynamic_cast<SeparationMatrix*> (src_facility_->Clone());
+TEST_F(SeparationsTest, clone) {
+  Separations* cloned_fac =
+      dynamic_cast<Separations*> (src_facility_->Clone());
   TestInitState(cloned_fac);
 }
 
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-TEST_F(SeparationMatrixTest, InitialState) {
+TEST_F(SeparationsTest, InitialState) {
   // Test things about the initial state of the facility here
   TestInitState(src_facility_);
 }
 
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-TEST_F(SeparationMatrixTest, CurrentCapacity) {
+TEST_F(SeparationsTest, CurrentCapacity) {
   EXPECT_EQ(capacity, src_facility_->current_capacity());
   src_facility_->max_inv_size_(1e299);
   EXPECT_EQ(1e299, src_facility_->max_inv_size_());
@@ -91,18 +91,18 @@ TEST_F(SeparationMatrixTest, CurrentCapacity) {
 }
 
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-TEST_F(SeparationMatrixTest, Print) {
+TEST_F(SeparationsTest, Print) {
   EXPECT_NO_THROW(std::string s = src_facility_->str());
-  // Test SeparationMatrix specific aspects of the print method here
+  // Test Separations specific aspects of the print method here
 }
 
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-TEST_F(SeparationMatrixTest, Request) { 
+TEST_F(SeparationsTest, Request) { 
   TestRequest(src_facility_, src_facility_->current_capacity());
 }
 
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-TEST_F(SeparationMatrixTest, AddMats) { 
+TEST_F(SeparationsTest, AddMats) { 
   double cap = src_facility_->current_capacity();
   cyclus::Material::Ptr mat = cyclus::NewBlankMaterial(0.5*cap);
   TestAddMat(src_facility_, mat);
@@ -113,13 +113,13 @@ TEST_F(SeparationMatrixTest, AddMats) {
 }
 
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-TEST_F(SeparationMatrixTest, Tick) {
+TEST_F(SeparationsTest, Tick) {
   ASSERT_NO_THROW(src_facility_->Tick());
-  // Test SeparationMatrix specific behaviors of the Tick function here
+  // Test Separations specific behaviors of the Tick function here
 }
 
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-TEST_F(SeparationMatrixTest, Tock) {
+TEST_F(SeparationsTest, Tock) {
 
   // initially, nothing in the buffers
   TestBuffers(src_facility_,0,0,0);
@@ -158,7 +158,7 @@ TEST_F(SeparationMatrixTest, Tock) {
 }
 
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-TEST_F(SeparationMatrixTest, NoProcessTime) {
+TEST_F(SeparationsTest, NoProcessTime) {
   // tests what happens when the process time is zero
   src_facility_->process_time_(0);
   EXPECT_EQ(0, src_facility_->process_time_());
@@ -178,11 +178,11 @@ TEST_F(SeparationMatrixTest, NoProcessTime) {
 }
 
 
-} // namespace separationmatrix
+} // namespace separations
 
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-cyclus::Agent* SeparationMatrixConstructor(cyclus::Context* ctx) {
-  return new separationmatrix::SeparationMatrix(ctx);
+cyclus::Agent* SeparationsConstructor(cyclus::Context* ctx) {
+  return new separations::Separations(ctx);
 }
 
 // required to get functionality in cyclus agent unit tests library
@@ -193,8 +193,8 @@ static int cyclus_agent_tests_connected = ConnectAgentTests();
 #endif // CYCLUS_AGENT_TESTS_CONNECTED
 
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-INSTANTIATE_TEST_CASE_P(SeparationMatrixFac, FacilityTests,
-                        ::testing::Values(&SeparationMatrixConstructor));
+INSTANTIATE_TEST_CASE_P(SeparationsFac, FacilityTests,
+                        ::testing::Values(&SeparationsConstructor));
 
-INSTANTIATE_TEST_CASE_P(SeparationMatrixFac, AgentTests,
-                        ::testing::Values(&SeparationMatrixConstructor));
+INSTANTIATE_TEST_CASE_P(SeparationsFac, AgentTests,
+                        ::testing::Values(&SeparationsConstructor));

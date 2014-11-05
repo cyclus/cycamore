@@ -8,3 +8,4 @@ suffix.h
 *.pyc
 rs.cred
 *.h5
+tests/run_inputs.py

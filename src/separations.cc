@@ -1,43 +1,43 @@
-#include "separationmatrix.h"
+#include "separations.h"
 
-namespace separationmatrix {
+namespace separations {
 
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-SeparationMatrix::SeparationMatrix(cyclus::Context* ctx)
+Separations::Separations(cyclus::Context* ctx)
     : cyclus::Facility(ctx) {
-  cyclus::Warn<cyclus::EXPERIMENTAL_WARNING>("the SeparationMatrix is experimental.");
+  cyclus::Warn<cyclus::EXPERIMENTAL_WARNING>("the Separations is experimental.");
     };
 
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 // pragmas
 
-#pragma cyclus def schema separationmatrix::SeparationMatrix
+#pragma cyclus def schema separations::Separations
 
-#pragma cyclus def annotations separationmatrix::SeparationMatrix
+#pragma cyclus def annotations separations::Separations
 
-#pragma cyclus def initinv separationmatrix::SeparationMatrix
+#pragma cyclus def initinv separations::Separations
 
-#pragma cyclus def snapshotinv separationmatrix::SeparationMatrix
+#pragma cyclus def snapshotinv separations::Separations
 
-#pragma cyclus def infiletodb separationmatrix::SeparationMatrix
+#pragma cyclus def infiletodb separations::Separations
 
-#pragma cyclus def snapshot separationmatrix::SeparationMatrix
+#pragma cyclus def snapshot separations::Separations
 
-#pragma cyclus def clone separationmatrix::SeparationMatrix
+#pragma cyclus def clone separations::Separations
 
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-void SeparationMatrix::InitFrom(SeparationMatrix* m) {
+void Separations::InitFrom(Separations* m) {
 
-  #pragma cyclus impl initfromcopy separationmatrix::SeparationMatrix
+  #pragma cyclus impl initfromcopy separations::Separations
 
   cyclus::toolkit::CommodityProducer::Copy(m);
 }
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-void SeparationMatrix::InitFrom(cyclus::QueryableBackend* b){
+void Separations::InitFrom(cyclus::QueryableBackend* b){
 
-  #pragma cyclus impl initfromdb separationmatrix::SeparationMatrix
+  #pragma cyclus impl initfromdb separations::Separations
 
   std::vector<std::string>::const_iterator it;
   for(it = out_commods.begin(); it != out_commods.end(); ++it ) {
@@ -47,7 +47,7 @@ void SeparationMatrix::InitFrom(cyclus::QueryableBackend* b){
 }
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-void SeparationMatrix::EnterNotify() {
+void Separations::EnterNotify() {
   Facility::EnterNotify();
 
   std::vector<std::string>::const_iterator it;
@@ -58,7 +58,7 @@ void SeparationMatrix::EnterNotify() {
 }
 
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-std::string SeparationMatrix::str() {
+std::string Separations::str() {
   std::stringstream ss;
   std::string ans;
   std::stringstream prod;
@@ -94,7 +94,7 @@ std::string SeparationMatrix::str() {
 }
 
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-void SeparationMatrix::Tick() {
+void Separations::Tick() {
 
   int time = context()->time();
   LOG(cyclus::LEV_INFO3, "SepMtx") << prototype() << " is ticking at time "
@@ -118,7 +118,7 @@ void SeparationMatrix::Tick() {
 }
 
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-void SeparationMatrix::Tock() {
+void Separations::Tock() {
   int time = context()->time();
   LOG(cyclus::LEV_INFO3, "SepMtx") << prototype() << " is tocking {";
   LOG(cyclus::LEV_DEBUG4, "SepMtx") << "Current facility parameters for "
@@ -141,7 +141,7 @@ void SeparationMatrix::Tock() {
 
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 std::set<cyclus::RequestPortfolio<cyclus::Material>::Ptr>
-SeparationMatrix::GetMatlRequests() {
+Separations::GetMatlRequests() {
   using cyclus::CapacityConstraint;
   using cyclus::Material;
   using cyclus::RequestPortfolio;
@@ -169,7 +169,7 @@ SeparationMatrix::GetMatlRequests() {
 
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 std::set<cyclus::BidPortfolio<cyclus::Material>::Ptr>
-SeparationMatrix::GetMatlBids(cyclus::CommodMap<cyclus::Material>::type&
+Separations::GetMatlBids(cyclus::CommodMap<cyclus::Material>::type&
                           commod_requests) {
   using cyclus::BidPortfolio;
   using cyclus::Material;
@@ -190,7 +190,7 @@ SeparationMatrix::GetMatlBids(cyclus::CommodMap<cyclus::Material>::type&
 }
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-void SeparationMatrix::GetMatlTrades(
+void Separations::GetMatlTrades(
   const std::vector< cyclus::Trade<cyclus::Material> >& trades,
   std::vector<std::pair<cyclus::Trade<cyclus::Material>,
   cyclus::Material::Ptr> >& responses) {
@@ -216,7 +216,7 @@ void SeparationMatrix::GetMatlTrades(
 }
 
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-void SeparationMatrix::AcceptMatlTrades(
+void Separations::AcceptMatlTrades(
     const std::vector< std::pair<cyclus::Trade<cyclus::Material>,
                                  cyclus::Material::Ptr> >& responses) {
   // accept blindly, no judgement, any material that's been matched
@@ -230,7 +230,7 @@ void SeparationMatrix::AcceptMatlTrades(
 }
 
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-cyclus::BidPortfolio<cyclus::Material>::Ptr SeparationMatrix::GetBids_(
+cyclus::BidPortfolio<cyclus::Material>::Ptr Separations::GetBids_(
     cyclus::CommodMap<cyclus::Material>::type& commod_requests,
     std::string commod,
     cyclus::toolkit::ResourceBuff* buffer) {
@@ -270,7 +270,7 @@ cyclus::BidPortfolio<cyclus::Material>::Ptr SeparationMatrix::GetBids_(
 }
 
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-void SeparationMatrix::AddMat_(cyclus::Material::Ptr mat) {
+void Separations::AddMat_(cyclus::Material::Ptr mat) {
   // Here we do not check that the recipe matches the input recipe.
 
   LOG(cyclus::LEV_INFO5, "SepMtx") << prototype() << " is initially holding "
@@ -291,7 +291,7 @@ void SeparationMatrix::AddMat_(cyclus::Material::Ptr mat) {
 }
 
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-void SeparationMatrix::PrintStatus() {
+void Separations::PrintStatus() {
   LOG(cyclus::LEV_DEBUG3, "SepMtx") << "     ProcessTime: " << process_time_();
   LOG(cyclus::LEV_DEBUG3, "SepMtx") << "     Input Commodity = " << in_commod_();
   LOG(cyclus::LEV_DEBUG3, "SepMtx") << "     Process Time = " << process_time_();
@@ -306,7 +306,7 @@ void SeparationMatrix::PrintStatus() {
 
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-cyclus::Material::Ptr SeparationMatrix::TradeResponse_(
+cyclus::Material::Ptr Separations::TradeResponse_(
     double qty,
     cyclus::toolkit::ResourceBuff* buffer) {
   using cyclus::Material;
@@ -329,7 +329,7 @@ cyclus::Material::Ptr SeparationMatrix::TradeResponse_(
 }
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-const double SeparationMatrix::sepbuff_quantity(std::string commod) const {
+const double Separations::sepbuff_quantity(std::string commod) const {
   using cyclus::toolkit::ResourceBuff;
 
   std::map<std::string, ResourceBuff>::const_iterator found;
@@ -344,7 +344,7 @@ const double SeparationMatrix::sepbuff_quantity(std::string commod) const {
 }
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-const double SeparationMatrix::sepbuff_quantity() const {
+const double Separations::sepbuff_quantity() const {
   using cyclus::toolkit::ResourceBuff;
 
   double total = 0;
@@ -356,7 +356,7 @@ const double SeparationMatrix::sepbuff_quantity() const {
 }
 
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-void SeparationMatrix::RegisterProduction(std::string commod_str, double cap, 
+void Separations::RegisterProduction(std::string commod_str, double cap, 
     double cost){
   using cyclus::toolkit::Commodity;
   Commodity commod = Commodity(commod_str); 
@@ -367,14 +367,14 @@ void SeparationMatrix::RegisterProduction(std::string commod_str, double cap,
 }
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-void SeparationMatrix::Separate_(){
+void Separations::Separate_(){
   if ( processing.find(ready()) != processing.end() ) {
     Separate_(&processing[ready()]);
   }
 }
 
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-void SeparationMatrix::Separate_(cyclus::toolkit::ResourceBuff* buff){
+void Separations::Separate_(cyclus::toolkit::ResourceBuff* buff){
   using cyclus::Material;
   using cyclus::ResCast;
   using cyclus::toolkit::ResourceBuff;
@@ -386,7 +386,7 @@ void SeparationMatrix::Separate_(cyclus::toolkit::ResourceBuff* buff){
 }
 
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-void SeparationMatrix::Separate_(cyclus::Material::Ptr mat){
+void Separations::Separate_(cyclus::Material::Ptr mat){
   using cyclus::CompMap;
   using cyclus::Composition;
   using std::make_pair;
@@ -427,7 +427,7 @@ void SeparationMatrix::Separate_(cyclus::Material::Ptr mat){
 }
 
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-int SeparationMatrix::ElemIdx_(int element){
+int Separations::ElemIdx_(int element){
   int to_ret = find(elems.begin(), elems.end(), element) - elems.begin();
 
   if( to_ret > elems.size() ){
@@ -437,7 +437,7 @@ int SeparationMatrix::ElemIdx_(int element){
 }
 
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-double SeparationMatrix::Eff_(int element){
+double Separations::Eff_(int element){
   double to_ret = 0;
   try {
     int idx = ElemIdx_(element);
@@ -451,7 +451,7 @@ double SeparationMatrix::Eff_(int element){
 }
 
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-std::string SeparationMatrix::Stream_(int element){
+std::string Separations::Stream_(int element){
   std::string to_ret = waste_stream_();
   try {
     int idx = ElemIdx_(element);
@@ -463,7 +463,7 @@ std::string SeparationMatrix::Stream_(int element){
 }
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-void SeparationMatrix::BeginProcessing_(){
+void Separations::BeginProcessing_(){
   using cyclus::toolkit::ResourceBuff;
 
   while (!rawbuff.empty()){
@@ -480,8 +480,8 @@ void SeparationMatrix::BeginProcessing_(){
 }
 
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-extern "C" cyclus::Agent* ConstructSeparationMatrix(cyclus::Context* ctx) {
-  return new SeparationMatrix(ctx);
+extern "C" cyclus::Agent* ConstructSeparations(cyclus::Context* ctx) {
+  return new Separations(ctx);
 }
 
 }
