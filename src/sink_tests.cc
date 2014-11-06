@@ -130,9 +130,7 @@ TEST_F(SinkTest, Requests) {
 
   const std::set< CapacityConstraint<Material> >& constraints =
       ports.begin()->get()->constraints();
-  ASSERT_TRUE(constraints.size() > 0);
-  EXPECT_EQ(constraints.size(), 1);
-  EXPECT_EQ(*constraints.begin(), CapacityConstraint<Material>(capacity_));
+  EXPECT_EQ(constraints.size(), 0);
 }
 
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
