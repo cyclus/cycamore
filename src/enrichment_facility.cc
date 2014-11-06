@@ -24,24 +24,6 @@ EnrichmentFacility::EnrichmentFacility(cyclus::Context* ctx)
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 EnrichmentFacility::~EnrichmentFacility() {}
 
-#pragma cyclus def clone cycamore::EnrichmentFacility
-
-#pragma cyclus def schema cycamore::EnrichmentFacility
-
-#pragma cyclus def annotations cycamore::EnrichmentFacility
-
-#pragma cyclus def initinv cycamore::EnrichmentFacility
-
-#pragma cyclus def snapshotinv cycamore::EnrichmentFacility
-
-#pragma cyclus def initfromdb cycamore::EnrichmentFacility
-
-#pragma cyclus def initfromcopy cycamore::EnrichmentFacility
-
-#pragma cyclus def infiletodb cycamore::EnrichmentFacility
-
-#pragma cyclus def snapshot cycamore::EnrichmentFacility
-
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 std::string EnrichmentFacility::str() {
   std::stringstream ss;

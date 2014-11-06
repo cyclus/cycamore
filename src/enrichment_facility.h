@@ -128,7 +128,7 @@ class EnrichmentFacility : public cyclus::Facility {
 ///     Destructor for the EnrichmentFacility class
   virtual ~EnrichmentFacility();
 
-  #pragma cyclus decl
+  #pragma cyclus
 
   #pragma cyclus note {"doc": "An enrichment facility that intakes a commodity " \
                               "(usually natural uranium) and supplies a user-" \
