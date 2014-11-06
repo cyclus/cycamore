@@ -58,69 +58,54 @@ namespace cycamore {
 ///  SEND MATERIAL
 ///  Pull sepbuff material from sepbuff based on Requests
 ///  Decrement ordersWaiting
-class Separations : 
-  public cyclus::Facility,
-  public cyclus::toolkit::CommodityProducer {
+class Separations : public cyclus::Facility {
  public:  
   /// Constructor for Separations Class
   /// @param ctx the cyclus context for access to simulation-wide parameters
   explicit Separations(cyclus::Context* ctx);
 
-  /// The Prime Directive
-  /// Generates code that handles all input file reading and restart operations
-  /// (e.g., reading from the database, instantiating a new object, etc.).
-  /// @warning The Prime Directive must have a space before it! (A fix will be
-  /// in 2.0 ^TM)
-  
-  #pragma cyclus decl
+  #pragma cyclus
 
-  #pragma cyclus note {"doc": "A separations facility is provided to "\
-                              "separate materials into streams by element "}
-
-  /// Notify the simulation that this facility has arrived
-  void EnterNotify();
+  #pragma cyclus note {"doc": "A separations facility is provided to separate "\
+                              "materials into streams by element or nuclide."}
 
   /// A verbose printer for the Separations
   virtual std::string str();
   
-  /// The handleTick function specific to the Separations.
-  /// @param time the time of the tick  
+  /// Handles the tick phase of the time step.
   virtual void Tick();
 
-  /// The handleTick function specific to the Separations.
-  /// @param time the time of the tock
-  virtual void Tock();
-
   /// @brief makes requests of the in_commod
-  virtual std::set<cyclus::RequestPortfolio<cyclus::Material>::Ptr> 
-    GetMatlRequests();
+  virtual std::set<cyclus::RequestPortfolio<cyclus::Material>::Ptr> GetMatlRequests();
 
   /// @brief Responds to each request for this facility's commodity.  If a given
   /// request is more than this facility's inventory capacity, it will
   /// offer its minimum of its capacities.
-  std::set<cyclus::BidPortfolio<cyclus::Material>::Ptr>
-    GetMatlBids(cyclus::CommodMap<cyclus::Material>::type&
-                                  commod_requests);
+  std::set<cyclus::BidPortfolio<cyclus::Material>::Ptr> GetMatlBids(
+      cyclus::CommodMap<cyclus::Material>::type& commod_requests);
 
-  /// @brief makes bids for a commodity from a buffer
-  cyclus::BidPortfolio<cyclus::Material>::Ptr GetBids_(
+  /// @brief helper that makes bids for a commodity from a buffer
+  cyclus::BidPortfolio<cyclus::Material>::Ptr GetBids(
       cyclus::CommodMap<cyclus::Material>::type& commod_requests,
       std::string commod,
       cyclus::toolkit::ResourceBuff* buffer);  
-
-  /// This facility accepts all materials of the right commodity
-  virtual void AcceptMatlTrades( const std::vector< 
-      std::pair<cyclus::Trade<cyclus::Material>, cyclus::Material::Ptr> >& 
-      responses);
 
   /// @brief respond to each trade with a material of out_commod and out_recipe
   ///
   /// @param trades all trades in which this trader is the supplier
   /// @param responses a container to populate with responses to each trade
   virtual void GetMatlTrades(
-    const std::vector< cyclus::Trade<cyclus::Material> >& trades,
-    std::vector<std::pair<cyclus::Trade<cyclus::Material>,
-    cyclus::Material::Ptr> >& responses);
+    const std::vector<cyclus::Trade<cyclus::Material> >& trades,
+    std::vector<std::pair<cyclus::Trade<cyclus::Material>, 
+                          cyclus::Material::Ptr> >& responses);
+
+  /// This facility accepts all materials of the right commodity
+  virtual void AcceptMatlTrades(
+      const std::vector<std::pair<cyclus::Trade<cyclus::Material>, 
+                                  cyclus::Material::Ptr> >& responses);
+
+  /// @param time the time of the tock
+  virtual void Tock();
 
   /// Prints the status of the variables
   void PrintStatus();
@@ -152,38 +137,44 @@ class Separations :
 
   /// @brief sets the capacity variable
   inline void capacity_(double c) {capacity = c;};
+
   /// @brief returns the capacity variable
   inline double capacity_() const {return capacity;};
 
   /// @brief the cost per unit out_commod
   inline void cost_(double c) { cost = c; }
+
   /// @brief returns the cost variable
   inline double cost_() const { return cost; } 
 
   /// @brief current maximum amount that can be added to processing
-  inline double current_capacity() const {
-    return (std::min(capacity, max_inv_size - sepbuff_quantity())); } 
+  inline double CurrentCapacity() const {
+    return (std::min(capacity, max_inv_size - SepbuffQuantity()));
+  } 
 
   /// @brief sets the elems variable
   inline void elems_(std::vector<int> c) {elems = c;};
+
   /// @brief returns the elems variable
   inline std::vector<int> elems_() const {return elems;};
 
   /// @brief sets the effs variable
   inline void effs_(std::vector<std::string> c) {effs = c;};
+
   /// @brief returns the effs variable
   inline std::vector<std::string> effs_() const {return effs;};
 
   /// @brief sets the streams variable
   inline void streams_(std::vector<std::string> c) {streams = c;};
+
   /// @brief returns the streams variable
   inline std::vector<std::string> streams_() const {return streams;};
 
-  // @brief gives current quantity of commod in sepbuff
-  const double sepbuff_quantity(std::string commod) const;
-
   /// @brief gives current quantity of all commods in sepbuff
-  const double sepbuff_quantity() const;
+  const double SepbuffQuantity() const;
+
+  // @brief gives current quantity of commod in sepbuff
+  const double SepbuffQuantity(std::string commod) const;
 
   /// @brief returns the time key for ready materials
   int ready(){ return context()->time() - process_time ; }
@@ -192,40 +183,25 @@ protected:
   ///   @brief adds a material into the incoming commodity sepbuff
   ///   @param mat the material to add to the incoming sepbuff.
   ///   @throws if there is trouble with pushing to the sepbuff buffer.
-  void AddMat_(cyclus::Material::Ptr mat);
+  void AddMat(cyclus::Material::Ptr mat);
 
   /// @brief suggests, based on the buffer, a material response to an offer
-  cyclus::Material::Ptr TradeResponse_(
-      double qty,
+  cyclus::Material::Ptr TradeResponse(double qty,
       cyclus::toolkit::ResourceBuff* buffer);
   
-  /// @brief registers the commodity production for this facility
-  /// @param commod_str a commodity that this facility produces
-  /// @param cap the capacity of this facility to produce the commod
-  /// @param cost the cost of the commods
-  void RegisterProduction(std::string commod_str, double cap, double cost);
-
-  /// @brief this facility's commodity-recipe context
-  inline void crctx(const cyclus::toolkit::CommodityRecipeContext& crctx) {
-    crctx_ = crctx;
-  }
-  inline cyclus::toolkit::CommodityRecipeContext crctx() const {
-    return crctx_;
-  }
-
   /// @brief Move all unprocessed sepbuff to processing
-  void BeginProcessing_(); 
+  void BeginProcessing(); 
 
   /// @brief Separate all the material in processing
-  void Separate_();
+  void Separate();
 
   /// @brief Separate all the material in the buff ResourceBuff
   /// @param buff the ResourceBuff to separate
-  void Separate_(cyclus::toolkit::ResourceBuff* buff);
+  void Separate(cyclus::toolkit::ResourceBuff* buff);
 
   /// @brief Separate a single material
   /// @param mat the material to separate
-  void Separate_(cyclus::Material::Ptr mat);
+  void Separate(cyclus::Material::Ptr mat);
 
   /// @brief returns the stream name for the element
   /// @param elem the integer representation of an element (e.g. 92)
@@ -244,67 +220,65 @@ protected:
 
   /* --- Module Members --- */
 
-  #pragma cyclus var {"tooltip":"input commodity",\
-                      "doc":"commodity accepted by this facility"}
+  #pragma cyclus var {"tooltip": "input commodity",\
+                      "doc": "commodity accepted by this facility"}
   std::string in_commod;
 
-  #pragma cyclus var {"tooltip":"output stream list     ",\
-                      "doc":"list of commodities produced by this facility"}
-  std::vector< std::string > out_commods;
+  #pragma cyclus var {"tooltip": "output stream list",\
+                      "doc": "list of commodities produced by this facility"}
+  std::vector<std::string> out_commods;
 
-  #pragma cyclus var {"default":"losses",\
-                      "tooltip":"waste (losses) stream name",\
-                      "doc":"name of the commodity containing the losses"}
-  std::string waste_stream;
+  #pragma cyclus var {"default": "separations_losses",\
+                      "tooltip": "waste stream name",\
+                      "doc": "name of the commodity containing the losses"}
+  std::string waste_commod;
 
   #pragma cyclus var {"default": 0,\
-                      "tooltip":"process time (timesteps)",\
-                      "doc":"the time it takes to convert a received commodity (timesteps)."}
+                      "tooltip": "process time (timesteps)",\
+                      "doc": "the time it takes to convert a received commodity "\
+                             "(timesteps)."}
   int process_time; //should be nonnegative
 
   #pragma cyclus var {"default": 1e299,\
-                      "tooltip":"maximum sepbuff size (kg)",\
-                      "doc":"the amount of material that can be in storage at "\
-                      "one time (kg)."}
+                      "tooltip": "maximum sepbuff size (kg)",\
+                      "doc": "the amount of material that can be in storage at "\
+                             "one time (kg)."}
   double max_inv_size; //should be nonnegative
 
   #pragma cyclus var {"default": 1e299,\
-                      "tooltip":"maximum capacity (kg)",\
-                      "doc":"the amount of material that can be processed per "\
-                      "timestep (kg)."}
+                      "tooltip": "maximum capacity (kg)",\
+                      "doc": "the amount of material that can be processed per "\
+                             "timestep (kg)."}
   double capacity; //should be nonnegative
 
   #pragma cyclus var {"default": 0,\
-                     "tooltip":"cost per kg of production",\
-                     "doc":"cost per kg of produced material"}
+                      "tooltip": "cost per kg of production",\
+                      "doc": "cost per kg of produced material"}
   double cost;
 
-  #pragma cyclus var {"tooltip":"elements to separate",\
-                      "doc":"elements to separate"}
+  #pragma cyclus var {"tooltip": "elements to separate",\
+                      "doc": "elements to separate"}
   std::vector<int> elems;
 
-  #pragma cyclus var {"tooltip":"separation efficiencies",\
-                      "doc":"double, in the form of a string (because of the db). "\
-                      "number from 0-1, efficiency at separating each element."}
-  std::vector<std::string> effs;
+  #pragma cyclus var {"tooltip": "separation efficiencies",\
+                      "doc": "number from 0.0 - 1.0, efficiency at separating "\
+                             "each element."}
+  std::vector<double> effs;
 
   #pragma cyclus var {"tooltip":"names of sepbuff streams",\
                       "doc":"string, for each sepbuff element, name the stream it "\
                       "belongs in. This list can contain repeated entries."}
   std::vector<std::string> streams;
 
-  std::map<std::string, cyclus::toolkit::ResourceBuff> sepbuff;
-  cyclus::toolkit::ResourceBuff rawbuff;
-  cyclus::toolkit::ResourceBuff wastes;
-
+  std::map<std::string, cyclus::toolkit::ResourceBuff> sepbuff_;
+  cyclus::toolkit::ResourceBuff rawbuff_;
+  cyclus::toolkit::ResourceBuff wastes_;
 
   /// @brief a list of preffered commodities
   std::map<int, std::set<std::string> > prefs_;
 
   /// @brief map from ready time to resource buffers
   std::map<int, cyclus::toolkit::ResourceBuff> processing;
-
-  cyclus::toolkit::CommodityRecipeContext crctx_;
 
   friend class SeparationsTest;
 };
