@@ -186,9 +186,10 @@ protected:
 
   /* --- Module Members --- */
 
-  #pragma cyclus var {"tooltip": "input commodity",\
-                      "doc": "commodity accepted by this facility"}
-  std::string in_commod;
+  #pragma cyclus var {"tooltip": "input commodities",\
+                      "doc": "commodities accepted by this facility as "\
+                             "feedstock for separations."}
+  std::vector<std::string> in_commods;
 
   #pragma cyclus var {"tooltip": "output stream list",\
                       "doc": "list of commodities produced by this facility"}

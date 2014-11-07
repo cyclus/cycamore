@@ -60,25 +60,25 @@ void Separations::Tick() {
 
 std::set<cyclus::RequestPortfolio<cyclus::Material>::Ptr> 
     Separations::GetMatlRequests() {
-  using cyclus::CapacityConstraint;
   using cyclus::Material;
   using cyclus::RequestPortfolio;
   using cyclus::Request;
 
   std::set<RequestPortfolio<Material>::Ptr> ports;
-  RequestPortfolio<Material>::Ptr port(new RequestPortfolio<Material>());
-
   double amt = CurrentCapacity();
-  Material::Ptr mat = cyclus::NewBlankMaterial(amt);
-  if (amt > cyclus::eps()) {
-    CapacityConstraint<Material> cc(amt);
-    port->AddConstraint(cc);
-    std::vector<std::string>::const_iterator it;
-    std::vector<Request<Material>*> mutuals;
-    mutuals.push_back(port->AddRequest(mat, this, in_commod));
-    port->AddMutualReqs(mutuals);
-    ports.insert(port);
-  }  // if amt > eps
+  if (amt < cyclus::eps()) {
+    return ports;
+  }
+
+  std::vector<Request<Material>*> mutuals;
+  RequestPortfolio<Material>::Ptr port(new RequestPortfolio<Material>());
+  for (int i = 0; i < in_commods.size(); i++) {
+    Material::Ptr m = cyclus::NewBlankMaterial(amt);
+    mutuals.push_back(port->AddRequest(m, this, in_commods[i]));
+  }
+
+  port->AddMutualReqs(mutuals);
+  ports.insert(port);
   return ports;
 }
 
