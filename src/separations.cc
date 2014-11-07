@@ -304,8 +304,8 @@ void Separations::Separate(cyclus::Material::Ptr mat){
   for (entry = orig.begin(); entry != orig.end(); ++entry){
     int iso = int(entry->first);
     int elem = int(iso/10000000.); // convert iso to element
-    double sep = entry->second*tot*Eff_(elem); // access matrix
-    string stream = Stream_(elem);
+    double sep = entry->second*tot*Eff(elem); // access matrix
+    string stream = Stream(elem);
     sep_comps[stream][iso] = sep;
   }
   std::map< string, CompMap >::iterator str;
@@ -332,7 +332,7 @@ void Separations::Separate(cyclus::Material::Ptr mat){
 }
 
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-int Separations::ElemIdx_(int element){
+int Separations::ElemIdx(int element){
   int to_ret = find(elems.begin(), elems.end(), element) - elems.begin();
 
   if( to_ret > elems.size() ){
@@ -342,10 +342,10 @@ int Separations::ElemIdx_(int element){
 }
 
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-double Separations::Eff_(int element){
+double Separations::Eff(int element){
   double to_ret = 0;
   try {
-    int idx = ElemIdx_(element);
+    int idx = ElemIdx(element);
     if ( idx < effs.size() ) {
       try {
       to_ret = boost::lexical_cast<double>(std::string(effs[idx]));
@@ -356,10 +356,10 @@ double Separations::Eff_(int element){
 }
 
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-std::string Separations::Stream_(int element){
+std::string Separations::Stream(int element){
   std::string to_ret = waste_stream_();
   try {
-    int idx = ElemIdx_(element);
+    int idx = ElemIdx(element);
     if ( idx < streams.size() ) {
       to_ret = streams[idx];
     }
