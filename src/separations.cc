@@ -28,7 +28,6 @@ std::string Separations::str() {
 
   ss << cyclus::Facility::str();
   ss << " has facility parameters {" << "\n"
-     << "     Input Commodity = " << in_commod_() << ",\n"
      << "     Process Time = " << process_time_() << ",\n"
      << "     Maximum Inventory Size = " << max_inv_size_() << ",\n"
      << "     Capacity = " << capacity_() << ",\n"
@@ -53,8 +52,7 @@ void Separations::Tick() {
   // if lifetime is up, clear self of materials??
   double currcap = CurrentCapacity();
   if (currcap > cyclus::eps()) {
-    LOG(cyclus::LEV_INFO4, "Separartions") << " will request " << currcap
-                                           << " kg of " << in_commod << ".";
+    LOG(cyclus::LEV_INFO4, "Separartions") << " will request " << currcap;
   }
 }
 
@@ -209,7 +207,6 @@ void Separations::AddMat(cyclus::Material::Ptr mat) {
   }
   LOG(cyclus::LEV_INFO5, "Separartions") << prototype() << " added " 
                                          << mat->quantity()
-                                         << " of " << in_commod_()
                                          << " to its rawbuff, which is holding "
                                          << rawbuff_.quantity() << " total.";
 }
@@ -217,7 +214,6 @@ void Separations::AddMat(cyclus::Material::Ptr mat) {
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 void Separations::PrintStatus() {
   LOG(cyclus::LEV_DEBUG3, "Separartions") << "     ProcessTime: " << process_time_();
-  LOG(cyclus::LEV_DEBUG3, "Separartions") << "     Input Commodity = " << in_commod_();
   LOG(cyclus::LEV_DEBUG3, "Separartions") << "     Process Time = " << process_time_();
   LOG(cyclus::LEV_DEBUG3, "Separartions") << "     Maximum Inventory Size = " << max_inv_size_();
   LOG(cyclus::LEV_DEBUG3, "Separartions") << "     Capacity = " << capacity_();
