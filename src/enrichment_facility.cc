@@ -69,7 +69,6 @@ void EnrichmentFacility::Tock() {
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 std::set<cyclus::RequestPortfolio<cyclus::Material>::Ptr>
 EnrichmentFacility::GetMatlRequests() {
-  using cyclus::CapacityConstraint;
   using cyclus::Material;
   using cyclus::RequestPortfolio;
   using cyclus::Request;
@@ -80,13 +79,9 @@ EnrichmentFacility::GetMatlRequests() {
   double amt = mat->quantity();
 
   if (amt > cyclus::eps()) {
-    CapacityConstraint<Material> cc(amt);
-    port->AddConstraint(cc);
-
     port->AddRequest(mat, this, in_commod);
-
     ports.insert(port);
-  }  // if amt > eps
+  }
 
   return ports;
 }

@@ -59,7 +59,6 @@ std::string Sink::str() {
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 std::set<cyclus::RequestPortfolio<cyclus::Material>::Ptr>
 Sink::GetMatlRequests() {
-  using cyclus::CapacityConstraint;
   using cyclus::Material;
   using cyclus::RequestPortfolio;
   using cyclus::Request;
@@ -70,9 +69,6 @@ Sink::GetMatlRequests() {
   Material::Ptr mat = cyclus::NewBlankMaterial(amt);
 
   if (amt > cyclus::eps()) {
-    CapacityConstraint<Material> cc(amt);
-    port->AddConstraint(cc);
-
     std::vector<std::string>::const_iterator it;
     std::vector<Request<Material>*> mutuals;
     for (it = in_commods.begin(); it != in_commods.end(); ++it) {
