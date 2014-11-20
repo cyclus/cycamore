@@ -297,9 +297,7 @@ TEST_F(EnrichmentFacilityTest, AddRequests) {
 
   const std::set< CapacityConstraint<Material> >& constraints =
       ports.begin()->get()->constraints();
-  CapacityConstraint<Material> c(inv_size);
-  EXPECT_EQ(constraints.size(), 1);
-  EXPECT_EQ(*constraints.begin(), c);
+  EXPECT_EQ(constraints.size(), 0);
 }
 
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
