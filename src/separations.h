@@ -107,12 +107,6 @@ class Separations : public cyclus::Facility {
   /// returns the capacity variable
   inline double capacity_() const {return capacity;};
 
-  /// the cost per unit out_commod
-  inline void cost_(double c) { cost = c; }
-
-  /// returns the cost variable
-  inline double cost_() const { return cost; } 
-
   /// current maximum amount that can be added to processing
   inline double CurrentCapacity() const {
     return (std::min(capacity, max_inv_size - SepbuffQuantity()));
@@ -218,11 +212,6 @@ protected:
                              "timestep (kg)."}
   double capacity; //should be nonnegative
 
-  #pragma cyclus var {"default": 0,\
-                      "tooltip": "cost per kg of production",\
-                      "doc": "cost per kg of produced material"}
-  double cost;
-
   #pragma cyclus var {"tooltip": "elements to separate",\
                       "doc": "elements to separate"}
   std::vector<int> elems;
@@ -241,7 +230,7 @@ protected:
   cyclus::toolkit::ResourceBuff rawbuff_;
   cyclus::toolkit::ResourceBuff wastes_;
 
-  /// a list of preffered commodities
+  /// a list of preferred commodities
   std::map<int, std::set<std::string> > prefs_;
 
   /// map from ready time to resource buffers

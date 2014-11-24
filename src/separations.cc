@@ -32,7 +32,6 @@ std::string Separations::str() {
      << "     Maximum Inventory Size = " << max_inv_size_() << ",\n"
      << "     Capacity = " << capacity_() << ",\n"
      << "     Current Capacity = " << CurrentCapacity() << ",\n"
-     << "     Cost = " << cost_() << ",\n"
      << "     Separated Quantity = " << SepbuffQuantity() << ",\n"
      << "     Raw Quantity = " << rawbuff_.quantity() << ",\n"
      << " commod producer members: " << " produces "
@@ -218,7 +217,6 @@ void Separations::PrintStatus() {
   LOG(cyclus::LEV_DEBUG3, "Separartions") << "     Maximum Inventory Size = " << max_inv_size_();
   LOG(cyclus::LEV_DEBUG3, "Separartions") << "     Capacity = " << capacity_();
   LOG(cyclus::LEV_DEBUG3, "Separartions") << "     Current Capacity = " << CurrentCapacity();
-  LOG(cyclus::LEV_DEBUG3, "Separartions") << "     Cost = " << cost_();
   LOG(cyclus::LEV_DEBUG3, "Separartions") << "     Separated Quantity = " << SepbuffQuantity() ;
   LOG(cyclus::LEV_DEBUG3, "Separartions") << "     Raw Quantity = " << rawbuff_.quantity() ;
 }
