@@ -6,6 +6,7 @@ This project has had contributions from the following people (in alphabetical or
 
 * Robert Carlsen
 * Royal Elmore
+* Robert Flanagan
 * Matthew Gidden
 * Katy Huff
 * Arrielle Opotowsky
@@ -13,3 +14,4 @@ This project has had contributions from the following people (in alphabetical or
 * Anthony Scopatz
 * Paul P.H. Wilson
 * Zach Welch
+* John Xia
