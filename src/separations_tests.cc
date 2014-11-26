@@ -17,6 +17,7 @@ void SeparationsTest::TearDown() {
 
 void SeparationsTest::InitParameters(){
   in_c1 = "in_c1";
+  ins.push_back(out_c1);
   out_c1 = "out_c1";
   out_c2 = "out_c2";
   out_c3 = "out_c3";
@@ -31,7 +32,7 @@ void SeparationsTest::InitParameters(){
 }
 
 void SeparationsTest::SetUpSeparations(){
-  src_facility_->InCommod(in_c1);
+  src_facility_->InCommods(ins);
   src_facility_->OutCommods(outs);
   src_facility_->ProcessTime(process_time);
   src_facility_->MaxInvSize(max_inv_size);
@@ -43,7 +44,7 @@ void SeparationsTest::TestInitState(Separations* fac){
   EXPECT_EQ(max_inv_size, fac->MaxInvSize());
   EXPECT_EQ(capacity, fac->Capacity());
   EXPECT_EQ(outs, fac->OutCommods());
-  EXPECT_EQ(in_c1, fac->InCommod());
+  EXPECT_EQ(ins, fac->InCommods());
 }
 
 void SeparationsTest::TestRequest(Separations* fac, double cap){
@@ -83,11 +84,11 @@ TEST_F(SeparationsTest, InitialState) {
 
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 TEST_F(SeparationsTest, CurrentCapacity) {
-  EXPECT_EQ(capacity, src_facility_->current_capacity());
+  EXPECT_EQ(capacity, src_facility_->CurrentCapacity());
   src_facility_->MaxInvSize(1e299);
   EXPECT_EQ(1e299, src_facility_->MaxInvSize());
   EXPECT_EQ(capacity, src_facility_->Capacity());
-  EXPECT_EQ(capacity, src_facility_->current_capacity());
+  EXPECT_EQ(capacity, src_facility_->CurrentCapacity());
 }
 
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -98,12 +99,12 @@ TEST_F(SeparationsTest, Print) {
 
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 TEST_F(SeparationsTest, Request) { 
-  TestRequest(src_facility_, src_facility_->current_capacity());
+  TestRequest(src_facility_, src_facility_->CurrentCapacity());
 }
 
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 TEST_F(SeparationsTest, AddMats) { 
-  double cap = src_facility_->current_capacity();
+  double cap = src_facility_->CurrentCapacity();
   cyclus::Material::Ptr mat = cyclus::NewBlankMaterial(0.5*cap);
   TestAddMat(src_facility_, mat);
 
@@ -124,7 +125,7 @@ TEST_F(SeparationsTest, Tock) {
   // initially, nothing in the buffers
   TestBuffers(src_facility_,0,0,0);
 
-  double cap = src_facility_->current_capacity();
+  double cap = src_facility_->CurrentCapacity();
   //cyclus::Composition::Ptr rec = tc_.get()->GetRecipe(in_r1);
   //cyclus::Material::Ptr mat = cyclus::Material::CreateUntracked(cap, rec);
   //TestAddMat(src_facility_, mat);
@@ -163,7 +164,7 @@ TEST_F(SeparationsTest, NoProcessTime) {
   src_facility_->ProcessTime(0);
   EXPECT_EQ(0, src_facility_->ProcessTime());
 
-  double cap = src_facility_->current_capacity();
+  double cap = src_facility_->CurrentCapacity();
   //cyclus::Composition::Ptr rec = tc_.get()->GetRecipe(in_r1);
   //cyclus::Material::Ptr mat = cyclus::Material::CreateUntracked(cap, rec);
   //TestAddMat(src_facility_, mat);

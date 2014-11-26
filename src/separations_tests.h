@@ -28,7 +28,7 @@ class SeparationsTest : public ::testing::Test {
       proc, double rawbuff);
 
   std::string in_c1, out_c1, out_c2, out_c3;
-  std::vector< std::string > outs;
+  std::vector<std::string> ins, outs;
 
   int process_time;
   double capacity, max_inv_size, cost;

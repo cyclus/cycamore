@@ -77,10 +77,10 @@ class Separations : public cyclus::Facility {
   void PrintStatus();
 
   /// sets the in_commod variable
-  inline void InCommod(std::string c) { in_commod = c; };
+  inline void InCommods(std::vector<std::string> c) { in_commod = c; };
 
   /// returns the in_commod variable
-  inline std::string InCommod() const { return in_commod; };
+  inline std::vector<std::string> InCommods() const { return in_commod; };
 
   /// sets the out_commods variable
   inline void OutCommods(std::vector<std::string> c) { out_commods = c; };
