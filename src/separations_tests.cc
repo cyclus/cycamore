@@ -31,19 +31,19 @@ void SeparationsTest::InitParameters(){
 }
 
 void SeparationsTest::SetUpSeparations(){
-  src_facility_->in_commod_(in_c1);
-  src_facility_->out_commods_(outs);
-  src_facility_->process_time_(process_time);
-  src_facility_->max_inv_size_(max_inv_size);
-  src_facility_->capacity_(capacity);
+  src_facility_->InCommod(in_c1);
+  src_facility_->OutCommods(outs);
+  src_facility_->ProcessTime(process_time);
+  src_facility_->MaxInvSize(max_inv_size);
+  src_facility_->Capacity(capacity);
 }
 
 void SeparationsTest::TestInitState(Separations* fac){
-  EXPECT_EQ(process_time, fac->process_time_());
-  EXPECT_EQ(max_inv_size, fac->max_inv_size_());
-  EXPECT_EQ(capacity, fac->capacity_());
-  EXPECT_EQ(outs, fac->out_commods_());
-  EXPECT_EQ(in_c1, fac->in_commod_());
+  EXPECT_EQ(process_time, fac->ProcessTime());
+  EXPECT_EQ(max_inv_size, fac->MaxInvSize());
+  EXPECT_EQ(capacity, fac->Capacity());
+  EXPECT_EQ(outs, fac->OutCommods());
+  EXPECT_EQ(in_c1, fac->InCommod());
 }
 
 void SeparationsTest::TestRequest(Separations* fac, double cap){
@@ -84,9 +84,9 @@ TEST_F(SeparationsTest, InitialState) {
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 TEST_F(SeparationsTest, CurrentCapacity) {
   EXPECT_EQ(capacity, src_facility_->current_capacity());
-  src_facility_->max_inv_size_(1e299);
-  EXPECT_EQ(1e299, src_facility_->max_inv_size_());
-  EXPECT_EQ(capacity, src_facility_->capacity_());
+  src_facility_->MaxInvSize(1e299);
+  EXPECT_EQ(1e299, src_facility_->MaxInvSize());
+  EXPECT_EQ(capacity, src_facility_->Capacity());
   EXPECT_EQ(capacity, src_facility_->current_capacity());
 }
 
@@ -160,8 +160,8 @@ TEST_F(SeparationsTest, Tock) {
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 TEST_F(SeparationsTest, NoProcessTime) {
   // tests what happens when the process time is zero
-  src_facility_->process_time_(0);
-  EXPECT_EQ(0, src_facility_->process_time_());
+  src_facility_->ProcessTime(0);
+  EXPECT_EQ(0, src_facility_->ProcessTime());
 
   double cap = src_facility_->current_capacity();
   //cyclus::Composition::Ptr rec = tc_.get()->GetRecipe(in_r1);

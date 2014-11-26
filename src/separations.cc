@@ -28,9 +28,9 @@ std::string Separations::str() {
 
   ss << cyclus::Facility::str();
   ss << " has facility parameters {" << "\n"
-     << "     Process Time = " << process_time_() << ",\n"
-     << "     Maximum Inventory Size = " << max_inv_size_() << ",\n"
-     << "     Capacity = " << capacity_() << ",\n"
+     << "     Process Time = " << ProcessTime() << ",\n"
+     << "     Maximum Inventory Size = " << MaxInvSize() << ",\n"
+     << "     Capacity = " << Capacity() << ",\n"
      << "     Current Capacity = " << CurrentCapacity() << ",\n"
      << "     Separated Quantity = " << SepbuffQuantity() << ",\n"
      << "     Raw Quantity = " << rawbuff_.quantity() << ",\n"
@@ -212,13 +212,16 @@ void Separations::AddMat(cyclus::Material::Ptr mat) {
 
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 void Separations::PrintStatus() {
-  LOG(cyclus::LEV_DEBUG3, "Separartions") << "     ProcessTime: " << process_time_();
-  LOG(cyclus::LEV_DEBUG3, "Separartions") << "     Process Time = " << process_time_();
-  LOG(cyclus::LEV_DEBUG3, "Separartions") << "     Maximum Inventory Size = " << max_inv_size_();
-  LOG(cyclus::LEV_DEBUG3, "Separartions") << "     Capacity = " << capacity_();
-  LOG(cyclus::LEV_DEBUG3, "Separartions") << "     Current Capacity = " << CurrentCapacity();
-  LOG(cyclus::LEV_DEBUG3, "Separartions") << "     Separated Quantity = " << SepbuffQuantity() ;
-  LOG(cyclus::LEV_DEBUG3, "Separartions") << "     Raw Quantity = " << rawbuff_.quantity() ;
+  LOG(cyclus::LEV_DEBUG3, "Separartions") << "     Process Time = " << ProcessTime();
+  LOG(cyclus::LEV_DEBUG3, "Separartions") << "     Maximum Inventory Size = " \
+                                          << MaxInvSize();
+  LOG(cyclus::LEV_DEBUG3, "Separartions") << "     Capacity = " << Capacity();
+  LOG(cyclus::LEV_DEBUG3, "Separartions") << "     Current Capacity = " \
+                                          << CurrentCapacity();
+  LOG(cyclus::LEV_DEBUG3, "Separartions") << "     Separated Quantity = " \
+                                          << SepbuffQuantity();
+  LOG(cyclus::LEV_DEBUG3, "Separartions") << "     Raw Quantity = " \
+                                          << rawbuff_.quantity();
 }
 
 
@@ -351,7 +354,7 @@ double Separations::Eff(int element){
 
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 std::string Separations::Stream(int element){
-  std::string to_ret = waste_stream_();
+  std::string to_ret = WasteStream();
   try {
     int idx = ElemIdx(element);
     if ( idx < streams.size() ) {

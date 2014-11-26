@@ -77,39 +77,40 @@ class Separations : public cyclus::Facility {
   void PrintStatus();
 
   /// sets the in_commod variable
-  inline void in_commod_(std::string c) { in_commod = c; };
+  inline void InCommod(std::string c) { in_commod = c; };
 
   /// returns the in_commod variable
-  inline std::string in_commod_() const { return in_commod; };
+  inline std::string InCommod() const { return in_commod; };
 
   /// sets the out_commods variable
-  inline void out_commods_(std::vector<std::string> c) { out_commods = c; };
+  inline void OutCommods(std::vector<std::string> c) { out_commods = c; };
 
   /// returns the out_commods variable
-  inline std::vector<std::string> out_commods_() const { return out_commods; };
+  inline std::vector<std::string> OutCommods() const { return out_commods; };
 
   /// sets the waste_stream variable
-  inline void waste_stream_(std::string c) { waste_stream = c; };
+  inline void WasteStream(std::string c) { waste_stream = c; };
+
   /// returns the waste_stream variable
-  inline std::string waste_stream_() const { return waste_stream; };
+  inline std::string WasteStream() const { return waste_stream; };
 
   /// sets the process_time variable
-  inline void process_time_(int c) { process_time = c; };
+  inline void ProcessTime(int c) { process_time = c; };
 
   /// returns the process_time variable
-  inline int process_time_() const { return process_time; };
+  inline int ProcessTime() const { return process_time; };
 
   /// sets the max_inv_size variable
-  inline void max_inv_size_(double c) { max_inv_size = c; };
+  inline void MaxInvSize(double c) { max_inv_size = c; };
 
   /// returns the max_inv_size variable
-  inline double max_inv_size_() const { return max_inv_size; };
+  inline double MaxInvSize() const { return max_inv_size; };
 
   /// sets the capacity variable
-  inline void capacity_(double c) { capacity = c; };
+  inline void Capacity(double c) { capacity = c; };
 
   /// returns the capacity variable
-  inline double capacity_() const { return capacity; };
+  inline double Capacity() const { return capacity; };
 
   /// current maximum amount that can be added to processing
   inline double CurrentCapacity() const {
@@ -117,22 +118,22 @@ class Separations : public cyclus::Facility {
   } 
 
   /// sets the elems variable
-  inline void elems_(std::vector<int> c) { elems = c; };
+  inline void Elems(std::vector<int> c) { elems = c; };
 
   /// returns the elems variable
-  inline std::vector<int> elems_() const { return elems; };
+  inline std::vector<int> Elems() const { return elems; };
 
   /// sets the effs variable
-  inline void effs_(std::vector<std::string> c) { effs = c; };
+  inline void Effs(std::vector<std::string> c) { effs = c; };
 
   /// returns the effs variable
-  inline std::vector<std::string> effs_() const { return effs; };
+  inline std::vector<std::string> Effs() const { return effs; };
 
   /// sets the streams variable
-  inline void streams_(std::vector<std::string> c) { streams = c; };
+  inline void Streams(std::vector<std::string> c) { streams = c; };
 
   /// returns the streams variable
-  inline std::vector<std::string> streams_() const { return streams; };
+  inline std::vector<std::string> Streams() const { return streams; };
 
   /// gives current quantity of all commods in sepbuff
   const double SepbuffQuantity() const;
@@ -141,7 +142,7 @@ class Separations : public cyclus::Facility {
   const double SepbuffQuantity(std::string commod) const;
 
   /// returns the time key for ready materials
-  int ready(){ return context()->time() - process_time; }
+  int ready() { return context()->time() - process_time; }
 
 protected:
   /// adds a material into the incoming commodity sepbuff
