@@ -55,9 +55,9 @@ void SeparationsTest::TestRequest(Separations* fac, double cap){
 void SeparationsTest::TestAddMat(Separations* fac, 
     cyclus::Material::Ptr mat){
   double amt = mat->quantity();
-  double before = fac->sepbuff_quantity();
+  double before = fac->SepbuffQuantity();
   //fac->AddMat_(mat);
-  double after = fac->sepbuff_quantity();
+  double after = fac->SepbuffQuantity();
   EXPECT_EQ(amt, after - before);
 }
 
@@ -65,8 +65,8 @@ void SeparationsTest::TestBuffers(Separations* fac, double inv,
     double proc, double rawbuff){
   double t = tc_.get()->time();
 
-  EXPECT_EQ(inv, fac->sepbuff_quantity());
-  EXPECT_EQ(rawbuff, fac->rawbuff.quantity());
+  EXPECT_EQ(inv, fac->SepbuffQuantity());
+  EXPECT_EQ(rawbuff, fac->rawbuff_.quantity());
 }
 
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -

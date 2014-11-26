@@ -12,20 +12,6 @@ std::string Separations::str() {
   std::string ans;
   std::stringstream prod;
 
-  std::vector<std::string>::const_iterator it;
-  for(it = out_commods.begin(); it != out_commods.end(); ++it ) {
-    if (cyclus::toolkit::CommodityProducer::
-        Produces(cyclus::toolkit::Commodity(*it))){
-      ans = "yes";
-    } else {
-      ans = "no";
-    }
-    prod << *it << "?:" << ans
-         << " capacity: " << cyclus::toolkit::CommodityProducer::Capacity(*it)
-         << " cost: " << cyclus::toolkit::CommodityProducer::Cost(*it);
-  }
-
-
   ss << cyclus::Facility::str();
   ss << " has facility parameters {" << "\n"
      << "     Process Time = " << ProcessTime() << ",\n"
@@ -344,11 +330,9 @@ double Separations::Eff(int element){
   try {
     int idx = ElemIdx(element);
     if ( idx < effs.size() ) {
-      try {
-      to_ret = boost::lexical_cast<double>(std::string(effs[idx]));
-      } catch (boost::bad_lexical_cast const&) {}
+      to_ret = effs[idx];
     }
-  } catch (cyclus::KeyError &e) { }
+  } catch (cyclus::KeyError &e) {}
   return to_ret;
 }
 
@@ -358,7 +342,9 @@ std::string Separations::Stream(int element){
   try {
     int idx = ElemIdx(element);
     if ( idx < streams.size() ) {
-      to_ret = streams[idx];
+      std::stringstream ss; 
+      ss << streams[idx];
+      to_ret = ss.str();
     }
   } catch (cyclus::KeyError &e) { }
   return to_ret;
