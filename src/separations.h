@@ -88,11 +88,11 @@ class Separations : public cyclus::Facility {
   /// returns the out_commods variable
   inline std::vector<std::string> OutCommods() const { return out_commods; };
 
-  /// sets the waste_stream variable
-  inline void WasteStream(std::string c) { waste_stream = c; };
+  /// sets the waste_commod variable
+  inline void WasteCommod(std::string c) { waste_commod = c; };
 
-  /// returns the waste_stream variable
-  inline std::string WasteStream() const { return waste_stream; };
+  /// returns the waste_commod variable
+  inline std::string WasteCommod() const { return waste_commod; };
 
   /// sets the process_time variable
   inline void ProcessTime(int c) { process_time = c; };

@@ -316,7 +316,7 @@ void Separations::Separate(cyclus::Material::Ptr mat){
                                       << qty << " at t = "
                                       << context()->time();
   }
-  sepbuff_[waste_stream].Push(mat);
+  sepbuff_[waste_commod].Push(mat);
   LOG(cyclus::LEV_DEBUG2, "Separartions") << "Separations " << prototype()
                                     << " separated material at t = "
                                     << context()->time();
@@ -354,7 +354,7 @@ double Separations::Eff(int element){
 
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 std::string Separations::Stream(int element){
-  std::string to_ret = WasteStream();
+  std::string to_ret = WasteCommod();
   try {
     int idx = ElemIdx(element);
     if ( idx < streams.size() ) {
