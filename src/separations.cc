@@ -28,12 +28,10 @@ std::string Separations::str() {
 
   ss << cyclus::Facility::str();
   ss << " has facility parameters {" << "\n"
-     << "     Input Commodity = " << in_commod_() << ",\n"
      << "     Process Time = " << process_time_() << ",\n"
      << "     Maximum Inventory Size = " << max_inv_size_() << ",\n"
      << "     Capacity = " << capacity_() << ",\n"
      << "     Current Capacity = " << CurrentCapacity() << ",\n"
-     << "     Cost = " << cost_() << ",\n"
      << "     Separated Quantity = " << SepbuffQuantity() << ",\n"
      << "     Raw Quantity = " << rawbuff_.quantity() << ",\n"
      << " commod producer members: " << " produces "
@@ -53,32 +51,31 @@ void Separations::Tick() {
   // if lifetime is up, clear self of materials??
   double currcap = CurrentCapacity();
   if (currcap > cyclus::eps()) {
-    LOG(cyclus::LEV_INFO4, "Separartions") << " will request " << currcap
-                                           << " kg of " << in_commod << ".";
+    LOG(cyclus::LEV_INFO4, "Separartions") << " will request " << currcap;
   }
 }
 
 std::set<cyclus::RequestPortfolio<cyclus::Material>::Ptr> 
     Separations::GetMatlRequests() {
-  using cyclus::CapacityConstraint;
   using cyclus::Material;
   using cyclus::RequestPortfolio;
   using cyclus::Request;
 
   std::set<RequestPortfolio<Material>::Ptr> ports;
-  RequestPortfolio<Material>::Ptr port(new RequestPortfolio<Material>());
-
   double amt = CurrentCapacity();
-  Material::Ptr mat = cyclus::NewBlankMaterial(amt);
-  if (amt > cyclus::eps()) {
-    CapacityConstraint<Material> cc(amt);
-    port->AddConstraint(cc);
-    std::vector<std::string>::const_iterator it;
-    std::vector<Request<Material>*> mutuals;
-    mutuals.push_back(port->AddRequest(mat, this, in_commod));
-    port->AddMutualReqs(mutuals);
-    ports.insert(port);
-  }  // if amt > eps
+  if (amt < cyclus::eps()) {
+    return ports;
+  }
+
+  std::vector<Request<Material>*> mutuals;
+  RequestPortfolio<Material>::Ptr port(new RequestPortfolio<Material>());
+  for (int i = 0; i < in_commods.size(); i++) {
+    Material::Ptr m = cyclus::NewBlankMaterial(amt);
+    mutuals.push_back(port->AddRequest(m, this, in_commods[i]));
+  }
+
+  port->AddMutualReqs(mutuals);
+  ports.insert(port);
   return ports;
 }
 
@@ -209,7 +206,6 @@ void Separations::AddMat(cyclus::Material::Ptr mat) {
   }
   LOG(cyclus::LEV_INFO5, "Separartions") << prototype() << " added " 
                                          << mat->quantity()
-                                         << " of " << in_commod_()
                                          << " to its rawbuff, which is holding "
                                          << rawbuff_.quantity() << " total.";
 }
@@ -217,12 +213,10 @@ void Separations::AddMat(cyclus::Material::Ptr mat) {
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 void Separations::PrintStatus() {
   LOG(cyclus::LEV_DEBUG3, "Separartions") << "     ProcessTime: " << process_time_();
-  LOG(cyclus::LEV_DEBUG3, "Separartions") << "     Input Commodity = " << in_commod_();
   LOG(cyclus::LEV_DEBUG3, "Separartions") << "     Process Time = " << process_time_();
   LOG(cyclus::LEV_DEBUG3, "Separartions") << "     Maximum Inventory Size = " << max_inv_size_();
   LOG(cyclus::LEV_DEBUG3, "Separartions") << "     Capacity = " << capacity_();
   LOG(cyclus::LEV_DEBUG3, "Separartions") << "     Current Capacity = " << CurrentCapacity();
-  LOG(cyclus::LEV_DEBUG3, "Separartions") << "     Cost = " << cost_();
   LOG(cyclus::LEV_DEBUG3, "Separartions") << "     Separated Quantity = " << SepbuffQuantity() ;
   LOG(cyclus::LEV_DEBUG3, "Separartions") << "     Raw Quantity = " << rawbuff_.quantity() ;
 }
@@ -304,8 +298,8 @@ void Separations::Separate(cyclus::Material::Ptr mat){
   for (entry = orig.begin(); entry != orig.end(); ++entry){
     int iso = int(entry->first);
     int elem = int(iso/10000000.); // convert iso to element
-    double sep = entry->second*tot*Eff_(elem); // access matrix
-    string stream = Stream_(elem);
+    double sep = entry->second*tot*Eff(elem); // access matrix
+    string stream = Stream(elem);
     sep_comps[stream][iso] = sep;
   }
   std::map< string, CompMap >::iterator str;
@@ -332,7 +326,7 @@ void Separations::Separate(cyclus::Material::Ptr mat){
 }
 
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-int Separations::ElemIdx_(int element){
+int Separations::ElemIdx(int element){
   int to_ret = find(elems.begin(), elems.end(), element) - elems.begin();
 
   if( to_ret > elems.size() ){
@@ -342,10 +336,10 @@ int Separations::ElemIdx_(int element){
 }
 
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-double Separations::Eff_(int element){
+double Separations::Eff(int element){
   double to_ret = 0;
   try {
-    int idx = ElemIdx_(element);
+    int idx = ElemIdx(element);
     if ( idx < effs.size() ) {
       try {
       to_ret = boost::lexical_cast<double>(std::string(effs[idx]));
@@ -356,10 +350,10 @@ double Separations::Eff_(int element){
 }
 
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-std::string Separations::Stream_(int element){
+std::string Separations::Stream(int element){
   std::string to_ret = waste_stream_();
   try {
-    int idx = ElemIdx_(element);
+    int idx = ElemIdx(element);
     if ( idx < streams.size() ) {
       to_ret = streams[idx];
     }
