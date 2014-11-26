@@ -30,9 +30,9 @@ class Separations : public cyclus::Facility {
   /// @param ctx the cyclus context for access to simulation-wide parameters
   explicit Separations(cyclus::Context* ctx);
 
-  #pragma cyclus
+# pragma cyclus
 
-  #pragma cyclus note {"doc": "A separations facility is provided to separate "\
+# pragma cyclus note {"doc": "A separations facility is provided to separate "\
                               "materials into streams by element or nuclide."}
 
   /// A verbose printer for the Separations
@@ -180,48 +180,48 @@ protected:
 
   /* --- Module Members --- */
 
-  #pragma cyclus var {"tooltip": "input commodities",\
+#  pragma cyclus var {"tooltip": "input commodities",\
                       "doc": "commodities accepted by this facility as "\
                              "feedstock for separations."}
   std::vector<std::string> in_commods;
 
-  #pragma cyclus var {"tooltip": "output stream list",\
+# pragma cyclus var {"tooltip": "output stream list",\
                       "doc": "list of commodities produced by this facility"}
   std::vector<std::string> out_commods;
 
-  #pragma cyclus var {"default": "separations_leftover",\
+# pragma cyclus var {"default": "separations_leftover",\
                       "tooltip": "waste stream name",\
                       "doc": "name of the commodity containing the losses"}
   std::string waste_commod;
 
-  #pragma cyclus var {"default": 0,\
+# pragma cyclus var {"default": 0,\
                       "tooltip": "process time (timesteps)",\
                       "doc": "the time it takes to convert a received commodity "\
                              "(timesteps)."}
   int process_time; //should be nonnegative
 
-  #pragma cyclus var {"default": 1e299,\
+# pragma cyclus var {"default": 1e299,\
                       "tooltip": "maximum sepbuff size (kg)",\
                       "doc": "the amount of material that can be in storage at "\
                              "one time (kg)."}
   double max_inv_size; //should be nonnegative
 
-  #pragma cyclus var {"default": 1e299,\
+# pragma cyclus var {"default": 1e299,\
                       "tooltip": "maximum capacity (kg)",\
                       "doc": "the amount of material that can be processed per "\
                              "timestep (kg)."}
-  double capacity; //should be nonnegative
+  double capacity;  //cshould be nonnegative
 
-  #pragma cyclus var {"tooltip": "elements to separate",\
+# pragma cyclus var {"tooltip": "elements to separate",\
                       "doc": "elements to separate"}
   std::vector<int> elems;
 
-  #pragma cyclus var {"tooltip": "separation efficiencies",\
+# pragma cyclus var {"tooltip": "separation efficiencies",\
                       "doc": "number from 0.0 - 1.0, efficiency at separating "\
                              "each element."}
   std::vector<double> effs;
 
-  #pragma cyclus var {"tooltip":"names of sepbuff streams",\
+# pragma cyclus var {"tooltip":"names of sepbuff streams",\
                       "doc":"string, for each sepbuff element, name the stream it "\
                       "belongs in. This list can contain repeated entries."}
   std::vector<std::string> streams;
