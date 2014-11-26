@@ -33,7 +33,7 @@ class Separations : public cyclus::Facility {
 # pragma cyclus
 
 # pragma cyclus note {"doc": "A separations facility is provided to separate "\
-                              "materials into streams by element or nuclide."}
+                             "materials into streams by element or nuclide."}
 
   /// A verbose printer for the Separations
   virtual std::string str();
@@ -77,35 +77,39 @@ class Separations : public cyclus::Facility {
   void PrintStatus();
 
   /// sets the in_commod variable
-  inline void in_commod_(std::string c) {in_commod = c;};
+  inline void in_commod_(std::string c) { in_commod = c; };
+
   /// returns the in_commod variable
-  inline std::string in_commod_() const {return in_commod;};
+  inline std::string in_commod_() const { return in_commod; };
 
   /// sets the out_commods variable
-  inline void out_commods_(std::vector< std::string > c) {out_commods = c;};
+  inline void out_commods_(std::vector<std::string> c) { out_commods = c; };
+
   /// returns the out_commods variable
-  inline std::vector< std::string > out_commods_() const {return out_commods;};
+  inline std::vector<std::string> out_commods_() const { return out_commods; };
 
   /// sets the waste_stream variable
-  inline void waste_stream_(std::string c) {waste_stream = c;};
+  inline void waste_stream_(std::string c) { waste_stream = c; };
   /// returns the waste_stream variable
-  inline std::string waste_stream_() const {return waste_stream;};
+  inline std::string waste_stream_() const { return waste_stream; };
 
   /// sets the process_time variable
-  inline void process_time_(int c) {process_time = c;};
+  inline void process_time_(int c) { process_time = c; };
+
   /// returns the process_time variable
-  inline int process_time_() const {return process_time;};
+  inline int process_time_() const { return process_time; };
 
   /// sets the max_inv_size variable
-  inline void max_inv_size_(double c) {max_inv_size = c;};
+  inline void max_inv_size_(double c) { max_inv_size = c; };
+
   /// returns the max_inv_size variable
-  inline double max_inv_size_() const {return max_inv_size;};
+  inline double max_inv_size_() const { return max_inv_size; };
 
   /// sets the capacity variable
-  inline void capacity_(double c) {capacity = c;};
+  inline void capacity_(double c) { capacity = c; };
 
   /// returns the capacity variable
-  inline double capacity_() const {return capacity;};
+  inline double capacity_() const { return capacity; };
 
   /// current maximum amount that can be added to processing
   inline double CurrentCapacity() const {
@@ -113,22 +117,22 @@ class Separations : public cyclus::Facility {
   } 
 
   /// sets the elems variable
-  inline void elems_(std::vector<int> c) {elems = c;};
+  inline void elems_(std::vector<int> c) { elems = c; };
 
   /// returns the elems variable
-  inline std::vector<int> elems_() const {return elems;};
+  inline std::vector<int> elems_() const { return elems; };
 
   /// sets the effs variable
-  inline void effs_(std::vector<std::string> c) {effs = c;};
+  inline void effs_(std::vector<std::string> c) { effs = c; };
 
   /// returns the effs variable
-  inline std::vector<std::string> effs_() const {return effs;};
+  inline std::vector<std::string> effs_() const { return effs; };
 
   /// sets the streams variable
-  inline void streams_(std::vector<std::string> c) {streams = c;};
+  inline void streams_(std::vector<std::string> c) { streams = c; };
 
   /// returns the streams variable
-  inline std::vector<std::string> streams_() const {return streams;};
+  inline std::vector<std::string> streams_() const { return streams; };
 
   /// gives current quantity of all commods in sepbuff
   const double SepbuffQuantity() const;
@@ -137,12 +141,12 @@ class Separations : public cyclus::Facility {
   const double SepbuffQuantity(std::string commod) const;
 
   /// returns the time key for ready materials
-  int ready(){ return context()->time() - process_time ; }
+  int ready(){ return context()->time() - process_time; }
 
 protected:
-  ///   adds a material into the incoming commodity sepbuff
-  ///   @param mat the material to add to the incoming sepbuff.
-  ///   @throws if there is trouble with pushing to the sepbuff buffer.
+  /// adds a material into the incoming commodity sepbuff
+  /// @param mat the material to add to the incoming sepbuff.
+  /// @throws if there is trouble with pushing to the sepbuff buffer.
   void AddMat(cyclus::Material::Ptr mat);
 
   /// suggests, based on the buffer, a material response to an offer
@@ -178,8 +182,6 @@ protected:
   /// @return the index of the element in the lists
   int ElemIdx(int elem);
 
-  /* --- Module Members --- */
-
 #  pragma cyclus var {"tooltip": "input commodities",\
                       "doc": "commodities accepted by this facility as "\
                              "feedstock for separations."}
@@ -198,13 +200,13 @@ protected:
                       "tooltip": "process time (timesteps)",\
                       "doc": "the time it takes to convert a received commodity "\
                              "(timesteps)."}
-  int process_time; //should be nonnegative
+  int process_time;  //should be nonnegative
 
 # pragma cyclus var {"default": 1e299,\
                       "tooltip": "maximum sepbuff size (kg)",\
                       "doc": "the amount of material that can be in storage at "\
                              "one time (kg)."}
-  double max_inv_size; //should be nonnegative
+  double max_inv_size;  //should be nonnegative
 
 # pragma cyclus var {"default": 1e299,\
                       "tooltip": "maximum capacity (kg)",\
