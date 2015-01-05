@@ -32,6 +32,9 @@ class TestRegression(object):
                 else None
             self.resources = f.get_node("/Resources")[:]
             self.transactions = f.get_node("/Transactions")[:]
+            self.rsrc_qtys = {
+                x["ResourceId"]: x["Quantity"] for x in self.resources}
+            
             
     def teardown(self):
         if os.path.isfile(self.outf_):
@@ -75,9 +78,7 @@ class TestPhysorEnrichment(TestRegression):
         xa = self.transactions
         rs = self.resources
 
-        rqtys = {x["ResourceId"]: x["Quantity"] for x in rs \
-                     if x["ResourceId"] in xa["ResourceId"]}
-        torxtrs = {i: [rqtys[x["ResourceId"]] \
+        torxtrs = {i: [self.rsrc_qtys[x["ResourceId"]] \
                            for x in xa[xa["ReceiverId"] == i]] \
                            for i in self.rx_id} 
         transfers = sorted(torxtrs.values())
@@ -92,3 +93,81 @@ class TestPhysorEnrichment(TestRegression):
         msg = "Testing that second reactor gets what it wants."      
         np.testing.assert_almost_equal(exp, obs, decimal=2)
         
+
+class TestPhysorSources(TestRegression):
+    def __init__(self):
+        super(TestPhysorSources, self).__init__()
+        self.inf_ = "../input/physor/2_Sources_3_Reactors.xml"
+
+    def setup(self):
+        super(TestPhysorSources, self).setup()
+        
+        # identify each reactor and supplier by id
+        tbl = self.agent_entry
+        rx_id = find_ids(":cycamore:BatchReactor", 
+                         tbl["Spec"], tbl["AgentId"])
+        self.r1, self.r2, self.r3 = tuple(rx_id)
+        s_id = find_ids(":cycamore:Source", 
+                        tbl["Spec"], tbl["AgentId"])
+        self.smox = self.transactions[0]["SenderId"]
+        s_id.remove(self.smox)
+        self.suox = s_id[0]
+
+    def test_rxtr_deployment(self):
+        depl_time = {x["AgentId"]: x["EnterTime"] for x in self.agent_entry}
+        
+        assert_equal(depl_time[self.r1], 1)
+        assert_equal(depl_time[self.r2], 2)
+        assert_equal(depl_time[self.r3], 3)
+
+    def test_rxtr1_xactions(self):
+        xa = self.transactions
+        
+        mox_exp = [0, 1, 1, 1, 0]
+        obs = np.zeros(5)
+        rows = xa[np.logical_and(xa["ReceiverId"] == self.r1, 
+                                 xa["SenderId"] == self.smox)] 
+        obs[rows["Time"]] = [self.rsrc_qtys[x] for x in rows["ResourceId"]]
+        np.testing.assert_almost_equal(mox_exp, obs)
+        
+        uox_exp = [0, 0, 0, 0, 1]
+        obs = np.zeros(5)
+        rows = xa[np.logical_and(xa["ReceiverId"] == self.r1, 
+                                 xa["SenderId"] == self.suox)] 
+        obs[rows["Time"]] = [self.rsrc_qtys[x] for x in rows["ResourceId"]]
+        np.testing.assert_almost_equal(uox_exp, obs)
+         
+    def test_rxtr2_xactions(self):
+        xa = self.transactions
+        
+        mox_exp = [0, 0, 1, 1, 1]
+        obs = np.zeros(5)
+        rows = xa[np.logical_and(xa["ReceiverId"] == self.r2, 
+                                 xa["SenderId"] == self.smox)] 
+        obs[rows["Time"]] = [self.rsrc_qtys[x] for x in rows["ResourceId"]]
+        np.testing.assert_almost_equal(mox_exp, obs)
+        
+        uox_exp = [0, 0, 0, 0, 0]
+        obs = np.zeros(5)
+        rows = xa[np.logical_and(xa["ReceiverId"] == self.r2, 
+                                 xa["SenderId"] == self.suox)] 
+        obs[rows["Time"]] = [self.rsrc_qtys[x] for x in rows["ResourceId"]]
+        np.testing.assert_almost_equal(uox_exp, obs)
+         
+    def test_rxtr3_xactions(self):
+        xa = self.transactions
+        
+        mox_exp = [0, 0, 0, 0.5, 1]
+        obs = np.zeros(5)
+        rows = xa[np.logical_and(xa["ReceiverId"] == self.r3, 
+                                 xa["SenderId"] == self.smox)] 
+        obs[rows["Time"]] = [self.rsrc_qtys[x] for x in rows["ResourceId"]]
+        np.testing.assert_almost_equal(mox_exp, obs)
+        
+        uox_exp = [0, 0, 0, 0.5, 0]
+        obs = np.zeros(5)
+        rows = xa[np.logical_and(xa["ReceiverId"] == self.r3, 
+                                 xa["SenderId"] == self.suox)] 
+        obs[rows["Time"]] = [self.rsrc_qtys[x] for x in rows["ResourceId"]]
+        np.testing.assert_almost_equal(uox_exp, obs)
+         
