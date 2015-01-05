@@ -5,9 +5,7 @@ import os
 import tables
 import numpy as np
 import uuid
-from tools import check_cmd
-from helper import table_exist, find_ids
-from cyclus_tools import run_cyclus
+from helper import check_cmd, run_cyclus, table_exist, find_ids
 
 class TestRegression(object):
     """A base class for all regression tests. A derived class is required for

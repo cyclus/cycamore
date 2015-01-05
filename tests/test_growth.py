@@ -5,8 +5,7 @@ import os
 import tables
 import numpy as np
 import uuid
-from tools import check_cmd
-from helper import table_exist, find_ids
+from helper import check_cmd, table_exist, find_ids
 
 def test_growth():
     """Tests GrowthRegion, ManagerInst, and Source over a 4-time step
