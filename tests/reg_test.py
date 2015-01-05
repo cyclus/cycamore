@@ -73,7 +73,7 @@ def check_query(conn, query, expect):
         for val, exp_val in zip(row, exp_row):
             col += 1
             if val != exp_val:
-                if isinstance(float, val) and abs(val - exp_val) / exp_val < 1e-12:
+                if isinstance(val, float) and abs(val - exp_val) / exp_val < 1e-12:
                     continue
                 s = 'value NE - row {1} col {2}: got {3}, expected {4}'.format(
                         i, col, val, exp_val)
