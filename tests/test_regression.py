@@ -294,3 +294,31 @@ class TestDynamicCapacitated(TestRegression):
                 np.where(self.resource_ids == self.trans_resource[t])]
         assert_equal(quantity, 2)
 
+class TestGrowth(TestRegression):
+    """Tests GrowthRegion, ManagerInst, and Source over a 4-time step
+    simulation.
+
+    A linear growth demand (y = x + 2) is provided to the growth region. Two
+    Sources are allowed in the ManagerInst, with capacities of 2 and 1.1,
+    respectively. At t=1, a 2-capacity Source is expected to be built, and at
+    t=2 and t=3, 1-capacity Sources are expected to be built.
+    """
+    def __init__(self):
+        super(TestGrowth, self).__init__()
+        self.inf = "./input/growth.xml"
+
+    def test_deployment(self):
+        agent_ids = self.agent_entry["AgentId"]
+        proto = self.agent_entry["Prototype"]
+        depl_time = self.agent_entry["EnterTime"]
+        
+        source1_id = find_ids("Source1", proto, agent_ids)
+        source2_id = find_ids("Source2", proto, agent_ids)
+    
+        assert_equal(len(source2_id), 1)
+        assert_equal(len(source1_id), 2)
+
+        assert_equal(depl_time[np.where(agent_ids == source2_id[0])], 1)
+        assert_equal(depl_time[np.where(agent_ids == source1_id[0])], 2)
+        assert_equal(depl_time[np.where(agent_ids == source1_id[1])], 3)
+
