@@ -27,30 +27,12 @@ class TestRegression(object):
 
         with tables.open_file(self.outf_, mode="r") as f:
             # Get specific tables and columns
-            agent_entry = f.get_node("/AgentEntry")[:]
-            agent_exit = f.get_node("/AgentExit")[:] if "/AgentExit" in f \
+            self.agent_entry = f.get_node("/AgentEntry")[:]
+            self.agent_exit = f.get_node("/AgentExit")[:] if "/AgentExit" in f \
                 else None
-            resources = f.get_node("/Resources")[:]
-            transactions = f.get_node("/Transactions")[:]
+            self.resources = f.get_node("/Resources")[:]
+            self.transactions = f.get_node("/Transactions")[:]
             
-            # Find agent ids of source and sink facilities
-            self.agent_ids = agent_entry["AgentId"]
-            self.agent_impl = agent_entry["Spec"]
-            self.depl_time = agent_entry["EnterTime"]
-            if agent_exit:
-                self.exit_ids = agent_exit["AgentId"]
-                self.exit_time = agent_exit["ExitTime"]
-            
-            # Check transactions
-            self.sender_ids = transactions["SenderId"]
-            self.receiver_ids = transactions["ReceiverId"]
-            self.trans_time = transactions["Time"]
-            self.trans_resource = transactions["ResourceId"]
-        
-            # Track transacted resources
-            self.resource_ids = resources["ResourceId"]
-            self.quantities = resources["Quantity"]
-
     def teardown(self):
         if os.path.isfile(self.outf_):
             print("removing {0}".format(self.outf_))
@@ -60,25 +42,53 @@ class TestPhysorEnrichment(TestRegression):
     def __init__(self):
         super(TestPhysorEnrichment, self).__init__()
         self.inf_ = "../input/physor/1_Enrichment_2_Reactor.xml"
-        print(self.outf_)
 
     def setup(self):
         super(TestPhysorEnrichment, self).setup()
+        tbl = self.agent_entry
         self.rx_id = find_ids(":cycamore:BatchReactor", 
-                              self.agent_impl, self.agent_ids)
+                              tbl["Spec"], tbl["AgentId"])
         self.enr_id = find_ids(":cycamore:EnrichmentFacility", 
-                               self.agent_impl, self.agent_ids)        
+                               tbl["Spec"], tbl["AgentId"])
 
         with tables.open_file(self.outf_, mode="r") as f:
             self.enrichments = f.get_node("/Enrichments")[:]
         
     def test_deploy(self):
-        # Test for 3 sources and 4 sinks are deployed in the simulation
         assert_equal(len(self.rx_id), 2)
         assert_equal(len(self.enr_id), 1)
 
     def test_swu(self):
+        enr = self.enrichments
         exp = [6.9, 10, 4.14, 6.9]
-        obs = [np.sum(self.enrichments["SWU"][self.enrichments["Time"] == t]) \
+        obs = [np.sum(enr["SWU"][enr["Time"] == t]) for t in range(4)]
+        np.testing.assert_almost_equal(exp, obs, decimal=2)
+
+    def test_nu(self):
+        enr = self.enrichments
+        exp = [13.03, 16.54, 7.83, 13.03]
+        obs = [np.sum(enr["Natural_Uranium"][enr["Time"] == t]) \
                    for t in range(4)]
-        np.testing.assert_almost_equal(exp, obs)
+        np.testing.assert_almost_equal(exp, obs, decimal=2)
+
+    def test_xactions(self):
+        xa = self.transactions
+        rs = self.resources
+
+        rqtys = {x["ResourceId"]: x["Quantity"] for x in rs \
+                     if x["ResourceId"] in xa["ResourceId"]}
+        torxtrs = {i: [rqtys[x["ResourceId"]] \
+                           for x in xa[xa["ReceiverId"] == i]] \
+                           for i in self.rx_id} 
+        transfers = sorted(torxtrs.values())
+
+        exp = [1, 0.8, 0.2, 1]
+        obs = transfers[0]
+        msg = "Testing that first reactor gets less than it wants."      
+        np.testing.assert_almost_equal(exp, obs, decimal=2, err_msg=msg)
+        
+        exp = [1, 1, 1, 1]
+        obs = transfers[1]
+        msg = "Testing that second reactor gets what it wants."      
+        np.testing.assert_almost_equal(exp, obs, decimal=2)
+        
