@@ -70,4 +70,6 @@ if __name__ == '__main__':
         print_query(conn, args.query)
     else:
         conn2 = sqlite3.connect(args.compare)
-        check_query(query_eq(conn2, conn, args.query))
+        errors = check_query(query_eq(conn2, conn, args.query))
+        for e in errors:
+            print(e)
