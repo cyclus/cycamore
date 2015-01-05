@@ -10,9 +10,15 @@ from helper import table_exist, find_ids
 from cyclus_tools import run_cyclus
 
 class TestRegression(object):
+    """A base class for all regression tests. A derived class is required for
+    each new input file to be tested. Each derived class *must* declare an `inf`
+    member in their `__ini__` function that points to the input file to be
+    tested, e.g., `self.inf_ = ./path/to/my/input_file.xml. See below for
+    examples.
+    """
     def __init__(self):
         self.outf_ = str(uuid.uuid4()) + ".h5"
-        self.inf_ = None
+        self.inf = None
 
     def __del__(self):
         if os.path.isfile(self.outf_):
@@ -20,10 +26,10 @@ class TestRegression(object):
             os.remove(self.outf_)
 
     def setup(self):
-        if not self.inf_:
-            raise TypeError(("self.inf_ must be set in derived classes "
+        if not self.inf:
+            raise TypeError(("self.inf must be set in derived classes "
                              "to run regression tests."))
-        run_cyclus("cyclus", os.getcwd(), self.inf_, self.outf_)        
+        run_cyclus("cyclus", os.getcwd(), self.inf, self.outf_)        
 
         with tables.open_file(self.outf_, mode="r") as f:
             # Get specific tables and columns
@@ -42,9 +48,13 @@ class TestRegression(object):
             os.remove(self.outf_)
 
 class TestPhysorEnrichment(TestRegression):
+    """This class tests the 1_Enrichment_2_Reactor.xml file related to the
+    Cyclus Physor 2014 publication. The number of key facilities, the enrichment
+    values, and the transactions to each reactor are tested.
+    """
     def __init__(self):
         super(TestPhysorEnrichment, self).__init__()
-        self.inf_ = "../input/physor/1_Enrichment_2_Reactor.xml"
+        self.inf = "../input/physor/1_Enrichment_2_Reactor.xml"
 
     def setup(self):
         super(TestPhysorEnrichment, self).setup()
@@ -63,12 +73,16 @@ class TestPhysorEnrichment(TestRegression):
 
     def test_swu(self):
         enr = self.enrichments
+        # this can be updated if/when we can call into the cyclus::toolkit's
+        # enrichment module from python
         exp = [6.9, 10, 4.14, 6.9]
         obs = [np.sum(enr["SWU"][enr["Time"] == t]) for t in range(4)]
         np.testing.assert_almost_equal(exp, obs, decimal=2)
 
     def test_nu(self):
         enr = self.enrichments
+        # this can be updated if/when we can call into the cyclus::toolkit's
+        # enrichment module from python
         exp = [13.03, 16.54, 7.83, 13.03]
         obs = [np.sum(enr["Natural_Uranium"][enr["Time"] == t]) \
                    for t in range(4)]
@@ -83,6 +97,8 @@ class TestPhysorEnrichment(TestRegression):
                            for i in self.rx_id} 
         transfers = sorted(torxtrs.values())
 
+        # this can be updated if/when we can call into the cyclus::toolkit's
+        # enrichment module from python
         exp = [1, 0.8, 0.2, 1]
         obs = transfers[0]
         msg = "Testing that first reactor gets less than it wants."      
@@ -93,11 +109,14 @@ class TestPhysorEnrichment(TestRegression):
         msg = "Testing that second reactor gets what it wants."      
         np.testing.assert_almost_equal(exp, obs, decimal=2)
         
-
 class TestPhysorSources(TestRegression):
+    """This class tests the 2_Sources_3_Reactor.xml file related to the Cyclus
+    Physor 2014 publication. Reactor deployment and transactions between
+    suppliers and reactors are tested.
+    """
     def __init__(self):
         super(TestPhysorSources, self).__init__()
-        self.inf_ = "../input/physor/2_Sources_3_Reactors.xml"
+        self.inf = "../input/physor/2_Sources_3_Reactors.xml"
 
     def setup(self):
         super(TestPhysorSources, self).setup()
