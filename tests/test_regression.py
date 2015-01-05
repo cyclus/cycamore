@@ -220,7 +220,8 @@ class TestDynamicCapacitated(TestRegression):
         self.depl_time = self.agent_entry["EnterTime"]
         self.exit_time = self.agent_exit["ExitTime"]
         self.exit_ids = self.agent_exit["AgentId"]
-        self.source_id = find_ids(":agents:Source", self.agent_impl, self.agent_ids)
+        self.source_id = find_ids(":agents:Source", self.agent_impl, 
+                                  self.agent_ids)
         self.sink_id = find_ids(":agents:Sink", self.agent_impl, self.agent_ids)
 
         # Check transactions
@@ -246,13 +247,17 @@ class TestDynamicCapacitated(TestRegression):
         # Test that first 2 sink facilities are deployed at time step 1
         # and decommissioned at time step 2
         for i in [0, 1]:
-            assert_equal(self.depl_time[np.where(self.agent_ids == self.sink_id[i])], 1)
-            assert_equal(self.exit_time[np.where(self.exit_ids == self.sink_id[i])], 2)
+            assert_equal(
+                self.depl_time[np.where(self.agent_ids == self.sink_id[i])], 1)
+            assert_equal(
+                self.exit_time[np.where(self.exit_ids == self.sink_id[i])], 2)
         # Test that second 2 sink facilities are deployed at time step 2
         # and decommissioned at time step 3
         for i in [2, 3]:
-            assert_equal(self.depl_time[np.where(self.agent_ids == self.sink_id[i])], 2)
-            assert_equal(self.exit_time[np.where(self.exit_ids == self.sink_id[i])], 3)
+            assert_equal(
+                self.depl_time[np.where(self.agent_ids == self.sink_id[i])], 2)
+            assert_equal(
+                self.exit_time[np.where(self.exit_ids == self.sink_id[i])], 3)
 
     def test_xaction_general(self):        
         # Check that transactions are between sources and sinks only
