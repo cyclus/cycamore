@@ -39,6 +39,8 @@ class TestRegression(TestCase):
                 else None
             self.resources = f.get_node("/Resources")[:]
             self.transactions = f.get_node("/Transactions")[:]
+            self.compositions = f.get_node("/Compositions")[:]
+            self.info = f.get_node("/Info")[:]
             self.rsrc_qtys = {
                 x["ResourceId"]: x["Quantity"] for x in self.resources}
                         
