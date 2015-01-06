@@ -1,10 +1,10 @@
 """A set of tools for use in integration tests."""
 import os
-from hashlib import sha1
+import tempfile
 import subprocess
+from hashlib import sha1
 import numpy as np
 import tables
-import tempfile
 from nose.tools import assert_equal
 
 def hasher(x):

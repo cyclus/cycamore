@@ -2,11 +2,11 @@
 
 from nose.tools import assert_equal, assert_true
 import os
+from unittest import TestCase
 import tables
 import numpy as np
 import uuid
 from helper import check_cmd, run_cyclus, table_exist, find_ids
-from unittest import TestCase
 
 class TestRegression(TestCase):
     """A base class for all regression tests. A derived class is required for
