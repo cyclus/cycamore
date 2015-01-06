@@ -2,10 +2,16 @@
 import os
 import tempfile
 import subprocess
+import sys
 from hashlib import sha1
 import numpy as np
 import tables
 from nose.tools import assert_equal
+
+if sys.version_info[0] > 3:
+    str_types = (bytes, str)
+else:
+    str_types = (str, unicode)
 
 def hasher(x):
     return int(sha1(x.encode()).hexdigest(), 16)
@@ -62,16 +68,15 @@ def run_cyclus(cyclus, cwd, in_path, out_path):
 def check_cmd(args, cwd, holdsrtn):
     """Runs a command in a subprocess and verifies that it executed properly.
     """
-    if not isinstance(args, basestring):
+    if not isinstance(args, str_types):
         args = " ".join(args)
     print("TESTING: running command in {0}:\n\n{1}\n".format(cwd, args))
     env = dict(os.environ)
     env['_'] = subprocess.check_output(['which', 'cyclus'], cwd=cwd).strip()
-    f = tempfile.NamedTemporaryFile()
-    rtn = subprocess.call(args, shell=True, cwd=cwd, stdout=f, stderr=f, env=env)
-    if rtn != 0:
-        f.seek(0)
-        print("STDOUT + STDERR:\n\n" + f.read().decode())
-    f.close()
+    with tempfile.NamedTemporaryFile() as f:
+        rtn = subprocess.call(args, shell=True, cwd=cwd, stdout=f, stderr=f, env=env)
+        if rtn != 0:
+            f.seek(0)
+            print("STDOUT + STDERR:\n\n" + f.read().decode())
     holdsrtn[0] = rtn
     assert_equal(rtn, 0)
