@@ -6,15 +6,17 @@ import tables
 import numpy as np
 import uuid
 from helper import check_cmd, run_cyclus, table_exist, find_ids
+from unittest import TestCase
 
-class TestRegression(object):
+class TestRegression(TestCase):
     """A base class for all regression tests. A derived class is required for
     each new input file to be tested. Each derived class *must* declare an `inf`
-    member in their `__ini__` function that points to the input file to be
+    member in their `__init__` function that points to the input file to be
     tested, e.g., `self.inf_ = ./path/to/my/input_file.xml. See below for
     examples.
     """
-    def __init__(self):
+    def __init__(self, *args, **kwargs):
+        super(TestRegression, self).__init__(*args, **kwargs)
         self.outf_ = str(uuid.uuid4()) + ".h5"
         self.inf = None
 
@@ -23,7 +25,7 @@ class TestRegression(object):
             print("removing {0}".format(self.outf_))
             os.remove(self.outf_)
 
-    def setup(self):
+    def setUp(self):
         if not self.inf:
             raise TypeError(("self.inf must be set in derived classes "
                              "to run regression tests."))
@@ -38,9 +40,8 @@ class TestRegression(object):
             self.transactions = f.get_node("/Transactions")[:]
             self.rsrc_qtys = {
                 x["ResourceId"]: x["Quantity"] for x in self.resources}
-            
-            
-    def teardown(self):
+                        
+    def tearDown(self):
         if os.path.isfile(self.outf_):
             print("removing {0}".format(self.outf_))
             os.remove(self.outf_)
@@ -50,12 +51,12 @@ class TestPhysorEnrichment(TestRegression):
     Cyclus Physor 2014 publication. The number of key facilities, the enrichment
     values, and the transactions to each reactor are tested.
     """
-    def __init__(self):
-        super(TestPhysorEnrichment, self).__init__()
+    def __init__(self, *args, **kwargs):
+        super(TestPhysorEnrichment, self).__init__(*args, **kwargs)
         self.inf = "../input/physor/1_Enrichment_2_Reactor.xml"
 
-    def setup(self):
-        super(TestPhysorEnrichment, self).setup()
+    def setUp(self):
+        super(TestPhysorEnrichment, self).setUp()
         tbl = self.agent_entry
         self.rx_id = find_ids(":cycamore:BatchReactor", 
                               tbl["Spec"], tbl["AgentId"])
@@ -64,7 +65,7 @@ class TestPhysorEnrichment(TestRegression):
 
         with tables.open_file(self.outf_, mode="r") as f:
             self.enrichments = f.get_node("/Enrichments")[:]
-        
+
     def test_deploy(self):
         assert_equal(len(self.rx_id), 2)
         assert_equal(len(self.enr_id), 1)
@@ -112,12 +113,12 @@ class TestPhysorSources(TestRegression):
     Physor 2014 publication. Reactor deployment and transactions between
     suppliers and reactors are tested.
     """
-    def __init__(self):
-        super(TestPhysorSources, self).__init__()
+    def __init__(self, *args, **kwargs):
+        super(TestPhysorSources, self).__init__(*args, **kwargs)
         self.inf = "../input/physor/2_Sources_3_Reactors.xml"
 
-    def setup(self):
-        super(TestPhysorSources, self).setup()
+    def setUp(self):
+        super(TestPhysorSources, self).setUp()
         
         # identify each reactor and supplier by id
         tbl = self.agent_entry
@@ -207,13 +208,13 @@ class TestDynamicCapacitated(TestRegression):
     older sink facilities, the remaining number of sink facilities becomes
     the constraint, resulting in the same transaction amount as in time step 1.
     """
-    def __init__(self):
-        super(TestDynamicCapacitated, self).__init__()
+    def __init__(self, *args, **kwargs):
+        super(TestDynamicCapacitated, self).__init__(*args, **kwargs)
         self.inf = "./input/dynamic_capacitated.xml"
 
-    def setup(self):
-        super(TestDynamicCapacitated, self).setup()
-                
+    def setUp(self):
+        super(TestDynamicCapacitated, self).setUp()
+
         # Find agent ids of source and sink facilities
         self.agent_ids = self.agent_entry["AgentId"]
         self.agent_impl = self.agent_entry["Spec"]
@@ -308,8 +309,8 @@ class TestGrowth(TestRegression):
     respectively. At t=1, a 2-capacity Source is expected to be built, and at
     t=2 and t=3, 1-capacity Sources are expected to be built.
     """
-    def __init__(self):
-        super(TestGrowth, self).__init__()
+    def __init__(self, *args, **kwargs):
+        super(TestGrowth, self).__init__(*args, **kwargs)
         self.inf = "./input/growth.xml"
 
     def test_deployment(self):
