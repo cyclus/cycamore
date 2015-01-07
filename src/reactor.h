@@ -102,18 +102,33 @@ class Reactor : public cyclus::Facility {
   #pragma cyclus
 
  private:
+  std::string fuel_outcommod(int obj_id);
+  std::string fuel_inrecipe(int obj_id);
+  std::string fuel_outrecipe(int obj_id);
+  std::string fuel_pref(int obj_id);
+  /// Returns true if the reactor is operating in discrete assembly mode.
+  bool discrete_mode() {return n_assem_core > 1 || n_batches == 1};
+
+  /// discharge a batch from the core
+  void Discharge();
+
+  /// top up core inventory if possible
+  void Load();
+
+  double assem_per_discharge();
+
   // inventory and core params
   #pragma cyclus var {}
   double n_batches;
   #pragma cyclus var {}
   double assem_size;
-  #pragma cyclus var {'default': 1}
+  #pragma cyclus var {"default": 1}
   bool integral_assem;
-  #pragma cyclus var {'default': 'n_batches'}
+  #pragma cyclus var {"default": 'n_batches'}
   int n_assem_core;
-  #pragma cyclus var {'default': 1e250}
+  #pragma cyclus var {"default": 1000000000}
   int n_assem_spent;
-  #pragma cyclus var {'default': 'n_assem_core'}
+  #pragma cyclus var {"default": 'n_assem_core'}
   int n_assem_fresh;
 
   // cycle params
@@ -121,43 +136,36 @@ class Reactor : public cyclus::Facility {
   int cycle_time;
   #pragma cyclus var {}
   int refuel_time;
-  #pragma cyclus var {'default': 0}
+  #pragma cyclus var { \
+    "default": 0, \
+    "doc": "number of time steps since the beginning of the last cycle", \
+  }
   int cycle_step;
 
   // fuel specifications
-  #pragma cyclus var {}
-  std::vector<std::string> incommods;
-  #pragma cyclus var {}
-  std::vector<std::string> inrecipes;
-  #pragma cyclus var {}
-  std::vector<std::string> outrecipes;
-  #pragma cyclus var {}
-  std::vector<std::string> outcommods;
-  #pragma cyclus var {'default': []} // if this is empty, assume zero for all
-  std::vector<double> incommod_prefs;
+  #pragma cyclus var { \
+    "uitype": ["oneormore", "incommodity"], \
+  }
+  std::vector<std::string> fuel_incommods;
+  #pragma cyclus var { \
+    "uitype": ["oneormore", "recipe"], \
+  }
+  std::vector<std::string> fuel_inrecipes;
+  #pragma cyclus var { \
+    "uitype": ["oneormore", "recipe"], \
+  }
+  std::vector<std::string> fuel_outrecipes;
+  #pragma cyclus var { \
+    "uitype": ["oneormore", "incommodity"], \
+  }
+  std::vector<std::string> fuel_outcommods;
+  #pragma cyclus var {"default": []} // if this is empty, assume zero for all
+  std::vector<double> fuel_prefs;
 
-  // This variable should be hidden/unavailable in ui.  Maps resource id's to
-  // the incommods through which they were received.
+  // This variable should be hidden/unavailable in ui.  Maps resource object
+  // id's to the incommods through which they were received.
   #pragma cyclus var {}
   std::map<int, std::string> res_commods;
-
-  // preference changes
-  #pragma cyclus var {'default': []}
-  std::vector<int> pref_change_times;
-  #pragma cyclus var {'default': []}
-  std::vector<std::string> pref_change_commods;
-  #pragma cyclus var {'default': []}
-  std::vector<double> pref_change_values;
-
-  // recipe changes
-  #pragma cyclus var {'default': []}
-  std::vector<int> recipe_change_times;
-  #pragma cyclus var {'default': []}
-  std::vector<std::string> recipe_change_commods;
-  #pragma cyclus var {'default': []}
-  std::vector<std::string> recipe_change_incommods;
-  #pragma cyclus var {'default': []}
-  std::vector<std::string> recipe_change_outcommods;
 
   // Resource inventories
   #pragma cyclus var {'capacity': 'n_assem_fresh * assem_size'}
@@ -166,6 +174,24 @@ class Reactor : public cyclus::Facility {
   ResBuf<Material> core;
   #pragma cyclus var {'capacity': 'n_assem_spent * assem_size'}
   ResBuf<Material> spent;
+
+  // preference changes
+  #pragma cyclus var {"default": []}
+  std::vector<int> pref_change_times;
+  #pragma cyclus var {"default": []}
+  std::vector<std::string> pref_change_commods;
+  #pragma cyclus var {"default": []}
+  std::vector<double> pref_change_values;
+
+  // recipe changes
+  #pragma cyclus var {"default": []}
+  std::vector<int> recipe_change_times;
+  #pragma cyclus var {"default": []}
+  std::vector<std::string> recipe_change_commods;
+  #pragma cyclus var {"default": []}
+  std::vector<std::string> recipe_change_incommods;
+  #pragma cyclus var {"default": []}
+  std::vector<std::string> recipe_change_outcommods;
 
 };
 
