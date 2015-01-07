@@ -20,21 +20,21 @@ class TestRegression(TestCase):
     """
     def __init__(self, *args, **kwargs):
         super(TestRegression, self).__init__(*args, **kwargs)
-        self.outf_ = str(uuid.uuid4()) + ".h5"
+        self.outf = str(uuid.uuid4()) + ".h5"
         self.inf = None
 
     def __del__(self):
-        if os.path.isfile(self.outf_):
-            print("removing {0}".format(self.outf_))
-            os.remove(self.outf_)
+        if os.path.isfile(self.outf):
+            print("removing {0}".format(self.outf))
+            os.remove(self.outf)
 
     def setUp(self):
         if not self.inf:
             raise TypeError(("self.inf must be set in derived classes "
                              "to run regression tests."))
-        run_cyclus("cyclus", os.getcwd(), self.inf, self.outf_)        
+        run_cyclus("cyclus", os.getcwd(), self.inf, self.outf)        
 
-        with tables.open_file(self.outf_, mode="r") as f:
+        with tables.open_file(self.outf, mode="r") as f:
             # Get specific tables and columns
             self.agent_entry = f.get_node("/AgentEntry")[:]
             self.agent_exit = f.get_node("/AgentExit")[:] if "/AgentExit" in f \
@@ -47,9 +47,9 @@ class TestRegression(TestCase):
                 x["ResourceId"]: x["Quantity"] for x in self.resources}
                         
     def tearDown(self):
-        if os.path.isfile(self.outf_):
-            print("removing {0}".format(self.outf_))
-            os.remove(self.outf_)
+        if os.path.isfile(self.outf):
+            print("removing {0}".format(self.outf))
+            os.remove(self.outf)
 
 class TestPhysorEnrichment(TestRegression):
     """This class tests the 1_Enrichment_2_Reactor.xml file related to the
@@ -68,7 +68,7 @@ class TestPhysorEnrichment(TestRegression):
         self.enr_id = find_ids(":cycamore:EnrichmentFacility", 
                                tbl["Spec"], tbl["AgentId"])
 
-        with tables.open_file(self.outf_, mode="r") as f:
+        with tables.open_file(self.outf, mode="r") as f:
             self.enrichments = f.get_node("/Enrichments")[:]
 
     def test_deploy(self):
