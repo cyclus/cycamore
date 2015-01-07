@@ -1,12 +1,14 @@
 #! /usr/bin/env python
 
-from nose.tools import assert_equal, assert_true
 import os
 from unittest import TestCase
+
 import tables
-import numpy as np
-from numpy.testing import assert_almost_equal 
 import uuid
+import numpy as np
+from numpy.testing import assert_array_almost_equal 
+from nose.tools import assert_equal, assert_true
+
 from helper import check_cmd, run_cyclus, table_exist, find_ids
 
 class TestRegression(TestCase):
@@ -79,7 +81,7 @@ class TestPhysorEnrichment(TestRegression):
         # enrichment module from python
         exp = [6.9, 10, 4.14, 6.9]
         obs = [np.sum(enr["SWU"][enr["Time"] == t]) for t in range(4)]
-        assert_almost_equal(exp, obs, decimal=2)
+        assert_array_almost_equal(exp, obs, decimal=2)
 
     def test_nu(self):
         enr = self.enrichments
@@ -88,7 +90,7 @@ class TestPhysorEnrichment(TestRegression):
         exp = [13.03, 16.54, 7.83, 13.03]
         obs = [np.sum(enr["Natural_Uranium"][enr["Time"] == t]) \
                    for t in range(4)]
-        assert_almost_equal(exp, obs, decimal=2)
+        assert_array_almost_equal(exp, obs, decimal=2)
 
     def test_xactions(self):
         xa = self.transactions
@@ -104,12 +106,12 @@ class TestPhysorEnrichment(TestRegression):
         exp = [1, 0.8, 0.2, 1]
         obs = transfers[0]
         msg = "Testing that first reactor gets less than it wants."      
-        assert_almost_equal(exp, obs, decimal=2, err_msg=msg)
+        assert_array_almost_equal(exp, obs, decimal=2, err_msg=msg)
         
         exp = [1, 1, 1, 1]
         obs = transfers[1]
         msg = "Testing that second reactor gets what it wants."      
-        assert_almost_equal(exp, obs, decimal=2)
+        assert_array_almost_equal(exp, obs, decimal=2)
         
 class TestPhysorSources(TestRegression):
     """This class tests the 2_Sources_3_Reactor.xml file related to the Cyclus
@@ -149,14 +151,14 @@ class TestPhysorSources(TestRegression):
         rows = xa[np.logical_and(xa["ReceiverId"] == self.r1, 
                                  xa["SenderId"] == self.smox)] 
         obs[rows["Time"]] = [self.rsrc_qtys[x] for x in rows["ResourceId"]]
-        assert_almost_equal(mox_exp, obs)
+        assert_array_almost_equal(mox_exp, obs)
         
         uox_exp = [0, 0, 0, 0, 1]
         obs = np.zeros(5)
         rows = xa[np.logical_and(xa["ReceiverId"] == self.r1, 
                                  xa["SenderId"] == self.suox)] 
         obs[rows["Time"]] = [self.rsrc_qtys[x] for x in rows["ResourceId"]]
-        assert_almost_equal(uox_exp, obs)
+        assert_array_almost_equal(uox_exp, obs)
          
     def test_rxtr2_xactions(self):
         xa = self.transactions
@@ -166,14 +168,14 @@ class TestPhysorSources(TestRegression):
         rows = xa[np.logical_and(xa["ReceiverId"] == self.r2, 
                                  xa["SenderId"] == self.smox)] 
         obs[rows["Time"]] = [self.rsrc_qtys[x] for x in rows["ResourceId"]]
-        assert_almost_equal(mox_exp, obs)
+        assert_array_almost_equal(mox_exp, obs)
         
         uox_exp = [0, 0, 0, 0, 0]
         obs = np.zeros(5)
         rows = xa[np.logical_and(xa["ReceiverId"] == self.r2, 
                                  xa["SenderId"] == self.suox)] 
         obs[rows["Time"]] = [self.rsrc_qtys[x] for x in rows["ResourceId"]]
-        assert_almost_equal(uox_exp, obs)
+        assert_array_almost_equal(uox_exp, obs)
          
     def test_rxtr3_xactions(self):
         xa = self.transactions
@@ -183,14 +185,14 @@ class TestPhysorSources(TestRegression):
         rows = xa[np.logical_and(xa["ReceiverId"] == self.r3, 
                                  xa["SenderId"] == self.smox)] 
         obs[rows["Time"]] = [self.rsrc_qtys[x] for x in rows["ResourceId"]]
-        assert_almost_equal(mox_exp, obs)
+        assert_array_almost_equal(mox_exp, obs)
         
         uox_exp = [0, 0, 0, 0.5, 0]
         obs = np.zeros(5)
         rows = xa[np.logical_and(xa["ReceiverId"] == self.r3, 
                                  xa["SenderId"] == self.suox)] 
         obs[rows["Time"]] = [self.rsrc_qtys[x] for x in rows["ResourceId"]]
-        assert_almost_equal(uox_exp, obs)
+        assert_array_almost_equal(uox_exp, obs)
 
 class TestDynamicCapacitated(TestRegression):
     """Tests dynamic capacity restraints involving changes in the number of
