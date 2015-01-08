@@ -6,6 +6,7 @@ using cyclus::toolkit::ResBuf;
 using cyclus::toolkit::MatVec;
 using cyclus::KeyError;
 using cyclus::ValueError;
+using cyclus::Request;
 
 namespace cycamore {
 
@@ -14,8 +15,8 @@ Reactor::Reactor(cyclus::Context* ctx)
       n_batches(0),
       assem_size(0),
       n_assem_core(0),
-      n_batch_spent(0),
-      n_batch_fresh(0),
+      n_assem_spent(0),
+      n_assem_fresh(0),
       cycle_time(0),
       refuel_time(0),
       cycle_step(0) {
@@ -39,36 +40,21 @@ void Reactor::Tick() {
 std::set<cyclus::RequestPortfolio<Material>::Ptr>
 Reactor::GetMatlRequests() {
   using cyclus::RequestPortfolio;
-  using cyclus::Request;
 
   std::set<RequestPortfolio<Material>::Ptr> ports;
   RequestPortfolio<Material>::Ptr port(new RequestPortfolio<Material>());
   Material::Ptr m;
 
-  if (discrete_mode()) {
-    int n_assem_order = static_cast<int>(core.space() / assem_size)
-                        + static_cast<int>(fresh.space() / assem_size);
-    for (int i = 0; i < n_assem_order; i++) {
-      std::vector<Request<Material>*> mreqs;
-      for (int j = 0; j < fuel_incommods.size(); j++) {
-        std::string commod = fuel_incommods[j];
-        double pref = fuel_prefs[j];
-        Composition::Ptr recipe = context()->GetRecipe(fuel_inrecipes[j]);
-        m = Material::CreateUntracked(assem_size, recipe);
-        Request<Material>* r = port->AddRequest(m, this, commod, pref, true);
-        mreqs.push_back(r);
-      }
-      port->AddMutualReqs(mreqs);
-    }
-  } else {
-    double qty_order = core.space() + fresh.space();
+  int n_assem_order = n_assem_core - core.count()
+                      + n_assem_fresh - fresh.count();
+  for (int i = 0; i < n_assem_order; i++) {
     std::vector<Request<Material>*> mreqs;
-    for (int i = 0; i < fuel_incommods.size(); i++) {
-      std::string commod = fuel_incommods[i];
-      double pref = fuel_prefs[i];
-      Composition::Ptr recipe = context()->GetRecipe(fuel_inrecipes[i]);
-      m = Material::CreateUntracked(qty_order, recipe);
-      Request<Material>* r = port->AddRequest(m, this, commod, pref);
+    for (int j = 0; j < fuel_incommods.size(); j++) {
+      std::string commod = fuel_incommods[j];
+      double pref = fuel_prefs[j];
+      Composition::Ptr recipe = context()->GetRecipe(fuel_inrecipes[j]);
+      m = Material::CreateUntracked(assem_size, recipe);
+      Request<Material>* r = port->AddRequest(m, this, commod, pref, true);
       mreqs.push_back(r);
     }
     port->AddMutualReqs(mreqs);
@@ -90,19 +76,68 @@ void Reactor::AcceptMatlTrades(
     Material::Ptr m = trade->second;
     index_res(m, commod);
 
-    if (core.space() >= m->quantity()) {
-      // discrete or continuous mode with enough room in core for entire mat
+    if (core.count() < n_assem_core) {
       core.Push(m);
-    } else if (!discrete_mode()) {
-      // continuous mode and must split material between core and fresh bufs
-      Material::Ptr m2 = m->ExtractQty(core.space());
-      index_res(m2, commod);
-      core.Push(m2);
-      fresh.Push(m);
     } else {
-      // discrete mode and no room in core
       fresh.Push(m);
     }
+  }
+}
+
+std::set<cyclus::BidPortfolio<Material>::Ptr>
+Reactor::GetMatlBids(cyclus::CommodMap<Material>::type&
+                          commod_requests) {
+  using cyclus::BidPortfolio;
+
+  std::set<BidPortfolio<Material>::Ptr> ports;
+
+  for (int i = 0; i < fuel_outcommods.size(); i++) {
+    std::string commod = fuel_outcommods[i];
+    MatVec mats = SpentResFor(commod);
+    std::vector<Request<Material>*>& reqs = commod_requests[commod];
+    if (mats.size() == 0 || reqs.size() == 0) {
+      continue;
+    }
+
+    BidPortfolio<Material>::Ptr port(new BidPortfolio<Material>());
+
+    for (int j = 0; j < reqs.size(); j++) {
+      Request<Material>* req = reqs[j];
+      double tot_bid = 0;
+      for (int k = 0; k < mats.size(); k++) {
+        Material::Ptr m = mats[k];
+        tot_bid += m->quantity();
+        port->AddBid(req, m, this, true);
+        if (tot_bid >= req->target()->quantity()) {
+          break;
+        }
+      }
+    }
+
+    double tot_qty = 0;
+    for (int j = 0; j < mats.size(); j++) {
+      tot_qty += mats[j]->quantity();
+    }
+    cyclus::CapacityConstraint<Material> cc(tot_qty);
+    port->AddConstraint(cc);
+    ports.insert(port);
+  }
+
+  return ports;
+}
+
+void Reactor::GetMatlTrades(
+    const std::vector< cyclus::Trade<Material> >& trades,
+    std::vector<std::pair<cyclus::Trade<Material>,
+    Material::Ptr> >& responses) {
+  using cyclus::Trade;
+
+  std::vector< cyclus::Trade<cyclus::Material> >::const_iterator it;
+  for (int i = 0; i < trades.size(); i++) {
+    std::string commod = trades[i].request->commodity();
+    Material::Ptr m = PopSpentRes(commod);
+    responses.push_back(std::make_pair(trades[i], m));
+    res_indexes.erase(m->obj_id());
   }
 }
 
@@ -112,29 +147,23 @@ void Reactor::Tock() {
   if (cycle_step >= cycle_time) {
     Load();
   }
-  if (cycle_step > cycle_time + refuel_time && core.space() < cyclus::eps()) {
+  if (cycle_step > cycle_time + refuel_time && core.count() == n_assem_core) {
     cycle_step = 0;
   }
 }
 
 void Reactor::Transmute() {
-  MatVec old;
   // we don't need min(assem_per_discharge()..., core.quantity()) because
   // this function is+should only be called at the end of an operational cycle -
   // which can only happen if the core is full.
-  if (discrete_mode()) {
-    old = core.PopN(assem_per_discharge());
-  } else {
-    old.push_back(core.Pop(assem_per_discharge() * assem_size));
-  }
+  MatVec old = core.PopN(assem_per_discharge());
+  MatVec tail = core.PopN(core.count());
+  core.Push(old);
+  core.Push(tail);
 
   for (int i = 0; i < old.size(); i++) {
     old[i]->Transmute(context()->GetRecipe(fuel_outrecipe(old[i])));
   }
-
-  MatVec tail = core.PopN(core.count());
-  core.Push(old);
-  core.Push(tail);
 }
 
 bool Reactor::Discharge() {
@@ -145,35 +174,19 @@ bool Reactor::Discharge() {
     return false; // not enough space in spent fuel inventory
   }
 
-  if (discrete_mode()) {
-    int npop = std::min((int)assem_per_discharge(), core.count());
-    spent.Push(core.PopN(npop));
-  } else {
-    spent.Push(core.Pop(qty_pop));
-  }
+  int npop = std::min(assem_per_discharge(), core.count());
+  spent.Push(core.PopN(npop));
   return true;
 }
 
 void Reactor::Load() {
-  if (core.space() < cyclus::eps()) {
-    return; // core is full
-  }
-
-  if (discrete_mode()) {
-    while (core.space() > assem_size && fresh.quantity() >= assem_size) {
-      core.Push(fresh.Pop());
-    }
-  } else {
-    core.Push(fresh.Pop(std::min(core.space(), fresh.quantity())));
+  while (core.count() < n_assem_core && fresh.count() > 0) {
+    core.Push(fresh.Pop());
   }
 }
 
-double Reactor::assem_per_discharge() {
-  if (discrete_mode()) {
-    return static_cast<int>(n_assem_core / n_batches);
-  } else {
-    return static_cast<double>(n_assem_core) / n_batches;
-  }
+int Reactor::assem_per_discharge() {
+  return static_cast<int>(n_assem_core / n_batches);
 }
 
 std::string Reactor::fuel_incommod(Material::Ptr m) {
@@ -225,6 +238,35 @@ void Reactor::index_res(cyclus::Resource::Ptr m, std::string incommod) {
   }
   throw ValueError("cycamore::Reactor - received unsupported incommod material");
 }
+
+Material::Ptr Reactor::PopSpentRes(std::string outcommod) {
+  MatVec mats = spent.PopN(spent.count());
+  Material::Ptr m;
+  bool found = false;
+  for (int i = 0; i < mats.size(); i++) {
+    std::string commod = fuel_outcommod(mats[i]);
+    if (!found && commod == outcommod) {
+      m = mats[i];
+      found = true;
+    } else {
+      spent.Push(mats[i]);
+    }
+  }
+  return m;
+}
   
+MatVec Reactor::SpentResFor(std::string outcommod) {
+  MatVec mats = spent.PopN(spent.count());
+  MatVec found;
+  spent.Push(mats);
+  for (int i = 0; i < mats.size(); i++) {
+    std::string commod = fuel_outcommod(mats[i]);
+    if (commod == outcommod) {
+      found.push_back(mats[i]);
+    }
+  }
+  return found;
+}
+
 } // namespace cycamore
 

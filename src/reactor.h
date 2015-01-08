@@ -85,6 +85,15 @@ class Reactor : public cyclus::Facility {
 
   std::set<cyclus::RequestPortfolio<cyclus::Material>::Ptr> GetMatlRequests();
 
+  virtual std::set<cyclus::BidPortfolio<cyclus::Material>::Ptr>
+      GetMatlBids(cyclus::CommodMap<cyclus::Material>::type&
+                  commod_requests);
+
+  virtual void GetMatlTrades(
+      const std::vector< cyclus::Trade<cyclus::Material> >& trades,
+      std::vector<std::pair<cyclus::Trade<cyclus::Material>,
+      cyclus::Material::Ptr> >& responses);
+
   #pragma cyclus
 
  private:
@@ -111,9 +120,13 @@ class Reactor : public cyclus::Facility {
   /// fully burnt state as defined by its outrecipe.
   void Transmute();
 
-  double assem_per_discharge();
+  int assem_per_discharge();
 
-  // inventory and core params
+  cyclus::toolkit::MatVec SpentResFor(std::string outcommod);
+
+  cyclus::Material::Ptr PopSpentRes(std::string outcommod);
+
+  //////////// inventory and core params ////////////
   #pragma cyclus var { \
     "doc": "", \
   }
@@ -129,13 +142,13 @@ class Reactor : public cyclus::Facility {
   #pragma cyclus var { \
     "default": 1000000000, \
   }
-  int n_batch_spent;
+  int n_assem_spent;
   #pragma cyclus var { \
     "default": 1, \
   }
-  int n_batch_fresh;
+  int n_assem_fresh;
 
-  // cycle params
+  ///////// cycle params ///////////
   #pragma cyclus var { \
     "doc": "", \
   }
@@ -150,7 +163,7 @@ class Reactor : public cyclus::Facility {
   }
   int cycle_step;
 
-  // fuel specifications
+  /////// fuel specifications /////////
   #pragma cyclus var { \
     "uitype": ["oneormore", "incommodity"], \
     "doc": "Ordered list of input commodities for requesting fuel.", \
@@ -189,14 +202,14 @@ class Reactor : public cyclus::Facility {
 
   // Resource inventories - these must be defined AFTER/BELOW the member vars
   // referenced (e.g. n_batch_fresh, assem_size, etc.).
-  #pragma cyclus var {"capacity": "assem_per_discharge() * assem_size * n_batch_fresh"}
+  #pragma cyclus var {"capacity": "n_assem_fresh * assem_size"}
   cyclus::toolkit::ResBuf<cyclus::Material> fresh;
   #pragma cyclus var {"capacity": "n_assem_core * assem_size"}
   cyclus::toolkit::ResBuf<cyclus::Material> core;
-  #pragma cyclus var {"capacity": "assem_per_discharge() * assem_size * n_batch_spent"}
+  #pragma cyclus var {"capacity": "n_assem_spent * assem_size"}
   cyclus::toolkit::ResBuf<cyclus::Material> spent;
 
-  // preference changes
+  /////////// preference changes ///////////
   #pragma cyclus var { \
     "default": [], \
   }
@@ -210,7 +223,7 @@ class Reactor : public cyclus::Facility {
   }
   std::vector<double> pref_change_values;
 
-  // recipe changes
+  ///////////// recipe changes ///////////
   #pragma cyclus var { \
     "default": [], \
   }
