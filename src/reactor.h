@@ -22,7 +22,7 @@ namespace cycamore {
 // The Reactor will have 3 resource buffers (all with automatically computed
 // capacities based on above params):
 //
-// * fresh: capacity = n_assem_fresh * assem_size
+// * fresh: capacity = n_assem_fresh * assem_size + eps
 //
 // * core: capacity = n_assem_core * assem_size
 //
@@ -43,32 +43,18 @@ namespace cycamore {
 // enough material can be acquired to complete the full assembly.  In this
 // mode, partial assemblies may not be inserted into the core.  When in this
 // mode, resources will never be split/combined by the reactor post assembly
-// discretization.
-// Under either of the following conditions, a reactor will operate in
-// discrete assembly mode:
+// discretization.  Number of assemblies discharged per cycle is computed:
 //
-// * n_assem_core == n_batches:  pop one assembly per cycle
+//     floor(n_assem_core / n_batches)
 //
-// * n_assem_core > 1:  pop floor(n_assem_core / n_batches) assemblies per cycle
-//
-// If neither of those conditions are met (i.e. n_assem_core == 1 && n_assem_core !=
-// n_batches), then the reactor will operate in continuous assembly mode.  In
-// this mode it discharges 1 / n_batches fraction of the single assembly from
-// the core at the end of each cycle, and the same quantity will be
-// extracted/split from the (not assembly discretized) fresh fuel buffer
-// (or requested on DRE if no fresh) and inserted into the core.  Material can
-// be requested+accepted in non-assembly sized quanta.
-//
-// Time to make it code generatable? - Yes  Bring into compliance? - Yes.
-// The BatchReactor currently has no state variables. A UINT type might be
-// useful here.  We should scavenge the batch reactor for pieces as we
-// reimplement a new code-generated version.
+// If that number is zero or results in a significantly rounded batch size,
+// the reactor will throw an exception or print a warning respectively.
 //
 // Meta-data associated with resource objects in inventory (e.g. the in-commod
 // on which they were received) should be associated with resources based on
-// obj_id.  This is necessary for handling the case where in continuous
-// assembly mode where resources are potentially combined/split inside
-// buffers during extraction - and also when decay could change Resource::id.
+// obj_id.  This is necessary for maintaining continuity in the face of
+// potential decay calcs and other things that might change the regular
+// Resource::id.
 
 class Reactor : public cyclus::Facility {
  public:
