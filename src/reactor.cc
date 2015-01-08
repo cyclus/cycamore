@@ -1,5 +1,10 @@
 #include "reactor.h"
 
+using cyclus::Material;
+using cyclus::toolkit::ResBuf;
+using cyclus::toolkit::MatVec;
+using cyclus::KeyError;
+
 namespace cycamore {
 
 Reactor::Reactor(cyclus::Context* ctx)
@@ -33,51 +38,46 @@ void Reactor::Tick() {
 // DRE code here - request enough fuel to fill fresh and core inventories.  Fill core first.
 
 void Reactor::Tock() {
+  cycle_step++;
+
   if (cycle_step >= cycle_time) {
     Load();
   }
-
-  if (cycle_step < cycle_time + refuel_time || core.space() < cyclus::eps()) {
-    // move forward if in cycle operation or refueling, but halt if waiting
-    // for fuel at beginning of cycle.
-    cycle_step++;
-  }
-  if (cycle_step > cycle_time + refuel_time) {
+  if (cycle_step > cycle_time + refuel_time && core.space() < cyclus::eps()) {
     cycle_step = 0;
   }
 }
 
 void Reactor::Transmute() {
-  MatVect old;
+  MatVec old;
   if (discrete_mode()) {
     old = core.PopN(assem_per_discharge());
   } else {
-    old = core.PopQty(assem_per_discharge() * assem_size);
+    old.push_back(core.Pop(assem_per_discharge() * assem_size));
   }
-  MatVect tail = core.PopN(core.count());
 
   for (int i = 0; i < old.size(); i++) {
-    int id = old[i]->obj_id();
-    old[i]->Transmute(context()->GetRecipe(fuel_outrecipe(id)));
+    old[i]->Transmute(context()->GetRecipe(fuel_outrecipe(old[i])));
   }
+
+  MatVec tail = core.PopN(core.count());
   core.Push(old);
   core.Push(tail);
 }
 
-void Reactor::Discharge() {
+bool Reactor::Discharge() {
   double qty_pop = assem_per_discharge() * assem_size;
   if (spent.space() < qty_pop) {
-    return; // not enough space in spent fuel inventory
+    return false; // not enough space in spent fuel inventory
   }
 
-  MatVect old;
   if (discrete_mode()) {
-    old = core.PopN(assem_per_discharge());
+    spent.Push(core.PopN(assem_per_discharge()));
   } else {
-    old = core.PopQty(qty_pop);
+    // Transmute already discretized the batch to extract into a single object
+    spent.Push(core.Pop());
   }
-
-  spent.Push(old);
+  return true;
 }
 
 void Reactor::Load() {
@@ -98,8 +98,6 @@ void Reactor::Load() {
   }
 }
 
-} // namespace cycamore
-
 double Reactor::assem_per_discharge() {
   if (discrete_mode()) {
     return static_cast<int>(n_assem_core / n_batches);
@@ -107,4 +105,46 @@ double Reactor::assem_per_discharge() {
     return static_cast<double>(n_assem_core) / n_batches;
   }
 }
+
+std::string Reactor::fuel_incommod(Material::Ptr m) {
+  int i = res_indexes[m->obj_id()];
+  if (i >= fuel_incommods.size()) {
+    throw KeyError("cycamore::Reactor - no incommod for material object");
+  }
+  return fuel_incommods[i];
+}
+
+std::string Reactor::fuel_outcommod(Material::Ptr m) {
+  int i = res_indexes[m->obj_id()];
+  if (i >= fuel_outcommods.size()) {
+    throw KeyError("cycamore::Reactor - no outcommod for material object");
+  }
+  return fuel_outcommods[i];
+}
+
+std::string Reactor::fuel_inrecipe(Material::Ptr m) {
+  int i = res_indexes[m->obj_id()];
+  if (i >= fuel_inrecipes.size()) {
+    throw KeyError("cycamore::Reactor - no inrecipe for material object");
+  }
+  return fuel_inrecipes[i];
+}
+
+std::string Reactor::fuel_outrecipe(Material::Ptr m) {
+  int i = res_indexes[m->obj_id()];
+  if (i >= fuel_outrecipes.size()) {
+    throw KeyError("cycamore::Reactor - no outrecipe for material object");
+  }
+  return fuel_outrecipes[i];
+}
+
+double Reactor::fuel_pref(Material::Ptr m) {
+  int i = res_indexes[m->obj_id()];
+  if (i >= fuel_prefs.size()) {
+    return 0;
+  }
+  return fuel_prefs[i];
+}
+
+} // namespace cycamore
 

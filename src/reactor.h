@@ -3,9 +3,6 @@
 
 #include "cyclus.h"
 
-using cyclus::Material;
-using cyclus::toolkit::ResBuf;
-
 namespace cycamore {
 
 // Configurable parameters:
@@ -96,24 +93,31 @@ class Reactor : public cyclus::Facility {
   virtual ~Reactor() {};
 
   virtual void EnterNotify() {};
-  virtual void Tick() {};
-  virtual void Tock() {};
+  virtual void Tick();
+  virtual void Tock();
 
   #pragma cyclus
 
  private:
-  std::string fuel_outcommod(int obj_id);
-  std::string fuel_inrecipe(int obj_id);
-  std::string fuel_outrecipe(int obj_id);
-  std::string fuel_pref(int obj_id);
+  std::string fuel_incommod(cyclus::Material::Ptr m);
+  std::string fuel_outcommod(cyclus::Material::Ptr m);
+  std::string fuel_inrecipe(cyclus::Material::Ptr m);
+  std::string fuel_outrecipe(cyclus::Material::Ptr m);
+  double fuel_pref(cyclus::Material::Ptr m);
+
   /// Returns true if the reactor is operating in discrete assembly mode.
-  bool discrete_mode() {return n_assem_core > 1 || n_batches == 1};
+  bool discrete_mode() {return n_assem_core > 1 || n_batches == 1;};
 
-  /// discharge a batch from the core
-  void Discharge();
+  /// Discharge a batch from the core if there is room in the spent fuel
+  /// inventory.  Returns true if a batch was successfully discharged.
+  bool Discharge();
 
-  /// top up core inventory if possible
+  /// Top up core inventory if possible.
   void Load();
+
+  /// Transmute the batch in the core that is about to be discharged to its
+  /// fully burnt state as defined by its outrecipe.
+  void Transmute();
 
   double assem_per_discharge();
 
@@ -163,17 +167,17 @@ class Reactor : public cyclus::Facility {
   std::vector<double> fuel_prefs;
 
   // This variable should be hidden/unavailable in ui.  Maps resource object
-  // id's to the incommods through which they were received.
+  // id's to the index for the incommod through which they were received.
   #pragma cyclus var {}
-  std::map<int, std::string> res_commods;
+  std::map<int, int> res_indexes;
 
   // Resource inventories
   #pragma cyclus var {'capacity': 'n_assem_fresh * assem_size'}
-  ResBuf<Material> fresh;
+  cyclus::toolkit::ResBuf<cyclus::Material> fresh;
   #pragma cyclus var {'capacity': 'n_assem_core * assem_size'}
-  ResBuf<Material> core;
+  cyclus::toolkit::ResBuf<cyclus::Material> core;
   #pragma cyclus var {'capacity': 'n_assem_spent * assem_size'}
-  ResBuf<Material> spent;
+  cyclus::toolkit::ResBuf<cyclus::Material> spent;
 
   // preference changes
   #pragma cyclus var {"default": []}
