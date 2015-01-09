@@ -138,7 +138,7 @@ class Reactor : public cyclus::Facility {
   }
   int refuel_time;
   #pragma cyclus var { \
-    "default": 0, \
+    "default": "cycle_time + refuel_time + 1", \
     "doc": "Number of time steps since the beginning of the last cycle.", \
   }
   int cycle_step;

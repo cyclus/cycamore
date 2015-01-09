@@ -27,7 +27,8 @@ Reactor::Reactor(cyclus::Context* ctx)
 void Reactor::Tick() {
   if (cycle_step == cycle_time) {
     Transmute();
-  } else if (cycle_step == cycle_time + refuel_time) {
+  }
+  if (cycle_step == cycle_time + refuel_time) {
     Discharge();
     Load();
   }
@@ -153,8 +154,6 @@ Reactor::GetMatlBids(cyclus::CommodMap<Material>::type&
     for (int j = 0; j < mats.size(); j++) {
       tot_qty += mats[j]->quantity();
     }
-    std::cout << "mats.size() = " << mats.size() << "\n";
-    std::cout << "tot_qty = " << tot_qty << "\n";
     cyclus::CapacityConstraint<Material> cc(tot_qty);
     port->AddConstraint(cc);
     ports.insert(port);
@@ -179,20 +178,35 @@ void Reactor::GetMatlTrades(
 }
 
 void Reactor::Tock() {
-  cycle_step++;
+  // "if" prevents starting cycle after initial deployment until core is full
+  // even though cycle_step is its initial zero.
+  if (cycle_step > 0 || core.count() == n_assem_core) {
+    cycle_step++;
+  }
+
+  // The following "if" is necessary here if cycle_time+refuel_time = 1 in
+  // case we didn't have a full core in the Tick, but we got enough during
+  // resource exchange.  In this case, we want to still burn a batch this
+  // timestep - and every time step as long as fuel can be received.
+  if (cycle_step == 1 && refuel_time == 0) {
+    Transmute();
+    Discharge();
+  }
 
   if (cycle_step >= cycle_time) {
     Load();
   }
-  if (cycle_step > cycle_time + refuel_time && core.count() == n_assem_core) {
+
+  if (cycle_step >= cycle_time + refuel_time && core.count() == n_assem_core) {
     cycle_step = 0;
   }
 }
 
 void Reactor::Transmute() {
-  // we don't need min(n_assem_batch * assem_size, core.quantity()) because
-  // this function is+should only be called at the end of an operational cycle -
-  // which can only happen if the core is full.
+  if (core.count() < n_assem_core) {
+    return;
+  }
+
   MatVec old = core.PopN(n_assem_batch);
   MatVec tail = core.PopN(core.count());
   core.Push(old);
@@ -217,9 +231,8 @@ bool Reactor::Discharge() {
 }
 
 void Reactor::Load() {
-  while (core.count() < n_assem_core && fresh.count() > 0) {
-    core.Push(fresh.Pop());
-  }
+  int n = std::min(n_assem_core - core.count(), fresh.count());
+  core.Push(fresh.PopN(n));
 }
 
 std::string Reactor::fuel_incommod(Material::Ptr m) {
