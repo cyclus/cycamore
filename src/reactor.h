@@ -138,7 +138,7 @@ class Reactor : public cyclus::Facility {
   }
   int refuel_time;
   #pragma cyclus var { \
-    "default": "cycle_time + refuel_time + 1", \
+    "default": 0, \
     "doc": "Number of time steps since the beginning of the last cycle.", \
   }
   int cycle_step;
@@ -193,6 +193,7 @@ class Reactor : public cyclus::Facility {
   #pragma cyclus var {"capacity": "n_assem_spent * assem_size"}
   cyclus::toolkit::ResBuf<cyclus::Material> spent;
 
+
   /////////// preference changes ///////////
   #pragma cyclus var { \
     "default": [], \
@@ -225,6 +226,10 @@ class Reactor : public cyclus::Facility {
   }
   std::vector<std::string> recipe_change_out;
 
+  // should be hidden in ui (internal only). True if fuel has been discharged
+  // this cycle.
+  #pragma cyclus var {"default": 0}
+  bool discharged;
 };
 
 } // namespace cycamore

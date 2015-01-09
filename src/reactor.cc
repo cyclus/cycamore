@@ -19,20 +19,13 @@ Reactor::Reactor(cyclus::Context* ctx)
       n_assem_fresh(0),
       cycle_time(0),
       refuel_time(0),
-      cycle_step(0) {
+      cycle_step(0),
+      discharged(false) {
   cyclus::Warn<cyclus::EXPERIMENTAL_WARNING>("the Reactor archetype "
                                              "is experimental");
 }
 
 void Reactor::Tick() {
-  if (cycle_step == cycle_time) {
-    Transmute();
-  }
-  if (cycle_step == cycle_time + refuel_time) {
-    Discharge();
-    Load();
-  }
-  
   int t = context()->time();
 
   // update preferences
@@ -178,35 +171,30 @@ void Reactor::GetMatlTrades(
 }
 
 void Reactor::Tock() {
+  if (cycle_step >= cycle_time + refuel_time && core.count() == n_assem_core) {
+    discharged = false;
+    cycle_step = 0;
+  }
+
   // "if" prevents starting cycle after initial deployment until core is full
   // even though cycle_step is its initial zero.
   if (cycle_step > 0 || core.count() == n_assem_core) {
     cycle_step++;
   }
 
-  // The following "if" is necessary here if cycle_time+refuel_time = 1 in
-  // case we didn't have a full core in the Tick, but we got enough during
-  // resource exchange.  In this case, we want to still burn a batch this
-  // timestep - and every time step as long as fuel can be received.
-  if (cycle_step == 1 && refuel_time == 0) {
+  if (cycle_step == cycle_time) {
     Transmute();
-    Discharge();
   }
-
+  if (cycle_step >= cycle_time && !discharged) {
+    discharged = Discharge();
+  }
   if (cycle_step >= cycle_time) {
     Load();
-  }
-
-  if (cycle_step >= cycle_time + refuel_time && core.count() == n_assem_core) {
-    cycle_step = 0;
   }
 }
 
 void Reactor::Transmute() {
-  if (core.count() < n_assem_core) {
-    return;
-  }
-
+  // safe to assume full core.
   MatVec old = core.PopN(n_assem_batch);
   MatVec tail = core.PopN(core.count());
   core.Push(old);
@@ -218,11 +206,8 @@ void Reactor::Transmute() {
 }
 
 bool Reactor::Discharge() {
-  // we do need min's here in case we ever decide to discharge non-fully
-  // batches from a core (e.g. discharge entire core at decommissioning).
-  double qty_pop = std::min(n_assem_batch * assem_size, core.quantity());
-  if (spent.space() < qty_pop) {
-    return false; // not enough space in spent fuel inventory
+  if (n_assem_spent - spent.count() < n_assem_batch) {
+    return false; // not enough room in spent buffer
   }
 
   int npop = std::min(n_assem_batch, core.count());
