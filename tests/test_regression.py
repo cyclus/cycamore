@@ -7,6 +7,7 @@ import tables
 import uuid
 import numpy as np
 from numpy.testing import assert_array_almost_equal 
+from numpy.testing import assert_almost_equal 
 from nose.tools import assert_equal, assert_true
 
 from helper import check_cmd, run_cyclus, table_exist, find_ids
@@ -63,7 +64,7 @@ class TestPhysorEnrichment(TestRegression):
     def setUp(self):
         super(TestPhysorEnrichment, self).setUp()
         tbl = self.agent_entry
-        self.rx_id = find_ids(":cycamore:BatchReactor", 
+        self.rx_id = find_ids(":cycamore:Reactor", 
                               tbl["Spec"], tbl["AgentId"])
         self.enr_id = find_ids(":cycamore:EnrichmentFacility", 
                                tbl["Spec"], tbl["AgentId"])
@@ -79,7 +80,8 @@ class TestPhysorEnrichment(TestRegression):
         enr = self.enrichments
         # this can be updated if/when we can call into the cyclus::toolkit's
         # enrichment module from python
-        exp = [6.9, 10, 4.14, 6.9]
+        # with old BatchReactor: exp = [6.9, 10, 4.14, 6.9]
+        exp = [6.9 ,  9.66,  4.48,  6.9]
         obs = [np.sum(enr["SWU"][enr["Time"] == t]) for t in range(4)]
         assert_array_almost_equal(exp, obs, decimal=2)
 
@@ -87,7 +89,9 @@ class TestPhysorEnrichment(TestRegression):
         enr = self.enrichments
         # this can be updated if/when we can call into the cyclus::toolkit's
         # enrichment module from python
-        exp = [13.03, 16.54, 7.83, 13.03]
+
+        # with old BatchReactor: exp = [13.03, 16.54, 7.83, 13.03]
+        exp = [13.03,  15.9 ,   8.47,  13.03]
         obs = [np.sum(enr["Natural_Uranium"][enr["Time"] == t]) \
                    for t in range(4)]
         assert_array_almost_equal(exp, obs, decimal=2)
@@ -103,15 +107,20 @@ class TestPhysorEnrichment(TestRegression):
 
         # this can be updated if/when we can call into the cyclus::toolkit's
         # enrichment module from python
-        exp = [1, 0.8, 0.2, 1]
-        obs = transfers[0]
+
         msg = "Testing that first reactor gets less than it wants."      
-        assert_array_almost_equal(exp, obs, decimal=2, err_msg=msg)
+        exp = 3
+        obs = transfers[0]
+        assert_almost_equal(exp, sum(obs))
+        # with old BatchReactor: exp = [1, 0.8, 0.2, 1]
+        # with old BatchReactor: assert_array_almost_equal(exp, obs, decimal=2, err_msg=msg)
         
-        exp = [1, 1, 1, 1]
-        obs = transfers[1]
         msg = "Testing that second reactor gets what it wants."      
-        assert_array_almost_equal(exp, obs, decimal=2)
+        exp = 4
+        obs = transfers[1]
+        assert_almost_equal(exp, sum(obs))
+        # with old BatchReactor: exp = [1, 1, 1, 1]
+        # with old BatchReactor: assert_array_almost_equal(exp, obs, decimal=2, err_msg=msg)
         
 class TestPhysorSources(TestRegression):
     """This class tests the 2_Sources_3_Reactor.xml file related to the Cyclus
@@ -127,7 +136,7 @@ class TestPhysorSources(TestRegression):
         
         # identify each reactor and supplier by id
         tbl = self.agent_entry
-        rx_id = find_ids(":cycamore:BatchReactor", 
+        rx_id = find_ids(":cycamore:Reactor", 
                          tbl["Spec"], tbl["AgentId"])
         self.r1, self.r2, self.r3 = tuple(rx_id)
         s_id = find_ids(":cycamore:Source", 
@@ -144,55 +153,49 @@ class TestPhysorSources(TestRegression):
         assert_equal(depl_time[self.r3], 3)
 
     def test_rxtr1_xactions(self):
-        xa = self.transactions
-        
         mox_exp = [0, 1, 1, 1, 0]
-        obs = np.zeros(5)
-        rows = xa[np.logical_and(xa["ReceiverId"] == self.r1, 
-                                 xa["SenderId"] == self.smox)] 
-        obs[rows["Time"]] = [self.rsrc_qtys[x] for x in rows["ResourceId"]]
-        assert_array_almost_equal(mox_exp, obs)
+        txs = [0, 0, 0, 0, 0]
+        for tx in self.transactions:
+            if tx['ReceiverId'] == self.r1 and tx['SenderId'] == self.smox:
+                txs[tx['Time']] += self.rsrc_qtys[tx['ResourceId']]
+        assert_array_almost_equal(mox_exp, txs)
         
         uox_exp = [0, 0, 0, 0, 1]
-        obs = np.zeros(5)
-        rows = xa[np.logical_and(xa["ReceiverId"] == self.r1, 
-                                 xa["SenderId"] == self.suox)] 
-        obs[rows["Time"]] = [self.rsrc_qtys[x] for x in rows["ResourceId"]]
-        assert_array_almost_equal(uox_exp, obs)
+        txs = [0, 0, 0, 0, 0]
+        for tx in self.transactions:
+            if tx['ReceiverId'] == self.r1 and tx['SenderId'] == self.suox:
+                txs[tx['Time']] += self.rsrc_qtys[tx['ResourceId']]
+        assert_array_almost_equal(uox_exp, txs)
          
     def test_rxtr2_xactions(self):
-        xa = self.transactions
-        
         mox_exp = [0, 0, 1, 1, 1]
-        obs = np.zeros(5)
-        rows = xa[np.logical_and(xa["ReceiverId"] == self.r2, 
-                                 xa["SenderId"] == self.smox)] 
-        obs[rows["Time"]] = [self.rsrc_qtys[x] for x in rows["ResourceId"]]
-        assert_array_almost_equal(mox_exp, obs)
+        txs = [0, 0, 0, 0, 0]
+        for tx in self.transactions:
+            if tx['ReceiverId'] == self.r2 and tx['SenderId'] == self.smox:
+                txs[tx['Time']] += self.rsrc_qtys[tx['ResourceId']]
+        assert_array_almost_equal(mox_exp, txs)
         
         uox_exp = [0, 0, 0, 0, 0]
-        obs = np.zeros(5)
-        rows = xa[np.logical_and(xa["ReceiverId"] == self.r2, 
-                                 xa["SenderId"] == self.suox)] 
-        obs[rows["Time"]] = [self.rsrc_qtys[x] for x in rows["ResourceId"]]
-        assert_array_almost_equal(uox_exp, obs)
+        txs = [0, 0, 0, 0, 0]
+        for tx in self.transactions:
+            if tx['ReceiverId'] == self.r2 and tx['SenderId'] == self.suox:
+                txs[tx['Time']] += self.rsrc_qtys[tx['ResourceId']]
+        assert_array_almost_equal(uox_exp, txs)
          
     def test_rxtr3_xactions(self):
-        xa = self.transactions
-        
         mox_exp = [0, 0, 0, 0.5, 1]
-        obs = np.zeros(5)
-        rows = xa[np.logical_and(xa["ReceiverId"] == self.r3, 
-                                 xa["SenderId"] == self.smox)] 
-        obs[rows["Time"]] = [self.rsrc_qtys[x] for x in rows["ResourceId"]]
-        assert_array_almost_equal(mox_exp, obs)
+        txs = [0, 0, 0, 0, 0]
+        for tx in self.transactions:
+            if tx['ReceiverId'] == self.r3 and tx['SenderId'] == self.smox:
+                txs[tx['Time']] += self.rsrc_qtys[tx['ResourceId']]
+        assert_array_almost_equal(mox_exp, txs)
         
         uox_exp = [0, 0, 0, 0.5, 0]
-        obs = np.zeros(5)
-        rows = xa[np.logical_and(xa["ReceiverId"] == self.r3, 
-                                 xa["SenderId"] == self.suox)] 
-        obs[rows["Time"]] = [self.rsrc_qtys[x] for x in rows["ResourceId"]]
-        assert_array_almost_equal(uox_exp, obs)
+        txs = [0, 0, 0, 0, 0]
+        for tx in self.transactions:
+            if tx['ReceiverId'] == self.r3 and tx['SenderId'] == self.suox:
+                txs[tx['Time']] += self.rsrc_qtys[tx['ResourceId']]
+        assert_array_almost_equal(uox_exp, txs)
 
 class TestDynamicCapacitated(TestRegression):
     """Tests dynamic capacity restraints involving changes in the number of

@@ -8,22 +8,10 @@
   </control>
 
   <archetypes>
-    <spec>
-      <lib>cycamore</lib>
-      <name>Source</name>
-    </spec>
-    <spec>
-      <lib>cycamore</lib>
-      <name>BatchReactor</name>
-    </spec>
-    <spec>
-      <lib>agents</lib>
-      <name>NullRegion</name>
-    </spec>
-    <spec>
-      <lib>cycamore</lib>
-      <name>DeployInst</name>
-    </spec>
+    <spec> <lib>cycamore</lib> <name>Source</name> </spec>
+    <spec> <lib>cycamore</lib> <name>Reactor</name> </spec>
+    <spec> <lib>agents</lib> <name>NullRegion</name> </spec>
+    <spec> <lib>cycamore</lib> <name>DeployInst</name> </spec>
   </archetypes>
 
   <facility>
@@ -32,7 +20,7 @@
       <Source>
         <out_commod>uox</out_commod>
         <recipe_name>uox_fuel_recipe</recipe_name>
-        <capacity>2.5</capacity>
+        <capacity>2.500000001</capacity>
       </Source>
     </config>
   </facility>
@@ -43,7 +31,7 @@
       <Source>
         <out_commod>mox</out_commod>
         <recipe_name>mox_fuel_recipe</recipe_name>
-        <capacity>2.5</capacity>
+        <capacity>2.500000001</capacity>
       </Source>
     </config>
   </facility>
@@ -51,125 +39,63 @@
   <facility>
     <name>Reactor1</name>
     <config>
-      <BatchReactor>
-        <fuel>
-          <incommodity>uox</incommodity>
-          <inrecipe>uox_fuel_recipe</inrecipe>
-          <outcommodity>waste</outcommodity>
-          <outrecipe>uox_used_fuel_recipe</outrecipe>
-        </fuel>
-        <fuel>
-          <incommodity>mox</incommodity>
-          <inrecipe>mox_fuel_recipe</inrecipe>
-          <outcommodity>waste</outcommodity>
-          <outrecipe>mox_used_fuel_recipe</outrecipe>
-        </fuel>
-        <processtime>1</processtime>
-        <nbatches>1</nbatches>
-        <batchsize>1</batchsize>
-        <refueltime>0</refueltime>
-        <initial_condition>
-          <core>
-            <nbatches>1</nbatches>
-            <commodity>mox</commodity>
-            <recipe>mox_fuel_recipe</recipe>
-          </core>
-        </initial_condition>
-        <commodity_production>
-          <commodity>lwr_power</commodity>
-          <capacity>.928</capacity>        <!--GWe-y-->
-          <cost>64</cost>        <!--$/kWe-y-->
-        </commodity_production>
-        <commod_pref>
-          <incommodity>mox</incommodity>
-          <preference>1.0</preference>
-        </commod_pref>
-        <pref_change>
-          <incommodity>uox</incommodity>
-          <new_pref>2.0</new_pref>
-          <time>4</time>
-        </pref_change>
-      </BatchReactor>
+      <Reactor>
+
+        <fuel_inrecipes>  <val>uox_fuel_recipe</val>      <val>mox_fuel_recipe</val>      </fuel_inrecipes>
+        <fuel_outrecipes> <val>uox_used_fuel_recipe</val> <val>mox_used_fuel_recipe</val> </fuel_outrecipes>
+        <fuel_incommods>  <val>uox</val>                  <val>mox</val>                  </fuel_incommods>
+        <fuel_outcommods> <val>waste</val>                <val>waste</val>                </fuel_outcommods>
+        <fuel_prefs>      <val>0.0</val>                  <val>1.0</val>                  </fuel_prefs>
+
+        <cycle_time>1</cycle_time>
+        <refuel_time>0</refuel_time>
+        <assem_size>0.1</assem_size>
+        <n_assem_core>10</n_assem_core>
+        <n_assem_batch>10</n_assem_batch>
+
+        <pref_change_times>   <val>4</val>   </pref_change_times>
+        <pref_change_commods> <val>uox</val> </pref_change_commods>
+        <pref_change_values>  <val>2.0</val> </pref_change_values>
+
+      </Reactor>
     </config>
   </facility>
 
   <facility>
     <name>Reactor2</name>
     <config>
-      <BatchReactor>
-        <fuel>
-          <incommodity>uox</incommodity>
-          <inrecipe>uox_fuel_recipe</inrecipe>
-          <outcommodity>waste</outcommodity>
-          <outrecipe>uox_used_fuel_recipe</outrecipe>
-        </fuel>
-        <fuel>
-          <incommodity>mox</incommodity>
-          <inrecipe>mox_fuel_recipe</inrecipe>
-          <outcommodity>waste</outcommodity>
-          <outrecipe>mox_used_fuel_recipe</outrecipe>
-        </fuel>
-        <processtime>1</processtime>
-        <nbatches>1</nbatches>
-        <batchsize>1</batchsize>
-        <refueltime>0</refueltime>
-        <initial_condition>
-          <core>
-            <nbatches>1</nbatches>
-            <commodity>mox</commodity>
-            <recipe>mox_fuel_recipe</recipe>
-          </core>
-        </initial_condition>
-        <commodity_production>
-          <commodity>lwr_power</commodity>
-          <capacity>.928</capacity>        <!--GWe-y-->
-          <cost>64</cost>        <!--$/kWe-y-->
-        </commodity_production>
-        <commod_pref>
-          <incommodity>mox</incommodity>
-          <preference>1.0</preference>
-        </commod_pref>
-      </BatchReactor>
+      <Reactor>
+        <fuel_inrecipes>  <val>uox_fuel_recipe</val>      <val>mox_fuel_recipe</val>      </fuel_inrecipes>
+        <fuel_outrecipes> <val>uox_used_fuel_recipe</val> <val>mox_used_fuel_recipe</val> </fuel_outrecipes>
+        <fuel_incommods>  <val>uox</val>                  <val>mox</val>                  </fuel_incommods>
+        <fuel_outcommods> <val>waste</val>                <val>waste</val>                </fuel_outcommods>
+        <fuel_prefs>      <val>0.0</val>                  <val>1.0</val>                  </fuel_prefs>
+
+        <cycle_time>1</cycle_time>
+        <refuel_time>0</refuel_time>
+        <assem_size>0.1</assem_size>
+        <n_assem_core>10</n_assem_core>
+        <n_assem_batch>10</n_assem_batch>
+      </Reactor>
     </config>
   </facility>
 
   <facility>
     <name>Reactor3</name>
     <config>
-      <BatchReactor>
-        <fuel>
-          <incommodity>uox</incommodity>
-          <inrecipe>uox_fuel_recipe</inrecipe>
-          <outcommodity>waste</outcommodity>
-          <outrecipe>uox_used_fuel_recipe</outrecipe>
-        </fuel>
-        <fuel>
-          <incommodity>mox</incommodity>
-          <inrecipe>mox_fuel_recipe</inrecipe>
-          <outcommodity>waste</outcommodity>
-          <outrecipe>mox_used_fuel_recipe</outrecipe>
-        </fuel>
-        <processtime>1</processtime>
-        <nbatches>1</nbatches>
-        <batchsize>1</batchsize>
-        <refueltime>0</refueltime>
-        <initial_condition>
-          <core>
-            <nbatches>1</nbatches>
-            <commodity>mox</commodity>
-            <recipe>mox_fuel_recipe</recipe>
-          </core>
-        </initial_condition>
-        <commodity_production>
-          <commodity>lwr_power</commodity>
-          <capacity>.928</capacity>        <!--GWe-y-->
-          <cost>64</cost>        <!--$/kWe-y-->
-        </commodity_production>
-        <commod_pref>
-          <incommodity>mox</incommodity>
-          <preference>0.5</preference>
-        </commod_pref>
-      </BatchReactor>
+      <Reactor>
+        <fuel_inrecipes>  <val>uox_fuel_recipe</val>      <val>mox_fuel_recipe</val>      </fuel_inrecipes>
+        <fuel_outrecipes> <val>uox_used_fuel_recipe</val> <val>mox_used_fuel_recipe</val> </fuel_outrecipes>
+        <fuel_incommods>  <val>uox</val>                  <val>mox</val>                  </fuel_incommods>
+        <fuel_outcommods> <val>waste</val>                <val>waste</val>                </fuel_outcommods>
+        <fuel_prefs>      <val>0.0</val>                  <val>0.5</val>                  </fuel_prefs>
+
+        <cycle_time>1</cycle_time>
+        <refuel_time>0</refuel_time>
+        <assem_size>0.1</assem_size>
+        <n_assem_core>10</n_assem_core>
+        <n_assem_batch>10</n_assem_batch>
+      </Reactor>
     </config>
   </facility>
 
