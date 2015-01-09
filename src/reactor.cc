@@ -100,6 +100,11 @@ void Reactor::AcceptMatlTrades(
   std::vector< std::pair<cyclus::Trade<cyclus::Material>,
                          cyclus::Material::Ptr> >::const_iterator trade;
 
+  std::stringstream ss;
+  ss << "LOAD: " << std::min((int)responses.size(), n_assem_core - core.count())
+     << " assemblies";
+  Record(ss.str());
+
   for (trade = responses.begin(); trade != responses.end(); ++trade) {
     std::string commod = trade->first.request->commodity();
     Material::Ptr m = trade->second;
@@ -176,6 +181,10 @@ void Reactor::Tock() {
     cycle_step = 0;
   }
 
+  if (cycle_step == 0 && core.count() == n_assem_core) {
+    Record("CYCLE: start");
+  }
+
   // "if" prevents starting cycle after initial deployment until core is full
   // even though cycle_step is its initial zero.
   if (cycle_step > 0 || core.count() == n_assem_core) {
@@ -184,6 +193,7 @@ void Reactor::Tock() {
 
   if (cycle_step == cycle_time) {
     Transmute();
+    Record("CYCLE: end");
   }
   if (cycle_step >= cycle_time && !discharged) {
     discharged = Discharge();
@@ -200,6 +210,10 @@ void Reactor::Transmute() {
   core.Push(old);
   core.Push(tail);
 
+  std::stringstream ss;
+  ss << "TRANSMUTE: " << old.size() << " assemblies";
+  Record(ss.str());
+
   for (int i = 0; i < old.size(); i++) {
     old[i]->Transmute(context()->GetRecipe(fuel_outrecipe(old[i])));
   }
@@ -207,16 +221,29 @@ void Reactor::Transmute() {
 
 bool Reactor::Discharge() {
   if (n_assem_spent - spent.count() < n_assem_batch) {
+    Record("DISCHARGE: failed");
     return false; // not enough room in spent buffer
   }
 
   int npop = std::min(n_assem_batch, core.count());
+
+  std::stringstream ss;
+  ss << "DISCHARGE: " << npop << " assemblies";
+  Record(ss.str());
+
   spent.Push(core.PopN(npop));
   return true;
 }
 
 void Reactor::Load() {
   int n = std::min(n_assem_core - core.count(), fresh.count());
+  if (n == 0) {
+    return;
+  }
+
+  std::stringstream ss;
+  ss << "LOAD: " << n << " assemblies";
+  Record(ss.str());
   core.Push(fresh.PopN(n));
 }
 
@@ -297,6 +324,14 @@ MatVec Reactor::SpentResFor(std::string outcommod) {
     }
   }
   return found;
+}
+
+void Reactor::Record(std::string name) {
+  context()->NewDatum("ReactorEvents")
+    ->AddVal("AgentId", id())
+    ->AddVal("Time", context()->time())
+    ->AddVal("Event", name)
+    ->Record();
 }
 
 extern "C" cyclus::Agent* ConstructReactor(cyclus::Context* ctx) {

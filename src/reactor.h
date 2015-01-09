@@ -102,6 +102,9 @@ class Reactor : public cyclus::Facility {
   /// fully burnt state as defined by its outrecipe.
   void Transmute();
 
+  /// record a reactor event
+  void Record(std::string name);
+
   cyclus::toolkit::MatVec SpentResFor(std::string outcommod);
 
   cyclus::Material::Ptr PopSpentRes(std::string outcommod);
