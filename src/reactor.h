@@ -92,9 +92,6 @@ class Reactor : public cyclus::Facility {
   /// Store fuel info index for the given resource received on incommod.
   void index_res(cyclus::Resource::Ptr m, std::string incommod);
 
-  /// Returns true if the reactor is operating in discrete assembly mode.
-  bool discrete_mode() {return n_assem_core > 1 || n_batches == 1;};
-
   /// Discharge a batch from the core if there is room in the spent fuel
   /// inventory.  Returns true if a batch was successfully discharged.
   bool Discharge();
@@ -221,11 +218,11 @@ class Reactor : public cyclus::Facility {
   #pragma cyclus var { \
     "default": [], \
   }
-  std::vector<std::string> recipe_change_incommods;
+  std::vector<std::string> recipe_change_in;
   #pragma cyclus var { \
     "default": [], \
   }
-  std::vector<std::string> recipe_change_outcommods;
+  std::vector<std::string> recipe_change_out;
 
 };
 

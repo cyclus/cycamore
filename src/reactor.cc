@@ -31,10 +31,41 @@ void Reactor::Tick() {
     Discharge();
     Load();
   }
+  
+  int t = context()->time();
 
   // update preferences
+  for (int i = 0; i < pref_change_times.size(); i++) {
+    int change_t = pref_change_times[i];
+    if (t != change_t) {
+      continue;
+    }
+
+    std::string incommod = pref_change_commods[i];
+    for (int j = 0; j < fuel_incommods.size(); j++) {
+      if (fuel_incommods[j] == incommod) {
+        fuel_prefs[j] = pref_change_values[i];
+        break;
+      }
+    }
+  }
 
   // update recipes
+  for (int i = 0; i < recipe_change_times.size(); i++) {
+    int change_t = recipe_change_times[i];
+    if (t != change_t) {
+      continue;
+    }
+
+    std::string incommod = recipe_change_commods[i];
+    for (int j = 0; j < fuel_incommods.size(); j++) {
+      if (fuel_incommods[j] == incommod) {
+        fuel_inrecipes[j] = recipe_change_in[i];
+        fuel_outrecipes[j] = recipe_change_out[i];
+        break;
+      }
+    }
+  }
 }
 
 std::set<cyclus::RequestPortfolio<Material>::Ptr>
