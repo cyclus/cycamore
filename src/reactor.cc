@@ -78,6 +78,10 @@ Reactor::GetMatlRequests() {
 
   int n_assem_order = n_assem_core - core.count()
                       + n_assem_fresh - fresh.count();
+  if (n_assem_order == 0) {
+    return ports;
+  }
+
   for (int i = 0; i < n_assem_order; i++) {
     std::vector<Request<Material>*> mreqs;
     for (int j = 0; j < fuel_incommods.size(); j++) {
@@ -149,6 +153,8 @@ Reactor::GetMatlBids(cyclus::CommodMap<Material>::type&
     for (int j = 0; j < mats.size(); j++) {
       tot_qty += mats[j]->quantity();
     }
+    std::cout << "mats.size() = " << mats.size() << "\n";
+    std::cout << "tot_qty = " << tot_qty << "\n";
     cyclus::CapacityConstraint<Material> cc(tot_qty);
     port->AddConstraint(cc);
     ports.insert(port);
@@ -293,6 +299,10 @@ MatVec Reactor::SpentResFor(std::string outcommod) {
     }
   }
   return found;
+}
+
+extern "C" cyclus::Agent* ConstructReactor(cyclus::Context* ctx) {
+  return new Reactor(ctx);
 }
 
 } // namespace cycamore

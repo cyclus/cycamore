@@ -61,7 +61,6 @@ class Reactor : public cyclus::Facility {
   Reactor(cyclus::Context* ctx);
   virtual ~Reactor() {};
 
-  virtual void EnterNotify() {};
   virtual void Tick();
   virtual void Tock();
 
@@ -178,8 +177,12 @@ class Reactor : public cyclus::Facility {
 
   // This variable should be hidden/unavailable in ui.  Maps resource object
   // id's to the index for the incommod through which they were received.
-  #pragma cyclus var {}
+  #pragma cyclus var {"default": {}}
   std::map<int, int> res_indexes;
+
+  // TODO: do we need this?
+  std::vector<std::string> init_core_fuel;
+  std::vector<int> init_core_assem;
 
   // Resource inventories - these must be defined AFTER/BELOW the member vars
   // referenced (e.g. n_batch_fresh, assem_size, etc.).
