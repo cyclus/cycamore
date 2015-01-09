@@ -103,8 +103,6 @@ class Reactor : public cyclus::Facility {
   /// fully burnt state as defined by its outrecipe.
   void Transmute();
 
-  int assem_per_discharge();
-
   cyclus::toolkit::MatVec SpentResFor(std::string outcommod);
 
   cyclus::Material::Ptr PopSpentRes(std::string outcommod);
@@ -113,13 +111,13 @@ class Reactor : public cyclus::Facility {
   #pragma cyclus var { \
     "doc": "", \
   }
-  double n_batches;
+  int n_assem_batch;
   #pragma cyclus var { \
     "doc": "", \
   }
   double assem_size;
   #pragma cyclus var { \
-    "default": "n_batches", \
+    "doc": "", \
   }
   int n_assem_core;
   #pragma cyclus var { \
@@ -127,7 +125,7 @@ class Reactor : public cyclus::Facility {
   }
   int n_assem_spent;
   #pragma cyclus var { \
-    "default": 1, \
+    "default": 0, \
   }
   int n_assem_fresh;
 

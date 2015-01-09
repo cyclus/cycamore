@@ -12,7 +12,7 @@ namespace cycamore {
 
 Reactor::Reactor(cyclus::Context* ctx)
     : cyclus::Facility(ctx),
-      n_batches(0),
+      n_assem_batch(0),
       assem_size(0),
       n_assem_core(0),
       n_assem_spent(0),
@@ -184,10 +184,10 @@ void Reactor::Tock() {
 }
 
 void Reactor::Transmute() {
-  // we don't need min(assem_per_discharge()..., core.quantity()) because
+  // we don't need min(n_assem_batch * assem_size, core.quantity()) because
   // this function is+should only be called at the end of an operational cycle -
   // which can only happen if the core is full.
-  MatVec old = core.PopN(assem_per_discharge());
+  MatVec old = core.PopN(n_assem_batch);
   MatVec tail = core.PopN(core.count());
   core.Push(old);
   core.Push(tail);
@@ -200,12 +200,12 @@ void Reactor::Transmute() {
 bool Reactor::Discharge() {
   // we do need min's here in case we ever decide to discharge non-fully
   // batches from a core (e.g. discharge entire core at decommissioning).
-  double qty_pop = std::min(assem_per_discharge() * assem_size, core.quantity());
+  double qty_pop = std::min(n_assem_batch * assem_size, core.quantity());
   if (spent.space() < qty_pop) {
     return false; // not enough space in spent fuel inventory
   }
 
-  int npop = std::min(assem_per_discharge(), core.count());
+  int npop = std::min(n_assem_batch, core.count());
   spent.Push(core.PopN(npop));
   return true;
 }
@@ -214,10 +214,6 @@ void Reactor::Load() {
   while (core.count() < n_assem_core && fresh.count() > 0) {
     core.Push(fresh.Pop());
   }
-}
-
-int Reactor::assem_per_discharge() {
-  return static_cast<int>(n_assem_core / n_batches);
 }
 
 std::string Reactor::fuel_incommod(Material::Ptr m) {
