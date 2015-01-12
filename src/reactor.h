@@ -7,9 +7,10 @@ namespace cycamore {
 
 // Configurable parameters:
 //
-// * n_batches (double) - the inverse of the core fraction discharged per cycle
-//
 // * assem_size (double) - the mass in kg of a single assembly
+//
+// * n_assem_batch (int) - number of assemblies discharged per batch at the
+//   end of an operational cycle
 //
 // * n_assem_core (int) - the number of assemblies that constitute a core.
 //
@@ -22,33 +23,25 @@ namespace cycamore {
 // The Reactor will have 3 resource buffers (all with automatically computed
 // capacities based on above params):
 //
-// * fresh: capacity = n_assem_fresh * assem_size + eps
+// * fresh: capacity = n_assem_fresh * assem_size
 //
 // * core: capacity = n_assem_core * assem_size
 //
 // * spent: capacity = n_assem_spent * assem_size
 //
 // The reactor will always try to keep its fresh_fuel and core buffers full.
+// If the fresh fuel buffer has zero capacity (i.e. n_assem_fresh == 0), then
+// the reactor will not order new fuel until the next batch is discharged from
+// the core - i.e. "just-in-time" ordering.
 // The cycle progresses/runs only if the reactor is in active operation. The
 // following conditions result in reactor operation being suspended:
 //
 // * There are not enough full assemblies (with unspent life) to provide a full core
 //
-// * There is no room in the spent_fuel buffer to discharge a fully-burned assembly to.
+// * There is no room in the spent_fuel buffer to discharge a fully-burned assembly into.
 //
-// If a reactor is operating in discrete assembly mode, when it receives fresh
-// fuel, it only requests and accepts material in discrete assembly quanta (of size
-// assem_size).  Discrete assembly mode is the recommended mode of operation
-// for a reactor.  If a partial assembly is received, it is stored until
-// enough material can be acquired to complete the full assembly.  In this
-// mode, partial assemblies may not be inserted into the core.  When in this
-// mode, resources will never be split/combined by the reactor post assembly
-// discretization.  Number of assemblies discharged per cycle is computed:
-//
-//     floor(n_assem_core / n_batches)
-//
-// If that number is zero or results in a significantly rounded batch size,
-// the reactor will throw an exception or print a warning respectively.
+// A reactor only requests and accepts material in discrete assembly quanta (of size
+// assem_size). Resources will never be split/combined by the reactor.
 //
 // Meta-data associated with resource objects in inventory (e.g. the in-commod
 // on which they were received) should be associated with resources based on
@@ -103,7 +96,7 @@ class Reactor : public cyclus::Facility {
   void Transmute();
 
   /// record a reactor event
-  void Record(std::string name);
+  void Record(std::string name, std::string val);
 
   cyclus::toolkit::MatVec SpentResFor(std::string outcommod);
 
@@ -111,38 +104,48 @@ class Reactor : public cyclus::Facility {
 
   //////////// inventory and core params ////////////
   #pragma cyclus var { \
-    "doc": "", \
+    "doc": "Number of assemblies that constitute a single batch." \
+           "This is the number of assemblies discharged from the core fully burned each cycle.", \
   }
   int n_assem_batch;
   #pragma cyclus var { \
-    "doc": "", \
+    "doc": "Mass (kg) of a single assembly.", \
+    "units": "kg", \
   }
   double assem_size;
   #pragma cyclus var { \
     "doc": "", \
+    "doc": "Number of assemblies that constitute a full core.", \
   }
   int n_assem_core;
   #pragma cyclus var { \
     "default": 1000000000, \
+    "doc": "Number of spent fuel assemblies that can be stored on-site before reactor operation stalls.", \
   }
   int n_assem_spent;
   #pragma cyclus var { \
     "default": 0, \
+    "doc": "Number of fresh fuel assemblies to keep on-hand.", \
   }
   int n_assem_fresh;
 
   ///////// cycle params ///////////
   #pragma cyclus var { \
-    "doc": "", \
+    "doc": "The duration of a full operational cycle (excluding refueling time) in time steps.", \
+    "units": "time step duration", \
   }
   int cycle_time;
   #pragma cyclus var { \
-    "doc": "", \
+    "doc": "The duration of a full refueling period - the time between a cycle end" \
+           " and the start of the next cycle.", \
+    "units": "time steps", \
   }
   int refuel_time;
   #pragma cyclus var { \
     "default": 0, \
-    "doc": "Number of time steps since the beginning of the last cycle.", \
+    "doc": "Number of time steps since the start of the last cycle." \
+           " Only set this if you know what you are doing", \
+    "units": "time steps", \
   }
   int cycle_step;
 
@@ -154,38 +157,34 @@ class Reactor : public cyclus::Facility {
   std::vector<std::string> fuel_incommods;
   #pragma cyclus var { \
     "uitype": ["oneormore", "recipe"], \
-    "doc": "Fresh fuel recipes to request for each of the given fuel_incommods (same order).", \
+    "doc": "Fresh fuel recipes to request for each of the given fuel input commodities (same order).", \
   }
   std::vector<std::string> fuel_inrecipes;
   #pragma cyclus var { \
     "uitype": ["oneormore", "recipe"], \
-    "doc": "Spent fuel recipes corresponding to the given fuel_incommods (by order)." \
-           " Fuel received via a particular incommod is transmuted to the recipe specified" \
+    "doc": "Spent fuel recipes corresponding to the given fuel input commodities (same order)." \
+           " Fuel received via a particular input commodity is transmuted to the recipe specified" \
            " here after being burned during a cycle.", \
   }
   std::vector<std::string> fuel_outrecipes;
   #pragma cyclus var { \
     "uitype": ["oneormore", "incommodity"], \
-    "doc": "Output commodities on which to offer spent fuel for each of the given" \ 
-           " incommods (same order)." \
+    "doc": "Output commodities on which to offer spent fuel originally received as each particular " \ 
+           " input commodity (same order)." \
   }
   std::vector<std::string> fuel_outcommods;
   #pragma cyclus var { \
     "default": [], \
-    "doc": "The preference for each type of fresh fuel requested via the given" \
-           " incommods (same order).  If no preferences are specified, zero is" \
-           " used for all fuel requests.", \
+    "doc": "The preference for each type of fresh fuel requested corresponding to each input" \
+           " commodity (same order).  If no preferences are specified, zero is" \
+           " used for all fuel requests (default).", \
   }
   std::vector<double> fuel_prefs;
 
   // This variable should be hidden/unavailable in ui.  Maps resource object
   // id's to the index for the incommod through which they were received.
-  #pragma cyclus var {"default": {}}
+  #pragma cyclus var {"default": {}, "doc": "This should NEVER be set manually."}
   std::map<int, int> res_indexes;
-
-  // TODO: do we need this?
-  std::vector<std::string> init_core_fuel;
-  std::vector<int> init_core_assem;
 
   // Resource inventories - these must be defined AFTER/BELOW the member vars
   // referenced (e.g. n_batch_fresh, assem_size, etc.).
@@ -200,38 +199,51 @@ class Reactor : public cyclus::Facility {
   /////////// preference changes ///////////
   #pragma cyclus var { \
     "default": [], \
+    "doc": "The time step on which to change the request preference for a " \
+           "particular fresh fuel type.", \
   }
   std::vector<int> pref_change_times;
   #pragma cyclus var { \
     "default": [], \
+    "doc": "The input commodity for a particular fuel preference change." \
+           " Same order as and direct correspondence to the specified preference change time steps.", \
   }
   std::vector<std::string> pref_change_commods;
   #pragma cyclus var { \
     "default": [], \
+    "doc": "The new/changed request preference for a particular fresh fuel." \
+           " Same order as and direct correspondence to the specified preference change time steps.", \
   }
   std::vector<double> pref_change_values;
 
   ///////////// recipe changes ///////////
   #pragma cyclus var { \
     "default": [], \
+    "doc": "The time step on which to change the input-output recipe pair for a requested fresh fuel.", \
   }
   std::vector<int> recipe_change_times;
   #pragma cyclus var { \
     "default": [], \
+    "doc": "The input commodity indicating fresh fuel for which recipes will be changed." \
+           " Same order as and direct correspondence to the specified recipe change time steps.", \
   }
   std::vector<std::string> recipe_change_commods;
   #pragma cyclus var { \
     "default": [], \
+    "doc": "The new input recipe to use for this recipe change." \
+           " Same order as and direct correspondence to the specified recipe change time steps.", \
   }
   std::vector<std::string> recipe_change_in;
   #pragma cyclus var { \
     "default": [], \
+    "doc": "The new output recipe to use for this recipe change." \
+           " Same order as and direct correspondence to the specified recipe change time steps.", \
   }
   std::vector<std::string> recipe_change_out;
 
   // should be hidden in ui (internal only). True if fuel has been discharged
   // this cycle.
-  #pragma cyclus var {"default": 0}
+  #pragma cyclus var {"default": 0, "doc": "This should NEVER be set manually."}
   bool discharged;
 };
 

@@ -26,6 +26,22 @@ Reactor::Reactor(cyclus::Context* ctx)
 }
 
 void Reactor::Tick() {
+  // The following code must go in the Tick so they fire on the time step
+  // following the cycle_step update - allowing for the all reactor events to
+  // occur and be recorded on the "beginning" of a time step.  Another reason they
+  // can't go at the beginnin of the Tock is so that resource exchange has a
+  // chance to occur after the discharge on this same time step.
+  if (cycle_step == cycle_time) {
+    Transmute();
+    Record("CYCLE_END", "");
+  }
+  if (cycle_step >= cycle_time && !discharged) {
+    discharged = Discharge();
+  }
+  if (cycle_step >= cycle_time) {
+    Load();
+  }
+
   int t = context()->time();
 
   // update preferences
@@ -101,9 +117,11 @@ void Reactor::AcceptMatlTrades(
                          cyclus::Material::Ptr> >::const_iterator trade;
 
   std::stringstream ss;
-  ss << "LOAD: " << std::min((int)responses.size(), n_assem_core - core.count())
-     << " assemblies";
-  Record(ss.str());
+  int nload = std::min((int)responses.size(), n_assem_core - core.count());
+  if (nload > 0) {
+    ss << nload << " assemblies";
+    Record("LOAD", ss.str());
+  }
 
   for (trade = responses.begin(); trade != responses.end(); ++trade) {
     std::string commod = trade->first.request->commodity();
@@ -182,24 +200,13 @@ void Reactor::Tock() {
   }
 
   if (cycle_step == 0 && core.count() == n_assem_core) {
-    Record("CYCLE: start");
+    Record("CYCLE_START", "");
   }
 
   // "if" prevents starting cycle after initial deployment until core is full
   // even though cycle_step is its initial zero.
   if (cycle_step > 0 || core.count() == n_assem_core) {
     cycle_step++;
-  }
-
-  if (cycle_step == cycle_time) {
-    Transmute();
-    Record("CYCLE: end");
-  }
-  if (cycle_step >= cycle_time && !discharged) {
-    discharged = Discharge();
-  }
-  if (cycle_step >= cycle_time) {
-    Load();
   }
 }
 
@@ -211,8 +218,8 @@ void Reactor::Transmute() {
   core.Push(tail);
 
   std::stringstream ss;
-  ss << "TRANSMUTE: " << old.size() << " assemblies";
-  Record(ss.str());
+  ss << old.size() << " assemblies";
+  Record("TRANSMUTE", ss.str());
 
   for (int i = 0; i < old.size(); i++) {
     old[i]->Transmute(context()->GetRecipe(fuel_outrecipe(old[i])));
@@ -221,15 +228,15 @@ void Reactor::Transmute() {
 
 bool Reactor::Discharge() {
   if (n_assem_spent - spent.count() < n_assem_batch) {
-    Record("DISCHARGE: failed");
+    Record("DISCHARGE", "failed");
     return false; // not enough room in spent buffer
   }
 
   int npop = std::min(n_assem_batch, core.count());
 
   std::stringstream ss;
-  ss << "DISCHARGE: " << npop << " assemblies";
-  Record(ss.str());
+  ss << npop << " assemblies";
+  Record("DISCHARGE", ss.str());
 
   spent.Push(core.PopN(npop));
   return true;
@@ -242,8 +249,8 @@ void Reactor::Load() {
   }
 
   std::stringstream ss;
-  ss << "LOAD: " << n << " assemblies";
-  Record(ss.str());
+  ss << n << " assemblies";
+  Record("LOAD", ss.str());
   core.Push(fresh.PopN(n));
 }
 
@@ -326,11 +333,12 @@ MatVec Reactor::SpentResFor(std::string outcommod) {
   return found;
 }
 
-void Reactor::Record(std::string name) {
+void Reactor::Record(std::string name, std::string val) {
   context()->NewDatum("ReactorEvents")
     ->AddVal("AgentId", id())
     ->AddVal("Time", context()->time())
     ->AddVal("Event", name)
+    ->AddVal("Value", val)
     ->Record();
 }
 
