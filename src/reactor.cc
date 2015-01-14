@@ -76,6 +76,7 @@ void Reactor::Tick() {
       }
     }
   }
+
 }
 
 std::set<cyclus::RequestPortfolio<Material>::Ptr>
@@ -143,11 +144,19 @@ Reactor::GetMatlBids(cyclus::CommodMap<Material>::type&
 
   std::set<BidPortfolio<Material>::Ptr> ports;
 
+  bool gotmats = false;
+  std::map<std::string, MatVec> all_mats;
   for (int i = 0; i < fuel_outcommods.size(); i++) {
     std::string commod = fuel_outcommods[i];
-    MatVec mats = SpentResFor(commod);
     std::vector<Request<Material>*>& reqs = commod_requests[commod];
-    if (mats.size() == 0 || reqs.size() == 0) {
+    if (reqs.size() == 0) {
+      continue;
+    } else if (!gotmats) {
+      all_mats = PeekSpent();
+    }
+
+    MatVec mats = all_mats[commod];
+    if (mats.size() == 0) {
       continue;
     }
 
@@ -184,13 +193,16 @@ void Reactor::GetMatlTrades(
     Material::Ptr> >& responses) {
   using cyclus::Trade;
 
+  std::map<std::string, MatVec> mats = PopSpent();
   std::vector< cyclus::Trade<cyclus::Material> >::const_iterator it;
   for (int i = 0; i < trades.size(); i++) {
     std::string commod = trades[i].request->commodity();
-    Material::Ptr m = PopSpentRes(commod);
+    Material::Ptr m = mats[commod].back();
+    mats[commod].pop_back();
     responses.push_back(std::make_pair(trades[i], m));
     res_indexes.erase(m->obj_id());
   }
+  PushSpent(mats); // return leftovers back to spent buffer
 }
 
 void Reactor::Tock() {
@@ -224,6 +236,17 @@ void Reactor::Transmute() {
   for (int i = 0; i < old.size(); i++) {
     old[i]->Transmute(context()->GetRecipe(fuel_outrecipe(old[i])));
   }
+}
+
+std::map<std::string, MatVec> Reactor::PeekSpent() {
+  std::map<std::string, MatVec> mapped;
+  MatVec mats = spent.PopN(spent.count());
+  spent.Push(mats);
+  for (int i = 0; i < mats.size(); i++) {
+    std::string commod = fuel_outcommod(mats[i]);
+    mapped[commod].push_back(mats[i]);
+  }
+  return mapped;
 }
 
 bool Reactor::Discharge() {
@@ -304,35 +327,32 @@ void Reactor::index_res(cyclus::Resource::Ptr m, std::string incommod) {
   throw ValueError("cycamore::Reactor - received unsupported incommod material");
 }
 
-Material::Ptr Reactor::PopSpentRes(std::string outcommod) {
+std::map<std::string, MatVec> Reactor::PopSpent() {
   MatVec mats = spent.PopN(spent.count());
-  Material::Ptr m;
-  bool found = false;
+  std::map<std::string, MatVec> mapped;
   for (int i = 0; i < mats.size(); i++) {
     std::string commod = fuel_outcommod(mats[i]);
-    if (!found && commod == outcommod) {
-      m = mats[i];
-      found = true;
-    } else {
-      spent.Push(mats[i]);
-    }
+    mapped[commod].push_back(mats[i]);
   }
-  return m;
+
+  // needed so we trade away oldest assemblies first
+  std::map<std::string, MatVec>::iterator it;
+  for (it = mapped.begin(); it != mapped.end(); ++it) {
+    std::reverse(it->second.begin(), it->second.end());
+  }
+
+  return mapped;
 }
   
-MatVec Reactor::SpentResFor(std::string outcommod) {
-  MatVec mats = spent.PopN(spent.count());
-  MatVec found;
-  spent.Push(mats);
-  for (int i = 0; i < mats.size(); i++) {
-    std::string commod = fuel_outcommod(mats[i]);
-    if (commod == outcommod) {
-      found.push_back(mats[i]);
-    }
+void Reactor::PushSpent(std::map<std::string, MatVec> leftover) {
+  std::map<std::string, MatVec>::iterator it;
+  for (it = leftover.begin(); it != leftover.end(); ++it) {
+    // undo reverse in PopSpent to make sure oldest assemblies come out first
+    std::reverse(it->second.begin(), it->second.end());
+    spent.Push(it->second);
   }
-  return found;
 }
-
+  
 void Reactor::Record(std::string name, std::string val) {
   context()->NewDatum("ReactorEvents")
     ->AddVal("AgentId", id())

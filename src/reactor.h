@@ -57,11 +57,11 @@ class Reactor : public cyclus::Facility {
   virtual void Tick();
   virtual void Tock();
 
-  void AcceptMatlTrades(
+  virtual void AcceptMatlTrades(
       const std::vector< std::pair<cyclus::Trade<cyclus::Material>,
       cyclus::Material::Ptr> >& responses);
 
-  std::set<cyclus::RequestPortfolio<cyclus::Material>::Ptr> GetMatlRequests();
+  virtual std::set<cyclus::RequestPortfolio<cyclus::Material>::Ptr> GetMatlRequests();
 
   virtual std::set<cyclus::BidPortfolio<cyclus::Material>::Ptr>
       GetMatlBids(cyclus::CommodMap<cyclus::Material>::type&
@@ -98,14 +98,17 @@ class Reactor : public cyclus::Facility {
   /// Records a reactor event to the output db with the given name and note val.
   void Record(std::string name, std::string val);
 
-  /// Returns pointers to all the spent fuel materials that should be offered
-  /// on a particular outcommod without removing them from the spent
-  /// fuel buffer.
-  cyclus::toolkit::MatVec SpentResFor(std::string outcommod);
+  /// Complement of PopSpent - must be called with all materials passed that
+  /// were not traded away to other agents.
+  void PushSpent(std::map<std::string, cyclus::toolkit::MatVec> leftover);
 
-  /// Returns a single assembly for the specified outcommod - removing it from
+  /// Returns all spent assemblies indexed by outcommod - removing them from
   /// the spent fuel buffer.
-  cyclus::Material::Ptr PopSpentRes(std::string outcommod);
+  std::map<std::string, cyclus::toolkit::MatVec> PopSpent();
+
+  /// Returns all spent assemblies indexed by outcommod without removing them
+  /// from the spent fuel buffer.
+  std::map<std::string, cyclus::toolkit::MatVec> PeekSpent();
 
   //////////// inventory and core params ////////////
   #pragma cyclus var { \
