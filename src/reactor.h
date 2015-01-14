@@ -95,17 +95,23 @@ class Reactor : public cyclus::Facility {
   /// fully burnt state as defined by its outrecipe.
   void Transmute();
 
-  /// record a reactor event
+  /// Records a reactor event to the output db with the given name and note val.
   void Record(std::string name, std::string val);
 
+  /// Returns pointers to all the spent fuel materials that should be offered
+  /// on a particular outcommod without removing them from the spent
+  /// fuel buffer.
   cyclus::toolkit::MatVec SpentResFor(std::string outcommod);
 
+  /// Returns a single assembly for the specified outcommod - removing it from
+  /// the spent fuel buffer.
   cyclus::Material::Ptr PopSpentRes(std::string outcommod);
 
   //////////// inventory and core params ////////////
   #pragma cyclus var { \
     "doc": "Number of assemblies that constitute a single batch." \
-           "This is the number of assemblies discharged from the core fully burned each cycle.", \
+           "This is the number of assemblies discharged from the core fully burned each cycle." \
+           "Batch size is equivalent to ``n_assem_batch / n_assem_core``.", \
   }
   int n_assem_batch;
   #pragma cyclus var { \
@@ -114,7 +120,6 @@ class Reactor : public cyclus::Facility {
   }
   double assem_size;
   #pragma cyclus var { \
-    "doc": "", \
     "doc": "Number of assemblies that constitute a full core.", \
   }
   int n_assem_core;
@@ -125,19 +130,19 @@ class Reactor : public cyclus::Facility {
   int n_assem_spent;
   #pragma cyclus var { \
     "default": 0, \
-    "doc": "Number of fresh fuel assemblies to keep on-hand.", \
+    "doc": "Number of fresh fuel assemblies to keep on-hand if possible.", \
   }
   int n_assem_fresh;
 
   ///////// cycle params ///////////
   #pragma cyclus var { \
     "doc": "The duration of a full operational cycle (excluding refueling time) in time steps.", \
-    "units": "time step duration", \
+    "units": "time steps", \
   }
   int cycle_time;
   #pragma cyclus var { \
-    "doc": "The duration of a full refueling period - the time between a cycle end" \
-           " and the start of the next cycle.", \
+    "doc": "The duration of a full refueling period - the minimum time between" \
+           " a cycle end and the start of the next cycle.", \
     "units": "time steps", \
   }
   int refuel_time;
@@ -152,7 +157,7 @@ class Reactor : public cyclus::Facility {
   /////// fuel specifications /////////
   #pragma cyclus var { \
     "uitype": ["oneormore", "incommodity"], \
-    "doc": "Ordered list of input commodities for requesting fuel.", \
+    "doc": "Ordered list of input commodities on which to requesting fuel.", \
   }
   std::vector<std::string> fuel_incommods;
   #pragma cyclus var { \
@@ -195,7 +200,6 @@ class Reactor : public cyclus::Facility {
   #pragma cyclus var {"capacity": "n_assem_spent * assem_size"}
   cyclus::toolkit::ResBuf<cyclus::Material> spent;
 
-
   /////////// preference changes ///////////
   #pragma cyclus var { \
     "default": [], \
@@ -207,6 +211,7 @@ class Reactor : public cyclus::Facility {
     "default": [], \
     "doc": "The input commodity for a particular fuel preference change." \
            " Same order as and direct correspondence to the specified preference change time steps.", \
+    "uitype": ["oneormore", "incommodity"], \
   }
   std::vector<std::string> pref_change_commods;
   #pragma cyclus var { \
@@ -226,18 +231,21 @@ class Reactor : public cyclus::Facility {
     "default": [], \
     "doc": "The input commodity indicating fresh fuel for which recipes will be changed." \
            " Same order as and direct correspondence to the specified recipe change time steps.", \
+    "uitype": ["oneormore", "incommodity"], \
   }
   std::vector<std::string> recipe_change_commods;
   #pragma cyclus var { \
     "default": [], \
     "doc": "The new input recipe to use for this recipe change." \
            " Same order as and direct correspondence to the specified recipe change time steps.", \
+    "uitype": ["oneormore", "recipe"], \
   }
   std::vector<std::string> recipe_change_in;
   #pragma cyclus var { \
     "default": [], \
     "doc": "The new output recipe to use for this recipe change." \
            " Same order as and direct correspondence to the specified recipe change time steps.", \
+    "uitype": ["oneormore", "recipe"], \
   }
   std::vector<std::string> recipe_change_out;
 
