@@ -5,51 +5,86 @@
 
 namespace cycamore {
 
-// Configurable parameters:
-//
-// * assem_size (double) - the mass in kg of a single assembly
-//
-// * n_assem_batch (int) - number of assemblies discharged per batch at the
-//   end of an operational cycle
-//
-// * n_assem_core (int) - the number of assemblies that constitute a core.
-//
-// * n_assem_spent (int, default infinite) - the number of spent fuel assemblies
-//   that can be stored
-//
-// * n_assem_fresh (int, default n_assem_core) - the number of fresh assemblies to keep on
-//   hand
-//
-// The Reactor will have 3 resource buffers (all with automatically computed
-// capacities based on above params):
-//
-// * fresh: capacity = n_assem_fresh * assem_size
-//
-// * core: capacity = n_assem_core * assem_size
-//
-// * spent: capacity = n_assem_spent * assem_size
-//
-// The reactor will always try to keep its fresh_fuel and core buffers full.
-// If the fresh fuel buffer has zero capacity (i.e. n_assem_fresh == 0), then
-// the reactor will not order new fuel until the next batch is discharged from
-// the core - i.e. "just-in-time" ordering.
-// The cycle progresses/runs only if the reactor is in active operation. The
-// following conditions result in reactor operation being suspended:
-//
-// * There are not enough full assemblies (with unspent life) to provide a full core
-//
-// * There is no room in the spent_fuel buffer to discharge a fully-burned assembly into.
-//
-// A reactor only requests and accepts material in discrete assembly quanta (of size
-// assem_size). Resources will never be split/combined by the reactor.
-//
-// Meta-data associated with resource objects in inventory (e.g. the in-commod
-// on which they were received) should be associated with resources based on
-// obj_id.  This is necessary for maintaining continuity in the face of
-// potential decay calcs and other things that might change the regular
-// Resource::id.
-
+/// Reactor is a simple, general reactor based on static compositional
+/// transformations to model fuel burnup.  The user specifies a set of input
+/// fuels and corresponding burnt compositions that fuel is transformed to when
+/// it is discharged from the core.  No incremental transmutation takes place.
+/// Rather, at the end of an operational cycle, the batch being discharged from
+/// the core is instantaneously transmuted from its original fresh fuel
+/// composition into its spent fuel form.
+///
+/// Each fuel is identified by a specific input commodity and has an associated
+/// input recipe (nuclide composition), output recipe, output commidity, and
+/// preference.  The preference identifies which input fuels are preferred when
+/// requesting.  Changes in these preferences can be specified as a function of
+/// time using the pref_change variables.  Changes in the input-output recipe
+/// compositions can also be specified as a function of time using the
+/// recipe_change variables.
+///
+/// The reactor treats fuel as individual assemblies that are never split,
+/// combined or otherwise treated in any non-discrete way.  Fuel is requested
+/// in full-or-nothing assembly sized quanta.  If real-world assembly modeling
+/// is unnecessary, parameters can be adjusted (e.g. n_assem_core, assem_size,
+/// n_assem_batch).  At the end of every cycle, a full batch is discharged from
+/// the core consisting of n_assem_batch assemblies of assem_size kg. The
+/// reactor also has a specifiable refueling time period following the end of
+/// each cycle at the end of which it will resume operation on the next cycle
+/// *if* it has enough fuel for a full core; otherwise it waits until it has
+/// enough fresh fuel assemblies.
+///
+/// In addition to its core, the reactor has an on-hand fresh fuel inventory
+/// and a spent fuel inventory whose capacities are specified by n_assem_fresh
+/// and n_assem_spent respectively.  Each time step the reactor will attempt to
+/// acquire enough fresh fuel to fill its fresh fuel inventory (and its core if
+/// the core isn't currently full).  If the fresh fuel inventory has zero
+/// capacity, fuel will be ordered just-in-time after the end of each
+/// operational cycle before the next begins.  If the spent fuel inventory
+/// becomes full, the reactor will halt operation at the end of the next cycle
+/// until there is more room.  Each time step, the reactor will try to trade
+/// away as much of its spent fuel inventory as possible.
 class Reactor : public cyclus::Facility {
+#pragma cyclus note { \
+"niche": "reactor", \
+"doc": \
+  "Reactor is a simple, general reactor based on static compositional" \
+  "transformations to model fuel burnup.  The user specifies a set of input" \
+  "fuels and corresponding burnt compositions that fuel is transformed to when" \
+  "it is discharged from the core.  No incremental transmutation takes place." \
+  "Rather, at the end of an operational cycle, the batch being discharged from" \
+  "the core is instantaneously transmuted from its original fresh fuel" \
+  "composition into its spent fuel form." \
+  "\n\n" \
+  "Each fuel is identified by a specific input commodity and has an associated" \
+  "input recipe (nuclide composition), output recipe, output commidity, and" \
+  "preference.  The preference identifies which input fuels are preferred when" \
+  "requesting.  Changes in these preferences can be specified as a function of" \
+  "time using the pref_change variables.  Changes in the input-output recipe" \
+  "compositions can also be specified as a function of time using the" \
+  "recipe_change variables." \
+  "\n\n" \
+  "The reactor treats fuel as individual assemblies that are never split," \
+  "combined or otherwise treated in any non-discrete way.  Fuel is requested" \
+  "in full-or-nothing assembly sized quanta.  If real-world assembly modeling" \
+  "is unnecessary, parameters can be adjusted (e.g. n_assem_core, assem_size," \
+  "n_assem_batch).  At the end of every cycle, a full batch is discharged from" \
+  "the core consisting of n_assem_batch assemblies of assem_size kg. The" \
+  "reactor also has a specifiable refueling time period following the end of" \
+  "each cycle at the end of which it will resume operation on the next cycle" \
+  "*if* it has enough fuel for a full core; otherwise it waits until it has" \
+  "enough fresh fuel assemblies." \
+  "\n\n" \
+  "In addition to its core, the reactor has an on-hand fresh fuel inventory" \
+  "and a spent fuel inventory whose capacities are specified by n_assem_fresh" \
+  "and n_assem_spent respectively.  Each time step the reactor will attempt to" \
+  "acquire enough fresh fuel to fill its fresh fuel inventory (and its core if" \
+  "the core isn't currently full).  If the fresh fuel inventory has zero" \
+  "capacity, fuel will be ordered just-in-time after the end of each" \
+  "operational cycle before the next begins.  If the spent fuel inventory" \
+  "becomes full, the reactor will halt operation at the end of the next cycle" \
+  "until there is more room.  Each time step, the reactor will try to trade" \
+  "away as much of its spent fuel inventory as possible.", \
+}
+
  public:
   Reactor(cyclus::Context* ctx);
   virtual ~Reactor() {};
