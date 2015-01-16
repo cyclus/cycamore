@@ -14,12 +14,14 @@ namespace cycamore {
 EnrichmentFacility::EnrichmentFacility(cyclus::Context* ctx)
     : cyclus::Facility(ctx),
       tails_assay(0),
-      feed_assay(0),
+      feed_assay(0),    ///***DO we make Feed Assay derived at line 142???
       swu_capacity(0),
+      //      max_enrich(0),  ///***
       initial_reserves(0),
       in_commod(""),
       in_recipe(""),
-      out_commod("") {}
+      out_commod(""){} //,
+  //      tails_commod{}   /// ***
 
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 EnrichmentFacility::~EnrichmentFacility() {}
@@ -34,6 +36,7 @@ std::string EnrichmentFacility::str() {
      << " * Feed assay: " << FeedAssay()
      << " * Input cyclus::Commodity: " << in_commodity()
      << " * Output cyclus::Commodity: " << out_commodity();
+  //     << " * Tails cyclus::Commodity: " << tails_commodity(); ///***
   return ss.str();
 }
 
@@ -99,6 +102,8 @@ void EnrichmentFacility::AcceptMatlTrades(
   }
 }
 
+  ///*** Here is where we check material composition ***
+  
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 std::set<cyclus::BidPortfolio<cyclus::Material>::Ptr>
 EnrichmentFacility::GetMatlBids(
@@ -110,6 +115,8 @@ EnrichmentFacility::GetMatlBids(
   using cyclus::Material;
   using cyclus::Request;
 
+  /// *** add a similar function for tails bids? ***
+  
   std::set<BidPortfolio<Material>::Ptr> ports;
 
   if (commod_requests.count(out_commod) > 0 && inventory.quantity() > 0) {
@@ -127,8 +134,15 @@ EnrichmentFacility::GetMatlBids(
       }
     }
 
-    Converter<Material>::Ptr sc(new SWUConverter(feed_assay, tails_assay));
-    Converter<Material>::Ptr nc(new NatUConverter(feed_assay, tails_assay));
+    /// *** Need to calculate what actual feed assay is (U235 fraction
+    ///in unenriched inventory -- currently is calculating based on
+    /// input recipe instead ) rather than using hard-coded value
+    Material::Ptr fission_matl=inventory.Pop(inventory.quantity());
+    inventory.Push(fission_matl);
+    double my_feed_assay=cyclus::toolkit::UraniumAssay(fission_matl); //TODO ** change var to feed_assay??
+      
+    Converter<Material>::Ptr sc(new SWUConverter(my_feed_assay, tails_assay));
+    Converter<Material>::Ptr nc(new NatUConverter(my_feed_assay, tails_assay));
     CapacityConstraint<Material> swu(swu_capacity, sc);
     CapacityConstraint<Material> natu(inventory.quantity(), nc);
     port->AddConstraint(swu);
@@ -153,7 +167,7 @@ bool EnrichmentFacility::ValidReq(const cyclus::Material::Ptr mat) {
   double u238 = q.atom_frac(922380000);
   return (u238 > 0 && u235 / (u235 + u238) > TailsAssay());
 }
-
+  
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 void EnrichmentFacility::GetMatlTrades(
   const std::vector< cyclus::Trade<cyclus::Material> >& trades,
@@ -180,16 +194,44 @@ void EnrichmentFacility::GetMatlTrades(
       + " is being asked to provide more than its SWU capacity.");
   }
 }
-
+  /// *** Add similar for tails ? ****
+  
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 void EnrichmentFacility::AddMat_(cyclus::Material::Ptr mat) {
-  if (mat->comp() != context()->GetRecipe(in_recipe)) {
+  double threshold = 0.001;  /// TODO *** What is a reasonable threshold?
+  cyclus::toolkit::MatQuery q = MatQuery(mat) ;
+  if (! bool cyclus::toolkit::MatQuery::AlmostEq(context()->
+    GetRecipe(in_recipe), threshold)){
     throw cyclus::ValueError(
       "EnrichmentFacility recipe and material composition not the same.");
   }
+  // Elements and isotopes other than U-235, U-238 are sent directly to tails
+  cyclus::CompMap cm = mat->comp()->atom();
+  double u_other, non_u ;
+  for (cyclus::CompMap::const_iterator it=cm.begin(); it !=cm.end; ++it) {
+    if (pyne::nucname::znum(it->first) == 92){
+      if (pyne::nucname::anum(it->first) != 235 &&
+          pyne::nucname::anum(it->first) != 238 ){
+	u_other +=it->second.atom_frac();
+      }
+    }
+    else {
+      u_other +=it->second.atom_frac() ;
+    }
+  }
+  if (u_other > 0.0){
+    cyclus::Warn<cyclus::VALUE_WARNING>("More than 2 isotopes of U."  \
+      "Istopes other than U-235, U-238 are sent directly to tails.");
+  }
+  if (non_u > 0.0){
+    cyclus::Warn<cyclus::VALUE_WARNING>("Non-uranium elements are "   \
+      "sent directly to tails.");
+  }
+  /// TODO: Add FAIL if non-235/238 quantities are too large
+ 
 
   LOG(cyclus::LEV_INFO5, "EnrFac") << prototype() << " is initially holding "
-                                << inventory.quantity() << " total.";
+				   << inventory.quantity() << " total.";
 
   try {
     inventory.Push(mat);
@@ -220,7 +262,7 @@ cyclus::Material::Ptr EnrichmentFacility::Offer_(cyclus::Material::Ptr mat) {
   return cyclus::Material::CreateUntracked(
            mat->quantity(), cyclus::Composition::CreateFromAtom(comp));
 }
-
+  /// *** bid for input material or offer of output?
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 cyclus::Material::Ptr EnrichmentFacility::Enrich_(
   cyclus::Material::Ptr mat,
@@ -237,7 +279,7 @@ cyclus::Material::Ptr EnrichmentFacility::Enrich_(
   Assays assays(FeedAssay(), UraniumAssay(mat), TailsAssay());
   double swu_req = SwuRequired(qty, assays);
   double natu_req = FeedQty(qty, assays);
-
+ 
   // pop amount from inventory and blob it into one material
   std::vector<Material::Ptr> manifest;
   try {
