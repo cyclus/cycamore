@@ -110,6 +110,24 @@ Reactor::GetMatlRequests() {
   return ports;
 }
 
+void Reactor::GetMatlTrades(
+    const std::vector< cyclus::Trade<Material> >& trades,
+    std::vector<std::pair<cyclus::Trade<Material>,
+    Material::Ptr> >& responses) {
+  using cyclus::Trade;
+
+  std::map<std::string, MatVec> mats = PopSpent();
+  std::vector< cyclus::Trade<cyclus::Material> >::const_iterator it;
+  for (int i = 0; i < trades.size(); i++) {
+    std::string commod = trades[i].request->commodity();
+    Material::Ptr m = mats[commod].back();
+    mats[commod].pop_back();
+    responses.push_back(std::make_pair(trades[i], m));
+    res_indexes.erase(m->obj_id());
+  }
+  PushSpent(mats); // return leftovers back to spent buffer
+}
+
 void Reactor::AcceptMatlTrades(
     const std::vector< std::pair<cyclus::Trade<Material>,
     Material::Ptr> >& responses) {
@@ -185,24 +203,6 @@ Reactor::GetMatlBids(cyclus::CommodMap<Material>::type&
   }
 
   return ports;
-}
-
-void Reactor::GetMatlTrades(
-    const std::vector< cyclus::Trade<Material> >& trades,
-    std::vector<std::pair<cyclus::Trade<Material>,
-    Material::Ptr> >& responses) {
-  using cyclus::Trade;
-
-  std::map<std::string, MatVec> mats = PopSpent();
-  std::vector< cyclus::Trade<cyclus::Material> >::const_iterator it;
-  for (int i = 0; i < trades.size(); i++) {
-    std::string commod = trades[i].request->commodity();
-    Material::Ptr m = mats[commod].back();
-    mats[commod].pop_back();
-    responses.push_back(std::make_pair(trades[i], m));
-    res_indexes.erase(m->obj_id());
-  }
-  PushSpent(mats); // return leftovers back to spent buffer
 }
 
 void Reactor::Tock() {

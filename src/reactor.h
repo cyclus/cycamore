@@ -126,7 +126,7 @@ class Reactor : public cyclus::Facility {
   /// Top up core inventory as much as possible.
   void Load();
 
-  /// Transmute the batch in the core that is about to be discharged to its
+  /// Transmute the batch that is about to be discharged from the core to its
   /// fully burnt state as defined by its outrecipe.
   void Transmute();
 
