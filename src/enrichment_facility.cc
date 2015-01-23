@@ -1,5 +1,4 @@
 /*
-What is the difference between feed_assay and FeedAssay? How do I fix FeedAssay and possibly create a new function?
 How do I track the tails material going in and out of trades? Make sure request doesnt exceed inventory?
 How do I refer to the tails Material in the bids?
 */
@@ -20,14 +19,13 @@ namespace cycamore {
 EnrichmentFacility::EnrichmentFacility(cyclus::Context* ctx)
     : cyclus::Facility(ctx),
       tails_assay(0),
-      //      feed_assay(0),    ///***DO we make Feed Assay derived at line 142???
       swu_capacity(0),
-      //      max_enrich(0),  ///***
+      //      max_enrich(0),  ///QQ
       initial_reserves(0),
       in_commod(""),
       in_recipe(""),
-      out_commod(""),
-      tails_commod(""){}   /// ***
+      out_commod(""){}
+      //     tails_commod(""){}   ///QQ
 
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 EnrichmentFacility::~EnrichmentFacility() {}
@@ -39,10 +37,10 @@ std::string EnrichmentFacility::str() {
      << " with enrichment facility parameters:"
      << " * SWU capacity: " << SwuCapacity()
      << " * Tails assay: " << TailsAssay()
-     << " * Feed assay: " << FeedAssay()   //*** Remove?? **
+     << " * Feed assay: " << FeedAssay()   //QQ Remove??
      << " * Input cyclus::Commodity: " << in_commodity()
-     << " * Output cyclus::Commodity: " << out_commodity()
-     << " * Tails cyclus::Commodity: " << tails_commodity(); ///***
+     << " * Output cyclus::Commodity: " << out_commodity();
+    //QQ    << " * Tails cyclus::Commodity: " << tails_commodity(); ///QQ
   return ss.str();
 }
 
@@ -67,7 +65,7 @@ void EnrichmentFacility::Tick() {
   LOG(cyclus::LEV_INFO3, "EnrFac") << prototype() << " is ticking {";
   ///  LOG(cyclus::LEV_INFO4, "SrcFac") << "will offer " << capacity
   //                                 << " kg of "
-  //                                 << tails_commod << ".";  // *** Not needed since no out_commod notification?
+  //                                 << tails_commod << ".";  //QQ Not needed since no out_commod notification?
   LOG(cyclus::LEV_INFO3, "EnrFac") << "}";
   current_swu_capacity = SwuCapacity();
 }
@@ -111,7 +109,7 @@ void EnrichmentFacility::AcceptMatlTrades(
   }
 }
 
-  ///*** Here is where we check material composition ***
+  ///QQ Here is where we check material composition 
   
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 std::set<cyclus::BidPortfolio<cyclus::Material>::Ptr>
@@ -125,13 +123,13 @@ EnrichmentFacility::GetMatlBids(
   using cyclus::Request;
 
   std::set<BidPortfolio<Material>::Ptr> ports;
-  // *** Add tails bids here
+  /*  //QQ Add tails bids here
   if (commod_requests.count(tails_commod) > 0 && tails.quantity() > 0) {
-    BidPortfolio<Material>::Ptr port(new BidPortfolio<Material>());  // ** What is correct Matl?
+    BidPortfolio<Material>::Ptr port(new BidPortfolio<Material>());  //QQ What is correct Matl?
 
     std::vector<Request<Material>*>& requests =
         commod_requests[tails_commod];
-
+  
     std::vector<Request<Material>*>::iterator it;
     for (it = requests.begin(); it != requests.end(); ++it) {
       Request<Material>* req = *it;
@@ -141,7 +139,8 @@ EnrichmentFacility::GetMatlBids(
       }
     }
   }
-    // *** Did I set up this loop correctly or is it missing stuff at the end?
+    //QQ Did I set up this loop correctly or is it missing stuff at the end?
+    */
   if (commod_requests.count(out_commod) > 0 && inventory.quantity() > 0) {
     BidPortfolio<Material>::Ptr port(new BidPortfolio<Material>());
 
@@ -156,15 +155,8 @@ EnrichmentFacility::GetMatlBids(
         port->AddBid(req, offer, this);
       }
     }
-
-    /// *** Need to calculate what actual feed assay is (U235 fraction
-    ///in unenriched inventory -- currently is calculating based on
-    /// input recipe instead ) rather than using hard-coded value
-    Material::Ptr fission_matl=inventory.Pop(inventory.quantity());
-    inventory.Push(fission_matl);
-    double feed_assay=cyclus::toolkit::UraniumAssay(fission_matl);       
-    Converter<Material>::Ptr sc(new SWUConverter(feed_assay, tails_assay));
-    Converter<Material>::Ptr nc(new NatUConverter(feed_assay, tails_assay));
+    Converter<Material>::Ptr sc(new SWUConverter(FeedAssay(), tails_assay));
+    Converter<Material>::Ptr nc(new NatUConverter(FeedAssay(), tails_assay));
     CapacityConstraint<Material> swu(swu_capacity, sc);
     CapacityConstraint<Material> natu(inventory.quantity(), nc);
     port->AddConstraint(swu);
@@ -203,7 +195,8 @@ void EnrichmentFacility::GetMatlTrades(
   for (it = trades.begin(); it != trades.end(); ++it) {
     Material::Ptr mat = it->bid->offer();
     double qty = it->amt;
-    if /***matl eq tails*/ { //***Should I be using Tails() here instead?
+    /*
+    if ?matl eq tails { //Should I be using Tails() here instead?
 	tails -= qty;
 	tails_for_trade += qty;
 	Material::Ptr response = Material::Create(this, qty,
@@ -213,11 +206,12 @@ void EnrichmentFacility::GetMatlTrades(
 	  ss << "is being asked to provide " << tails_for_trade
 	     << " but its tails inventory is " << tails << ".";
 	  throw cyclus::ValueError(Agent::InformErrorMsg(ss.str()));
-	  } */       //*** Is this how to check whether the tails inventory has been used up?
-      }
+	  }       // Is this how to check whether the tails inventory has been used up?
+  }
     else {
+      */
       Material::Ptr response = Enrich_(mat, qty);
-    }
+      // }
       responses.push_back(std::make_pair(*it, response));
       LOG(cyclus::LEV_INFO5, "EnrFac") << prototype()
 				       << " just received an order"
@@ -231,36 +225,29 @@ void EnrichmentFacility::GetMatlTrades(
       + " is being asked to provide more than its SWU capacity.");
   }
 }
-  /// *** Add similar for tails ? ****
   
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 void EnrichmentFacility::AddMat_(cyclus::Material::Ptr mat) {
-  double threshold = 0.001;  /// TODO *** What is a reasonable threshold?
-  cyclus::toolkit::MatQuery q = MatQuery(mat) ;
-  if (! bool cyclus::toolkit::MatQuery::AlmostEq(context()->
-    GetRecipe(in_recipe), threshold)){
-    throw cyclus::ValueError(
-      "EnrichmentFacility recipe and material composition not the same.");
-  }
   // Elements and isotopes other than U-235, U-238 are sent directly to tails
   cyclus::CompMap cm = mat->comp()->atom();
-  double u_other, non_u ;
-  for (cyclus::CompMap::const_iterator it=cm.begin(); it !=cm.end; ++it) {
+  bool extra_u = false;
+  bool other_elem = false;
+  for (cyclus::CompMap::const_iterator it=cm.begin(); it !=cm.end(); ++it) {
     if (pyne::nucname::znum(it->first) == 92){
       if (pyne::nucname::anum(it->first) != 235 &&
-          pyne::nucname::anum(it->first) != 238 ){
-	u_other +=it->second.atom_frac();
+          pyne::nucname::anum(it->first) != 238 && it->second > 0){
+	extra_u = true;
       }
     }
-    else {
-      u_other +=it->second.atom_frac() ;
+    else if (it->second > 0) {
+      other_elem = true ;
     }
   }
-  if (u_other > 0.0){
+  if (extra_u){
     cyclus::Warn<cyclus::VALUE_WARNING>("More than 2 isotopes of U."  \
       "Istopes other than U-235, U-238 are sent directly to tails.");
   }
-  if (non_u > 0.0){
+  if (other_elem){
     cyclus::Warn<cyclus::VALUE_WARNING>("Non-uranium elements are "   \
       "sent directly to tails.");
   }
@@ -290,7 +277,7 @@ cyclus::Material::Ptr EnrichmentFacility::Request_() {
                                         context()->GetRecipe(in_recipe));
 }
 
-// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+  // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 cyclus::Material::Ptr EnrichmentFacility::Offer_(cyclus::Material::Ptr mat) {
   cyclus::toolkit::MatQuery q(mat);
   cyclus::CompMap comp;
@@ -299,7 +286,7 @@ cyclus::Material::Ptr EnrichmentFacility::Offer_(cyclus::Material::Ptr mat) {
   return cyclus::Material::CreateUntracked(
            mat->quantity(), cyclus::Composition::CreateFromAtom(comp));
 }
-  /// *** bid for input material or offer of output?
+  //QQ bid for input material or offer of output?
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 cyclus::Material::Ptr EnrichmentFacility::Enrich_(
   cyclus::Material::Ptr mat,
@@ -318,29 +305,22 @@ cyclus::Material::Ptr EnrichmentFacility::Enrich_(
   double natu_req = FeedQty(qty, assays);
  
   // pop amount from inventory and blob it into one material
-  std::vector<Material::Ptr> manifest;
+  Material::Ptr r;
   try {
     // required so popping doesn't take out too much
     if (cyclus::AlmostEq(natu_req, inventory.quantity())) {
-      manifest = ResCast<Material>(inventory.PopN(inventory.count()));
+      r = cyclus::toolkit::Squash(inventory.PopN(inventory.count()));
     } else {
-      manifest = ResCast<Material>(inventory.PopQty(natu_req));
+      r = inventory.Pop(natu_req);
     }
   } catch (cyclus::Error& e) {
-    Material::Ptr fission_matl=inventory.Pop(inventory.quantity());
-    inventory.Push(fission_matl);
-    double feed_assay=cyclus::toolkit::UraniumAssay(fission_matl); 
-    NatUConverter nc(feed_assay, tails_assay);
+    NatUConverter nc(FeedAssay(), tails_assay);
     std::stringstream ss;
     ss << " tried to remove " << natu_req
        << " from its inventory of size " << inventory.quantity()
        << " and the conversion of the material into natu is "
        << nc.convert(mat);
     throw cyclus::ValueError(Agent::InformErrorMsg(ss.str()));
-  }
-  Material::Ptr r = manifest[0];
-  for (int i = 1; i < manifest.size(); ++i) {
-    r->Absorb(manifest[i]);
   }
 
   // "enrich" it, but pull out the composition and quantity we require from the
@@ -393,7 +373,15 @@ void EnrichmentFacility::RecordEnrichment_(double natural_u, double swu) {
       ->AddVal("SWU", swu)
       ->Record();
 }
-
+// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+double EnrichmentFacility::FeedAssay() {
+  using cyclus::Material;
+  
+  cyclus::Material::Ptr fission_matl=inventory.Pop(inventory.quantity());
+  inventory.Push(fission_matl);
+  return cyclus::toolkit::UraniumAssay(fission_matl); 
+}
+  
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 extern "C" cyclus::Agent* ConstructEnrichmentFacility(cyclus::Context* ctx) {
   return new EnrichmentFacility(ctx);

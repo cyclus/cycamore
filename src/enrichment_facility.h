@@ -174,7 +174,7 @@ class EnrichmentFacility : public cyclus::Facility {
   virtual std::set<cyclus::BidPortfolio<cyclus::Material>::Ptr>
       GetMatlBids(cyclus::CommodMap<cyclus::Material>::type&
                   commod_requests);
-  /// *** ADD RESPONSE FOR TAILS ***
+  ///QQ ADD RESPONSE FOR TAILS 
   
   /// @brief respond to each trade with a material enriched to the appropriate
   /// level given this facility's inventory
@@ -204,19 +204,20 @@ class EnrichmentFacility : public cyclus::Facility {
 
   inline std::string out_commodity() const { return out_commod; }
 
+  /*
   inline void tails_commodity(std::string tails_com) {
     tails_commod = tails_com;
-  } /// ****
+  } ///QQ
 
-  inline std::string tails_commodity() const { return tails_commod; } /// ***
-
+  inline std::string tails_commodity() const { return tails_commod; } ///QQ
+  */
   inline void InRecipe(std::string in_rec) { in_recipe = in_rec; }
 
   inline std::string InRecipe() const { return in_recipe; }
 
   inline void SetMaxInventorySize(double size) {
     max_inv_size = size;
-    inventory.set_capacity(size);
+    inventory.capacity(size); //QQ
   }
 
   inline double MaxInventorySize() const { return inventory.capacity(); }
@@ -224,9 +225,7 @@ class EnrichmentFacility : public cyclus::Facility {
   inline double InventorySize() const { return inventory.quantity(); }
 
   //  inline void FeedAssay(double assay) { feed_assay = assay; }
-
-  inline double FeedAssay() const { return feed_assay; }
-
+ 
   inline void TailsAssay(double assay) { tails_assay = assay; }
 
   inline double TailsAssay() const { return tails_assay; }
@@ -235,20 +234,20 @@ class EnrichmentFacility : public cyclus::Facility {
     swu_capacity = capacity;
     current_swu_capacity = swu_capacity;
   }
-  //  inline void MaxEnrich(double enrichment) { max_enrich_ = enrichment; } /// ***
+  //  inline void MaxEnrich(double enrichment) { max_enrich_ = enrichment; } //QQ
 
   inline double SwuCapacity() const { return swu_capacity; }
 
   inline double CurrentSwuCapacity() const { return current_swu_capacity; }
 
-  //  inline double MaxEnrich() const { return max_enrich; } /// ***
+  //  inline double MaxEnrich() const { return max_enrich; } ///QQ
 
   /// @brief this facility's initial conditions
   inline void  InitialReserves(double qty) { initial_reserves = qty; }
   inline double InitialReserves() const { return initial_reserves; }
 
-  inline const cyclus::toolkit::ResBuf<Material>& Tails() const { return tails; } 
-  /// *** relevant to tails buffer (but how?) -- It's not used for anything and can be deleted if we decide to make everything a state variable for testing ***
+  inline const cyclus::toolkit::ResBuf<cyclus::Material>& Tails() const { return tails; } 
+  ///QQ relevant to tails buffer (but how?) -- It's not used for anything and can be deleted if we decide to make everything a state variable for testing
   
  private:
   ///   @brief adds a material into the natural uranium inventory
@@ -268,7 +267,10 @@ class EnrichmentFacility : public cyclus::Facility {
   cyclus::Material::Ptr Offer_(cyclus::Material::Ptr req);
 
   cyclus::Material::Ptr Enrich_(cyclus::Material::Ptr mat, double qty);
-  /// *** max enrichment? ***
+
+  ///  @brief calculates the feed assay based on the unenriched inventory
+  double FeedAssay();
+
   
   ///   @brief records and enrichment with the cyclus::Recorder
   void RecordEnrichment_(double natural_u, double swu);
@@ -288,7 +290,7 @@ class EnrichmentFacility : public cyclus::Facility {
   //  #pragma cyclus var {"tooltip": "tails commodity",			\
   //                      "doc": "tails commodity that the enrichment facility supplies", \
 //                      "uitype": "tailscommodity"}
-  //  std::string tails_commod;  /// ***
+  //  std::string tails_commod;  ///QQ
 
    #pragma cyclus var {"default": 0.03, "tooltip": "tails assay",		\
      "doc": "tails assay from the enrichment process"}
@@ -298,16 +300,16 @@ class EnrichmentFacility : public cyclus::Facility {
      "doc": "separative work unit (SWU) capcity of "		      \
                              "enrichment facility"}
   double swu_capacity;
-  /*  #pragma cyclus var {"default": 1e299, "tooltip": "maximum inventory size", \
+    #pragma cyclus var {"default": 1e299, "tooltip": "maximum inventory size", \
                       "doc": "maximum inventory capacity of natural uranium in " \
                              "the enrichment facility"}
-  double enrich_capacity;
-  */
+  double max_inv_size;
+  /* 
   #pragma cyclus var {"default": 100, "tooltip": "maximum allowed enrichment", \
                       "doc": "maximum allowed enrichment of uranium product in " \
-                             "the enrichment facility"}  /// *** 
-
-  double max_inv_size;
+                             "the enrichment facility"}  ///QQ 
+  double enrich_capacity; //QQ
+  */
   #pragma cyclus var {"default": 0, "tooltip": "initial uranium reserves", \
                       "doc": "amount of natural uranium stored at the " \
                              "enrichment facility at the beginning of the " \
@@ -315,18 +317,21 @@ class EnrichmentFacility : public cyclus::Facility {
   double initial_reserves;
   #pragma cyclus var {'derived_init': 'current_swu_capacity = swu_capacity;'}
   double current_swu_capacity;
-  #pragma cyclus var {\
+  /*
+  #pragma cyclus var {				\
     'derived_init': "cyclus::Material::Ptr feed = "\
     "cyclus::Material::CreateUntracked(0, context()->GetRecipe(in_recipe)); "\
     "feed_assay = cyclus::toolkit::UraniumAssay(feed);", \
                       "tooltip": "feed assay", \
                       "doc": "feed assay for the enrichment process"}
   double feed_assay;
+  */
+  
   #pragma cyclus var {'capacity': 'max_inv_size'}
-  cyclus::toolkit::ResBuf<Material> inventory;  // of natl u
+  cyclus::toolkit::ResBuf<cyclus::Material> inventory;  // of natl u
   #pragma cyclus var {}
   cyclus::toolkit::ResBuf<cyclus::Material> tails;  // depleted u
-
+  
   friend class EnrichmentFacilityTest;
     // ---
 };
