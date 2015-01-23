@@ -174,7 +174,6 @@ class EnrichmentFacility : public cyclus::Facility {
   virtual std::set<cyclus::BidPortfolio<cyclus::Material>::Ptr>
       GetMatlBids(cyclus::CommodMap<cyclus::Material>::type&
                   commod_requests);
-  ///QQ ADD RESPONSE FOR TAILS 
   
   /// @brief respond to each trade with a material enriched to the appropriate
   /// level given this facility's inventory
@@ -204,13 +203,12 @@ class EnrichmentFacility : public cyclus::Facility {
 
   inline std::string out_commodity() const { return out_commod; }
 
-  /*
   inline void tails_commodity(std::string tails_com) {
     tails_commod = tails_com;
   } ///QQ
 
   inline std::string tails_commodity() const { return tails_commod; } ///QQ
-  */
+
   inline void InRecipe(std::string in_rec) { in_recipe = in_rec; }
 
   inline std::string InRecipe() const { return in_recipe; }
@@ -287,10 +285,10 @@ class EnrichmentFacility : public cyclus::Facility {
                       "doc": "recipe for enrichment facility's input commodity", \
                       "uitype": "recipe"}
   std::string in_recipe;
-  //  #pragma cyclus var {"tooltip": "tails commodity",			\
-  //                      "doc": "tails commodity that the enrichment facility supplies", \
-//                      "uitype": "tailscommodity"}
-  //  std::string tails_commod;  ///QQ
+  #pragma cyclus var {"tooltip": "tails commodity",			\
+    "doc": "tails commodity that the enrichment facility supplies",	\
+    "uitype": "tailscommodity"}
+  std::string tails_commod;  ///QQ
 
    #pragma cyclus var {"default": 0.03, "tooltip": "tails assay",		\
      "doc": "tails assay from the enrichment process"}

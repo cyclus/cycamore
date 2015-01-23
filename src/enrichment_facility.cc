@@ -24,8 +24,8 @@ EnrichmentFacility::EnrichmentFacility(cyclus::Context* ctx)
       initial_reserves(0),
       in_commod(""),
       in_recipe(""),
-      out_commod(""){}
-      //     tails_commod(""){}   ///QQ
+      out_commod(""),
+      tails_commod(""){}   ///QQ
 
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 EnrichmentFacility::~EnrichmentFacility() {}
@@ -39,8 +39,8 @@ std::string EnrichmentFacility::str() {
      << " * Tails assay: " << TailsAssay()
      << " * Feed assay: " << FeedAssay()   //QQ Remove??
      << " * Input cyclus::Commodity: " << in_commodity()
-     << " * Output cyclus::Commodity: " << out_commodity();
-    //QQ    << " * Tails cyclus::Commodity: " << tails_commodity(); ///QQ
+     << " * Output cyclus::Commodity: " << out_commodity()
+     << " * Tails cyclus::Commodity: " << tails_commodity(); ///QQ
   return ss.str();
 }
 
@@ -63,9 +63,6 @@ void EnrichmentFacility::Build(cyclus::Agent* parent) {
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 void EnrichmentFacility::Tick() {
   LOG(cyclus::LEV_INFO3, "EnrFac") << prototype() << " is ticking {";
-  ///  LOG(cyclus::LEV_INFO4, "SrcFac") << "will offer " << capacity
-  //                                 << " kg of "
-  //                                 << tails_commod << ".";  //QQ Not needed since no out_commod notification?
   LOG(cyclus::LEV_INFO3, "EnrFac") << "}";
   current_swu_capacity = SwuCapacity();
 }
@@ -114,7 +111,7 @@ void EnrichmentFacility::AcceptMatlTrades(
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 std::set<cyclus::BidPortfolio<cyclus::Material>::Ptr>
 EnrichmentFacility::GetMatlBids(
-    cyclus::CommodMap<cyclus::Material>::type& commod_requests){
+    cyclus::CommodMap<cyclus::Material>::type& out_requests){
   using cyclus::Bid;
   using cyclus::BidPortfolio;
   using cyclus::CapacityConstraint;
@@ -123,45 +120,50 @@ EnrichmentFacility::GetMatlBids(
   using cyclus::Request;
 
   std::set<BidPortfolio<Material>::Ptr> ports;
-  /*  //QQ Add tails bids here
-  if (commod_requests.count(tails_commod) > 0 && tails.quantity() > 0) {
-    BidPortfolio<Material>::Ptr port(new BidPortfolio<Material>());  //QQ What is correct Matl?
-
-    std::vector<Request<Material>*>& requests =
-        commod_requests[tails_commod];
-  
+  //QQ 
+  if (out_requests.count(tails_commod) > 0 && tails.quantity() > 0) {
+    BidPortfolio<Material>::Ptr tails_port(new BidPortfolio<Material>());  //QQ What is correct Matl?
+    
+    std::vector<Request<Material>*>& tails_requests =
+      out_requests[tails_commod];
+    
     std::vector<Request<Material>*>::iterator it;
-    for (it = requests.begin(); it != requests.end(); ++it) {
+    for (it = tails_requests.begin(); it != tails_requests.end(); ++it) {
       Request<Material>* req = *it;
-      if (ValidReq(req->target())) {
-        Material::Ptr offer = Offer_(req->target());
-        port->AddBid(req, offer, this);
-      }
+      tails_port->AddBid(req, tails.Peek(), this);
     }
+    //QQ
+    // overbidding (bidding on every offer)
+    // add an overall capacity constraint 
+    CapacityConstraint<Material> tc(tails.quantity());
+    commod_port->AddConstraint(tc);
+    LOG(cyclus::LEV_INFO5, "EnrFac") << prototype()
+				     << " adding a tails capacity constraint of "
+				     << tails.capacity();
+    //QQ
+    ports.insert(tails_port);
   }
-    //QQ Did I set up this loop correctly or is it missing stuff at the end?
-    */
-  if (commod_requests.count(out_commod) > 0 && inventory.quantity() > 0) {
-    BidPortfolio<Material>::Ptr port(new BidPortfolio<Material>());
-
-    std::vector<Request<Material>*>& requests =
-        commod_requests[out_commod];
-
+  if (out_requests.count(out_commod) > 0 && inventory.quantity() > 0) {
+    BidPortfolio<Material>::Ptr commod_port(new BidPortfolio<Material>()); 
+    
+    std::vector<Request<Material>*>& commod_requests =
+      out_requests[out_commod];
+    
     std::vector<Request<Material>*>::iterator it;
-    for (it = requests.begin(); it != requests.end(); ++it) {
+    for (it = commod_requests.begin(); it != commod_requests.end(); ++it) {
       Request<Material>* req = *it;
       if (ValidReq(req->target())) {
         Material::Ptr offer = Offer_(req->target());
-        port->AddBid(req, offer, this);
+        commod_port->AddBid(req, offer, this);
       }
     }
     Converter<Material>::Ptr sc(new SWUConverter(FeedAssay(), tails_assay));
     Converter<Material>::Ptr nc(new NatUConverter(FeedAssay(), tails_assay));
     CapacityConstraint<Material> swu(swu_capacity, sc);
     CapacityConstraint<Material> natu(inventory.quantity(), nc);
-    port->AddConstraint(swu);
-    port->AddConstraint(natu);
-
+    commod_port->AddConstraint(swu);
+    commod_port->AddConstraint(natu);
+    
     LOG(cyclus::LEV_INFO5, "EnrFac") << prototype()
                                   << " adding a swu constraint of "
                                   << swu.capacity();
@@ -169,7 +171,7 @@ EnrichmentFacility::GetMatlBids(
                                   << " adding a natu constraint of "
                                   << natu.capacity();
 
-    ports.insert(port);
+    ports.insert(commod_port);
   }
   return ports;
 }
@@ -190,42 +192,43 @@ void EnrichmentFacility::GetMatlTrades(
   using cyclus::Material;
   using cyclus::Trade;
 
-  double tails_for_trade = 0 ;
   std::vector< Trade<Material> >::const_iterator it;
   for (it = trades.begin(); it != trades.end(); ++it) {
     Material::Ptr mat = it->bid->offer();
     double qty = it->amt;
-    /*
-    if ?matl eq tails { //Should I be using Tails() here instead?
-	tails -= qty;
-	tails_for_trade += qty;
-	Material::Ptr response = Material::Create(this, qty,
-						  context()->GetRecipe(recipe_name));
-	if (cyclus::IsNegative(tails.quantity)) {
-	  std::stringstream ss;
-	  ss << "is being asked to provide " << tails_for_trade
-	     << " but its tails inventory is " << tails << ".";
-	  throw cyclus::ValueError(Agent::InformErrorMsg(ss.str()));
-	  }       // Is this how to check whether the tails inventory has been used up?
-  }
-    else {
-      */
-      Material::Ptr response = Enrich_(mat, qty);
-      // }
-      responses.push_back(std::make_pair(*it, response));
+    //QQ Figure out whether material is tails or enriched,
+    // if tails then make transfer of material
+    
+    //QQ Need to figure out if the response material is tails or product  
+    if (cyclus::toolkit::Assays::Tails(mat) == tails_assay){  //tails_assay or TailsAssay?
+      LOG(cyclus::LEV_INFO5, "EnrFac") << prototype()
+				       << " just received an order"
+				       << " for " << it->amt
+				       << " of " << tails_commod;
+      // Do the material moving
+      tails.Pop(qty);     // remove the qty from the Tails buffer Need to send to response.
+      Material::Ptr response = mat;  //QQ Correct?
+    } else {
       LOG(cyclus::LEV_INFO5, "EnrFac") << prototype()
 				       << " just received an order"
 				       << " for " << it->amt
 				       << " of " << out_commod;
+      
+      Material::Ptr response = Enrich_(mat, qty);
+    }
+    responses.push_back(std::make_pair(*it, response));	
   }
-
+  if (cyclus::IsNegative(tails.quantity())) {
+    std::stringstream ss;
+    ss << "is being asked to provide more than its current inventory."
+      throw cyclus::ValueError(Agent::InformErrorMsg(ss.str()));
+  }
   if (cyclus::IsNegative(current_swu_capacity)) {
     throw cyclus::ValueError(
-      "EnrFac " + prototype()
-      + " is being asked to provide more than its SWU capacity.");
+			     "EnrFac " + prototype()
+			     + " is being asked to provide more than its SWU capacity.");
   }
 }
-  
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 void EnrichmentFacility::AddMat_(cyclus::Material::Ptr mat) {
   // Elements and isotopes other than U-235, U-238 are sent directly to tails
@@ -286,7 +289,6 @@ cyclus::Material::Ptr EnrichmentFacility::Offer_(cyclus::Material::Ptr mat) {
   return cyclus::Material::CreateUntracked(
            mat->quantity(), cyclus::Composition::CreateFromAtom(comp));
 }
-  //QQ bid for input material or offer of output?
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 cyclus::Material::Ptr EnrichmentFacility::Enrich_(
   cyclus::Material::Ptr mat,
