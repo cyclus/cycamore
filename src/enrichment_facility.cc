@@ -1,6 +1,7 @@
 /*
-How do I track the tails material going in and out of trades? Make sure request doesnt exceed inventory?
-How do I refer to the tails Material in the bids?
+How/Where do I check that enrichment limit is a fraction of 1?
+Where is the default max enrich set?
+Use MaxEnrich or max_enrich?
 */
 
 // Implements the EnrichmentFacility class
@@ -20,7 +21,7 @@ EnrichmentFacility::EnrichmentFacility(cyclus::Context* ctx)
     : cyclus::Facility(ctx),
       tails_assay(0),
       swu_capacity(0),
-      //      max_enrich(0),  ///QQ
+      max_enrich(0),  ///QQ is this defaulting to zero? Where to set default?
       initial_reserves(0),
       in_commod(""),
       in_recipe(""),
@@ -122,7 +123,7 @@ EnrichmentFacility::GetMatlBids(
   std::set<BidPortfolio<Material>::Ptr> ports;
   //QQ 
   if (out_requests.count(tails_commod) > 0 && tails.quantity() > 0) {
-    BidPortfolio<Material>::Ptr tails_port(new BidPortfolio<Material>());  //QQ What is correct Matl?
+    BidPortfolio<Material>::Ptr tails_port(new BidPortfolio<Material>()); //QQ
     
     std::vector<Request<Material>*>& tails_requests =
       out_requests[tails_commod];
@@ -152,7 +153,10 @@ EnrichmentFacility::GetMatlBids(
     std::vector<Request<Material>*>::iterator it;
     for (it = commod_requests.begin(); it != commod_requests.end(); ++it) {
       Request<Material>* req = *it;
-      if (ValidReq(req->target())) {
+      // Do not offer a bid if the enrichment exceed max.  QQ
+      Material::Ptr mat = Request_();
+      double request_enrich = cyclus::toolkit::UraniumAssay(mat) ;
+      if (ValidReq(req->target()) && (request_enrich <= max_enrich)) {
         Material::Ptr offer = Offer_(req->target());
         commod_port->AddBid(req, offer, this);
       }

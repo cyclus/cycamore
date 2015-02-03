@@ -232,13 +232,13 @@ class EnrichmentFacility : public cyclus::Facility {
     swu_capacity = capacity;
     current_swu_capacity = swu_capacity;
   }
-  //  inline void MaxEnrich(double enrichment) { max_enrich_ = enrichment; } //QQ
+  inline void MaxEnrich(double enrichment) { max_enrich_ = enrichment; } //QQ
 
   inline double SwuCapacity() const { return swu_capacity; }
 
   inline double CurrentSwuCapacity() const { return current_swu_capacity; }
 
-  //  inline double MaxEnrich() const { return max_enrich; } ///QQ
+  inline double MaxEnrich() const { return max_enrich; } ///QQ
 
   /// @brief this facility's initial conditions
   inline void  InitialReserves(double qty) { initial_reserves = qty; }
@@ -301,12 +301,10 @@ class EnrichmentFacility : public cyclus::Facility {
                       "doc": "maximum inventory capacity of natural uranium in " \
                       "the enrichment facility"}
   double max_inv_size;
-  /* 
-  #pragma cyclus var {"default": 100, "tooltip": "maximum allowed enrichment", \
-                      "doc": "maximum allowed enrichment of uranium product in " \
-                             "the enrichment facility"}  ///QQ 
-  double enrich_capacity; //QQ
-  */
+  #pragma cyclus var {"default": 1.0, "tooltip": "maximum allowed enrichment fraction", \
+                      "doc": "maximum allowed enrichment fraction of uranium product " \
+                             "in the enrichment facility"}  ///QQ 
+  double max_enrich; //QQ
   #pragma cyclus var {"default": 0, "tooltip": "initial uranium reserves", \
                       "doc": "amount of natural uranium stored at the " \
                              "enrichment facility at the beginning of the " \
