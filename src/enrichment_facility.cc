@@ -136,7 +136,7 @@ EnrichmentFacility::GetMatlBids(
     // overbidding (bidding on every offer)
     // add an overall capacity constraint 
     CapacityConstraint<Material> tc(tails.quantity());
-    commod_port->AddConstraint(tc);
+    tails_port->AddConstraint(tc);
     LOG(cyclus::LEV_INFO5, "EnrFac") << prototype()
 				     << " adding a tails capacity constraint of "
 				     << tails.capacity();
@@ -196,17 +196,18 @@ void EnrichmentFacility::GetMatlTrades(
   for (it = trades.begin(); it != trades.end(); ++it) {
     Material::Ptr mat = it->bid->offer();
     double qty = it->amt;
+    std::string commod_type = it->bid->request()->commodity() ;
     //QQ Figure out whether material is tails or enriched,
     // if tails then make transfer of material
     
     //QQ Need to figure out if the response material is tails or product  
-    if (cyclus::toolkit::Assays::Tails(mat) == tails_assay){  //tails_assay or TailsAssay?
+    if (commod_type == tails_commod){
       LOG(cyclus::LEV_INFO5, "EnrFac") << prototype()
 				       << " just received an order"
 				       << " for " << it->amt
 				       << " of " << tails_commod;
       // Do the material moving
-      tails.Pop(qty);     // remove the qty from the Tails buffer Need to send to response.
+      tails.Pop(qty);     // remove the qty from the Tails buffer
       Material::Ptr response = mat;  //QQ Correct?
     } else {
       LOG(cyclus::LEV_INFO5, "EnrFac") << prototype()
@@ -220,13 +221,14 @@ void EnrichmentFacility::GetMatlTrades(
   }
   if (cyclus::IsNegative(tails.quantity())) {
     std::stringstream ss;
-    ss << "is being asked to provide more than its current inventory."
-      throw cyclus::ValueError(Agent::InformErrorMsg(ss.str()));
+    ss << "is being asked to provide more than its current inventory." ;
+    throw cyclus::ValueError(Agent::InformErrorMsg(ss.str()));
   }
   if (cyclus::IsNegative(current_swu_capacity)) {
     throw cyclus::ValueError(
 			     "EnrFac " + prototype()
-			     + " is being asked to provide more than its SWU capacity.");
+			     + " is being asked to provide more than" +
+			     " its SWU capacity.");
   }
 }
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -

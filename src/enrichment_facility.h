@@ -221,7 +221,7 @@ class EnrichmentFacility : public cyclus::Facility {
   inline double MaxInventorySize() const { return inventory.capacity(); }
 
   inline double InventorySize() const { return inventory.quantity(); }
-
+  //QQ: TO BE DELETED
   //  inline void FeedAssay(double assay) { feed_assay = assay; }
  
   inline void TailsAssay(double assay) { tails_assay = assay; }
@@ -285,22 +285,21 @@ class EnrichmentFacility : public cyclus::Facility {
                       "doc": "recipe for enrichment facility's input commodity", \
                       "uitype": "recipe"}
   std::string in_recipe;
-  #pragma cyclus var {"tooltip": "tails commodity",			\
-    "doc": "tails commodity that the enrichment facility supplies",	\
-    "uitype": "tailscommodity"}
-  std::string tails_commod;  ///QQ
+  #pragma cyclus var {"tooltip": "tails commodity", \
+                      "doc": "tails commodity that the enrichment facility supplies", \
+                      "uitype": "outcommodity"}
+  std::string tails_commod;  //QQ
 
-   #pragma cyclus var {"default": 0.03, "tooltip": "tails assay",		\
-     "doc": "tails assay from the enrichment process"}
-
-   double tails_assay;
-   #pragma cyclus var {"default": 1e299, "tooltip": "SWU capacity",      \
-     "doc": "separative work unit (SWU) capcity of "		      \
-                             "enrichment facility"}
+  #pragma cyclus var {"default": 0.03, "tooltip": "tails assay",	\
+                      "doc": "tails assay from the enrichment process"}
+  double tails_assay;
+  #pragma cyclus var {"default": 1e299, "tooltip": "SWU capacity", \
+                      "doc": "separative work unit (SWU) capcity of " \
+                      "enrichment facility"}
   double swu_capacity;
-    #pragma cyclus var {"default": 1e299, "tooltip": "maximum inventory size", \
+  #pragma cyclus var {"default": 1e299, "tooltip": "maximum inventory size", \
                       "doc": "maximum inventory capacity of natural uranium in " \
-                             "the enrichment facility"}
+                      "the enrichment facility"}
   double max_inv_size;
   /* 
   #pragma cyclus var {"default": 100, "tooltip": "maximum allowed enrichment", \
@@ -315,7 +314,7 @@ class EnrichmentFacility : public cyclus::Facility {
   double initial_reserves;
   #pragma cyclus var {'derived_init': 'current_swu_capacity = swu_capacity;'}
   double current_swu_capacity;
-  /*
+  /*  //QQ: TO BE DELETED
   #pragma cyclus var {				\
     'derived_init': "cyclus::Material::Ptr feed = "\
     "cyclus::Material::CreateUntracked(0, context()->GetRecipe(in_recipe)); "\
