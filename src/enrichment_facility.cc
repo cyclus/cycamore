@@ -154,7 +154,7 @@ EnrichmentFacility::GetMatlBids(
     for (it = commod_requests.begin(); it != commod_requests.end(); ++it) {
       Request<Material>* req = *it;
       // Do not offer a bid if the enrichment exceed max.  QQ
-      Material::Ptr mat = Request_();
+      Material::Ptr mat = req->target();
       double request_enrich = cyclus::toolkit::UraniumAssay(mat) ;
       if (ValidReq(req->target()) && (request_enrich <= max_enrich)) {
         Material::Ptr offer = Offer_(req->target());

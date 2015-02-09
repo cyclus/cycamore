@@ -232,7 +232,7 @@ class EnrichmentFacility : public cyclus::Facility {
     swu_capacity = capacity;
     current_swu_capacity = swu_capacity;
   }
-  inline void MaxEnrich(double enrichment) { max_enrich_ = enrichment; } //QQ
+  inline void MaxEnrich(double enrichment) { max_enrich = enrichment; } //QQ
 
   inline double SwuCapacity() const { return swu_capacity; }
 
