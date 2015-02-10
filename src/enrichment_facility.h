@@ -97,7 +97,7 @@ class NatUConverter : public cyclus::Converter<cyclus::Material> {
 ///  The EnrichmentFacility will execute trades for its output commodity in the
 ///  following manner:
 ///    #. Determine the trade's quantity and product assay
-///    #. Determine the natural Uranium and SWU requires to create that product
+///    #. Determine the natural Uranium and SWU required to create that product
 ///    #. Remove the required quantity of natural Uranium from its inventory
 ///    #. Extract the appropriate composition of enriched Uranium
 ///    #. Send the enriched Uranium as the trade resource
