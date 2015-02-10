@@ -35,6 +35,7 @@
         <in_recipe>natl_u</in_recipe>
         <max_inv_size>100</max_inv_size>
         <out_commod>enriched_u</out_commod>
+        <tails_commod>ef_tails</tails_commod>
         <tails_assay>0.003</tails_assay>
         <swu_capacity>30.0</swu_capacity>
       </EnrichmentFacility>

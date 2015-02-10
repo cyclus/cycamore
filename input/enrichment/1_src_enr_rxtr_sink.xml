@@ -33,6 +33,7 @@
       <EnrichmentFacility>
         <in_commod>natl_u</in_commod>
         <out_commod>enriched_u</out_commod>
+        <tails_commod>ef_tails</tails_commod>
         <in_recipe>natl_u</in_recipe>
         <tails_assay>0.003</tails_assay>
         <max_inv_size>500</max_inv_size>
