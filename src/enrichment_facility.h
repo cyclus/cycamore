@@ -128,11 +128,12 @@ class EnrichmentFacility : public cyclus::Facility {
 ///     Destructor for the EnrichmentFacility class
   virtual ~EnrichmentFacility();
 
-  #pragma cyclus decl
+  #pragma cyclus
 
   #pragma cyclus note {"doc": "An enrichment facility that intakes a commodity " \
                               "(usually natural uranium) and supplies a user-" \
-                              "specified enriched product based on SWU capacity"}
+                              "specified enriched product based on SWU capacity", \
+                       "niche": "enrichment"}
 
 ///     Print information about this agent
   virtual std::string str();
@@ -236,6 +237,8 @@ class EnrichmentFacility : public cyclus::Facility {
   inline void  InitialReserves(double qty) { initial_reserves = qty; }
   inline double InitialReserves() const { return initial_reserves; }
 
+  inline const cyclus::toolkit::ResourceBuff& Tails() const { return tails; } 
+  
  private:
   ///   @brief adds a material into the natural uranium inventory
   ///   @throws if the material is not the same composition as the in_recipe
@@ -259,13 +262,16 @@ class EnrichmentFacility : public cyclus::Facility {
   void RecordEnrichment_(double natural_u, double swu);
 
   #pragma cyclus var {"tooltip": "input commodity", \
-                      "doc": "commodity that the enrichment facility accepts"}
+                      "doc": "commodity that the enrichment facility accepts", \
+                      "uitype": "incommodity"}
   std::string in_commod;
   #pragma cyclus var {"tooltip": "output commodity", \
-                      "doc": "commodity that the enrichment facility supplies"}
+                      "doc": "commodity that the enrichment facility supplies", \
+                      "uitype": "outcommodity"}
   std::string out_commod;
   #pragma cyclus var {"tooltip": "input commodity recipe", \
-                      "doc": "recipe for enrichment facility's input commodity"}
+                      "doc": "recipe for enrichment facility's input commodity", \
+                      "uitype": "recipe"}
   std::string in_recipe;
 
   #pragma cyclus var {"default": 0.03, "tooltip": "tails assay", \
@@ -295,6 +301,8 @@ class EnrichmentFacility : public cyclus::Facility {
   double feed_assay;
   #pragma cyclus var {'capacity': 'max_inv_size'}
   cyclus::toolkit::ResourceBuff inventory;  // of natl u
+  #pragma cyclus var {}
+  cyclus::toolkit::ResourceBuff tails;  // depleted u
 
   friend class EnrichmentFacilityTest;
   // ---

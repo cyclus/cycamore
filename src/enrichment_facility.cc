@@ -24,24 +24,6 @@ EnrichmentFacility::EnrichmentFacility(cyclus::Context* ctx)
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 EnrichmentFacility::~EnrichmentFacility() {}
 
-#pragma cyclus def clone cycamore::EnrichmentFacility
-
-#pragma cyclus def schema cycamore::EnrichmentFacility
-
-#pragma cyclus def annotations cycamore::EnrichmentFacility
-
-#pragma cyclus def initinv cycamore::EnrichmentFacility
-
-#pragma cyclus def snapshotinv cycamore::EnrichmentFacility
-
-#pragma cyclus def initfromdb cycamore::EnrichmentFacility
-
-#pragma cyclus def initfromcopy cycamore::EnrichmentFacility
-
-#pragma cyclus def infiletodb cycamore::EnrichmentFacility
-
-#pragma cyclus def snapshot cycamore::EnrichmentFacility
-
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 std::string EnrichmentFacility::str() {
   std::stringstream ss;
@@ -87,7 +69,6 @@ void EnrichmentFacility::Tock() {
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 std::set<cyclus::RequestPortfolio<cyclus::Material>::Ptr>
 EnrichmentFacility::GetMatlRequests() {
-  using cyclus::CapacityConstraint;
   using cyclus::Material;
   using cyclus::RequestPortfolio;
   using cyclus::Request;
@@ -98,13 +79,9 @@ EnrichmentFacility::GetMatlRequests() {
   double amt = mat->quantity();
 
   if (amt > cyclus::eps()) {
-    CapacityConstraint<Material> cc(amt);
-    port->AddConstraint(cc);
-
     port->AddRequest(mat, this, in_commod);
-
     ports.insert(port);
-  }  // if amt > eps
+  }
 
   return ports;
 }
@@ -288,7 +265,8 @@ cyclus::Material::Ptr EnrichmentFacility::Enrich_(
   // blob
   cyclus::Composition::Ptr comp = mat->comp();
   Material::Ptr response = r->ExtractComp(qty, comp);
-
+  tails.Push(r); // add remainder to tails buffer
+  
   current_swu_capacity -= swu_req;
 
   RecordEnrichment_(natu_req, swu_req);

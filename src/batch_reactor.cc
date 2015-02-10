@@ -895,7 +895,7 @@ void BatchReactor::MoveBatchOut_() {
     assert(incommod != "");
     std::string outcommod = crctx_.out_commod(incommod);
     assert(outcommod != "");
-    std::string outrecipe = crctx_.out_recipe(crctx_.in_recipe(incommod));
+    std::string outrecipe = crctx_.out_recipe(incommod);
     assert(outrecipe != "");
     mat->Transmute(context()->GetRecipe(outrecipe));
     crctx_.UpdateRsrc(outcommod, mat);
