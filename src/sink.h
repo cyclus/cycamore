@@ -176,8 +176,9 @@ class Sink : public cyclus::Facility  {
   double capacity;
 
   #pragma cyclus var {"default": "", "tooltip": "requested composition", \
-                      "doc": "name of recipe to use for material " \
-                             "requests"}
+                      "doc": "name of recipe to use for material requests, where " \
+                             "the default (empty string) is to accept everything", \
+                      "uitype": "recipe"}
   std::string recipe_name;
 
   /// max inventory size
