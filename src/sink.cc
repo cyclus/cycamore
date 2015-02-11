@@ -62,11 +62,19 @@ Sink::GetMatlRequests() {
   using cyclus::Material;
   using cyclus::RequestPortfolio;
   using cyclus::Request;
+  using cyclus::Composition;
 
   std::set<RequestPortfolio<Material>::Ptr> ports;
   RequestPortfolio<Material>::Ptr port(new RequestPortfolio<Material>());
   double amt = RequestAmt();
-  Material::Ptr mat = cyclus::NewBlankMaterial(amt);
+  Material::Ptr mat;
+
+  if (recipe_name.empty()) {
+    mat = cyclus::NewBlankMaterial(amt);
+  } else {
+    Composition::Ptr rec = this->context()->GetRecipe(recipe_name);
+    mat = cyclus::Material::CreateUntracked(amt, rec); 
+  } 
 
   if (amt > cyclus::eps()) {
     std::vector<std::string>::const_iterator it;
