@@ -1,96 +1,204 @@
-#include "recipe_mixer.h"
-#include "kitlus/fuel_match.h"
-
-#define LG(X) LOG(cyclus::LEV_##X, "RecMix")
+#include "fuel_fab.h"
 
 using cyclus::Material;
 using cyclus::Composition;
-using cyclus::ResCast;
+using pyne::simple_xs;
 
 namespace cycamore {
 
+double CosiWeight(cyclus::Composition::Ptr c, std::string spectrum) {
+  cyclus::CompMap cm = c->mass();
+  cyclus::compmath::Normalize(&cm);
+
+  double nu_pu239 = 2.85;
+  double nu_u233 = 2.5;
+  double nu_u235 = 2.4;
+
+  double fiss_u238 = simple_xs("u238", "fission", spectrum);
+  double absorb_u238 = simple_xs("u238", "absorption", spectrum);
+  double nu_u238 = 0;
+  double p_u238 = nu_u238 * fiss_u238 - absorb_u238;
+
+  double fiss_pu239 = simple_xs("Pu239", "fission", spectrum);
+  double absorb_pu239 = simple_xs("Pu239", "absorption", spectrum);
+  double p_pu239 = nu_pu239 * fiss_pu239 - absorb_pu239;
+
+  cyclus::CompMap::iterator it;
+  double w = 0;
+  for (it = cm.begin(); it != cm.end(); ++it) {
+    cyclus::Nuc nuc = it->first;
+    double nu = 0;
+    if (nuc == 922350000) {
+      nu = nu_u235;
+    } else if (nuc == 922330000) {
+      nu = nu_u233;
+    } else if (nuc == 942390000) {
+      nu = nu_pu239;
+    }
+
+    double fiss = 0;
+    double absorb = 0;
+    try {
+      fiss = simple_xs(nuc, "fission", spectrum);
+      absorb = simple_xs(nuc, "absorption", spectrum);
+    } catch(pyne::InvalidSimpleXS err) {
+      fiss = 0;
+      absorb = 0;
+    }
+
+    double p = nu * fiss - absorb;
+    w += it->second * (p - p_u238) / (p_pu239 - p_u238);
+  }
+  return w;
+}
+
+double CosiFissileFrac(double w_tgt, double w_fill, double w_fiss) {
+  if (w_fiss == w_fill && w_tgt == w_fiss) {
+    return 1;
+  } else if (w_fiss == w_fill) {
+    throw cyclus::ValueError("fissile and filler weights are the same");
+  }
+  return (w_tgt - w_fill) / (w_fiss - w_fill);
+}
+
+double CosiFissileFrac(cyclus::Composition::Ptr target,
+                       cyclus::Composition::Ptr filler,
+                       cyclus::Composition::Ptr fissile,
+                       std::string spectrum) {
+  double w_fill = CosiWeight(filler, spectrum);
+  double w_fiss = CosiWeight(fissile, spectrum);
+  double w_tgt = CosiWeight(target, spectrum);
+  return CosiFissileFrac(w_tgt, w_fill, w_fiss);
+}
+
+double CosiFillerFrac(double w_tgt, double w_fill, double w_fiss) {
+  return 1-CosiFissileFrac(w_tgt, w_fill, w_fiss);
+}
+
+// Returns true if the given weights can be used to compute valid mixing
+// fractions of the filler and fissile streams to hit the target.
+bool CosiValid(double w_target, double w_filler, double w_fissile) {
+  // w_target must be in between w_filler and w_fissile for the cosi
+  // equivalence technique to work - so we must check for this
+  if (w_filler <= w_target && w_target <= w_fissile) {
+    return true;
+  } else if (w_fissile <= w_target && w_target <= w_filler) {
+    return true;
+  } else {
+    return false;
+  }
+}
+
+class FissConverter : public cyclus::Converter<cyclus::Material> {
+ public:
+  FissConverter(
+      double w_fill,
+      double w_fiss,
+      double w_topup,
+      std::string spectrum
+      ) : w_fiss_(w_fiss), w_topup_(w_topup), w_fill_(w_fill), spec_(spectrum) {}
+
+  virtual ~FissConverter() {}
+
+  virtual double convert(
+      cyclus::Material::Ptr m,
+      cyclus::Arc const * a = NULL,
+      cyclus::ExchangeTranslationContext<cyclus::Material> const * ctx = NULL) const {
+
+    double w_tgt = CosiWeight(m->comp(), spec_);
+    if (CosiValid(w_tgt, w_fill_, w_fiss_)) {
+      return CosiFissileFrac(w_tgt, w_fill_, w_fiss_) * m->quantity();
+    } else if (CosiValid(w_tgt, w_fiss_, w_topup_)) {
+      // use fiss inventory as filler, and topup as fissile
+      return CosiFillerFrac(w_tgt, w_fiss_, w_topup_) * m->quantity();
+    } else {
+      // don't bid at all
+      return 1e200;
+    }
+  }
+
+ private:
+  std::string spec_;
+  double w_fiss_;
+  double w_topup_;
+  double w_fill_;
+};
+
+class FillConverter : public cyclus::Converter<cyclus::Material> {
+ public:
+  FillConverter(
+      double w_fill,
+      double w_fiss,
+      double w_topup,
+      std::string spectrum
+      ) : w_fiss_(w_fiss), w_topup_(w_topup), w_fill_(w_fill), spec_(spectrum) {}
+
+  virtual ~FillConverter() {}
+
+  virtual double convert(
+      cyclus::Material::Ptr m,
+      cyclus::Arc const * a = NULL,
+      cyclus::ExchangeTranslationContext<cyclus::Material> const * ctx = NULL) const {
+
+    double w_tgt = CosiWeight(m->comp(), spec_);
+    if (CosiValid(w_tgt, w_fill_, w_fiss_)) {
+      return CosiFillerFrac(w_tgt, w_fill_, w_fiss_) * m->quantity();
+    } else if (CosiValid(w_tgt, w_fiss_, w_topup_)) {
+      // switched fissile inventory to filler so don't need any filler inventory
+      return 0;
+    } else {
+      // don't bid at all
+      return 1e200;
+    }
+  }
+
+ private:
+  std::string spec_;
+  double w_fiss_;
+  double w_topup_;
+  double w_fill_;
+};
+
+class TopupConverter : public cyclus::Converter<cyclus::Material> {
+ public:
+  TopupConverter(
+      double w_fill,
+      double w_fiss,
+      double w_topup,
+      std::string spectrum
+      ) : w_fiss_(w_fiss), w_topup_(w_topup), w_fill_(w_fill), spec_(spectrum) {}
+
+  virtual ~TopupConverter() {}
+
+  virtual double convert(
+      cyclus::Material::Ptr m,
+      cyclus::Arc const * a = NULL,
+      cyclus::ExchangeTranslationContext<cyclus::Material> const * ctx = NULL) const {
+
+    double w_tgt = CosiWeight(m->comp(), spec_);
+    if (CosiValid(w_tgt, w_fill_, w_fiss_)) {
+      return 0;
+    } else if (CosiValid(w_tgt, w_fiss_, w_topup_)) {
+      // switched fissile inventory to filler and topup as fissile
+      return CosiFissileFrac(w_tgt, w_fiss_, w_topup_) * m->quantity();
+    } else {
+      // don't bid at all
+      return 1e200;
+    }
+  }
+
+ private:
+  std::string spec_;
+  double w_fiss_;
+  double w_topup_;
+  double w_fill_;
+};
+
 FuelFab::FuelFab(cyclus::Context* ctx)
   : cyclus::Facility(ctx),
-    fill_size_(0),
-    fiss_size_(0),
-    throughput_(0) {}
-
-void FuelFab::EnterNotify() {
-  cyclus::Facility::EnterNotify();
-
-  fillpolicy_.Init(this, &fill_, "filler")
-             .Set(fill_commod_, context()->GetRecipe(fill_recipe_))
-             .Start();
-  fisspolicy_.Init(this, &fiss_, "fissile")
-             .Set(fiss_commod_, context()->GetRecipe(fiss_recipe_))
-             .Start();
-}
-
-void FuelFab::Tick() {
-  LG(INFO3) << "FuelFab id=" << id() << " is ticking";
-  LG(INFO4) << "filler quantity = " << fill_.quantity();
-  LG(INFO4) << "fissile quantity = " << fiss_.quantity();
-  LG(INFO4) << "outbuf quantity = " << out_.quantity();
-  double qty = std::min(throughput_, out_.space());
-  if (fill_.quantity() < cyclus::eps() || fiss_.quantity() < cyclus::eps() || qty < cyclus::eps()) {
-    return;
-  }
-
-  Material::Ptr m_fill = fill.Push(Squash(fill.PopN(fill.count())));
-  Material::Ptr m_fiss = fiss.Push(Squash(fiss.PopN(fiss.count())));
-
-  // determine frac needed from each input stream
-  Composition::Ptr tgt = context()->GetRecipe(outrecipe_);
-  double frac2 = kitlus::CosiFissileFrac(tgt, m1->comp(), m2->comp());
-  double frac1 = 1 - frac2;
-  if (frac2 < 0) {
-    fill_.Push(m1);
-    fiss_.Push(m2);
-    LG(ERROR) << "fiss stream has too low reactivity";
-    return;
-  }
-
-  LG(INFO4) << "fill frac = " << frac1;
-  LG(INFO4) << "fiss frac = " << frac2;
-
-  // deal with stream quantity and out buf space constraints
-  double qty1 = frac1 * qty;
-  double qty2 = frac2 * qty;
-  double qty1diff = m1->quantity() - qty1;
-  double qty2diff = m2->quantity() - qty2;
-  if (qty1diff >= 0 && qty2diff >= 0) {
-    // not constrained by inbuf quantities
-  } else if (qty1diff < qty2diff ) {
-    // constrained by fiss_
-    LG(INFO5) << "Constrained by incommod '" << fill_commod_
-              << "' - reducing qty from " << qty
-              << " to " << m1->quantity() / frac1;
-    qty = m1->quantity() / frac1;
-  } else {
-    // constrained by inbuf2
-    LG(INFO5) << "Constrained by incommod '" << fiss_commod_
-              << "' - reducing qty from " << qty
-              << " to " << m2->quantity() / frac2;
-    qty = m2->quantity() / frac2;
-  }
-
-  Material::Ptr mix = m1->ExtractQty(std::min(frac1 * qty, m1->quantity()));
-  mix->Absorb(m2->ExtractQty(std::min(frac2 * qty, m2->quantity())));
-
-  cyclus::toolkit::MatQuery mq(mix);
-  LG(INFO4) << "Mixed " << mix->quantity() << " kg to recipe";
-  LG(INFO5) << " u238 = " << mq.mass_frac(922380000);
-  LG(INFO5) << " u235 = " << mq.mass_frac(922350000);
-  LG(INFO5) << "Pu239 = " << mq.mass_frac(942390000);
-
-  out_.Push(mix);
-  if (m1->quantity() > 0) {
-    fill_.Push(m1);
-  }
-  if (m2->quantity() > 0) {
-    fiss_.Push(m2);
-  }
-}
+    fill_size(0),
+    fiss_size(0),
+    throughput(0) {}
 
 std::set<cyclus::BidPortfolio<Material>::Ptr>
 FuelFab::GetMatlBids(cyclus::CommodMap<Material>::type&
@@ -98,39 +206,65 @@ FuelFab::GetMatlBids(cyclus::CommodMap<Material>::type&
   using cyclus::BidPortfolio;
 
   std::set<BidPortfolio<Material>::Ptr> ports;
+  if (fiss.empty()) {
+    return ports;
+  }
 
-  Material::Ptr m_fill = Squash(fill.PopN(fill.count()));
-  Material::Ptr m_fiss = Squash(fiss.PopN(fiss.count()));
-  Material::Ptr m_topup = Squash(topup.PopN(topup.count()));
-  topup.Push(m_topup);
-  fiss.Push(m_fiss);
-  fill.Push(m_fill);
+  Material::Ptr m_fiss = fiss.Peek();
+  double w_fiss = CosiWeight(m_fiss->comp(), spectrum);
 
-  std::vector<Request<Material>*>& reqs = commod_requests[outcommod];
+  Material::Ptr m_fill;
+  Material::Ptr m_topup;
+  double w_fill = 0;
+  double w_topup = 0;
+  if (fill.count() > 0) {
+    m_fill = fill.Peek();
+    w_fill = CosiWeight(m_fill->comp(), spectrum);
+  }
+  if (topup.count() > 0) {
+    m_topup = topup.Peek();
+    w_topup = CosiWeight(m_topup->comp(), spectrum);
+  }
+
+  std::vector<cyclus::Request<Material>*>& reqs = commod_requests[outcommod];
 
   BidPortfolio<Material>::Ptr port(new BidPortfolio<Material>());
   for (int j = 0; j < reqs.size(); j++) {
-    Request<Material>* req = reqs[j];
-    double tot_bid = 0;
-    for (int k = 0; k < mats.size(); k++) {
-      Material::Ptr m = mats[k];
-      tot_bid += m->quantity();
-      port->AddBid(req, m, this, true);
-      if (tot_bid >= req->target()->quantity()) {
-        break;
-      }
-    }
+    cyclus::Request<Material>* req = reqs[j];
+
+    Composition::Ptr tgt = req->target()->comp();
+    double w_tgt = CosiWeight(tgt, spectrum);
+    double tgt_qty = req->target()->quantity();
+    if (fill.count() > 0 && CosiValid(w_tgt, w_fill, w_fiss)) {
+      double fiss_frac = CosiFissileFrac(w_tgt, w_fill, w_fiss);
+      double fill_frac = 1 - fiss_frac;
+      Material::Ptr m1 = Material::CreateUntracked(fiss_frac * tgt_qty, m_fiss->comp());
+      Material::Ptr m2 = Material::CreateUntracked(fill_frac * tgt_qty, m_fill->comp());
+      m1->Absorb(m2);
+
+      bool exclusive = false;
+      port->AddBid(req, m1, this, exclusive);
+    } else if (fill.count() > 0 && topup.count() > 0 && CosiValid(w_tgt, w_fiss, w_topup)) {
+      // only bid with topup if we have filler - otherwise we might be able to
+      // meet target with filler when we get it. we should only use topup
+      // when the fissile has too poor neutronics.
+      double topup_frac = CosiFissileFrac(w_tgt, w_fiss, w_topup);
+      double fiss_frac = 1 - topup_frac;
+      Material::Ptr m1 = Material::CreateUntracked(topup_frac * tgt_qty, m_topup->comp());
+      Material::Ptr m2 = Material::CreateUntracked(fiss_frac * tgt_qty, m_fiss->comp());
+      m1->Absorb(m2);
+
+      bool exclusive = false;
+      port->AddBid(req, m1, this, exclusive);
+    } // else can't meet the target - don't bid
   }
 
-  double w_fill = CosiWeight(m_fill->comp(), spectrum);
-  double w_fiss = CosiWeight(m_fiss->comp(), spectrum);
-  double w_topup = CosiWeight(m_topup->comp(), spectrum);
-  Converter<Material>::Ptr fillconv(new FissConverter(w_fill, w_fiss, w_topup, spectrum));
-  Converter<Material>::Ptr fissconv(new FillConverter(w_fill, w_fiss, w_topup, spectrum));
-  Converter<Material>::Ptr topupconv(new TopupConverter(w_fill, w_fiss, w_topup, spectrum));
-  CapacityConstraint<Material> fillc(fill.quantity(), fillconv);
-  CapacityConstraint<Material> fissc(fiss.quantity(), fissconv);
-  CapacityConstraint<Material> topupc(topup.quantity(), topupconv);
+  cyclus::Converter<Material>::Ptr fillconv(new FissConverter(w_fill, w_fiss, w_topup, spectrum));
+  cyclus::Converter<Material>::Ptr fissconv(new FillConverter(w_fill, w_fiss, w_topup, spectrum));
+  cyclus::Converter<Material>::Ptr topupconv(new TopupConverter(w_fill, w_fiss, w_topup, spectrum));
+  cyclus::CapacityConstraint<Material> fillc(fill.quantity(), fillconv);
+  cyclus::CapacityConstraint<Material> fissc(fiss.quantity(), fissconv);
+  cyclus::CapacityConstraint<Material> topupc(topup.quantity(), topupconv);
   port->AddConstraint(fillc);
   port->AddConstraint(fissc);
   port->AddConstraint(topupc);
@@ -141,11 +275,52 @@ FuelFab::GetMatlBids(cyclus::CommodMap<Material>::type&
   return ports;
 }
 
-} // namespace cycamore
+void FuelFab::GetMatlTrades(
+    const std::vector< cyclus::Trade<Material> >& trades,
+    std::vector<std::pair<cyclus::Trade<Material>,
+    Material::Ptr> >& responses) {
+  using cyclus::Trade;
+
+  Material::Ptr m_fiss = fiss.Peek();
+  double w_fiss = CosiWeight(m_fiss->comp(), spectrum);
+
+  Material::Ptr m_fill = fill.Peek();
+  double w_fill = CosiWeight(m_fill->comp(), spectrum);
+
+  Material::Ptr m_topup;
+  double w_topup = 0;
+  if (topup.count() > 0) {
+    m_topup = topup.Peek();
+    w_topup = CosiWeight(m_topup->comp(), spectrum);
+  }
+
+  std::vector< cyclus::Trade<cyclus::Material> >::const_iterator it;
+  for (int i = 0; i < trades.size(); i++) {
+    Material::Ptr tgt = trades[i].request->target();
+    double w_tgt = CosiWeight(tgt->comp(), spectrum);
+    double qty = tgt->quantity();
+
+    if (CosiValid(w_tgt, w_fill, w_fiss)) {
+      double fiss_frac = CosiFissileFrac(w_tgt, w_fill, w_fiss);
+      double fill_frac = 1 - fiss_frac;
+
+      Material::Ptr m = fiss.Pop(fiss_frac*qty);
+      m->Absorb(fill.Pop(fill_frac*qty));
+      responses.push_back(std::make_pair(trades[i], m));
+    } else {
+      double topup_frac = CosiFissileFrac(w_tgt, w_fiss, w_topup);
+      double fiss_frac = 1 - topup_frac;
+
+      Material::Ptr m = topup.Pop(topup_frac*qty);
+      m->Absorb(fiss.Pop(fiss_frac*qty));
+      responses.push_back(std::make_pair(trades[i], m));
+    }
+  }
+}
 
 extern "C" cyclus::Agent* ConstructFuelFab(cyclus::Context* ctx) {
   return new FuelFab(ctx);
 }
 
-
+} // namespace cycamore
 
