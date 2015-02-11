@@ -30,9 +30,9 @@
     <name>SomeSource</name>
     <config>
       <Source>
-        <out_commod>commodity</out_commod>
-        <capacity>1</capacity>
-        <recipe_name>commod_recipe</recipe_name>
+        <outcommod>commodity</outcommod>
+        <outrecipe>commod_recipe</outrecipe>
+        <throughput>1</throughput>
       </Source>
     </config>
   </facility>

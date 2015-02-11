@@ -12,7 +12,8 @@
 #include "facility_tests.h"
 #include "material.h"
 
-// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+namespace cycamore {
+
 class SourceTest : public ::testing::Test {
  public:
   cyclus::TestContext tc;
@@ -27,8 +28,22 @@ class SourceTest : public ::testing::Test {
   void InitParameters();
   void SetUpSource();
 
-  boost::shared_ptr< cyclus::ExchangeContext<cyclus::Material> >
-      GetContext(int nreqs, std::string commodity);
+  std::string outrecipe(cycamore::Source* s) { return s->outrecipe; }
+  std::string outcommod(cycamore::Source* s) { return s->outcommod; }
+  double throughput(cycamore::Source* s) { return s->throughput; }
+
+  void outrecipe(cycamore::Source* s, std::string recipe) {
+    s->outrecipe = recipe;
+  }
+  void outcommod(cycamore::Source* s, std::string commod) {
+    s->outcommod = commod;
+  }
+  void throughput(cycamore::Source* s, double val) { s->throughput = val; }
+
+  boost::shared_ptr<cyclus::ExchangeContext<cyclus::Material> > GetContext(
+      int nreqs, std::string commodity);
 };
+
+} // namespace cycamore
 
 #endif  // CYCAMORE_SRC_SOURCE_TESTS_H_

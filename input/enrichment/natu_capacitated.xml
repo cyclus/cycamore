@@ -20,9 +20,9 @@
     <name>Source</name>
     <config>
       <Source>
-        <out_commod>natl_u</out_commod>
-        <capacity>1000</capacity>
-        <recipe_name>natl_u</recipe_name>
+        <outcommod>natl_u</outcommod>
+        <outrecipe>natl_u</outrecipe>
+        <throughput>1000</throughput>
       </Source>
     </config>
   </facility>
