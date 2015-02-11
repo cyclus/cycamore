@@ -289,26 +289,33 @@ class EnrichmentFacility : public cyclus::Facility {
                       "doc": "tails commodity that the enrichment facility supplies", \
                       "uitype": "outcommodity"}
   std::string tails_commod;  //QQ
-
   #pragma cyclus var {"default": 0.03, "tooltip": "tails assay",	\
                       "doc": "tails assay from the enrichment process"}
   double tails_assay;
-  #pragma cyclus var {"default": 1e299, "tooltip": "SWU capacity", \
+  #pragma cyclus var {"default": 1e299, "tooltip": "SWU capacity (kgSWU/month)", \
                       "doc": "separative work unit (SWU) capcity of " \
-                      "enrichment facility"}
+                      "enrichment facility (kgSWU/month)"}
   double swu_capacity;
-  #pragma cyclus var {"default": 1e299, "tooltip": "maximum inventory size", \
-                      "doc": "maximum inventory capacity of natural uranium in " \
-                      "the enrichment facility"}
+  #pragma cyclus var {"default": 1e299, "tooltip": "maximum inventory size (kg)", \
+                      "doc": "maximum total inventory of natural uranium in " \
+                      "the enrichment facility (kg)"}
   double max_inv_size;
   #pragma cyclus var {"default": 1.0, "tooltip": "maximum allowed enrichment fraction", \
-                      "doc": "maximum allowed enrichment fraction of uranium product " \
+                      "doc": "maximum allowed weight fraction of U235 in product " \
                              "in the enrichment facility"}  ///QQ 
-  double max_enrich; //QQ
-  #pragma cyclus var {"default": 0, "tooltip": "initial uranium reserves", \
+  double max_enrich;
+#pragma cyclus var {"schema": '"<element name=\\"max_enrich\\">\\n"'\
+                              '"  <data type=\\"float"\\" />\\n"' \
+                              '"  <minInclusive value=\\"0.0\\">\\n"' \
+                              '"  <maxInclusive value=\\"1.0\\">\\n"' \
+                              '"</element>\\n"'}
+
+  
+  //QQ
+  #pragma cyclus var {"default": 0, "tooltip": "initial uranium reserves (kg)", \
                       "doc": "amount of natural uranium stored at the " \
                              "enrichment facility at the beginning of the " \
-                             "simulation"}
+                             "simulation (kg)"}
   double initial_reserves;
   #pragma cyclus var {'derived_init': 'current_swu_capacity = swu_capacity;'}
   double current_swu_capacity;
