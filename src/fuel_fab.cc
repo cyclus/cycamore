@@ -200,6 +200,113 @@ FuelFab::FuelFab(cyclus::Context* ctx)
     fiss_size(0),
     throughput(0) {}
 
+void FuelFab::EnterNotify() {
+  cyclus::Facility::EnterNotify();
+
+  if (fiss_commod_prefs.size() == 0) {
+    for (int i = 0; i < fiss_commods.size(); i++) {
+      fiss_commod_prefs.push_back(0);
+    }
+  }
+}
+
+std::set<cyclus::RequestPortfolio<Material>::Ptr>
+FuelFab::GetMatlRequests() {
+  using cyclus::RequestPortfolio;
+
+  std::set<RequestPortfolio<Material>::Ptr> ports;
+
+  bool exclusive = false;
+
+  if (fiss.space() > cyclus::eps()) {
+    RequestPortfolio<Material>::Ptr port(new RequestPortfolio<Material>());
+
+    Material::Ptr m = cyclus::NewBlankMaterial(fiss.space());
+    if (!fiss_recipe.empty()) {
+      Composition::Ptr c = context()->GetRecipe(fiss_recipe);
+      m = Material::CreateUntracked(fiss.space(), c);
+    }
+
+    for (int i = 0; i < fiss_commods.size(); i++) {
+      std::string commod = fiss_commods[i];
+      double pref = fiss_commod_prefs[i];
+
+      port->AddRequest(m, this, commod, pref, exclusive);
+    }
+
+    // TODO (BUG): this needs to be a less-than constraint, but that
+    // functionality doesn't exist for DRE yet.
+    cyclus::CapacityConstraint<Material> cc(fiss.space());
+    port->AddConstraint(cc);
+    ports.insert(port);
+  }
+
+  if (fill.space() > cyclus::eps()) {
+    RequestPortfolio<Material>::Ptr port(new RequestPortfolio<Material>());
+
+    Material::Ptr m = cyclus::NewBlankMaterial(fill.space());
+    if (!fill_recipe.empty()) {
+      Composition::Ptr c = context()->GetRecipe(fill_recipe);
+      m = Material::CreateUntracked(fill.space(), c);
+    }
+    port->AddRequest(m, this, fill_commod, fill_pref, exclusive);
+    ports.insert(port);
+  }
+
+  if (topup.space() > cyclus::eps()) {
+    RequestPortfolio<Material>::Ptr port(new RequestPortfolio<Material>());
+
+    Material::Ptr m = cyclus::NewBlankMaterial(topup.space());
+    if (!topup_recipe.empty()) {
+      Composition::Ptr c = context()->GetRecipe(topup_recipe);
+      m = Material::CreateUntracked(topup.space(), c);
+    }
+    port->AddRequest(m, this, topup_commod, topup_pref, exclusive);
+    ports.insert(port);
+  }
+
+  return ports;
+}
+
+bool Contains(std::vector<std::string> vec, std::string s) {
+  for (int i = 0; i < vec.size(); i++) {
+    if (vec[i] == s) {
+      return true;
+    }
+  }
+  return false;
+}
+
+void FuelFab::AcceptMatlTrades(
+    const std::vector< std::pair<cyclus::Trade<Material>,
+    Material::Ptr> >& responses) {
+
+  std::vector< std::pair<cyclus::Trade<cyclus::Material>,
+                         cyclus::Material::Ptr> >::const_iterator trade;
+
+  for (trade = responses.begin(); trade != responses.end(); ++trade) {
+    std::string commod = trade->first.request->commodity();
+    double req_qty = trade->first.request->target()->quantity();
+    Material::Ptr m = trade->second;
+
+    // the checks of req_qty <= inventorySpace are important in circumstances
+    // where fill_commod, topup_commod, and any of the fiss_commods may be the
+    // same as each other.  Currently the case where topup_commod or
+    // fill_commod are one or both inside fiss_commods, trades for each
+    // inventory can get mixed up,
+    // TODO: handle same commod case inventory discrimination more robustly.
+    if (commod == fill_commod && req_qty <= fill.space()) {
+      fill.Push(m);
+    } else if (commod == topup_commod && req_qty <= topup.space()) {
+      topup.Push(m);
+    } else if (Contains(fiss_commods, commod) && req_qty <= fiss.space()) {
+      fiss.Push(m);
+    } else {
+      throw cyclus::ValueError("cycamore::FuelFab was overmatched on requests");
+    }
+  }
+}
+
 std::set<cyclus::BidPortfolio<Material>::Ptr>
 FuelFab::GetMatlBids(cyclus::CommodMap<Material>::type&
                           commod_requests) {

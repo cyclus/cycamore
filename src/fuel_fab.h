@@ -15,6 +15,7 @@ class FuelFab : public cyclus::Facility {
 
   virtual void Tick() {};
   virtual void Tock() {};
+  virtual void EnterNotify();
 
   virtual std::set<cyclus::BidPortfolio<cyclus::Material>::Ptr>
       GetMatlBids(cyclus::CommodMap<cyclus::Material>::type&
@@ -25,13 +26,21 @@ class FuelFab : public cyclus::Facility {
       std::vector<std::pair<cyclus::Trade<cyclus::Material>,
       cyclus::Material::Ptr> >& responses);
 
+  virtual void AcceptMatlTrades(
+      const std::vector< std::pair<cyclus::Trade<cyclus::Material>,
+      cyclus::Material::Ptr> >& responses);
+
+  virtual std::set<cyclus::RequestPortfolio<cyclus::Material>::Ptr> GetMatlRequests();
+
  private:
   #pragma cyclus var {}
-  std::vector<std::string> fill_commods;
-  #pragma cyclus var {}
-  std::vector<std::string> fill_commod_prefs;
+  std::string fill_commod;
   #pragma cyclus var {}
   std::string fill_recipe;
+  #pragma cyclus var { \
+    "default": 0, \
+  }
+  double fill_pref;
   #pragma cyclus var {}
   double fill_size;
   #pragma cyclus var {'capacity': 'fill_size'}
@@ -39,18 +48,37 @@ class FuelFab : public cyclus::Facility {
 
   #pragma cyclus var {}
   std::vector<std::string> fiss_commods;
-  #pragma cyclus var {}
-  std::vector<std::string> fiss_commod_prefs;
+  #pragma cyclus var { \
+    "default": [], \
+    "doc": "If unspecified, default is to use zero for all preferences.", \
+  }
+  std::vector<double> fiss_commod_prefs;
+  #pragma cyclus var { \
+    "default": "", \
+    "doc": "If unspecified, default is to use a dummy blank recipe", \
+  }
+  std::string fiss_recipe;
   #pragma cyclus var {}
   double fiss_size;
   #pragma cyclus var {'capacity': 'fiss_size'}
   cyclus::toolkit::ResBuf<cyclus::Material> fiss;
 
-  #pragma cyclus var {}
+  #pragma cyclus var { \
+    "doc": "", \
+    "default": "", \
+  }
   std::string topup_commod;
-  #pragma cyclus var {}
+  #pragma cyclus var { \
+    "default": "", \
+  }
   std::string topup_recipe;
-  #pragma cyclus var {}
+  #pragma cyclus var { \
+    "default": 0, \
+  }
+  double topup_pref;
+  #pragma cyclus var { \
+    "default": 0, \
+  }
   double topup_size;
   #pragma cyclus var {'capacity': 'topup_size'}
   cyclus::toolkit::ResBuf<cyclus::Material> topup;
