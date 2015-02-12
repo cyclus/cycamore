@@ -254,16 +254,16 @@ class TestDynamicCapacitated(TestRegression):
         # and decommissioned at time step 2
         for i in [0, 1]:
             assert_equal(
-                self.depl_time[np.where(self.agent_ids == self.sink_id[i])], 1)
+                self.depl_time[np.where(self.agent_ids == self.sink_id[i])][0], 1)
             assert_equal(
-                self.exit_time[np.where(self.exit_ids == self.sink_id[i])], 2)
+                self.exit_time[np.where(self.exit_ids == self.sink_id[i])][0], 2)
         # Test that second 2 sink facilities are deployed at time step 2
         # and decommissioned at time step 3
         for i in [2, 3]:
             assert_equal(
-                self.depl_time[np.where(self.agent_ids == self.sink_id[i])], 2)
+                self.depl_time[np.where(self.agent_ids == self.sink_id[i])][0], 2)
             assert_equal(
-                self.exit_time[np.where(self.exit_ids == self.sink_id[i])], 3)
+                self.exit_time[np.where(self.exit_ids == self.sink_id[i])][0], 3)
 
     def test_xaction_general(self):        
         # Check that transactions are between sources and sinks only

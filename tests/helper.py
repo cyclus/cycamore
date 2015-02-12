@@ -8,7 +8,7 @@ import numpy as np
 import tables
 from nose.tools import assert_equal
 
-if sys.version_info[0] > 3:
+if sys.version_info[0] >= 3:
     str_types = (bytes, str)
 else:
     str_types = (str, unicode)
