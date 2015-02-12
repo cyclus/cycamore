@@ -25,6 +25,16 @@ Reactor::Reactor(cyclus::Context* ctx)
                                              "is experimental");
 }
 
+void Reactor::EnterNotify() {
+  cyclus::Facility::EnterNotify();
+
+  if (fuel_prefs.size() == 0) {
+    for (int i = 0; i < fuel_outcommods.size(); i++) {
+      fuel_prefs.push_back(0);
+    }
+  }
+}
+
 void Reactor::Tick() {
   // The following code must go in the Tick so they fire on the time step
   // following the cycle_step update - allowing for the all reactor events to

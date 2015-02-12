@@ -91,6 +91,7 @@ class Reactor : public cyclus::Facility {
 
   virtual void Tick();
   virtual void Tock();
+  virtual void EnterNotify();
 
   virtual void AcceptMatlTrades(
       const std::vector< std::pair<cyclus::Trade<cyclus::Material>,
