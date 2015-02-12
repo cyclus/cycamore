@@ -366,12 +366,14 @@ FuelFab::GetMatlBids(cyclus::CommodMap<Material>::type&
     } // else can't meet the target - don't bid
   }
 
-  cyclus::Converter<Material>::Ptr fillconv(new FissConverter(w_fill, w_fiss, w_topup, spectrum));
   cyclus::Converter<Material>::Ptr fissconv(new FillConverter(w_fill, w_fiss, w_topup, spectrum));
+  cyclus::Converter<Material>::Ptr fillconv(new FissConverter(w_fill, w_fiss, w_topup, spectrum));
   cyclus::Converter<Material>::Ptr topupconv(new TopupConverter(w_fill, w_fiss, w_topup, spectrum));
-  cyclus::CapacityConstraint<Material> fillc(fill.quantity(), fillconv);
   cyclus::CapacityConstraint<Material> fissc(fiss.quantity(), fissconv);
-  cyclus::CapacityConstraint<Material> topupc(topup.quantity(), topupconv);
+  // important! - the std::max calls prevent CapacityConstraint throwing a zero cap exception
+  // TODO: write a test to check for this capacity adjustment
+  cyclus::CapacityConstraint<Material> fillc(std::max(fill.quantity(), 1e-100), fillconv);
+  cyclus::CapacityConstraint<Material> topupc(std::max(topup.quantity(), 1e-100), topupconv);
   port->AddConstraint(fillc);
   port->AddConstraint(fissc);
   port->AddConstraint(topupc);
