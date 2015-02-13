@@ -28,6 +28,8 @@ Reactor::Reactor(cyclus::Context* ctx)
 void Reactor::EnterNotify() {
   cyclus::Facility::EnterNotify();
 
+  // If the user ommitted fuel_prefs, we set it to zeros for each fuel
+  // type.  Without this segfaults could occur - yuck.
   if (fuel_prefs.size() == 0) {
     for (int i = 0; i < fuel_outcommods.size(); i++) {
       fuel_prefs.push_back(0);
