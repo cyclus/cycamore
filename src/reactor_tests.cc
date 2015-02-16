@@ -6,6 +6,7 @@
 
 using pyne::nucname::id;
 using cyclus::Composition;
+using cyclus::Material;
 using cyclus::QueryResult;
 using cyclus::Cond;
 using cyclus::toolkit::MatQuery;
@@ -203,7 +204,31 @@ TEST(ReactorTests, MultiFuelMix) {
 // tests that the reactor halts operation when it has no more room in its
 // spent fuel inventory buffer.
 TEST(ReactorTests, FullSpentInventory) {
-  FAIL() << "not implemented";
+  std::string config = 
+     "  <fuel_inrecipes>  <val>uox</val>      </fuel_inrecipes>  "
+     "  <fuel_outrecipes> <val>spentuox</val> </fuel_outrecipes>  "
+     "  <fuel_incommods>  <val>uox</val>      </fuel_incommods>  "
+     "  <fuel_outcommods> <val>waste</val>    </fuel_outcommods>  "
+     ""
+     "  <cycle_time>1</cycle_time>  "
+     "  <refuel_time>0</refuel_time>  "
+     "  <assem_size>1</assem_size>  "
+     "  <n_assem_core>1</n_assem_core>  "
+     "  <n_assem_batch>1</n_assem_batch>  "
+     "  <n_assem_spent>3</n_assem_spent>  ";
+
+  int simdur = 10;
+  cyclus::MockSim sim(cyclus::AgentSpec(":cycamore:Reactor"), config, simdur);
+  sim.AddSource("uox").Finalize();
+  sim.AddRecipe("uox", c_uox());
+  sim.AddRecipe("spentuox", c_spentuox());
+  int id = sim.Run();
+
+  QueryResult qr = sim.db().Query("Transactions", NULL);
+  int n_assem_spent = 3;
+
+  // +1 is for the assembly in the core + the three in spent
+  EXPECT_EQ(n_assem_spent+1, qr.rows.size());
 }
 
 // tests that the reactor cycle is delayed as expected when it is unable to
@@ -214,7 +239,34 @@ TEST(ReactorTests, FuelShortage) {
 
 // tests that discharged fuel is transmuted properly immediately at cycle end.
 TEST(ReactorTests, DischargedFuelTransmute) {
-  FAIL() << "not implemented";
+  std::string config = 
+     "  <fuel_inrecipes>  <val>uox</val>      </fuel_inrecipes>  "
+     "  <fuel_outrecipes> <val>spentuox</val> </fuel_outrecipes>  "
+     "  <fuel_incommods>  <val>uox</val>      </fuel_incommods>  "
+     "  <fuel_outcommods> <val>waste</val>    </fuel_outcommods>  "
+     ""
+     "  <cycle_time>4</cycle_time>  "
+     "  <refuel_time>3</refuel_time>  "
+     "  <assem_size>1</assem_size>  "
+     "  <n_assem_core>1</n_assem_core>  "
+     "  <n_assem_batch>1</n_assem_batch>  ";
+
+  int simdur = 7;
+  cyclus::MockSim sim(cyclus::AgentSpec(":cycamore:Reactor"), config, simdur);
+  sim.AddSource("uox").Finalize();
+  sim.AddSink("waste").Finalize();
+  sim.AddRecipe("uox", c_uox());
+  Composition::Ptr spentuox = c_spentuox();
+  sim.AddRecipe("spentuox", spentuox);
+  int id = sim.Run();
+
+  std::vector<Cond> conds;
+  conds.push_back(Cond("SenderId", "==", id));
+  int resid = sim.db().Query("Transactions", &conds).GetVal<int>("ResourceId");
+  Material::Ptr m = sim.GetMaterial(resid);
+  MatQuery mq(m);
+  EXPECT_EQ(spentuox->id(), m->comp()->id());
+  EXPECT_TRUE(mq.mass(942390000) > 0) << "transmuted spent fuel doesn't have Pu239";
 }
 
 // The user can optionally omit fuel preferences.  In the case where
