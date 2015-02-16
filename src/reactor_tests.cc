@@ -212,6 +212,11 @@ TEST(ReactorTests, FuelShortage) {
   FAIL() << "not implemented";
 }
 
+// tests that discharged fuel is transmuted properly immediately at cycle end.
+TEST(ReactorTests, DischargedFuelTransmute) {
+  FAIL() << "not implemented";
+}
+
 // The user can optionally omit fuel preferences.  In the case where
 // preferences are adjusted, the ommitted preference vector must be populated
 // with default values - if it wasn't then preferences won't be adjusted
