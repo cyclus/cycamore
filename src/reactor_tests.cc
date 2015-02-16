@@ -78,6 +78,140 @@ TEST(ReactorTests, JustInTimeOrdering) {
   EXPECT_EQ(simdur, qr.rows.size()) << "failed to order+run on fresh fuel inside 1 time step";
 }
 
+// tests that the correct number of assemblies are popped from the core each
+// cycle.
+TEST(ReactorTests, BatchSizes) {
+  std::string config = 
+     "  <fuel_inrecipes>  <val>uox</val>      </fuel_inrecipes>  "
+     "  <fuel_outrecipes> <val>spentuox</val> </fuel_outrecipes>  "
+     "  <fuel_incommods>  <val>uox</val>      </fuel_incommods>  "
+     "  <fuel_outcommods> <val>waste</val>    </fuel_outcommods>  "
+     ""
+     "  <cycle_time>1</cycle_time>  "
+     "  <refuel_time>0</refuel_time>  "
+     "  <assem_size>1</assem_size>  "
+     "  <n_assem_core>7</n_assem_core>  "
+     "  <n_assem_batch>3</n_assem_batch>  ";
+
+  int simdur = 50;
+  cyclus::MockSim sim(cyclus::AgentSpec(":cycamore:Reactor"), config, simdur);
+  sim.AddSource("uox").Finalize();
+  sim.AddRecipe("uox", c_uox());
+  sim.AddRecipe("spentuox", c_spentuox());
+  int id = sim.Run();
+
+  QueryResult qr = sim.db().Query("Transactions", NULL);
+  // 7 for initial core, 3 per time step for each new batch for remainder
+  EXPECT_EQ(7+3*(simdur-1), qr.rows.size());
+}
+
+// tests that the refueling period between cycle end and start of the next
+// cycle is honored.
+TEST(ReactorTests, RefuelTimes) {
+  std::string config = 
+     "  <fuel_inrecipes>  <val>uox</val>      </fuel_inrecipes>  "
+     "  <fuel_outrecipes> <val>spentuox</val> </fuel_outrecipes>  "
+     "  <fuel_incommods>  <val>uox</val>      </fuel_incommods>  "
+     "  <fuel_outcommods> <val>waste</val>    </fuel_outcommods>  "
+     ""
+     "  <cycle_time>4</cycle_time>  "
+     "  <refuel_time>3</refuel_time>  "
+     "  <assem_size>1</assem_size>  "
+     "  <n_assem_core>1</n_assem_core>  "
+     "  <n_assem_batch>1</n_assem_batch>  ";
+
+  int simdur = 49;
+  cyclus::MockSim sim(cyclus::AgentSpec(":cycamore:Reactor"), config, simdur);
+  sim.AddSource("uox").Finalize();
+  sim.AddRecipe("uox", c_uox());
+  sim.AddRecipe("spentuox", c_spentuox());
+  int id = sim.Run();
+
+  QueryResult qr = sim.db().Query("Transactions", NULL);
+  int cyclet = 4;
+  int refuelt = 3;
+  int n_assem_want = simdur/(cyclet+refuelt)+1; // +1 for initial core
+  EXPECT_EQ(n_assem_want, qr.rows.size());
+}
+
+// tests that new fuel is ordered immediately following cycle end - at the
+// start of the refueling period - not before and not after. - thie is subtly
+// different than RefuelTimes test and is not a duplicate of it.
+TEST(ReactorTests, OrderAtRefuelStart) {
+  std::string config = 
+     "  <fuel_inrecipes>  <val>uox</val>      </fuel_inrecipes>  "
+     "  <fuel_outrecipes> <val>spentuox</val> </fuel_outrecipes>  "
+     "  <fuel_incommods>  <val>uox</val>      </fuel_incommods>  "
+     "  <fuel_outcommods> <val>waste</val>    </fuel_outcommods>  "
+     ""
+     "  <cycle_time>4</cycle_time>  "
+     "  <refuel_time>3</refuel_time>  "
+     "  <assem_size>1</assem_size>  "
+     "  <n_assem_core>1</n_assem_core>  "
+     "  <n_assem_batch>1</n_assem_batch>  ";
+
+  int simdur = 7;
+  cyclus::MockSim sim(cyclus::AgentSpec(":cycamore:Reactor"), config, simdur);
+  sim.AddSource("uox").Finalize();
+  sim.AddRecipe("uox", c_uox());
+  sim.AddRecipe("spentuox", c_spentuox());
+  int id = sim.Run();
+
+  QueryResult qr = sim.db().Query("Transactions", NULL);
+  int cyclet = 4;
+  int refuelt = 3;
+  int n_assem_want = simdur/(cyclet+refuelt)+1; // +1 for initial core
+  EXPECT_EQ(n_assem_want, qr.rows.size());
+}
+
+// tests that the reactor handles requesting multiple types of fuel correctly
+// - with proper inventory constraint honoring, etc.
+TEST(ReactorTests, MultiFuelMix) {
+  std::string config = 
+     "  <fuel_inrecipes>  <val>uox</val>      <val>mox</val>      </fuel_inrecipes>  "
+     "  <fuel_outrecipes> <val>spentuox</val> <val>spentmox</val> </fuel_outrecipes>  "
+     "  <fuel_incommods>  <val>uox</val>      <val>mox</val>      </fuel_incommods>  "
+     "  <fuel_outcommods> <val>waste</val>    <val>waste</val>    </fuel_outcommods>  "
+     ""
+     "  <cycle_time>1</cycle_time>  "
+     "  <refuel_time>0</refuel_time>  "
+     "  <assem_size>1</assem_size>  "
+     "  <n_assem_fresh>3</n_assem_fresh>  "
+     "  <n_assem_core>3</n_assem_core>  "
+     "  <n_assem_batch>3</n_assem_batch>  ";
+
+  // it is important that the sources have cumulative capacity greater than
+  // the reactor can take on a single time step - to test that inventory
+  // capacity constraints are being set properly.  It is also important that
+  // each source is smaller capacity thatn the reactor orders on each time
+  // step to make it easy to compute+check the number of transactions.
+  int simdur = 50;
+  cyclus::MockSim sim(cyclus::AgentSpec(":cycamore:Reactor"), config, simdur);
+  sim.AddSource("uox").capacity(2).Finalize();
+  sim.AddSource("mox").capacity(2).Finalize();
+  sim.AddRecipe("uox", c_uox());
+  sim.AddRecipe("spentuox", c_spentuox());
+  sim.AddRecipe("mox", c_spentuox());
+  sim.AddRecipe("spentmox", c_spentuox());
+  int id = sim.Run();
+
+  QueryResult qr = sim.db().Query("Transactions", NULL);
+  // +3 is for fresh fuel inventory
+  EXPECT_EQ(3*simdur+3, qr.rows.size());
+}
+
+// tests that the reactor halts operation when it has no more room in its
+// spent fuel inventory buffer.
+TEST(ReactorTests, FullSpentInventory) {
+  FAIL() << "not implemented";
+}
+
+// tests that the reactor cycle is delayed as expected when it is unable to
+// acquire fuel in time for the next cycle start.
+TEST(ReactorTests, FuelShortage) {
+  FAIL() << "not implemented";
+}
+
 // The user can optionally omit fuel preferences.  In the case where
 // preferences are adjusted, the ommitted preference vector must be populated
 // with default values - if it wasn't then preferences won't be adjusted
@@ -109,36 +243,6 @@ TEST(ReactorTests, PrefChange) {
 
   QueryResult qr = sim.db().Query("Transactions", NULL);
   EXPECT_EQ(25, qr.rows.size()) << "failed to adjust preferences properly";
-}
-
-// tests that the reactor handles requesting multiple types of fuel correctly
-// - with proper inventory constraints, etc.
-TEST(ReactorTests, MultiFuelMix) {
-  FAIL() << "not implemented";
-}
-
-// tests that the reactor halts operation when it has no more room in its
-// spent fuel inventory buffer.
-TEST(ReactorTests, FullSpentInventory) {
-  FAIL() << "not implemented";
-}
-
-// tests that the reactor cycle is delayed as expected when it is unable to
-// acquire fuel in time for the next cycle start.
-TEST(ReactorTests, FuelShortage) {
-  FAIL() << "not implemented";
-}
-
-// tests that the refueling period between cycle end and start of the next
-// cycle is honored.
-TEST(ReactorTests, RefuelTimes) {
-  FAIL() << "not implemented";
-}
-
-// tests that the correct number of assemblies are popped from the core each
-// cycle.
-TEST(ReactorTests, BatchSizes) {
-  FAIL() << "not implemented";
 }
 
 TEST(ReactorTests, RecipeChange) {
