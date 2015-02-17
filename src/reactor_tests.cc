@@ -232,9 +232,56 @@ TEST(ReactorTests, FullSpentInventory) {
 }
 
 // tests that the reactor cycle is delayed as expected when it is unable to
-// acquire fuel in time for the next cycle start.
+// acquire fuel in time for the next cycle start.  This checks that after a
+// cycle is delayed past an original scheduled start time, as soon as enough fuel is
+// received, a new cycle pattern is established starting from the delayed
+// start time.
 TEST(ReactorTests, FuelShortage) {
-  FAIL() << "not implemented";
+  std::string config = 
+     "  <fuel_inrecipes>  <val>uox</val>      </fuel_inrecipes>  "
+     "  <fuel_outrecipes> <val>spentuox</val> </fuel_outrecipes>  "
+     "  <fuel_incommods>  <val>uox</val>      </fuel_incommods>  "
+     "  <fuel_outcommods> <val>waste</val>    </fuel_outcommods>  "
+     ""
+     "  <cycle_time>7</cycle_time>  "
+     "  <refuel_time>0</refuel_time>  "
+     "  <assem_size>1</assem_size>  "
+     "  <n_assem_core>3</n_assem_core>  "
+     "  <n_assem_batch>3</n_assem_batch>  ";
+
+  int simdur = 50;
+  cyclus::MockSim sim(cyclus::AgentSpec(":cycamore:Reactor"), config, simdur);
+  sim.AddSource("uox").lifetime(1).Finalize(); // provide initial full batch
+  sim.AddSource("uox").start(9).lifetime(1).capacity(2).Finalize(); // provide partial batch post cycle-end
+  sim.AddSource("uox").start(15).Finalize(); // provide remainder of batch much later
+  sim.AddRecipe("uox", c_uox());
+  sim.AddRecipe("spentuox", c_spentuox());
+  int id = sim.Run();
+
+  // check that we never got a full refueled batch
+  std::vector<Cond> conds;
+  conds.push_back(Cond("Time", "<", 15));
+  QueryResult qr = sim.db().Query("Transactions", &conds);
+  EXPECT_EQ(5, qr.rows.size());
+
+  // after being delayed past original scheduled start of new cycle, we got
+  // final assembly for core.
+  conds.clear();
+  conds.push_back(Cond("Time", "==", 15));
+  qr = sim.db().Query("Transactions", &conds);
+  EXPECT_EQ(1, qr.rows.size());
+
+  // all during the next cycle we shouldn't be requesting any new fuel
+  conds.clear();
+  conds.push_back(Cond("Time", "<", 21));
+  qr = sim.db().Query("Transactions", &conds);
+  EXPECT_EQ(6, qr.rows.size());
+
+  // as soon as this cycle ends, we should be requesting/getting 3 new batches
+  conds.clear();
+  conds.push_back(Cond("Time", "==", 22));
+  qr = sim.db().Query("Transactions", &conds);
+  EXPECT_EQ(3, qr.rows.size());
 }
 
 // tests that discharged fuel is transmuted properly immediately at cycle end.
