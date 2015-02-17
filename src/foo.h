@@ -92,7 +92,7 @@ class Foo : public cyclus::Facility,
   ///  @param ctx the cyclus context for access to simulation-wide parameters
   Foo(cyclus::Context* ctx);
 
-  virtual ~Foo();
+  virtual ~Foo()
 
   #pragma cyclus decl
 
