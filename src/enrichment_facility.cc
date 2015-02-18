@@ -1,7 +1,3 @@
-/*
-How/Where do I check that enrichment limit is a fraction of 1?
-*/
-
 // Implements the EnrichmentFacility class
 #include "enrichment_facility.h"
 
@@ -19,7 +15,7 @@ EnrichmentFacility::EnrichmentFacility(cyclus::Context* ctx)
     : cyclus::Facility(ctx),
       tails_assay(0),
       swu_capacity(0),
-      max_enrich(0),  ///QQ is this defaulting to zero? Where to set default?
+      max_enrich(0),  ///QQ 
       initial_reserves(0),
       in_commod(""),
       in_recipe(""),
@@ -36,7 +32,7 @@ std::string EnrichmentFacility::str() {
      << " with enrichment facility parameters:"
      << " * SWU capacity: " << SwuCapacity()
      << " * Tails assay: " << TailsAssay()
-     << " * Feed assay: " << FeedAssay()   //QQ Remove??
+     << " * Feed assay: " << FeedAssay()
      << " * Input cyclus::Commodity: " << in_commodity()
      << " * Output cyclus::Commodity: " << out_commodity()
      << " * Tails cyclus::Commodity: " << tails_commodity(); ///QQ
@@ -104,8 +100,6 @@ void EnrichmentFacility::AcceptMatlTrades(
     AddMat_(it->second);
   }
 }
-
-  ///QQ Here is where we check material composition 
   
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 std::set<cyclus::BidPortfolio<cyclus::Material>::Ptr>
@@ -134,8 +128,8 @@ EnrichmentFacility::GetMatlBids(
     //QQ
     // overbidding (bidding on every offer)
     // add an overall capacity constraint 
-    CapacityConstraint<Material> tc(tails.quantity());
-    tails_port->AddConstraint(tc);
+    CapacityConstraint<Material> tails_constraint(tails.quantity());
+    tails_port->AddConstraint(tails_constraint);
     LOG(cyclus::LEV_INFO5, "EnrFac") << prototype()
 				     << " adding a tails capacity constraint of "
 				     << tails.capacity();
@@ -196,30 +190,28 @@ void EnrichmentFacility::GetMatlTrades(
 
   std::vector< Trade<Material> >::const_iterator it;
   for (it = trades.begin(); it != trades.end(); ++it) {
-    Material::Ptr mat = it->bid->offer();
     double qty = it->amt;
     std::string commod_type = it->bid->request()->commodity() ;
     Material::Ptr response ;
+
     //QQ Figure out whether material is tails or enriched,
     // if tails then make transfer of material
-    
-    //QQ Need to figure out if the response material is tails or product  
     if (commod_type == tails_commod){
       LOG(cyclus::LEV_INFO5, "EnrFac") << prototype()
 				       << " just received an order"
 				       << " for " << it->amt
 				       << " of " << tails_commod;
       // Do the material moving
-      tails.Pop(qty);     // remove the qty from the Tails buffer
-      response = mat;  //QQ Correct?
+      response = tails.Pop(qty);     // remove the qty from the Tails buffer
+      //      std::cout << "TAILS" << std::endl ;
     } else {
       LOG(cyclus::LEV_INFO5, "EnrFac") << prototype()
 				       << " just received an order"
 				       << " for " << it->amt
 				       << " of " << out_commod;
-      
-      response = Enrich_(mat, qty);
+      response = Enrich_(it->bid->offer(), qty);
     }
+    //    std::cout << "adding material to trade " << std::endl ;
     responses.push_back(std::make_pair(*it, response));	
   }
   if (cyclus::IsNegative(tails.quantity())) {
@@ -265,6 +257,8 @@ void EnrichmentFacility::AddMat_(cyclus::Material::Ptr mat) {
   LOG(cyclus::LEV_INFO5, "EnrFac") << prototype() << " is initially holding "
 				   << inventory.quantity() << " total.";
 
+
+  
   try {
     inventory.Push(mat);
   } catch (cyclus::Error& e) {
@@ -310,7 +304,8 @@ cyclus::Material::Ptr EnrichmentFacility::Enrich_(
   Assays assays(FeedAssay(), UraniumAssay(mat), TailsAssay());
   double swu_req = SwuRequired(qty, assays);
   double natu_req = FeedQty(qty, assays);
- 
+
+  // NN HERES THE PROBLEM WITH TOO MUCH U239
   // pop amount from inventory and blob it into one material
   Material::Ptr r;
   try {
@@ -332,9 +327,13 @@ cyclus::Material::Ptr EnrichmentFacility::Enrich_(
 
   // "enrich" it, but pull out the composition and quantity we require from the
   // blob
-  cyclus::Composition::Ptr comp = mat->comp();
-  Material::Ptr response = r->ExtractComp(qty, comp);
+  //  std::cout << "Before enrichment tails inventory is " << tails.quantity() << std::endl ;
+
+  cyclus::Composition::Ptr comp = mat->comp();   //requested EF output composition QQ
+  Material::Ptr response = r->ExtractComp(qty, comp);  //r becomes leftovers, should include U239
   tails.Push(r); // add remainder to tails buffer
+
+  //  std::cout << "After enrichment tails is . . .  ." << tails.quantity() << std::endl ;
   
   current_swu_capacity -= swu_req;
 
