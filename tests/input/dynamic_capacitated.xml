@@ -27,7 +27,7 @@
 
   <facility>
     <name>Sink</name>
-    <lifetime>1</lifetime>
+    <lifetime>2</lifetime>
     <config>
       <Sink>
         <in_commods>
