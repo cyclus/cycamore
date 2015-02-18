@@ -201,9 +201,7 @@ void EnrichmentFacility::GetMatlTrades(
 				       << " just received an order"
 				       << " for " << it->amt
 				       << " of " << tails_commod;
-      // Do the material moving
-      response = tails.Pop(qty);     // remove the qty from the Tails buffer
-      //      std::cout << "TAILS" << std::endl ;
+      response = tails.Pop(qty);    
     } else {
       LOG(cyclus::LEV_INFO5, "EnrFac") << prototype()
 				       << " just received an order"
@@ -211,7 +209,6 @@ void EnrichmentFacility::GetMatlTrades(
 				       << " of " << out_commod;
       response = Enrich_(it->bid->offer(), qty);
     }
-    //    std::cout << "adding material to trade " << std::endl ;
     responses.push_back(std::make_pair(*it, response));	
   }
   if (cyclus::IsNegative(tails.quantity())) {
@@ -288,7 +285,7 @@ cyclus::Material::Ptr EnrichmentFacility::Offer_(cyclus::Material::Ptr mat) {
   return cyclus::Material::CreateUntracked(
            mat->quantity(), cyclus::Composition::CreateFromAtom(comp));
 }
-// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+  // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 cyclus::Material::Ptr EnrichmentFacility::Enrich_(
   cyclus::Material::Ptr mat,
   double qty) {
@@ -303,9 +300,22 @@ cyclus::Material::Ptr EnrichmentFacility::Enrich_(
   // get enrichment parameters
   Assays assays(FeedAssay(), UraniumAssay(mat), TailsAssay());
   double swu_req = SwuRequired(qty, assays);
-  double natu_req = FeedQty(qty, assays);
+  double fissile_u_req = FeedQty(qty, assays);
 
-  // NN HERES THE PROBLEM WITH TOO MUCH U239
+  // Determine the composition of the natural uranium
+  // (ie. does it contain non-fissile materials?)
+  Material::Ptr natu_matl=inventory.Pop(inventory.quantity());
+  inventory.Push(natu_matl);
+
+  // calculate a multiplier to determine actual amount of raw material
+  // needed to supply the necessary quantities of U-235, U-238 
+  cyclus::toolkit::MatQuery mq(natu_matl);
+  double fissile_mass = mq.mass(922350000) + mq.mass(922380000);
+  double fissile_multiplier = mq.qty()/fissile_mass;
+
+  // fissile_u_req was calculated assuming only fissile materials present
+  double natu_req = fissile_u_req*fissile_multiplier;
+  
   // pop amount from inventory and blob it into one material
   Material::Ptr r;
   try {
@@ -327,14 +337,10 @@ cyclus::Material::Ptr EnrichmentFacility::Enrich_(
 
   // "enrich" it, but pull out the composition and quantity we require from the
   // blob
-  //  std::cout << "Before enrichment tails inventory is " << tails.quantity() << std::endl ;
+  cyclus::Composition::Ptr comp = mat->comp();
+  Material::Ptr response = r->ExtractComp(qty, comp); 
+  tails.Push(r);
 
-  cyclus::Composition::Ptr comp = mat->comp();   //requested EF output composition QQ
-  Material::Ptr response = r->ExtractComp(qty, comp);  //r becomes leftovers, should include U239
-  tails.Push(r); // add remainder to tails buffer
-
-  //  std::cout << "After enrichment tails is . . .  ." << tails.quantity() << std::endl ;
-  
   current_swu_capacity -= swu_req;
 
   RecordEnrichment_(natu_req, swu_req);
