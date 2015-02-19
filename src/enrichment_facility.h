@@ -306,13 +306,14 @@ class EnrichmentFacility : public cyclus::Facility {
                       "doc": "maximum allowed weight fraction of U235 in product " \
                              "in the enrichment facility"}  ///QQ 
   double max_enrich;
-#pragma cyclus var {"schema": '"<element name=\\"max_enrich\\">\\n"'\
-                              '"  <data type=\\"float"\\" />\\n"' \
-                              '"  <minInclusive value=\\"0.0\\">\\n"' \
-                              '"  <maxInclusive value=\\"1.0\\">\\n"' \
-                              '"</element>\\n"'}
-
-  
+  #pragma cyclus var {"schema": '"<xs:element name=\\"max_enrich\\">\\n"'	\
+                                '"  <xs:simpleType>\\n"' \
+                                '"    <xs:restriction base=\\"xs:float\\">\\n"'	\
+                                '"      <xs:minInclusive value=\\"0.0\\">\\n"'				\
+                                '"      <xs:maxInclusive value=\\"1.0\\">\\n"' \
+                                '"    <xs:/restriction>\\n"'	\
+                                '"  <xs:/simpleType>\\n"'	\
+                                '"<xs:/element>\\n"'}
   //QQ
   #pragma cyclus var {"default": 0, "tooltip": "initial uranium reserves (kg)", \
                       "doc": "amount of natural uranium stored at the " \
