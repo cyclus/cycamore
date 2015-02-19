@@ -303,18 +303,12 @@ cyclus::Material::Ptr EnrichmentFacility::Enrich_(
   double fissile_u_req = FeedQty(qty, assays);
 
   // Determine the composition of the natural uranium
-  // (ie. does it contain non-fissile materials?)
+  // (ie. fraction of non-fissile materials)
   Material::Ptr natu_matl=inventory.Pop(inventory.quantity());
   inventory.Push(natu_matl);
 
-  // calculate a multiplier to determine actual amount of raw material
-  // needed to supply the necessary quantities of U-235, U-238 
-  cyclus::toolkit::MatQuery mq(natu_matl);
-  double fissile_mass = mq.mass(922350000) + mq.mass(922380000);
-  double fissile_multiplier = mq.qty()/fissile_mass;
-
-  // fissile_u_req was calculated assuming only fissile materials present
-  double natu_req = fissile_u_req*fissile_multiplier;
+  double non_fissile_mult = cyclus::toolkit::NonFissileMultiplier(natu_matl);
+  double natu_req = fissile_u_req*non_fissile_mult;
   
   // pop amount from inventory and blob it into one material
   Material::Ptr r;
@@ -392,8 +386,7 @@ double EnrichmentFacility::FeedAssay() {
   cyclus::Material::Ptr fission_matl=inventory.Pop(inventory.quantity());
   inventory.Push(fission_matl);
   return cyclus::toolkit::UraniumAssay(fission_matl); 
-}
-  
+}  
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 extern "C" cyclus::Agent* ConstructEnrichmentFacility(cyclus::Context* ctx) {
   return new EnrichmentFacility(ctx);

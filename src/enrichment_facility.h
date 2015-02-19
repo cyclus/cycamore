@@ -6,7 +6,6 @@
 #include "cyclus.h"
 
 namespace cycamore {
-
 /// @class SWUConverter
 ///
 /// @brief The SWUConverter is a simple Converter class for material to
@@ -57,7 +56,11 @@ class NatUConverter : public cyclus::Converter<cyclus::Material> {
           const * ctx = NULL) const {
     cyclus::toolkit::Assays assays(feed_, cyclus::toolkit::UraniumAssay(m),
                                    tails_);
-    return cyclus::toolkit::FeedQty(m->quantity(), assays);
+    
+    double fissile_matl = cyclus::toolkit::FeedQty(m->quantity(), assays);
+    //    double non_fissile_mult = 1.0 ;
+    double non_fissile_mult = cyclus::toolkit::NonFissileMultiplier(m);
+    return fissile_matl*non_fissile_mult;
   }
 
   /// @returns true if Converter is a NatUConverter and feed and tails equal
@@ -245,7 +248,7 @@ class EnrichmentFacility : public cyclus::Facility {
   inline double InitialReserves() const { return initial_reserves; }
 
   inline const cyclus::toolkit::ResBuf<cyclus::Material>& Tails() const { return tails; } 
-  ///QQ relevant to tails buffer (but how?) -- It's not used for anything and can be deleted if we decide to make everything a state variable for testing
+  ///QQ  It's not used for anything and can be deleted if we decide to make everything a state variable for testing
   
  private:
   ///   @brief adds a material into the natural uranium inventory
@@ -269,10 +272,9 @@ class EnrichmentFacility : public cyclus::Facility {
   ///  @brief calculates the feed assay based on the unenriched inventory
   double FeedAssay();
 
-  
   ///   @brief records and enrichment with the cyclus::Recorder
   void RecordEnrichment_(double natural_u, double swu);
-
+ 
   #pragma cyclus var {"tooltip": "input commodity", \
                       "doc": "commodity that the enrichment facility accepts", \
                       "uitype": "incommodity"}
@@ -319,15 +321,6 @@ class EnrichmentFacility : public cyclus::Facility {
   double initial_reserves;
   #pragma cyclus var {'derived_init': 'current_swu_capacity = swu_capacity;'}
   double current_swu_capacity;
-  /*  //QQ: TO BE DELETED
-  #pragma cyclus var {				\
-    'derived_init': "cyclus::Material::Ptr feed = "\
-    "cyclus::Material::CreateUntracked(0, context()->GetRecipe(in_recipe)); "\
-    "feed_assay = cyclus::toolkit::UraniumAssay(feed);", \
-                      "tooltip": "feed assay", \
-                      "doc": "feed assay for the enrichment process"}
-  double feed_assay;
-  */
   
   #pragma cyclus var {'capacity': 'max_inv_size'}
   cyclus::toolkit::ResBuf<cyclus::Material> inventory;  // of natl u
