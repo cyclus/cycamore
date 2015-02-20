@@ -306,14 +306,16 @@ class EnrichmentFacility : public cyclus::Facility {
   #pragma cyclus var {"default": 1.0, "tooltip": "maximum allowed enrichment fraction", \
                     "doc": "maximum allowed weight fraction of U235 in product " \
                            "in the enrichment facility",                         \
-                    "schema": '" <element name=\\"max_enrich\\">\\n"'           \
-                               '"   <simpleType>\\n"'				\
-                               '"     <restriction base=\\"double\\">\\n"'	\
-                               '"       <minInclusive value=\\"0.0\\">\\n"'	\
-                               '"       <maxInclusive value=\\"1.0\\">\\n"'     \
-                               '"     </restriction>\\n"'               	\
-                               '"   </simpleType>\\n"'	                        \
-                               '"</element>\\n"'}
+                      "schema": '      "<optional>\\n"\n' \
+                                '      "    <element name=\\"max_Enrich\\">\\n"\n'  \
+                                '      "        <simpleType>\\n"\n'	      \
+                                '      "            <restriction base=\\"double\\" />\\n"\n'\
+                                '      "                <minInclusive value=\\"0.0\\" />\\n"\n'\
+                                '      "                <maxInclusive value=\\"1.0\\" />\\n"\n'\
+                                '      "            </restriction>\\n"\n'\
+                                '      "        </simpleType>\\n"\n'\
+                                '      "    </element>\\n"\n'\
+                                '      "</optional>\\n"\n'}
   double max_enrich;
  //QQ
   #pragma cyclus var {"default": 0, "tooltip": "initial uranium reserves (kg)", \
