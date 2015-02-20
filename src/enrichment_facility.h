@@ -308,7 +308,7 @@ class EnrichmentFacility : public cyclus::Facility {
   double max_enrich;
   #pragma cyclus var {"schema": '"<xs:element name=\\"max_enrich\\">\\n"'	\
                                 '"  <xs:simpleType>\\n"' \
-                                '"    <xs:restriction base=\\"xs:float\\">\\n"'	\
+                                '"    <xs:restriction base=\\"xs:double\\">\\n"'	\
                                 '"      <xs:minInclusive value=\\"0.0\\">\\n"'				\
                                 '"      <xs:maxInclusive value=\\"1.0\\">\\n"' \
                                 '"    <xs:/restriction>\\n"'	\
