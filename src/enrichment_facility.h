@@ -302,19 +302,20 @@ class EnrichmentFacility : public cyclus::Facility {
                       "doc": "maximum total inventory of natural uranium in " \
                       "the enrichment facility (kg)"}
   double max_inv_size;
+
   #pragma cyclus var {"default": 1.0, "tooltip": "maximum allowed enrichment fraction", \
-                      "doc": "maximum allowed weight fraction of U235 in product " \
-                             "in the enrichment facility"}  ///QQ 
+                    "doc": "maximum allowed weight fraction of U235 in product " \
+                           "in the enrichment facility",                         \
+                    "schema": '" <element name=\\"max_enrich\\">\\n"'           \
+                               '"   <simpleType>\\n"'				\
+                               '"     <restriction base=\\"double\\">\\n"'	\
+                               '"       <minInclusive value=\\"0.0\\">\\n"'	\
+                               '"       <maxInclusive value=\\"1.0\\">\\n"'     \
+                               '"     </restriction>\\n"'               	\
+                               '"   </simpleType>\\n"'	                        \
+                               '"</element>\\n"'}
   double max_enrich;
-  #pragma cyclus var {"schema": '"<xs:element name=\\"max_enrich\\">\\n"'	\
-                                '"  <xs:simpleType>\\n"' \
-                                '"    <xs:restriction base=\\"xs:double\\">\\n"'	\
-                                '"      <xs:minInclusive value=\\"0.0\\">\\n"'				\
-                                '"      <xs:maxInclusive value=\\"1.0\\">\\n"' \
-                                '"    <xs:/restriction>\\n"'	\
-                                '"  <xs:/simpleType>\\n"'	\
-                                '"<xs:/element>\\n"'}
-  //QQ
+ //QQ
   #pragma cyclus var {"default": 0, "tooltip": "initial uranium reserves (kg)", \
                       "doc": "amount of natural uranium stored at the " \
                              "enrichment facility at the beginning of the " \
