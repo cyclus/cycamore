@@ -242,54 +242,54 @@ class Reactor : public cyclus::Facility {
   /////////// preference changes ///////////
   #pragma cyclus var { \
     "default": [], \
-    "doc": "The time step on which to change the request preference for a " \
+    "doc": "A time step on which to change the request preference for a " \
            "particular fresh fuel type.", \
   }
   std::vector<int> pref_change_times;
   #pragma cyclus var { \
     "default": [], \
     "doc": "The input commodity for a particular fuel preference change." \
-           " Same order as and direct correspondence to the specified preference change time steps.", \
+           " Same order as and direct correspondence to the specified preference change times.", \
     "uitype": ["oneormore", "incommodity"], \
   }
   std::vector<std::string> pref_change_commods;
   #pragma cyclus var { \
     "default": [], \
     "doc": "The new/changed request preference for a particular fresh fuel." \
-           " Same order as and direct correspondence to the specified preference change time steps.", \
+           " Same order as and direct correspondence to the specified preference change times.", \
   }
   std::vector<double> pref_change_values;
 
   ///////////// recipe changes ///////////
   #pragma cyclus var { \
     "default": [], \
-    "doc": "The time step on which to change the input-output recipe pair for a requested fresh fuel.", \
+    "doc": "A time step on which to change the input-output recipe pair for a requested fresh fuel.", \
   }
   std::vector<int> recipe_change_times;
   #pragma cyclus var { \
     "default": [], \
     "doc": "The input commodity indicating fresh fuel for which recipes will be changed." \
-           " Same order as and direct correspondence to the specified recipe change time steps.", \
+           " Same order as and direct correspondence to the specified recipe change times.", \
     "uitype": ["oneormore", "incommodity"], \
   }
   std::vector<std::string> recipe_change_commods;
   #pragma cyclus var { \
     "default": [], \
     "doc": "The new input recipe to use for this recipe change." \
-           " Same order as and direct correspondence to the specified recipe change time steps.", \
+           " Same order as and direct correspondence to the specified recipe change times.", \
     "uitype": ["oneormore", "recipe"], \
   }
   std::vector<std::string> recipe_change_in;
   #pragma cyclus var { \
     "default": [], \
     "doc": "The new output recipe to use for this recipe change." \
-           " Same order as and direct correspondence to the specified recipe change time steps.", \
+           " Same order as and direct correspondence to the specified recipe change times.", \
     "uitype": ["oneormore", "recipe"], \
   }
   std::vector<std::string> recipe_change_out;
 
-  // should be hidden in ui (internal only). True if fuel has been discharged
-  // this cycle.
+  // should be hidden in ui (internal only). True if fuel has already been
+  // discharged this cycle.
   #pragma cyclus var {"default": 0, "doc": "This should NEVER be set manually."}
   bool discharged;
 };
