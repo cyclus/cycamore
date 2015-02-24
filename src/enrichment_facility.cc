@@ -89,6 +89,64 @@ EnrichmentFacility::GetMatlRequests() {
 }
 
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+// Sort offers of input material to have higher preference for more
+//  U-235 content
+void EnrichmentFacility::AdjustMatlPrefs(
+  cyclus::PrefMap<cyclus::Material>::type& prefs) {
+  using cyclus::Bid;
+  using cyclus::Material;
+  using cyclus::Request;
+  
+  cyclus::PrefMap<cyclus::Material>::type::iterator reqit;
+  // PrefMap is map of requests and a map of bids and prefs. (<Requests>, map<Bids, prefs>)
+
+  // Loop over all requests
+  for (reqit = prefs.begin(); reqit != prefs.end(); ++reqit) {
+    //    Request<Material>* req = reqit->first;
+       std::map<double, Bid<Material>* > u235qty_map ;
+
+    // Make a map with U235 qty as key so Bids can be sorted by qty.
+    std::map<Bid<Material>*, double>::iterator bidit;
+
+    for (bidit = reqit->second.begin(); bidit != reqit->second.end(); ++bidit) {
+      cyclus::Material::Ptr mat = bidit->first->offer();
+      double u235qty = -1 ;
+      cyclus::CompMap cm = mat->comp()->atom();
+      for (cyclus::CompMap::const_iterator it=cm.begin(); it !=cm.end(); ++it) {
+	if (pyne::nucname::anum(it->first) == 235){
+	  u235qty = it->second;
+	  u235qty_map.insert ((<double, Bid<Material>* >(u235qty, bidit)) ;
+	  break ;
+	}
+      }  // each composition element
+    } // each Bid for the request
+
+      //THIS ISNT WORKING BECAUSE I CANT HAVE DUPLICATE KEYS.
+      // NEED TO MAKE A VECTOR AND USE THE ALGORITHM SORT FUNCTION INSTEAD.
+      
+    double n_bids = prefs->second.count() ;
+    int bidct = 0 ;
+    std::map<Bid<Material>*, double>::iterator qtyit;
+    //u235qty map is automatically sorted by U-235 content
+    for (qtyit = u235qty_map.begin();qtyit != u235qty_map.end(); ++qtyit)
+      {
+	bidct++ ;
+	bid = qtyit->second;
+	if (qtyit->first == 0) {
+	  reqit->second->first.at(bid) = new_pref;
+	}
+	else {
+	  double new_pref = (10/n_bids)*(bidct) ;
+	  reqit->second->first.at(bid) = new_pref;
+	}
+	std::cout << "U235 = " << qtyit->first << " New pref is " <<
+	  reqit->second->first.at(bid) << std::endl;
+      } // each Bid again
+    
+  } // each Material Request
+}
+  
+// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 void EnrichmentFacility::AcceptMatlTrades(
   const std::vector< std::pair<cyclus::Trade<cyclus::Material>,
   cyclus::Material::Ptr> >& responses) {
@@ -112,7 +170,7 @@ EnrichmentFacility::GetMatlBids(
   using cyclus::Material;
   using cyclus::Request;
 
-  std::set<BidPortfolio<Material>::Ptr> ports;
+  Std::set<BidPortfolio<Material>::Ptr> ports;
   //QQ 
   if (out_requests.count(tails_commod) > 0 && tails.quantity() > 0) {
     BidPortfolio<Material>::Ptr tails_port(new BidPortfolio<Material>()); //QQ
@@ -386,7 +444,46 @@ double EnrichmentFacility::FeedAssay() {
   cyclus::Material::Ptr fission_matl=inventory.Pop(inventory.quantity());
   inventory.Push(fission_matl);
   return cyclus::toolkit::UraniumAssay(fission_matl); 
-}  
+}
+
+// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+// Sort bids by u-235 content
+bool SortBids ( Bid<Material>* i, Bid<Material>* j) {
+  cyclus::Material::Ptr mat_i = i->first->offer();
+  cyclus::Material::Ptr mat_j = j->first->offer();
+  cyclus::CompMap cm_i = mat_i->comp()->atom();
+  cyclus::CompMap cm_j = mat_j->comp()->atom();
+  double u235_i ;
+  double u_235_j ;
+
+  // CAN I USE THE COMP MAP FOR A DIRECT LOOKUP INSTEAD OF THIS LOOP?
+
+  for (cyclus::CompMap::const_iterator it=cm_i.begin(); it !=cm_i.end(); ++it) {
+    if (pyne::nucname::anum(it->first) == 235){
+      u235qty = it->second;
+      u235qty_map.insert ((<double, Bid<Material>* >(u235qty, bidit)) ;
+			  break ;
+			  
+
+
+
+  return (i <= j );
+
+}
+
+
+    for (bidit = reqit->second.begin(); bidit != reqit->second.end(); ++bidit) {
+      cyclus::Material::Ptr mat = bidit->first->offer();
+      double u235qty = -1 ;
+      cyclus::CompMap cm = mat->comp()->atom();
+      for (cyclus::CompMap::const_iterator it=cm.begin(); it !=cm.end(); ++it) {
+	if (pyne::nucname::anum(it->first) == 235){
+	  u235qty = it->second;
+	  u235qty_map.insert ((<double, Bid<Material>* >(u235qty, bidit)) ;
+	  break ;
+	}
+ 
+ 
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 extern "C" cyclus::Agent* ConstructEnrichmentFacility(cyclus::Context* ctx) {
   return new EnrichmentFacility(ctx);
