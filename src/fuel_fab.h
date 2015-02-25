@@ -6,6 +6,11 @@
 
 namespace cycamore {
 
+double CosiWeight(cyclus::Composition::Ptr c, const std::string& spectrum);
+bool ValidWeights(double w_low, double w_tgt, double w_high);
+double LowFrac(double w_low, double w_tgt, double w_high);
+double HighFrac(double w_low, double w_tgt, double w_high);
+
 class FuelFab : public cyclus::Facility {
  public:
   FuelFab(cyclus::Context* ctx);
@@ -87,7 +92,7 @@ class FuelFab : public cyclus::Facility {
   std::string outcommod;
 
   #pragma cyclus var { \
-    "doc": "'fission' for fast reactor compositions or 'thermal' for slow reactors.", \
+    "doc": "'fission_spectrum_ave' for fast reactor compositions or 'thermal' for slow reactors.", \
   }
   std::string spectrum;
 
