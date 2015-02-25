@@ -264,6 +264,11 @@ TEST(FuelFabTests, MultipleFissStreams) {
   EXPECT_EQ(1, qr.rows.size());
 }
 
+// fissile stream preferences can be specified.
+TEST(FuelFabTests, FissStreamPrefs) {
+  FAIL() << "not implemented";
+}
+
 // fill, fiss, and topup inventories are all requested for and
 // filled as expected
 TEST(FuelFabTests, FillInventories) {
