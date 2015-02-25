@@ -200,9 +200,6 @@ class EnrichmentFacility : public cyclus::Facility {
   ///  U235-to-U238 ratio less than this facility's tails_assay().
   ///  @return true if the above description is met by the material
   bool ValidReq(const cyclus::Material::Ptr mat);
-
-  // Sort bids by u-235 content
-  bool SortBids (int i, int j) {return (i <= j );}
   
   inline void in_commodity(std::string in_com) { in_commod = in_com; }
 
