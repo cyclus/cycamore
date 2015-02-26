@@ -277,7 +277,7 @@ class EnrichmentFacility : public cyclus::Facility {
   ///  @brief calculates the feed assay based on the unenriched inventory
   double FeedAssay();
 
-  ///   @brief records and enrichment with the cyclus::Recorder
+  ///  @brief records and enrichment with the cyclus::Recorder
   void RecordEnrichment_(double natural_u, double swu);
  
   #pragma cyclus var {"tooltip": "input commodity", \
@@ -307,28 +307,27 @@ class EnrichmentFacility : public cyclus::Facility {
                       "doc": "maximum total inventory of natural uranium in " \
                       "the enrichment facility (kg)"}
   double max_inv_size;
-  /*
+
   #pragma cyclus var {"default": 1.0, "tooltip": "maximum allowed enrichment fraction", \
                     "doc": "maximum allowed weight fraction of U235 in product " \
                            "in the enrichment facility",                         \
                       "schema": '      "<optional>\\n"\n' \
-                                '      "    <element name=\\"max_Enrich\\">\\n"\n'  \
-                                '      "        <simpleType>\\n"\n'	      \
-                                '      "            <restriction base=\\"double\\" />\\n"\n'\
-                                '      "                <minInclusive value=\\"0.0\\" />\\n"\n'\
-                                '      "                <maxInclusive value=\\"1.0\\" />\\n"\n'\
-                                '      "            </restriction>\\n"\n'\
-                                '      "        </simpleType>\\n"\n'\
-                                '      "    </element>\\n"\n'\
+                                '      "    <element name=\\"max_enrich\\">\\n"\n'  \
+                                '      "        <data type=\\"double\\">\\n"\n ' \
+                                '      "            <param name=\\"minInclusive\\">0</param>\\n"\n'\
+                                '      "            <param name=\\"maxInclusive\\">1</param>\\n"\n'\
+                                '      "        </data>\\n"\n '					\
+                                '      "    </element>\\n"\n'					\
                                 '      "</optional>\\n"\n'}
   double max_enrich;
  //QQ
- */
+
+  /*
   #pragma cyclus var {"default": 1.0, "tooltip": "maximum allowed enrichment fraction", \
     "doc": "maximum allowed weight fraction of U235 in product "	\
     "in the enrichment facility"}
   double max_enrich;
-
+  */
   #pragma cyclus var {"default": 0, "tooltip": "initial uranium reserves (kg)", \
                       "doc": "amount of natural uranium stored at the " \
                              "enrichment facility at the beginning of the " \
