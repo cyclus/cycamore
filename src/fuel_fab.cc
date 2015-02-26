@@ -5,7 +5,7 @@ using cyclus::Composition;
 using pyne::simple_xs;
 
 #define SHOW(X) \
-  std::cout << __FILE__ << ":" << __LINE__ << ": "#X" = " << X << "\n"
+  std::cout << std::setprecision(17) << __FILE__ << ":" << __LINE__ << ": "#X" = " << X << "\n"
 
 namespace cycamore {
 
@@ -27,7 +27,6 @@ class FissConverter : public cyclus::Converter<cyclus::Material> {
 
     double w_tgt = CosiWeight(m->comp(), spec_);
     if (ValidWeights(w_fill_, w_tgt, w_fiss_)) {
-      std::cout << std::setprecision(17) << "fissconvert=" << HighFrac(w_fill_, w_tgt, w_fiss_) * m->quantity() << "\n";
       return HighFrac(w_fill_, w_tgt, w_fiss_) * m->quantity();
     } else if (ValidWeights(w_fiss_, w_tgt, w_topup_)) {
       // use fiss inventory as filler, and topup as fissile
@@ -63,10 +62,6 @@ class FillConverter : public cyclus::Converter<cyclus::Material> {
 
     double w_tgt = CosiWeight(m->comp(), spec_);
     if (ValidWeights(w_fill_, w_tgt, w_fiss_)) {
-      std::cout << std::setprecision(17) << "w_tgt = " << w_tgt << "\n";
-      std::cout << std::setprecision(17) << "w_fiss = " << w_fiss_ << "\n";
-      std::cout << std::setprecision(17) << "w_fill = " << w_fill_ << "\n";
-      std::cout << std::setprecision(17) << "fillconvert=" << LowFrac(w_fill_, w_tgt, w_fiss_) * m->quantity() << "\n";
       return LowFrac(w_fill_, w_tgt, w_fiss_) * m->quantity();
     } else if (ValidWeights(w_fiss_, w_tgt, w_topup_)) {
       // switched fissile inventory to filler so don't need any filler inventory
@@ -102,7 +97,6 @@ class TopupConverter : public cyclus::Converter<cyclus::Material> {
 
     double w_tgt = CosiWeight(m->comp(), spec_);
     if (ValidWeights(w_fill_, w_tgt, w_fiss_)) {
-      std::cout << "topupconvert=0\n";
       return 0;
     } else if (ValidWeights(w_fiss_, w_tgt, w_topup_)) {
       // switched fissile inventory to filler and topup as fissile
@@ -158,6 +152,7 @@ FuelFab::GetMatlRequests() {
       std::string commod = fiss_commods[i];
       double pref = fiss_commod_prefs[i];
       reqs.push_back(port->AddRequest(m, this, commod, pref, exclusive));
+      req_inventories_[reqs.back()] = "fiss";
     }
     port->AddMutualReqs(reqs);
     ports.insert(port);
@@ -171,7 +166,8 @@ FuelFab::GetMatlRequests() {
       Composition::Ptr c = context()->GetRecipe(fill_recipe);
       m = Material::CreateUntracked(fill.space(), c);
     }
-    port->AddRequest(m, this, fill_commod, fill_pref, exclusive);
+    cyclus::Request<Material>* r = port->AddRequest(m, this, fill_commod, fill_pref, exclusive);
+    req_inventories_[r] = "fill";
     ports.insert(port);
   }
 
@@ -183,7 +179,8 @@ FuelFab::GetMatlRequests() {
       Composition::Ptr c = context()->GetRecipe(topup_recipe);
       m = Material::CreateUntracked(topup.space(), c);
     }
-    port->AddRequest(m, this, topup_commod, topup_pref, exclusive);
+    cyclus::Request<Material>* r = port->AddRequest(m, this, topup_commod, topup_pref, exclusive);
+    req_inventories_[r] = "topup";
     ports.insert(port);
   }
 
@@ -209,24 +206,19 @@ void FuelFab::AcceptMatlTrades(
   for (trade = responses.begin(); trade != responses.end(); ++trade) {
     std::string commod = trade->first.request->commodity();
     double req_qty = trade->first.request->target()->quantity();
+    cyclus::Request<Material>* req = trade->first.request;
     Material::Ptr m = trade->second;
-
-    // the checks of "m->quantity() <= [inventory].space()" are important in circumstances
-    // where fill_commod, topup_commod, and any of the fiss_commods may be the
-    // same as each other.  Currently the case where topup_commod or
-    // fill_commod are one or both inside fiss_commods, trades for each
-    // inventory can get mixed up,
-    // TODO: handle same commod case inventory discrimination more robustly.
-    if (commod == fill_commod && m->quantity() <= fill.space()) {
+    if (req_inventories_[req] == "fill") {
       fill.Push(m);
-    } else if (commod == topup_commod && m->quantity() <= topup.space()) {
+    } else if (req_inventories_[req] == "topup") {
       topup.Push(m);
-    } else if (Contains(fiss_commods, commod) && m->quantity() <= fiss.space()) {
+    } else if (req_inventories_[req] == "fiss") {
       fiss.Push(m);
     } else {
       throw cyclus::ValueError("cycamore::FuelFab was overmatched on requests");
     }
   }
+  req_inventories_.clear();
 }
 
 std::set<cyclus::BidPortfolio<Material>::Ptr>
@@ -238,7 +230,6 @@ FuelFab::GetMatlBids(cyclus::CommodMap<Material>::type&
   if (throughput == 0) {
     return ports;
   }
-
 
   Composition::Ptr c_fill;
   Composition::Ptr c_fiss;
@@ -279,7 +270,6 @@ FuelFab::GetMatlBids(cyclus::CommodMap<Material>::type&
     double w_tgt = CosiWeight(tgt, spectrum);
     double tgt_qty = req->target()->quantity();
     if (ValidWeights(w_fill, w_tgt, w_fiss)) {
-      std::cout << "bidding with fill and fiss tgt_qty=" << tgt_qty << "\n";
       double fiss_frac = HighFrac(w_fill, w_tgt, w_fiss);
       double fill_frac = 1 - fiss_frac;
       Material::Ptr m1 = Material::CreateUntracked(fiss_frac * tgt_qty, c_fiss);
@@ -288,8 +278,7 @@ FuelFab::GetMatlBids(cyclus::CommodMap<Material>::type&
 
       bool exclusive = false;
       port->AddBid(req, m1, this, exclusive);
-    } else if (0 && topup.count() > 0 && ValidWeights(w_fiss, w_tgt, w_topup)) {
-      std::cout << "bidding with fiss and topup\n";
+    } else if (topup.count() > 0 && ValidWeights(w_fiss, w_tgt, w_topup)) {
       // only bid with topup if we have filler - otherwise we might be able to
       // meet target with filler when we get it. we should only use topup
       // when the fissile has too poor neutronics.
@@ -304,8 +293,6 @@ FuelFab::GetMatlBids(cyclus::CommodMap<Material>::type&
     } // else can't meet the target - don't bid
   }
 
-  SHOW(fill.quantity());
-  SHOW(fiss.quantity());
   cyclus::Converter<Material>::Ptr fissconv(new FissConverter(w_fill, w_fiss, w_topup, spectrum));
   cyclus::Converter<Material>::Ptr fillconv(new FillConverter(w_fill, w_fiss, w_topup, spectrum));
   cyclus::Converter<Material>::Ptr topupconv(new TopupConverter(w_fill, w_fiss, w_topup, spectrum));
@@ -342,21 +329,19 @@ void FuelFab::GetMatlTrades(
     w_fiss = CosiWeight(fiss.Peek()->comp(), spectrum);
   }
 
-  std::cout << "w_fill=" << w_fill << "\n";
-  std::cout << "w_fiss=" << w_fiss << "\n";
-  std::cout << "w_topup=" << w_topup << "\n";
-
   std::vector< cyclus::Trade<cyclus::Material> >::const_iterator it;
   double tot = 0;
   for (int i = 0; i < trades.size(); i++) {
     Material::Ptr tgt = trades[i].request->target();
     double w_tgt = CosiWeight(tgt->comp(), spectrum);
-    double qty = tgt->quantity();
+    double qty = trades[i].amt;
     double wfiss = w_fiss;
 
     tot += qty;
     if (tot > throughput + cyclus::eps()) {
-      throw cyclus::ValueError("FuelFab was matched above throughput limit"); 
+      std::stringstream ss;
+      ss << "FuelFab was matched above throughput limit: " << tot << " > " << throughput;
+      throw cyclus::ValueError(ss.str()); 
     }
 
     if (fiss.count() == 0) {

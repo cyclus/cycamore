@@ -98,6 +98,10 @@ class FuelFab : public cyclus::Facility {
 
   #pragma cyclus var {}
   double throughput;
+
+  // intra-time-step state - no need to be a state var
+  // map<request, inventory name>
+  std::map<cyclus::Request<cyclus::Material>*, std::string> req_inventories_;
 };
 
 } // namespace cycamore
