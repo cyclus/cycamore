@@ -8,8 +8,8 @@ namespace cycamore {
 
 double CosiWeight(cyclus::Composition::Ptr c, const std::string& spectrum);
 bool ValidWeights(double w_low, double w_tgt, double w_high);
-double LowFrac(double w_low, double w_tgt, double w_high);
-double HighFrac(double w_low, double w_tgt, double w_high);
+double LowFrac(double w_low, double w_tgt, double w_high, double eps = 1e-6);
+double HighFrac(double w_low, double w_tgt, double w_high, double eps = 1e-6);
 
 class FuelFab : public cyclus::Facility {
  public:
