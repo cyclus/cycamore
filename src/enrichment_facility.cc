@@ -102,7 +102,6 @@ bool SortBids(
   return ((mq_i.mass(922350000)/mq_i.qty()) <=
 	  (mq_j.mass(922350000)/mq_j.qty()));
 }
-
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 // Sort offers of input material to have higher preference for more
 //  U-235 content
@@ -130,16 +129,21 @@ void EnrichmentFacility::AdjustMatlPrefs(
     // Assign preferences to the sorted vector
     double n_bids = bids_vector.size() ;
 
+    bool finite_mass = 0 ;
     for (int bidit=0 ; bidit < bids_vector.size(); bidit++) {
       int new_pref = bidit+1 ;
       
       // If u-235 qty of smallest item is 0, set pref to zero. 
-      if (bidit == 0) {
+      if (!finite_mass) {
 	cyclus::Material::Ptr mat = bids_vector[bidit]->offer();
 	cyclus::toolkit::MatQuery mq(mat);
-	new_pref = (mq.mass(922350000) == 0) ? -1 : (new_pref) ;
+	if (mq.mass(922350000) == 0) {
+	  new_pref = -1;
+	}
+	else {
+	  finite_mass = TRUE;
+	}
       }
-
       (reqit->second)[bids_vector[bidit]] = new_pref;
     } // each bid
   } // each Material Request
@@ -358,29 +362,33 @@ cyclus::Material::Ptr EnrichmentFacility::Enrich_(
   // get enrichment parameters
   Assays assays(FeedAssay(), UraniumAssay(mat), TailsAssay());
   double swu_req = SwuRequired(qty, assays);
-  double fissile_u_req = FeedQty(qty, assays);
+  double natu_req = FeedQty(qty, assays);
 
   // Determine the composition of the natural uranium
   // (ie. fraction of non-fissile materials)
   Material::Ptr natu_matl=inventory.Pop(inventory.quantity());
   inventory.Push(natu_matl);
-
-  double non_fissile_mult = cyclus::toolkit::NonFissileMultiplier(natu_matl);
-  double natu_req = fissile_u_req*non_fissile_mult;
   
+  cyclus::toolkit::MatQuery mq(natu_matl);
+  std::set<cyclus::Nuc> nucs ;
+  nucs.insert(922350000);
+  nucs.insert(922380000);
+  double natu_frac = mq.multi_mass_frac(nucs);
+  double feed_req = natu_req/natu_frac;
+
   // pop amount from inventory and blob it into one material
   Material::Ptr r;
   try {
     // required so popping doesn't take out too much
-    if (cyclus::AlmostEq(natu_req, inventory.quantity())) {
+    if (cyclus::AlmostEq(feed_req, inventory.quantity())) {
       r = cyclus::toolkit::Squash(inventory.PopN(inventory.count()));
     } else {
-      r = inventory.Pop(natu_req);
+      r = inventory.Pop(feed_req);
     }
   } catch (cyclus::Error& e) {
     NatUConverter nc(FeedAssay(), tails_assay);
     std::stringstream ss;
-    ss << " tried to remove " << natu_req
+    ss << " tried to remove " << feed_req
        << " from its inventory of size " << inventory.quantity()
        << " and the conversion of the material into natu is "
        << nc.convert(mat);
@@ -395,12 +403,12 @@ cyclus::Material::Ptr EnrichmentFacility::Enrich_(
 
   current_swu_capacity -= swu_req;
 
-  RecordEnrichment_(natu_req, swu_req);
+  RecordEnrichment_(feed_req, swu_req);
 
   LOG(cyclus::LEV_INFO5, "EnrFac") << prototype() <<
                                 " has performed an enrichment: ";
   LOG(cyclus::LEV_INFO5, "EnrFac") << "   * Feed Qty: "
-                                << natu_req;
+                                << feed_req;
   LOG(cyclus::LEV_INFO5, "EnrFac") << "   * Feed Assay: "
                                 << assays.Feed() * 100;
   LOG(cyclus::LEV_INFO5, "EnrFac") << "   * Product Qty: "
@@ -445,8 +453,8 @@ double EnrichmentFacility::FeedAssay() {
   inventory.Push(fission_matl);
   return cyclus::toolkit::UraniumAssay(fission_matl); 
 }
-  
-// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+
+  // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 extern "C" cyclus::Agent* ConstructEnrichmentFacility(cyclus::Context* ctx) {
   return new EnrichmentFacility(ctx);
 }

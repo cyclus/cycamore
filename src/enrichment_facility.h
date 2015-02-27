@@ -6,6 +6,7 @@
 #include "cyclus.h"
 
 namespace cycamore {
+
 /// @class SWUConverter
 ///
 /// @brief The SWUConverter is a simple Converter class for material to
@@ -57,10 +58,14 @@ class NatUConverter : public cyclus::Converter<cyclus::Material> {
     cyclus::toolkit::Assays assays(feed_, cyclus::toolkit::UraniumAssay(m),
                                    tails_);
     
-    double fissile_matl = cyclus::toolkit::FeedQty(m->quantity(), assays);
-    //    double non_fissile_mult = 1.0 ;
-    double non_fissile_mult = cyclus::toolkit::NonFissileMultiplier(m);
-    return fissile_matl*non_fissile_mult;
+    cyclus::toolkit::MatQuery mq(m);
+    std::set<cyclus::Nuc> nucs ;
+    nucs.insert(922350000);
+    nucs.insert(922380000);
+
+    double natu_frac = mq.multi_mass_frac(nucs);
+    double natu_req = cyclus::toolkit::FeedQty(m->quantity(), assays);
+    return natu_req/natu_frac;
   }
 
   /// @returns true if Converter is a NatUConverter and feed and tails equal
@@ -75,6 +80,9 @@ class NatUConverter : public cyclus::Converter<cyclus::Material> {
   double feed_, tails_;
 };
 
+
+/// NEW DOC GOES HERE
+ 
 ///  @class EnrichmentFacility
 ///
 ///  @section introduction Introduction
@@ -85,8 +93,11 @@ class NatUConverter : public cyclus::Converter<cyclus::Material> {
 ///
 ///  @section requests Requests
 ///  The EnrichmentFacility will request from the cyclus::ResourceExchange a
-///  cyclus::Material whose quantity is its remaining inventory capacity and whose
-///  composition is that of its input recipe.
+///  cyclus::Material whose quantity is its remaining inventory capacity.
+///  All material compositions with U-235 content < the EnrichmentFacility
+///  output recipe will be accepted, with higher U-235 fraction preferred up
+///  to the U-235 fraction of the output bids.  Bids with U-235 fraction=0
+///  or greater than output bid are not accepted.
 ///
 ///  @section acctrade Accepting Trades
 ///  The EnrichmentFacility adds any accepted trades to its inventory.
@@ -95,6 +106,7 @@ class NatUConverter : public cyclus::Converter<cyclus::Material> {
 ///  The EnrichmentFacility will bid on any request for its output commodity. It
 ///  will bid either the request quantity, or the quanity associated with either
 ///  its SWU constraint or natural uranium constraint, whichever is lower.
+///  The EnrichmentFacility also offers its Tails as an additional output commodity.
 ///
 ///  @section extrades Executing Trades
 ///  The EnrichmentFacility will execute trades for its output commodity in the
@@ -102,33 +114,30 @@ class NatUConverter : public cyclus::Converter<cyclus::Material> {
 ///    #. Determine the trade's quantity and product assay
 ///    #. Determine the natural Uranium and SWU required to create that product
 ///    #. Remove the required quantity of natural Uranium from its inventory
+///       (this quantity is adjusted if it contains components other than U-235
+///        and U-238 so that the correct ratio of U-235/U-235+U-238 is provided)
 ///    #. Extract the appropriate composition of enriched Uranium
+///    #. Send all remaining material to the tails inventory
 ///    #. Send the enriched Uranium as the trade resource
 ///
-///  @section gotchas Gotchas
-///  #. In its current form, the EnrichmentFacility can only accept
-///  cyclus::Material having the composition of its input recipe. If a
-///  cyclus::Material of a different composition is sent to it, an exception will
-///  be thrown.
+///    #. During the trading phase, an exception will be thrown if either the
+///       EnrichmentFacility's SWU or inventory constraint is breached.
 ///
-///  #. During the trading phase, an exception will be thrown if either the
-///  EnrichmentFacility's SWU or inventory constraint is breached.
-///
-///  @section improvements Improvments
-///  The primary improvement to the EnrichmentFacility would be to relax the
-///  requirement that all input material have the in_recipe composition (i.e.,
-///  allow different base enrichments of Uranium).
-///
-///  How would I go about doing so? I'd likely develop an EnrichmentBuffer-type
-///  class that can be queried as to its SWU and natural Uranium capacity.
 class EnrichmentFacility : public cyclus::Facility {
+#pragma cyclus note {		  \
+  "niche": "enrichment facility", \
+  "doc":			  \
+  "TODO:Copy documentation here, with "		\
+  "\n\n"					\
+  "to separate paragraphs." ,\ 
+}
  public:
   // --- Module Members ---
-///    Constructor for the EnrichmentFacility class
-///    @param ctx the cyclus context for access to simulation-wide parameters
+  ///    Constructor for the EnrichmentFacility class
+  ///    @param ctx the cyclus context for access to simulation-wide parameters
   EnrichmentFacility(cyclus::Context* ctx);
 
-///     Destructor for the EnrichmentFacility class
+  ///     Destructor for the EnrichmentFacility class
   virtual ~EnrichmentFacility();
 
   #pragma cyclus
@@ -138,7 +147,7 @@ class EnrichmentFacility : public cyclus::Facility {
                               "specified enriched product based on SWU capacity", \
                        "niche": "enrichment"}
 
-///     Print information about this agent
+  ///     Print information about this agent
   virtual std::string str();
   // ---
 
@@ -167,7 +176,7 @@ class EnrichmentFacility : public cyclus::Facility {
 
   /// @brief The EnrichmentFacility adjusts preferences for offers of
   /// natural uranium it has received to maximize U-235 content
-  /// If any offers have zero U-235 content then they get a preference = 0
+  /// Any offers that have zero U-235 content are not accepted
   virtual void AdjustMatlPrefs(cyclus::PrefMap<cyclus::Material>::type& prefs);
  
   /// @brief The EnrichmentFacility place accepted trade Materials in their
