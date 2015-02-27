@@ -99,7 +99,8 @@ bool SortBids(
   cyclus::toolkit::MatQuery mq_i(mat_i);
   cyclus::toolkit::MatQuery mq_j(mat_j);
 
-  return ((mq_i.mass(922350000)/mq_i.qty()) <= (mq_j.mass(922350000)/mq_j.qty()));
+  return ((mq_i.mass(922350000)/mq_i.qty()) <=
+	  (mq_j.mass(922350000)/mq_j.qty()));
 }
 
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -113,11 +114,9 @@ void EnrichmentFacility::AdjustMatlPrefs(
   using cyclus::Request;
   
   cyclus::PrefMap<cyclus::Material>::type::iterator reqit;
-  // PrefMap is map of requests and a map of bids and prefs: map(<Requests>, map<Bids, prefs>)
 
   // Loop over all requests
   for (reqit = prefs.begin(); reqit != prefs.end(); ++reqit) {
-    //    std::map<Bid<Material>* , double> bids_map    = reqit->second ;
 
     std::vector<Bid<Material>* > bids_vector;    
     std::map<Bid<Material>*, double>::iterator mit;
@@ -125,34 +124,26 @@ void EnrichmentFacility::AdjustMatlPrefs(
       Bid<Material>* bid = mit->first;
       bids_vector.push_back(bid) ;
     }
-    
+
     std::sort (bids_vector.begin(), bids_vector.end(), SortBids); 
 
     // Assign preferences to the sorted vector
     double n_bids = bids_vector.size() ;
 
-    //   std::vector<Bid<Material>* >::iterator bidit;
-    //  for (bidit=bids_vector.begin(); bidit!=bids_vector.end(); ++bidit) {
     for (int bidit=0 ; bidit < bids_vector.size(); bidit++) {
-      int new_pref = bidit ;
+      int new_pref = bidit+1 ;
       
       // If u-235 qty of smallest item is 0, set pref to zero. 
-      //      if (bidct == 0) {
-      	cyclus::Material::Ptr mat = bids_vector[bidit]->offer();
+      if (bidit == 0) {
+	cyclus::Material::Ptr mat = bids_vector[bidit]->offer();
 	cyclus::toolkit::MatQuery mq(mat);
-      //	new_pref = (mq_i.mass(922350000) == 0) ? 0 : 1 ;
-	//      new_pref = (mq.mass(922350000) == 0) ? 0 : (bidit) ;
-	if (mq.mass(922350000) == 0) {
-	  new_pref = 0;
-	}
-	
+	new_pref = (mq.mass(922350000) == 0) ? -1 : (new_pref) ;
+      }
+
       (reqit->second)[bids_vector[bidit]] = new_pref;
-      
-      std::cout << "U235 = " << mq.mass(922350000) << " New pref is " <<
-	(reqit->second)[bids_vector[bidit]] << std::endl;
-      
     } // each bid
   } // each Material Request
+  std::cout << "end of request" << std::endl;
 }
   
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
