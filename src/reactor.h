@@ -225,11 +225,6 @@ class Reactor : public cyclus::Facility {
   }
   std::vector<double> fuel_prefs;
 
-  // This variable should be hidden/unavailable in ui.  Maps resource object
-  // id's to the index for the incommod through which they were received.
-  #pragma cyclus var {"default": {}, "doc": "This should NEVER be set manually."}
-  std::map<int, int> res_indexes;
-
   // Resource inventories - these must be defined AFTER/BELOW the member vars
   // referenced (e.g. n_batch_fresh, assem_size, etc.).
   #pragma cyclus var {"capacity": "n_assem_fresh * assem_size"}
@@ -292,6 +287,12 @@ class Reactor : public cyclus::Facility {
   // discharged this cycle.
   #pragma cyclus var {"default": 0, "doc": "This should NEVER be set manually."}
   bool discharged;
+
+  // This variable should be hidden/unavailable in ui.  Maps resource object
+  // id's to the index for the incommod through which they were received.
+  #pragma cyclus var {"default": {}, "doc": "This should NEVER be set manually."}
+  std::map<int, int> res_indexes;
+
 };
 
 } // namespace cycamore

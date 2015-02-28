@@ -258,7 +258,7 @@ TEST(ReactorTests, FuelShortage) {
   sim.AddRecipe("spentuox", c_spentuox());
   int id = sim.Run();
 
-  // check that we never got a full refueled batch
+  // check that we never got a full refueled batch during refuel period
   std::vector<Cond> conds;
   conds.push_back(Cond("Time", "<", 15));
   QueryResult qr = sim.db().Query("Transactions", &conds);
@@ -271,13 +271,13 @@ TEST(ReactorTests, FuelShortage) {
   qr = sim.db().Query("Transactions", &conds);
   EXPECT_EQ(1, qr.rows.size());
 
-  // all during the next cycle we shouldn't be requesting any new fuel
+  // all during the next (delayed) cycle we shouldn't be requesting any new fuel
   conds.clear();
   conds.push_back(Cond("Time", "<", 21));
   qr = sim.db().Query("Transactions", &conds);
   EXPECT_EQ(6, qr.rows.size());
 
-  // as soon as this cycle ends, we should be requesting/getting 3 new batches
+  // as soon as this delayed cycle ends, we should be requesting/getting 3 new batches
   conds.clear();
   conds.push_back(Cond("Time", "==", 22));
   qr = sim.db().Query("Transactions", &conds);
@@ -314,6 +314,45 @@ TEST(ReactorTests, DischargedFuelTransmute) {
   MatQuery mq(m);
   EXPECT_EQ(spentuox->id(), m->comp()->id());
   EXPECT_TRUE(mq.mass(942390000) > 0) << "transmuted spent fuel doesn't have Pu239";
+}
+
+// tests that spent fuel is offerred on correct commods according to the
+// incommod it was received on - esp when dealing with multiple fuel commods
+// simultaneously.
+TEST(ReactorTests, SpentFuelProperCommodTracking) {
+  std::string config = 
+     "  <fuel_inrecipes>  <val>uox</val>      <val>mox</val>      </fuel_inrecipes>  "
+     "  <fuel_outrecipes> <val>spentuox</val> <val>spentmox</val> </fuel_outrecipes>  "
+     "  <fuel_incommods>  <val>uox</val>      <val>mox</val>      </fuel_incommods>  "
+     "  <fuel_outcommods> <val>waste1</val>   <val>waste2</val>   </fuel_outcommods>  "
+     ""
+     "  <cycle_time>1</cycle_time>  "
+     "  <refuel_time>0</refuel_time>  "
+     "  <assem_size>1</assem_size>  "
+     "  <n_assem_core>3</n_assem_core>  "
+     "  <n_assem_batch>3</n_assem_batch>  ";
+
+  int simdur = 7;
+  cyclus::MockSim sim(cyclus::AgentSpec(":cycamore:Reactor"), config, simdur);
+  sim.AddSource("uox").capacity(1).Finalize();
+  sim.AddSource("mox").capacity(2).Finalize();
+  sim.AddSink("waste1").Finalize();
+  sim.AddSink("waste2").Finalize();
+  sim.AddRecipe("uox", c_uox());
+  sim.AddRecipe("spentuox", c_spentuox());
+  sim.AddRecipe("mox", c_mox());
+  sim.AddRecipe("spentmox", c_spentmox());
+  int id = sim.Run();
+
+  std::vector<Cond> conds;
+  conds.push_back(Cond("SenderId", "==", id));
+  conds.push_back(Cond("Commodity", "==", std::string("waste1")));
+  QueryResult qr = sim.db().Query("Transactions", &conds);
+  EXPECT_EQ(simdur-1, qr.rows.size());
+
+  conds[1] = Cond("Commodity", "==", std::string("waste2"));
+  qr = sim.db().Query("Transactions", &conds);
+  EXPECT_EQ(2*(simdur-1), qr.rows.size());
 }
 
 // The user can optionally omit fuel preferences.  In the case where
