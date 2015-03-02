@@ -190,6 +190,60 @@ TEST_F(CommodConverterTest, NoProcessTime) {
   TestBuffers(src_facility_,0,0,cap);
 }
 
+TEST_F(CommodConverterTest, NoConvert) {
+  // test what happens if no recipe change specified
+  src_facility_->out_recipe_(in_r1);
+  EXPECT_EQ(src_facility_->in_recipe_(), src_facility_->out_recipe_());
+
+  double cap = src_facility_->current_capacity();
+  cyclus::Composition::Ptr rec = tc_.get()->GetRecipe(in_r1);
+  cyclus::Material::Ptr mat = cyclus::Material::CreateUntracked(cap, rec);
+  TestAddMat(src_facility_, mat);
+
+  EXPECT_NO_THROW(src_facility_->Tock());
+
+  tc_.get()->time(process_time);
+  EXPECT_EQ(0, src_facility_->ready());
+  EXPECT_NO_THROW(src_facility_->Tock());
+  TestBuffers(src_facility_,0,0,cap);
+}
+
+TEST_F(CommodConverterTest, MultipleSmallBatches) {
+  // Add first small batch
+  double cap = src_facility_->current_capacity();
+  cyclus::Composition::Ptr rec = tc_.get()->GetRecipe(in_r1);
+  cyclus::Material::Ptr mat = cyclus::Material::CreateUntracked(0.2*cap, rec);
+  TestAddMat(src_facility_, mat);
+
+  // After add, material is in inventory
+  TestBuffers(src_facility_,0.2*cap,0,0);
+  
+  // Move first batch into processing
+  src_facility_->Tock();
+  TestBuffers(src_facility_,0,0.2*cap,0);
+
+  // Add second small batch
+  tc_.get()->time(2);
+  src_facility_->Tock();
+  cyclus::Material::Ptr mat1 = cyclus::Material::CreateUntracked(0.3*cap, rec);
+  TestAddMat(src_facility_,mat1);
+  TestBuffers(src_facility_,0.3*cap,0,0);
+
+  // Move second batch into processing
+  EXPECT_NO_THROW(src_facility_->Tock());
+  TestBuffers(src_facility_,0,0.3*cap,0);
+
+  // Move first batch to stocks
+  tc_.get()->time(process_time);
+  EXPECT_EQ(0,src_facility_->ready());
+  EXPECT_NO_THROW(src_facility_->Tock());
+  TestBuffers(src_facility_,0,0,0.2*cap);
+
+  tc_.get()->time(process_time+2);
+  EXPECT_NO_THROW(src_facility_->Tock());
+  TestBuffers(src_facility_,0,0,0.5*cap);
+}
+
 
 } // namespace commodconverter
 
