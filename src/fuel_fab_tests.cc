@@ -120,6 +120,25 @@ TEST(FuelFabTests, CosiWeight) {
   EXPECT_GT(w_therm, w_fast);
 }
 
+TEST(FuelFabTests, CosiWeight_Mixed) {
+  double w_fill = CosiWeight(c_natu(), "thermal");
+  double w_fiss = CosiWeight(c_pustream(), "thermal");
+  double w_target = CosiWeight(c_uox(), "thermal");
+
+  double fiss_frac = HighFrac(w_fill, w_target, w_fiss);
+  double fill_frac = LowFrac(w_fill, w_target, w_fiss);
+
+  // correct frac's from atom-based into mass-based for mixing
+  fiss_frac = AtomToMassFrac(fiss_frac, c_pustream(), c_natu());
+  fill_frac = AtomToMassFrac(fill_frac, c_natu(), c_pustream());
+
+  Material::Ptr m1 = Material::CreateUntracked(fiss_frac, c_pustream());
+  Material::Ptr m2 = Material::CreateUntracked(fill_frac, c_natu());
+  m1->Absorb(m2);
+  double got = CosiWeight(m1->comp(), "thermal");
+  EXPECT_LT(std::abs((w_target-got)/w_target), 0.00001) << "mixed composition not within 0.001% of target";
+}
+
 TEST(FuelFabTests, HighFrac) {
   double w_fill = CosiWeight(c_natu(), "thermal");
   double w_fiss = CosiWeight(c_pustream(), "thermal");
@@ -469,7 +488,51 @@ TEST(FuelFabTests, ThroughputLimit) {
 
 // supplied fuel has proper equivalence weights as requested.
 TEST(FuelFabTests, CorrectMixing) {
-  FAIL() << "not implemented";
+  std::string config = 
+     "<fill_commod>natu</fill_commod>"
+     "<fill_recipe>natu</fill_recipe>"
+     "<fill_size>100</fill_size>"
+     ""
+     "<fiss_commods> <val>pustream</val> </fiss_commods>"
+     "<fiss_recipe>pustream</fiss_recipe>"
+     "<fiss_size>100</fiss_size>"
+     ""
+     "<outcommod>recyclefuel</outcommod>"
+     "<spectrum>thermal</spectrum>"
+     "<throughput>100</throughput>"
+     ;
+  int simdur = 3;
+  cyclus::MockSim sim(cyclus::AgentSpec(":cycamore:FuelFab"), config, simdur);
+  sim.AddSource("pustream").Finalize();
+  sim.AddSource("natu").Finalize();
+  sim.AddSink("recyclefuel").recipe("uox").capacity(10).lifetime(2).Finalize();
+  sim.AddRecipe("uox", c_uox());
+  sim.AddRecipe("pustream", c_pustream());
+  sim.AddRecipe("natu", c_natu());
+  int id = sim.Run();
+
+  std::vector<Cond> conds;
+  conds.push_back(Cond("Commodity", "==", std::string("recyclefuel")));
+  QueryResult qr = sim.db().Query("Transactions", &conds);
+  EXPECT_EQ(1, qr.rows.size());
+
+  Material::Ptr m = sim.GetMaterial(qr.GetVal<int>("ResourceId"));
+  double got = CosiWeight(m->comp(), "thermal");
+  double w_target = CosiWeight(c_uox(), "thermal");
+  EXPECT_LT(std::abs((w_target-got)/w_target), 0.00001) << "mixed composition not within 0.001% of target";
+
+  conds.push_back(Cond("Time", "==", 2));
+
+  // TODO: do hand calcs to verify expected vals below - they are just regression values currently.
+  conds[0] = Cond("Commodity", "==", std::string("natu"));
+  qr = sim.db().Query("Transactions", &conds);
+  m = sim.GetMaterial(qr.GetVal<int>("ResourceId"));
+  EXPECT_NEAR(9.7457947, m->quantity(), 1e-6) << "mixed wrong amount of Nat. U stream";
+
+  conds[0] = Cond("Commodity", "==", std::string("pustream"));
+  qr = sim.db().Query("Transactions", &conds);
+  m = sim.GetMaterial(qr.GetVal<int>("ResourceId"));
+  EXPECT_NEAR(0.2542052, m->quantity(), 1e-6) << "mixed wrong amount of Pu stream";
 }
 
 // fuel is requested requiring more filler than is available with plenty of

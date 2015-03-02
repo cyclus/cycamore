@@ -12,11 +12,15 @@ namespace cycamore {
 class FissConverter : public cyclus::Converter<cyclus::Material> {
  public:
   FissConverter(
-      double w_fill,
-      double w_fiss,
-      double w_topup,
+      Composition::Ptr c_fill,
+      Composition::Ptr c_fiss,
+      Composition::Ptr c_topup,
       std::string spectrum
-      ) : w_fiss_(w_fiss), w_topup_(w_topup), w_fill_(w_fill), spec_(spectrum) {}
+      ) : c_fiss_(c_fiss), c_topup_(c_topup), c_fill_(c_fill), spec_(spectrum) {
+    w_fiss_ = CosiWeight(c_fiss, spectrum);
+    w_fill_ = CosiWeight(c_fill, spectrum);
+    w_topup_ = CosiWeight(c_topup, spectrum);
+  }
 
   virtual ~FissConverter() {}
 
@@ -27,10 +31,12 @@ class FissConverter : public cyclus::Converter<cyclus::Material> {
 
     double w_tgt = CosiWeight(m->comp(), spec_);
     if (ValidWeights(w_fill_, w_tgt, w_fiss_)) {
-      return HighFrac(w_fill_, w_tgt, w_fiss_) * m->quantity();
+      double frac = HighFrac(w_fill_, w_tgt, w_fiss_);
+      return AtomToMassFrac(frac, c_fiss_, c_fill_) * m->quantity();
     } else if (ValidWeights(w_fiss_, w_tgt, w_topup_)) {
       // use fiss inventory as filler, and topup as fissile
-      return LowFrac(w_fiss_, w_tgt, w_topup_) * m->quantity();
+      double frac = LowFrac(w_fiss_, w_tgt, w_topup_);
+      return AtomToMassFrac(frac, c_fiss_, c_topup_) * m->quantity();
     } else {
       // don't bid at all
       return 1e200;
@@ -42,16 +48,23 @@ class FissConverter : public cyclus::Converter<cyclus::Material> {
   double w_fiss_;
   double w_topup_;
   double w_fill_;
+  Composition::Ptr c_fiss_;
+  Composition::Ptr c_fill_;
+  Composition::Ptr c_topup_;
 };
 
 class FillConverter : public cyclus::Converter<cyclus::Material> {
  public:
   FillConverter(
-      double w_fill,
-      double w_fiss,
-      double w_topup,
+      Composition::Ptr c_fill,
+      Composition::Ptr c_fiss,
+      Composition::Ptr c_topup,
       std::string spectrum
-      ) : w_fiss_(w_fiss), w_topup_(w_topup), w_fill_(w_fill), spec_(spectrum) {}
+      ) : c_fiss_(c_fiss), c_topup_(c_topup), c_fill_(c_fill), spec_(spectrum) {
+    w_fiss_ = CosiWeight(c_fiss, spectrum);
+    w_fill_ = CosiWeight(c_fill, spectrum);
+    w_topup_ = CosiWeight(c_topup, spectrum);
+  }
 
   virtual ~FillConverter() {}
 
@@ -62,7 +75,8 @@ class FillConverter : public cyclus::Converter<cyclus::Material> {
 
     double w_tgt = CosiWeight(m->comp(), spec_);
     if (ValidWeights(w_fill_, w_tgt, w_fiss_)) {
-      return LowFrac(w_fill_, w_tgt, w_fiss_) * m->quantity();
+      double frac = LowFrac(w_fill_, w_tgt, w_fiss_);
+      return AtomToMassFrac(frac, c_fill_, c_fiss_) * m->quantity();
     } else if (ValidWeights(w_fiss_, w_tgt, w_topup_)) {
       // switched fissile inventory to filler so don't need any filler inventory
       return 0;
@@ -77,16 +91,23 @@ class FillConverter : public cyclus::Converter<cyclus::Material> {
   double w_fiss_;
   double w_topup_;
   double w_fill_;
+  Composition::Ptr c_fiss_;
+  Composition::Ptr c_fill_;
+  Composition::Ptr c_topup_;
 };
 
 class TopupConverter : public cyclus::Converter<cyclus::Material> {
  public:
   TopupConverter(
-      double w_fill,
-      double w_fiss,
-      double w_topup,
+      Composition::Ptr c_fill,
+      Composition::Ptr c_fiss,
+      Composition::Ptr c_topup,
       std::string spectrum
-      ) : w_fiss_(w_fiss), w_topup_(w_topup), w_fill_(w_fill), spec_(spectrum) {}
+      ) : c_fiss_(c_fiss), c_topup_(c_topup), c_fill_(c_fill), spec_(spectrum) {
+    w_fiss_ = CosiWeight(c_fiss, spectrum);
+    w_fill_ = CosiWeight(c_fill, spectrum);
+    w_topup_ = CosiWeight(c_topup, spectrum);
+  }
 
   virtual ~TopupConverter() {}
 
@@ -100,7 +121,8 @@ class TopupConverter : public cyclus::Converter<cyclus::Material> {
       return 0;
     } else if (ValidWeights(w_fiss_, w_tgt, w_topup_)) {
       // switched fissile inventory to filler and topup as fissile
-      return HighFrac(w_fiss_, w_tgt, w_topup_) * m->quantity();
+      double frac = HighFrac(w_fiss_, w_tgt, w_topup_);
+      return AtomToMassFrac(frac, c_topup_, c_fiss_) * m->quantity();
     } else {
       // don't bid at all
       return 1e200;
@@ -112,6 +134,9 @@ class TopupConverter : public cyclus::Converter<cyclus::Material> {
   double w_fiss_;
   double w_topup_;
   double w_fill_;
+  Composition::Ptr c_fiss_;
+  Composition::Ptr c_fill_;
+  Composition::Ptr c_topup_;
 };
 
 FuelFab::FuelFab(cyclus::Context* ctx)
@@ -231,18 +256,18 @@ FuelFab::GetMatlBids(cyclus::CommodMap<Material>::type&
     return ports;
   }
 
-  Composition::Ptr c_fill;
-  Composition::Ptr c_fiss;
-  Composition::Ptr c_topup;
   double w_fill = 0;
-  double w_topup = 0;
+  Composition::Ptr c_fill; // no default needed - this is non-optional parameter
   if (fill.count() > 0) {
     c_fill = fill.Peek()->comp();
     w_fill = CosiWeight(c_fill, spectrum);
-  } else if (!fill_recipe.empty()) {
+  } else {
     c_fill = context()->GetRecipe(fill_recipe);
     w_fill = CosiWeight(c_fill, spectrum);
   }
+
+  double w_topup = 0;
+  Composition::Ptr c_topup = c_fill;
   if (topup.count() > 0) {
     c_topup = topup.Peek()->comp();
     w_topup = CosiWeight(c_topup, spectrum);
@@ -252,6 +277,7 @@ FuelFab::GetMatlBids(cyclus::CommodMap<Material>::type&
   }
 
   double w_fiss = w_fill; // this allows trading just fill with no fiss inventory
+  Composition::Ptr c_fiss = c_fill;
   if (fiss.count() > 0) {
     c_fiss = fiss.Peek()->comp();
     w_fiss = CosiWeight(c_fiss, spectrum);
@@ -272,6 +298,8 @@ FuelFab::GetMatlBids(cyclus::CommodMap<Material>::type&
     if (ValidWeights(w_fill, w_tgt, w_fiss)) {
       double fiss_frac = HighFrac(w_fill, w_tgt, w_fiss);
       double fill_frac = 1 - fiss_frac;
+      fiss_frac = AtomToMassFrac(fiss_frac, c_fiss, c_fill);
+      fill_frac = AtomToMassFrac(fill_frac, c_fill, c_fiss);
       Material::Ptr m1 = Material::CreateUntracked(fiss_frac * tgt_qty, c_fiss);
       Material::Ptr m2 = Material::CreateUntracked(fill_frac * tgt_qty, c_fill);
       m1->Absorb(m2);
@@ -284,6 +312,8 @@ FuelFab::GetMatlBids(cyclus::CommodMap<Material>::type&
       // when the fissile has too poor neutronics.
       double topup_frac = HighFrac(w_fiss, w_tgt, w_topup);
       double fiss_frac = 1 - topup_frac;
+      fiss_frac = AtomToMassFrac(fiss_frac, c_fiss, c_topup);
+      topup_frac = AtomToMassFrac(topup_frac, c_topup, c_fiss);
       Material::Ptr m1 = Material::CreateUntracked(topup_frac * tgt_qty, c_topup);
       Material::Ptr m2 = Material::CreateUntracked(fiss_frac * tgt_qty, c_fiss);
       m1->Absorb(m2);
@@ -293,9 +323,9 @@ FuelFab::GetMatlBids(cyclus::CommodMap<Material>::type&
     } // else can't meet the target - don't bid
   }
 
-  cyclus::Converter<Material>::Ptr fissconv(new FissConverter(w_fill, w_fiss, w_topup, spectrum));
-  cyclus::Converter<Material>::Ptr fillconv(new FillConverter(w_fill, w_fiss, w_topup, spectrum));
-  cyclus::Converter<Material>::Ptr topupconv(new TopupConverter(w_fill, w_fiss, w_topup, spectrum));
+  cyclus::Converter<Material>::Ptr fissconv(new FissConverter(c_fill, c_fiss, c_topup, spectrum));
+  cyclus::Converter<Material>::Ptr fillconv(new FillConverter(c_fill, c_fiss, c_topup, spectrum));
+  cyclus::Converter<Material>::Ptr topupconv(new TopupConverter(c_fill, c_fiss, c_topup, spectrum));
   // important! - the std::max calls prevent CapacityConstraint throwing a zero cap exception
   cyclus::CapacityConstraint<Material> fissc(std::max(fiss.quantity(), 1e-10), fissconv);
   cyclus::CapacityConstraint<Material> fillc(std::max(fill.quantity(), 1e-10), fillconv);
@@ -318,7 +348,7 @@ void FuelFab::GetMatlTrades(
 
   double w_fill = 0;
   if (fill.count() > 0) { // it's possible to only need fissile inventory for a trade
-    CosiWeight(fill.Peek()->comp(), spectrum);
+    w_fill = CosiWeight(fill.Peek()->comp(), spectrum);
   }
   double w_topup = 0;
   if (topup.count() > 0) {
@@ -352,7 +382,9 @@ void FuelFab::GetMatlTrades(
       responses.push_back(std::make_pair(trades[i], fiss.Pop(qty)));
     } else if (ValidWeights(w_fill, w_tgt, w_fiss)) {
       double fiss_frac = HighFrac(w_fill, w_tgt, w_fiss);
-      double fill_frac = 1 - fiss_frac;
+      double fill_frac = LowFrac(w_fill, w_tgt, w_fiss);
+      fiss_frac = AtomToMassFrac(fiss_frac, fiss.Peek()->comp(), fill.Peek()->comp());
+      fill_frac = AtomToMassFrac(fill_frac, fill.Peek()->comp(), fiss.Peek()->comp());
 
       Material::Ptr m = fiss.Pop(fiss_frac*qty);
       // this if block prevents zero qty ResBuf pop exceptions
@@ -363,6 +395,8 @@ void FuelFab::GetMatlTrades(
     } else {
       double topup_frac = HighFrac(w_fiss, w_tgt, w_topup);
       double fiss_frac = 1 - topup_frac;
+      topup_frac = AtomToMassFrac(topup_frac, topup.Peek()->comp(), fiss.Peek()->comp());
+      fiss_frac = AtomToMassFrac(fiss_frac, fiss.Peek()->comp(), topup.Peek()->comp());
 
       Material::Ptr m = fiss.Pop(fiss_frac*qty);
       // this if block prevents zero qty ResBuf pop exceptions
@@ -387,7 +421,10 @@ extern "C" cyclus::Agent* ConstructFuelFab(cyclus::Context* ctx) {
 //     * resonance_integral
 //     * fourteen_MeV
 //
-// The weight is calculated as "(nu*sigma_f - sigma_a) * N".
+// The weight is calculated as "(nu*sigma_f - sigma_a) * N".  Since weights
+// are computed based on nuclide atom fractions, corresponding computed
+// material/mixing fractions will also be atom-based naturally and will need
+// to be converted to mass-based for actual material object mixing.
 double CosiWeight(cyclus::Composition::Ptr c, const std::string& spectrum) {
   cyclus::CompMap cm = c->atom();
   cyclus::compmath::Normalize(&cm);
@@ -432,6 +469,29 @@ double CosiWeight(cyclus::Composition::Ptr c, const std::string& spectrum) {
     w += it->second * (p - p_u238) / (p_pu239 - p_u238);
   }
   return w;
+}
+
+// Convert an atom frac (n1/(n1+n2) to a mass frac (m1/(m1+m2) given
+// corresponding compositions c1 and c2.
+double AtomToMassFrac(double atomfrac, Composition::Ptr c1, Composition::Ptr c2) {
+  cyclus::CompMap n1 = c1->atom();
+  cyclus::CompMap n2 = c2->atom();
+  cyclus::compmath::Normalize(&n1, atomfrac);
+  cyclus::compmath::Normalize(&n2, 1-atomfrac);
+
+  cyclus::CompMap::iterator it;
+
+  double mass1 = 0;
+  for (it = n1.begin(); it != n1.end(); ++it) {
+    mass1 += it->second * pyne::atomic_mass(it->first);
+  }
+
+  double mass2 = 0;
+  for (it = n2.begin(); it != n2.end(); ++it) {
+    mass2 += it->second * pyne::atomic_mass(it->first);
+  }
+
+  return mass1 / (mass1 + mass2);
 }
 
 double HighFrac(double w_low, double w_target, double w_high, double eps) {
