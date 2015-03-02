@@ -375,10 +375,10 @@ void FuelFab::GetMatlTrades(
     }
 
     if (fiss.count() == 0) {
-      // we must use filler to satisfy this request
+      // use straight filler to satisfy this request
       responses.push_back(std::make_pair(trades[i], fill.Pop(qty)));
-    } else if (fill.count() == 0) {
-      // we must use fissile to satisfy this request
+    } else if (fill.count() == 0 && ValidWeights(w_fill, w_tgt, w_fiss)) {
+      // use straight fissile to satisfy this request
       responses.push_back(std::make_pair(trades[i], fiss.Pop(qty)));
     } else if (ValidWeights(w_fill, w_tgt, w_fiss)) {
       double fiss_frac = HighFrac(w_fill, w_tgt, w_fiss);
