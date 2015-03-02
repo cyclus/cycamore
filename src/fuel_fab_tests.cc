@@ -538,13 +538,91 @@ TEST(FuelFabTests, CorrectMixing) {
 // fuel is requested requiring more filler than is available with plenty of
 // fissile.
 TEST(FuelFabTests, FillConstrained) {
-  FAIL() << "not implemented";
+  std::string config = 
+     "<fill_commod>natu</fill_commod>"
+     "<fill_recipe>natu</fill_recipe>"
+     "<fill_size>1</fill_size>"
+     ""
+     "<fiss_commods> <val>pustream</val> </fiss_commods>"
+     "<fiss_recipe>pustream</fiss_recipe>"
+     "<fiss_size>10000</fiss_size>"
+     ""
+     "<outcommod>recyclefuel</outcommod>"
+     "<spectrum>thermal</spectrum>"
+     "<throughput>10000</throughput>"
+     ;
+  double fillinv = 1;
+  int simdur = 2;
+
+  double w_fill = CosiWeight(c_natu(), "thermal");
+  double w_fiss = CosiWeight(c_pustream(), "thermal");
+  double w_target = CosiWeight(c_uox(), "thermal");
+  double fiss_frac = HighFrac(w_fill, w_target, w_fiss);
+  double fill_frac = LowFrac(w_fill, w_target, w_fiss);
+  fiss_frac = AtomToMassFrac(fiss_frac, c_pustream(), c_natu());
+  fill_frac = AtomToMassFrac(fill_frac, c_natu(), c_pustream());
+  double max_provide = fillinv / fill_frac;
+
+  cyclus::MockSim sim(cyclus::AgentSpec(":cycamore:FuelFab"), config, simdur);
+  sim.AddSource("pustream").lifetime(1).Finalize();
+  sim.AddSource("natu").lifetime(1).Finalize();
+  sim.AddSink("recyclefuel").recipe("uox").capacity(2 * max_provide).Finalize();
+  sim.AddRecipe("uox", c_uox());
+  sim.AddRecipe("pustream", c_pustream());
+  sim.AddRecipe("natu", c_natu());
+  int id = sim.Run();
+
+  std::vector<Cond> conds;
+  conds.push_back(Cond("Commodity", "==", std::string("recyclefuel")));
+  QueryResult qr = sim.db().Query("Transactions", &conds);
+  Material::Ptr m = sim.GetMaterial(qr.GetVal<int>("ResourceId"));
+
+  EXPECT_NEAR(max_provide, m->quantity(), 1e-10) << "matched trades require more fill than available";
 }
 
 // fuel is requested requiring more fissile material than is available with
 // plenty of filler.
 TEST(FuelFabTests, FissConstrained) {
-  FAIL() << "not implemented";
+  std::string config = 
+     "<fill_commod>natu</fill_commod>"
+     "<fill_recipe>natu</fill_recipe>"
+     "<fill_size>10000</fill_size>"
+     ""
+     "<fiss_commods> <val>pustream</val> </fiss_commods>"
+     "<fiss_recipe>pustream</fiss_recipe>"
+     "<fiss_size>1</fiss_size>"
+     ""
+     "<outcommod>recyclefuel</outcommod>"
+     "<spectrum>thermal</spectrum>"
+     "<throughput>10000</throughput>"
+     ;
+  double fissinv = 1;
+  int simdur = 2;
+
+  double w_fill = CosiWeight(c_natu(), "thermal");
+  double w_fiss = CosiWeight(c_pustream(), "thermal");
+  double w_target = CosiWeight(c_uox(), "thermal");
+  double fiss_frac = HighFrac(w_fill, w_target, w_fiss);
+  double fill_frac = LowFrac(w_fill, w_target, w_fiss);
+  fiss_frac = AtomToMassFrac(fiss_frac, c_pustream(), c_natu());
+  fill_frac = AtomToMassFrac(fill_frac, c_natu(), c_pustream());
+  double max_provide = fissinv / fiss_frac;
+
+  cyclus::MockSim sim(cyclus::AgentSpec(":cycamore:FuelFab"), config, simdur);
+  sim.AddSource("pustream").lifetime(1).Finalize();
+  sim.AddSource("natu").lifetime(1).Finalize();
+  sim.AddSink("recyclefuel").recipe("uox").capacity(2 * max_provide).Finalize();
+  sim.AddRecipe("uox", c_uox());
+  sim.AddRecipe("pustream", c_pustream());
+  sim.AddRecipe("natu", c_natu());
+  int id = sim.Run();
+
+  std::vector<Cond> conds;
+  conds.push_back(Cond("Commodity", "==", std::string("recyclefuel")));
+  QueryResult qr = sim.db().Query("Transactions", &conds);
+  Material::Ptr m = sim.GetMaterial(qr.GetVal<int>("ResourceId"));
+
+  EXPECT_NEAR(max_provide, m->quantity(), 1e-10) << "matched trades require more fill than available";
 }
 
 // swap to topup inventory because fissile has too low reactivity.
