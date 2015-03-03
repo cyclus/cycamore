@@ -6,13 +6,93 @@
 
 namespace cycamore {
 
-double CosiWeight(cyclus::Composition::Ptr c, const std::string& spectrum);
-bool ValidWeights(double w_low, double w_tgt, double w_high);
-double LowFrac(double w_low, double w_tgt, double w_high, double eps = 1e-6);
-double HighFrac(double w_low, double w_tgt, double w_high, double eps = 1e-6);
-double AtomToMassFrac(double atomfrac, cyclus::Composition::Ptr c1, cyclus::Composition::Ptr c2);
-
+/// FuelFab takes in 2 streams of material and mixes them in ratios in order to
+/// supply material that matches some neutronics properties of reqeusted
+/// material.  It uses an equivalence type method (TODO: cite equivalence
+/// method) inspired by a similar approach in the COSI fuel cycle simulator.
+///
+/// The FuelFab has 3 input inventories: fissile stream, filler stream, and an
+/// optional top-up inventory.  All materials received into each inventory are
+/// always combined into a single material (i.e. a single fissile material, a
+/// single filler material, etc.).  The input streams and requested fuel
+/// composition are each assigned weights based on summing:
+///
+///     N * (p_i - p_U238) / (p_Pu239 - p_U238)
+///
+/// for each nuclide where:
+///
+///
+///     - p = nu*sigma_f - sigma_a   for the nuclide
+///     - p_U238 is p for pure U238
+///     - p_Pu239 is p for pure Pu239
+///     - N is the nuclide's atom fraction
+///     - nu is the average # neutrons per fission
+///     - sigma_f is the microscopic fission cross-section
+///     - sigma_a is the microscopic neutron absorption cross-section
+///
+/// The cross sections are from the simple cross section library in PyNE. They
+/// can be set to either a thermal or fast neutron spectrum.  A linear
+/// interpolation is performed using the weights of the fissile, filler, and
+/// target streams. The interpolation is used to compute a mixing ratio of the
+/// input streams that matches the target weight.  In the event that the target
+/// weight is higher than the fissile stream weight, the FuelFab will attempt
+/// to use the top-up and fissile input streams together instead of the fissile
+/// and filler streams.  All supplied material will always have the same weight
+/// as the requested material.
+///
+/// The supplying of mixed material is constrained by available inventory
+/// quantities and a per time step throughput limit.  Requests for fuel
+/// material larger than the throughput can never be met.  Fissile inventory
+/// can be requested/received via one or more commodities.  The DRE request
+/// preference for each of these commodities can also optionally be specified.
+/// By default, the top-up inventory size is zero, and it is not used for
+/// mixing. 
 class FuelFab : public cyclus::Facility {
+#pragma cyclus note { \
+"doc": \
+  "FuelFab takes in 2 streams of material and mixes them in ratios in order to" \
+  "supply material that matches some neutronics properties of reqeusted" \
+  "material.  It uses an equivalence type method (TODO: cite equivalence" \
+  "method) inspired by a similar approach in the COSI fuel cycle simulator." \
+  "\n\n" \
+  "The FuelFab has 3 input inventories: fissile stream, filler stream, and an" \
+  "optional top-up inventory.  All materials received into each inventory are" \
+  "always combined into a single material (i.e. a single fissile material, a" \
+  "single filler material, etc.).  The input streams and requested fuel" \
+  "composition are each assigned weights based on summing:" \
+  "\n\n" \
+  "    N * (p_i - p_U238) / (p_Pu239 - p_U238)" \
+  "\n\n" \
+  "for each nuclide where:" \
+  "\n\n" \
+  "\n\n" \
+  "    - p = nu*sigma_f - sigma_a   for the nuclide" \
+  "    - p_U238 is p for pure U238" \
+  "    - p_Pu239 is p for pure Pu239" \
+  "    - N is the nuclide's atom fraction" \
+  "    - nu is the average # neutrons per fission" \
+  "    - sigma_f is the microscopic fission cross-section" \
+  "    - sigma_a is the microscopic neutron absorption cross-section" \
+  "\n\n" \
+  "The cross sections are from the simple cross section library in PyNE. They" \
+  "can be set to either a thermal or fast neutron spectrum.  A linear" \
+  "interpolation is performed using the weights of the fissile, filler, and" \
+  "target streams. The interpolation is used to compute a mixing ratio of the" \
+  "input streams that matches the target weight.  In the event that the target" \
+  "weight is higher than the fissile stream weight, the FuelFab will attempt" \
+  "to use the top-up and fissile input streams together instead of the fissile" \
+  "and filler streams.  All supplied material will always have the same weight" \
+  "as the requested material." \
+  "\n\n" \
+  "The supplying of mixed material is constrained by available inventory" \
+  "quantities and a per time step throughput limit.  Requests for fuel" \
+  "material larger than the throughput can never be met.  Fissile inventory" \
+  "can be requested/received via one or more commodities.  The DRE request" \
+  "preference for each of these commodities can also optionally be specified." \
+  "By default, the top-up inventory size is zero, and it is not used for" \
+  "mixing. " \
+  "", \
+}
  public:
   FuelFab(cyclus::Context* ctx);
   virtual ~FuelFab() {};
@@ -39,71 +119,111 @@ class FuelFab : public cyclus::Facility {
   virtual std::set<cyclus::RequestPortfolio<cyclus::Material>::Ptr> GetMatlRequests();
 
  private:
-  #pragma cyclus var {}
+  #pragma cyclus var { \
+    "doc": "Commodity on which to request material for filler stream.", \
+    "uitype": "incommodity", \
+  }
   std::string fill_commod;
-  #pragma cyclus var {}
+  #pragma cyclus var { \
+    "doc": "Name of recipe to be used in filler material stream requests.", \
+    "uitype": "recipe", \
+  }
   std::string fill_recipe;
   #pragma cyclus var { \
+    "doc": "Filler material stream request preference.", \
     "default": 0, \
   }
   double fill_pref;
-  #pragma cyclus var {}
+  #pragma cyclus var { \
+    "doc": "Size of filler material stream inventory.", \
+    "units": "kg", \
+  }
   double fill_size;
-  #pragma cyclus var {'capacity': 'fill_size'}
+  #pragma cyclus var {"capacity": "fill_size"}
   cyclus::toolkit::ResBuf<cyclus::Material> fill;
 
-  #pragma cyclus var {}
+  #pragma cyclus var { \
+    "doc": "Ordered list of commodities on which to requesting fissile stream material.", \
+    "uitype": ["oneormore", "incommodity"], \
+  }
   std::vector<std::string> fiss_commods;
   #pragma cyclus var { \
     "default": [], \
-    "doc": "If unspecified, default is to use zero for all preferences.", \
+    "doc": "Fissile stream commodity request preferences for each of the given fissile commodities (same order)." \
+           " If unspecified, default is to use zero for all preferences.", \
   }
   std::vector<double> fiss_commod_prefs;
   #pragma cyclus var { \
+    "doc": "Name for recipe to be used in fissile stream requests." \
+           " Empty string results in use of an empty dummy recipe.", \
+    "uitype": "recipe", \
     "default": "", \
-    "doc": "If unspecified, default is to use a dummy blank recipe", \
   }
   std::string fiss_recipe;
-  #pragma cyclus var {}
+  #pragma cyclus var { \
+    "doc": "Size of fissile material stream inventory.", \
+    "units": "kg", \
+  }
   double fiss_size;
-  #pragma cyclus var {'capacity': 'fiss_size'}
+  #pragma cyclus var {"capacity": "fiss_size"}
   cyclus::toolkit::ResBuf<cyclus::Material> fiss;
 
   #pragma cyclus var { \
-    "doc": "", \
+    "doc": "Commodity on which to request material for top-up stream." \
+           " This MUST be set if 'topup_size > 0'.", \
     "default": "", \
+    "uitype": "incommodity", \
   }
   std::string topup_commod;
   #pragma cyclus var { \
+    "doc": "Name of recipe to be used in top-up material stream requests." \
+           " This MUST be set if 'topup_size > 0'.", \
+    "uitype": "recipe", \
     "default": "", \
   }
   std::string topup_recipe;
   #pragma cyclus var { \
+    "doc": "Top-up material stream request preference.", \
     "default": 0, \
   }
   double topup_pref;
   #pragma cyclus var { \
+    "doc": "Size of top-up material stream inventory.", \
+    "units": "kg", \
     "default": 0, \
   }
   double topup_size;
-  #pragma cyclus var {'capacity': 'topup_size'}
+  #pragma cyclus var {"capacity": "topup_size"}
   cyclus::toolkit::ResBuf<cyclus::Material> topup;
 
-  #pragma cyclus var {}
-  std::string outcommod;
-
   #pragma cyclus var { \
-    "doc": "'fission_spectrum_ave' for fast reactor compositions or 'thermal' for slow reactors.", \
+    "doc": "The type of cross-sections to use for composition property calculation." \
+           " Use 'fission_spectrum_ave' for fast reactor compositions or 'thermal' for slow reactors.", \
   }
   std::string spectrum;
 
-  #pragma cyclus var {}
+  #pragma cyclus var { \
+    "doc": "Commodity on which to offer/supply mixed fuel material.", \
+    "uitype": "outcommodity", \
+  }
+  std::string outcommod;
+
+  #pragma cyclus var { \
+    "doc": "Maximum number of kg of fuel material that can be supplied per time step.", \
+    "units": "kg", \
+  }
   double throughput;
 
   // intra-time-step state - no need to be a state var
   // map<request, inventory name>
   std::map<cyclus::Request<cyclus::Material>*, std::string> req_inventories_;
 };
+
+double CosiWeight(cyclus::Composition::Ptr c, const std::string& spectrum);
+bool ValidWeights(double w_low, double w_tgt, double w_high);
+double LowFrac(double w_low, double w_tgt, double w_high, double eps = 1e-6);
+double HighFrac(double w_low, double w_tgt, double w_high, double eps = 1e-6);
+double AtomToMassFrac(double atomfrac, cyclus::Composition::Ptr c1, cyclus::Composition::Ptr c2);
 
 } // namespace cycamore
 
