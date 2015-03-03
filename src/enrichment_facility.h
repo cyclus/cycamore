@@ -80,57 +80,73 @@ class NatUConverter : public cyclus::Converter<cyclus::Material> {
   double feed_, tails_;
 };
 
+///  EnrichmentFacility is a simple Agent that enriches natural
+///  uranium in a Cyclus simulation. It does not explicitly compute
+///  the physical enrichment process, rather it calculates the SWU
+///  required to convert an source uranium recipe (ie. natural uranium)
+///  into a requested enriched recipe (ie. 4% enriched uranium), given
+///  the natural uranium inventory constraint and its SWU capacity
+///  constraint.
 
-/// NEW DOC GOES HERE
- 
-///  @class EnrichmentFacility
-///
-///  @section introduction Introduction
-///  The EnrichmentFacility is a simple Agent to agent the enriching of natural
-///  Uranium in a Cyclus simulation. It requests its input recipe (nominally
-///  natural Uranium), and produces any amount of enriched Uranium, given the its
-///  natural uranium inventory constraint and its SWU capacity constraint.
-///
-///  @section requests Requests
-///  The EnrichmentFacility will request from the cyclus::ResourceExchange a
-///  cyclus::Material whose quantity is its remaining inventory capacity.
-///  All material compositions with U-235 content < the EnrichmentFacility
-///  output recipe will be accepted, with higher U-235 fraction preferred up
-///  to the U-235 fraction of the output bids.  Bids with U-235 fraction=0
-///  or greater than output bid are not accepted.
-///
-///  @section acctrade Accepting Trades
-///  The EnrichmentFacility adds any accepted trades to its inventory.
-///
-///  @section bids Bids
-///  The EnrichmentFacility will bid on any request for its output commodity. It
-///  will bid either the request quantity, or the quanity associated with either
-///  its SWU constraint or natural uranium constraint, whichever is lower.
-///  The EnrichmentFacility also offers its Tails as an additional output commodity.
-///
-///  @section extrades Executing Trades
-///  The EnrichmentFacility will execute trades for its output commodity in the
-///  following manner:
-///    #. Determine the trade's quantity and product assay
-///    #. Determine the natural Uranium and SWU required to create that product
-///    #. Remove the required quantity of natural Uranium from its inventory
-///       (this quantity is adjusted if it contains components other than U-235
-///        and U-238 so that the correct ratio of U-235/U-235+U-238 is provided)
-///    #. Extract the appropriate composition of enriched Uranium
-///    #. Send all remaining material to the tails inventory
-///    #. Send the enriched Uranium as the trade resource
-///
-///    #. During the trading phase, an exception will be thrown if either the
-///       EnrichmentFacility's SWU or inventory constraint is breached.
-///
+///  Enrichment Facility requests an input commodity and associated recipe
+///  whose quantity is its remaining inventory capacity.  All facilities
+///  trading the same input commodity (even with different recipes) will
+///  offer materials for trade.  The Enrichment Facility accepts any input
+///  materials with enrichments less than its tails assay, as long as some
+///  U235 is present, and preference increases with U235 content.  If no
+///  U235 is present in the offered material, the trade preference is set
+///  to -1 and the material is not accepted.  Any material components other
+///  other than U235 and U238 are sent directly to the tails buffer.
+
+///  EnrichmentFacility will bid on any request for its output commodity
+///  up to the maximum allowed enrichment (if not specified, default is 100%)
+///  It bids on either the request quantity, or the maximum quanity allowed
+///  by its SWU constraint or natural uranium inventory, whichever is lower.
+///  If multiple output commodities with different enrichment levels are
+///  requested and the facility does not have the SWU or quantity capacity
+///  to meet all requests, the requests are fully, then partially filled
+///  in unspecified but repeatable order.
+
+///  EnrichmentFacility also offers its tails as an output commodity with
+///  no associated recipe.  Bids for tails are constrained only by total
+///  tails inventory.
+
 class EnrichmentFacility : public cyclus::Facility {
 #pragma cyclus note {		  \
   "niche": "enrichment facility", \
   "doc":			  \
-  "TODO:Copy documentation here, with "		\
-  "\n\n"					\
-  "to separate paragraphs." ,\ 
+ "EnrichmentFacility is a simple Agent that enriches natural" \
+ "uranium in a Cyclus simulation. It does not explicitly compute" \
+ "the physical enrichment process, rather it calculates the SWU" \
+ "required to convert an source uranium recipe (ie. natural uranium)" \
+ "into a requested enriched recipe (ie. 4% enriched uranium), given" \
+ "the natural uranium inventory constraint and its SWU capacity" \
+ "constraint." \
+ "\n\n"\
+ "Enrichment Facility requests an input commodity and associated recipe" \
+ "whose quantity is its remaining inventory capacity.  All facilities" \
+ "trading the same input commodity (even with different recipes) will" \
+ "offer materials for trade.  The Enrichment Facility accepts any input" \
+ "materials with enrichments less than its tails assay, as long as some" \
+ "U235 is present, and preference increases with U235 content.  If no" \
+ "U235 is present in the offered material, the trade preference is set" \
+ "to -1 and the material is not accepted.  Any material components other" \
+ "other than U235 and U238 are sent directly to the tails buffer." \
+ "\n\n"\
+ "EnrichmentFacility will bid on any request for its output commodity" \
+ "up to the maximum allowed enrichment (if not specified, default is 100%)" \
+ "It bids on either the request quantity, or the maximum quanity allowed" \
+ "by its SWU constraint or natural uranium inventory, whichever is lower." \
+ "If multiple output commodities with different enrichment levels are" \
+ "requested and the facility does not have the SWU or quantity capacity" \
+ "to meet all requests, the requests are fully, then partially filled" \
+ "in unspecified but repeatable order." \
+ "\n\n"\
+ "EnrichmentFacility also offers its tails as an output commodity with" \
+ "no associated recipe.  Bids for tails are constrained only by total" \
+ "tails inventory.", \
 }
+
  public:
   // --- Module Members ---
   ///    Constructor for the EnrichmentFacility class
@@ -238,8 +254,6 @@ class EnrichmentFacility : public cyclus::Facility {
   inline double MaxInventorySize() const { return inventory.capacity(); }
 
   inline double InventorySize() const { return inventory.quantity(); }
-  //QQ: TO BE DELETED
-  //  inline void FeedAssay(double assay) { feed_assay = assay; }
  
   inline void TailsAssay(double assay) { tails_assay = assay; }
 
@@ -249,19 +263,22 @@ class EnrichmentFacility : public cyclus::Facility {
     swu_capacity = capacity;
     current_swu_capacity = swu_capacity;
   }
-  inline void MaxEnrich(double enrichment) { max_enrich = enrichment; } //QQ
 
   inline double SwuCapacity() const { return swu_capacity; }
 
   inline double CurrentSwuCapacity() const { return current_swu_capacity; }
 
+  inline void MaxEnrich(double enrichment) { max_enrich = enrichment; } //QQ
+  
   inline double MaxEnrich() const { return max_enrich; } ///QQ
 
   /// @brief this facility's initial conditions
   inline void  InitialReserves(double qty) { initial_reserves = qty; }
   inline double InitialReserves() const { return initial_reserves; }
 
-  inline const cyclus::toolkit::ResBuf<cyclus::Material>& Tails() const { return tails; } 
+  inline const cyclus::toolkit::ResBuf<cyclus::Material>& Tails() const {
+    return tails;
+  } 
   ///QQ  It's not used for anything and can be deleted if we decide to make everything a state variable for testing
   
  private:
@@ -269,14 +286,14 @@ class EnrichmentFacility : public cyclus::Facility {
   ///   @throws if the material is not the same composition as the in_recipe
   void AddMat_(cyclus::Material::Ptr mat);
 
-  ///   @brief generates a request for this facility given its current state. The
-  ///   quantity of the material will be equal to the remaining inventory size.
+  ///   @brief generates a request for this facility given its current state.
+  ///   Quantity of the material will be equal to remaining inventory size.
   cyclus::Material::Ptr Request_();
 
   ///  @brief Generates a material offer for a given request. The response
-  ///  composition will be comprised only of U235 and U238 at their relative ratio
-  ///  in the requested material. The response quantity will be the same as the
-  ///  requested commodity.
+  ///  composition will be comprised only of U235 and U238 at their relative
+  ///  ratio in the requested material. The response quantity will be the
+  ///  same as the requested commodity.
   ///
   ///  @param req the requested material being responded to
   cyclus::Material::Ptr Offer_(cyclus::Material::Ptr req);
@@ -298,28 +315,30 @@ class EnrichmentFacility : public cyclus::Facility {
                       "uitype": "outcommodity"}
   std::string out_commod;
   #pragma cyclus var {"tooltip": "input commodity recipe", \
-                      "doc": "recipe for enrichment facility's input commodity", \
+                      "doc": "recipe for enrichment facility input commodity", \
                       "uitype": "recipe"}
   std::string in_recipe;
   #pragma cyclus var {"tooltip": "tails commodity", \
-                      "doc": "tails commodity that the enrichment facility supplies", \
+                      "doc": "tails commodity supplied by enrichment facility",\
                       "uitype": "outcommodity"}
   std::string tails_commod;  //QQ
   #pragma cyclus var {"default": 0.03, "tooltip": "tails assay",	\
                       "doc": "tails assay from the enrichment process"}
   double tails_assay;
-  #pragma cyclus var {"default": 1e299, "tooltip": "SWU capacity (kgSWU/month)", \
-                      "doc": "separative work unit (SWU) capcity of " \
+  #pragma cyclus var {"default": 1e299, \
+                      "tooltip": "SWU capacity (kgSWU/month)", \
+                      "doc": "separative work unit (SWU) capacity of " \
                       "enrichment facility (kgSWU/month)"}
   double swu_capacity;
-  #pragma cyclus var {"default": 1e299, "tooltip": "maximum inventory size (kg)", \
+  #pragma cyclus var {"default": 1e299, "tooltip": "max inventory size (kg)", \
                       "doc": "maximum total inventory of natural uranium in " \
-                      "the enrichment facility (kg)"}
+                             "the enrichment facility (kg)"}
   double max_inv_size;
 
-  #pragma cyclus var {"default": 1.0, "tooltip": "maximum allowed enrichment fraction", \
-                    "doc": "maximum allowed weight fraction of U235 in product " \
-                           "in the enrichment facility",                         \
+  #pragma cyclus var {"default": 1.0, \
+                      "tooltip": "maximum allowed enrichment fraction",\
+                      "doc": "maximum allowed weight fraction of U235 " \
+                             "in product ", \
                       "schema": '      "<optional>\\n"\n' \
                                 '      "    <element name=\\"max_enrich\\">\\n"\n'  \
                                 '      "        <data type=\\"double\\">\\n"\n ' \
@@ -331,13 +350,7 @@ class EnrichmentFacility : public cyclus::Facility {
   double max_enrich;
  //QQ
 
-  /*
-  #pragma cyclus var {"default": 1.0, "tooltip": "maximum allowed enrichment fraction", \
-    "doc": "maximum allowed weight fraction of U235 in product "	\
-    "in the enrichment facility"}
-  double max_enrich;
-  */
-  #pragma cyclus var {"default": 0, "tooltip": "initial uranium reserves (kg)", \
+  #pragma cyclus var {"default": 0, "tooltip": "initial uranium reserves (kg)",\
                       "doc": "amount of natural uranium stored at the " \
                              "enrichment facility at the beginning of the " \
                              "simulation (kg)"}
@@ -346,12 +359,11 @@ class EnrichmentFacility : public cyclus::Facility {
   double current_swu_capacity;
   
   #pragma cyclus var {'capacity': 'max_inv_size'}
-  cyclus::toolkit::ResBuf<cyclus::Material> inventory;  // of natl u
+  cyclus::toolkit::ResBuf<cyclus::Material> inventory;  // natural u
   #pragma cyclus var {}
   cyclus::toolkit::ResBuf<cyclus::Material> tails;  // depleted u
   
   friend class EnrichmentFacilityTest;
-    // ---
 };
 
 }  // namespace cycamore

@@ -129,19 +129,19 @@ void EnrichmentFacility::AdjustMatlPrefs(
     // Assign preferences to the sorted vector
     double n_bids = bids_vector.size() ;
 
-    bool finite_mass = 0 ;
+    bool u235_mass = 0 ;
     for (int bidit=0 ; bidit < bids_vector.size(); bidit++) {
       int new_pref = bidit+1 ;
       
-      // If u-235 qty of smallest item is 0, set pref to zero. 
-      if (!finite_mass) {
+      // For any bids with U-235 qty=0, set pref to zero. 
+      if (!u235_mass) {
 	cyclus::Material::Ptr mat = bids_vector[bidit]->offer();
 	cyclus::toolkit::MatQuery mq(mat);
 	if (mq.mass(922350000) == 0) {
 	  new_pref = -1;
 	}
 	else {
-	  finite_mass = TRUE;
+	  u235_mass = TRUE;
 	}
       }
       (reqit->second)[bids_vector[bidit]] = new_pref;
