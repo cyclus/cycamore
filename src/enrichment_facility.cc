@@ -17,6 +17,7 @@ EnrichmentFacility::EnrichmentFacility(cyclus::Context* ctx)
       swu_capacity(0),
       max_enrich(0),  ///QQ 
       initial_reserves(0),
+      order_prefs(0),
       in_commod(""),
       in_recipe(""),
       out_commod(""),
@@ -112,6 +113,10 @@ void EnrichmentFacility::AdjustMatlPrefs(
   using cyclus::Material;
   using cyclus::Request;
   
+  if (!order_prefs){
+    return ;
+  }
+
   cyclus::PrefMap<cyclus::Material>::type::iterator reqit;
 
   // Loop over all requests

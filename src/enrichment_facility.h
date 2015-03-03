@@ -355,8 +355,16 @@ class EnrichmentFacility : public cyclus::Facility {
                              "enrichment facility at the beginning of the " \
                              "simulation (kg)"}
   double initial_reserves;
+  #pragma cyclus var {"default": 1,\
+                      "userlevel": 10, \
+                      "tooltip": "order material requests by U235 content",\
+                      "doc": "turn on preference ordering for input material "\
+                             "so that EF chooses higher U235 content first"}
+
+  bool order_prefs;
   #pragma cyclus var {'derived_init': 'current_swu_capacity = swu_capacity;'}
   double current_swu_capacity;
+
   
   #pragma cyclus var {'capacity': 'max_inv_size'}
   cyclus::toolkit::ResBuf<cyclus::Material> inventory;  // natural u
