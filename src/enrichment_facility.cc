@@ -17,7 +17,7 @@ EnrichmentFacility::EnrichmentFacility(cyclus::Context* ctx)
       swu_capacity(0),
       max_enrich(0),  ///QQ 
       initial_reserves(0),
-      order_prefs(0),
+      order_prefs(0), //QQ
       in_commod(""),
       in_recipe(""),
       out_commod(""),
@@ -315,13 +315,9 @@ void EnrichmentFacility::AddMat_(cyclus::Material::Ptr mat) {
     cyclus::Warn<cyclus::VALUE_WARNING>("Non-uranium elements are "   \
       "sent directly to tails.");
   }
-  /// TODO: Add FAIL if non-235/238 quantities are too large
- 
 
   LOG(cyclus::LEV_INFO5, "EnrFac") << prototype() << " is initially holding "
 				   << inventory.quantity() << " total.";
-
-
   
   try {
     inventory.Push(mat);
