@@ -219,7 +219,6 @@ class EnrichmentFacility : public cyclus::Facility {
     cyclus::Material::Ptr> >& responses);
   // ---
 
-  // --- EnrichmentFacility Members ---
   ///  @brief Determines if a particular material is a valid request to respond
   ///  to.  Valid requests must contain U235 and U238 and must have a relative
   ///  U235-to-U238 ratio less than this facility's tails_assay().

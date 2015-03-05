@@ -15,13 +15,9 @@ EnrichmentFacility::EnrichmentFacility(cyclus::Context* ctx)
     : cyclus::Facility(ctx),
       tails_assay(0),
       swu_capacity(0),
-      max_enrich(0),  ///QQ 
+      max_enrich(1),  ///QQ 
       initial_reserves(0),
-      order_prefs(0), //QQ
-      in_commod(""),
-      in_recipe(""),
-      out_commod(""),
-      tails_commod(""){}   ///QQ
+      order_prefs(true){} //QQ
 
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 EnrichmentFacility::~EnrichmentFacility() {}
@@ -219,6 +215,10 @@ EnrichmentFacility::GetMatlBids(
         Material::Ptr offer = Offer_(req->target());
         commod_port->AddBid(req, offer, this);
       }
+      else {
+	std::cout<< request_enrich << " , " << max_enrich << "\n" ;
+      }
+
     }
     Converter<Material>::Ptr sc(new SWUConverter(FeedAssay(), tails_assay));
     Converter<Material>::Ptr nc(new NatUConverter(FeedAssay(), tails_assay));

@@ -353,95 +353,6 @@ EnrichmentFacilityTest::DoEnrich(cyclus::Material::Ptr mat, double qty) {
   return src_facility->Enrich_(mat, qty);
 }
 
-// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-TEST_F(EnrichmentFacilityTest, InitialState) {
-  EXPECT_EQ(in_recipe, src_facility->InRecipe());
-  EXPECT_EQ(in_commod, src_facility->in_commodity());
-  EXPECT_EQ(out_commod, src_facility->out_commodity());
-  EXPECT_EQ(tails_commod, src_facility->tails_commodity()); //QQ -fixed
-  EXPECT_DOUBLE_EQ(tails_assay, src_facility->TailsAssay());
-  EXPECT_DOUBLE_EQ(inv_size, src_facility->MaxInventorySize());
-  EXPECT_DOUBLE_EQ(0.0, src_facility->InventorySize());
-  EXPECT_DOUBLE_EQ(swu_capacity, src_facility->SwuCapacity());
-  EXPECT_DOUBLE_EQ(max_enrich, src_facility->MaxEnrich());  //QQ -fixed
-  EXPECT_EQ(reserves, src_facility->InitialReserves());
-}
-
-// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-TEST_F(EnrichmentFacilityTest, DISABLED_XMLInit) {
-  std::stringstream ss;
-  ss << "<start>"
-     << "<name>fooname</name>"
-     << "<config>"
-     << "<UNSPECIFIED>"
-     << "  <input>"
-     << "    <incommodity>" << in_commod << "</incommodity>"
-     << "    <inrecipe>" << in_recipe << "</inrecipe>"
-     << "    <inventorysize>" << inv_size << "</inventorysize>"
-     << "  </input>"
-     << "  <output>"
-     << "    <outcommodity>" << out_commod << "</outcommodity>"
-     << "    <tails_commod>" << tails_commod << "</tails_commod>" //QQ-fixed
-     << "    <tails_assay>" << tails_assay << "</tails_assay>"
-     << "    <swu_capacity>" << swu_capacity << "</swu_capacity>"
-     << "    <max_enrich>" << max_enrich << "</max_enrich>"       //QQ-fixed
-     << "  </output>"
-     << "  <initial_condition>"
-     << "    <reserves_qty>" << reserves << "</reserves_qty>"
-     << "  </initial_condition>"
-     << "</UNSPECIFIED>"
-     << "</config>"
-     << "</start>";
-
-  cyclus::XMLParser p;
-  p.Init(ss);
-  cyclus::InfileTree engine(p);
-  cycamore::EnrichmentFacility fac(tc_.get());
-
-  // EXPECT_NO_THROW(fac.InitFrom(&engine););
-  EXPECT_EQ(in_recipe, fac.InRecipe());
-  EXPECT_EQ(in_commod, fac.in_commodity());
-  EXPECT_EQ(out_commod, fac.out_commodity());
-  EXPECT_EQ(tails_commod, fac.tails_commodity());   //QQ--fixed
-  EXPECT_DOUBLE_EQ(tails_assay, fac.TailsAssay());
-  EXPECT_DOUBLE_EQ(inv_size, fac.MaxInventorySize());
-  EXPECT_DOUBLE_EQ(0.0, fac.InventorySize());
-  EXPECT_DOUBLE_EQ(swu_capacity, fac.SwuCapacity());
-  EXPECT_DOUBLE_EQ(max_enrich, fac.MaxEnrich());   //QQ--fixed
-  EXPECT_EQ(reserves, fac.InitialReserves());
-}
-
-// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-TEST_F(EnrichmentFacilityTest, Clone) {
-  cyclus::Context* ctx = tc_.get();
-
-  cycamore::EnrichmentFacility* cloned_fac =
-    dynamic_cast<cycamore::EnrichmentFacility*>(src_facility->Clone());
-
-  EXPECT_EQ(in_recipe, cloned_fac->InRecipe());
-  EXPECT_EQ(in_commod, cloned_fac->in_commodity());
-  EXPECT_EQ(out_commod, cloned_fac->out_commodity());
-  EXPECT_EQ(tails_commod, cloned_fac->tails_commodity());   //QQ--fixed
-  EXPECT_DOUBLE_EQ(tails_assay, cloned_fac->TailsAssay());
-  //  EXPECT_DOUBLE_EQ(feed_assay, cloned_fac->FeedAssay());
-  EXPECT_DOUBLE_EQ(inv_size, cloned_fac->MaxInventorySize());
-  EXPECT_DOUBLE_EQ(0.0, cloned_fac->InventorySize());
-  EXPECT_DOUBLE_EQ(swu_capacity, cloned_fac->SwuCapacity());
-  EXPECT_DOUBLE_EQ(max_enrich, cloned_fac->MaxEnrich());   //QQ-fixed
-  EXPECT_EQ(reserves, cloned_fac->InitialReserves());
-
-  delete cloned_fac;
-}
-
-// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-TEST_F(EnrichmentFacilityTest, AddMat) {
-  //QQ - GetMat->AddMat_ is failing when pushing material to inventory. Why?  Not set up?
-  // EXPECT_THROW(DoAddMat(test_helpers::get_mat()), cyclus::ValueError);
-  EXPECT_THROW(DoAddMat(GetMat(inv_size + 1)), cyclus::Error);
-  EXPECT_NO_THROW(DoAddMat(GetMat(inv_size)));  
-  //  EXPECT_THROW(DoAddMat(GetMat(1)), cyclus::Error);
-}
-
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 TEST_F(EnrichmentFacilityTest, Request) {
   double req = inv_size;
@@ -466,32 +377,7 @@ TEST_F(EnrichmentFacilityTest, Request) {
 }
 
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-  TEST_F(EnrichmentFacilityTest, Offer) {
-  using cyclus::CompMap;
-  using cyclus::Composition;
-  using cyclus::Material;
-  using cyclus::toolkit::MatQuery;
-
-  double qty = 4.5;
-  double u234 = 1.0;
-  double u235 = 1.0;
-  double u238 = 2.0;
-  cyclus::CompMap v;
-  v[94239] = u234;
-  v[922350000] = u235;
-  v[922380000] = u238;
-  Material::Ptr mat =
-      DoOffer(Material::CreateUntracked(qty, Composition::CreateFromAtom(v)));
-
-  MatQuery q(mat);
-
-  EXPECT_DOUBLE_EQ(q.atom_frac(94239), 0.0);
-  EXPECT_DOUBLE_EQ(q.atom_frac(922350000), u235 / (u235 + u238));
-  EXPECT_DOUBLE_EQ(q.atom_frac(922380000), u238 / (u235 + u238));
-  EXPECT_DOUBLE_EQ(mat->quantity(), qty);
-}
-
-// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+// QQ Document, check that Fn is false when expected.
 TEST_F(EnrichmentFacilityTest, ValidReq) {
   using cyclus::CompMap;
   using cyclus::Composition;
@@ -503,13 +389,13 @@ TEST_F(EnrichmentFacilityTest, ValidReq) {
   v1[922350000] = 1;
   Material::Ptr mat = Material::CreateUntracked(qty,
                                                 Composition::CreateFromAtom(v1));
-  EXPECT_TRUE(!src_facility->ValidReq(mat));  // u238 = 0
+  EXPECT_FALSE(src_facility->ValidReq(mat));  // u238 = 0
 
   cyclus::CompMap v2;
   v2[922350000] = tails_assay;
   v2[922380000] = 1 - tails_assay;
   mat = Material::CreateUntracked(qty, Composition::CreateFromAtom(v2));
-  EXPECT_TRUE(!src_facility->ValidReq(mat));  // u235 / (u235 + u238) <= tails_assay
+  EXPECT_FALSE(src_facility->ValidReq(mat));  // u235 / (u235 + u238) <= tails_assay
 
   cyclus::CompMap v3;
   v3[922350000] = 1;
@@ -518,20 +404,11 @@ TEST_F(EnrichmentFacilityTest, ValidReq) {
   EXPECT_TRUE(src_facility->ValidReq(mat));  // valid
 }
 
-// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-TEST_F(EnrichmentFacilityTest, EmptyRequests) {
-  using cyclus::Material;
-  using cyclus::RequestPortfolio;
-
-  src_facility->SetMaxInventorySize(src_facility->InventorySize());
-  std::set<RequestPortfolio<Material>::Ptr> ports =
-      src_facility->GetMatlRequests();
-  ports = src_facility->GetMatlRequests();
-  EXPECT_TRUE(ports.empty());
-}
-
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-TEST_F(EnrichmentFacilityTest, AddRequests) {
+// QQ Replace w/MockSim: generates requests with the correct amnt of material
+// (requests to fill its inventory size - no more and no less)
+// Generate case where source can generate more than inventory, amount matched is reasonable.
+  TEST_F(EnrichmentFacilityTest, AddRequests) {
   using cyclus::Request;
   using cyclus::RequestPortfolio;
   using cyclus::CapacityConstraint;
@@ -559,68 +436,13 @@ TEST_F(EnrichmentFacilityTest, AddRequests) {
   EXPECT_EQ(constraints.size(), 0);
 }
 
-// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-TEST_F(EnrichmentFacilityTest, Extract) {
-  using cyclus::Material;
-  cyclus::Env::SetNucDataPath();
-  double qty = 1000;  // 5 kg
-  Material::Ptr base = GetMat(qty);
-  double time = tc_.get()->time();
-      // cyclus::Material::Create(src_facility, qty,
-      //                                   tc_.get()->GetRecipe(in_recipe));
-  Material::Ptr base2 = GetMat(qty);
-  base->Absorb(base2);
-  double product_assay = 0.05;  // of 5 w/o enriched U
-  cyclus::CompMap v;
-  v[922350000] = product_assay;
-  v[922380000] = 1 - product_assay;
-  // target qty need not be = to request qty
-  Material::Ptr target = cyclus::Material::CreateUntracked(
-      5, cyclus::Composition::CreateFromMass(v));
-  Material::Ptr response = base->ExtractComp(6, target->comp());
-}
-
-// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-TEST_F(EnrichmentFacilityTest, Accept) {
-  using cyclus::Bid;
-  using cyclus::Material;
-  using cyclus::Request;
-  using cyclus::Trade;
-
-  // an enrichment facility gets two trades, each for 1/3 of its inv size
-  // note that comp != recipe is covered by AddMat tests
-  // note that qty >= inv capacity is covered by toolkit::ResourceBuff tests
-
-  double qty = inv_size / 3;
-  std::vector< std::pair<cyclus::Trade<cyclus::Material>,
-                         cyclus::Material::Ptr> > responses;
-
-  Request<Material>* req1 =
-      Request<Material>::Create(DoRequest(), src_facility, in_commod);
-  Bid<Material>* bid1 =
-      Bid<Material>::Create(req1, GetMat(qty), trader);
-
-  Request<Material>* req2 =
-      Request<Material>::Create(DoRequest(), src_facility, in_commod);
-  Bid<Material>* bid2 = Bid<Material>::Create(req2, GetMat(qty), trader);
-
-  Trade<Material> trade1(req1, bid1, qty);
-  responses.push_back(std::make_pair(trade1, GetMat(qty)));
-  Trade<Material> trade2(req2, bid2, qty);
-  responses.push_back(std::make_pair(trade2, GetMat(qty)));
-
-  EXPECT_DOUBLE_EQ(0.0, src_facility->InventorySize());
-  src_facility->AcceptMatlTrades(responses);
-  EXPECT_DOUBLE_EQ(qty * 2, src_facility->InventorySize());
-
-  delete bid2;
-  delete bid1;
-  delete req2;
-  delete req1;
-}
 
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-TEST_F(EnrichmentFacilityTest, AddBids) {
+// Tests that SWU and invent. constraints are being properly applied.
+  // MockSim that is SWU constrained - check amnt of matl traded.
+  // Does traded amount meet SWU constraint? (1/2 qty of requested value)
+  // Cap constraint - requests too much - supplies only amt avail.
+  TEST_F(EnrichmentFacilityTest, AddBids) {
   using cyclus::Bid;
   using cyclus::BidPortfolio;
   using cyclus::CapacityConstraint;
@@ -649,10 +471,10 @@ TEST_F(EnrichmentFacilityTest, AddBids) {
 
   BidPortfolio<Material>::Ptr port = *ports.begin();
   //QQ src_facility failing b/c of GetMat->AddMat_ ?
-  //  EXPECT_EQ(port->bidder(), src_facility);
+    EXPECT_EQ(port->bidder(), src_facility);
 
   //QQ bids().size=0, but nvalid=4  -->src_facility isn't working?
-  //  EXPECT_EQ(port->bids().size(), nvalid);
+    EXPECT_EQ(port->bids().size(), nvalid);
 
   const std::set< CapacityConstraint<Material> >& constrs = port->constraints();
   Converter<Material>::Ptr sc(new SWUConverter(feed_assay, tails_assay));  //QQ
@@ -686,7 +508,8 @@ EnrichmentFacilityTest::GetContext(int nreqs, int nvalid) {
 }
 
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-TEST_F(EnrichmentFacilityTest, BidConverters) {
+  // Add documentation to clarify
+  TEST_F(EnrichmentFacilityTest, ConstraintConverters) {
   // this test is designed to confirm that the bid response behavior matches the
   // converter behavior.
   using cyclus::CompMap;
@@ -726,6 +549,7 @@ TEST_F(EnrichmentFacilityTest, BidConverters) {
 }
 
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+// QQ KEEP HERE
 TEST_F(EnrichmentFacilityTest, Enrich) {
   // this test asks the facility to enrich a material that results in an amount
   // of natural uranium required that is exactly its inventory level. that
@@ -841,6 +665,7 @@ TEST_F(EnrichmentFacilityTest, Response) {
   EXPECT_DOUBLE_EQ(src_facility->CurrentSwuCapacity(),
                    swu_req - SwuRequired(trade_qty, assays));
 
+  // KEEP ONLY THIS SET OF TESTS
   // 2 trades, SWU = SWU cap
   ASSERT_GT(src_facility->CurrentSwuCapacity() - 2 * swu_req / 3,
             -1 * cyclus::eps());
@@ -849,17 +674,14 @@ TEST_F(EnrichmentFacilityTest, Response) {
   EXPECT_NO_THROW(src_facility->GetMatlTrades(trades, responses));
   EXPECT_EQ(responses.size(), 2);
   EXPECT_TRUE(cyclus::AlmostEq(src_facility->CurrentSwuCapacity(), 0));
-
+  // END
+  
   // too much qty, capn!
   trade = Trade<Material>(req, bid, 1);  // a small number
   trades.clear();
   trades.push_back(trade);
   EXPECT_THROW(src_facility->GetMatlTrades(trades, responses),
                cyclus::ValueError);
-
-  // reset!
-  src_facility->Tick();
-  EXPECT_DOUBLE_EQ(src_facility->CurrentSwuCapacity(), swu_req);
 }
 
   
