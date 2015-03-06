@@ -158,9 +158,10 @@ class EnrichmentFacility : public cyclus::Facility {
 
   #pragma cyclus
 
-  #pragma cyclus note {"doc": "An enrichment facility that intakes a commodity " \
-                              "(usually natural uranium) and supplies a user-" \
-                              "specified enriched product based on SWU capacity", \
+  #pragma cyclus note {"doc": "An enrichment facility that intakes a "\
+                              "commodity (usually natural uranium) and " \
+                              "supplies a user-specified enriched product "\
+                              "based on SWU capacity", \
                        "niche": "enrichment"}
 
   ///     Print information about this agent
@@ -304,8 +305,8 @@ class EnrichmentFacility : public cyclus::Facility {
 
   ///  @brief records and enrichment with the cyclus::Recorder
   void RecordEnrichment_(double natural_u, double swu);
- 
-  #pragma cyclus var {"tooltip": "input commodity", \
+
+  #pragma cyclus var {"tooltip": "input commodity",			\
                       "doc": "commodity that the enrichment facility accepts", \
                       "uitype": "incommodity"}
   std::string in_commod;

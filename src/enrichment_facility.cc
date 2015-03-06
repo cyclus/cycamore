@@ -17,6 +17,10 @@ EnrichmentFacility::EnrichmentFacility(cyclus::Context* ctx)
       swu_capacity(0),
       max_enrich(1),  ///QQ 
       initial_reserves(0),
+      in_commod(""),
+      in_recipe(""),
+      out_commod(""),
+      tails_commod(""),
       order_prefs(true){} //QQ
 
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -109,7 +113,7 @@ void EnrichmentFacility::AdjustMatlPrefs(
   using cyclus::Material;
   using cyclus::Request;
   
-  if (!order_prefs){
+  if (order_prefs == false){
     return ;
   }
 
@@ -148,8 +152,7 @@ void EnrichmentFacility::AdjustMatlPrefs(
       (reqit->second)[bids_vector[bidit]] = new_pref;
     } // each bid
   } // each Material Request
-  std::cout << "end of request" << std::endl;
-}
+
   
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 void EnrichmentFacility::AcceptMatlTrades(
@@ -214,9 +217,6 @@ EnrichmentFacility::GetMatlBids(
       if (ValidReq(req->target()) && (request_enrich <= max_enrich)) {
         Material::Ptr offer = Offer_(req->target());
         commod_port->AddBid(req, offer, this);
-      }
-      else {
-	std::cout<< request_enrich << " , " << max_enrich << "\n" ;
       }
 
     }
@@ -449,7 +449,10 @@ void EnrichmentFacility::RecordEnrichment_(double natural_u, double swu) {
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 double EnrichmentFacility::FeedAssay() {
   using cyclus::Material;
-  
+
+  if (inventory.empty()) {
+    return 0 ;
+  }
   cyclus::Material::Ptr fission_matl=inventory.Pop(inventory.quantity());
   inventory.Push(fission_matl);
   return cyclus::toolkit::UraniumAssay(fission_matl); 
