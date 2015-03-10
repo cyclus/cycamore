@@ -23,7 +23,7 @@ class EnrichmentFacilityTest : public ::testing::Test {
   cyclus::Composition::Ptr recipe;
   TestFacility* trader;
 
-  double feed_assay, tails_assay, inv_size, commodity_price, swu_capacity, max_enrich;
+  double feed_assay, tails_assay, inv_size, swu_capacity, max_enrich;
 
   bool order_prefs;
   

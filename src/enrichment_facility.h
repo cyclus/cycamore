@@ -1,6 +1,6 @@
 #ifndef CYCAMORE_SRC_ENRICHMENT_FACILITY_H_
 #define CYCAMORE_SRC_ENRICHMENT_FACILITY_H_
-
+/*
 #include <string>
 
 #include "cyclus.h"
@@ -57,9 +57,8 @@ class NatUConverter : public cyclus::Converter<cyclus::Material> {
           const * ctx = NULL) const {
     cyclus::toolkit::Assays assays(feed_, cyclus::toolkit::UraniumAssay(m),
                                    tails_);
-    
     cyclus::toolkit::MatQuery mq(m);
-    std::set<cyclus::Nuc> nucs ;
+    std::set<cyclus::Nuc> nucs;
     nucs.insert(922350000);
     nucs.insert(922380000);
 
@@ -69,7 +68,7 @@ class NatUConverter : public cyclus::Converter<cyclus::Material> {
   }
 
   /// @returns true if Converter is a NatUConverter and feed and tails equal
-  virtual bool operator==(Converter& other) const {
+  virtual bool operator == (Converter& other) const {
     NatUConverter* cast = dynamic_cast<NatUConverter*>(&other);
     return cast != NULL &&
     feed_ == cast->feed_ &&
@@ -112,41 +111,40 @@ class NatUConverter : public cyclus::Converter<cyclus::Material> {
 ///  tails inventory.
 
 class EnrichmentFacility : public cyclus::Facility {
-#pragma cyclus note {		  \
-  "niche": "enrichment facility", \
-  "doc":			  \
- "EnrichmentFacility is a simple Agent that enriches natural" \
- "uranium in a Cyclus simulation. It does not explicitly compute" \
- "the physical enrichment process, rather it calculates the SWU" \
- "required to convert an source uranium recipe (ie. natural uranium)" \
- "into a requested enriched recipe (ie. 4% enriched uranium), given" \
- "the natural uranium inventory constraint and its SWU capacity" \
- "constraint." \
- "\n\n"\
- "Enrichment Facility requests an input commodity and associated recipe" \
- "whose quantity is its remaining inventory capacity.  All facilities" \
- "trading the same input commodity (even with different recipes) will" \
- "offer materials for trade.  The Enrichment Facility accepts any input" \
- "materials with enrichments less than its tails assay, as long as some" \
- "U235 is present, and preference increases with U235 content.  If no" \
- "U235 is present in the offered material, the trade preference is set" \
- "to -1 and the material is not accepted.  Any material components other" \
- "other than U235 and U238 are sent directly to the tails buffer." \
- "\n\n"\
- "EnrichmentFacility will bid on any request for its output commodity" \
- "up to the maximum allowed enrichment (if not specified, default is 100%)" \
- "It bids on either the request quantity, or the maximum quanity allowed" \
- "by its SWU constraint or natural uranium inventory, whichever is lower." \
- "If multiple output commodities with different enrichment levels are" \
- "requested and the facility does not have the SWU or quantity capacity" \
- "to meet all requests, the requests are fully, then partially filled" \
- "in unspecified but repeatable order." \
- "\n\n"\
- "EnrichmentFacility also offers its tails as an output commodity with" \
- "no associated recipe.  Bids for tails are constrained only by total" \
- "tails inventory.", \
+#pragma cyclus note {   	  \
+  "niche": "enrichment facility",				  \
+  "doc":								\
+  "EnrichmentFacility is a simple Agent that enriches natural"		\
+  "uranium in a Cyclus simulation. It does not explicitly compute"	\
+  "the physical enrichment process, rather it calculates the SWU"	\
+  "required to convert an source uranium recipe (ie. natural uranium)"	\
+  "into a requested enriched recipe (ie. 4% enriched uranium), given"	\
+  "the natural uranium inventory constraint and its SWU capacity"	\
+  "constraint."								\
+  "\n\n"								\
+  "Enrichment Facility requests an input commodity and associated recipe" \
+  "whose quantity is its remaining inventory capacity.  All facilities" \
+  "trading the same input commodity (even with different recipes) will" \
+  "offer materials for trade.  The Enrichment Facility accepts any input" \
+  "materials with enrichments less than its tails assay, as long as some" \
+  "U235 is present, and preference increases with U235 content.  If no" \
+  "U235 is present in the offered material, the trade preference is set" \
+  "to -1 and the material is not accepted.  Any material components other" \
+  "other than U235 and U238 are sent directly to the tails buffer."	\
+  "\n\n"								\
+  "EnrichmentFacility will bid on any request for its output commodity" \
+  "up to the maximum allowed enrichment (if not specified, default is 100%)" \
+  "It bids on either the request quantity, or the maximum quanity allowed" \
+  "by its SWU constraint or natural uranium inventory, whichever is lower." \
+  "If multiple output commodities with different enrichment levels are" \
+  "requested and the facility does not have the SWU or quantity capacity" \
+  "to meet all requests, the requests are fully, then partially filled" \
+  "in unspecified but repeatable order."				\
+  "\n\n"								\
+  "EnrichmentFacility also offers its tails as an output commodity with" \
+  "no associated recipe.  Bids for tails are constrained only by total" \
+  "tails inventory.",							\
 }
-
  public:
   // --- Module Members ---
   ///    Constructor for the EnrichmentFacility class
@@ -238,9 +236,9 @@ class EnrichmentFacility : public cyclus::Facility {
 
   inline void tails_commodity(std::string tails_com) {
     tails_commod = tails_com;
-  } ///QQ
+  }
 
-  inline std::string tails_commodity() const { return tails_commod; } ///QQ
+  inline std::string tails_commodity() const { return tails_commod; }
 
   inline void InRecipe(std::string in_rec) { in_recipe = in_rec; }
 
@@ -248,7 +246,7 @@ class EnrichmentFacility : public cyclus::Facility {
 
   inline void SetMaxInventorySize(double size) {
     max_inv_size = size;
-    inventory.capacity(size); //QQ
+    inventory.capacity(size);
   }
 
   inline double MaxInventorySize() const { return inventory.capacity(); }
@@ -268,9 +266,9 @@ class EnrichmentFacility : public cyclus::Facility {
 
   inline double CurrentSwuCapacity() const { return current_swu_capacity; }
 
-  inline void MaxEnrich(double enrichment) { max_enrich = enrichment; } //QQ
+  inline void MaxEnrich(double enrichment) { max_enrich = enrichment; }
   
-  inline double MaxEnrich() const { return max_enrich; } ///QQ
+  inline double MaxEnrich() const { return max_enrich; }
 
   /// @brief this facility's initial conditions
   inline void  InitialReserves(double qty) { initial_reserves = qty; }
@@ -279,8 +277,7 @@ class EnrichmentFacility : public cyclus::Facility {
   inline const cyclus::toolkit::ResBuf<cyclus::Material>& Tails() const {
     return tails;
   } 
-  ///QQ  It's not used for anything and can be deleted if we decide to make everything a state variable for testing
-  
+
  private:
   ///   @brief adds a material into the natural uranium inventory
   ///   @throws if the material is not the same composition as the in_recipe
@@ -305,75 +302,89 @@ class EnrichmentFacility : public cyclus::Facility {
 
   ///  @brief records and enrichment with the cyclus::Recorder
   void RecordEnrichment_(double natural_u, double swu);
-
-  #pragma cyclus var {"tooltip": "input commodity",			\
-                      "doc": "commodity that the enrichment facility accepts", \
-                      "uitype": "incommodity"}
+  
+  #pragma cyclus var {							\
+    "tooltip": "input commodity",					\
+    "doc": "commodity that the enrichment facility accepts",		\
+    "uitype": "incommodity" \
+  }
   std::string in_commod;
-  #pragma cyclus var {"tooltip": "output commodity", \
-                      "doc": "commodity that the enrichment facility supplies", \
-                      "uitype": "outcommodity"}
+  #pragma cyclus var { \
+    "tooltip": "output commodity",					\
+    "doc": "commodity that the enrichment facility supplies",		\
+    "uitype": "outcommodity" \
+  }
   std::string out_commod;
-  #pragma cyclus var {"tooltip": "input commodity recipe", \
-                      "doc": "recipe for enrichment facility input commodity", \
-                      "uitype": "recipe"}
+  #pragma cyclus var { \
+    "tooltip": "input commodity recipe",				\
+    "doc": "recipe for enrichment facility input commodity",		\
+    "uitype": "recipe" \
+  }
   std::string in_recipe;
-  #pragma cyclus var {"tooltip": "tails commodity", \
-                      "doc": "tails commodity supplied by enrichment facility",\
-                      "uitype": "outcommodity"}
-  std::string tails_commod;  //QQ
-  #pragma cyclus var {"default": 0.03, "tooltip": "tails assay",	\
-                      "doc": "tails assay from the enrichment process"}
+  #pragma cyclus var { \
+    "tooltip": "tails commodity",					\
+    "doc": "tails commodity supplied by enrichment facility",		\
+    "uitype": "outcommodity" \
+  }
+  std::string tails_commod;
+  #pragma cyclus var { \
+    "default": 0.03, "tooltip": "tails assay",				\
+    "doc": "tails assay from the enrichment process" \
+  }
   double tails_assay;
-  #pragma cyclus var {"default": 1e299, \
-                      "tooltip": "SWU capacity (kgSWU/month)", \
-                      "doc": "separative work unit (SWU) capacity of " \
-                      "enrichment facility (kgSWU/month)"}
+  #pragma cyclus var { \
+    "default": 1e299,					       \
+    "tooltip": "SWU capacity (kgSWU/month)",			       \
+    "doc": "separative work unit (SWU) capacity of enrichment " \
+           "facility (kgSWU/month) "		       \
+  }
   double swu_capacity;
-  #pragma cyclus var {"default": 1e299, "tooltip": "max inventory size (kg)", \
-                      "doc": "maximum total inventory of natural uranium in " \
-                             "the enrichment facility (kg)"}
+  #pragma cyclus var { \
+    "default": 1e299, "tooltip": "max inventory size (kg)",		\
+    "doc": "maximum total inventory of natural uranium in "		\
+           "the enrichment facility (kg)" \
+  }
   double max_inv_size;
 
-  #pragma cyclus var {"default": 1.0, \
-                      "tooltip": "maximum allowed enrichment fraction",\
-                      "doc": "maximum allowed weight fraction of U235 " \
-                             "in product ", \
-                      "schema": '      "<optional>\\n"\n' \
-                                '      "    <element name=\\"max_enrich\\">\\n"\n'  \
-                                '      "        <data type=\\"double\\">\\n"\n ' \
-                                '      "            <param name=\\"minInclusive\\">0</param>\\n"\n'\
-                                '      "            <param name=\\"maxInclusive\\">1</param>\\n"\n'\
-                                '      "        </data>\\n"\n '					\
-                                '      "    </element>\\n"\n'					\
-                                '      "</optional>\\n"\n'}
+  #pragma cyclus var { \
+    "default": 1.0,							\
+    "tooltip": "maximum allowed enrichment fraction",			\
+    "doc": "maximum allowed weight fraction of U235 in product",	\
+    "schema": '      "<optional>\\n"\n'					\
+      '      "    <element name=\\"max_enrich\\">\\n"\n'		\
+      '      "        <data type=\\"double\\">\\n"\n '			\
+      '      "            <param name=\\"minInclusive\\">0</param>\\n"\n' \
+      '      "            <param name=\\"maxInclusive\\">1</param>\\n"\n' \
+      '      "        </data>\\n"\n '					\
+      '      "    </element>\\n"\n'					\
+      '      "</optional>\\n"\n' \
+  }
   double max_enrich;
- //QQ
-
-  #pragma cyclus var {"default": 0, "tooltip": "initial uranium reserves (kg)",\
-                      "doc": "amount of natural uranium stored at the " \
-                             "enrichment facility at the beginning of the " \
-                             "simulation (kg)"}
-  double initial_reserves;
-  #pragma cyclus var {"default": 1,\
-                      "userlevel": 10, \
-                      "tooltip": "order material requests by U235 content",\
-                      "doc": "turn on preference ordering for input material "\
-                             "so that EF chooses higher U235 content first"}
-
-  bool order_prefs;
-  #pragma cyclus var {'derived_init': 'current_swu_capacity = swu_capacity;'}
-  double current_swu_capacity;
-
   
-  #pragma cyclus var {'capacity': 'max_inv_size'}
+  #pragma cyclus var { \
+    "default": 0, "tooltip": "initial uranium reserves (kg)",		\
+    "doc": "amount of natural uranium stored at the enrichment "       \
+           "facility at the beginning of the simulation (kg)"		\
+  }
+  double initial_reserves;
+  #pragma cyclus var { \
+    "default": 1,		       \
+    "userlevel": 10,							\
+    "tooltip": "order material requests by U235 content",		\
+    "doc": "turn on preference ordering for input material "		\
+           "so that EF chooses higher U235 content first" \
+  }
+  bool order_prefs;
+  #pragma cyclus var { 'derived_init': 'current_swu_capacity = swu_capacity;' }
+  double current_swu_capacity;
+  #pragma cyclus var { 'capacity': 'max_inv_size' }
   cyclus::toolkit::ResBuf<cyclus::Material> inventory;  // natural u
   #pragma cyclus var {}
   cyclus::toolkit::ResBuf<cyclus::Material> tails;  // depleted u
   
   friend class EnrichmentFacilityTest;
 };
-
+ 
 }  // namespace cycamore
-
-#endif  // CYCAMORE_SRC_ENRICHMENT_FACILITY_H_
+*/
+#endif // CYCAMORE_SRC_ENRICHMENT_FACILITY_H_
