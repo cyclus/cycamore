@@ -1,6 +1,6 @@
 #ifndef CYCAMORE_SRC_ENRICHMENT_FACILITY_H_
 #define CYCAMORE_SRC_ENRICHMENT_FACILITY_H_
-/*
+
 #include <string>
 
 #include "cyclus.h"
@@ -383,8 +383,9 @@ class EnrichmentFacility : public cyclus::Facility {
   cyclus::toolkit::ResBuf<cyclus::Material> tails;  // depleted u
   
   friend class EnrichmentFacilityTest;
+  // ---
 };
  
 }  // namespace cycamore
-*/
+
 #endif // CYCAMORE_SRC_ENRICHMENT_FACILITY_H_

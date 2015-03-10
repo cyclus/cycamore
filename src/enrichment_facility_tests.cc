@@ -66,7 +66,7 @@ TEST_F(EnrichmentFacilityTest, RequestQty) {
   int simdur = 1;
   cyclus::MockSim sim(cyclus::AgentSpec
 		      (":cycamore:EnrichmentFacility"), config, simdur);
-  sim.AddRecipe("natu1", c_natu1()) ;
+  sim.AddRecipe("natu1", c_natu1());
   
   sim.AddSource("natu")
     .recipe("natu1")
@@ -75,7 +75,7 @@ TEST_F(EnrichmentFacilityTest, RequestQty) {
   int id = sim.Run();
 
   std::vector<Cond> conds;
-  conds.push_back(Cond("Commodity", "==",std::string("natu")));
+  conds.push_back(Cond("Commodity", "==", std::string("natu")));
   QueryResult qr = sim.db().Query("Transactions", &conds);
   Material::Ptr m = sim.GetMaterial(qr.GetVal<int>("ResourceId"));
   
@@ -100,15 +100,15 @@ TEST_F(EnrichmentFacilityTest, CheckSWUConstraint) {
     "   <tails_commod>tails</tails_commod> "
     "   <tails_assay>0.003</tails_assay> "
     "   <initial_reserves>1000</initial_reserves> "
-    "   <swu_capacity>195</swu_capacity> " ;
+    "   <swu_capacity>195</swu_capacity> ";
 
   int simdur = 1;
   
   cyclus::MockSim sim(cyclus::AgentSpec
 		      (":cycamore:EnrichmentFacility"), config, simdur);
    
-  sim.AddRecipe("natu1", c_natu1()) ;
-  sim.AddRecipe("heu", c_heu()) ;
+  sim.AddRecipe("natu1", c_natu1());
+  sim.AddRecipe("heu", c_heu());
   
   sim.AddSink("enr_u")
     .recipe("heu")
@@ -118,7 +118,7 @@ TEST_F(EnrichmentFacilityTest, CheckSWUConstraint) {
   int id = sim.Run();
 
   std::vector<Cond> conds;
-  conds.push_back(Cond("Commodity", "==",std::string("enr_u")));
+  conds.push_back(Cond("Commodity", "==", std::string("enr_u")));
   QueryResult qr = sim.db().Query("Transactions", &conds);
   Material::Ptr m = sim.GetMaterial(qr.GetVal<int>("ResourceId"));
 
@@ -138,7 +138,7 @@ TEST_F(EnrichmentFacilityTest, CheckCapConstraint) {
     "   <out_commod>enr_u</out_commod> "
     "   <tails_commod>tails</tails_commod> "
     "   <tails_assay>0.003</tails_assay> "
-    "   <initial_reserves>243</initial_reserves> " ;
+    "   <initial_reserves>243</initial_reserves> ";
 
   int simdur = 1;
 
@@ -146,8 +146,8 @@ TEST_F(EnrichmentFacilityTest, CheckCapConstraint) {
 		      (":cycamore:EnrichmentFacility"), config, simdur);
 
 
-  sim.AddRecipe("natu1", c_natu1()) ;
-  sim.AddRecipe("heu", c_heu()) ;
+  sim.AddRecipe("natu1", c_natu1());
+  sim.AddRecipe("heu", c_heu());
    
   sim.AddSink("enr_u")
     .recipe("heu")
@@ -157,7 +157,7 @@ TEST_F(EnrichmentFacilityTest, CheckCapConstraint) {
   int id = sim.Run();
   
   std::vector<Cond> conds;
-  conds.push_back(Cond("Commodity", "==",std::string("enr_u")));
+  conds.push_back(Cond("Commodity", "==", std::string("enr_u")));
   QueryResult qr = sim.db().Query("Transactions", &conds);
   Material::Ptr m = sim.GetMaterial(qr.GetVal<int>("ResourceId"));
 
@@ -177,14 +177,14 @@ TEST_F(EnrichmentFacilityTest, RequestEnrich) {
     "   <out_commod>enr_u</out_commod> "
     "   <tails_commod>tails</tails_commod> "
     "   <tails_assay>0.003</tails_assay> "
-    "   <max_enrich>0.20</max_enrich> " ;
+    "   <max_enrich>0.20</max_enrich> ";
 
   int simdur = 2;
   cyclus::MockSim sim(cyclus::AgentSpec
 		      (":cycamore:EnrichmentFacility"), config, simdur);
-  sim.AddRecipe("natu1", c_natu1()) ;
-  sim.AddRecipe("leu", c_leu()) ;
-  sim.AddRecipe("heu", c_heu()) ;
+  sim.AddRecipe("natu1", c_natu1());
+  sim.AddRecipe("leu", c_leu());
+  sim.AddRecipe("heu", c_heu());
   
   sim.AddSource("natu")
     .recipe("natu1")
@@ -200,7 +200,7 @@ TEST_F(EnrichmentFacilityTest, RequestEnrich) {
   int id = sim.Run();
 
   std::vector<Cond> conds;
-  conds.push_back(Cond("Commodity", "==",std::string("enr_u")));
+  conds.push_back(Cond("Commodity", "==", std::string("enr_u")));
   QueryResult qr = sim.db().Query("Transactions", &conds);
   Material::Ptr m = sim.GetMaterial(qr.GetVal<int>("ResourceId"));
    
@@ -231,14 +231,14 @@ TEST_F(EnrichmentFacilityTest, TradeTails) {
     "   <in_recipe>natu1</in_recipe> "
     "   <out_commod>enr_u</out_commod> "
     "   <tails_commod>tails</tails_commod> "
-    "   <tails_assay>0.003</tails_assay> " ;
+    "   <tails_assay>0.003</tails_assay> ";
 
-  //QQ - should tails buffer be available for trades on timestep 2?
-  int simdur = 3 ;// 1-source to EF, 2-EF process, 3-add to tails inventory
+  // 1-source to EF, 2-Enrich, add to tails, 3-tails avail. for trade
+  int simdur = 3;
   cyclus::MockSim sim(cyclus::AgentSpec
 		      (":cycamore:EnrichmentFacility"), config, simdur);
-  sim.AddRecipe("natu1", c_natu1()) ;
-  sim.AddRecipe("leu", c_leu()) ;
+  sim.AddRecipe("natu1", c_natu1());
+  sim.AddRecipe("leu", c_leu());
   
   sim.AddSource("natu")
     .recipe("natu1")
@@ -252,7 +252,7 @@ TEST_F(EnrichmentFacilityTest, TradeTails) {
   int id = sim.Run();
 
   std::vector<Cond> conds;
-  conds.push_back(Cond("Commodity", "==",std::string("tails")));
+  conds.push_back(Cond("Commodity", "==", std::string("tails")));
   QueryResult qr = sim.db().Query("Transactions", &conds);
 
   // Should be exactly one tails transaction
@@ -270,13 +270,13 @@ TEST_F(EnrichmentFacilityTest, BidPrefs) {
     "   <out_commod>enr_u</out_commod> "
     "   <tails_commod>tails</tails_commod> "
     "   <tails_assay>0.003</tails_assay> "
-    "   <max_inv_size>1.0</max_inv_size> " ;
+    "   <max_inv_size>1.0</max_inv_size> ";
 
   int simdur = 1;
   cyclus::MockSim sim(cyclus::AgentSpec
 		      (":cycamore:EnrichmentFacility"), config, simdur);
-  sim.AddRecipe("natu1", c_natu1()) ;
-  sim.AddRecipe("natu2", c_natu2()) ;
+  sim.AddRecipe("natu1", c_natu1());
+  sim.AddRecipe("natu2", c_natu2());
 
   sim.AddSource("natu")
     .recipe("natu1")
@@ -291,7 +291,7 @@ TEST_F(EnrichmentFacilityTest, BidPrefs) {
   int id = sim.Run();
 
   std::vector<Cond> conds;
-  conds.push_back(Cond("Commodity", "==",std::string("natu")));
+  conds.push_back(Cond("Commodity", "==", std::string("natu")));
   QueryResult qr = sim.db().Query("Transactions", &conds);
 
   // should trade only with #2 since it has higher U235
@@ -322,13 +322,13 @@ TEST_F(EnrichmentFacilityTest, BidPrefs) {
     "   <tails_commod>tails</tails_commod> "
     "   <tails_assay>0.003</tails_assay> "
     "   <max_inv_size>2.0</max_inv_size> " 
-    "   <order_prefs>0</order_prefs> " ;
+    "   <order_prefs>0</order_prefs> ";
 
   int simdur = 1;
   cyclus::MockSim sim(cyclus::AgentSpec
 		      (":cycamore:EnrichmentFacility"), config, simdur);
-  sim.AddRecipe("natu1", c_natu1()) ;
-  sim.AddRecipe("natu2", c_natu2()) ;
+  sim.AddRecipe("natu1", c_natu1());
+  sim.AddRecipe("natu2", c_natu2());
 
   sim.AddSource("natu")
     .recipe("natu1")
@@ -343,7 +343,7 @@ TEST_F(EnrichmentFacilityTest, BidPrefs) {
   int id = sim.Run();
 
   std::vector<Cond> conds;
-  conds.push_back(Cond("Commodity", "==",std::string("natu")));
+  conds.push_back(Cond("Commodity", "==", std::string("natu")));
   QueryResult qr = sim.db().Query("Transactions", &conds);
 
   // should trade with both to meet its capacity limit
@@ -360,13 +360,13 @@ TEST_F(EnrichmentFacilityTest, ZeroU235) {
     "   <out_commod>enr_u</out_commod> "
     "   <tails_commod>tails</tails_commod> "
     "   <tails_assay>0.003</tails_assay> "
-    "   <max_inv_size>1.0</max_inv_size> " ;
+    "   <max_inv_size>1.0</max_inv_size> ";
 
   int simdur = 1;
   cyclus::MockSim sim(cyclus::AgentSpec
 		      (":cycamore:EnrichmentFacility"), config, simdur);
-  sim.AddRecipe("no_u235", c_nou235()) ;
-  sim.AddRecipe("natu1", c_natu1()) ;
+  sim.AddRecipe("no_u235", c_nou235());
+  sim.AddRecipe("natu1", c_natu1());
 
   sim.AddSource("natu")
     .recipe("no_u235")
@@ -376,7 +376,7 @@ TEST_F(EnrichmentFacilityTest, ZeroU235) {
   int id = sim.Run();
 
   std::vector<Cond> conds;
-  conds.push_back(Cond("Commodity", "==",std::string("natu")));
+  conds.push_back(Cond("Commodity", "==", std::string("natu")));
   // DB table should be empty since there are no transactions
   EXPECT_THROW(sim.db().Query("Transactions", &conds),
 	       std::exception);
@@ -539,11 +539,11 @@ TEST_F(EnrichmentFacilityTest, ValidReq) {
   Material::Ptr target = Material::CreateUntracked(
       qty, Composition::CreateFromMass(v));
 
-  std::set<cyclus::Nuc> nucs ;
+  std::set<cyclus::Nuc> nucs;
   nucs.insert(922350000);
   nucs.insert(922380000);
 
-  MatQuery mq(target) ;
+  MatQuery mq(target);
   double mass_frac = mq.multi_mass_frac(nucs);
   
   SWUConverter swuc(feed_assay, tails_assay);
@@ -552,7 +552,7 @@ TEST_F(EnrichmentFacilityTest, ValidReq) {
   Material::Ptr offer = DoOffer(target);
 
   EXPECT_NEAR(swuc.convert(target), swuc.convert(offer), 0.001);
-  EXPECT_NEAR(natuc.convert(target)*mass_frac, natuc.convert(offer), 0.001); //QQ fixed
+  EXPECT_NEAR(natuc.convert(target) * mass_frac, natuc.convert(offer), 0.001); 
 }
 
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -570,7 +570,7 @@ TEST_F(EnrichmentFacilityTest, Enrich) {
   using cyclus::toolkit::SwuRequired;
   using cyclus::toolkit::FeedQty;
 
-  double qty = 5;  // 5 kg
+  double qty = 5;  // kg
   double product_assay = 0.05;  // of 5 w/o enriched U
   cyclus::CompMap v;
   v[922350000] = product_assay;
@@ -628,7 +628,7 @@ TEST_F(EnrichmentFacilityTest, Response) {
   std::vector<std::pair<cyclus::Trade<cyclus::Material>,
                         cyclus::Material::Ptr> > responses;
 
-  double qty = 5;  // 5 kg
+  double qty = 5;  // kg
   double trade_qty = qty / 3;
   double product_assay = 0.05;  // of 5 w/o enriched U
 
