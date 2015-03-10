@@ -245,6 +245,76 @@ TEST_F(CommodConverterTest, MultipleSmallBatches) {
 }
 
 
+TEST_F(CommodConverterTest, ChangeCapacity) {
+  src_facility_->max_inv_size_(10000);
+  // Set capacity, add first batch
+  src_facility_->capacity_(300);
+  double cap1 = src_facility_->capacity_();
+  cyclus::Composition::Ptr rec = tc_.get()->GetRecipe(in_r1);
+  cyclus::Material::Ptr mat1 = cyclus::Material::CreateUntracked(cap1, rec);
+  TestAddMat(src_facility_, mat1);
+  EXPECT_NO_THROW(src_facility_->Tock());
+  TestBuffers(src_facility_,0,cap1,0);
+	
+  // Increase capacity, add second and third batches
+  tc_.get()->time(2);
+  src_facility_->capacity_(500);
+  double cap2 = src_facility_->capacity_();
+  cyclus::Material::Ptr mat2 = cyclus::Material::CreateUntracked(cap2,rec);
+  TestAddMat(src_facility_, mat2);
+  EXPECT_NO_THROW(src_facility_->Tock());
+  TestBuffers(src_facility_,0,cap2,0);
+  tc_.get()->time(3);
+  cyclus::Material::Ptr mat3 = cyclus::Material::CreateUntracked(cap2,rec);
+  TestAddMat(src_facility_, mat3);
+  EXPECT_NO_THROW(src_facility_->Tock());
+  TestBuffers(src_facility_,0,cap2,0);
+	
+  // Move first batch to stocks
+  tc_.get()->time(process_time);
+  EXPECT_NO_THROW(src_facility_->Tock());
+  TestBuffers(src_facility_,0,0,cap1);	
+	
+  // Decrease capacity and move portion of second batch to stocks
+  src_facility_->capacity_(400);
+  tc_.get()->time(process_time+2);
+  EXPECT_NO_THROW(src_facility_->Tock());   
+  TestBuffers(src_facility_,0,0,cap1+400);
+
+  // Continue to move second batch // and portion of third
+  tc_.get()->time(process_time+3);
+  EXPECT_NO_THROW(src_facility_->Tock());
+  TestBuffers(src_facility_,0,0,cap1+cap2+300);
+  
+  // Move remainder of third batch
+  tc_.get()->time(process_time+4);
+  EXPECT_NO_THROW(src_facility_->Tock());
+  TestBuffers(src_facility_,0,0,cap1+cap2+cap2);
+	
+}
+
+TEST_F(CommodConverterTest, TwoBatchSameTime) {
+  // Add first small batch
+  double cap = src_facility_->current_capacity();
+  cyclus::Composition::Ptr rec = tc_.get()->GetRecipe(in_r1);
+  cyclus::Material::Ptr mat = cyclus::Material::CreateUntracked(0.2*cap, rec);
+  TestAddMat(src_facility_, mat);
+
+  // After add, material is in inventory
+  TestBuffers(src_facility_,0.2*cap,0,0);
+  cyclus::Material::Ptr mat1 = cyclus::Material::CreateUntracked(0.2*cap, rec);
+  TestAddMat(src_facility_, mat1);
+  TestBuffers(src_facility_,0.4*cap,0,0);
+
+  EXPECT_NO_THROW(src_facility_->Tock());
+  TestBuffers(src_facility_,0,0.4*cap,0);
+
+  // Move material to stocks
+  tc_.get()->time(process_time);
+  EXPECT_NO_THROW(src_facility_->Tock());
+  TestBuffers(src_facility_,0,0,0.4*cap);
+}
+
 } // namespace commodconverter
 
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -

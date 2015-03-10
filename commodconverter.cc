@@ -291,7 +291,7 @@ cyclus::Material::Ptr CommodConverter::TradeResponse_(
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 void CommodConverter::BeginProcessing_(){
-  if( inventory.count() > 0 ){
+  while( inventory.count() > 0 ){
     try {
       processing[context()->time()].Push(inventory.Pop());
       LOG(cyclus::LEV_DEBUG2, "ComCnv") << "CommodConverter " << prototype() 
@@ -312,9 +312,11 @@ void CommodConverter::Convert_(double cap){
   using cyclus::toolkit::Manifest;
 
   int t = ready();
+
   if ( ProcessingAmt_(t) > 0 ){
     try {
       double to_pop = std::min(cap, processing[t].quantity());
+
       // pop appropriate amount of material from processing 
       std::vector<Material::Ptr> to_conv = 
         ResCast<Material>(processing[t].PopQty(to_pop));
@@ -331,6 +333,7 @@ void CommodConverter::Convert_(double cap){
           stocks.Push(*mat);
         }
       }
+
       AdvanceUnconverted_(t);
       LOG(cyclus::LEV_INFO1, "ComCnv") << "CommodConverter " << prototype() 
                                         << " converted quantity : " << to_pop 
@@ -354,6 +357,7 @@ double CommodConverter::ProcessingAmt_(int time) {
     to_ret = proc->second.quantity();
   }
   return to_ret;
+
 }
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
