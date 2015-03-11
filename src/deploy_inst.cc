@@ -87,7 +87,7 @@ void DeployInst::Build(cyclus::Agent* parent) {
       cyclus::Agent* a = context()->CreateAgent<Agent>(proto);
       a->lifetime_ = lifetimes[i];
 
-      ss << "_life" << lifetimes[i];
+      ss << "_life_" << lifetimes[i];
       proto = ss.str();
       context()->AddPrototype(proto, a);
     }
