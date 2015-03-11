@@ -21,7 +21,6 @@ namespace cycamore {
 ///
 /// for each nuclide where:
 ///
-///
 ///     - p = nu*sigma_f - sigma_a   for the nuclide
 ///     - p_U238 is p for pure U238
 ///     - p_Pu239 is p for pure Pu239
@@ -51,46 +50,45 @@ class FuelFab : public cyclus::Facility {
 #pragma cyclus note { \
 "doc": \
   "FuelFab takes in 2 streams of material and mixes them in ratios in order to" \
-  "supply material that matches some neutronics properties of reqeusted" \
-  "material.  It uses an equivalence type method (TODO: cite equivalence" \
-  "method) inspired by a similar approach in the COSI fuel cycle simulator." \
+  " supply material that matches some neutronics properties of reqeusted" \
+  " material.  It uses an equivalence type method (TODO: cite equivalence" \
+  " method) inspired by a similar approach in the COSI fuel cycle simulator." \
   "\n\n" \
   "The FuelFab has 3 input inventories: fissile stream, filler stream, and an" \
-  "optional top-up inventory.  All materials received into each inventory are" \
-  "always combined into a single material (i.e. a single fissile material, a" \
-  "single filler material, etc.).  The input streams and requested fuel" \
-  "composition are each assigned weights based on summing:" \
+  " optional top-up inventory.  All materials received into each inventory are" \
+  " always combined into a single material (i.e. a single fissile material, a" \
+  " single filler material, etc.).  The input streams and requested fuel" \
+  " composition are each assigned weights based on summing:" \
   "\n\n" \
   "    N * (p_i - p_U238) / (p_Pu239 - p_U238)" \
   "\n\n" \
   "for each nuclide where:" \
-  "\n\n" \
-  "\n\n" \
-  "    - p = nu*sigma_f - sigma_a   for the nuclide" \
-  "    - p_U238 is p for pure U238" \
-  "    - p_Pu239 is p for pure Pu239" \
-  "    - N is the nuclide's atom fraction" \
-  "    - nu is the average # neutrons per fission" \
-  "    - sigma_f is the microscopic fission cross-section" \
-  "    - sigma_a is the microscopic neutron absorption cross-section" \
+  "\n" \
+  "\n    - p = nu*sigma_f - sigma_a   for the nuclide" \
+  "\n    - p_U238 is p for pure U238" \
+  "\n    - p_Pu239 is p for pure Pu239" \
+  "\n    - N is the nuclide's atom fraction" \
+  "\n    - nu is the average # neutrons per fission" \
+  "\n    - sigma_f is the microscopic fission cross-section" \
+  "\n    - sigma_a is the microscopic neutron absorption cross-section" \
   "\n\n" \
   "The cross sections are from the simple cross section library in PyNE. They" \
-  "can be set to either a thermal or fast neutron spectrum.  A linear" \
-  "interpolation is performed using the weights of the fissile, filler, and" \
-  "target streams. The interpolation is used to compute a mixing ratio of the" \
-  "input streams that matches the target weight.  In the event that the target" \
-  "weight is higher than the fissile stream weight, the FuelFab will attempt" \
-  "to use the top-up and fissile input streams together instead of the fissile" \
-  "and filler streams.  All supplied material will always have the same weight" \
-  "as the requested material." \
+  " can be set to either a thermal or fast neutron spectrum.  A linear" \
+  " interpolation is performed using the weights of the fissile, filler, and" \
+  " target streams. The interpolation is used to compute a mixing ratio of the" \
+  " input streams that matches the target weight.  In the event that the target" \
+  " weight is higher than the fissile stream weight, the FuelFab will attempt" \
+  " to use the top-up and fissile input streams together instead of the fissile" \
+  " and filler streams.  All supplied material will always have the same weight" \
+  " as the requested material." \
   "\n\n" \
   "The supplying of mixed material is constrained by available inventory" \
-  "quantities and a per time step throughput limit.  Requests for fuel" \
-  "material larger than the throughput can never be met.  Fissile inventory" \
-  "can be requested/received via one or more commodities.  The DRE request" \
-  "preference for each of these commodities can also optionally be specified." \
-  "By default, the top-up inventory size is zero, and it is not used for" \
-  "mixing. " \
+  " quantities and a per time step throughput limit.  Requests for fuel" \
+  " material larger than the throughput can never be met.  Fissile inventory" \
+  " can be requested/received via one or more commodities.  The DRE request" \
+  " preference for each of these commodities can also optionally be specified." \
+  " By default, the top-up inventory size is zero, and it is not used for" \
+  " mixing. " \
   "", \
 }
  public:
