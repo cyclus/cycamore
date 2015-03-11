@@ -77,11 +77,24 @@ void DeployInst::Snapshot(cyclus::DbInit di) {
 void DeployInst::Build(cyclus::Agent* parent) {
   cyclus::Institution::Build(parent);
   BuildSched::iterator it;
-  for (it = build_sched_.begin(); it != build_sched_.end(); ++it) {
-    int t = it->first;
-    std::vector<std::string> protos = it->second;
-    for (int i = 0; i < protos.size(); ++i) {
-      context()->SchedBuild(this, protos[i], t);
+  for (int i = 0; i < prototypes.size(); i++) {
+    std::string proto = prototypes[i];
+
+    std::stringstream ss;
+    ss << proto;
+
+    if (lifetimes.size() == prototypes.size()) {
+      cyclus::Agent* a = context()->CreateAgent<Agent>(proto);
+      a->lifetime_ = lifetimes[i];
+
+      ss << "_life" << lifetimes[i];
+      proto = ss.str();
+      context()->AddPrototype(proto, a);
+    }
+
+    int t = build_times[i];
+    for (int j = 0; j < n_build[i]; j++) {
+      context()->SchedBuild(this, proto, t);
     }
   }
 }
