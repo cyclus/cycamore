@@ -371,7 +371,7 @@ cyclus::Material::Ptr EnrichmentFacility::Enrich_(
   std::set<cyclus::Nuc> nucs;
   nucs.insert(922350000);
   nucs.insert(922380000);
-  double natu_frac = mq.multi_mass_frac(nucs);
+  double natu_frac = mq.mass_frac(nucs);
   double feed_req = natu_req/natu_frac;
 
   // pop amount from inventory and blob it into one material

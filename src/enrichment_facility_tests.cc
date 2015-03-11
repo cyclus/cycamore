@@ -544,7 +544,7 @@ TEST_F(EnrichmentFacilityTest, ValidReq) {
   nucs.insert(922380000);
 
   MatQuery mq(target);
-  double mass_frac = mq.multi_mass_frac(nucs);
+  double mass_frac = mq.mass_frac(nucs);
   
   SWUConverter swuc(feed_assay, tails_assay);
   NatUConverter natuc(feed_assay, tails_assay);

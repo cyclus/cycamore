@@ -62,7 +62,7 @@ class NatUConverter : public cyclus::Converter<cyclus::Material> {
     nucs.insert(922350000);
     nucs.insert(922380000);
 
-    double natu_frac = mq.multi_mass_frac(nucs);
+    double natu_frac = mq.mass_frac(nucs);
     double natu_req = cyclus::toolkit::FeedQty(m->quantity(), assays);
     return natu_req/natu_frac;
   }
@@ -345,23 +345,23 @@ class EnrichmentFacility : public cyclus::Facility {
            "the enrichment facility (kg)" \
   }
   double max_inv_size;
-
+ 
   #pragma cyclus var { \
-    "default": 1.0,							\
-    "tooltip": "maximum allowed enrichment fraction",			\
-    "doc": "maximum allowed weight fraction of U235 in product",	\
-    "schema": '      "<optional>\\n"\n'					\
-      '      "    <element name=\\"max_enrich\\">\\n"\n'		\
-      '      "        <data type=\\"double\\">\\n"\n '			\
-      '      "            <param name=\\"minInclusive\\">0</param>\\n"\n' \
-      '      "            <param name=\\"maxInclusive\\">1</param>\\n"\n' \
-      '      "        </data>\\n"\n '					\
-      '      "    </element>\\n"\n'					\
-      '      "</optional>\\n"\n' \
+    "default": 1.0,						\
+    "tooltip": "maximum allowed enrichment fraction",		\
+    "doc": "maximum allowed weight fraction of U235 in product",\
+    "schema": '<optional>'				     	   \
+        '          <element name="max_enrich">'			   \
+        '              <data type="double">'			   \
+        '                  <param name="minInclusive">0</param>'   \
+        '                  <param name="maxInclusive">1</param>'   \
+        '              </data>'					   \
+        '          </element>'					   \
+        '      </optional>'					   \
   }
   double max_enrich;
-  
-  #pragma cyclus var { \
+
+  #pragma cyclus var {							\
     "default": 0, "tooltip": "initial uranium reserves (kg)",		\
     "doc": "amount of natural uranium stored at the enrichment "       \
            "facility at the beginning of the simulation (kg)"		\
