@@ -59,7 +59,8 @@ class DeployInst : public cyclus::Institution {
     "doc": "Lifetimes for each prototype in protos (same order)." \
            " These lifetimes override the lifetimes in the original prototype definition." \
            " If unspecified, lifetimes from the original prototype definitions are used." \
-           " A new prototype is created for each lifetime with the suffix '_life_[lifetime]'.", \
+           " Although a new prototype is created in the Prototypes table for each lifetime with the suffix '_life_[lifetime]'," \
+           " all deployed agents themselves will have the same original prototype name (and so will the Agents tables).", \
     "default": [], \
   }
   std::vector<int> lifetimes;
