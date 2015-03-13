@@ -18,7 +18,7 @@ void DeployInst::Build(cyclus::Agent* parent) {
 
     if (lifetimes.size() == prototypes.size()) {
       cyclus::Agent* a = context()->CreateAgent<Agent>(proto);
-      a->Agent::lifetime_ = lifetimes[i];
+      a->lifetime(lifetimes[i]);
 
       ss << "_life_" << lifetimes[i];
       proto = ss.str();
