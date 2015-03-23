@@ -38,6 +38,8 @@ class DeployInst : public cyclus::Institution {
 
   virtual void Build(cyclus::Agent* parent);
 
+  virtual void EnterNotify();
+
  protected:
   #pragma cyclus var { \
     "doc": "Ordered list of prototypes to build.", \

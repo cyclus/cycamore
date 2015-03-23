@@ -32,6 +32,24 @@ void DeployInst::Build(cyclus::Agent* parent) {
   }
 }
 
+void DeployInst::EnterNotify() {
+  cyclus::Institution::EnterNotify();
+  int n = prototypes.size();
+  if (build_times.size() != n) {
+    std::stringstream ss;
+    ss << "prototype '" << prototype() << "' has " << build_times.size() << " build_times vals, expected " << n;
+    throw cyclus::ValueError(ss.str());
+  } else if (n_build.size() != n) {
+    std::stringstream ss;
+    ss << "prototype '" << prototype() << "' has " << n_build.size() << " n_build vals, expected " << n;
+    throw cyclus::ValueError(ss.str());
+  } else if (lifetimes.size() > 0 && lifetimes.size() != n) {
+    std::stringstream ss;
+    ss << "prototype '" << prototype() << "' has " << lifetimes.size() << " lifetimes vals, expected " << n;
+    throw cyclus::ValueError(ss.str());
+  }
+}
+
 extern "C" cyclus::Agent* ConstructDeployInst(cyclus::Context* ctx) {
   return new DeployInst(ctx);
 }
