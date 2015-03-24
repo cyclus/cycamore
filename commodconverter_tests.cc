@@ -315,6 +315,53 @@ TEST_F(CommodConverterTest, TwoBatchSameTime) {
   TestBuffers(src_facility_,0,0,0.4*cap);
 }
 
+TEST_F(CommodConverterTest,ChangeProcessTime){
+  // Initialize process time variable and add first batch
+  int proc_time1 = src_facility_->process_time_();
+  double cap = src_facility_->current_capacity();
+  cyclus::Composition::Ptr rec = tc_.get()->GetRecipe(in_r1);
+  cyclus::Material::Ptr mat = cyclus::Material::CreateUntracked(cap, rec);
+  TestAddMat(src_facility_, mat);  
+  TestBuffers(src_facility_,cap,0,0);
+  
+  // Move material to processing
+  EXPECT_NO_THROW(src_facility_->Tock());
+  TestBuffers(src_facility_,0,cap,0);
+  
+  // Add second batch
+  cyclus::Material::Ptr mat1 = cyclus::Material::CreateUntracked(cap,rec);
+  tc_.get()->time(8);
+  TestAddMat(src_facility_,mat1);
+  TestBuffers(src_facility_,cap,0,0);
+  EXPECT_NO_THROW(src_facility_->Tock());
+  TestBuffers(src_facility_,0,cap,0);
+  
+  // Increase process time
+  src_facility_->process_time_(proc_time1+5);
+  int proc_time2 = src_facility_->process_time_();
+  
+  // Make sure material doesn't move before new process time
+  for( int i=proc_time1; i < proc_time2 - 1; ++i){
+  tc_.get()->time(i);
+  EXPECT_NO_THROW(src_facility_->Tock());
+  TestBuffers(src_facility_,0,0,0);
+  }
+  
+  // Move first batch to stocks
+  tc_.get()->time(proc_time2);
+  EXPECT_NO_THROW(src_facility_->Tock());
+  TestBuffers(src_facility_,0,0,cap);
+  
+  // Decrease process time
+  src_facility_->process_time_(proc_time2-3);
+  int proc_time3 = src_facility_->process_time_();
+  
+  // Move second batch to stocks
+  tc_.get()->time(proc_time3 +8);
+  EXPECT_NO_THROW(src_facility_->Tock());
+  TestBuffers(src_facility_,0,0,2*cap);
+}
+
 } // namespace commodconverter
 
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
