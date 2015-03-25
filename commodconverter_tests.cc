@@ -362,6 +362,25 @@ TEST_F(CommodConverterTest,ChangeProcessTime){
   TestBuffers(src_facility_,0,0,2*cap);
 }
 
+TEST_F(CommodConverterTest,DifferentRecipe){
+  // Initialize material with different recipe than in_recipe
+  double cap = src_facility_->current_capacity();
+  cyclus::CompMap v;
+  v[922350000] = 3;
+  v[922380000] = 1;
+  cyclus::Composition::Ptr rec = cyclus::Composition::CreateFromAtom(v);
+  cyclus::Material::Ptr mat = cyclus::Material::CreateUntracked(cap, rec);
+  
+  // Move material through the facility
+  TestAddMat(src_facility_, mat);  
+  TestBuffers(src_facility_,cap,0,0);  
+  EXPECT_NO_THROW(src_facility_->Tock());
+  TestBuffers(src_facility_,0,cap,0);
+  tc_.get()->time(process_time);
+  EXPECT_NO_THROW(src_facility_->Tock());
+  TestBuffers(src_facility_,0,0,cap);
+}
+
 } // namespace commodconverter
 
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
