@@ -35,6 +35,31 @@ void Reactor::EnterNotify() {
       fuel_prefs.push_back(0);
     }
   }
+
+  // input consistency checking:
+  int n = recipe_change_times.size();
+  std::stringstream ss;
+  if (recipe_change_commods.size() != n) {
+    ss << "prototype '" << prototype() << "' has " << recipe_change_commods.size() << " recipe_change_commods vals, expected " << n << "\n";
+  }
+  if (recipe_change_in.size() != n) {
+    ss << "prototype '" << prototype() << "' has " << recipe_change_in.size() << " recipe_change_in vals, expected " << n << "\n";
+  }
+  if (recipe_change_out.size() != n) {
+    ss << "prototype '" << prototype() << "' has " << recipe_change_out.size() << " recipe_change_out vals, expected " << n << "\n";
+  }
+
+  n = pref_change_times.size();
+  if (pref_change_commods.size() != n) {
+    ss << "prototype '" << prototype() << "' has " << pref_change_commods.size() << " pref_change_commods vals, expected " << n << "\n";
+  }
+  if (pref_change_values.size() != n) {
+    ss << "prototype '" << prototype() << "' has " << pref_change_values.size() << " pref_change_values vals, expected " << n << "\n";
+  }
+
+  if (ss.str().size() > 0) {
+    throw cyclus::ValueError(ss.str());
+  }
 }
 
 void Reactor::Tick() {
