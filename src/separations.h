@@ -5,6 +5,8 @@
 
 namespace cycamore {
 
+cyclus::Material::Ptr SepMaterial(std::map<int, double> effs, cyclus::Material::Ptr mat);
+
 class Separations : public cyclus::Facility {
  public:
   Separations(cyclus::Context* ctx);
@@ -55,6 +57,12 @@ class Separations : public cyclus::Facility {
   std::map<std::string,std::pair<double,std::map<int,double> > > streams_;
 
   #pragma cyclus var { \
+    "doc" : "Maximum quantity of feed material that can be processed per time step.", \
+    "units": "kg", \
+  }
+  double throughput;
+
+  #pragma cyclus var { \
     "doc" : "", \
   }
   double feedbuf_size;
@@ -75,7 +83,7 @@ class Separations : public cyclus::Facility {
   cyclus::toolkit::ResBuf<cyclus::Material> leftover;
 
   std::map<std::string, cyclus::toolkit::ResBuf<cyclus::Material> > streambufs;
-  };
+};
 
 }  // namespace cycamore
 

@@ -7,6 +7,7 @@ using cyclus::toolkit::MatVec;
 using cyclus::KeyError;
 using cyclus::ValueError;
 using cyclus::Request;
+using cyclus::CompMap;
 
 namespace cycamore {
 
@@ -32,6 +33,7 @@ cyclus::Inventories Separations::SnapshotInv() {
 
   return invs;
 }
+
 void Separations::InitInv(cyclus::Inventories& inv) {
   leftover.Push(inv["leftover"]);
   feed.Push(inv["feed"]);
@@ -42,8 +44,8 @@ void Separations::InitInv(cyclus::Inventories& inv) {
   }
 }
 
-typedef std::map<std::string, std::pair<double, std::map<int, double> > > StreamSet;
 typedef std::pair<double, std::map<int, double> > Stream;
+typedef std::map<std::string, Stream> StreamSet;
 
 void Separations::EnterNotify() {
   cyclus::Facility::EnterNotify();
@@ -59,13 +61,70 @@ void Separations::EnterNotify() {
 }
 
 void Separations::Tick() {
+  Material::Ptr mat = feed.Pop(std::min(throughput, feed.quantity()));
+
+  StreamSet::iterator it;
+  double maxfrac = 1;
+  std::map<std::string, Material::Ptr> stagedsep;
+  for (it = streams_.begin(); it != streams_.end(); ++it) {
+    Stream info = it->second;
+    std::string name = it->first;
+    stagedsep[name] = SepMaterial(info.second, mat);
+    double frac = streambufs[name].space() / stagedsep[name]->quantity();
+    if (frac < maxfrac) {
+      maxfrac = frac;
+    }
+  }
+
+  std::map<std::string, Material::Ptr>::iterator itf;
+  for (itf = stagedsep.begin(); itf != stagedsep.end(); ++it) {
+    std::string name = itf->first;
+    Material::Ptr m = itf->second;
+    streambufs[name].Push(mat->ExtractComp(m->quantity() * maxfrac, m->comp()));
+  }
+
+  // push back any leftover onto feed stocks
+  if (maxfrac < 1) {
+    feed.Push(mat);
+  }
 }
+
+// Note that this returns an untracked material that should just be used for
+// its composition and qty - not in any real inventories, etc.
+Material::Ptr SepMaterial(std::map<int, double> effs, Material::Ptr mat) {
+  CompMap cm = mat->comp()->mass();
+  cyclus::compmath::Normalize(&cm, mat->quantity());
+  double tot_qty = 0;
+  CompMap sepcomp;
+
+  CompMap::iterator it;
+  for (it = cm.begin(); it != cm.end(); ++it) {
+    int nuc = it->first;
+    int elem = (nuc / 10000000) * 10000000;
+    double eff = 0;
+    if (effs.count(nuc) > 0) {
+      eff = effs[nuc];
+    } else if (effs.count(elem) > 0) {
+      eff = effs[elem];
+    } else {
+      continue;
+    }
+    
+    double qty = it->second;
+    double sepqty = qty * eff;
+    sepcomp[nuc] = sepqty;
+    tot_qty += sepqty;
+  }
+
+  Composition::Ptr c = Composition::CreateFromMass(sepcomp);
+  return Material::CreateUntracked(tot_qty, c);
+};
 
 std::set<cyclus::RequestPortfolio<Material>::Ptr>
 Separations::GetMatlRequests() {
-  //using cyclus::RequestPortfolio;
+  using cyclus::RequestPortfolio;
 
-  //std::set<RequestPortfolio<Material>::Ptr> ports;
+  std::set<RequestPortfolio<Material>::Ptr> ports;
   //Material::Ptr m;
 
   //int n_assem_order = n_assem_core - core.count()
@@ -89,7 +148,7 @@ Separations::GetMatlRequests() {
   //  ports.insert(port);
   //}
 
-  //return ports;
+  return ports;
 }
 
 void Separations::GetMatlTrades(
@@ -140,9 +199,9 @@ void Separations::AcceptMatlTrades(
 std::set<cyclus::BidPortfolio<Material>::Ptr>
 Separations::GetMatlBids(cyclus::CommodMap<Material>::type&
                           commod_requests) {
-  //using cyclus::BidPortfolio;
+  using cyclus::BidPortfolio;
 
-  //std::set<BidPortfolio<Material>::Ptr> ports;
+  std::set<BidPortfolio<Material>::Ptr> ports;
 
   //bool gotmats = false;
   //std::map<std::string, MatVec> all_mats;
@@ -184,7 +243,7 @@ Separations::GetMatlBids(cyclus::CommodMap<Material>::type&
   //  ports.insert(port);
   //}
 
-  //return ports;
+  return ports;
 }
 
 void Separations::Tock() {
