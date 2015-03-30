@@ -13,6 +13,7 @@ using cyclus::Cond;
 using cyclus::toolkit::MatQuery;
 
 namespace cycamore {
+namespace fuelfabtests {
 
 Composition::Ptr c_uox() {
   CompMap m;
@@ -836,5 +837,6 @@ TEST(FuelFabTests, SwapTopup_FissConstrained) {
   EXPECT_NEAR(max_provide, m->quantity(), 1e-10) << "matched trade uses more fiss than available";
 }
 
+} // namespace fuelfabtests
 } // namespace cycamore
 
