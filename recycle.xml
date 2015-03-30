@@ -3,17 +3,18 @@
 <simulation>
   <schematype>flat</schematype>
   <control>
-    <duration>500</duration>
+    <duration>1000</duration>
     <startmonth>1</startmonth>
     <startyear>2000</startyear>
   </control>
 
   <archetypes>
-    <spec><lib>agents</lib><name>Source</name></spec>
+    <spec><lib>cycamore</lib><name>Source</name></spec>
+    <spec><lib>cycamore</lib><name>Sink</name></spec>
     <spec> <lib>cycamore</lib> <name>EnrichmentFacility</name> </spec>
     <spec> <lib>cycamore</lib> <name>Reactor</name> </spec>
     <spec> <lib>cycamore</lib> <name>FuelFab</name> </spec>
-    <spec><lib>rwc</lib><name>Separator</name></spec>
+    <spec> <lib>cycamore</lib> <name>Separations</name> </spec>
   </archetypes>
 
   <prototype>
@@ -35,11 +36,11 @@
     <config>
       <Separations>
           <streams>
-              <commod>sepfiss</commod>
+              <commod>sep_stream</commod>
               <info>
                   <buf_size>1e100</buf_size>
                   <efficiencies>
-                      <comp>U</comp> <eff>.99</eff>
+                      <comp>U</comp> <eff>0</eff>
                       <comp>Pu</comp> <eff>.98</eff>
                   </efficiencies>
               </info>
@@ -85,9 +86,19 @@
         <cycle_time>9</cycle_time>
         <refuel_time>1</refuel_time>
         <assem_size>11000</assem_size>
-        <n_assem_core>200</n_assem_core>
-        <n_assem_batch>70</n_assem_batch>
+        <n_assem_core>7</n_assem_core>
+        <n_assem_batch>2</n_assem_batch>
       </Reactor>
+    </config>
+  </prototype>
+
+  <prototype>
+    <name>repo</name>
+    <config>
+      <Sink>
+        <in_commods><val>waste</val></in_commods>
+        <capacity>1e10</capacity>
+      </Sink>
     </config>
   </prototype>
 
@@ -95,12 +106,17 @@
     <name>depleted_src</name>
     <config>
       <Source>
-        <commod>depleted_u</commod>
+        <out_commod>depleted_u</out_commod>
         <recipe_name>depleted_u</recipe_name>
         <capacity>1e10</capacity>
       </Source>
     </config>
   </prototype>
+
+  <agent>
+    <name>repo1</name>
+    <prototype>repo</prototype>
+  </agent>
 
   <agent>
     <name>r1</name>

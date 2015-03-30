@@ -108,7 +108,7 @@ class Separations : public cyclus::Facility {
     "uitype": ["oneormore", "outcommodity", ["pair", "double", ["oneormore", "nuclide", "double"]]], \
     "doc": "Output streams for separations.  Each stream must have a unique name identifying the commodity on which its material is traded," \
            " a max buffer capacity in kg (neg values indicate infinite size), and a set of component efficiencies." \
-           " 'comp' is a component to be separated into this stream (e.g. U, Pu, etc.) and 'eff' is the mass fraction of that component that is separated from the feed into this output stream.", \
+           " 'comp' is a component to be separated into the stream (e.g. U, Pu, etc.) and 'eff' is the mass fraction of the component that is separated from the feed into this output stream.", \
   }
   std::map<std::string,std::pair<double,std::map<int,double> > > streams_;
 

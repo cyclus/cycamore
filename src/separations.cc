@@ -20,10 +20,13 @@ Separations::Separations(cyclus::Context* ctx)
 cyclus::Inventories Separations::SnapshotInv() {
   cyclus::Inventories invs;
 
-  invs["leftover"] = leftover.PopNRes(leftover.count());
-  leftover.Push(invs["leftover"]);
-  invs["feed"] = feed.PopNRes(feed.count());
-  feed.Push(invs["feed"]);
+  // these inventory names are intentionally convoluted so as to not clash
+  // with the user-specified stream commods that are used as the separations
+  // streams inventory names.
+  invs["leftover-inv-name"] = leftover.PopNRes(leftover.count());
+  leftover.Push(invs["leftover-inv-name"]);
+  invs["feed-inv-name"] = feed.PopNRes(feed.count());
+  feed.Push(invs["feed-inv-name"]);
 
   std::map<std::string, ResBuf<Material> >::iterator it;
   for (it = streambufs.begin(); it != streambufs.end(); ++it) {
@@ -35,8 +38,8 @@ cyclus::Inventories Separations::SnapshotInv() {
 }
 
 void Separations::InitInv(cyclus::Inventories& inv) {
-  leftover.Push(inv["leftover"]);
-  feed.Push(inv["feed"]);
+  leftover.Push(inv["leftover-inv-name"]);
+  feed.Push(inv["feed-inv-name"]);
 
   cyclus::Inventories::iterator it;
   for (it = inv.begin(); it != inv.end(); ++it) {
@@ -67,6 +70,10 @@ void Separations::EnterNotify() {
 }
 
 void Separations::Tick() {
+  if (feed.count() == 0) {
+    return;
+  }
+
   Material::Ptr mat = feed.Pop(std::min(throughput, feed.quantity()));
   double orig_qty = mat->quantity();
 
@@ -84,7 +91,7 @@ void Separations::Tick() {
   }
 
   std::map<std::string, Material::Ptr>::iterator itf;
-  for (itf = stagedsep.begin(); itf != stagedsep.end(); ++it) {
+  for (itf = stagedsep.begin(); itf != stagedsep.end(); ++itf) {
     std::string name = itf->first;
     Material::Ptr m = itf->second;
     streambufs[name].Push(mat->ExtractComp(m->quantity() * maxfrac, m->comp()));
@@ -202,6 +209,7 @@ Separations::GetMatlBids(cyclus::CommodMap<Material>::type&
                           commod_requests) {
   using cyclus::BidPortfolio;
 
+  bool exclusive = false;
   std::set<BidPortfolio<Material>::Ptr> ports;
 
   // bid streams
@@ -215,7 +223,6 @@ Separations::GetMatlBids(cyclus::CommodMap<Material>::type&
       continue;
     }
 
-    double tot_qty = streambufs[commod].quantity();
     MatVec mats = streambufs[commod].PopN(streambufs[commod].count());
     streambufs[commod].Push(mats);
 
@@ -227,13 +234,14 @@ Separations::GetMatlBids(cyclus::CommodMap<Material>::type&
       for (int k = 0; k < mats.size(); k++) {
         Material::Ptr m = mats[k];
         tot_bid += m->quantity();
-        port->AddBid(req, m, this, true);
+        port->AddBid(req, m, this, exclusive);
         if (tot_bid >= req->target()->quantity()) {
           break;
         }
       }
     }
 
+    double tot_qty = streambufs[commod].quantity();
     cyclus::CapacityConstraint<Material> cc(tot_qty);
     port->AddConstraint(cc);
     ports.insert(port);
@@ -253,7 +261,7 @@ Separations::GetMatlBids(cyclus::CommodMap<Material>::type&
       for (int k = 0; k < mats.size(); k++) {
         Material::Ptr m = mats[k];
         tot_bid += m->quantity();
-        port->AddBid(req, m, this, true);
+        port->AddBid(req, m, this, exclusive);
         if (tot_bid >= req->target()->quantity()) {
           break;
         }
