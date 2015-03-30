@@ -97,7 +97,7 @@ void Separations::Tick() {
     }
   } else { // maxfrac is < 1
     // push back any leftover feed due to separated stream inv size constraints
-    feed.Push(mat->Extract((1 - maxfrac) * orig_qty))
+    feed.Push(mat->ExtractQty((1 - maxfrac) * orig_qty));
     if (mat->quantity() > 0) {
       // unspecified separations fractions go to leftovers
       leftover.Push(mat);

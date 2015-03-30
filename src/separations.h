@@ -104,8 +104,8 @@ class Separations : public cyclus::Facility {
   cyclus::toolkit::ResBuf<cyclus::Material> leftover;
 
   #pragma cyclus var { \
-    "alias": ["streams", "name", ["info", "cap", ["efficiencies", "comp", "eff"]]], \
-    "uitype": ["oneormore", "commod", ["pair", "double", ["oneormore", "nuclide", "double"]]], \
+    "alias": ["streams", "commod", ["info", "buf_size", ["efficiencies", "comp", "eff"]]], \
+    "uitype": ["oneormore", "outcommodity", ["pair", "double", ["oneormore", "nuclide", "double"]]], \
     "doc": "Output streams for separations.  Each stream must have a unique name identifying the commodity on which its material is traded," \
            " a max buffer capacity in kg (neg values indicate infinite size), and a set of component efficiencies." \
            " 'comp' is a component to be separated into this stream (e.g. U, Pu, etc.) and 'eff' is the mass fraction of that component that is separated from the feed into this output stream.", \
