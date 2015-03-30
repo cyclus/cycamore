@@ -58,10 +58,17 @@ void Separations::EnterNotify() {
       streambufs[name].capacity(cap);
     }
   }
+
+  if (feed_commod_prefs.size() == 0) {
+    for (int i = 0; i < feed_commods.size(); i++) {
+      feed_commod_prefs.push_back(0);
+    }
+  }
 }
 
 void Separations::Tick() {
   Material::Ptr mat = feed.Pop(std::min(throughput, feed.quantity()));
+  double orig_qty = mat->quantity();
 
   StreamSet::iterator it;
   double maxfrac = 1;
@@ -83,9 +90,18 @@ void Separations::Tick() {
     streambufs[name].Push(mat->ExtractComp(m->quantity() * maxfrac, m->comp()));
   }
 
-  // push back any leftover onto feed stocks
-  if (maxfrac < 1) {
-    feed.Push(mat);
+  if (maxfrac == 1) {
+    if (mat->quantity() > 0) {
+      // unspecified separations fractions go to leftovers
+      leftover.Push(mat);
+    }
+  } else { // maxfrac is < 1
+    // push back any leftover feed due to separated stream inv size constraints
+    feed.Push(mat->Extract((1 - maxfrac) * orig_qty))
+    if (mat->quantity() > 0) {
+      // unspecified separations fractions go to leftovers
+      leftover.Push(mat);
+    }
   }
 }
 
@@ -123,30 +139,27 @@ Material::Ptr SepMaterial(std::map<int, double> effs, Material::Ptr mat) {
 std::set<cyclus::RequestPortfolio<Material>::Ptr>
 Separations::GetMatlRequests() {
   using cyclus::RequestPortfolio;
-
   std::set<RequestPortfolio<Material>::Ptr> ports;
-  //Material::Ptr m;
+  bool exclusive = false;
 
-  //int n_assem_order = n_assem_core - core.count()
-  //                    + n_assem_fresh - fresh.count();
-  //if (n_assem_order == 0) {
-  //  return ports;
-  //}
+  if (feed.space() > cyclus::eps()) {
+    RequestPortfolio<Material>::Ptr port(new RequestPortfolio<Material>());
 
-  //for (int i = 0; i < n_assem_order; i++) {
-  //  RequestPortfolio<Material>::Ptr port(new RequestPortfolio<Material>());
-  //  std::vector<Request<Material>*> mreqs;
-  //  for (int j = 0; j < fuel_incommods.size(); j++) {
-  //    std::string commod = fuel_incommods[j];
-  //    double pref = fuel_prefs[j];
-  //    Composition::Ptr recipe = context()->GetRecipe(fuel_inrecipes[j]);
-  //    m = Material::CreateUntracked(assem_size, recipe);
-  //    Request<Material>* r = port->AddRequest(m, this, commod, pref, true);
-  //    mreqs.push_back(r);
-  //  }
-  //  port->AddMutualReqs(mreqs);
-  //  ports.insert(port);
-  //}
+    Material::Ptr m = cyclus::NewBlankMaterial(feed.space());
+    if (!feed_recipe.empty()) {
+      Composition::Ptr c = context()->GetRecipe(feed_recipe);
+      m = Material::CreateUntracked(feed.space(), c);
+    }
+
+    std::vector<cyclus::Request<Material>*> reqs;
+    for (int i = 0; i < feed_commods.size(); i++) {
+      std::string commod = feed_commods[i];
+      double pref = feed_commod_prefs[i];
+      reqs.push_back(port->AddRequest(m, this, commod, pref, exclusive));
+    }
+    port->AddMutualReqs(reqs);
+    ports.insert(port);
+  }
 
   return ports;
 }
@@ -155,45 +168,33 @@ void Separations::GetMatlTrades(
     const std::vector< cyclus::Trade<Material> >& trades,
     std::vector<std::pair<cyclus::Trade<Material>,
     Material::Ptr> >& responses) {
-  //using cyclus::Trade;
+  using cyclus::Trade;
 
-  //std::map<std::string, MatVec> mats = PopSpent();
-  //std::vector< cyclus::Trade<cyclus::Material> >::const_iterator it;
-  //for (int i = 0; i < trades.size(); i++) {
-  //  std::string commod = trades[i].request->commodity();
-  //  Material::Ptr m = mats[commod].back();
-  //  mats[commod].pop_back();
-  //  responses.push_back(std::make_pair(trades[i], m));
-  //  res_indexes.erase(m->obj_id());
-  //}
-  //PushSpent(mats); // return leftovers back to spent buffer
+  std::vector< cyclus::Trade<cyclus::Material> >::const_iterator it;
+  for (int i = 0; i < trades.size(); i++) {
+    std::string commod = trades[i].request->commodity();
+    if (commod == leftover_commod) {
+      Material::Ptr m = leftover.Pop(trades[i].amt);
+      responses.push_back(std::make_pair(trades[i], m));
+    } else if (streambufs.count(commod) > 0) {
+      Material::Ptr m = streambufs[commod].Pop(trades[i].amt);
+      responses.push_back(std::make_pair(trades[i], m));
+    } else {
+      throw ValueError("invalid commodity " + commod + " on trade matched to prototype " + prototype());
+    }
+  }
 }
 
 void Separations::AcceptMatlTrades(
     const std::vector< std::pair<cyclus::Trade<Material>,
     Material::Ptr> >& responses) {
 
-  //std::vector< std::pair<cyclus::Trade<cyclus::Material>,
-  //                       cyclus::Material::Ptr> >::const_iterator trade;
+  std::vector< std::pair<cyclus::Trade<cyclus::Material>,
+                         cyclus::Material::Ptr> >::const_iterator trade;
 
-  //std::stringstream ss;
-  //int nload = std::min((int)responses.size(), n_assem_core - core.count());
-  //if (nload > 0) {
-  //  ss << nload << " assemblies";
-  //  Record("LOAD", ss.str());
-  //}
-
-  //for (trade = responses.begin(); trade != responses.end(); ++trade) {
-  //  std::string commod = trade->first.request->commodity();
-  //  Material::Ptr m = trade->second;
-  //  index_res(m, commod);
-
-  //  if (core.count() < n_assem_core) {
-  //    core.Push(m);
-  //  } else {
-  //    fresh.Push(m);
-  //  }
-  //}
+  for (trade = responses.begin(); trade != responses.end(); ++trade) {
+    feed.Push(trade->second);
+  }
 }
 
 std::set<cyclus::BidPortfolio<Material>::Ptr>
@@ -203,45 +204,66 @@ Separations::GetMatlBids(cyclus::CommodMap<Material>::type&
 
   std::set<BidPortfolio<Material>::Ptr> ports;
 
-  //bool gotmats = false;
-  //std::map<std::string, MatVec> all_mats;
-  //for (int i = 0; i < fuel_outcommods.size(); i++) {
-  //  std::string commod = fuel_outcommods[i];
-  //  std::vector<Request<Material>*>& reqs = commod_requests[commod];
-  //  if (reqs.size() == 0) {
-  //    continue;
-  //  } else if (!gotmats) {
-  //    all_mats = PeekSpent();
-  //  }
+  // bid streams
+  std::map<std::string, ResBuf<Material> >::iterator it;
+  for (it = streambufs.begin(); it != streambufs.end(); ++it) {
+    std::string commod = it->first;
+    std::vector<Request<Material>*>& reqs = commod_requests[commod];
+    if (reqs.size() == 0) {
+      continue;
+    } else if (streambufs[commod].count() == 0) {
+      continue;
+    }
 
-  //  MatVec mats = all_mats[commod];
-  //  if (mats.size() == 0) {
-  //    continue;
-  //  }
+    double tot_qty = streambufs[commod].quantity();
+    MatVec mats = streambufs[commod].PopN(streambufs[commod].count());
+    streambufs[commod].Push(mats);
 
-  //  BidPortfolio<Material>::Ptr port(new BidPortfolio<Material>());
+    BidPortfolio<Material>::Ptr port(new BidPortfolio<Material>());
 
-  //  for (int j = 0; j < reqs.size(); j++) {
-  //    Request<Material>* req = reqs[j];
-  //    double tot_bid = 0;
-  //    for (int k = 0; k < mats.size(); k++) {
-  //      Material::Ptr m = mats[k];
-  //      tot_bid += m->quantity();
-  //      port->AddBid(req, m, this, true);
-  //      if (tot_bid >= req->target()->quantity()) {
-  //        break;
-  //      }
-  //    }
-  //  }
+    for (int j = 0; j < reqs.size(); j++) {
+      Request<Material>* req = reqs[j];
+      double tot_bid = 0;
+      for (int k = 0; k < mats.size(); k++) {
+        Material::Ptr m = mats[k];
+        tot_bid += m->quantity();
+        port->AddBid(req, m, this, true);
+        if (tot_bid >= req->target()->quantity()) {
+          break;
+        }
+      }
+    }
 
-  //  double tot_qty = 0;
-  //  for (int j = 0; j < mats.size(); j++) {
-  //    tot_qty += mats[j]->quantity();
-  //  }
-  //  cyclus::CapacityConstraint<Material> cc(tot_qty);
-  //  port->AddConstraint(cc);
-  //  ports.insert(port);
-  //}
+    cyclus::CapacityConstraint<Material> cc(tot_qty);
+    port->AddConstraint(cc);
+    ports.insert(port);
+  }
+
+  // bid leftovers
+  std::vector<Request<Material>*>& reqs = commod_requests[leftover_commod];
+  if (reqs.size() > 0 && leftover.quantity() > cyclus::eps()) {
+    MatVec mats = leftover.PopN(leftover.count());
+    leftover.Push(mats);
+
+    BidPortfolio<Material>::Ptr port(new BidPortfolio<Material>());
+
+    for (int j = 0; j < reqs.size(); j++) {
+      Request<Material>* req = reqs[j];
+      double tot_bid = 0;
+      for (int k = 0; k < mats.size(); k++) {
+        Material::Ptr m = mats[k];
+        tot_bid += m->quantity();
+        port->AddBid(req, m, this, true);
+        if (tot_bid >= req->target()->quantity()) {
+          break;
+        }
+      }
+    }
+
+    cyclus::CapacityConstraint<Material> cc(leftover.quantity());
+    port->AddConstraint(cc);
+    ports.insert(port);
+  }
 
   return ports;
 }

@@ -38,29 +38,41 @@ class Separations : public cyclus::Facility {
   #pragma cyclus annotations
   #pragma cyclus snapshot
 
-  virtual cyclus::Inventories SnapshotInv();
-  virtual void InitInv(cyclus::Inventories& inv);
-
   // the following pragmas are ommitted and generated manually to handle a
   // vector of resource buffers:
   //     #pragma cyclus snapshotinv
   //     #pragma cyclus initinv
 
- private:
-  #pragma cyclus var { \
-    "alias": ["streams", "name", ["info", "cap", ["efficiencies", "comp", "eff"]]], \
-    "uitype": ["oneormore", "string", ["pair", "double", ["oneormore", "nuclide", "double"]]], \
-    "doc": "Output streams for separations.  Each stream must have a unique name," \
-           " a max buffer capacity in kg (neg values indicate infinite size), and a set of component efficiencies." \
-           " 'comp' is a component to be separated into this stream (e.g. U, Pu, etc.) and 'eff' is the mass fraction of that component that is separated from the feed into this output stream.", \
-  }
-  std::map<std::string,std::pair<double,std::map<int,double> > > streams_;
+  virtual cyclus::Inventories SnapshotInv();
+  virtual void InitInv(cyclus::Inventories& inv);
 
+ private:
   #pragma cyclus var { \
     "doc" : "Maximum quantity of feed material that can be processed per time step.", \
     "units": "kg", \
   }
   double throughput;
+
+  #pragma cyclus var { \
+    "doc": "Ordered list of commodities on which to request feed material to separate.", \
+    "uitype": ["oneormore", "incommodity"], \
+  }
+  std::vector<std::string> feed_commods;
+
+  #pragma cyclus var { \
+    "default": [], \
+    "doc": "Feed commodity request preferences for each of the given feed commodities (same order)." \
+           " If unspecified, default is to use zero for all preferences.", \
+  }
+  std::vector<double> feed_commod_prefs;
+
+  #pragma cyclus var { \
+    "doc": "Name for recipe to be used in feed requests." \
+           " Empty string results in use of an empty dummy recipe.", \
+    "uitype": "recipe", \
+    "default": "", \
+  }
+  std::string feed_recipe;
 
   #pragma cyclus var { \
     "doc" : "", \
@@ -74,13 +86,31 @@ class Separations : public cyclus::Facility {
 
   #pragma cyclus var { \
     "doc" : "", \
+    "default": 1e299, \
   }
   double leftoverbuf_size;
+
+  #pragma cyclus var { \
+    "doc": "Commodity on which to trade the leftover separated material stream." \
+           " This MUST NOT be the same as any commodity used to define the other separations streams.", \
+    "uitype": "outcommodity", \
+    "default": "default-waste-stream", \
+  }
+  std::string leftover_commod;
 
   #pragma cyclus var { \
     "capacity" : "leftoverbuf_size", \
   }
   cyclus::toolkit::ResBuf<cyclus::Material> leftover;
+
+  #pragma cyclus var { \
+    "alias": ["streams", "name", ["info", "cap", ["efficiencies", "comp", "eff"]]], \
+    "uitype": ["oneormore", "commod", ["pair", "double", ["oneormore", "nuclide", "double"]]], \
+    "doc": "Output streams for separations.  Each stream must have a unique name identifying the commodity on which its material is traded," \
+           " a max buffer capacity in kg (neg values indicate infinite size), and a set of component efficiencies." \
+           " 'comp' is a component to be separated into this stream (e.g. U, Pu, etc.) and 'eff' is the mass fraction of that component that is separated from the feed into this output stream.", \
+  }
+  std::map<std::string,std::pair<double,std::map<int,double> > > streams_;
 
   std::map<std::string, cyclus::toolkit::ResBuf<cyclus::Material> > streambufs;
 };
