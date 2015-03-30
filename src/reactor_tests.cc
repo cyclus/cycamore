@@ -12,6 +12,7 @@ using cyclus::Cond;
 using cyclus::toolkit::MatQuery;
 
 namespace cycamore {
+namespace reactortests {
 
 Composition::Ptr c_uox() {
   cyclus::CompMap m;
@@ -460,5 +461,6 @@ TEST(ReactorTests, RecipeChange) {
   EXPECT_TRUE(0 < mq.mass(id("H1")));
 }
 
+} // namespace reactortests
 } // namespace cycamore
 
