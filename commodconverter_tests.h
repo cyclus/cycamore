@@ -26,6 +26,7 @@ class CommodConverterTest : public ::testing::Test {
       cyclus::Material::Ptr mat);
   void TestBuffers(commodconverter::CommodConverter* fac, double inv, double 
       proc, double stocks);
+  void TestStocks(commodconverter::CommodConverter* fac, cyclus::CompMap v);
 
   std::string in_c1, out_c1;
   std::string in_r1, out_r1;

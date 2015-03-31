@@ -81,6 +81,15 @@ void CommodConverterTest::TestBuffers(CommodConverter* fac, double inv,
   EXPECT_EQ(stocks, fac->stocks.quantity());
 }
 
+void CommodConverterTest::TestStocks(CommodConverter* fac, cyclus::CompMap v){
+
+  cyclus::toolkit::ResourceBuff* buffer = &fac->stocks;
+  Material::Ptr final_mat = cyclus::ResCast<Material>(buffer->Pop(cyclus::toolkit::ResourceBuff::BACK));
+  cyclus::CompMap final_comp = final_mat->comp()->atom();
+  EXPECT_EQ(final_comp,v);
+
+}
+
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 TEST_F(CommodConverterTest, clone) {
   CommodConverter* cloned_fac =
@@ -206,6 +215,10 @@ TEST_F(CommodConverterTest, NoConvert) {
   EXPECT_EQ(0, src_facility_->ready());
   EXPECT_NO_THROW(src_facility_->Tock());
   TestBuffers(src_facility_,0,0,cap);
+  cyclus::CompMap in_rec;
+  in_rec[922350000] = 1;
+  in_rec[922380000] = 2;
+  TestStocks(src_facility_,in_rec);
 }
 
 TEST_F(CommodConverterTest, MultipleSmallBatches) {
@@ -360,6 +373,7 @@ TEST_F(CommodConverterTest,ChangeProcessTime){
   tc_.get()->time(proc_time3 +8);
   EXPECT_NO_THROW(src_facility_->Tock());
   TestBuffers(src_facility_,0,0,2*cap);
+  
 }
 
 TEST_F(CommodConverterTest,DifferentRecipe){
