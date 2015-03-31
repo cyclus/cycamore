@@ -252,7 +252,11 @@ FuelFab::GetMatlBids(cyclus::CommodMap<Material>::type&
   using cyclus::BidPortfolio;
 
   std::set<BidPortfolio<Material>::Ptr> ports;
+  std::vector<cyclus::Request<Material>*>& reqs = commod_requests[outcommod];
+
   if (throughput == 0) {
+    return ports;
+  } else if (reqs.size() == 0) {
     return ports;
   }
 
@@ -285,8 +289,6 @@ FuelFab::GetMatlBids(cyclus::CommodMap<Material>::type&
     c_fiss = context()->GetRecipe(fiss_recipe);
     w_fiss = CosiWeight(c_fiss, spectrum);
   }
-
-  std::vector<cyclus::Request<Material>*>& reqs = commod_requests[outcommod];
 
   BidPortfolio<Material>::Ptr port(new BidPortfolio<Material>());
   for (int j = 0; j < reqs.size(); j++) {
@@ -432,43 +434,143 @@ double CosiWeight(cyclus::Composition::Ptr c, const std::string& spectrum) {
   double nu_pu239 = 2.85;
   double nu_u233 = 2.5;
   double nu_u235 = 2.4;
-
-  double fiss_u238 = simple_xs("u238", "fission", spectrum);
-  double absorb_u238 = simple_xs("u238", "absorption", spectrum);
   double nu_u238 = 0;
-  double p_u238 = nu_u238 * fiss_u238 - absorb_u238;
 
-  double fiss_pu239 = simple_xs("Pu239", "fission", spectrum);
-  double absorb_pu239 = simple_xs("Pu239", "absorption", spectrum);
-  double p_pu239 = nu_pu239 * fiss_pu239 - absorb_pu239;
+  if (spectrum == "thermal") {
+    static std::map<int, double> absorb_xs;
+    static std::map<int, double> fiss_xs;
+    static double p_u238 = 0;
+    static double p_pu239 = 0;
+    if (p_u238 == 0) {
+      double fiss_u238 = simple_xs(922380000, "fission", "thermal");
+      double absorb_u238 = simple_xs(922380000, "absorption", "thermal");
+      p_u238 = nu_u238 * fiss_u238 - absorb_u238;
 
-  cyclus::CompMap::iterator it;
-  double w = 0;
-  for (it = cm.begin(); it != cm.end(); ++it) {
-    cyclus::Nuc nuc = it->first;
-    double nu = 0;
-    if (nuc == 922350000) {
-      nu = nu_u235;
-    } else if (nuc == 922330000) {
-      nu = nu_u233;
-    } else if (nuc == 942390000) {
-      nu = nu_pu239;
+      double fiss_pu239 = simple_xs(942390000, "fission", "thermal");
+      double absorb_pu239 = simple_xs(942390000, "absorption", "thermal");
+      p_pu239 = nu_pu239 * fiss_pu239 - absorb_pu239;
     }
 
-    double fiss = 0;
-    double absorb = 0;
-    try {
-      fiss = simple_xs(nuc, "fission", spectrum);
-      absorb = simple_xs(nuc, "absorption", spectrum);
-    } catch(pyne::InvalidSimpleXS err) {
-      fiss = 0;
-      absorb = 0;
+    cyclus::CompMap::iterator it;
+    double w = 0;
+    for (it = cm.begin(); it != cm.end(); ++it) {
+      cyclus::Nuc nuc = it->first;
+      double nu = 0;
+      if (nuc == 922350000) {
+        nu = nu_u235;
+      } else if (nuc == 922330000) {
+        nu = nu_u233;
+      } else if (nuc == 942390000) {
+        nu = nu_pu239;
+      }
+
+      double fiss = 0;
+      double absorb = 0;
+      if (absorb_xs.count(nuc) == 0) {
+        try {
+          fiss = simple_xs(nuc, "fission", "thermal");
+          absorb = simple_xs(nuc, "absorption", "thermal");
+          absorb_xs[nuc] = absorb;
+          fiss_xs[nuc] = fiss;
+        } catch(pyne::InvalidSimpleXS err) {
+          fiss = 0;
+          absorb = 0;
+        }
+      } else {
+        fiss = fiss_xs[nuc];
+        absorb = absorb_xs[nuc];
+      }
+
+      double p = nu * fiss - absorb;
+      w += it->second * (p - p_u238) / (p_pu239 - p_u238);
+    }
+    return w;
+  } else if (spectrum == "fission_spectrum_ave") {
+    static std::map<int, double> absorb_xs;
+    static std::map<int, double> fiss_xs;
+    static double p_u238 = 0;
+    static double p_pu239 = 0;
+    if (p_u238 == 0) {
+      double fiss_u238 = simple_xs(922380000, "fission", "fission_spectrum_ave");
+      double absorb_u238 = simple_xs(922380000, "absorption", "fission_spectrum_ave");
+      p_u238 = nu_u238 * fiss_u238 - absorb_u238;
+
+      double fiss_pu239 = simple_xs(942390000, "fission", "fission_spectrum_ave");
+      double absorb_pu239 = simple_xs(942390000, "absorption", "fission_spectrum_ave");
+      p_pu239 = nu_pu239 * fiss_pu239 - absorb_pu239;
     }
 
-    double p = nu * fiss - absorb;
-    w += it->second * (p - p_u238) / (p_pu239 - p_u238);
+    cyclus::CompMap::iterator it;
+    double w = 0;
+    for (it = cm.begin(); it != cm.end(); ++it) {
+      cyclus::Nuc nuc = it->first;
+      double nu = 0;
+      if (nuc == 922350000) {
+        nu = nu_u235;
+      } else if (nuc == 922330000) {
+        nu = nu_u233;
+      } else if (nuc == 942390000) {
+        nu = nu_pu239;
+      }
+
+      double fiss = 0;
+      double absorb = 0;
+      if (absorb_xs.count(nuc) == 0) {
+        try {
+          fiss = simple_xs(nuc, "fission", "fission_spectrum_ave");
+          absorb = simple_xs(nuc, "absorption", "fission_spectrum_ave");
+          absorb_xs[nuc] = absorb;
+          fiss_xs[nuc] = fiss;
+        } catch(pyne::InvalidSimpleXS err) {
+          fiss = 0;
+          absorb = 0;
+        }
+      } else {
+        fiss = fiss_xs[nuc];
+        absorb = absorb_xs[nuc];
+      }
+
+      double p = nu * fiss - absorb;
+      w += it->second * (p - p_u238) / (p_pu239 - p_u238);
+    }
+    return w;
+  } else {
+    double fiss_u238 = simple_xs(922380000, "fission", spectrum);
+    double absorb_u238 = simple_xs(922380000, "absorption", spectrum);
+    double p_u238 = nu_u238 * fiss_u238 - absorb_u238;
+
+    double fiss_pu239 = simple_xs(942390000, "fission", spectrum);
+    double absorb_pu239 = simple_xs(942390000, "absorption", spectrum);
+    double p_pu239 = nu_pu239 * fiss_pu239 - absorb_pu239;
+
+    cyclus::CompMap::iterator it;
+    double w = 0;
+    for (it = cm.begin(); it != cm.end(); ++it) {
+      cyclus::Nuc nuc = it->first;
+      double nu = 0;
+      if (nuc == 922350000) {
+        nu = nu_u235;
+      } else if (nuc == 922330000) {
+        nu = nu_u233;
+      } else if (nuc == 942390000) {
+        nu = nu_pu239;
+      }
+
+      double fiss = 0;
+      double absorb = 0;
+      try {
+        fiss = simple_xs(nuc, "fission", spectrum);
+        absorb = simple_xs(nuc, "absorption", spectrum);
+      } catch(pyne::InvalidSimpleXS err) {
+        fiss = 0;
+        absorb = 0;
+      }
+
+      double p = nu * fiss - absorb;
+      w += it->second * (p - p_u238) / (p_pu239 - p_u238);
+    }
+    return w;
   }
-  return w;
 }
 
 // Convert an atom frac (n1/(n1+n2) to a mass frac (m1/(m1+m2) given
