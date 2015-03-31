@@ -293,6 +293,13 @@ class Reactor : public cyclus::Facility {
   #pragma cyclus var {"default": {}, "doc": "This should NEVER be set manually."}
   std::map<int, int> res_indexes;
 
+  #pragma cyclus var { \
+    "default": 0, \
+    "doc": "Amount of electrical power the facility produces when operating normally.", \
+    "units": "MWe", \
+  }
+  double power_cap;
+
 };
 
 } // namespace cycamore

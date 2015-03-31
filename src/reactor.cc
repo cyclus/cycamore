@@ -20,6 +20,7 @@ Reactor::Reactor(cyclus::Context* ctx)
       cycle_time(0),
       refuel_time(0),
       cycle_step(0),
+      power_cap(0),
       discharged(false) {
   cyclus::Warn<cyclus::EXPERIMENTAL_WARNING>("the Reactor archetype "
                                              "is experimental");
@@ -250,6 +251,13 @@ void Reactor::Tock() {
 
   if (cycle_step == 0 && core.count() == n_assem_core) {
     Record("CYCLE_START", "");
+  }
+
+  if (cycle_step >= 0 && cycle_step < cycle_time &&
+      core.count() == n_assem_core) {
+    cyclus::toolkit::RecordTimeSeries<cyclus::toolkit::POWER>(this, power_cap);
+  } else {
+    cyclus::toolkit::RecordTimeSeries<cyclus::toolkit::POWER>(this, 0);
   }
 
   // "if" prevents starting cycle after initial deployment until core is full
