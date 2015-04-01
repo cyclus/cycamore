@@ -51,21 +51,21 @@ Composition::Ptr c_heu() {
 };
 
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-TEST_F(EnrichmentFacilityTest, RequestQty) {
+TEST_F(EnrichmentTest, RequestQty) {
   // this tests verifies that requests for input material are fulfilled
   // without providing any extra
   
   std::string config = 
-    "   <in_commod>natu</in_commod> "
-    "   <in_recipe>natu1</in_recipe> "
-    "   <out_commod>enr_u</out_commod> "
+    "   <feed>natu</feed> "
+    "   <feed_recipe>natu1</feed_recipe> "
+    "   <product>enr_u</product> "
     "   <tails_commod>tails</tails_commod> "
-    "   <max_inv_size>1.0</max_inv_size> "
+    "   <max_feed_inventory>1.0</max_feed_inventory> "
     "   <tails_assay>0.003</tails_assay> ";
 
   int simdur = 1;
   cyclus::MockSim sim(cyclus::AgentSpec
-		      (":cycamore:EnrichmentFacility"), config, simdur);
+		      (":cycamore:Enrichment"), config, simdur);
   sim.AddRecipe("natu1", c_natu1());
   
   sim.AddSource("natu")
@@ -87,25 +87,25 @@ TEST_F(EnrichmentFacilityTest, RequestQty) {
 }
 
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-TEST_F(EnrichmentFacilityTest, CheckSWUConstraint) {
+TEST_F(EnrichmentTest, CheckSWUConstraint) {
   // Tests that request for enrichment that exceeds the SWU constraint
   // fulfilled only up to the available SWU.
-  // Also confirms that initial_reserves flag works.
+  // Also confirms that initial_feed flag works.
   // 388 SWU = 10kg 80% enriched HEU from 486kg feed matl
 
   std::string config = 
-    "   <in_commod>natu</in_commod> "
-    "   <in_recipe>natu1</in_recipe> "
-    "   <out_commod>enr_u</out_commod> "
+    "   <feed>natu</feed> "
+    "   <feed_recipe>natu1</feed_recipe> "
+    "   <product>enr_u</product> "
     "   <tails_commod>tails</tails_commod> "
     "   <tails_assay>0.003</tails_assay> "
-    "   <initial_reserves>1000</initial_reserves> "
+    "   <initial_feed>1000</initial_feed> "
     "   <swu_capacity>195</swu_capacity> ";
 
   int simdur = 1;
   
   cyclus::MockSim sim(cyclus::AgentSpec
-		      (":cycamore:EnrichmentFacility"), config, simdur);
+		      (":cycamore:Enrichment"), config, simdur);
    
   sim.AddRecipe("natu1", c_natu1());
   sim.AddRecipe("heu", c_heu());
@@ -128,22 +128,22 @@ TEST_F(EnrichmentFacilityTest, CheckSWUConstraint) {
 }
 
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-TEST_F(EnrichmentFacilityTest, CheckCapConstraint) {
+TEST_F(EnrichmentTest, CheckCapConstraint) {
   // Tests that a request for more material than is available in
   // inventory is partially filled with only the inventory quantity.
 
   std::string config = 
-    "   <in_commod>natu</in_commod> "
-    "   <in_recipe>natu1</in_recipe> "
-    "   <out_commod>enr_u</out_commod> "
+    "   <feed>natu</feed> "
+    "   <feed_recipe>natu1</feed_recipe> "
+    "   <product>enr_u</product> "
     "   <tails_commod>tails</tails_commod> "
     "   <tails_assay>0.003</tails_assay> "
-    "   <initial_reserves>243</initial_reserves> ";
+    "   <initial_feed>243</initial_feed> ";
 
   int simdur = 1;
 
   cyclus::MockSim sim(cyclus::AgentSpec
-		      (":cycamore:EnrichmentFacility"), config, simdur);
+		      (":cycamore:Enrichment"), config, simdur);
 
 
   sim.AddRecipe("natu1", c_natu1());
@@ -167,21 +167,21 @@ TEST_F(EnrichmentFacilityTest, CheckCapConstraint) {
 }
 
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-TEST_F(EnrichmentFacilityTest, RequestEnrich) {
+TEST_F(EnrichmentTest, RequestEnrich) {
   // this tests verifies that requests for output material exceeding
   // the maximum allowed enrichment are not fulfilled.
   
   std::string config = 
-    "   <in_commod>natu</in_commod> "
-    "   <in_recipe>natu1</in_recipe> "
-    "   <out_commod>enr_u</out_commod> "
+    "   <feed>natu</feed> "
+    "   <feed_recipe>natu1</feed_recipe> "
+    "   <product>enr_u</product> "
     "   <tails_commod>tails</tails_commod> "
     "   <tails_assay>0.003</tails_assay> "
     "   <max_enrich>0.20</max_enrich> ";
 
   int simdur = 2;
   cyclus::MockSim sim(cyclus::AgentSpec
-		      (":cycamore:EnrichmentFacility"), config, simdur);
+		      (":cycamore:Enrichment"), config, simdur);
   sim.AddRecipe("natu1", c_natu1());
   sim.AddRecipe("leu", c_leu());
   sim.AddRecipe("heu", c_heu());
@@ -223,20 +223,20 @@ TEST_F(EnrichmentFacilityTest, RequestEnrich) {
 }
 
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-TEST_F(EnrichmentFacilityTest, TradeTails) {
+TEST_F(EnrichmentTest, TradeTails) {
   // this tests whether tails are being traded.
 
   std::string config = 
-    "   <in_commod>natu</in_commod> "
-    "   <in_recipe>natu1</in_recipe> "
-    "   <out_commod>enr_u</out_commod> "
+    "   <feed>natu</feed> "
+    "   <feed_recipe>natu1</feed_recipe> "
+    "   <product>enr_u</product> "
     "   <tails_commod>tails</tails_commod> "
     "   <tails_assay>0.003</tails_assay> ";
 
   // 1-source to EF, 2-Enrich, add to tails, 3-tails avail. for trade
   int simdur = 3;
   cyclus::MockSim sim(cyclus::AgentSpec
-		      (":cycamore:EnrichmentFacility"), config, simdur);
+		      (":cycamore:Enrichment"), config, simdur);
   sim.AddRecipe("natu1", c_natu1());
   sim.AddRecipe("leu", c_leu());
   
@@ -260,21 +260,21 @@ TEST_F(EnrichmentFacilityTest, TradeTails) {
   
 }
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-TEST_F(EnrichmentFacilityTest, BidPrefs) {
+TEST_F(EnrichmentTest, BidPrefs) {
   // This tests that natu sources are preference-ordered by
   // U235 content
 
   std::string config = 
-    "   <in_commod>natu</in_commod> "
-    "   <in_recipe>natu1</in_recipe> "
-    "   <out_commod>enr_u</out_commod> "
+    "   <feed>natu</feed> "
+    "   <feed_recipe>natu1</feed_recipe> "
+    "   <product>enr_u</product> "
     "   <tails_commod>tails</tails_commod> "
     "   <tails_assay>0.003</tails_assay> "
-    "   <max_inv_size>1.0</max_inv_size> ";
+    "   <max_feed_inventory>1.0</max_feed_inventory> ";
 
   int simdur = 1;
   cyclus::MockSim sim(cyclus::AgentSpec
-		      (":cycamore:EnrichmentFacility"), config, simdur);
+		      (":cycamore:Enrichment"), config, simdur);
   sim.AddRecipe("natu1", c_natu1());
   sim.AddRecipe("natu2", c_natu2());
 
@@ -311,22 +311,22 @@ TEST_F(EnrichmentFacilityTest, BidPrefs) {
   
 }
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-  TEST_F(EnrichmentFacilityTest, NoBidPrefs) {
+  TEST_F(EnrichmentTest, NoBidPrefs) {
   // This tests that preference-ordering for sources
   // turns off correctly if flag is used
 
   std::string config = 
-    "   <in_commod>natu</in_commod> "
-    "   <in_recipe>natu1</in_recipe> "
-    "   <out_commod>enr_u</out_commod> "
+    "   <feed>natu</feed> "
+    "   <feed_recipe>natu1</feed_recipe> "
+    "   <product>enr_u</product> "
     "   <tails_commod>tails</tails_commod> "
     "   <tails_assay>0.003</tails_assay> "
-    "   <max_inv_size>2.0</max_inv_size> " 
+    "   <max_feed_inventory>2.0</max_feed_inventory> " 
     "   <order_prefs>0</order_prefs> ";
 
   int simdur = 1;
   cyclus::MockSim sim(cyclus::AgentSpec
-		      (":cycamore:EnrichmentFacility"), config, simdur);
+		      (":cycamore:Enrichment"), config, simdur);
   sim.AddRecipe("natu1", c_natu1());
   sim.AddRecipe("natu2", c_natu2());
 
@@ -351,20 +351,20 @@ TEST_F(EnrichmentFacilityTest, BidPrefs) {
   }
   
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-TEST_F(EnrichmentFacilityTest, ZeroU235) {
+TEST_F(EnrichmentTest, ZeroU235) {
   // Test that offers of natu with no u235 content are rejected
 
   std::string config = 
-    "   <in_commod>natu</in_commod> "
-    "   <in_recipe>natu1</in_recipe> "
-    "   <out_commod>enr_u</out_commod> "
+    "   <feed>natu</feed> "
+    "   <feed_recipe>natu1</feed_recipe> "
+    "   <product>enr_u</product> "
     "   <tails_commod>tails</tails_commod> "
     "   <tails_assay>0.003</tails_assay> "
-    "   <max_inv_size>1.0</max_inv_size> ";
+    "   <max_feed_inventory>1.0</max_feed_inventory> ";
 
   int simdur = 1;
   cyclus::MockSim sim(cyclus::AgentSpec
-		      (":cycamore:EnrichmentFacility"), config, simdur);
+		      (":cycamore:Enrichment"), config, simdur);
   sim.AddRecipe("no_u235", c_nou235());
   sim.AddRecipe("natu1", c_natu1());
 
@@ -383,36 +383,36 @@ TEST_F(EnrichmentFacilityTest, ZeroU235) {
 }
 
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-void EnrichmentFacilityTest::SetUp() {
+void EnrichmentTest::SetUp() {
   cyclus::Env::SetNucDataPath();
   cyclus::Context* ctx = tc_.get();
-  src_facility = new EnrichmentFacility(ctx);
+  src_facility = new Enrichment(ctx);
   trader = tc_.trader();
   InitParameters();
   SetUpSource();
 }
 
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-void EnrichmentFacilityTest::TearDown() {
+void EnrichmentTest::TearDown() {
   delete src_facility;
 }
 
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-void EnrichmentFacilityTest::InitParameters() {
+void EnrichmentTest::InitParameters() {
   cyclus::Context* ctx = tc_.get();
 
-  in_commod = "incommod";
-  out_commod = "outcommod";
+  feed = "incommod";
+  product = "outcommod";
   tails_commod = "tailscommod";
 
-  in_recipe = "recipe";
+  feed_recipe = "recipe";
   feed_assay = 0.0072;
 
   cyclus::CompMap v;
   v[922350000] = feed_assay;
   v[922380000] = 1 - feed_assay;
   recipe = cyclus::Composition::CreateFromAtom(v);
-  ctx->AddRecipe(in_recipe, recipe);
+  ctx->AddRecipe(feed_recipe, recipe);
 
   tails_assay = 0.002;
   swu_capacity = 100;
@@ -422,72 +422,72 @@ void EnrichmentFacilityTest::InitParameters() {
 }
 
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-void EnrichmentFacilityTest::SetUpSource() {
-  src_facility->InRecipe(in_recipe);
-  src_facility->in_commodity(in_commod);
-  src_facility->out_commodity(out_commod);
+void EnrichmentTest::SetUpSource() {
+  src_facility->InRecipe(feed_recipe);
+  src_facility->feed_commod(feed);
+  src_facility->product_commod(product);
   src_facility->tails_commodity(tails_commod);
   src_facility->TailsAssay(tails_assay);
   src_facility->MaxEnrich(max_enrich);
   src_facility->SetMaxInventorySize(inv_size);
   src_facility->SwuCapacity(swu_capacity);
-  src_facility->InitialReserves(reserves);
+  src_facility->InitialFeed(reserves);
 }
 
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-cyclus::Material::Ptr EnrichmentFacilityTest::GetMat(double qty) {
+cyclus::Material::Ptr EnrichmentTest::GetMat(double qty) {
   return cyclus::Material::CreateUntracked(qty,
-                                           tc_.get()->GetRecipe(in_recipe));
+                                           tc_.get()->GetRecipe(feed_recipe));
 }
 
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-void EnrichmentFacilityTest::DoAddMat(cyclus::Material::Ptr mat) {
+void EnrichmentTest::DoAddMat(cyclus::Material::Ptr mat) {
   src_facility->AddMat_(mat);
 }
 
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-cyclus::Material::Ptr EnrichmentFacilityTest::DoRequest() {
+cyclus::Material::Ptr EnrichmentTest::DoRequest() {
   return src_facility->Request_();
 }
 
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 cyclus::Material::Ptr
-EnrichmentFacilityTest::DoOffer(cyclus::Material::Ptr mat) {
+EnrichmentTest::DoOffer(cyclus::Material::Ptr mat) {
   return src_facility->Offer_(mat);
 }
 
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 cyclus::Material::Ptr
-EnrichmentFacilityTest::DoEnrich(cyclus::Material::Ptr mat, double qty) {
+EnrichmentTest::DoEnrich(cyclus::Material::Ptr mat, double qty) {
   return src_facility->Enrich_(mat, qty);
 }
 
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-TEST_F(EnrichmentFacilityTest, Request) {
+TEST_F(EnrichmentTest, Request) {
   // Tests that quantity in material request is accurate
   double req = inv_size;
   double add = 0;
   cyclus::Material::Ptr mat = DoRequest();
   EXPECT_DOUBLE_EQ(mat->quantity(), req);
-  EXPECT_EQ(mat->comp(), tc_.get()->GetRecipe(in_recipe));
+  EXPECT_EQ(mat->comp(), tc_.get()->GetRecipe(feed_recipe));
 
   add = 2 * inv_size / 3;
   req -= add;
   DoAddMat(GetMat(add));
   mat = DoRequest();
   EXPECT_DOUBLE_EQ(mat->quantity(), req);
-  EXPECT_EQ(mat->comp(), tc_.get()->GetRecipe(in_recipe));
+  EXPECT_EQ(mat->comp(), tc_.get()->GetRecipe(feed_recipe));
 
   add = inv_size / 3;
   req = 0;
   DoAddMat(GetMat(add));
   mat = DoRequest();
   EXPECT_DOUBLE_EQ(mat->quantity(), req);
-  EXPECT_EQ(mat->comp(), tc_.get()->GetRecipe(in_recipe));
+  EXPECT_EQ(mat->comp(), tc_.get()->GetRecipe(feed_recipe));
 }
 
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-TEST_F(EnrichmentFacilityTest, ValidReq) {
+TEST_F(EnrichmentTest, ValidReq) {
   // Tests that material requests have U235/(U235+U238) > tails assay
   using cyclus::CompMap;
   using cyclus::Composition;
@@ -516,7 +516,7 @@ TEST_F(EnrichmentFacilityTest, ValidReq) {
 }
 
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-  TEST_F(EnrichmentFacilityTest, ConstraintConverters) {
+  TEST_F(EnrichmentTest, ConstraintConverters) {
     // Tests the SWU and NatU converters to make sure that amount of
     // feed and SWU required are correct to fulfill the enrichment request.
   using cyclus::CompMap;
@@ -556,7 +556,7 @@ TEST_F(EnrichmentFacilityTest, ValidReq) {
 }
 
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-TEST_F(EnrichmentFacilityTest, Enrich) {
+TEST_F(EnrichmentTest, Enrich) {
   // this test asks the facility to enrich a material that results in an amount
   // of natural uranium required that is exactly its inventory level. that
   // inventory will be comprised of two materials to test the manifest/absorb
@@ -605,7 +605,7 @@ TEST_F(EnrichmentFacilityTest, Enrich) {
 }
 
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-TEST_F(EnrichmentFacilityTest, Response) {
+TEST_F(EnrichmentTest, Response) {
   // this test asks the facility to respond to multiple requests for enriched
   // uranium. two requests are provided, whose total equals the swu capacity of
   // the facility while not exceeding its inventory capacity (that's taken care
@@ -655,7 +655,7 @@ TEST_F(EnrichmentFacilityTest, Response) {
   src_facility->GetMatlTrades(trades, responses);
 
   Request<Material>* req =
-      Request<Material>::Create(target, trader, out_commod);
+      Request<Material>::Create(target, trader, product);
   Bid<Material>* bid = Bid<Material>::Create(req, target, src_facility);
   Trade<Material> trade(req, bid, trade_qty);
   trades.push_back(trade);
@@ -672,8 +672,8 @@ TEST_F(EnrichmentFacilityTest, Response) {
 }  // namespace cycamore
 
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-cyclus::Agent* EnrichmentFacilityConstructor(cyclus::Context* ctx) {
-  return new cycamore::EnrichmentFacility(ctx);
+cyclus::Agent* EnrichmentConstructor(cyclus::Context* ctx) {
+  return new cycamore::Enrichment(ctx);
 }
 
 // required to get functionality in cyclus agent unit tests library
@@ -685,6 +685,6 @@ static int cyclus_agent_tests_connected = ConnectAgentTests();
 
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 INSTANTIATE_TEST_CASE_P(EnrichmentFac, FacilityTests,
-                        Values(&EnrichmentFacilityConstructor));
+                        Values(&EnrichmentConstructor));
 INSTANTIATE_TEST_CASE_P(EnrichmentFac, AgentTests,
-                        Values(&EnrichmentFacilityConstructor));
+                        Values(&EnrichmentConstructor));

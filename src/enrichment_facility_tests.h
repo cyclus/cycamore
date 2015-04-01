@@ -1,5 +1,5 @@
-#ifndef CYCAMORE_SRC_ENRICHMENT_FACILITY_TESTS_
-#define CYCAMORE_SRC_ENRICHMENT_FACILITY_TESTS_
+#ifndef CYCAMORE_SRC_ENRICHMENT_TESTS_
+#define CYCAMORE_SRC_ENRICHMENT_TESTS_
 
 #include <gtest/gtest.h>
 
@@ -15,11 +15,11 @@
 namespace cycamore {
 
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-class EnrichmentFacilityTest : public ::testing::Test {
+class EnrichmentTest : public ::testing::Test {
  protected:
   cyclus::TestContext tc_;
-  EnrichmentFacility* src_facility;
-  std::string in_commod, out_commod, in_recipe, tails_commod;
+  Enrichment* src_facility;
+  std::string feed, product, feed_recipe, tails_commod;
   cyclus::Composition::Ptr recipe;
   TestFacility* trader;
 

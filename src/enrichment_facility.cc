@@ -1,4 +1,4 @@
-// Implements the EnrichmentFacility class
+// Implements the Enrichment class
 #include "enrichment_facility.h"
 
 #include <algorithm>
@@ -11,67 +11,67 @@
 namespace cycamore {
 
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-EnrichmentFacility::EnrichmentFacility(cyclus::Context* ctx)
+Enrichment::Enrichment(cyclus::Context* ctx)
     : cyclus::Facility(ctx),
       tails_assay(0),
       swu_capacity(0),
       max_enrich(1), 
-      initial_reserves(0),
-      in_commod(""),
-      in_recipe(""),
-      out_commod(""),
+      initial_feed(0),
+      feed(""),
+      feed_recipe(""),
+      product(""),
       tails_commod(""),
       order_prefs(true){}
 
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-EnrichmentFacility::~EnrichmentFacility() {}
+Enrichment::~Enrichment() {}
 
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-std::string EnrichmentFacility::str() {
+std::string Enrichment::str() {
   std::stringstream ss;
   ss << cyclus::Facility::str()
      << " with enrichment facility parameters:"
      << " * SWU capacity: " << SwuCapacity()
      << " * Tails assay: " << TailsAssay()
      << " * Feed assay: " << FeedAssay()
-     << " * Input cyclus::Commodity: " << in_commodity()
-     << " * Output cyclus::Commodity: " << out_commodity()
+     << " * Input cyclus::Commodity: " << feed_commod()
+     << " * Output cyclus::Commodity: " << product_commod()
      << " * Tails cyclus::Commodity: " << tails_commodity();
   return ss.str();
 }
 
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-void EnrichmentFacility::Build(cyclus::Agent* parent) {
+void Enrichment::Build(cyclus::Agent* parent) {
   using cyclus::Material;
 
   Facility::Build(parent);
-  if (initial_reserves > 0) {
+  if (initial_feed > 0) {
     inventory.Push(
       Material::Create(
-        this, initial_reserves, context()->GetRecipe(in_recipe)));
+        this, initial_feed, context()->GetRecipe(feed_recipe)));
   }
 
-  LOG(cyclus::LEV_DEBUG2, "EnrFac") << "EnrichmentFacility "
+  LOG(cyclus::LEV_DEBUG2, "EnrFac") << "Enrichment "
 				    << " entering the simuluation: ";
   LOG(cyclus::LEV_DEBUG2, "EnrFac") << str();
 }
 
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-void EnrichmentFacility::Tick() {
+void Enrichment::Tick() {
   LOG(cyclus::LEV_INFO3, "EnrFac") << prototype() << " is ticking {";
   LOG(cyclus::LEV_INFO3, "EnrFac") << "}";
   current_swu_capacity = SwuCapacity();
 }
 
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-void EnrichmentFacility::Tock() {
+void Enrichment::Tock() {
   LOG(cyclus::LEV_INFO3, "EnrFac") << prototype() << " is tocking {";
   LOG(cyclus::LEV_INFO3, "EnrFac") << "}";
 }
 
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 std::set<cyclus::RequestPortfolio<cyclus::Material>::Ptr>
-    EnrichmentFacility::GetMatlRequests() {
+    Enrichment::GetMatlRequests() {
   using cyclus::Material;
   using cyclus::RequestPortfolio;
   using cyclus::Request;
@@ -82,7 +82,7 @@ std::set<cyclus::RequestPortfolio<cyclus::Material>::Ptr>
   double amt = mat->quantity();
 
   if (amt > cyclus::eps()) {
-    port->AddRequest(mat, this, in_commod);
+    port->AddRequest(mat, this, feed);
     ports.insert(port);
   }
 
@@ -106,7 +106,7 @@ bool SortBids(
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 // Sort offers of input material to have higher preference for more
 //  U-235 content
-void EnrichmentFacility::AdjustMatlPrefs(
+void Enrichment::AdjustMatlPrefs(
     cyclus::PrefMap<cyclus::Material>::type& prefs) {
 
   using cyclus::Bid;
@@ -153,7 +153,7 @@ void EnrichmentFacility::AdjustMatlPrefs(
 }
 
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-void EnrichmentFacility::AcceptMatlTrades(
+void Enrichment::AcceptMatlTrades(
     const std::vector< std::pair<cyclus::Trade<cyclus::Material>,
     cyclus::Material::Ptr> >& responses) {
   // see
@@ -167,7 +167,7 @@ void EnrichmentFacility::AcceptMatlTrades(
   
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 std::set<cyclus::BidPortfolio<cyclus::Material>::Ptr>
-    EnrichmentFacility::GetMatlBids(
+    Enrichment::GetMatlBids(
     cyclus::CommodMap<cyclus::Material>::type& out_requests){
   using cyclus::Bid;
   using cyclus::BidPortfolio;
@@ -198,11 +198,11 @@ std::set<cyclus::BidPortfolio<cyclus::Material>::Ptr>
     ports.insert(tails_port);
   }
 
-  if ((out_requests.count(out_commod) > 0) && (inventory.quantity() > 0)) {
+  if ((out_requests.count(product) > 0) && (inventory.quantity() > 0)) {
     BidPortfolio<Material>::Ptr commod_port(new BidPortfolio<Material>()); 
     
     std::vector<Request<Material>*>& commod_requests =
-      out_requests[out_commod];
+      out_requests[product];
     std::vector<Request<Material>*>::iterator it;
     for (it = commod_requests.begin(); it != commod_requests.end(); ++it) {
       Request<Material>* req = *it;
@@ -233,7 +233,7 @@ std::set<cyclus::BidPortfolio<cyclus::Material>::Ptr>
 }
 
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-bool EnrichmentFacility::ValidReq(const cyclus::Material::Ptr mat) {
+bool Enrichment::ValidReq(const cyclus::Material::Ptr mat) {
   cyclus::toolkit::MatQuery q(mat);
   double u235 = q.atom_frac(922350000);
   double u238 = q.atom_frac(922380000);
@@ -241,7 +241,7 @@ bool EnrichmentFacility::ValidReq(const cyclus::Material::Ptr mat) {
 }
   
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-void EnrichmentFacility::GetMatlTrades(
+void Enrichment::GetMatlTrades(
     const std::vector< cyclus::Trade<cyclus::Material> >& trades,
     std::vector<std::pair<cyclus::Trade<cyclus::Material>,
     cyclus::Material::Ptr> >& responses) {
@@ -267,7 +267,7 @@ void EnrichmentFacility::GetMatlTrades(
       LOG(cyclus::LEV_INFO5, "EnrFac") << prototype()
 				       << " just received an order"
 				       << " for " << it->amt
-				       << " of " << out_commod;
+				       << " of " << product;
       response = Enrich_(it->bid->offer(), qty);
     }
     responses.push_back(std::make_pair(*it, response));	
@@ -286,7 +286,7 @@ void EnrichmentFacility::GetMatlTrades(
   }
 }
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-void EnrichmentFacility::AddMat_(cyclus::Material::Ptr mat) {
+void Enrichment::AddMat_(cyclus::Material::Ptr mat) {
   // Elements and isotopes other than U-235, U-238 are sent directly to tails
   cyclus::CompMap cm = mat->comp()->atom();
   bool extra_u = false;
@@ -323,20 +323,20 @@ void EnrichmentFacility::AddMat_(cyclus::Material::Ptr mat) {
   }
 
   LOG(cyclus::LEV_INFO5, "EnrFac") << prototype() << " added "
-                                   << mat->quantity() << " of " << in_commod
+                                   << mat->quantity() << " of " << feed
                                    << " to its inventory, which is holding "
                                    << inventory.quantity() << " total.";
 }
 
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-cyclus::Material::Ptr EnrichmentFacility::Request_() {
+cyclus::Material::Ptr Enrichment::Request_() {
   double qty = std::max(0.0, MaxInventorySize() - InventorySize());
   return cyclus::Material::CreateUntracked(qty,
-					   context()->GetRecipe(in_recipe));
+					   context()->GetRecipe(feed_recipe));
 }
 
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-cyclus::Material::Ptr EnrichmentFacility::Offer_(cyclus::Material::Ptr mat) {
+cyclus::Material::Ptr Enrichment::Offer_(cyclus::Material::Ptr mat) {
   cyclus::toolkit::MatQuery q(mat);
   cyclus::CompMap comp;
   comp[922350000] = q.atom_frac(922350000);
@@ -345,7 +345,7 @@ cyclus::Material::Ptr EnrichmentFacility::Offer_(cyclus::Material::Ptr mat) {
            mat->quantity(), cyclus::Composition::CreateFromAtom(comp));
 }
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-cyclus::Material::Ptr EnrichmentFacility::Enrich_(
+cyclus::Material::Ptr Enrichment::Enrich_(
     cyclus::Material::Ptr mat,
     double qty) {
 
@@ -426,7 +426,7 @@ cyclus::Material::Ptr EnrichmentFacility::Enrich_(
 }
 
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-void EnrichmentFacility::RecordEnrichment_(double natural_u, double swu) {
+void Enrichment::RecordEnrichment_(double natural_u, double swu) {
   using cyclus::Context;
   using cyclus::Agent;
 
@@ -444,7 +444,7 @@ void EnrichmentFacility::RecordEnrichment_(double natural_u, double swu) {
       ->Record();
 }
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-double EnrichmentFacility::FeedAssay() {
+double Enrichment::FeedAssay() {
   using cyclus::Material;
 
   if (inventory.empty()) {
@@ -456,8 +456,8 @@ double EnrichmentFacility::FeedAssay() {
 }
 
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-extern "C" cyclus::Agent* ConstructEnrichmentFacility(cyclus::Context* ctx) {
-  return new EnrichmentFacility(ctx);
+extern "C" cyclus::Agent* ConstructEnrichment(cyclus::Context* ctx) {
+  return new Enrichment(ctx);
 }
   
 }  // namespace cycamore
