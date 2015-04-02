@@ -374,8 +374,9 @@ class Enrichment : public cyclus::Facility {
            "so that EF chooses higher U235 content first" \
   }
   bool order_prefs;
-  #pragma cyclus var { 'derived_init': 'current_swu_capacity = swu_capacity;' }
+
   double current_swu_capacity;
+
   #pragma cyclus var { 'capacity': 'max_feed_inventory' }
   cyclus::toolkit::ResBuf<cyclus::Material> inventory;  // natural u
   #pragma cyclus var {}
