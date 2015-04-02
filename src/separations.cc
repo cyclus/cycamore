@@ -219,7 +219,7 @@ Separations::GetMatlBids(cyclus::CommodMap<Material>::type&
     std::vector<Request<Material>*>& reqs = commod_requests[commod];
     if (reqs.size() == 0) {
       continue;
-    } else if (streambufs[commod].count() == 0) {
+    } else if (streambufs[commod].quantity() < cyclus::eps()) {
       continue;
     }
 
@@ -249,7 +249,7 @@ Separations::GetMatlBids(cyclus::CommodMap<Material>::type&
 
   // bid leftovers
   std::vector<Request<Material>*>& reqs = commod_requests[leftover_commod];
-  if (reqs.size() > 0 && leftover.quantity() > cyclus::eps()) {
+  if (reqs.size() > 0 && leftover.quantity() >= cyclus::eps()) {
     MatVec mats = leftover.PopN(leftover.count());
     leftover.Push(mats);
 
