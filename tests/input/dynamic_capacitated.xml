@@ -47,21 +47,23 @@
       <name>SingleInstitution</name>
       <config>
         <DeployInst>
-          <buildorder>
-            <prototype>Source</prototype>
-            <number>3</number>
-            <date>1</date>
-          </buildorder>
-          <buildorder>
-            <prototype>Sink</prototype>
-            <number>2</number>
-            <date>1</date>
-          </buildorder>
-          <buildorder>
-            <prototype>Sink</prototype>
-            <number>2</number>
-            <date>2</date>
-          </buildorder>
+          <prototypes>
+            <val>Source</val>
+            <val>Sink</val>
+            <val>Sink</val>
+          </prototypes>
+
+          <build_times>
+            <val>1</val>
+            <val>1</val>
+            <val>2</val>
+          </build_times>
+
+          <n_build>
+            <val>3</val>
+            <val>2</val>
+            <val>2</val>
+          </n_build>
         </DeployInst>
       </config>
     </institution>

@@ -182,31 +182,29 @@
       <name>SingleInstitution</name>
       <config>
         <DeployInst>
-          <buildorder>
-            <prototype>UOX_Source</prototype>
-            <number>1</number>
-            <date>1</date>
-          </buildorder>
-          <buildorder>
-            <prototype>MOX_Source</prototype>
-            <number>1</number>
-            <date>1</date>
-          </buildorder>
-          <buildorder>
-            <prototype>Reactor1</prototype>
-            <number>1</number>
-            <date>1</date>
-          </buildorder>
-          <buildorder>
-            <prototype>Reactor2</prototype>
-            <number>1</number>
-            <date>2</date>
-          </buildorder>
-          <buildorder>
-            <prototype>Reactor3</prototype>
-            <number>1</number>
-            <date>3</date>
-          </buildorder>
+          <prototypes>
+            <val>UOX_Source</val>
+            <val>MOX_Source</val>
+            <val>Reactor1</val>
+            <val>Reactor2</val>
+            <val>Reactor3</val>
+          </prototypes>
+
+          <build_times>
+            <val>1</val>
+            <val>1</val>
+            <val>1</val>
+            <val>2</val>
+            <val>3</val>
+          </build_times>
+
+          <n_build>
+            <val>1</val>
+            <val>1</val>
+            <val>1</val>
+            <val>1</val>
+            <val>1</val>
+          </n_build>
         </DeployInst>
       </config>
     </institution>
