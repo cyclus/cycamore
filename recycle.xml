@@ -1,5 +1,3 @@
-<!-- 1 Enrichment 2 Reactors -->
-
 <simulation>
   <schematype>flat</schematype>
   <control>
@@ -9,8 +7,8 @@
   </control>
 
   <archetypes>
-    <spec><lib>cycamore</lib><name>Source</name></spec>
-    <spec><lib>cycamore</lib><name>Sink</name></spec>
+    <spec> <lib>cycamore</lib> <name>Source</name></spec>
+    <spec> <lib>cycamore</lib> <name>Sink</name></spec>
     <spec> <lib>cycamore</lib> <name>EnrichmentFacility</name> </spec>
     <spec> <lib>cycamore</lib> <name>Reactor</name> </spec>
     <spec> <lib>cycamore</lib> <name>FuelFab</name> </spec>
@@ -47,7 +45,7 @@
           </streams>
 
           <leftover_commod>waste</leftover_commod>
-          <throughput>60000</throughput>
+          <throughput>66000.001</throughput>
           <feedbuf_size>1e100</feedbuf_size>
           <feed_commods> <val>spent_uox</val> </feed_commods>
           <feed_commod_prefs> <val>2.0</val> </feed_commod_prefs>
@@ -83,8 +81,8 @@
         <fuel_outcommods> <val>spent_uox</val>  <val>waste</val></fuel_outcommods>
         <fuel_prefs>      <val>1.0</val>        <val>2.0</val></fuel_prefs>
 
-        <cycle_time>9</cycle_time>
-        <refuel_time>1</refuel_time>
+        <cycle_time>16</cycle_time>
+        <refuel_time>2</refuel_time>
         <assem_size>11000</assem_size>
         <n_assem_core>7</n_assem_core>
         <n_assem_batch>2</n_assem_batch>
@@ -113,98 +111,74 @@
     </config>
   </prototype>
 
-  <agent>
-    <name>repo1</name>
-    <prototype>repo</prototype>
-  </agent>
+  <agent> <name>repo1</name>     <prototype>repo</prototype> </agent>
+  <agent> <name>r1</name>        <prototype>reactor</prototype> </agent>
+  <agent> <name>depleted1</name> <prototype>depleted_src</prototype> </agent>
+  <agent> <name>fab1</name>      <prototype>fuelfab</prototype> </agent>
+  <agent> <name>sep1</name>      <prototype>separations</prototype> </agent>
+  <agent> <name>enrich1</name>   <prototype>enrichment</prototype> </agent>
 
-  <agent>
-    <name>r1</name>
-    <prototype>reactor</prototype>
-  </agent>
-
-  <agent>
-    <name>depleted1</name>
-    <prototype>depleted_src</prototype>
-  </agent>
-
-  <agent>
-    <name>fab1</name>
-    <prototype>fuelfab</prototype>
-  </agent>
-
-  <agent>
-    <name>sep1</name>
-    <prototype>separations</prototype>
-  </agent>
-
-  <agent>
-    <name>enrich1</name>
-    <prototype>enrichment</prototype>
-  </agent>
+  <recipe>
+    <name>natl_u</name>
+    <basis>mass</basis>
+    <nuclide> <id>U235</id> <comp>0.711</comp> </nuclide>
+    <nuclide> <id>U238</id> <comp>99.289</comp> </nuclide>
+  </recipe>
 
   <recipe>
     <name>fresh_uox</name>
     <basis>mass</basis>
-    <nuclide> <id>922350000</id><comp>0.04</comp></nuclide>
-    <nuclide><id>922380000</id><comp>0.96</comp></nuclide>
+    <nuclide> <id>U235</id><comp>0.04</comp></nuclide>
+    <nuclide><id>U238</id><comp>0.96</comp></nuclide>
   </recipe>
 
   <recipe>
     <name>depleted_u</name>
     <basis>mass</basis>
-    <nuclide> <id>922350000</id><comp>0.003</comp></nuclide>
-    <nuclide><id>922380000</id><comp>0.997</comp></nuclide>
+    <nuclide> <id>U235</id><comp>0.003</comp></nuclide>
+    <nuclide><id>U238</id><comp>0.997</comp></nuclide>
   </recipe>
 
   <recipe>
     <name>fresh_mox</name>
     <basis>mass</basis>
-    <nuclide> <id>922350000</id><comp>0.0027381</comp></nuclide>
-    <nuclide> <id>922380000</id><comp>0.9099619</comp></nuclide>
-    <nuclide> <id>942380000</id> <comp>0.001746</comp> </nuclide>
-    <nuclide> <id>942390000</id> <comp>0.045396</comp> </nuclide>
-    <nuclide> <id>942400000</id> <comp>0.020952</comp> </nuclide>
-    <nuclide> <id>942410000</id> <comp>0.013095</comp> </nuclide>
-    <nuclide> <id>942420000</id> <comp>0.005238</comp> </nuclide>
+    <nuclide> <id>U235</id>  <comp>0.0027381</comp> </nuclide>
+    <nuclide> <id>U238</id>  <comp>0.9099619</comp> </nuclide>
+    <nuclide> <id>Pu238</id> <comp>0.001746</comp> </nuclide>
+    <nuclide> <id>Pu239</id> <comp>0.045396</comp> </nuclide>
+    <nuclide> <id>Pu240</id> <comp>0.020952</comp> </nuclide>
+    <nuclide> <id>Pu241</id> <comp>0.013095</comp> </nuclide>
+    <nuclide> <id>Pu242</id> <comp>0.005238</comp> </nuclide>
   </recipe>
 
   <recipe>
     <name>spent_mox</name>
     <basis>mass</basis>
-    <nuclide> <id>922350000</id><comp>0.0017381</comp></nuclide>
-    <nuclide> <id>922380000</id><comp>0.90</comp></nuclide>
-    <nuclide> <id>942380000</id> <comp>0.001746</comp> </nuclide>
-    <nuclide> <id>942390000</id> <comp>0.0134</comp> </nuclide>
-    <nuclide> <id>942400000</id> <comp>0.020952</comp> </nuclide>
-    <nuclide> <id>942410000</id> <comp>0.013095</comp> </nuclide>
-    <nuclide> <id>942420000</id> <comp>0.005238</comp> </nuclide>
+    <nuclide> <id>U235</id>  <comp>0.0017381</comp> </nuclide>
+    <nuclide> <id>U238</id>  <comp>0.90</comp> </nuclide>
+    <nuclide> <id>Pu238</id> <comp>0.001746</comp> </nuclide>
+    <nuclide> <id>Pu239</id> <comp>0.0134</comp> </nuclide>
+    <nuclide> <id>Pu240</id> <comp>0.020952</comp> </nuclide>
+    <nuclide> <id>Pu241</id> <comp>0.013095</comp> </nuclide>
+    <nuclide> <id>Pu242</id> <comp>0.005238</comp> </nuclide>
   </recipe>
 
   <recipe>
     <name>spent_uox</name>
     <basis>mass</basis>
-    <nuclide> <id>922350000</id> <comp>156.729</comp> </nuclide>
-    <nuclide> <id>922360000</id> <comp>102.103</comp> </nuclide>
-    <nuclide> <id>922380000</id> <comp>18280.324</comp> </nuclide>
-    <nuclide> <id>932370000</id> <comp>13.656</comp> </nuclide>
-    <nuclide> <id>942380000</id> <comp>5.043</comp> </nuclide>
-    <nuclide> <id>942390000</id> <comp>106.343</comp> </nuclide>
-    <nuclide> <id>942400000</id> <comp>41.357</comp> </nuclide>
-    <nuclide> <id>942410000</id> <comp>36.477</comp> </nuclide>
-    <nuclide> <id>942420000</id> <comp>15.387</comp> </nuclide>
-    <nuclide> <id>952410000</id> <comp>1.234</comp> </nuclide>
-    <nuclide> <id>952430000</id> <comp>3.607</comp> </nuclide>
-    <nuclide> <id>962440000</id> <comp>0.431</comp> </nuclide>
-    <nuclide> <id>962450000</id> <comp>1.263</comp> </nuclide>
+    <nuclide> <id>U235</id>  <comp>156.729</comp> </nuclide>
+    <nuclide> <id>U236</id>  <comp>102.103</comp> </nuclide>
+    <nuclide> <id>U238</id>  <comp>18280.324</comp> </nuclide>
+    <nuclide> <id>Np237</id> <comp>13.656</comp> </nuclide>
+    <nuclide> <id>Pu238</id> <comp>5.043</comp> </nuclide>
+    <nuclide> <id>Pu239</id> <comp>106.343</comp> </nuclide>
+    <nuclide> <id>Pu240</id> <comp>41.357</comp> </nuclide>
+    <nuclide> <id>Pu241</id> <comp>36.477</comp> </nuclide>
+    <nuclide> <id>Pu242</id> <comp>15.387</comp> </nuclide>
+    <nuclide> <id>Am241</id> <comp>1.234</comp> </nuclide>
+    <nuclide> <id>Am243</id> <comp>3.607</comp> </nuclide>
+    <nuclide> <id>Cm244</id> <comp>0.431</comp> </nuclide>
+    <nuclide> <id>Cm245</id> <comp>1.263</comp> </nuclide>
   </recipe> 
-
-  <recipe>
-    <name>natl_u</name>
-    <basis>mass</basis>
-    <nuclide> <id>922350000</id> <comp>0.711</comp> </nuclide>
-    <nuclide> <id>922380000</id> <comp>99.289</comp> </nuclide>
-  </recipe>
-
 
 </simulation>
