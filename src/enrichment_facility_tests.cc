@@ -415,7 +415,7 @@ void EnrichmentTest::InitParameters() {
   ctx->AddRecipe(feed_recipe, recipe);
 
   tails_assay = 0.002;
-  swu_capacity = 100;
+  swu_capacity = 100; //**
   inv_size = 5;
 
   reserves = 105.5;
@@ -423,15 +423,15 @@ void EnrichmentTest::InitParameters() {
 
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 void EnrichmentTest::SetUpSource() {
-  src_facility->InRecipe(feed_recipe);
-  src_facility->feed_commodity(feed_commod);
-  src_facility->product_commodity(product_commod);
-  src_facility->tails_commodity(tails_commod);
-  src_facility->TailsAssay(tails_assay);
-  src_facility->MaxEnrich(max_enrich);
+  src_facility->feed_recipe = feed_recipe;
+  src_facility->feed_commod = feed_commod;
+  src_facility->product_commod = product_commod;
+  src_facility->tails_commod = tails_commod;
+  src_facility->tails_assay = tails_assay;
+  src_facility->max_enrich = max_enrich;
   src_facility->SetMaxInventorySize(inv_size);
   src_facility->SwuCapacity(swu_capacity);
-  src_facility->InitialFeed(reserves);
+  src_facility->initial_feed = reserves;
 }
 
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -592,7 +592,7 @@ TEST_F(EnrichmentTest, Enrich) {
 
   Material::Ptr response;
   EXPECT_NO_THROW(response = DoEnrich(target, qty));
-  EXPECT_DOUBLE_EQ(src_facility->Tails().quantity(), tails_qty);
+  EXPECT_DOUBLE_EQ(src_facility->Tails().quantity(), tails_qty); 
   
   MatQuery q(response);
   EXPECT_EQ(response->quantity(), qty);
@@ -643,12 +643,11 @@ TEST_F(EnrichmentTest, Response) {
   double swu_req = SwuRequired(qty, assays);
   double natu_req = FeedQty(qty, assays);
   
-  src_facility->SetMaxInventorySize(natu_req * 4);  // not capacitated by nat u
+  src_facility->SetMaxInventorySize(natu_req * 4);  // not capacitated by nat
   src_facility->SwuCapacity(swu_req);  // swu capacitated
   
-
- src_facility->GetMatlTrades(trades, responses);
-
+  src_facility->GetMatlTrades(trades, responses);
+  
   // set up state
   DoAddMat(GetMat(natu_req * 2));
 

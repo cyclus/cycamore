@@ -32,11 +32,11 @@ std::string Enrichment::str() {
   ss << cyclus::Facility::str()
      << " with enrichment facility parameters:"
      << " * SWU capacity: " << SwuCapacity()
-     << " * Tails assay: " << TailsAssay()
+     << " * Tails assay: " << tails_assay
      << " * Feed assay: " << FeedAssay()
-     << " * Input cyclus::Commodity: " << feed_commodity()
-     << " * Output cyclus::Commodity: " << product_commodity()
-     << " * Tails cyclus::Commodity: " << tails_commodity();
+     << " * Input cyclus::Commodity: " << feed_commod
+     << " * Output cyclus::Commodity: " << product_commod
+     << " * Tails cyclus::Commodity: " << tails_commod;
   return ss.str();
 }
 
@@ -235,7 +235,7 @@ bool Enrichment::ValidReq(const cyclus::Material::Ptr mat) {
   cyclus::toolkit::MatQuery q(mat);
   double u235 = q.atom_frac(922350000);
   double u238 = q.atom_frac(922380000);
-  return (u238 > 0 && u235 / (u235 + u238) > TailsAssay());
+  return (u238 > 0 && u235 / (u235 + u238) > tails_assay);
 }
   
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -328,7 +328,7 @@ void Enrichment::AddMat_(cyclus::Material::Ptr mat) {
 
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 cyclus::Material::Ptr Enrichment::Request_() {
-  double qty = std::max(0.0, MaxInventorySize() - InventorySize());
+  double qty = std::max(0.0, inventory.capacity() - inventory.quantity());
   return cyclus::Material::CreateUntracked(qty,
 					   context()->GetRecipe(feed_recipe));
 }
@@ -356,7 +356,7 @@ cyclus::Material::Ptr Enrichment::Enrich_(
   using cyclus::toolkit::TailsQty;
 
   // get enrichment parameters
-  Assays assays(FeedAssay(), UraniumAssay(mat), TailsAssay());
+  Assays assays(FeedAssay(), UraniumAssay(mat), tails_assay);
   double swu_req = SwuRequired(qty, assays);
   double natu_req = FeedQty(qty, assays);
 
@@ -418,7 +418,7 @@ cyclus::Material::Ptr Enrichment::Enrich_(
   LOG(cyclus::LEV_INFO5, "EnrFac") << "   * SWU: "
                                 << swu_req;
   LOG(cyclus::LEV_INFO5, "EnrFac") << "   * Current SWU capacity: "
-                                << CurrentSwuCapacity();
+                                << current_swu_capacity;
 
   return response;
 }

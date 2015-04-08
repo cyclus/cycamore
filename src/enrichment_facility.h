@@ -13,7 +13,8 @@ namespace cycamore {
 /// determine the amount of SWU required for their proposed enrichment
 class SWUConverter : public cyclus::Converter<cyclus::Material> {
  public:
-  SWUConverter(double feed_commod, double tails) : feed_(feed_commod), tails_(tails) {}
+  SWUConverter(double feed_commod, double tails) : feed_(feed_commod),
+    tails_(tails) {}
   virtual ~SWUConverter() {}
 
   /// @brief provides a conversion for the SWU required
@@ -46,7 +47,8 @@ class SWUConverter : public cyclus::Converter<cyclus::Material> {
 /// enrichment
 class NatUConverter : public cyclus::Converter<cyclus::Material> {
  public:
-  NatUConverter(double feed_commod, double tails) : feed_(feed_commod), tails_(tails) {}
+  NatUConverter(double feed_commod, double tails) : feed_(feed_commod),
+    tails_(tails) {}
   virtual ~NatUConverter() {}
 
   /// @brief provides a conversion for the amount of natural Uranium required
@@ -222,40 +224,12 @@ class Enrichment : public cyclus::Facility {
   ///  U235-to-U238 ratio less than this facility's tails_assay().
   ///  @return true if the above description is met by the material
   bool ValidReq(const cyclus::Material::Ptr mat);
-  
-  inline void feed_commodity(std::string in_com) { feed_commod = in_com; }
 
-  inline std::string feed_commodity() const { return feed_commod; }
-
-  inline void product_commodity(std::string out_com) {
-    product_commod = out_com;
-  }
-
-  inline std::string product_commodity() const { return product_commod; }
-
-  inline void tails_commodity(std::string tails_com) {
-    tails_commod = tails_com;
-  }
-
-  inline std::string tails_commodity() const { return tails_commod; }
-
-  inline void InRecipe(std::string in_rec) { feed_recipe = in_rec; }
-
-  inline std::string InRecipe() const { return feed_recipe; }
-
-  inline void SetMaxInventorySize(double size) {
+   inline void SetMaxInventorySize(double size) {
     max_feed_inventory = size;
     inventory.capacity(size);
   }
-
-  inline double MaxInventorySize() const { return inventory.capacity(); }
-
-  inline double InventorySize() const { return inventory.quantity(); }
  
-  inline void TailsAssay(double assay) { tails_assay = assay; }
-
-  inline double TailsAssay() const { return tails_assay; }
-
   inline void SwuCapacity(double capacity) {
     swu_capacity = capacity;
     current_swu_capacity = swu_capacity;
@@ -263,20 +237,10 @@ class Enrichment : public cyclus::Facility {
 
   inline double SwuCapacity() const { return swu_capacity; }
 
-  inline double CurrentSwuCapacity() const { return current_swu_capacity; }
-
-  inline void MaxEnrich(double enrichment) { max_enrich = enrichment; }
-  
-  inline double MaxEnrich() const { return max_enrich; }
-
-  /// @brief this facility's initial conditions
-  inline void  InitialFeed(double qty) { initial_feed = qty; }
-  inline double InitialFeed() const { return initial_feed; }
-
   inline const cyclus::toolkit::ResBuf<cyclus::Material>& Tails() const {
     return tails;
   } 
-
+  
  private:
   ///   @brief adds a material into the natural uranium inventory
   ///   @throws if the material is not the same composition as the feed_recipe
