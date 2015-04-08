@@ -42,7 +42,8 @@ namespace cycamore {
 /// becomes full, the reactor will halt operation at the end of the next cycle
 /// until there is more room.  Each time step, the reactor will try to trade
 /// away as much of its spent fuel inventory as possible.
-class Reactor : public cyclus::Facility {
+class Reactor : public cyclus::Facility,
+  public cyclus::toolkit::CommodityProducer {
 #pragma cyclus note { \
 "niche": "reactor", \
 "doc": \
@@ -107,7 +108,7 @@ class Reactor : public cyclus::Facility {
       std::vector<std::pair<cyclus::Trade<cyclus::Material>,
                             cyclus::Material::Ptr> >& responses);
 
-  #pragma cyclus
+  #pragma cyclus decl
 
  private:
   std::string fuel_incommod(cyclus::Material::Ptr m);
@@ -299,6 +300,14 @@ class Reactor : public cyclus::Facility {
   }
   double power_cap;
 
+  #pragma cyclus var { \
+    "default": "power", \
+    "doc": "The name of the 'power' commodity used in conjunction with a deployment curve.", \
+  }
+  std::string power_commod;
+
+  // internal use only
+  cyclus::toolkit::Commodity power_commod_;
 };
 
 } // namespace cycamore

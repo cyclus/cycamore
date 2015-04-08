@@ -21,14 +21,49 @@ Reactor::Reactor(cyclus::Context* ctx)
       refuel_time(0),
       cycle_step(0),
       power_cap(0),
+      power_commod("power"),
       discharged(false) {
   cyclus::Warn<cyclus::EXPERIMENTAL_WARNING>(
       "the Reactor archetype "
       "is experimental");
 }
 
+#pragma cyclus def clone cycamore::Reactor
+
+#pragma cyclus def schema cycamore::Reactor
+
+#pragma cyclus def annotations cycamore::Reactor
+
+#pragma cyclus def infiletodb cycamore::Reactor
+
+#pragma cyclus def snapshot cycamore::Reactor
+
+#pragma cyclus def snapshotinv cycamore::Reactor
+
+#pragma cyclus def initinv cycamore::Reactor
+
+void Reactor::InitFrom(Reactor* m) {
+  #pragma cyclus impl initfromcopy cycamore::Reactor
+  cyclus::toolkit::CommodityProducer::Copy(m);
+}
+
+void Reactor::InitFrom(cyclus::QueryableBackend* b) {
+  #pragma cyclus impl initfromdb cycamore::Reactor
+
+  power_commod_ = cyclus::toolkit::Commodity(power_commod);
+  cyclus::toolkit::CommodityProducer::Add(power_commod_);
+  cyclus::toolkit::CommodityProducer::SetCapacity(power_commod_, power_cap);
+  cyclus::toolkit::CommodityProducer::SetCost(power_commod_, power_cap);
+}
+
 void Reactor::EnterNotify() {
   cyclus::Facility::EnterNotify();
+
+  // setup commodity producer values
+  power_commod_ = cyclus::toolkit::Commodity(power_commod);
+  cyclus::toolkit::CommodityProducer::Add(power_commod_);
+  cyclus::toolkit::CommodityProducer::SetCapacity(power_commod_, power_cap);
+  cyclus::toolkit::CommodityProducer::SetCost(power_commod_, power_cap);
 
   // If the user ommitted fuel_prefs, we set it to zeros for each fuel
   // type.  Without this segfaults could occur - yuck.
