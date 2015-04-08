@@ -87,26 +87,25 @@ class Reactor : public cyclus::Facility {
 
  public:
   Reactor(cyclus::Context* ctx);
-  virtual ~Reactor() {};
+  virtual ~Reactor(){};
 
   virtual void Tick();
   virtual void Tock();
   virtual void EnterNotify();
 
-  virtual void AcceptMatlTrades(
-      const std::vector< std::pair<cyclus::Trade<cyclus::Material>,
-      cyclus::Material::Ptr> >& responses);
+  virtual void AcceptMatlTrades(const std::vector<std::pair<
+      cyclus::Trade<cyclus::Material>, cyclus::Material::Ptr> >& responses);
 
-  virtual std::set<cyclus::RequestPortfolio<cyclus::Material>::Ptr> GetMatlRequests();
+  virtual std::set<cyclus::RequestPortfolio<cyclus::Material>::Ptr>
+  GetMatlRequests();
 
-  virtual std::set<cyclus::BidPortfolio<cyclus::Material>::Ptr>
-      GetMatlBids(cyclus::CommodMap<cyclus::Material>::type&
-                  commod_requests);
+  virtual std::set<cyclus::BidPortfolio<cyclus::Material>::Ptr> GetMatlBids(
+      cyclus::CommodMap<cyclus::Material>::type& commod_requests);
 
   virtual void GetMatlTrades(
-      const std::vector< cyclus::Trade<cyclus::Material> >& trades,
+      const std::vector<cyclus::Trade<cyclus::Material> >& trades,
       std::vector<std::pair<cyclus::Trade<cyclus::Material>,
-      cyclus::Material::Ptr> >& responses);
+                            cyclus::Material::Ptr> >& responses);
 
   #pragma cyclus
 

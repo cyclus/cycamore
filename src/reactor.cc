@@ -22,8 +22,9 @@ Reactor::Reactor(cyclus::Context* ctx)
       cycle_step(0),
       power_cap(0),
       discharged(false) {
-  cyclus::Warn<cyclus::EXPERIMENTAL_WARNING>("the Reactor archetype "
-                                             "is experimental");
+  cyclus::Warn<cyclus::EXPERIMENTAL_WARNING>(
+      "the Reactor archetype "
+      "is experimental");
 }
 
 void Reactor::EnterNotify() {
@@ -41,21 +42,27 @@ void Reactor::EnterNotify() {
   int n = recipe_change_times.size();
   std::stringstream ss;
   if (recipe_change_commods.size() != n) {
-    ss << "prototype '" << prototype() << "' has " << recipe_change_commods.size() << " recipe_change_commods vals, expected " << n << "\n";
+    ss << "prototype '" << prototype() << "' has "
+       << recipe_change_commods.size()
+       << " recipe_change_commods vals, expected " << n << "\n";
   }
   if (recipe_change_in.size() != n) {
-    ss << "prototype '" << prototype() << "' has " << recipe_change_in.size() << " recipe_change_in vals, expected " << n << "\n";
+    ss << "prototype '" << prototype() << "' has " << recipe_change_in.size()
+       << " recipe_change_in vals, expected " << n << "\n";
   }
   if (recipe_change_out.size() != n) {
-    ss << "prototype '" << prototype() << "' has " << recipe_change_out.size() << " recipe_change_out vals, expected " << n << "\n";
+    ss << "prototype '" << prototype() << "' has " << recipe_change_out.size()
+       << " recipe_change_out vals, expected " << n << "\n";
   }
 
   n = pref_change_times.size();
   if (pref_change_commods.size() != n) {
-    ss << "prototype '" << prototype() << "' has " << pref_change_commods.size() << " pref_change_commods vals, expected " << n << "\n";
+    ss << "prototype '" << prototype() << "' has " << pref_change_commods.size()
+       << " pref_change_commods vals, expected " << n << "\n";
   }
   if (pref_change_values.size() != n) {
-    ss << "prototype '" << prototype() << "' has " << pref_change_values.size() << " pref_change_values vals, expected " << n << "\n";
+    ss << "prototype '" << prototype() << "' has " << pref_change_values.size()
+       << " pref_change_values vals, expected " << n << "\n";
   }
 
   if (ss.str().size() > 0) {
@@ -66,7 +73,8 @@ void Reactor::EnterNotify() {
 void Reactor::Tick() {
   // The following code must go in the Tick so they fire on the time step
   // following the cycle_step update - allowing for the all reactor events to
-  // occur and be recorded on the "beginning" of a time step.  Another reason they
+  // occur and be recorded on the "beginning" of a time step.  Another reason
+  // they
   // can't go at the beginnin of the Tock is so that resource exchange has a
   // chance to occur after the discharge on this same time step.
   if (cycle_step == cycle_time) {
@@ -114,18 +122,16 @@ void Reactor::Tick() {
       }
     }
   }
-
 }
 
-std::set<cyclus::RequestPortfolio<Material>::Ptr>
-Reactor::GetMatlRequests() {
+std::set<cyclus::RequestPortfolio<Material>::Ptr> Reactor::GetMatlRequests() {
   using cyclus::RequestPortfolio;
 
   std::set<RequestPortfolio<Material>::Ptr> ports;
   Material::Ptr m;
 
-  int n_assem_order = n_assem_core - core.count()
-                      + n_assem_fresh - fresh.count();
+  int n_assem_order =
+      n_assem_core - core.count() + n_assem_fresh - fresh.count();
   if (n_assem_order == 0) {
     return ports;
   }
@@ -149,13 +155,13 @@ Reactor::GetMatlRequests() {
 }
 
 void Reactor::GetMatlTrades(
-    const std::vector< cyclus::Trade<Material> >& trades,
-    std::vector<std::pair<cyclus::Trade<Material>,
-    Material::Ptr> >& responses) {
+    const std::vector<cyclus::Trade<Material> >& trades,
+    std::vector<std::pair<cyclus::Trade<Material>, Material::Ptr> >&
+        responses) {
   using cyclus::Trade;
 
   std::map<std::string, MatVec> mats = PopSpent();
-  std::vector< cyclus::Trade<cyclus::Material> >::const_iterator it;
+  std::vector<cyclus::Trade<cyclus::Material> >::const_iterator it;
   for (int i = 0; i < trades.size(); i++) {
     std::string commod = trades[i].request->commodity();
     Material::Ptr m = mats[commod].back();
@@ -163,15 +169,13 @@ void Reactor::GetMatlTrades(
     responses.push_back(std::make_pair(trades[i], m));
     res_indexes.erase(m->obj_id());
   }
-  PushSpent(mats); // return leftovers back to spent buffer
+  PushSpent(mats);  // return leftovers back to spent buffer
 }
 
-void Reactor::AcceptMatlTrades(
-    const std::vector< std::pair<cyclus::Trade<Material>,
-    Material::Ptr> >& responses) {
-
-  std::vector< std::pair<cyclus::Trade<cyclus::Material>,
-                         cyclus::Material::Ptr> >::const_iterator trade;
+void Reactor::AcceptMatlTrades(const std::vector<
+    std::pair<cyclus::Trade<Material>, Material::Ptr> >& responses) {
+  std::vector<std::pair<cyclus::Trade<cyclus::Material>,
+                        cyclus::Material::Ptr> >::const_iterator trade;
 
   std::stringstream ss;
   int nload = std::min((int)responses.size(), n_assem_core - core.count());
@@ -193,9 +197,8 @@ void Reactor::AcceptMatlTrades(
   }
 }
 
-std::set<cyclus::BidPortfolio<Material>::Ptr>
-Reactor::GetMatlBids(cyclus::CommodMap<Material>::type&
-                          commod_requests) {
+std::set<cyclus::BidPortfolio<Material>::Ptr> Reactor::GetMatlBids(
+    cyclus::CommodMap<Material>::type& commod_requests) {
   using cyclus::BidPortfolio;
 
   std::set<BidPortfolio<Material>::Ptr> ports;
@@ -297,7 +300,7 @@ std::map<std::string, MatVec> Reactor::PeekSpent() {
 bool Reactor::Discharge() {
   if (n_assem_spent - spent.count() < n_assem_batch) {
     Record("DISCHARGE", "failed");
-    return false; // not enough room in spent buffer
+    return false;  // not enough room in spent buffer
   }
 
   int npop = std::min(n_assem_batch, core.count());
@@ -369,7 +372,8 @@ void Reactor::index_res(cyclus::Resource::Ptr m, std::string incommod) {
       return;
     }
   }
-  throw ValueError("cycamore::Reactor - received unsupported incommod material");
+  throw ValueError(
+      "cycamore::Reactor - received unsupported incommod material");
 }
 
 std::map<std::string, MatVec> Reactor::PopSpent() {
@@ -388,7 +392,7 @@ std::map<std::string, MatVec> Reactor::PopSpent() {
 
   return mapped;
 }
-  
+
 void Reactor::PushSpent(std::map<std::string, MatVec> leftover) {
   std::map<std::string, MatVec>::iterator it;
   for (it = leftover.begin(); it != leftover.end(); ++it) {
@@ -397,19 +401,19 @@ void Reactor::PushSpent(std::map<std::string, MatVec> leftover) {
     spent.Push(it->second);
   }
 }
-  
+
 void Reactor::Record(std::string name, std::string val) {
-  context()->NewDatum("ReactorEvents")
-    ->AddVal("AgentId", id())
-    ->AddVal("Time", context()->time())
-    ->AddVal("Event", name)
-    ->AddVal("Value", val)
-    ->Record();
+  context()
+      ->NewDatum("ReactorEvents")
+      ->AddVal("AgentId", id())
+      ->AddVal("Time", context()->time())
+      ->AddVal("Event", name)
+      ->AddVal("Value", val)
+      ->Record();
 }
 
 extern "C" cyclus::Agent* ConstructReactor(cyclus::Context* ctx) {
   return new Reactor(ctx);
 }
 
-} // namespace cycamore
-
+}  // namespace cycamore
