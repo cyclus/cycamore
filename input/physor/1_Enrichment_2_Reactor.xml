@@ -22,7 +22,7 @@
         <in_recipe>natl_u</in_recipe>
         <out_commod>enriched_u</out_commod>
         <tails_assay>0.003</tails_assay>
-        <swu_capacity>10</swu_capacity>
+        <swu_capacity>10.01</swu_capacity>
         <initial_reserves>1e5</initial_reserves>
       </EnrichmentFacility>
     </config>

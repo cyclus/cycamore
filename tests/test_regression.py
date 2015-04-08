@@ -81,7 +81,7 @@ class TestPhysorEnrichment(TestRegression):
         # this can be updated if/when we can call into the cyclus::toolkit's
         # enrichment module from python
         # with old BatchReactor: exp = [6.9, 10, 4.14, 6.9]
-        exp = [6.9 ,  9.66,  4.48,  6.9]
+        exp = [6.9, 10., 4.14, 6.9]
         obs = [np.sum(enr["SWU"][enr["Time"] == t]) for t in range(4)]
         assert_array_almost_equal(exp, obs, decimal=2)
 
@@ -91,36 +91,31 @@ class TestPhysorEnrichment(TestRegression):
         # enrichment module from python
 
         # with old BatchReactor: exp = [13.03, 16.54, 7.83, 13.03]
-        exp = [13.03,  15.9 ,   8.47,  13.03]
+        exp = [13.03, 16.55, 7.82, 13.03]
         obs = [np.sum(enr["Natural_Uranium"][enr["Time"] == t]) \
                    for t in range(4)]
         assert_array_almost_equal(exp, obs, decimal=2)
 
     def test_xactions(self):
-        xa = self.transactions
-        rs = self.resources
-
-        torxtrs = {i: [self.rsrc_qtys[x["ResourceId"]] \
-                           for x in xa[xa["ReceiverId"] == i]] \
-                           for i in self.rx_id} 
-        transfers = sorted(torxtrs.values())
-
-        # this can be updated if/when we can call into the cyclus::toolkit's
-        # enrichment module from python
+        # reactor 1 transactions
+        exp = [1, 1, 1, 1]
+        txs = [0, 0, 0, 0]
+        for tx in self.transactions:
+            if tx['ReceiverId'] == self.rx_id[0]:
+                txs[tx['Time']] += self.rsrc_qtys[tx['ResourceId']]
 
         msg = "Testing that first reactor gets less than it wants."      
-        exp = 3
-        obs = transfers[0]
-        assert_almost_equal(exp, sum(obs))
-        # with old BatchReactor: exp = [1, 0.8, 0.2, 1]
-        # with old BatchReactor: assert_array_almost_equal(exp, obs, decimal=2, err_msg=msg)
-        
+        assert_array_almost_equal(exp, txs, decimal=2, err_msg=msg)
+
+        # reactor 2 transactions
+        exp = [1, 0.8, 0.2, 1]
+        txs = [0, 0, 0, 0]
+        for tx in self.transactions:
+            if tx['ReceiverId'] == self.rx_id[1]:
+                txs[tx['Time']] += self.rsrc_qtys[tx['ResourceId']]
+
         msg = "Testing that second reactor gets what it wants."      
-        exp = 4
-        obs = transfers[1]
-        assert_almost_equal(exp, sum(obs))
-        # with old BatchReactor: exp = [1, 1, 1, 1]
-        # with old BatchReactor: assert_array_almost_equal(exp, obs, decimal=2, err_msg=msg)
+        assert_array_almost_equal(exp, txs, decimal=2, err_msg=msg)
         
 class TestPhysorSources(TestRegression):
     """This class tests the 2_Sources_3_Reactor.xml file related to the Cyclus
