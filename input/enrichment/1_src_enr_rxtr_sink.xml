@@ -46,7 +46,7 @@
       <Reactor>
         <fuel_inrecipes>  <val>fuel_recipe</val>      </fuel_inrecipes>
         <fuel_outrecipes> <val>used_fuel_recipe</val> </fuel_outrecipes>
-        <fuel_incommods>  <val>enriched_u</val>       <fuel_incommods>
+        <fuel_incommods>  <val>enriched_u</val>       </fuel_incommods>
         <fuel_outcommods> <val>waste</val>            </fuel_outcommods>
 
         <cycle_time>1</cycle_time>
