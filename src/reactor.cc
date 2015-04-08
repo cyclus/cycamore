@@ -58,13 +58,7 @@ void Reactor::InitFrom(cyclus::QueryableBackend* b) {
 
 void Reactor::EnterNotify() {
   cyclus::Facility::EnterNotify();
-
-  // setup commodity producer values
-  power_commod_ = cyclus::toolkit::Commodity(power_commod);
-  cyclus::toolkit::CommodityProducer::Add(power_commod_);
-  cyclus::toolkit::CommodityProducer::SetCapacity(power_commod_, power_cap);
-  cyclus::toolkit::CommodityProducer::SetCost(power_commod_, power_cap);
-
+  
   // If the user ommitted fuel_prefs, we set it to zeros for each fuel
   // type.  Without this segfaults could occur - yuck.
   if (fuel_prefs.size() == 0) {
