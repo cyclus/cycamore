@@ -37,9 +37,9 @@ class Separations : public cyclus::Facility {
   #pragma cyclus schema
   #pragma cyclus annotations
   #pragma cyclus snapshot
-
-  // the following pragmas are ommitted and generated manually to handle a
-  // vector of resource buffers:
+  // the following pragmas are ommitted and the functions are generated
+  // manually in order to handle the vector of resource buffers:
+  //
   //     #pragma cyclus snapshotinv
   //     #pragma cyclus initinv
 
@@ -75,7 +75,8 @@ class Separations : public cyclus::Facility {
   std::string feed_recipe;
 
   #pragma cyclus var { \
-    "doc" : "", \
+    "doc" : "Amount of feed material to keep on hand.", \
+    "units" : "kg", \
   }
   double feedbuf_size;
 
@@ -85,7 +86,9 @@ class Separations : public cyclus::Facility {
   cyclus::toolkit::ResBuf<cyclus::Material> feed;
 
   #pragma cyclus var { \
-    "doc" : "", \
+    "doc" : "Maximum amount of leftover separated material (not included in" \
+            " any other stream) that can be stored." \
+            " If full, the facility halts operation until space becomes available.", \
     "default": 1e299, \
   }
   double leftoverbuf_size;
@@ -106,12 +109,19 @@ class Separations : public cyclus::Facility {
   #pragma cyclus var { \
     "alias": ["streams", "commod", ["info", "buf_size", ["efficiencies", "comp", "eff"]]], \
     "uitype": ["oneormore", "outcommodity", ["pair", "double", ["oneormore", "nuclide", "double"]]], \
-    "doc": "Output streams for separations.  Each stream must have a unique name identifying the commodity on which its material is traded," \
-           " a max buffer capacity in kg (neg values indicate infinite size), and a set of component efficiencies." \
-           " 'comp' is a component to be separated into the stream (e.g. U, Pu, etc.) and 'eff' is the mass fraction of the component that is separated from the feed into this output stream.", \
+    "doc": "Output streams for separations." \
+           " Each stream must have a unique name identifying the commodity on which its material is traded," \
+           " a max buffer capacity in kg (neg values indicate infinite size)," \
+           " and a set of component efficiencies." \
+           " 'comp' is a component to be separated into the stream" \
+           " (e.g. U, Pu, etc.) and 'eff' is the mass fraction of the component" \
+           " that is separated from the feed into this output stream." \
+           " If any stream buffer is full, the facility halts operation until space becomes available.", \
   }
   std::map<std::string,std::pair<double,std::map<int,double> > > streams_;
 
+  // custom SnapshotInv and InitInv and EnterNotify are used to persist this
+  // state var.
   std::map<std::string, cyclus::toolkit::ResBuf<cyclus::Material> > streambufs;
 };
 
