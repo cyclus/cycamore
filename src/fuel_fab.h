@@ -8,8 +8,8 @@ namespace cycamore {
 
 /// FuelFab takes in 2 streams of material and mixes them in ratios in order to
 /// supply material that matches some neutronics properties of reqeusted
-/// material.  It uses an equivalence type method (TODO: cite equivalence
-/// method) inspired by a similar approach in the COSI fuel cycle simulator.
+/// material.  It uses an equivalence type method [1]
+/// inspired by a similar approach in the COSI fuel cycle simulator.
 ///
 /// The FuelFab has 3 input inventories: fissile stream, filler stream, and an
 /// optional top-up inventory.  All materials received into each inventory are
@@ -46,13 +46,19 @@ namespace cycamore {
 /// preference for each of these commodities can also optionally be specified.
 /// By default, the top-up inventory size is zero, and it is not used for
 /// mixing.
+///
+/// @code
+/// [1] Baker, A. R., and R. W. Ross. "Comparison of the value of plutonium and
+///     uranium isotopes in fast reactors." Proceedings of the Conference on
+///     Breeding. Economics, and Safety in Large Fast Power Reactors. 1963.
+/// @endcode
 class FuelFab : public cyclus::Facility {
 #pragma cyclus note { \
 "doc": \
   "FuelFab takes in 2 streams of material and mixes them in ratios in order to" \
   " supply material that matches some neutronics properties of reqeusted" \
-  " material.  It uses an equivalence type method (TODO: cite equivalence" \
-  " method) inspired by a similar approach in the COSI fuel cycle simulator." \
+  " material.  It uses an equivalence type method [1]" \
+  " inspired by a similar approach in the COSI fuel cycle simulator." \
   "\n\n" \
   "The FuelFab has 3 input inventories: fissile stream, filler stream, and an" \
   " optional top-up inventory.  All materials received into each inventory are" \
@@ -89,6 +95,10 @@ class FuelFab : public cyclus::Facility {
   " preference for each of these commodities can also optionally be specified." \
   " By default, the top-up inventory size is zero, and it is not used for" \
   " mixing. " \
+  "\n\n" \
+  "[1] Baker, A. R., and R. W. Ross. \"Comparison of the value of plutonium and" \
+  "    uranium isotopes in fast reactors.\" Proceedings of the Conference on" \
+  "    Breeding. Economics, and Safety in Large Fast Power Reactors. 1963." \
   "", \
 }
  public:
@@ -195,7 +205,7 @@ class FuelFab : public cyclus::Facility {
 
   #pragma cyclus var { \
     "doc": "The type of cross-sections to use for composition property calculation." \
-           " Use 'fission_spectrum_ave' for fast reactor compositions or 'thermal' for slow reactors.", \
+           " Use 'fission_spectrum_ave' for fast reactor compositions or 'thermal' for thermal reactors.", \
   }
   std::string spectrum;
 
