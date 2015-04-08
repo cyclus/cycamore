@@ -45,7 +45,7 @@ namespace cycamore {
 /// can be requested/received via one or more commodities.  The DRE request
 /// preference for each of these commodities can also optionally be specified.
 /// By default, the top-up inventory size is zero, and it is not used for
-/// mixing. 
+/// mixing.
 class FuelFab : public cyclus::Facility {
 #pragma cyclus note { \
 "doc": \
@@ -93,28 +93,27 @@ class FuelFab : public cyclus::Facility {
 }
  public:
   FuelFab(cyclus::Context* ctx);
-  virtual ~FuelFab() {};
+  virtual ~FuelFab(){};
 
-  #pragma cyclus
+#pragma cyclus
 
-  virtual void Tick() {};
-  virtual void Tock() {};
+  virtual void Tick(){};
+  virtual void Tock(){};
   virtual void EnterNotify();
 
-  virtual std::set<cyclus::BidPortfolio<cyclus::Material>::Ptr>
-      GetMatlBids(cyclus::CommodMap<cyclus::Material>::type&
-                  commod_requests);
+  virtual std::set<cyclus::BidPortfolio<cyclus::Material>::Ptr> GetMatlBids(
+      cyclus::CommodMap<cyclus::Material>::type& commod_requests);
 
   virtual void GetMatlTrades(
-      const std::vector< cyclus::Trade<cyclus::Material> >& trades,
+      const std::vector<cyclus::Trade<cyclus::Material> >& trades,
       std::vector<std::pair<cyclus::Trade<cyclus::Material>,
-      cyclus::Material::Ptr> >& responses);
+                            cyclus::Material::Ptr> >& responses);
 
-  virtual void AcceptMatlTrades(
-      const std::vector< std::pair<cyclus::Trade<cyclus::Material>,
-      cyclus::Material::Ptr> >& responses);
+  virtual void AcceptMatlTrades(const std::vector<std::pair<
+      cyclus::Trade<cyclus::Material>, cyclus::Material::Ptr> >& responses);
 
-  virtual std::set<cyclus::RequestPortfolio<cyclus::Material>::Ptr> GetMatlRequests();
+  virtual std::set<cyclus::RequestPortfolio<cyclus::Material>::Ptr>
+  GetMatlRequests();
 
  private:
   #pragma cyclus var { \

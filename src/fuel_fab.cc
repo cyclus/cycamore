@@ -4,19 +4,17 @@ using cyclus::Material;
 using cyclus::Composition;
 using pyne::simple_xs;
 
-#define SHOW(X) \
-  std::cout << std::setprecision(17) << __FILE__ << ":" << __LINE__ << ": "#X" = " << X << "\n"
+#define SHOW(X)                                                     \
+  std::cout << std::setprecision(17) << __FILE__ << ":" << __LINE__ \
+            << ": " #X " = " << X << "\n"
 
 namespace cycamore {
 
 class FissConverter : public cyclus::Converter<cyclus::Material> {
  public:
-  FissConverter(
-      Composition::Ptr c_fill,
-      Composition::Ptr c_fiss,
-      Composition::Ptr c_topup,
-      std::string spectrum
-      ) : c_fiss_(c_fiss), c_topup_(c_topup), c_fill_(c_fill), spec_(spectrum) {
+  FissConverter(Composition::Ptr c_fill, Composition::Ptr c_fiss,
+                Composition::Ptr c_topup, std::string spectrum)
+      : c_fiss_(c_fiss), c_topup_(c_topup), c_fill_(c_fill), spec_(spectrum) {
     w_fiss_ = CosiWeight(c_fiss, spectrum);
     w_fill_ = CosiWeight(c_fill, spectrum);
     w_topup_ = CosiWeight(c_topup, spectrum);
@@ -24,11 +22,9 @@ class FissConverter : public cyclus::Converter<cyclus::Material> {
 
   virtual ~FissConverter() {}
 
-  virtual double convert(
-      cyclus::Material::Ptr m,
-      cyclus::Arc const * a = NULL,
-      cyclus::ExchangeTranslationContext<cyclus::Material> const * ctx = NULL) const {
-
+  virtual double convert(cyclus::Material::Ptr m, cyclus::Arc const* a = NULL,
+                         cyclus::ExchangeTranslationContext<
+                             cyclus::Material> const* ctx = NULL) const {
     double w_tgt = CosiWeight(m->comp(), spec_);
     if (ValidWeights(w_fill_, w_tgt, w_fiss_)) {
       double frac = HighFrac(w_fill_, w_tgt, w_fiss_);
@@ -55,12 +51,9 @@ class FissConverter : public cyclus::Converter<cyclus::Material> {
 
 class FillConverter : public cyclus::Converter<cyclus::Material> {
  public:
-  FillConverter(
-      Composition::Ptr c_fill,
-      Composition::Ptr c_fiss,
-      Composition::Ptr c_topup,
-      std::string spectrum
-      ) : c_fiss_(c_fiss), c_topup_(c_topup), c_fill_(c_fill), spec_(spectrum) {
+  FillConverter(Composition::Ptr c_fill, Composition::Ptr c_fiss,
+                Composition::Ptr c_topup, std::string spectrum)
+      : c_fiss_(c_fiss), c_topup_(c_topup), c_fill_(c_fill), spec_(spectrum) {
     w_fiss_ = CosiWeight(c_fiss, spectrum);
     w_fill_ = CosiWeight(c_fill, spectrum);
     w_topup_ = CosiWeight(c_topup, spectrum);
@@ -68,11 +61,9 @@ class FillConverter : public cyclus::Converter<cyclus::Material> {
 
   virtual ~FillConverter() {}
 
-  virtual double convert(
-      cyclus::Material::Ptr m,
-      cyclus::Arc const * a = NULL,
-      cyclus::ExchangeTranslationContext<cyclus::Material> const * ctx = NULL) const {
-
+  virtual double convert(cyclus::Material::Ptr m, cyclus::Arc const* a = NULL,
+                         cyclus::ExchangeTranslationContext<
+                             cyclus::Material> const* ctx = NULL) const {
     double w_tgt = CosiWeight(m->comp(), spec_);
     if (ValidWeights(w_fill_, w_tgt, w_fiss_)) {
       double frac = LowFrac(w_fill_, w_tgt, w_fiss_);
@@ -98,12 +89,9 @@ class FillConverter : public cyclus::Converter<cyclus::Material> {
 
 class TopupConverter : public cyclus::Converter<cyclus::Material> {
  public:
-  TopupConverter(
-      Composition::Ptr c_fill,
-      Composition::Ptr c_fiss,
-      Composition::Ptr c_topup,
-      std::string spectrum
-      ) : c_fiss_(c_fiss), c_topup_(c_topup), c_fill_(c_fill), spec_(spectrum) {
+  TopupConverter(Composition::Ptr c_fill, Composition::Ptr c_fiss,
+                 Composition::Ptr c_topup, std::string spectrum)
+      : c_fiss_(c_fiss), c_topup_(c_topup), c_fill_(c_fill), spec_(spectrum) {
     w_fiss_ = CosiWeight(c_fiss, spectrum);
     w_fill_ = CosiWeight(c_fill, spectrum);
     w_topup_ = CosiWeight(c_topup, spectrum);
@@ -111,11 +99,9 @@ class TopupConverter : public cyclus::Converter<cyclus::Material> {
 
   virtual ~TopupConverter() {}
 
-  virtual double convert(
-      cyclus::Material::Ptr m,
-      cyclus::Arc const * a = NULL,
-      cyclus::ExchangeTranslationContext<cyclus::Material> const * ctx = NULL) const {
-
+  virtual double convert(cyclus::Material::Ptr m, cyclus::Arc const* a = NULL,
+                         cyclus::ExchangeTranslationContext<
+                             cyclus::Material> const* ctx = NULL) const {
     double w_tgt = CosiWeight(m->comp(), spec_);
     if (ValidWeights(w_fill_, w_tgt, w_fiss_)) {
       return 0;
@@ -140,10 +126,7 @@ class TopupConverter : public cyclus::Converter<cyclus::Material> {
 };
 
 FuelFab::FuelFab(cyclus::Context* ctx)
-  : cyclus::Facility(ctx),
-    fill_size(0),
-    fiss_size(0),
-    throughput(0) {}
+    : cyclus::Facility(ctx), fill_size(0), fiss_size(0), throughput(0) {}
 
 void FuelFab::EnterNotify() {
   cyclus::Facility::EnterNotify();
@@ -155,8 +138,7 @@ void FuelFab::EnterNotify() {
   }
 }
 
-std::set<cyclus::RequestPortfolio<Material>::Ptr>
-FuelFab::GetMatlRequests() {
+std::set<cyclus::RequestPortfolio<Material>::Ptr> FuelFab::GetMatlRequests() {
   using cyclus::RequestPortfolio;
 
   std::set<RequestPortfolio<Material>::Ptr> ports;
@@ -191,7 +173,8 @@ FuelFab::GetMatlRequests() {
       Composition::Ptr c = context()->GetRecipe(fill_recipe);
       m = Material::CreateUntracked(fill.space(), c);
     }
-    cyclus::Request<Material>* r = port->AddRequest(m, this, fill_commod, fill_pref, exclusive);
+    cyclus::Request<Material>* r =
+        port->AddRequest(m, this, fill_commod, fill_pref, exclusive);
     req_inventories_[r] = "fill";
     ports.insert(port);
   }
@@ -204,7 +187,8 @@ FuelFab::GetMatlRequests() {
       Composition::Ptr c = context()->GetRecipe(topup_recipe);
       m = Material::CreateUntracked(topup.space(), c);
     }
-    cyclus::Request<Material>* r = port->AddRequest(m, this, topup_commod, topup_pref, exclusive);
+    cyclus::Request<Material>* r =
+        port->AddRequest(m, this, topup_commod, topup_pref, exclusive);
     req_inventories_[r] = "topup";
     ports.insert(port);
   }
@@ -221,12 +205,10 @@ bool Contains(std::vector<std::string> vec, std::string s) {
   return false;
 }
 
-void FuelFab::AcceptMatlTrades(
-    const std::vector< std::pair<cyclus::Trade<Material>,
-    Material::Ptr> >& responses) {
-
-  std::vector< std::pair<cyclus::Trade<cyclus::Material>,
-                         cyclus::Material::Ptr> >::const_iterator trade;
+void FuelFab::AcceptMatlTrades(const std::vector<
+    std::pair<cyclus::Trade<Material>, Material::Ptr> >& responses) {
+  std::vector<std::pair<cyclus::Trade<cyclus::Material>,
+                        cyclus::Material::Ptr> >::const_iterator trade;
 
   for (trade = responses.begin(); trade != responses.end(); ++trade) {
     std::string commod = trade->first.request->commodity();
@@ -246,9 +228,8 @@ void FuelFab::AcceptMatlTrades(
   req_inventories_.clear();
 }
 
-std::set<cyclus::BidPortfolio<Material>::Ptr>
-FuelFab::GetMatlBids(cyclus::CommodMap<Material>::type&
-                          commod_requests) {
+std::set<cyclus::BidPortfolio<Material>::Ptr> FuelFab::GetMatlBids(
+    cyclus::CommodMap<Material>::type& commod_requests) {
   using cyclus::BidPortfolio;
 
   std::set<BidPortfolio<Material>::Ptr> ports;
@@ -261,7 +242,8 @@ FuelFab::GetMatlBids(cyclus::CommodMap<Material>::type&
   }
 
   double w_fill = 0;
-  Composition::Ptr c_fill; // no default needed - this is non-optional parameter
+  Composition::Ptr
+      c_fill;  // no default needed - this is non-optional parameter
   if (fill.count() > 0) {
     c_fill = fill.Peek()->comp();
     w_fill = CosiWeight(c_fill, spectrum);
@@ -280,7 +262,8 @@ FuelFab::GetMatlBids(cyclus::CommodMap<Material>::type&
     w_topup = CosiWeight(c_topup, spectrum);
   }
 
-  double w_fiss = w_fill; // this allows trading just fill with no fiss inventory
+  double w_fiss =
+      w_fill;  // this allows trading just fill with no fiss inventory
   Composition::Ptr c_fiss = c_fill;
   if (fiss.count() > 0) {
     c_fiss = fiss.Peek()->comp();
@@ -316,22 +299,30 @@ FuelFab::GetMatlBids(cyclus::CommodMap<Material>::type&
       double fiss_frac = 1 - topup_frac;
       fiss_frac = AtomToMassFrac(fiss_frac, c_fiss, c_topup);
       topup_frac = AtomToMassFrac(topup_frac, c_topup, c_fiss);
-      Material::Ptr m1 = Material::CreateUntracked(topup_frac * tgt_qty, c_topup);
+      Material::Ptr m1 =
+          Material::CreateUntracked(topup_frac * tgt_qty, c_topup);
       Material::Ptr m2 = Material::CreateUntracked(fiss_frac * tgt_qty, c_fiss);
       m1->Absorb(m2);
 
       bool exclusive = false;
       port->AddBid(req, m1, this, exclusive);
-    } // else can't meet the target - don't bid
+    }  // else can't meet the target - don't bid
   }
 
-  cyclus::Converter<Material>::Ptr fissconv(new FissConverter(c_fill, c_fiss, c_topup, spectrum));
-  cyclus::Converter<Material>::Ptr fillconv(new FillConverter(c_fill, c_fiss, c_topup, spectrum));
-  cyclus::Converter<Material>::Ptr topupconv(new TopupConverter(c_fill, c_fiss, c_topup, spectrum));
-  // important! - the std::max calls prevent CapacityConstraint throwing a zero cap exception
-  cyclus::CapacityConstraint<Material> fissc(std::max(fiss.quantity(), 1e-10), fissconv);
-  cyclus::CapacityConstraint<Material> fillc(std::max(fill.quantity(), 1e-10), fillconv);
-  cyclus::CapacityConstraint<Material> topupc(std::max(topup.quantity(), 1e-10), topupconv);
+  cyclus::Converter<Material>::Ptr fissconv(
+      new FissConverter(c_fill, c_fiss, c_topup, spectrum));
+  cyclus::Converter<Material>::Ptr fillconv(
+      new FillConverter(c_fill, c_fiss, c_topup, spectrum));
+  cyclus::Converter<Material>::Ptr topupconv(
+      new TopupConverter(c_fill, c_fiss, c_topup, spectrum));
+  // important! - the std::max calls prevent CapacityConstraint throwing a zero
+  // cap exception
+  cyclus::CapacityConstraint<Material> fissc(std::max(fiss.quantity(), 1e-10),
+                                             fissconv);
+  cyclus::CapacityConstraint<Material> fillc(std::max(fill.quantity(), 1e-10),
+                                             fillconv);
+  cyclus::CapacityConstraint<Material> topupc(std::max(topup.quantity(), 1e-10),
+                                              topupconv);
   port->AddConstraint(fillc);
   port->AddConstraint(fissc);
   port->AddConstraint(topupc);
@@ -343,25 +334,26 @@ FuelFab::GetMatlBids(cyclus::CommodMap<Material>::type&
 }
 
 void FuelFab::GetMatlTrades(
-    const std::vector< cyclus::Trade<Material> >& trades,
-    std::vector<std::pair<cyclus::Trade<Material>,
-    Material::Ptr> >& responses) {
+    const std::vector<cyclus::Trade<Material> >& trades,
+    std::vector<std::pair<cyclus::Trade<Material>, Material::Ptr> >&
+        responses) {
   using cyclus::Trade;
 
   double w_fill = 0;
-  if (fill.count() > 0) { // it's possible to only need fissile inventory for a trade
+  if (fill.count() >
+      0) {  // it's possible to only need fissile inventory for a trade
     w_fill = CosiWeight(fill.Peek()->comp(), spectrum);
   }
   double w_topup = 0;
   if (topup.count() > 0) {
     w_topup = CosiWeight(topup.Peek()->comp(), spectrum);
   }
-  double w_fiss = 0; 
+  double w_fiss = 0;
   if (fiss.count() > 0) {
     w_fiss = CosiWeight(fiss.Peek()->comp(), spectrum);
   }
 
-  std::vector< cyclus::Trade<cyclus::Material> >::const_iterator it;
+  std::vector<cyclus::Trade<cyclus::Material> >::const_iterator it;
   double tot = 0;
   for (int i = 0; i < trades.size(); i++) {
     Material::Ptr tgt = trades[i].request->target();
@@ -372,8 +364,9 @@ void FuelFab::GetMatlTrades(
     tot += qty;
     if (tot > throughput + cyclus::eps()) {
       std::stringstream ss;
-      ss << "FuelFab was matched above throughput limit: " << tot << " > " << throughput;
-      throw cyclus::ValueError(ss.str()); 
+      ss << "FuelFab was matched above throughput limit: " << tot << " > "
+         << throughput;
+      throw cyclus::ValueError(ss.str());
     }
 
     if (fiss.count() == 0) {
@@ -385,25 +378,29 @@ void FuelFab::GetMatlTrades(
     } else if (ValidWeights(w_fill, w_tgt, w_fiss)) {
       double fiss_frac = HighFrac(w_fill, w_tgt, w_fiss);
       double fill_frac = LowFrac(w_fill, w_tgt, w_fiss);
-      fiss_frac = AtomToMassFrac(fiss_frac, fiss.Peek()->comp(), fill.Peek()->comp());
-      fill_frac = AtomToMassFrac(fill_frac, fill.Peek()->comp(), fiss.Peek()->comp());
+      fiss_frac =
+          AtomToMassFrac(fiss_frac, fiss.Peek()->comp(), fill.Peek()->comp());
+      fill_frac =
+          AtomToMassFrac(fill_frac, fill.Peek()->comp(), fiss.Peek()->comp());
 
-      Material::Ptr m = fiss.Pop(fiss_frac*qty);
+      Material::Ptr m = fiss.Pop(fiss_frac * qty);
       // this if block prevents zero qty ResBuf pop exceptions
       if (fill_frac > 0) {
-        m->Absorb(fill.Pop(fill_frac*qty));
+        m->Absorb(fill.Pop(fill_frac * qty));
       }
       responses.push_back(std::make_pair(trades[i], m));
     } else {
       double topup_frac = HighFrac(w_fiss, w_tgt, w_topup);
       double fiss_frac = 1 - topup_frac;
-      topup_frac = AtomToMassFrac(topup_frac, topup.Peek()->comp(), fiss.Peek()->comp());
-      fiss_frac = AtomToMassFrac(fiss_frac, fiss.Peek()->comp(), topup.Peek()->comp());
+      topup_frac =
+          AtomToMassFrac(topup_frac, topup.Peek()->comp(), fiss.Peek()->comp());
+      fiss_frac =
+          AtomToMassFrac(fiss_frac, fiss.Peek()->comp(), topup.Peek()->comp());
 
-      Material::Ptr m = fiss.Pop(fiss_frac*qty);
+      Material::Ptr m = fiss.Pop(fiss_frac * qty);
       // this if block prevents zero qty ResBuf pop exceptions
       if (topup_frac > 0) {
-        m->Absorb(topup.Pop(topup_frac*qty));
+        m->Absorb(topup.Pop(topup_frac * qty));
       }
       responses.push_back(std::make_pair(trades[i], m));
     }
@@ -416,7 +413,7 @@ extern "C" cyclus::Agent* ConstructFuelFab(cyclus::Context* ctx) {
 
 // Returns the weight of c using 1 group cross sections of type spectrum
 // which must be one of:
-// 
+//
 //     * thermal
 //     * thermal_maxwell_ave
 //     * fission_spectrum_ave
@@ -472,7 +469,7 @@ double CosiWeight(cyclus::Composition::Ptr c, const std::string& spectrum) {
           absorb = simple_xs(nuc, "absorption", "thermal");
           absorb_xs[nuc] = absorb;
           fiss_xs[nuc] = fiss;
-        } catch(pyne::InvalidSimpleXS err) {
+        } catch (pyne::InvalidSimpleXS err) {
           fiss = 0;
           absorb = 0;
         }
@@ -491,12 +488,16 @@ double CosiWeight(cyclus::Composition::Ptr c, const std::string& spectrum) {
     static double p_u238 = 0;
     static double p_pu239 = 0;
     if (p_u238 == 0) {
-      double fiss_u238 = simple_xs(922380000, "fission", "fission_spectrum_ave");
-      double absorb_u238 = simple_xs(922380000, "absorption", "fission_spectrum_ave");
+      double fiss_u238 =
+          simple_xs(922380000, "fission", "fission_spectrum_ave");
+      double absorb_u238 =
+          simple_xs(922380000, "absorption", "fission_spectrum_ave");
       p_u238 = nu_u238 * fiss_u238 - absorb_u238;
 
-      double fiss_pu239 = simple_xs(942390000, "fission", "fission_spectrum_ave");
-      double absorb_pu239 = simple_xs(942390000, "absorption", "fission_spectrum_ave");
+      double fiss_pu239 =
+          simple_xs(942390000, "fission", "fission_spectrum_ave");
+      double absorb_pu239 =
+          simple_xs(942390000, "absorption", "fission_spectrum_ave");
       p_pu239 = nu_pu239 * fiss_pu239 - absorb_pu239;
     }
 
@@ -521,7 +522,7 @@ double CosiWeight(cyclus::Composition::Ptr c, const std::string& spectrum) {
           absorb = simple_xs(nuc, "absorption", "fission_spectrum_ave");
           absorb_xs[nuc] = absorb;
           fiss_xs[nuc] = fiss;
-        } catch(pyne::InvalidSimpleXS err) {
+        } catch (pyne::InvalidSimpleXS err) {
           fiss = 0;
           absorb = 0;
         }
@@ -561,7 +562,7 @@ double CosiWeight(cyclus::Composition::Ptr c, const std::string& spectrum) {
       try {
         fiss = simple_xs(nuc, "fission", spectrum);
         absorb = simple_xs(nuc, "absorption", spectrum);
-      } catch(pyne::InvalidSimpleXS err) {
+      } catch (pyne::InvalidSimpleXS err) {
         fiss = 0;
         absorb = 0;
       }
@@ -575,11 +576,12 @@ double CosiWeight(cyclus::Composition::Ptr c, const std::string& spectrum) {
 
 // Convert an atom frac (n1/(n1+n2) to a mass frac (m1/(m1+m2) given
 // corresponding compositions c1 and c2.
-double AtomToMassFrac(double atomfrac, Composition::Ptr c1, Composition::Ptr c2) {
+double AtomToMassFrac(double atomfrac, Composition::Ptr c1,
+                      Composition::Ptr c2) {
   cyclus::CompMap n1 = c1->atom();
   cyclus::CompMap n2 = c2->atom();
   cyclus::compmath::Normalize(&n1, atomfrac);
-  cyclus::compmath::Normalize(&n2, 1-atomfrac);
+  cyclus::compmath::Normalize(&n2, 1 - atomfrac);
 
   cyclus::CompMap::iterator it;
 
@@ -603,7 +605,7 @@ double HighFrac(double w_low, double w_target, double w_high, double eps) {
     return 1;
   }
   double f = std::abs((w_target - w_low) / (w_high - w_low));
-  if (1-f < eps) {
+  if (1 - f < eps) {
     return 1;
   } else if (f < eps) {
     return 0;
@@ -623,5 +625,4 @@ bool ValidWeights(double w_low, double w_target, double w_high) {
   return w_low <= w_target && w_target <= w_high;
 }
 
-} // namespace cycamore
-
+}  // namespace cycamore
