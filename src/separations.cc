@@ -11,10 +11,10 @@ using cyclus::CompMap;
 
 namespace cycamore {
 
-Separations::Separations(cyclus::Context* ctx)
-    : cyclus::Facility(ctx) {
-  cyclus::Warn<cyclus::EXPERIMENTAL_WARNING>("the Separations archetype "
-                                             "is experimental");
+Separations::Separations(cyclus::Context* ctx) : cyclus::Facility(ctx) {
+  cyclus::Warn<cyclus::EXPERIMENTAL_WARNING>(
+      "the Separations archetype "
+      "is experimental");
 }
 
 cyclus::Inventories Separations::SnapshotInv() {
@@ -102,7 +102,7 @@ void Separations::Tick() {
       // unspecified separations fractions go to leftovers
       leftover.Push(mat);
     }
-  } else { // maxfrac is < 1
+  } else {  // maxfrac is < 1
     // push back any leftover feed due to separated stream inv size constraints
     feed.Push(mat->ExtractQty((1 - maxfrac) * orig_qty));
     if (mat->quantity() > 0) {
@@ -132,7 +132,7 @@ Material::Ptr SepMaterial(std::map<int, double> effs, Material::Ptr mat) {
     } else {
       continue;
     }
-    
+
     double qty = it->second;
     double sepqty = qty * eff;
     sepcomp[nuc] = sepqty;
@@ -172,12 +172,12 @@ Separations::GetMatlRequests() {
 }
 
 void Separations::GetMatlTrades(
-    const std::vector< cyclus::Trade<Material> >& trades,
-    std::vector<std::pair<cyclus::Trade<Material>,
-    Material::Ptr> >& responses) {
+    const std::vector<cyclus::Trade<Material> >& trades,
+    std::vector<std::pair<cyclus::Trade<Material>, Material::Ptr> >&
+        responses) {
   using cyclus::Trade;
 
-  std::vector< cyclus::Trade<cyclus::Material> >::const_iterator it;
+  std::vector<cyclus::Trade<cyclus::Material> >::const_iterator it;
   for (int i = 0; i < trades.size(); i++) {
     std::string commod = trades[i].request->commodity();
     if (commod == leftover_commod) {
@@ -187,26 +187,24 @@ void Separations::GetMatlTrades(
       Material::Ptr m = streambufs[commod].Pop(trades[i].amt);
       responses.push_back(std::make_pair(trades[i], m));
     } else {
-      throw ValueError("invalid commodity " + commod + " on trade matched to prototype " + prototype());
+      throw ValueError("invalid commodity " + commod +
+                       " on trade matched to prototype " + prototype());
     }
   }
 }
 
-void Separations::AcceptMatlTrades(
-    const std::vector< std::pair<cyclus::Trade<Material>,
-    Material::Ptr> >& responses) {
-
-  std::vector< std::pair<cyclus::Trade<cyclus::Material>,
-                         cyclus::Material::Ptr> >::const_iterator trade;
+void Separations::AcceptMatlTrades(const std::vector<
+    std::pair<cyclus::Trade<Material>, Material::Ptr> >& responses) {
+  std::vector<std::pair<cyclus::Trade<cyclus::Material>,
+                        cyclus::Material::Ptr> >::const_iterator trade;
 
   for (trade = responses.begin(); trade != responses.end(); ++trade) {
     feed.Push(trade->second);
   }
 }
 
-std::set<cyclus::BidPortfolio<Material>::Ptr>
-Separations::GetMatlBids(cyclus::CommodMap<Material>::type&
-                          commod_requests) {
+std::set<cyclus::BidPortfolio<Material>::Ptr> Separations::GetMatlBids(
+    cyclus::CommodMap<Material>::type& commod_requests) {
   using cyclus::BidPortfolio;
 
   bool exclusive = false;
@@ -276,12 +274,10 @@ Separations::GetMatlBids(cyclus::CommodMap<Material>::type&
   return ports;
 }
 
-void Separations::Tock() {
-}
+void Separations::Tock() {}
 
 extern "C" cyclus::Agent* ConstructSeparations(cyclus::Context* ctx) {
   return new Separations(ctx);
 }
 
-} // namespace cycamore
-
+}  // namespace cycamore
