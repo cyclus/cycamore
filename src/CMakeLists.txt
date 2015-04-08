@@ -1,12 +1,8 @@
 # ------------------- Add all Concrete Agents ----------------------------
 
-USE_CYCLUS("cycamore" "batch_reactor")
-
 USE_CYCLUS("cycamore" "reactor")
 
 USE_CYCLUS("cycamore" "enrichment_facility")
-
-#USE_CYCLUS("cycamore" "inpro_reactor")
 
 USE_CYCLUS("cycamore" "sink")
 
