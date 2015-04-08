@@ -428,12 +428,12 @@ double CosiWeight(cyclus::Composition::Ptr c, const std::string& spectrum) {
   cyclus::CompMap cm = c->atom();
   cyclus::compmath::Normalize(&cm);
 
-  double nu_pu239 = 2.85;
-  double nu_u233 = 2.5;
-  double nu_u235 = 2.4;
-  double nu_u238 = 0;
-
   if (spectrum == "thermal") {
+    double nu_pu239 = 2.85;
+    double nu_u233 = 2.5;
+    double nu_u235 = 2.43;
+    double nu_u238 = 0;
+
     static std::map<int, double> absorb_xs;
     static std::map<int, double> fiss_xs;
     static double p_u238 = 0;
@@ -483,6 +483,11 @@ double CosiWeight(cyclus::Composition::Ptr c, const std::string& spectrum) {
     }
     return w;
   } else if (spectrum == "fission_spectrum_ave") {
+    double nu_pu239 = 3.1;
+    double nu_u233 = 2.63;
+    double nu_u235 = 2.58;
+    double nu_u238 = 0;
+
     static std::map<int, double> absorb_xs;
     static std::map<int, double> fiss_xs;
     static double p_u238 = 0;
@@ -536,6 +541,11 @@ double CosiWeight(cyclus::Composition::Ptr c, const std::string& spectrum) {
     }
     return w;
   } else {
+    double nu_pu239 = 3.1;
+    double nu_u233 = 2.63;
+    double nu_u235 = 2.58;
+    double nu_u238 = 0;
+
     double fiss_u238 = simple_xs(922380000, "fission", spectrum);
     double absorb_u238 = simple_xs(922380000, "absorption", spectrum);
     double p_u238 = nu_u238 * fiss_u238 - absorb_u238;
