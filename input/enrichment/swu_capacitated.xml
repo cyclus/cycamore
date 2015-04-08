@@ -11,7 +11,7 @@
     <spec><lib>cycamore</lib><name>Sink</name></spec>
     <spec><lib>cycamore</lib><name>Source</name></spec>
     <spec><lib>cycamore</lib><name>EnrichmentFacility</name></spec>
-    <spec><lib>cycamore</lib><name>BatchReactor</name></spec>
+    <spec><lib>cycamore</lib><name>Reactor</name></spec>
     <spec><lib>cycamore</lib><name>GrowthRegion</name></spec>
     <spec><lib>cycamore</lib><name>ManagerInst</name></spec>
   </archetypes>
@@ -44,22 +44,21 @@
   <facility>
     <name>Reactor</name>
     <config>
-      <BatchReactor>
-        <fuel>
-          <incommodity>enriched_u</incommodity>
-          <inrecipe>fuel_recipe</inrecipe>
-          <outcommodity>waste</outcommodity>
-          <outrecipe>used_fuel_recipe</outrecipe>
-        </fuel>
-        <processtime>1</processtime>
-        <nbatches>1</nbatches>
-        <batchsize>2</batchsize>
-        <commodity_production>
-          <commodity>power</commodity>
-          <capacity>10</capacity>
-          <cost>10</cost>
-        </commodity_production>
-      </BatchReactor>
+      <Reactor>
+        <fuel_inrecipes>  <val>fuel_recipe</val>      </fuel_inrecipes>
+        <fuel_outrecipes> <val>used_fuel_recipe</val> </fuel_outrecipes>
+        <fuel_incommods>  <val>enriched_u</val>       </fuel_incommods>
+        <fuel_outcommods> <val>waste</val>            </fuel_outcommods>
+
+        <cycle_time>1</cycle_time>
+        <refuel_time>0</refuel_time>
+        <assem_size>2</assem_size>
+        <n_assem_core>1</n_assem_core>
+        <n_assem_batch>1</n_assem_batch>
+
+        <power_commod>power</power_commod>
+        <power_cap>10</power_cap>
+      </Reactor>
     </config>
   </facility>
 
@@ -112,6 +111,7 @@
           <prototypes>
             <val>Source</val>
             <val>Enrichment</val>
+            <val>Reactor</val>
             <val>Sink</val>
           </prototypes>
         </ManagerInst>
