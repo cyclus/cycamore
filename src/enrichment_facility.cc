@@ -34,8 +34,8 @@ std::string Enrichment::str() {
      << " * SWU capacity: " << SwuCapacity()
      << " * Tails assay: " << TailsAssay()
      << " * Feed assay: " << FeedAssay()
-     << " * Input cyclus::Commodity: " << feed_commod()
-     << " * Output cyclus::Commodity: " << product_commod()
+     << " * Input cyclus::Commodity: " << feed_commodity()
+     << " * Output cyclus::Commodity: " << product_commodity()
      << " * Tails cyclus::Commodity: " << tails_commodity();
   return ss.str();
 }

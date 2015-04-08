@@ -223,15 +223,15 @@ class Enrichment : public cyclus::Facility {
   ///  @return true if the above description is met by the material
   bool ValidReq(const cyclus::Material::Ptr mat);
   
-  inline void feed_commod(std::string in_com) { feed_commod = in_com; }
+  inline void feed_commodity(std::string in_com) { feed_commod = in_com; }
 
-  inline std::string feed_commod() const { return feed_commod; }
+  inline std::string feed_commodity() const { return feed_commod; }
 
-  inline void product_commod(std::string out_com) {
+  inline void product_commodity(std::string out_com) {
     product_commod = out_com;
   }
 
-  inline std::string product_commod() const { return product_commod; }
+  inline std::string product_commodity() const { return product_commod; }
 
   inline void tails_commodity(std::string tails_com) {
     tails_commod = tails_com;

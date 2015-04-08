@@ -424,8 +424,8 @@ void EnrichmentTest::InitParameters() {
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 void EnrichmentTest::SetUpSource() {
   src_facility->InRecipe(feed_recipe);
-  src_facility->feed_commod(feed_commod);
-  src_facility->product_commod(product_commod);
+  src_facility->feed_commodity(feed_commod);
+  src_facility->product_commodity(product_commod);
   src_facility->tails_commodity(tails_commod);
   src_facility->TailsAssay(tails_assay);
   src_facility->MaxEnrich(max_enrich);
