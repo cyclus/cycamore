@@ -13,7 +13,7 @@ namespace cycamore {
 /// determine the amount of SWU required for their proposed enrichment
 class SWUConverter : public cyclus::Converter<cyclus::Material> {
  public:
-  SWUConverter(double feed, double tails) : feed_(feed), tails_(tails) {}
+  SWUConverter(double feed_commod, double tails) : feed_(feed_commod), tails_(tails) {}
   virtual ~SWUConverter() {}
 
   /// @brief provides a conversion for the SWU required
@@ -46,7 +46,7 @@ class SWUConverter : public cyclus::Converter<cyclus::Material> {
 /// enrichment
 class NatUConverter : public cyclus::Converter<cyclus::Material> {
  public:
-  NatUConverter(double feed, double tails) : feed_(feed), tails_(tails) {}
+  NatUConverter(double feed_commod, double tails) : feed_(feed_commod), tails_(tails) {}
   virtual ~NatUConverter() {}
 
   /// @brief provides a conversion for the amount of natural Uranium required
@@ -223,15 +223,15 @@ class Enrichment : public cyclus::Facility {
   ///  @return true if the above description is met by the material
   bool ValidReq(const cyclus::Material::Ptr mat);
   
-  inline void feed_commod(std::string in_com) { feed = in_com; }
+  inline void feed_commod(std::string in_com) { feed_commod = in_com; }
 
-  inline std::string feed_commod() const { return feed; }
+  inline std::string feed_commod() const { return feed_commod; }
 
   inline void product_commod(std::string out_com) {
-    product = out_com;
+    product_commod = out_com;
   }
 
-  inline std::string product_commod() const { return product; }
+  inline std::string product_commod() const { return product_commod; }
 
   inline void tails_commodity(std::string tails_com) {
     tails_commod = tails_com;
@@ -303,17 +303,17 @@ class Enrichment : public cyclus::Facility {
   void RecordEnrichment_(double natural_u, double swu);
   
   #pragma cyclus var { \
-    "tooltip": "feed",							\
+    "tooltip": "feed commodity",					\
     "doc": "feed commodity that the enrichment facility accepts",	\
     "uitype": "incommodity" \
   }
-  std::string feed;
+  std::string feed_commod;
   #pragma cyclus var { \
-    "tooltip": "product",						\
+    "tooltip": "product commodity",					\
     "doc": "product commodity that the enrichment facility generates",	 \
     "uitype": "outcommodity" \
   }
-  std::string product;
+  std::string product_commod;
   #pragma cyclus var { \
     "tooltip": "feed recipe",						\
     "doc": "recipe for enrichment facility feed commodity",		\

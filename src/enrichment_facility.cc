@@ -17,9 +17,9 @@ Enrichment::Enrichment(cyclus::Context* ctx)
       swu_capacity(0),
       max_enrich(1), 
       initial_feed(0),
-      feed(""),
+      feed_commod(""),
       feed_recipe(""),
-      product(""),
+      product_commod(""),
       tails_commod(""),
       order_prefs(true){}
 
@@ -82,7 +82,7 @@ std::set<cyclus::RequestPortfolio<cyclus::Material>::Ptr>
   double amt = mat->quantity();
 
   if (amt > cyclus::eps()) {
-    port->AddRequest(mat, this, feed);
+    port->AddRequest(mat, this, feed_commod);
     ports.insert(port);
   }
 
@@ -198,11 +198,11 @@ std::set<cyclus::BidPortfolio<cyclus::Material>::Ptr>
     ports.insert(tails_port);
   }
 
-  if ((out_requests.count(product) > 0) && (inventory.quantity() > 0)) {
+  if ((out_requests.count(product_commod) > 0) && (inventory.quantity() > 0)) {
     BidPortfolio<Material>::Ptr commod_port(new BidPortfolio<Material>()); 
     
     std::vector<Request<Material>*>& commod_requests =
-      out_requests[product];
+      out_requests[product_commod];
     std::vector<Request<Material>*>::iterator it;
     for (it = commod_requests.begin(); it != commod_requests.end(); ++it) {
       Request<Material>* req = *it;
@@ -267,7 +267,7 @@ void Enrichment::GetMatlTrades(
       LOG(cyclus::LEV_INFO5, "EnrFac") << prototype()
 				       << " just received an order"
 				       << " for " << it->amt
-				       << " of " << product;
+				       << " of " << product_commod;
       response = Enrich_(it->bid->offer(), qty);
     }
     responses.push_back(std::make_pair(*it, response));	
@@ -323,7 +323,7 @@ void Enrichment::AddMat_(cyclus::Material::Ptr mat) {
   }
 
   LOG(cyclus::LEV_INFO5, "EnrFac") << prototype() << " added "
-                                   << mat->quantity() << " of " << feed
+                                   << mat->quantity() << " of " << feed_commod
                                    << " to its inventory, which is holding "
                                    << inventory.quantity() << " total.";
 }

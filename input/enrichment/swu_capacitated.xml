@@ -31,10 +31,10 @@
     <name>Enrichment</name>
     <config>
       <Enrichment>
-        <feed>natl_u</feed>
+        <feed_commod>natl_u</feed_commod>
         <feed_recipe>natl_u</feed_recipe>
         <max_feed_inventory>100</max_feed_inventory>
-        <product>enriched_u</product>
+        <product_commod>enriched_u</product_commod>
         <tails_commod>ef_tails</tails_commod>
         <tails_assay>0.003</tails_assay>
         <swu_capacity>30.0</swu_capacity>

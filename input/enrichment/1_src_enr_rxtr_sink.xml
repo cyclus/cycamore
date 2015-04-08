@@ -31,8 +31,8 @@
     <name>Enrichment</name>
     <config>
       <Enrichment>
-        <feed>natl_u</feed>
-        <product>enriched_u</product>
+        <feed_commod>natl_u</feed_commod>
+        <product_commod>enriched_u</product_commod>
         <tails_commod>ef_tails</tails_commod>
         <feed_recipe>natl_u</feed_recipe>
         <tails_assay>0.003</tails_assay>

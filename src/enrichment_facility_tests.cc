@@ -56,9 +56,9 @@ TEST_F(EnrichmentTest, RequestQty) {
   // without providing any extra
   
   std::string config = 
-    "   <feed>natu</feed> "
+    "   <feed_commod>natu</feed_commod> "
     "   <feed_recipe>natu1</feed_recipe> "
-    "   <product>enr_u</product> "
+    "   <product_commod>enr_u</product_commod> "
     "   <tails_commod>tails</tails_commod> "
     "   <max_feed_inventory>1.0</max_feed_inventory> "
     "   <tails_assay>0.003</tails_assay> ";
@@ -94,9 +94,9 @@ TEST_F(EnrichmentTest, CheckSWUConstraint) {
   // 388 SWU = 10kg 80% enriched HEU from 486kg feed matl
 
   std::string config = 
-    "   <feed>natu</feed> "
+    "   <feed_commod>natu</feed_commod> "
     "   <feed_recipe>natu1</feed_recipe> "
-    "   <product>enr_u</product> "
+    "   <product_commod>enr_u</product_commod> "
     "   <tails_commod>tails</tails_commod> "
     "   <tails_assay>0.003</tails_assay> "
     "   <initial_feed>1000</initial_feed> "
@@ -133,9 +133,9 @@ TEST_F(EnrichmentTest, CheckCapConstraint) {
   // inventory is partially filled with only the inventory quantity.
 
   std::string config = 
-    "   <feed>natu</feed> "
+    "   <feed_commod>natu</feed_commod> "
     "   <feed_recipe>natu1</feed_recipe> "
-    "   <product>enr_u</product> "
+    "   <product_commod>enr_u</product_commod> "
     "   <tails_commod>tails</tails_commod> "
     "   <tails_assay>0.003</tails_assay> "
     "   <initial_feed>243</initial_feed> ";
@@ -172,9 +172,9 @@ TEST_F(EnrichmentTest, RequestEnrich) {
   // the maximum allowed enrichment are not fulfilled.
   
   std::string config = 
-    "   <feed>natu</feed> "
+    "   <feed_commod>natu</feed_commod> "
     "   <feed_recipe>natu1</feed_recipe> "
-    "   <product>enr_u</product> "
+    "   <product_commod>enr_u</product_commod> "
     "   <tails_commod>tails</tails_commod> "
     "   <tails_assay>0.003</tails_assay> "
     "   <max_enrich>0.20</max_enrich> ";
@@ -227,9 +227,9 @@ TEST_F(EnrichmentTest, TradeTails) {
   // this tests whether tails are being traded.
 
   std::string config = 
-    "   <feed>natu</feed> "
+    "   <feed_commod>natu</feed_commod> "
     "   <feed_recipe>natu1</feed_recipe> "
-    "   <product>enr_u</product> "
+    "   <product_commod>enr_u</product_commod> "
     "   <tails_commod>tails</tails_commod> "
     "   <tails_assay>0.003</tails_assay> ";
 
@@ -265,9 +265,9 @@ TEST_F(EnrichmentTest, BidPrefs) {
   // U235 content
 
   std::string config = 
-    "   <feed>natu</feed> "
+    "   <feed_commod>natu</feed_commod> "
     "   <feed_recipe>natu1</feed_recipe> "
-    "   <product>enr_u</product> "
+    "   <product_commod>enr_u</product_commod> "
     "   <tails_commod>tails</tails_commod> "
     "   <tails_assay>0.003</tails_assay> "
     "   <max_feed_inventory>1.0</max_feed_inventory> ";
@@ -316,9 +316,9 @@ TEST_F(EnrichmentTest, BidPrefs) {
   // turns off correctly if flag is used
 
   std::string config = 
-    "   <feed>natu</feed> "
+    "   <feed_commod>natu</feed_commod> "
     "   <feed_recipe>natu1</feed_recipe> "
-    "   <product>enr_u</product> "
+    "   <product_commod>enr_u</product_commod> "
     "   <tails_commod>tails</tails_commod> "
     "   <tails_assay>0.003</tails_assay> "
     "   <max_feed_inventory>2.0</max_feed_inventory> " 
@@ -355,9 +355,9 @@ TEST_F(EnrichmentTest, ZeroU235) {
   // Test that offers of natu with no u235 content are rejected
 
   std::string config = 
-    "   <feed>natu</feed> "
+    "   <feed_commod>natu</feed_commod> "
     "   <feed_recipe>natu1</feed_recipe> "
-    "   <product>enr_u</product> "
+    "   <product_commod>enr_u</product_commod> "
     "   <tails_commod>tails</tails_commod> "
     "   <tails_assay>0.003</tails_assay> "
     "   <max_feed_inventory>1.0</max_feed_inventory> ";
@@ -401,8 +401,8 @@ void EnrichmentTest::TearDown() {
 void EnrichmentTest::InitParameters() {
   cyclus::Context* ctx = tc_.get();
 
-  feed = "incommod";
-  product = "outcommod";
+  feed_commod = "incommod";
+  product_commod = "outcommod";
   tails_commod = "tailscommod";
 
   feed_recipe = "recipe";
@@ -424,8 +424,8 @@ void EnrichmentTest::InitParameters() {
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 void EnrichmentTest::SetUpSource() {
   src_facility->InRecipe(feed_recipe);
-  src_facility->feed_commod(feed);
-  src_facility->product_commod(product);
+  src_facility->feed_commod(feed_commod);
+  src_facility->product_commod(product_commod);
   src_facility->tails_commodity(tails_commod);
   src_facility->TailsAssay(tails_assay);
   src_facility->MaxEnrich(max_enrich);
@@ -655,7 +655,7 @@ TEST_F(EnrichmentTest, Response) {
   src_facility->GetMatlTrades(trades, responses);
 
   Request<Material>* req =
-      Request<Material>::Create(target, trader, product);
+      Request<Material>::Create(target, trader, product_commod);
   Bid<Material>* bid = Bid<Material>::Create(req, target, src_facility);
   Trade<Material> trade(req, bid, trade_qty);
   trades.push_back(trade);
