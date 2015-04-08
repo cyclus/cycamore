@@ -64,11 +64,11 @@ class NatUConverter : public cyclus::Converter<cyclus::Material> {
 
     double natu_frac = mq.mass_frac(nucs);
     double natu_req = cyclus::toolkit::FeedQty(m->quantity(), assays);
-    return natu_req/natu_frac;
+    return natu_req / natu_frac;
   }
 
   /// @returns true if Converter is a NatUConverter and feed and tails equal
-  virtual bool operator == (Converter& other) const {
+  virtual bool operator==(Converter& other) const {
     NatUConverter* cast = dynamic_cast<NatUConverter*>(&other);
     return cast != NULL &&
     feed_ == cast->feed_ &&

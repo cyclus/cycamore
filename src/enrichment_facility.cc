@@ -90,7 +90,6 @@ std::set<cyclus::RequestPortfolio<cyclus::Material>::Ptr>
 }
 
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-// Sort bids by U-235 content
 bool SortBids(
     cyclus::Bid<cyclus::Material>* i, cyclus::Bid<cyclus::Material>* j) {
 
@@ -166,8 +165,7 @@ void Enrichment::AcceptMatlTrades(
 }
   
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-std::set<cyclus::BidPortfolio<cyclus::Material>::Ptr>
-    Enrichment::GetMatlBids(
+std::set<cyclus::BidPortfolio<cyclus::Material>::Ptr> Enrichment::GetMatlBids(
     cyclus::CommodMap<cyclus::Material>::type& out_requests){
   using cyclus::Bid;
   using cyclus::BidPortfolio;
