@@ -1,21 +1,21 @@
 #include <gtest/gtest.h>
 
-#include "commodconverter_tests.h"
+#include "storage_tests.h"
 
-namespace commodconverter {
+namespace storage {
 
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-void CommodConverterTest::SetUp() {
-  src_facility_ = new CommodConverter(tc_.get());
+void StorageTest::SetUp() {
+  src_facility_ = new Storage(tc_.get());
   InitParameters();
-  SetUpCommodConverter();
+  SetUpStorage();
 }
 
-void CommodConverterTest::TearDown() {
+void StorageTest::TearDown() {
   delete src_facility_;
 }
 
-void CommodConverterTest::InitParameters(){
+void StorageTest::InitParameters(){
   in_c1 = "in_c1";
   out_c1 = "out_c1";
   in_r1 = "in_r1";
@@ -36,7 +36,7 @@ void CommodConverterTest::InitParameters(){
   tc_.get()->AddRecipe(out_r1, recipe);
 }
 
-void CommodConverterTest::SetUpCommodConverter(){
+void StorageTest::SetUpStorage(){
   src_facility_->in_commod_(in_c1);
   src_facility_->out_commod_(out_c1);
   src_facility_->in_recipe_(in_r1);
@@ -47,7 +47,7 @@ void CommodConverterTest::SetUpCommodConverter(){
   src_facility_->cost_(cost);
 }
 
-void CommodConverterTest::TestInitState(CommodConverter* fac){
+void StorageTest::TestInitState(Storage* fac){
   EXPECT_EQ(process_time, fac->process_time_());
   EXPECT_EQ(max_inv_size, fac->max_inv_size_());
   EXPECT_EQ(capacity, fac->capacity_());
@@ -58,12 +58,12 @@ void CommodConverterTest::TestInitState(CommodConverter* fac){
   EXPECT_EQ(cost, fac->cost_());
 }
 
-void CommodConverterTest::TestRequest(CommodConverter* fac, double cap){
+void StorageTest::TestRequest(Storage* fac, double cap){
   cyclus::Material::Ptr req = fac->Request_();
   EXPECT_EQ(cap, req->quantity());
 }
 
-void CommodConverterTest::TestAddMat(CommodConverter* fac, 
+void StorageTest::TestAddMat(Storage* fac, 
     cyclus::Material::Ptr mat){
   double amt = mat->quantity();
   double before = fac->inventory.quantity();
@@ -72,7 +72,7 @@ void CommodConverterTest::TestAddMat(CommodConverter* fac,
   EXPECT_EQ(amt, after - before);
 }
 
-void CommodConverterTest::TestBuffers(CommodConverter* fac, double inv, 
+void StorageTest::TestBuffers(Storage* fac, double inv, 
     double proc, double stocks){
   double t = tc_.get()->time();
 
@@ -81,7 +81,7 @@ void CommodConverterTest::TestBuffers(CommodConverter* fac, double inv,
   EXPECT_EQ(stocks, fac->stocks.quantity());
 }
 
-void CommodConverterTest::TestStocks(CommodConverter* fac, cyclus::CompMap v){
+void StorageTest::TestStocks(Storage* fac, cyclus::CompMap v){
 
   cyclus::toolkit::ResourceBuff* buffer = &fac->stocks;
   Material::Ptr final_mat = cyclus::ResCast<Material>(buffer->Pop(cyclus::toolkit::ResourceBuff::BACK));
@@ -91,20 +91,20 @@ void CommodConverterTest::TestStocks(CommodConverter* fac, cyclus::CompMap v){
 }
 
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-TEST_F(CommodConverterTest, clone) {
-  CommodConverter* cloned_fac =
-      dynamic_cast<CommodConverter*> (src_facility_->Clone());
+TEST_F(StorageTest, clone) {
+  Storage* cloned_fac =
+      dynamic_cast<Storage*> (src_facility_->Clone());
   TestInitState(cloned_fac);
 }
 
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-TEST_F(CommodConverterTest, InitialState) {
+TEST_F(StorageTest, InitialState) {
   // Test things about the initial state of the facility here
   TestInitState(src_facility_);
 }
 
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-TEST_F(CommodConverterTest, CurrentCapacity) {
+TEST_F(StorageTest, CurrentCapacity) {
   EXPECT_EQ(capacity, src_facility_->current_capacity());
   src_facility_->max_inv_size_(1e299);
   EXPECT_EQ(1e299, src_facility_->max_inv_size_());
@@ -113,18 +113,18 @@ TEST_F(CommodConverterTest, CurrentCapacity) {
 }
 
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-TEST_F(CommodConverterTest, Print) {
+TEST_F(StorageTest, Print) {
   EXPECT_NO_THROW(std::string s = src_facility_->str());
-  // Test CommodConverter specific aspects of the print method here
+  // Test Storage specific aspects of the print method here
 }
 
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-TEST_F(CommodConverterTest, Request) { 
+TEST_F(StorageTest, Request) { 
   TestRequest(src_facility_, src_facility_->current_capacity());
 }
 
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-TEST_F(CommodConverterTest, AddMats) { 
+TEST_F(StorageTest, AddMats) { 
   double cap = src_facility_->current_capacity();
   cyclus::Material::Ptr mat = cyclus::NewBlankMaterial(0.5*cap);
   TestAddMat(src_facility_, mat);
@@ -135,13 +135,13 @@ TEST_F(CommodConverterTest, AddMats) {
 }
 
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-TEST_F(CommodConverterTest, Tick) {
+TEST_F(StorageTest, Tick) {
   ASSERT_NO_THROW(src_facility_->Tick());
-  // Test CommodConverter specific behaviors of the Tick function here
+  // Test Storage specific behaviors of the Tick function here
 }
 
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-TEST_F(CommodConverterTest, Tock) {
+TEST_F(StorageTest, Tock) {
 
   // initially, nothing in the buffers
   TestBuffers(src_facility_,0,0,0);
@@ -180,7 +180,7 @@ TEST_F(CommodConverterTest, Tock) {
 }
 
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-TEST_F(CommodConverterTest, NoProcessTime) {
+TEST_F(StorageTest, NoProcessTime) {
   // tests what happens when the process time is zero
   src_facility_->process_time_(0);
   EXPECT_EQ(0, src_facility_->process_time_());
@@ -199,7 +199,7 @@ TEST_F(CommodConverterTest, NoProcessTime) {
   TestBuffers(src_facility_,0,0,cap);
 }
 
-TEST_F(CommodConverterTest, NoConvert) {
+TEST_F(StorageTest, NoConvert) {
   // test what happens if no recipe change specified
   src_facility_->out_recipe_(in_r1);
   EXPECT_EQ(src_facility_->in_recipe_(), src_facility_->out_recipe_());
@@ -221,7 +221,7 @@ TEST_F(CommodConverterTest, NoConvert) {
   TestStocks(src_facility_,in_rec);
 }
 
-TEST_F(CommodConverterTest, MultipleSmallBatches) {
+TEST_F(StorageTest, MultipleSmallBatches) {
   // Add first small batch
   double cap = src_facility_->current_capacity();
   cyclus::Composition::Ptr rec = tc_.get()->GetRecipe(in_r1);
@@ -258,7 +258,7 @@ TEST_F(CommodConverterTest, MultipleSmallBatches) {
 }
 
 
-TEST_F(CommodConverterTest, ChangeCapacity) {
+TEST_F(StorageTest, ChangeCapacity) {
   src_facility_->max_inv_size_(10000);
   // Set capacity, add first batch
   src_facility_->capacity_(300);
@@ -268,7 +268,7 @@ TEST_F(CommodConverterTest, ChangeCapacity) {
   TestAddMat(src_facility_, mat1);
   EXPECT_NO_THROW(src_facility_->Tock());
   TestBuffers(src_facility_,0,cap1,0);
-	
+  
   // Increase capacity, add second and third batches
   tc_.get()->time(2);
   src_facility_->capacity_(500);
@@ -282,12 +282,12 @@ TEST_F(CommodConverterTest, ChangeCapacity) {
   TestAddMat(src_facility_, mat3);
   EXPECT_NO_THROW(src_facility_->Tock());
   TestBuffers(src_facility_,0,cap2,0);
-	
+  
   // Move first batch to stocks
   tc_.get()->time(process_time);
   EXPECT_NO_THROW(src_facility_->Tock());
-  TestBuffers(src_facility_,0,0,cap1);	
-	
+  TestBuffers(src_facility_,0,0,cap1);  
+  
   // Decrease capacity and move portion of second batch to stocks
   src_facility_->capacity_(400);
   tc_.get()->time(process_time+2);
@@ -303,10 +303,10 @@ TEST_F(CommodConverterTest, ChangeCapacity) {
   tc_.get()->time(process_time+4);
   EXPECT_NO_THROW(src_facility_->Tock());
   TestBuffers(src_facility_,0,0,cap1+cap2+cap2);
-	
+  
 }
 
-TEST_F(CommodConverterTest, TwoBatchSameTime) {
+TEST_F(StorageTest, TwoBatchSameTime) {
   // Add first small batch
   double cap = src_facility_->current_capacity();
   cyclus::Composition::Ptr rec = tc_.get()->GetRecipe(in_r1);
@@ -328,7 +328,7 @@ TEST_F(CommodConverterTest, TwoBatchSameTime) {
   TestBuffers(src_facility_,0,0,0.4*cap);
 }
 
-TEST_F(CommodConverterTest,ChangeProcessTime){
+TEST_F(StorageTest,ChangeProcessTime){
   // Initialize process time variable and add first batch
   int proc_time1 = src_facility_->process_time_();
   double cap = src_facility_->current_capacity();
@@ -376,7 +376,7 @@ TEST_F(CommodConverterTest,ChangeProcessTime){
   
 }
 
-TEST_F(CommodConverterTest,DifferentRecipe){
+TEST_F(StorageTest,DifferentRecipe){
   // Initialize material with different recipe than in_recipe
   double cap = src_facility_->current_capacity();
   cyclus::CompMap v;
@@ -395,11 +395,11 @@ TEST_F(CommodConverterTest,DifferentRecipe){
   TestBuffers(src_facility_,0,0,cap);
 }
 
-} // namespace commodconverter
+} // namespace storage
 
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-cyclus::Agent* CommodConverterConstructor(cyclus::Context* ctx) {
-  return new commodconverter::CommodConverter(ctx);
+cyclus::Agent* StorageConstructor(cyclus::Context* ctx) {
+  return new storage::Storage(ctx);
 }
 
 // required to get functionality in cyclus agent unit tests library
@@ -410,8 +410,8 @@ static int cyclus_agent_tests_connected = ConnectAgentTests();
 #endif // CYCLUS_AGENT_TESTS_CONNECTED
 
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-INSTANTIATE_TEST_CASE_P(CommodConverterFac, FacilityTests,
-                        ::testing::Values(&CommodConverterConstructor));
+INSTANTIATE_TEST_CASE_P(StorageFac, FacilityTests,
+                        ::testing::Values(&StorageConstructor));
 
-INSTANTIATE_TEST_CASE_P(CommodConverterFac, AgentTests,
-                        ::testing::Values(&CommodConverterConstructor));
+INSTANTIATE_TEST_CASE_P(StorageFac, AgentTests,
+                        ::testing::Values(&StorageConstructor));

@@ -1,44 +1,44 @@
-// commodconverter.cc
-// Implements the CommodConverter class
-#include "commodconverter.h"
+// storage.cc
+// Implements the Storage class
+#include "storage.h"
 
-namespace commodconverter {
+namespace storage {
 
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-CommodConverter::CommodConverter(cyclus::Context* ctx)
+Storage::Storage(cyclus::Context* ctx)
     : cyclus::Facility(ctx) {
-  cyclus::Warn<cyclus::EXPERIMENTAL_WARNING>("the CommodConverter is experimental.");
+  cyclus::Warn<cyclus::EXPERIMENTAL_WARNING>("the Storage is experimental.");
     };
 
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 // pragmas
 
-#pragma cyclus def schema commodconverter::CommodConverter
+#pragma cyclus def schema storage::Storage
 
-#pragma cyclus def annotations commodconverter::CommodConverter
+#pragma cyclus def annotations storage::Storage
 
-#pragma cyclus def initinv commodconverter::CommodConverter
+#pragma cyclus def initinv storage::Storage
 
-#pragma cyclus def snapshotinv commodconverter::CommodConverter
+#pragma cyclus def snapshotinv storage::Storage
 
-#pragma cyclus def infiletodb commodconverter::CommodConverter
+#pragma cyclus def infiletodb storage::Storage
 
-#pragma cyclus def snapshot commodconverter::CommodConverter
+#pragma cyclus def snapshot storage::Storage
 
-#pragma cyclus def clone commodconverter::CommodConverter
+#pragma cyclus def clone storage::Storage
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-void CommodConverter::InitFrom(CommodConverter* m) {
+void Storage::InitFrom(Storage* m) {
 
-  #pragma cyclus impl initfromcopy commodconverter::CommodConverter
+  #pragma cyclus impl initfromcopy storage::Storage
 
   cyclus::toolkit::CommodityProducer::Copy(m);
 }
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-void CommodConverter::InitFrom(cyclus::QueryableBackend* b){
+void Storage::InitFrom(cyclus::QueryableBackend* b){
 
-  #pragma cyclus impl initfromdb commodconverter::CommodConverter
+  #pragma cyclus impl initfromdb storage::Storage
 
   using cyclus::toolkit::Commodity;
   Commodity commod = Commodity(out_commod);
@@ -48,7 +48,7 @@ void CommodConverter::InitFrom(cyclus::QueryableBackend* b){
 }
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-void CommodConverter::EnterNotify() {
+void Storage::EnterNotify() {
   Facility::EnterNotify();
 
   using cyclus::toolkit::Commodity;
@@ -59,7 +59,7 @@ void CommodConverter::EnterNotify() {
 }
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-std::string CommodConverter::str() {
+std::string Storage::str() {
   std::stringstream ss;
   std::string ans;
   if (cyclus::toolkit::CommodityProducer::
@@ -83,7 +83,7 @@ std::string CommodConverter::str() {
 }
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-void CommodConverter::Tick() { 
+void Storage::Tick() { 
   LOG(cyclus::LEV_INFO3, "ComCnv") << prototype() << " is ticking {";
 
   if (current_capacity() > cyclus::eps()) {
@@ -96,7 +96,7 @@ void CommodConverter::Tick() {
 }
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-void CommodConverter::Tock() {
+void Storage::Tock() {
   LOG(cyclus::LEV_INFO3, "ComCnv") << prototype() << " is tocking {";
 
   BeginProcessing_(); // place unprocessed inventory into processing
@@ -110,7 +110,7 @@ void CommodConverter::Tock() {
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 std::set<cyclus::RequestPortfolio<cyclus::Material>::Ptr>
-CommodConverter::GetMatlRequests() {
+Storage::GetMatlRequests() {
   using cyclus::CapacityConstraint;
   using cyclus::Material;
   using cyclus::RequestPortfolio;
@@ -135,7 +135,7 @@ CommodConverter::GetMatlRequests() {
 }
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-void CommodConverter::AcceptMatlTrades(
+void Storage::AcceptMatlTrades(
   const std::vector< std::pair<cyclus::Trade<cyclus::Material>,
   cyclus::Material::Ptr> >& responses) {
   std::vector< std::pair<cyclus::Trade<cyclus::Material>,
@@ -147,7 +147,7 @@ void CommodConverter::AcceptMatlTrades(
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 std::set<cyclus::BidPortfolio<cyclus::Material>::Ptr>
-CommodConverter::GetMatlBids(cyclus::CommodMap<cyclus::Material>::type&
+Storage::GetMatlBids(cyclus::CommodMap<cyclus::Material>::type&
                           commod_requests) {
   using cyclus::BidPortfolio;
   using cyclus::Material;
@@ -167,7 +167,7 @@ CommodConverter::GetMatlBids(cyclus::CommodMap<cyclus::Material>::type&
 }
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-void CommodConverter::GetMatlTrades(
+void Storage::GetMatlTrades(
   const std::vector< cyclus::Trade<cyclus::Material> >& trades,
   std::vector<std::pair<cyclus::Trade<cyclus::Material>,
   cyclus::Material::Ptr> >& responses) {
@@ -194,7 +194,7 @@ void CommodConverter::GetMatlTrades(
 }
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-void CommodConverter::AddMat_(cyclus::Material::Ptr mat) {
+void Storage::AddMat_(cyclus::Material::Ptr mat) {
   // Here we do not check that the recipe matches the input recipe. 
 
   LOG(cyclus::LEV_INFO5, "ComCnv") << prototype() << " is initially holding "
@@ -215,7 +215,7 @@ void CommodConverter::AddMat_(cyclus::Material::Ptr mat) {
 }
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-cyclus::Material::Ptr CommodConverter::Request_() {
+cyclus::Material::Ptr Storage::Request_() {
   double qty = std::max(0.0, current_capacity());
   LOG(cyclus::LEV_INFO5, "ComCnv") << prototype()
                                   << " just requested "
@@ -227,7 +227,7 @@ cyclus::Material::Ptr CommodConverter::Request_() {
 }
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-cyclus::BidPortfolio<cyclus::Material>::Ptr CommodConverter::GetBids_(
+cyclus::BidPortfolio<cyclus::Material>::Ptr Storage::GetBids_(
     cyclus::CommodMap<cyclus::Material>::type& commod_requests,
     std::string commod,
     cyclus::toolkit::ResourceBuff* buffer) {
@@ -267,7 +267,7 @@ cyclus::BidPortfolio<cyclus::Material>::Ptr CommodConverter::GetBids_(
 }
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-cyclus::Material::Ptr CommodConverter::TradeResponse_(
+cyclus::Material::Ptr Storage::TradeResponse_(
     double qty,
     cyclus::toolkit::ResourceBuff* buffer) {
   using cyclus::Material;
@@ -290,11 +290,11 @@ cyclus::Material::Ptr CommodConverter::TradeResponse_(
 }
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-void CommodConverter::BeginProcessing_(){
+void Storage::BeginProcessing_(){
   while( inventory.count() > 0 ){
     try {
       processing[context()->time()].Push(inventory.Pop());
-      LOG(cyclus::LEV_DEBUG2, "ComCnv") << "CommodConverter " << prototype() 
+      LOG(cyclus::LEV_DEBUG2, "ComCnv") << "Storage " << prototype() 
                                       << " added resources to processing at t= "
                                       << context()->time();
     } catch (cyclus::Error& e) {
@@ -305,7 +305,7 @@ void CommodConverter::BeginProcessing_(){
 }
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-void CommodConverter::Convert_(double cap){
+void Storage::Convert_(double cap){
   using cyclus::Material;
   using cyclus::ResCast;
   using cyclus::toolkit::ResourceBuff;
@@ -335,7 +335,7 @@ void CommodConverter::Convert_(double cap){
       }
 
       AdvanceUnconverted_(t);
-      LOG(cyclus::LEV_INFO1, "ComCnv") << "CommodConverter " << prototype() 
+      LOG(cyclus::LEV_INFO1, "ComCnv") << "Storage " << prototype() 
                                         << " converted quantity : " << to_pop 
                                         << " from " << in_commod 
                                         << " to " << out_commod
@@ -348,7 +348,7 @@ void CommodConverter::Convert_(double cap){
 }
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-double CommodConverter::ProcessingAmt_(int time) {
+double Storage::ProcessingAmt_(int time) {
   using cyclus::toolkit::ResourceBuff;
   double to_ret = 0;
   std::map<int, ResourceBuff>::iterator proc = processing.find(time);
@@ -361,7 +361,7 @@ double CommodConverter::ProcessingAmt_(int time) {
 }
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-void CommodConverter::AdvanceUnconverted_(int time){
+void Storage::AdvanceUnconverted_(int time){
   using cyclus::Material;
   using cyclus::ResCast;
 
@@ -379,8 +379,8 @@ void CommodConverter::AdvanceUnconverted_(int time){
 }
 
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-extern "C" cyclus::Agent* ConstructCommodConverter(cyclus::Context* ctx) {
-  return new CommodConverter(ctx);
+extern "C" cyclus::Agent* ConstructStorage(cyclus::Context* ctx) {
+  return new Storage(ctx);
 }
 
-} // namespace commodconverter
+} // namespace storage
