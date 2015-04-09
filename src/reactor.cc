@@ -50,10 +50,9 @@ void Reactor::InitFrom(Reactor* m) {
 void Reactor::InitFrom(cyclus::QueryableBackend* b) {
   #pragma cyclus impl initfromdb cycamore::Reactor
 
-  power_commod_ = cyclus::toolkit::Commodity(power_commod);
-  cyclus::toolkit::CommodityProducer::Add(power_commod_);
-  cyclus::toolkit::CommodityProducer::SetCapacity(power_commod_, power_cap);
-  cyclus::toolkit::CommodityProducer::SetCost(power_commod_, power_cap);
+  using cyclus::toolkit as tk;
+  tk::CommodityProducer::Add(tk::Commodity(power_commod),
+                             tk::CommodInfo(power_cap, power_cap));
 }
 
 void Reactor::EnterNotify() {

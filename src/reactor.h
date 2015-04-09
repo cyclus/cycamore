@@ -305,9 +305,6 @@ class Reactor : public cyclus::Facility,
     "doc": "The name of the 'power' commodity used in conjunction with a deployment curve.", \
   }
   std::string power_commod;
-
-  // internal use only
-  cyclus::toolkit::Commodity power_commod_;
 };
 
 } // namespace cycamore
