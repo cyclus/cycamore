@@ -23,7 +23,7 @@ class TestRegression(TestCase):
     def __init__(self, *args, **kwargs):
         super(TestRegression, self).__init__(*args, **kwargs)
         self.ext = '.sqlite'
-        self.ext = '.h5'
+        # self.ext = '.h5'
         self.outf = str(uuid.uuid4()) + self.ext
         self.inf = None
 
@@ -56,7 +56,9 @@ class TestRegression(TestCase):
             self.conn.row_factory = sqlite3.Row
             self.cur = self.conn.cursor()
             self.agent_entry = self.cur.execute('SELECT * FROM AgentEntry').fetchall()
-            self.agent_exit = self.cur.execute('SELECT * FROM AgentExit').fetchall()
+            print(self.agent_entry[0]['Prototype'])
+            print(self.cur.execute("SELECT * FROM sqlite_master WHERE type='table' AND name='AgentExit'").fetchall())
+            self.agent_exit = self.cur.execute('SELECT * FROM AgentExit').fetchall() if len(self.cur.execute("SELECT * FROM sqlite_master WHERE type='table' AND name='AgentExit'").fetchall()) > 0 else None
             self.resources = self.cur.execute('SELECT * FROM Resources').fetchall()
             print(self.resources, self.resources[0]['ResourceId'])
             self.transactions = self.cur.execute('SELECT * FROM Transactions').fetchall()
@@ -69,11 +71,13 @@ class TestRegression(TestCase):
         if self.ext == '.h5':
             return helper.find_ids(spec, a[spec_col], a[id_col])
         else:
-            pass
+            return [x[id_col] for x in a if x[spec_col] == spec]
 
     def to_array(self, a, k):
-        if self.ext == 'sqlite':
-            return [x[k] for x in a]
+        if self.ext == '.sqlite':
+            print('to_array', a, k)
+            print([x[k] for x in a])
+            return np.array([x[k] for x in a])
         else:
             return a[k]
                         
@@ -344,9 +348,9 @@ class TestGrowth(TestRegression):
         self.inf = "./input/growth.xml"
 
     def test_deployment(self):
-        agent_ids = self.agent_entry["AgentId"]
-        proto = self.agent_entry["Prototype"]
-        depl_time = self.agent_entry["EnterTime"]
+        agent_ids = self.to_array(self.agent_entry, "AgentId")
+        proto = self.to_array(self.agent_entry, "Prototype")
+        depl_time = self.to_array(self.agent_entry, "EnterTime")
         
         source1_id = self.find_ids("Source1", self.agent_entry, spec_col="Prototype")
         source2_id = self.find_ids("Source2", self.agent_entry, spec_col="Prototype")
