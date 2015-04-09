@@ -21,7 +21,7 @@ Reactor::Reactor(cyclus::Context* ctx)
       refuel_time(0),
       cycle_step(0),
       power_cap(0),
-      power_commod("power"),
+      power_name("power"),
       discharged(false) {
   cyclus::Warn<cyclus::EXPERIMENTAL_WARNING>(
       "the Reactor archetype "
@@ -51,7 +51,7 @@ void Reactor::InitFrom(cyclus::QueryableBackend* b) {
   #pragma cyclus impl initfromdb cycamore::Reactor
 
   namespace tk = cyclus::toolkit;
-  tk::CommodityProducer::Add(tk::Commodity(power_commod),
+  tk::CommodityProducer::Add(tk::Commodity(power_name),
                              tk::CommodInfo(power_cap, power_cap));
 }
 

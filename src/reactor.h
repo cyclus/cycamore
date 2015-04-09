@@ -159,7 +159,7 @@ class Reactor : public cyclus::Facility,
     "default": "power", \
     "doc": "The name of the 'power' commodity used in conjunction with a deployment curve.", \
   }
-  std::string power_commod;
+  std::string power_name;
   
   //////////// inventory and core params ////////////
   #pragma cyclus var { \
