@@ -50,7 +50,7 @@ void Reactor::InitFrom(Reactor* m) {
 void Reactor::InitFrom(cyclus::QueryableBackend* b) {
   #pragma cyclus impl initfromdb cycamore::Reactor
 
-  using cyclus::toolkit as tk;
+  namespace tk = cyclus::toolkit;
   tk::CommodityProducer::Add(tk::Commodity(power_commod),
                              tk::CommodInfo(power_cap, power_cap));
 }
