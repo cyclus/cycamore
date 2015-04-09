@@ -45,6 +45,8 @@ class TestRegression(TestCase):
                 self.agent_entry = f.get_node("/AgentEntry")[:]
                 self.agent_exit = f.get_node("/AgentExit")[:] if "/AgentExit" in f \
                     else None
+                self.enrichments = f.get_node("/Enrichments")[:] if "/Enrichments" in f \
+                    else None
                 self.resources = f.get_node("/Resources")[:]
                 self.transactions = f.get_node("/Transactions")[:]
                 self.compositions = f.get_node("/Compositions")[:]
@@ -56,11 +58,12 @@ class TestRegression(TestCase):
             self.conn.row_factory = sqlite3.Row
             self.cur = self.conn.cursor()
             self.agent_entry = self.cur.execute('SELECT * FROM AgentEntry').fetchall()
-            print(self.agent_entry[0]['Prototype'])
-            print(self.cur.execute("SELECT * FROM sqlite_master WHERE type='table' AND name='AgentExit'").fetchall())
+            # print(self.agent_entry[0]['Prototype'])
+            # print(self.cur.execute("SELECT * FROM sqlite_master WHERE type='table' AND name='AgentExit'").fetchall())
             self.agent_exit = self.cur.execute('SELECT * FROM AgentExit').fetchall() if len(self.cur.execute("SELECT * FROM sqlite_master WHERE type='table' AND name='AgentExit'").fetchall()) > 0 else None
+            self.enrichments = self.cur.execute('SELECT * FROM Enrichments').fetchall() if len(self.cur.execute("SELECT * FROM sqlite_master WHERE type='table' AND name='Enrichments'").fetchall()) > 0 else None
             self.resources = self.cur.execute('SELECT * FROM Resources').fetchall()
-            print(self.resources, self.resources[0]['ResourceId'])
+            # print(self.resources, self.resources[0]['ResourceId'])
             self.transactions = self.cur.execute('SELECT * FROM Transactions').fetchall()
             self.compositions = self.cur.execute('SELECT * FROM Compositions').fetchall()
             self.info = self.cur.execute('SELECT * FROM Info').fetchall()
@@ -75,8 +78,8 @@ class TestRegression(TestCase):
 
     def to_array(self, a, k):
         if self.ext == '.sqlite':
-            print('to_array', a, k)
-            print([x[k] for x in a])
+            # print('to_array', a, k)
+            # print([x[k] for x in a])
             return np.array([x[k] for x in a])
         else:
             return a[k]
@@ -103,9 +106,6 @@ class TestPhysorEnrichment(TestRegression):
         self.rx_id = self.find_ids(":cycamore:Reactor", tbl)
         self.enr_id = self.find_ids(":cycamore:EnrichmentFacility", tbl)
 
-        with tables.open_file(self.outf, mode="r") as f:
-            self.enrichments = f.get_node("/Enrichments")[:]
-
     def test_deploy(self):
         assert_equal(len(self.rx_id), 2)
         assert_equal(len(self.enr_id), 1)
@@ -116,7 +116,7 @@ class TestPhysorEnrichment(TestRegression):
         # enrichment module from python
         # with old BatchReactor: exp = [6.9, 10, 4.14, 6.9]
         exp = [6.9, 10., 4.14, 6.9]
-        obs = [np.sum(enr["SWU"][enr["Time"] == t]) for t in range(4)]
+        obs = [np.sum(self.to_array(enr, "SWU")[self.to_array(enr, "Time") == t]) for t in range(4)]
         assert_array_almost_equal(exp, obs, decimal=2)
 
     def test_nu(self):
