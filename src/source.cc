@@ -40,22 +40,14 @@ void Source::InitFrom(Source* m) {
 void Source::InitFrom(cyclus::QueryableBackend* b) {
   #pragma cyclus impl initfromdb cycamore::Source
 
-  commod_ = cyclus::toolkit::Commodity(out_commod);
-  cyclus::toolkit::CommodityProducer::Add(commod_);
-  cyclus::toolkit::CommodityProducer::SetCapacity(commod_, capacity);
-  cyclus::toolkit::CommodityProducer::SetCost(commod_, capacity);
-}
-
-void Source::EnterNotify() {
-  Facility::EnterNotify();
-  commod_ = cyclus::toolkit::Commodity(out_commod);
-  cyclus::toolkit::CommodityProducer::Add(commod_);
-  cyclus::toolkit::CommodityProducer::SetCapacity(commod_, capacity);
-  cyclus::toolkit::CommodityProducer::SetCost(commod_, capacity);
+  namespace tk = cyclus::toolkit;
+  tk::CommodityProducer::Add(tk::Commodity(out_commod),
+                             tk::CommodInfo(capacity, capacity));
 }
 
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 std::string Source::str() {
+  namespace tk = cyclus::toolkit;
   std::stringstream ss;
   std::string ans;
   if (cyclus::toolkit::CommodityProducer::
@@ -71,8 +63,8 @@ std::string Source::str() {
      << capacity << " kg per time step "
      << " commod producer members: " << " produces "
      << out_commod << "?: " <<  ans
-     << " capacity: " << cyclus::toolkit::CommodityProducer::Capacity(commod_)
-     << " cost: " << cyclus::toolkit::CommodityProducer::Cost(commod_);
+     << " capacity: " << tk::CommodityProducer::Capacity(out_commod)
+     << " cost: " << tk::CommodityProducer::Cost(out_commod);
   return ss.str();
 }
 
