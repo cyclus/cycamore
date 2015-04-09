@@ -21,19 +21,13 @@ void Source::InitFrom(Source* m) {
 
 void Source::InitFrom(cyclus::QueryableBackend* b) {
   #pragma cyclus impl initfromdb cycamore::Source
-  cyclus::toolkit::CommodityProducer::Add(outcommod);
-  cyclus::toolkit::CommodityProducer::SetCapacity(outcommod, throughput);
-  cyclus::toolkit::CommodityProducer::SetCost(outcommod, throughput);
-}
-
-void Source::EnterNotify() {
-  Facility::EnterNotify();
-  cyclus::toolkit::CommodityProducer::Add(outcommod);
-  cyclus::toolkit::CommodityProducer::SetCapacity(outcommod, throughput);
-  cyclus::toolkit::CommodityProducer::SetCost(outcommod, throughput);
+  namespace tk = cyclus::toolkit;
+  tk::CommodityProducer::Add(tk::Commodity(outcommod),
+                             tk::CommodInfo(throughput, throughput));
 }
 
 std::string Source::str() {
+  namespace tk = cyclus::toolkit;
   std::stringstream ss;
   std::string ans;
   if (cyclus::toolkit::CommodityProducer::Produces(

@@ -52,8 +52,6 @@ class Source : public cyclus::Facility,
 
   virtual void InitFrom(cyclus::QueryableBackend* b);
 
-  virtual void EnterNotify();
-
   virtual void Tick() {};
 
   virtual void Tock() {};
@@ -102,7 +100,6 @@ class Source : public cyclus::Facility,
     "units": "kg", \
   }
   double inventory_size;
-
 };
 
 }  // namespace cycamore
