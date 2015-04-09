@@ -42,7 +42,8 @@ namespace cycamore {
 /// becomes full, the reactor will halt operation at the end of the next cycle
 /// until there is more room.  Each time step, the reactor will try to trade
 /// away as much of its spent fuel inventory as possible.
-class Reactor : public cyclus::Facility {
+class Reactor : public cyclus::Facility,
+  public cyclus::toolkit::CommodityProducer {
 #pragma cyclus note { \
 "niche": "reactor", \
 "doc": \
@@ -107,7 +108,7 @@ class Reactor : public cyclus::Facility {
       std::vector<std::pair<cyclus::Trade<cyclus::Material>,
                             cyclus::Material::Ptr> >& responses);
 
-  #pragma cyclus
+  #pragma cyclus decl
 
  private:
   std::string fuel_incommod(cyclus::Material::Ptr m);
@@ -145,6 +146,21 @@ class Reactor : public cyclus::Facility {
   /// from the spent fuel buffer.
   std::map<std::string, cyclus::toolkit::MatVec> PeekSpent();
 
+
+  //////////// power params ////////////
+  #pragma cyclus var { \
+    "default": 0, \
+    "doc": "Amount of electrical power the facility produces when operating normally.", \
+    "units": "MWe", \
+  }
+  double power_cap;
+
+  #pragma cyclus var { \
+    "default": "power", \
+    "doc": "The name of the 'power' commodity used in conjunction with a deployment curve.", \
+  }
+  std::string power_name;
+  
   //////////// inventory and core params ////////////
   #pragma cyclus var { \
     "doc": "Number of assemblies that constitute a single batch." \
@@ -291,14 +307,6 @@ class Reactor : public cyclus::Facility {
   // id's to the index for the incommod through which they were received.
   #pragma cyclus var {"default": {}, "doc": "This should NEVER be set manually."}
   std::map<int, int> res_indexes;
-
-  #pragma cyclus var { \
-    "default": 0, \
-    "doc": "Amount of electrical power the facility produces when operating normally.", \
-    "units": "MWe", \
-  }
-  double power_cap;
-
 };
 
 } // namespace cycamore

@@ -21,15 +21,43 @@ Reactor::Reactor(cyclus::Context* ctx)
       refuel_time(0),
       cycle_step(0),
       power_cap(0),
+      power_name("power"),
       discharged(false) {
   cyclus::Warn<cyclus::EXPERIMENTAL_WARNING>(
       "the Reactor archetype "
       "is experimental");
 }
 
+#pragma cyclus def clone cycamore::Reactor
+
+#pragma cyclus def schema cycamore::Reactor
+
+#pragma cyclus def annotations cycamore::Reactor
+
+#pragma cyclus def infiletodb cycamore::Reactor
+
+#pragma cyclus def snapshot cycamore::Reactor
+
+#pragma cyclus def snapshotinv cycamore::Reactor
+
+#pragma cyclus def initinv cycamore::Reactor
+
+void Reactor::InitFrom(Reactor* m) {
+  #pragma cyclus impl initfromcopy cycamore::Reactor
+  cyclus::toolkit::CommodityProducer::Copy(m);
+}
+
+void Reactor::InitFrom(cyclus::QueryableBackend* b) {
+  #pragma cyclus impl initfromdb cycamore::Reactor
+
+  namespace tk = cyclus::toolkit;
+  tk::CommodityProducer::Add(tk::Commodity(power_name),
+                             tk::CommodInfo(power_cap, power_cap));
+}
+
 void Reactor::EnterNotify() {
   cyclus::Facility::EnterNotify();
-
+  
   // If the user ommitted fuel_prefs, we set it to zeros for each fuel
   // type.  Without this segfaults could occur - yuck.
   if (fuel_prefs.size() == 0) {
