@@ -54,7 +54,8 @@ class Separations : public cyclus::Facility {
   double throughput;
 
   #pragma cyclus var { \
-    "doc": "Ordered list of commodities on which to request feed material to separate.", \
+    "doc": "Ordered list of commodities on which to request feed material to separate." \
+           " Order only matters for matching up with feed commodity preferences if specified.", \
     "uitype": ["oneormore", "incommodity"], \
   }
   std::vector<std::string> feed_commods;
@@ -118,7 +119,7 @@ class Separations : public cyclus::Facility {
            " that is separated from the feed into this output stream." \
            " If any stream buffer is full, the facility halts operation until space becomes available.", \
   }
-  std::map<std::string,std::pair<double,std::map<int,double> > > streams_;
+  std::map<std::string, std::pair<double, std::map<int, double> > > streams_;
 
   // custom SnapshotInv and InitInv and EnterNotify are used to persist this
   // state var.
