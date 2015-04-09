@@ -1,6 +1,7 @@
 #! /usr/bin/env python
 
 import os
+import platform
 from unittest import TestCase
 
 import tables
@@ -22,8 +23,7 @@ class TestRegression(TestCase):
     """
     def __init__(self, *args, **kwargs):
         super(TestRegression, self).__init__(*args, **kwargs)
-        self.ext = '.sqlite'
-        # self.ext = '.h5'
+        self.ext = '.h5' if platform.system() == 'Linux' else '.sqlite'
         self.outf = str(uuid.uuid4()) + self.ext
         self.inf = None
 
