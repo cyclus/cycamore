@@ -18,9 +18,9 @@
     <name>UOX_Source</name>
     <config>
       <Source>
-        <out_commod>uox</out_commod>
-        <recipe_name>uox_fuel_recipe</recipe_name>
-        <capacity>2.500000001</capacity>
+        <outcommod>uox</outcommod>
+        <outrecipe>uox_fuel_recipe</outrecipe>
+        <throughput>2.500000001</throughput>
       </Source>
     </config>
   </facility>
@@ -29,9 +29,9 @@
     <name>MOX_Source</name>
     <config>
       <Source>
-        <out_commod>mox</out_commod>
-        <recipe_name>mox_fuel_recipe</recipe_name>
-        <capacity>2.500000001</capacity>
+        <outcommod>mox</outcommod>
+        <outrecipe>mox_fuel_recipe</outrecipe>
+        <throughput>2.500000001</throughput>
       </Source>
     </config>
   </facility>

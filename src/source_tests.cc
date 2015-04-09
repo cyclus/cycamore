@@ -8,7 +8,8 @@
 #include "resource_helpers.h"
 #include "test_context.h"
 
-// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+namespace cycamore {
+
 void SourceTest::SetUp() {
   src_facility = new cycamore::Source(tc.get());
   trader = tc.trader();
@@ -16,12 +17,10 @@ void SourceTest::SetUp() {
   SetUpSource();
 }
 
-// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 void SourceTest::TearDown() {
   delete src_facility;
 }
 
-// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 void SourceTest::InitParameters() {
   commod = "commod";
   recipe_name = "recipe";
@@ -31,64 +30,28 @@ void SourceTest::InitParameters() {
   tc.get()->AddRecipe(recipe_name, recipe);
 }
 
-// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 void SourceTest::SetUpSource() {
-  src_facility->commodity(commod);
-  src_facility->recipe(recipe_name);
-  src_facility->Capacity(capacity);
+  outcommod(src_facility, commod);
+  outrecipe(src_facility, recipe_name);
+  throughput(src_facility, capacity);
 }
 
-// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-TEST_F(SourceTest, InitialState) {
-  EXPECT_EQ(src_facility->Capacity(), capacity);
-  EXPECT_EQ(src_facility->commodity(), commod);
-  EXPECT_EQ(src_facility->recipe(), recipe_name);
-  EXPECT_EQ(src_facility->CurrentCapacity(), capacity);
-}
-
-// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 TEST_F(SourceTest, Clone) {
   cyclus::Context* ctx = tc.get();
   cycamore::Source* cloned_fac = dynamic_cast<cycamore::Source*>
                                          (src_facility->Clone());
 
-  EXPECT_EQ(src_facility->commodity(), cloned_fac->commodity());
-  EXPECT_EQ(src_facility->Capacity(), cloned_fac->Capacity());
-  EXPECT_EQ(src_facility->recipe(), cloned_fac->recipe());
-  EXPECT_EQ(src_facility->Capacity(), cloned_fac->CurrentCapacity());
+  EXPECT_EQ(outcommod(src_facility),  outcommod(cloned_fac));
+  EXPECT_EQ(throughput(src_facility), throughput(cloned_fac));
+  EXPECT_EQ(outrecipe(src_facility),  outrecipe(cloned_fac));
 
   delete cloned_fac;
 }
 
-// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 TEST_F(SourceTest, Print) {
   EXPECT_NO_THROW(std::string s = src_facility->str());
 }
 
-// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-TEST_F(SourceTest, GetOffer) {
-  using cyclus::Material;
-
-  double qty = capacity - 1;
-  Material::Ptr mat = cyclus::NewBlankMaterial(qty);
-  Material::Ptr obs_mat = src_facility->GetOffer(mat);
-  EXPECT_EQ(obs_mat->quantity(), qty);
-  EXPECT_EQ(obs_mat->comp(), recipe);
-
-  qty = capacity + 1;
-  mat = cyclus::NewBlankMaterial(qty);
-  obs_mat = src_facility->GetOffer(mat);
-  EXPECT_EQ(obs_mat->quantity(), capacity);
-  EXPECT_EQ(obs_mat->comp(), recipe);
-
-  qty = capacity;
-  mat = cyclus::NewBlankMaterial(qty);
-  obs_mat = src_facility->GetOffer(mat);
-  EXPECT_EQ(obs_mat->quantity(), capacity);
-  EXPECT_EQ(obs_mat->comp(), recipe);
-}
-
-// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 TEST_F(SourceTest, AddBids) {
   using cyclus::Bid;
   using cyclus::BidPortfolio;
@@ -117,7 +80,6 @@ TEST_F(SourceTest, AddBids) {
   EXPECT_EQ(*constrs.begin(), CapacityConstraint<Material>(capacity));
 }
 
-// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 TEST_F(SourceTest, Response) {
   using cyclus::Bid;
   using cyclus::Material;
@@ -143,34 +105,24 @@ TEST_F(SourceTest, Response) {
   trades.push_back(trade);
 
   // 1 trade
-  ASSERT_EQ(src_facility->CurrentCapacity(), capacity);
   src_facility->GetMatlTrades(trades, responses);
   EXPECT_EQ(responses.size(), 1);
   EXPECT_EQ(responses[0].second->quantity(), qty);
   EXPECT_EQ(responses[0].second->comp(), recipe);
 
   // 2 trades, total qty = capacity
-  ASSERT_DOUBLE_EQ(src_facility->CurrentCapacity(), capacity - qty);
-  ASSERT_GT(src_facility->CurrentCapacity() - 2 * qty, -1 * cyclus::eps());
   trades.push_back(trade);
   responses.clear();
   EXPECT_NO_THROW(src_facility->GetMatlTrades(trades, responses));
   EXPECT_EQ(responses.size(), 2);
-  ASSERT_TRUE(cyclus::AlmostEq(src_facility->CurrentCapacity(), 0));
-
-  // too much qty, capn!
-  EXPECT_THROW(src_facility->GetMatlTrades(trades, responses),
-               cyclus::ValueError);
 
   // reset!
   src_facility->Tick();
-  ASSERT_DOUBLE_EQ(src_facility->CurrentCapacity(), capacity);
 
   delete request;
   delete bid;
 }
 
-// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 boost::shared_ptr< cyclus::ExchangeContext<cyclus::Material> >
 SourceTest::GetContext(int nreqs, std::string commod) {
   using cyclus::Material;
@@ -187,7 +139,8 @@ SourceTest::GetContext(int nreqs, std::string commod) {
   return ec;
 }
 
-// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+} // namespace cycamore
+
 cyclus::Agent* SourceConstructor(cyclus::Context* ctx) {
   return new cycamore::Source(ctx);
 }
@@ -199,6 +152,6 @@ static int cyclus_agent_tests_connected = ConnectAgentTests();
 #define CYCLUS_AGENT_TESTS_CONNECTED cyclus_agent_tests_connected
 #endif  // CYCLUS_AGENT_TESTS_CONNECTED
 
-// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 INSTANTIATE_TEST_CASE_P(SourceFac, FacilityTests, Values(&SourceConstructor));
 INSTANTIATE_TEST_CASE_P(SourceFac, AgentTests, Values(&SourceConstructor));
+

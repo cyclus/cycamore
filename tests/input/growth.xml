@@ -30,9 +30,9 @@
     <name>Source1</name>
     <config>
       <Source>
-        <out_commod>commodity</out_commod>
-        <recipe_name>commod_recipe</recipe_name>
-        <capacity>1.1</capacity>
+        <outcommod>commodity</outcommod>
+        <outrecipe>commod_recipe</outrecipe>
+        <throughput>1.1</throughput>
       </Source>
     </config>
   </facility>
@@ -41,9 +41,9 @@
     <name>Source2</name>
     <config>
       <Source>
-        <out_commod>commodity</out_commod>
-        <recipe_name>commod_recipe</recipe_name>
-        <capacity>2</capacity>
+        <outcommod>commodity</outcommod>
+        <outrecipe>commod_recipe</outrecipe>
+        <throughput>2</throughput>
       </Source>
     </config>
   </facility>
