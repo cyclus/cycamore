@@ -55,7 +55,7 @@
         <n_assem_core>1</n_assem_core>
         <n_assem_batch>1</n_assem_batch>
 
-        <power_commod>power</power_commod>
+        <power_name>power</power_name>
         <power_cap>10</power_cap>
       </Reactor>
     </config>
