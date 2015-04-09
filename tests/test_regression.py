@@ -260,14 +260,14 @@ class TestDynamicCapacitated(TestRegression):
         self.sink_id = self.find_ids(":agents:Sink", self.agent_entry)
 
         # Check transactions
-        self.sender_ids = self.transactions["SenderId"]
-        self.receiver_ids = self.transactions["ReceiverId"]
-        self.trans_time = self.transactions["Time"]
-        self.trans_resource = self.transactions["ResourceId"]
+        self.sender_ids = self.to_array(self.transactions, "SenderId")
+        self.receiver_ids = self.to_array(self.transactions, "ReceiverId")
+        self.trans_time = self.to_array(self.transactions, "Time")
+        self.trans_resource = self.to_array(self.transactions, "ResourceId")
 
         # Track transacted resources
-        self.resource_ids = self.resources["ResourceId"]
-        self.quantities = self.resources["Quantity"]
+        self.resource_ids = self.to_array(self.resources, "ResourceId")
+        self.quantities = self.to_array(self.resources, "Quantity")
 
     def test_source_deployment(self):
         # test number of sources
