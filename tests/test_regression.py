@@ -5,12 +5,13 @@ from unittest import TestCase
 
 import tables
 import uuid
+import sqlite3
 import numpy as np
 from numpy.testing import assert_array_almost_equal 
 from numpy.testing import assert_almost_equal 
 from nose.tools import assert_equal, assert_true
-
-from helper import check_cmd, run_cyclus, table_exist, find_ids
+import helper
+from helper import check_cmd, run_cyclus, table_exist
 
 class TestRegression(TestCase):
     """A base class for all regression tests. A derived class is required for
@@ -21,7 +22,9 @@ class TestRegression(TestCase):
     """
     def __init__(self, *args, **kwargs):
         super(TestRegression, self).__init__(*args, **kwargs)
-        self.outf = str(uuid.uuid4()) + ".h5"
+        self.ext = '.sqlite'
+        self.ext = '.h5'
+        self.outf = str(uuid.uuid4()) + self.ext
         self.inf = None
 
     def __del__(self):
@@ -35,19 +38,48 @@ class TestRegression(TestCase):
                              "to run regression tests."))
         run_cyclus("cyclus", os.getcwd(), self.inf, self.outf)        
 
-        with tables.open_file(self.outf, mode="r") as f:
-            # Get specific tables and columns
-            self.agent_entry = f.get_node("/AgentEntry")[:]
-            self.agent_exit = f.get_node("/AgentExit")[:] if "/AgentExit" in f \
-                else None
-            self.resources = f.get_node("/Resources")[:]
-            self.transactions = f.get_node("/Transactions")[:]
-            self.compositions = f.get_node("/Compositions")[:]
-            self.info = f.get_node("/Info")[:]
+        # Get specific tables and columns
+        if self.ext == '.h5':
+            with tables.open_file(self.outf, mode="r") as f:
+                # Get specific tables and columns
+                self.agent_entry = f.get_node("/AgentEntry")[:]
+                self.agent_exit = f.get_node("/AgentExit")[:] if "/AgentExit" in f \
+                    else None
+                self.resources = f.get_node("/Resources")[:]
+                self.transactions = f.get_node("/Transactions")[:]
+                self.compositions = f.get_node("/Compositions")[:]
+                self.info = f.get_node("/Info")[:]
+                self.rsrc_qtys = {
+                    x["ResourceId"]: x["Quantity"] for x in self.resources}
+        else:
+            self.conn = sqlite3.connect(self.outf)
+            self.conn.row_factory = sqlite3.Row
+            self.cur = self.conn.cursor()
+            self.agent_entry = self.cur.execute('SELECT * FROM AgentEntry').fetchall()
+            self.agent_exit = self.cur.execute('SELECT * FROM AgentExit').fetchall()
+            self.resources = self.cur.execute('SELECT * FROM Resources').fetchall()
+            print(self.resources, self.resources[0]['ResourceId'])
+            self.transactions = self.cur.execute('SELECT * FROM Transactions').fetchall()
+            self.compositions = self.cur.execute('SELECT * FROM Compositions').fetchall()
+            self.info = self.cur.execute('SELECT * FROM Info').fetchall()
             self.rsrc_qtys = {
                 x["ResourceId"]: x["Quantity"] for x in self.resources}
+
+    def find_ids(self, spec, a, spec_col="Spec", id_col="AgentId"):
+        if self.ext == '.h5':
+            return helper.find_ids(spec, a[spec_col], a[id_col])
+        else:
+            pass
+
+    def to_array(self, a, k):
+        if self.ext == 'sqlite':
+            return [x[k] for x in a]
+        else:
+            return a[k]
                         
     def tearDown(self):
+        if self.ext == '.sqlite':
+            self.conn.close()
         if os.path.isfile(self.outf):
             print("removing {0}".format(self.outf))
             os.remove(self.outf)
@@ -64,10 +96,8 @@ class TestPhysorEnrichment(TestRegression):
     def setUp(self):
         super(TestPhysorEnrichment, self).setUp()
         tbl = self.agent_entry
-        self.rx_id = find_ids(":cycamore:Reactor", 
-                              tbl["Spec"], tbl["AgentId"])
-        self.enr_id = find_ids(":cycamore:EnrichmentFacility", 
-                               tbl["Spec"], tbl["AgentId"])
+        self.rx_id = self.find_ids(":cycamore:Reactor", tbl)
+        self.enr_id = self.find_ids(":cycamore:EnrichmentFacility", tbl)
 
         with tables.open_file(self.outf, mode="r") as f:
             self.enrichments = f.get_node("/Enrichments")[:]
@@ -131,11 +161,9 @@ class TestPhysorSources(TestRegression):
         
         # identify each reactor and supplier by id
         tbl = self.agent_entry
-        rx_id = find_ids(":cycamore:Reactor", 
-                         tbl["Spec"], tbl["AgentId"])
+        rx_id = self.find_ids(":cycamore:Reactor", tbl)
         self.r1, self.r2, self.r3 = tuple(rx_id)
-        s_id = find_ids(":cycamore:Source", 
-                        tbl["Spec"], tbl["AgentId"])
+        s_id = self.find_ids(":cycamore:Source", tbl)
         self.smox = self.transactions[0]["SenderId"]
         s_id.remove(self.smox)
         self.suox = s_id[0]
@@ -219,14 +247,13 @@ class TestDynamicCapacitated(TestRegression):
         super(TestDynamicCapacitated, self).setUp()
 
         # Find agent ids of source and sink facilities
-        self.agent_ids = self.agent_entry["AgentId"]
-        self.agent_impl = self.agent_entry["Spec"]
-        self.depl_time = self.agent_entry["EnterTime"]
-        self.exit_time = self.agent_exit["ExitTime"]
-        self.exit_ids = self.agent_exit["AgentId"]
-        self.source_id = find_ids(":agents:Source", self.agent_impl, 
-                                  self.agent_ids)
-        self.sink_id = find_ids(":agents:Sink", self.agent_impl, self.agent_ids)
+        self.agent_ids = self.to_array(self.agent_entry, "AgentId")
+        self.agent_impl = self.to_array(self.agent_entry, "Spec")
+        self.depl_time = self.to_array(self.agent_entry, "EnterTime")
+        self.exit_time = self.to_array(self.agent_exit, "ExitTime")
+        self.exit_ids = self.to_array(self.agent_exit, "AgentId")
+        self.source_id = self.find_ids(":agents:Source", self.agent_entry)
+        self.sink_id = self.find_ids(":agents:Sink", self.agent_entry)
 
         # Check transactions
         self.sender_ids = self.transactions["SenderId"]
@@ -321,8 +348,8 @@ class TestGrowth(TestRegression):
         proto = self.agent_entry["Prototype"]
         depl_time = self.agent_entry["EnterTime"]
         
-        source1_id = find_ids("Source1", proto, agent_ids)
-        source2_id = find_ids("Source2", proto, agent_ids)
+        source1_id = self.find_ids("Source1", self.agent_entry, spec_col="Prototype")
+        source2_id = self.find_ids("Source2", self.agent_entry, spec_col="Prototype")
     
         assert_equal(len(source2_id), 1)
         assert_equal(len(source1_id), 2)
