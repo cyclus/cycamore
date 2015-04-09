@@ -1,23 +1,23 @@
-#ifndef CYCLUS_COMMODCONVERTERS_COMMODCONVERTER_H_
-#define CYCLUS_COMMODCONVERTERS_COMMODCONVERTER_H_
+#ifndef CYCLUS_STORAGES_STORAGE_H_
+#define CYCLUS_STORAGES_STORAGE_H_
 
 #include <string>
 
 #include "cyclus.h"
 
 // forward declaration
-namespace commodconverter {
-class CommodConverter;
-} // namespace commodconverter
+namespace storage {
+class Storage;
+} // namespace storage
 
 
-namespace commodconverter {
-/// @class CommodConverter
+namespace storage {
+/// @class Storage
 ///
 /// This Facility is intended to convert a resource from one commodity to 
 /// another. It also has an optional delay parameter. It can therefore be used 
 /// quite easily as a storage facility. 
-/// The CommodConverter class inherits from the Facility class and is
+/// The Storage class inherits from the Facility class and is
 /// dynamically loaded by the Agent class when requested.
 ///
 /// @section intro Introduction
@@ -63,13 +63,13 @@ namespace commodconverter {
 ///
 /// Sending Resources:
 /// Matched resources are sent immediately.
-class CommodConverter 
+class Storage 
   : public cyclus::Facility,
     public cyclus::toolkit::CommodityProducer {
  public:  
-  /// Constructor for CommodConverter Class
+  /// Constructor for Storage Class
   /// @param ctx the cyclus context for access to simulation-wide parameters
-  CommodConverter(cyclus::Context* ctx);
+  Storage(cyclus::Context* ctx);
 
   /// The Prime Directive
   /// Generates code that handles all input file reading and restart operations
@@ -79,10 +79,10 @@ class CommodConverter
   
   #pragma cyclus decl
 
-  #pragma cyclus note {"doc": "A commodconverter facility converts from one " \
+  #pragma cyclus note {"doc": "A storage facility converts from one " \
                               "commodity to another, with an optional delay."}
 
-  /// A verbose printer for the CommodConverter
+  /// A verbose printer for the Storage
   virtual std::string str();
 
   // --- Facility Members ---
@@ -90,19 +90,19 @@ class CommodConverter
   // --- Agent Members ---
   virtual void EnterNotify();
 
-  /// The handleTick function specific to the CommodConverter.
+  /// The handleTick function specific to the Storage.
   /// @param time the time of the tick  
   virtual void Tick();
 
-  /// The handleTick function specific to the CommodConverter.
+  /// The handleTick function specific to the Storage.
   /// @param time the time of the tock
   virtual void Tock();
 
-  /// @brief The CommodConverter request Materials of its given
+  /// @brief The Storage request Materials of its given
   /// commodity.
   virtual std::set<cyclus::RequestPortfolio<cyclus::Material>::Ptr> GetMatlRequests();
 
-  /// @brief The CommodConverter place accepted trade Materials in their
+  /// @brief The Storage place accepted trade Materials in their
   /// Inventory
   virtual void AcceptMatlTrades(
       const std::vector< std::pair<cyclus::Trade<cyclus::Material>,
@@ -126,7 +126,7 @@ class CommodConverter
 
   /* --- */
 
-  /* --- CommodConverter Members --- */
+  /* --- Storage Members --- */
 
   /* --- */
   /// @brief the processing time required for a full process
@@ -265,9 +265,9 @@ class CommodConverter
   cyclus::toolkit::CommodityRecipeContext crctx_;
 
 
-  friend class CommodConverterTest;
+  friend class StorageTest;
 };
 
-}  // namespace commodconverter
+}  // namespace storage
 
-#endif  // CYCLUS_COMMODCONVERTERS_COMMODCONVERTER_H_
+#endif  // CYCLUS_STORAGES_STORAGE_H_

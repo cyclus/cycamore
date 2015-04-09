@@ -1,32 +1,32 @@
-#ifndef COMMODCONVERTER_TESTS_H_
-#define COMMODCONVERTER_TESTS_H_
+#ifndef STORAGE_TESTS_H_
+#define STORAGE_TESTS_H_
 
 #include <gtest/gtest.h>
 
-#include "commodconverter.h"
+#include "storage.h"
 
 #include "context.h"
 #include "facility_tests.h"
 #include "agent_tests.h"
 
-namespace commodconverter {
+namespace storage {
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-class CommodConverterTest : public ::testing::Test {
+class StorageTest : public ::testing::Test {
  protected:
   cyclus::TestContext tc_;
-  CommodConverter* src_facility_;
+  Storage* src_facility_;
 
   virtual void SetUp();
   virtual void TearDown();
   void InitParameters();
-  void SetUpCommodConverter();
-  void TestInitState(commodconverter::CommodConverter* fac);
-  void TestRequest(commodconverter::CommodConverter* fac, double cap);
-  void TestAddMat(commodconverter::CommodConverter* fac, 
+  void SetUpStorage();
+  void TestInitState(storage::Storage* fac);
+  void TestRequest(storage::Storage* fac, double cap);
+  void TestAddMat(storage::Storage* fac, 
       cyclus::Material::Ptr mat);
-  void TestBuffers(commodconverter::CommodConverter* fac, double inv, double 
+  void TestBuffers(storage::Storage* fac, double inv, double 
       proc, double stocks);
-  void TestStocks(commodconverter::CommodConverter* fac, cyclus::CompMap v);
+  void TestStocks(storage::Storage* fac, cyclus::CompMap v);
 
   std::string in_c1, out_c1;
   std::string in_r1, out_r1;
@@ -34,6 +34,6 @@ class CommodConverterTest : public ::testing::Test {
   int process_time;
   double capacity, max_inv_size, cost;
 };
-} // namespace commodconverter
-#endif // COMMODCONVERTER_TESTS_H_
+} // namespace storage
+#endif // STORAGE_TESTS_H_
 
