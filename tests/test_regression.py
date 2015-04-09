@@ -126,8 +126,7 @@ class TestPhysorEnrichment(TestRegression):
 
         # with old BatchReactor: exp = [13.03, 16.54, 7.83, 13.03]
         exp = [13.03, 16.55, 7.82, 13.03]
-        obs = [np.sum(enr["Natural_Uranium"][enr["Time"] == t]) \
-                   for t in range(4)]
+        obs = [np.sum(self.to_array(enr, "Natural_Uranium")[self.to_array(enr, "Time") == t]) for t in range(4)]
         assert_array_almost_equal(exp, obs, decimal=2)
 
     def test_xactions(self):
