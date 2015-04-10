@@ -1,16 +1,18 @@
 #! /usr/bin/env python
 
 import os
+import platform
 from unittest import TestCase
 
 import tables
 import uuid
+import sqlite3
 import numpy as np
 from numpy.testing import assert_array_almost_equal 
 from numpy.testing import assert_almost_equal 
 from nose.tools import assert_equal, assert_true
-
-from helper import check_cmd, run_cyclus, table_exist, find_ids
+import helper
+from helper import check_cmd, run_cyclus, table_exist
 
 class TestRegression(TestCase):
     """A base class for all regression tests. A derived class is required for
@@ -21,7 +23,8 @@ class TestRegression(TestCase):
     """
     def __init__(self, *args, **kwargs):
         super(TestRegression, self).__init__(*args, **kwargs)
-        self.outf = str(uuid.uuid4()) + ".h5"
+        self.ext = '.h5' if platform.system() == 'Linux' else '.sqlite'
+        self.outf = str(uuid.uuid4()) + self.ext
         self.inf = None
 
     def __del__(self):
@@ -35,19 +38,61 @@ class TestRegression(TestCase):
                              "to run regression tests."))
         run_cyclus("cyclus", os.getcwd(), self.inf, self.outf)        
 
-        with tables.open_file(self.outf, mode="r") as f:
-            # Get specific tables and columns
-            self.agent_entry = f.get_node("/AgentEntry")[:]
-            self.agent_exit = f.get_node("/AgentExit")[:] if "/AgentExit" in f \
-                else None
-            self.resources = f.get_node("/Resources")[:]
-            self.transactions = f.get_node("/Transactions")[:]
-            self.compositions = f.get_node("/Compositions")[:]
-            self.info = f.get_node("/Info")[:]
+        # Get specific tables and columns
+        if self.ext == '.h5':
+            with tables.open_file(self.outf, mode="r") as f:
+                # Get specific tables and columns
+                self.agent_entry = f.get_node("/AgentEntry")[:]
+                self.agent_exit = f.get_node("/AgentExit")[:] \
+                    if "/AgentExit" in f \
+                    else None
+                self.enrichments = f.get_node("/Enrichments")[:] \
+                    if "/Enrichments" in f \
+                    else None
+                self.resources = f.get_node("/Resources")[:]
+                self.transactions = f.get_node("/Transactions")[:]
+                self.compositions = f.get_node("/Compositions")[:]
+                self.info = f.get_node("/Info")[:]
+                self.rsrc_qtys = {
+                    x["ResourceId"]: x["Quantity"] for x in self.resources}
+        else:
+            self.conn = sqlite3.connect(self.outf)
+            self.conn.row_factory = sqlite3.Row
+            self.cur = self.conn.cursor()
+            exc = self.cur.execute
+            self.agent_entry = exc('SELECT * FROM AgentEntry').fetchall()
+            self.agent_exit = exc('SELECT * FROM AgentExit').fetchall() \
+                if len(exc(
+                    ("SELECT * FROM sqlite_master WHERE "
+                     "type='table' AND name='AgentExit'")).fetchall()) > 0 \
+                     else None
+            self.enrichments = exc('SELECT * FROM Enrichments').fetchall() \
+                if len(exc(
+                    ("SELECT * FROM sqlite_master WHERE "
+                     "type='table' AND name='Enrichments'")).fetchall()) > 0 \
+                     else None
+            self.resources = exc('SELECT * FROM Resources').fetchall()
+            self.transactions = exc('SELECT * FROM Transactions').fetchall()
+            self.compositions = exc('SELECT * FROM Compositions').fetchall()
+            self.info = exc('SELECT * FROM Info').fetchall()
             self.rsrc_qtys = {
                 x["ResourceId"]: x["Quantity"] for x in self.resources}
+
+    def find_ids(self, spec, a, spec_col="Spec", id_col="AgentId"):
+        if self.ext == '.h5':
+            return helper.find_ids(spec, a[spec_col], a[id_col])
+        else:
+            return [x[id_col] for x in a if x[spec_col] == spec]
+
+    def to_ary(self, a, k):
+        if self.ext == '.sqlite':
+            return np.array([x[k] for x in a])
+        else:
+            return a[k]
                         
     def tearDown(self):
+        if self.ext == '.sqlite':
+            self.conn.close()
         if os.path.isfile(self.outf):
             print("removing {0}".format(self.outf))
             os.remove(self.outf)
@@ -64,13 +109,8 @@ class TestPhysorEnrichment(TestRegression):
     def setUp(self):
         super(TestPhysorEnrichment, self).setUp()
         tbl = self.agent_entry
-        self.rx_id = find_ids(":cycamore:Reactor", 
-                              tbl["Spec"], tbl["AgentId"])
-        self.enr_id = find_ids(":cycamore:EnrichmentFacility", 
-                               tbl["Spec"], tbl["AgentId"])
-
-        with tables.open_file(self.outf, mode="r") as f:
-            self.enrichments = f.get_node("/Enrichments")[:]
+        self.rx_id = self.find_ids(":cycamore:Reactor", tbl)
+        self.enr_id = self.find_ids(":cycamore:EnrichmentFacility", tbl)
 
     def test_deploy(self):
         assert_equal(len(self.rx_id), 2)
@@ -82,7 +122,8 @@ class TestPhysorEnrichment(TestRegression):
         # enrichment module from python
         # with old BatchReactor: exp = [6.9, 10, 4.14, 6.9]
         exp = [6.9, 10., 4.14, 6.9]
-        obs = [np.sum(enr["SWU"][enr["Time"] == t]) for t in range(4)]
+        obs = [np.sum(self.to_ary(enr, "SWU")[
+                    self.to_ary(enr, "Time") == t]) for t in range(4)]
         assert_array_almost_equal(exp, obs, decimal=2)
 
     def test_nu(self):
@@ -92,8 +133,8 @@ class TestPhysorEnrichment(TestRegression):
 
         # with old BatchReactor: exp = [13.03, 16.54, 7.83, 13.03]
         exp = [13.03, 16.55, 7.82, 13.03]
-        obs = [np.sum(enr["Natural_Uranium"][enr["Time"] == t]) \
-                   for t in range(4)]
+        obs = [np.sum(self.to_ary(enr, "Natural_Uranium")[
+                    self.to_ary(enr, "Time") == t]) for t in range(4)]
         assert_array_almost_equal(exp, obs, decimal=2)
 
     def test_xactions(self):
@@ -131,11 +172,9 @@ class TestPhysorSources(TestRegression):
         
         # identify each reactor and supplier by id
         tbl = self.agent_entry
-        rx_id = find_ids(":cycamore:Reactor", 
-                         tbl["Spec"], tbl["AgentId"])
+        rx_id = self.find_ids(":cycamore:Reactor", tbl)
         self.r1, self.r2, self.r3 = tuple(rx_id)
-        s_id = find_ids(":cycamore:Source", 
-                        tbl["Spec"], tbl["AgentId"])
+        s_id = self.find_ids(":cycamore:Source", tbl)
         self.smox = self.transactions[0]["SenderId"]
         s_id.remove(self.smox)
         self.suox = s_id[0]
@@ -219,24 +258,23 @@ class TestDynamicCapacitated(TestRegression):
         super(TestDynamicCapacitated, self).setUp()
 
         # Find agent ids of source and sink facilities
-        self.agent_ids = self.agent_entry["AgentId"]
-        self.agent_impl = self.agent_entry["Spec"]
-        self.depl_time = self.agent_entry["EnterTime"]
-        self.exit_time = self.agent_exit["ExitTime"]
-        self.exit_ids = self.agent_exit["AgentId"]
-        self.source_id = find_ids(":agents:Source", self.agent_impl, 
-                                  self.agent_ids)
-        self.sink_id = find_ids(":agents:Sink", self.agent_impl, self.agent_ids)
+        self.agent_ids = self.to_ary(self.agent_entry, "AgentId")
+        self.agent_impl = self.to_ary(self.agent_entry, "Spec")
+        self.depl_time = self.to_ary(self.agent_entry, "EnterTime")
+        self.exit_time = self.to_ary(self.agent_exit, "ExitTime")
+        self.exit_ids = self.to_ary(self.agent_exit, "AgentId")
+        self.source_id = self.find_ids(":agents:Source", self.agent_entry)
+        self.sink_id = self.find_ids(":agents:Sink", self.agent_entry)
 
         # Check transactions
-        self.sender_ids = self.transactions["SenderId"]
-        self.receiver_ids = self.transactions["ReceiverId"]
-        self.trans_time = self.transactions["Time"]
-        self.trans_resource = self.transactions["ResourceId"]
+        self.sender_ids = self.to_ary(self.transactions, "SenderId")
+        self.receiver_ids = self.to_ary(self.transactions, "ReceiverId")
+        self.trans_time = self.to_ary(self.transactions, "Time")
+        self.trans_resource = self.to_ary(self.transactions, "ResourceId")
 
         # Track transacted resources
-        self.resource_ids = self.resources["ResourceId"]
-        self.quantities = self.resources["Quantity"]
+        self.resource_ids = self.to_ary(self.resources, "ResourceId")
+        self.quantities = self.to_ary(self.resources, "Quantity")
 
     def test_source_deployment(self):
         # test number of sources
@@ -252,16 +290,20 @@ class TestDynamicCapacitated(TestRegression):
         # and decommissioned at time step 2
         for i in [0, 1]:
             assert_equal(
-                self.depl_time[np.where(self.agent_ids == self.sink_id[i])][0], 1)
+                self.depl_time[np.where(self.agent_ids == self.sink_id[i])][0], 
+                1)
             assert_equal(
-                self.exit_time[np.where(self.exit_ids == self.sink_id[i])][0], 2)
+                self.exit_time[np.where(self.exit_ids == self.sink_id[i])][0], 
+                2)
         # Test that second 2 sink facilities are deployed at time step 2
         # and decommissioned at time step 3
         for i in [2, 3]:
             assert_equal(
-                self.depl_time[np.where(self.agent_ids == self.sink_id[i])][0], 2)
+                self.depl_time[np.where(self.agent_ids == self.sink_id[i])][0], 
+                2)
             assert_equal(
-                self.exit_time[np.where(self.exit_ids == self.sink_id[i])][0], 3)
+                self.exit_time[np.where(self.exit_ids == self.sink_id[i])][0], 
+                3)
 
     def test_xaction_general(self):        
         # Check that transactions are between sources and sinks only
@@ -317,12 +359,14 @@ class TestGrowth(TestRegression):
         self.inf = "./input/growth.xml"
 
     def test_deployment(self):
-        agent_ids = self.agent_entry["AgentId"]
-        proto = self.agent_entry["Prototype"]
-        depl_time = self.agent_entry["EnterTime"]
+        agent_ids = self.to_ary(self.agent_entry, "AgentId")
+        proto = self.to_ary(self.agent_entry, "Prototype")
+        depl_time = self.to_ary(self.agent_entry, "EnterTime")
         
-        source1_id = find_ids("Source1", proto, agent_ids)
-        source2_id = find_ids("Source2", proto, agent_ids)
+        source1_id = self.find_ids("Source1", self.agent_entry, 
+                                   spec_col="Prototype")
+        source2_id = self.find_ids("Source2", self.agent_entry, 
+                                   spec_col="Prototype")
     
         assert_equal(len(source2_id), 1)
         assert_equal(len(source1_id), 2)
