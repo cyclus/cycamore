@@ -93,6 +93,7 @@ class Reactor : public cyclus::Facility,
   virtual void Tick();
   virtual void Tock();
   virtual void EnterNotify();
+  virtual bool CheckDecommissionCondition();
 
   virtual void AcceptMatlTrades(const std::vector<std::pair<
       cyclus::Trade<cyclus::Material>, cyclus::Material::Ptr> >& responses);
@@ -116,6 +117,10 @@ class Reactor : public cyclus::Facility,
   std::string fuel_inrecipe(cyclus::Material::Ptr m);
   std::string fuel_outrecipe(cyclus::Material::Ptr m);
   double fuel_pref(cyclus::Material::Ptr m);
+
+  bool retired() {
+    return exit_time() != -1 && context()->time() >= exit_time();
+  }
 
   /// Store fuel info index for the given resource received on incommod.
   void index_res(cyclus::Resource::Ptr m, std::string incommod);

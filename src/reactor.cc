@@ -57,7 +57,7 @@ void Reactor::InitFrom(cyclus::QueryableBackend* b) {
 
 void Reactor::EnterNotify() {
   cyclus::Facility::EnterNotify();
-  
+
   // If the user ommitted fuel_prefs, we set it to zeros for each fuel
   // type.  Without this segfaults could occur - yuck.
   if (fuel_prefs.size() == 0) {
@@ -98,6 +98,10 @@ void Reactor::EnterNotify() {
   }
 }
 
+bool Reactor::CheckDecommissionCondition() {
+  return core.count() == 0 && spent.count() == 0;
+}
+
 void Reactor::Tick() {
   // The following code must go in the Tick so they fire on the time step
   // following the cycle_step update - allowing for the all reactor events to
@@ -105,10 +109,23 @@ void Reactor::Tick() {
   // they
   // can't go at the beginnin of the Tock is so that resource exchange has a
   // chance to occur after the discharge on this same time step.
+
+  if (retired()) {
+    Record("RETIRED", "");
+    while (core.count() > 0) {
+      Transmute();
+      if (!Discharge()) {
+        break;
+      }
+    }
+    return;
+  }
+
   if (cycle_step == cycle_time) {
     Transmute();
     Record("CYCLE_END", "");
   }
+
   if (cycle_step >= cycle_time && !discharged) {
     discharged = Discharge();
   }
@@ -158,9 +175,24 @@ std::set<cyclus::RequestPortfolio<Material>::Ptr> Reactor::GetMatlRequests() {
   std::set<RequestPortfolio<Material>::Ptr> ports;
   Material::Ptr m;
 
-  int n_assem_order =
-      n_assem_core - core.count() + n_assem_fresh - fresh.count();
+  // second min expression reduces assembles to amount needed until
+  // retirement if it is near.
+  int n_assem_order = n_assem_core - core.count() + n_assem_fresh - fresh.count();
+
+  if (exit_time() != -1) {
+    int tleft = exit_time() - context()->time();
+    int tleftcycle = cycle_time + refuel_time - cycle_step;
+    double ncyclesleft = (double)(tleft - tleftcycle) / (double)(cycle_time + refuel_time);
+    if ((int)ncyclesleft < ncyclesleft) {
+      ncyclesleft = ((int)ncyclesleft) + 1;
+    }
+    int nneed = std::max(0.0, ncyclesleft * n_assem_batch - n_assem_fresh);
+    n_assem_order = std::min(n_assem_order, nneed);
+  }
+
   if (n_assem_order == 0) {
+    return ports;
+  } else if (retired()) {
     return ports;
   }
 
@@ -275,6 +307,10 @@ std::set<cyclus::BidPortfolio<Material>::Ptr> Reactor::GetMatlBids(
 }
 
 void Reactor::Tock() {
+  if (retired()) {
+    return;
+  }
+
   if (cycle_step >= cycle_time + refuel_time && core.count() == n_assem_core) {
     discharged = false;
     cycle_step = 0;
@@ -299,11 +335,12 @@ void Reactor::Tock() {
 }
 
 void Reactor::Transmute() {
-  // safe to assume full core.
-  MatVec old = core.PopN(n_assem_batch);
-  MatVec tail = core.PopN(core.count());
+  MatVec old = core.PopN(std::min(n_assem_batch, core.count()));
   core.Push(old);
-  core.Push(tail);
+  if (core.count() > old.size()) {
+    // rotate untransmuted mats back to back of buffer
+    core.Push(core.PopN(core.count() - old.size()));
+  }
 
   std::stringstream ss;
   ss << old.size() << " assemblies";
@@ -326,12 +363,11 @@ std::map<std::string, MatVec> Reactor::PeekSpent() {
 }
 
 bool Reactor::Discharge() {
-  if (n_assem_spent - spent.count() < n_assem_batch) {
+  int npop = std::min(n_assem_batch, core.count());
+  if (n_assem_spent - spent.count() < npop) {
     Record("DISCHARGE", "failed");
     return false;  // not enough room in spent buffer
   }
-
-  int npop = std::min(n_assem_batch, core.count());
 
   std::stringstream ss;
   ss << npop << " assemblies";
