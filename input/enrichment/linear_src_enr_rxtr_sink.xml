@@ -10,8 +10,8 @@
   <archetypes>
     <spec><lib>cycamore</lib><name>Sink</name></spec>
     <spec><lib>cycamore</lib><name>Source</name></spec>
-    <spec><lib>cycamore</lib><name>EnrichmentFacility</name></spec>
     <spec><lib>cycamore</lib><name>Reactor</name></spec>
+    <spec><lib>cycamore</lib><name>Enrichment</name></spec>
     <spec><lib>cycamore</lib><name>GrowthRegion</name></spec>
     <spec><lib>cycamore</lib><name>ManagerInst</name></spec>
   </archetypes>
@@ -30,13 +30,14 @@
   <facility>
     <name>Enrichment</name>
     <config>
-      <EnrichmentFacility>
-        <in_commod>natl_u</in_commod>
-        <in_recipe>natl_u</in_recipe>
-        <max_inv_size>1000</max_inv_size>
-        <out_commod>enriched_u</out_commod>
-        <tails_assay>0.003</tails_assay>
-      </EnrichmentFacility>
+      <Enrichment>
+        <feed_commod>natl_u</feed_commod>
+        <feed_recipe>natl_u</feed_recipe>
+        <max_feed_inventory>1000</max_feed_inventory>
+        <product_commod>enriched_u</product_commod>
+         <tails_commod>ef_tails</tails_commod>
+       <tails_assay>0.003</tails_assay>
+      </Enrichment>
     </config>
   </facility>
 

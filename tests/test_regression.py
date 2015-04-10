@@ -110,7 +110,7 @@ class TestPhysorEnrichment(TestRegression):
         super(TestPhysorEnrichment, self).setUp()
         tbl = self.agent_entry
         self.rx_id = self.find_ids(":cycamore:Reactor", tbl)
-        self.enr_id = self.find_ids(":cycamore:EnrichmentFacility", tbl)
+        self.enr_id = self.find_ids(":cycamore:Enrichment", tbl)
 
     def test_deploy(self):
         assert_equal(len(self.rx_id), 2)

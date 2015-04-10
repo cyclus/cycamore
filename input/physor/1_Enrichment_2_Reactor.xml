@@ -8,7 +8,7 @@
   </control>
 
   <archetypes>
-    <spec> <lib>cycamore</lib> <name>EnrichmentFacility</name> </spec>
+    <spec> <lib>cycamore</lib> <name>Enrichment</name> </spec>
     <spec> <lib>cycamore</lib> <name>Reactor</name> </spec>
     <spec> <lib>agents</lib>   <name>NullRegion</name> </spec>
     <spec> <lib>agents</lib>   <name>NullInst</name> </spec>
@@ -17,14 +17,15 @@
   <facility>
     <name>Enrichment</name>
     <config>
-      <EnrichmentFacility>
-        <in_commod>natl_u</in_commod>
-        <in_recipe>natl_u</in_recipe>
-        <out_commod>enriched_u</out_commod>
+      <Enrichment>
+        <feed_commod>natl_u</feed_commod>
+        <feed_recipe>natl_u</feed_recipe>
+        <product_commod>enriched_u</product_commod>
+        <tails_commod>ef_tails</tails_commod>
         <tails_assay>0.003</tails_assay>
         <swu_capacity>10.01</swu_capacity>
-        <initial_reserves>1e5</initial_reserves>
-      </EnrichmentFacility>
+        <initial_feed>1e5</initial_feed>
+      </Enrichment>
     </config>
   </facility>
 
