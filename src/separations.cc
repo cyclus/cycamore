@@ -94,7 +94,9 @@ void Separations::Tick() {
   for (itf = stagedsep.begin(); itf != stagedsep.end(); ++itf) {
     std::string name = itf->first;
     Material::Ptr m = itf->second;
-    streambufs[name].Push(mat->ExtractComp(m->quantity() * maxfrac, m->comp()));
+    if (m->quantity() > 0) {
+      streambufs[name].Push(mat->ExtractComp(m->quantity() * maxfrac, m->comp()));
+    }
   }
 
   if (maxfrac == 1) {
