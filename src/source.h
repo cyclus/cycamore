@@ -56,16 +56,9 @@ class Source : public cyclus::Facility,
 
   virtual void Tock() {};
 
+  virtual void EnterNotify();
+  
   virtual std::string str();
-
-  virtual std::set<cyclus::BidPortfolio<cyclus::Material>::Ptr>
-      GetMatlBids(cyclus::CommodMap<cyclus::Material>::type&
-                  commod_requests);
-
-  virtual void GetMatlTrades(
-    const std::vector< cyclus::Trade<cyclus::Material> >& trades,
-    std::vector<std::pair<cyclus::Trade<cyclus::Material>,
-    cyclus::Material::Ptr> >& responses);
 
  private:
   #pragma cyclus var { \
@@ -100,6 +93,12 @@ class Source : public cyclus::Facility,
     "units": "kg", \
   }
   double inventory_size;
+
+  /// this facility holds material in storage.
+  #pragma cyclus var {'capacity': 'inventory_size'}
+  cyclus::toolkit::ResourceBuff inventory;
+  
+  cyclus::toolkit::MatlSellPolicy sellpol_;
 };
 
 }  // namespace cycamore
