@@ -263,8 +263,8 @@ class TestDynamicCapacitated(TestRegression):
         self.depl_time = self.to_ary(self.agent_entry, "EnterTime")
         self.exit_time = self.to_ary(self.agent_exit, "ExitTime")
         self.exit_ids = self.to_ary(self.agent_exit, "AgentId")
-        self.source_id = self.find_ids(":agents:Source", self.agent_entry)
-        self.sink_id = self.find_ids(":agents:Sink", self.agent_entry)
+        self.source_id = self.find_ids(":cycamore:Source", self.agent_entry)
+        self.sink_id = self.find_ids(":cycamore:Sink", self.agent_entry)
 
         # Check transactions
         self.sender_ids = self.to_ary(self.transactions, "SenderId")
