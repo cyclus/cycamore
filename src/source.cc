@@ -40,8 +40,8 @@ void Source::EnterNotify() {
     c = cyclus::Composition::CreateFromAtom(v);
   }
   inventory.Push(cyclus::Material::Create(this, inventory_size, c));
-  sellpol_.Init(this, &inventory, std::string("inv"), -1, throughput,
-                ignore_comp);
+  sellpol_.Init(this, &inventory, std::string("inv"), throughput,
+                ignore_comp, -1);
   sellpol_.Set(outcommod);
   sellpol_.Start();
 }
