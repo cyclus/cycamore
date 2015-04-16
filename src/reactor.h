@@ -362,6 +362,9 @@ class Reactor : public cyclus::Facility,
                       "internal": True \
   }
   std::map<int, int> res_indexes;
+
+  // populated lazily and no need to persist.
+  std::set<std::string> uniq_outcommods_;
 };
 
 } // namespace cycamore

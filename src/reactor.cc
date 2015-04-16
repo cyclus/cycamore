@@ -223,7 +223,6 @@ void Reactor::GetMatlTrades(
   using cyclus::Trade;
 
   std::map<std::string, MatVec> mats = PopSpent();
-  std::vector<cyclus::Trade<cyclus::Material> >::const_iterator it;
   for (int i = 0; i < trades.size(); i++) {
     std::string commod = trades[i].request->commodity();
     Material::Ptr m = mats[commod].back();
@@ -267,8 +266,16 @@ std::set<cyclus::BidPortfolio<Material>::Ptr> Reactor::GetMatlBids(
 
   bool gotmats = false;
   std::map<std::string, MatVec> all_mats;
-  for (int i = 0; i < fuel_outcommods.size(); i++) {
-    std::string commod = fuel_outcommods[i];
+
+  if (uniq_outcommods_.empty()) {
+    for (int i = 0; i < fuel_outcommods.size(); i++) {
+      uniq_outcommods_.insert(fuel_outcommods[i]);
+    }
+  }
+
+  std::set<std::string>::iterator it;
+  for (it = uniq_outcommods_.begin(); it != uniq_outcommods_.end(); ++it) {
+    std::string commod = *it;
     std::vector<Request<Material>*>& reqs = commod_requests[commod];
     if (reqs.size() == 0) {
       continue;
