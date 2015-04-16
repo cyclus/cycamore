@@ -183,10 +183,12 @@ void Separations::GetMatlTrades(
   for (int i = 0; i < trades.size(); i++) {
     std::string commod = trades[i].request->commodity();
     if (commod == leftover_commod) {
-      Material::Ptr m = leftover.Pop(trades[i].amt);
+      double amt = std::min(leftover.quantity(), trades[i].amt);
+      Material::Ptr m = leftover.Pop(amt);
       responses.push_back(std::make_pair(trades[i], m));
     } else if (streambufs.count(commod) > 0) {
-      Material::Ptr m = streambufs[commod].Pop(trades[i].amt);
+      double amt = std::min(streambufs[commod].quantity(), trades[i].amt);
+      Material::Ptr m = streambufs[commod].Pop(amt);
       responses.push_back(std::make_pair(trades[i], m));
     } else {
       throw ValueError("invalid commodity " + commod +
