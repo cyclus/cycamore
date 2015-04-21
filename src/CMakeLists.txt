@@ -18,6 +18,8 @@ USE_CYCLUS("cycamore" "manager_inst")
 
 USE_CYCLUS("cycamore" "growth_region")
 
+USE_CYCLUS("cycamore" "storage")
+
 INSTALL_CYCLUS_MODULE("cycamore" "" "NONE")
 
 SET(TestSource ${cycamore_TEST_CC} PARENT_SCOPE)
