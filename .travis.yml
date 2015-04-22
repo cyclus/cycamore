@@ -30,13 +30,14 @@ install:
   - wget https://github.com/gidden/ciclus/archive/travis.zip -O ciclus.zip
 
   # build cyclus
-  - unzip -j ciclus.zip "*/cyclus/*" -d conda-recipe-cyclus
-  - conda build --no-test conda-recipe-cyclus
+  - unzip -j ciclus.zip "*/cyclus/*" -d conda-recipe
+  - conda build --no-test conda-recipe
   - conda install --use-local cyclus=0.0
+  - mv conda-recipe conda-recipe-cyclus
 
   # build cycamore  
-  - unzip -j ciclus.zip "*/cycamore/*" -d conda-recipe-cycamore
-  - conda build --no-test conda-recipe-cycamore
+  - unzip -j ciclus.zip "*/cycamore/*" -d conda-recipe
+  - conda build --no-test conda-recipe
   - conda install --use-local cycamore=0.0
 
 script:
