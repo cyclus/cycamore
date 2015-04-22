@@ -31,13 +31,11 @@ install:
 
   # build cyclus
   - unzip -j ciclus.zip "*/cyclus/*" -d conda-recipe-cyclus
-  - mv ciclus/cyclus conda-recipe-cyclus
   - conda build --no-test conda-recipe-cyclus
   - conda install --use-local cyclus=0.0
 
   # build cycamore  
   - unzip -j ciclus.zip "*/cycamore/*" -d conda-recipe-cycamore
-  - mv ciclus/cycamore conda-recipe-cycamore
   - conda build --no-test conda-recipe-cycamore
   - conda install --use-local cycamore=0.0
 
