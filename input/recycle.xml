@@ -23,8 +23,9 @@
         <feed_recipe>natl_u</feed_recipe>
         <product_commod>uox</product_commod>
         <tails_assay>0.003</tails_assay>
+        <tails_commod>waste</tails_commod>
         <swu_capacity>1e100</swu_capacity>
-        <initial_reserves>1e100</initial_reserves>
+        <initial_feed>1e100</initial_feed>
       </Enrichment>
     </config>
   </prototype>
@@ -103,9 +104,8 @@
     <name>depleted_src</name>
     <config>
       <Source>
-        <out_commod>depleted_u</out_commod>
-        <recipe_name>depleted_u</recipe_name>
-        <capacity>1e100</capacity>
+        <outcommod>depleted_u</outcommod>
+        <outrecipe>depleted_u</outrecipe>
       </Source>
     </config>
   </prototype>
