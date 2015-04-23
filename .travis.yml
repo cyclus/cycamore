@@ -26,27 +26,15 @@ install:
   # Useful for debugging any issues with conda
   - conda info -a
   
-  # build cyclus
-  - pwd=$PWD
-  - echo "pwd $pwd"
-  - cd ..
-  - git clone https://github.com/gidden/cyclus
-  - cd cyclus
+  # install cyclus
+  - git clone https://github.com/gidden/cyclus ../cyclus
+  - cd ../cyclus
   - git checkout origin/travis
-  - wget https://github.com/gidden/ciclus/archive/travis.zip -O ciclus.zip
-  - unzip -j ciclus.zip "*/cyclus/*" -d conda-recipe
-  - conda build --no-test conda-recipe
-  - conda install --use-local cyclus=0.0
-  - mv conda-recipe cyclus-recipe
-  - cd $pwd
+  - ./.travis-install.sh
+  - cd ../cycamore
 
-  # build cycamore  
-  - wget https://github.com/gidden/ciclus/archive/travis.zip -O ciclus.zip
-  - unzip -j ciclus.zip "*/cycamore/*" -d conda-recipe
-  - sed -i  "s/- cyclus/- cyclus 0.0/g" conda-recipe/meta.yaml
-  - conda build --no-test conda-recipe
-  - conda install --use-local cycamore=0.0
-  - mv conda-recipe cycamore-recipe
+  # install cycamore  
+  - ./.travis-install.sh
 
 script:
   - export PATH="$HOME/miniconda/bin:$PATH"
