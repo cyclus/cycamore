@@ -43,5 +43,48 @@ TEST(SeparationsTests, SepMaterial) {
   EXPECT_DOUBLE_EQ(0, mqsep.mass("Am242"));
 }
 
+TEST(SeparationsTests, SepMixElemAndNuclide) {
+  std::string config = 
+      "<streams>"
+      "    <commod>stream1</commod>"
+      "    <info>"
+      "        <buf_size>-1</buf_size>"
+      "        <efficiencies>"
+      "            <comp>U</comp> <eff>0.6</eff>"
+      "            <comp>Pu239</comp> <eff>.7</eff>"
+      "        </efficiencies>"
+      "    </info>"
+      "</streams>"
+      ""
+      "<leftover_commod>waste</leftover_commod>"
+      "<throughput>100</throughput>"
+      "<feedbuf_size>100</feedbuf_size>"
+      "<feed_commods> <val>feed</val> </feed_commods>"
+     ;
+
+  CompMap m;
+  m[id("u235")] = 0.08;
+  m[id("u238")] = 0.9;
+  m[id("Pu239")] = .01;
+  m[id("Pu240")] = .01;
+  Composition::Ptr c = Composition::CreateFromMass(m);
+
+  int simdur = 2;
+  cyclus::MockSim sim(cyclus::AgentSpec(":cycamore:Separations"), config, simdur);
+  sim.AddSource("feed").recipe("recipe1").Finalize();
+  sim.AddSink("stream1").capacity(100).Finalize();
+  sim.AddRecipe("recipe1", c);
+  int id = sim.Run();
+
+  std::vector<Cond> conds;
+  conds.push_back(Cond("SenderId", "==", id));
+  int resid = sim.db().Query("Transactions", &conds).GetVal<int>("ResourceId");
+  MatQuery mq (sim.GetMaterial(resid));
+  EXPECT_DOUBLE_EQ(m[922350000]*0.6*100, mq.mass("U235"));
+  EXPECT_DOUBLE_EQ(m[922380000]*0.6*100, mq.mass("U238"));
+  EXPECT_DOUBLE_EQ(m[942390000]*0.7*100, mq.mass("Pu239"));
+  EXPECT_DOUBLE_EQ(0, mq.mass("Pu240"));
+}
+
 } // namespace cycamore
 
