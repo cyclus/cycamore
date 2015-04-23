@@ -5,9 +5,57 @@
 
 namespace cycamore {
 
-cyclus::Material::Ptr SepMaterial(std::map<int, double> effs, cyclus::Material::Ptr mat);
+/// SepMaterial returns a material object that represents the composition and
+/// quantity resulting from the separation of material from mat using the given
+/// mass-based efficiencies.  Each key in effs represents a nuclide or element
+/// (canonical PyNE form), and each value is the corresponding mass-based
+/// separations efficiency for that nuclide or element.  Note that this returns
+/// an untracked material that should only be used for its composition and qty
+/// - not in any real inventories, etc.
+cyclus::Material::Ptr SepMaterial(std::map<int, double> effs,
+                                  cyclus::Material::Ptr mat);
 
+/// Separations processes feed material into one or more streams containing
+/// specific elements and/or nuclides.  It uses mass-based efficiencies.
+///
+/// User defined separations streams are specified as groups of
+/// component-efficiency pairs where 'component' means either a particular
+/// element or a particular nuclide.  Each component's paired efficiency
+/// represents the mass fraction of that component in the feed that is
+/// separated into that stream.  The efficiencies of a particular component
+/// across all streams must sum up to less than or equal to one.  If less than
+/// one, the remainining material is sent to a waste inventory and
+/// (potentially) traded away from there.
+///
+/// The facility receives material into a feed inventory that it processes with
+/// a specified throughput each time step.  Each output stream has a
+/// corresponding output inventory size/limit.  If the facility is unable to
+/// reduce its stocks by trading and hits this limit for any of its output
+/// streams, further processing/separations of feed material will halt until
+/// room is again available in the output streams.
 class Separations : public cyclus::Facility {
+#pragma cyclus note { \
+  "doc": \
+    "Separations processes feed material into one or more streams containing" \
+    " specific elements and/or nuclides.  It uses mass-based efficiencies." \
+    "\n\n" \
+    "User defined separations streams are specified as groups of" \
+    " component-efficiency pairs where 'component' means either a particular" \
+    " element or a particular nuclide.  Each component's paired efficiency" \
+    " represents the mass fraction of that component in the feed that is" \
+    " separated into that stream.  The efficiencies of a particular component" \
+    " across all streams must sum up to less than or equal to one.  If less than" \
+    " one, the remainining material is sent to a waste inventory and" \
+    " (potentially) traded away from there." \
+    "\n\n" \
+    "The facility receives material into a feed inventory that it processes with" \
+    " a specified throughput each time step.  Each output stream has a" \
+    " corresponding output inventory size/limit.  If the facility is unable to" \
+    " reduce its stocks by trading and hits this limit for any of its output" \
+    " streams, further processing/separations of feed material will halt until" \
+    " room is again available in the output streams." \
+    "", \
+}
  public:
   Separations(cyclus::Context* ctx);
   virtual ~Separations(){};
@@ -37,7 +85,7 @@ class Separations : public cyclus::Facility {
   #pragma cyclus schema
   #pragma cyclus annotations
   #pragma cyclus snapshot
-  // the following pragmas are ommitted and the functions are generated
+  // the following pragmas are ommitted and the functions are written
   // manually in order to handle the vector of resource buffers:
   //
   //     #pragma cyclus snapshotinv
@@ -69,14 +117,14 @@ class Separations : public cyclus::Facility {
 
   #pragma cyclus var { \
     "doc": "Name for recipe to be used in feed requests." \
-           " Empty string results in use of an empty dummy recipe.", \
+           " Empty string results in use of a dummy recipe.", \
     "uitype": "recipe", \
     "default": "", \
   }
   std::string feed_recipe;
 
   #pragma cyclus var { \
-    "doc" : "Amount of feed material to keep on hand.", \
+    "doc" : "Maximum amount of feed material to keep on hand.", \
     "units" : "kg", \
   }
   double feedbuf_size;
@@ -91,6 +139,7 @@ class Separations : public cyclus::Facility {
             " any other stream) that can be stored." \
             " If full, the facility halts operation until space becomes available.", \
     "default": 1e299, \
+    "units": "kg", \
   }
   double leftoverbuf_size;
 
@@ -117,7 +166,9 @@ class Separations : public cyclus::Facility {
            " 'comp' is a component to be separated into the stream" \
            " (e.g. U, Pu, etc.) and 'eff' is the mass fraction of the component" \
            " that is separated from the feed into this output stream." \
-           " If any stream buffer is full, the facility halts operation until space becomes available.", \
+           " If any stream buffer is full, the facility halts operation until space becomes available." \
+           " The sum total of all component efficiencies across streams must be less than or equal to 1" \
+           " (e.g. sum of U efficiencies for all streams must be <= 1).", \
   }
   std::map<std::string, std::pair<double, std::map<int, double> > > streams_;
 
