@@ -33,12 +33,14 @@ install:
   - unzip -j ciclus.zip "*/cyclus/*" -d conda-recipe
   - conda build --no-test conda-recipe
   - conda install --use-local cyclus=0.0
-  - mv conda-recipe conda-recipe-cyclus
+  - mv conda-recipe cyclus-recipe
 
   # build cycamore  
   - unzip -j ciclus.zip "*/cycamore/*" -d conda-recipe
+  - sed -i  "s/- cyclus/- cyclus=0.0/g" conda-recipe/meta.yaml
   - conda build --no-test conda-recipe
   - conda install --use-local cycamore=0.0
+  - mv conda-recipe cycamore-recipe
 
 script:
   - export PATH="$HOME/miniconda/bin:$PATH"
