@@ -1,5 +1,7 @@
 #!/bin/bash
 
+set -x
+
 # log
 msg=`git log --pretty=oneline -1`
 echo "Building commit: $msg" 
@@ -10,9 +12,7 @@ unzip -j ciclus.zip "*/cycamore/*" -d conda-recipe
 sed -i  "s/- cyclus/- cyclus 0.0/g" conda-recipe/meta.yaml
 
 # build
-cmd="conda build --no-test conda-recipe"
-echo "cmd: $cmd"
-$cmd
+conda build --no-test conda-recipe
 status=$?
 echo "status: $status"
 if [[ $status != 0 ]]; then
@@ -20,9 +20,7 @@ if [[ $status != 0 ]]; then
 fi
 
 # install
-cmd="conda install --use-local cycamore=0.0"
-echo "cmd: $cmd"
-$cmd
+conda install --use-local cycamore=0.0
 status=$?
 echo "status: $status"
 if [[ $status != 0 ]]; then
