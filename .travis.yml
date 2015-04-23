@@ -42,6 +42,6 @@ script:
   #- ls -l $HOME/miniconda/lib
   #- ls -l $HOME/miniconda/envs/_build/lib
   - cycamore_unit_tests
-  - conda install numpy tables
+  - conda install numpy pytables
   - nosetests -w tests
 
