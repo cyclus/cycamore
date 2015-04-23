@@ -1,7 +1,7 @@
 <simulation>
   <schematype>flat</schematype>
   <control>
-    <duration>1000</duration>
+    <duration>600</duration>
     <startmonth>1</startmonth>
     <startyear>2000</startyear>
   </control>
@@ -9,7 +9,7 @@
   <archetypes>
     <spec> <lib>cycamore</lib> <name>Source</name></spec>
     <spec> <lib>cycamore</lib> <name>Sink</name></spec>
-    <spec> <lib>cycamore</lib> <name>EnrichmentFacility</name> </spec>
+    <spec> <lib>cycamore</lib> <name>Enrichment</name> </spec>
     <spec> <lib>cycamore</lib> <name>Reactor</name> </spec>
     <spec> <lib>cycamore</lib> <name>FuelFab</name> </spec>
     <spec> <lib>cycamore</lib> <name>Separations</name> </spec>
@@ -18,14 +18,14 @@
   <prototype>
     <name>enrichment</name>
     <config>
-      <EnrichmentFacility>
-        <in_commod>natl_u</in_commod>
-        <in_recipe>natl_u</in_recipe>
-        <out_commod>uox</out_commod>
+      <Enrichment>
+        <feed_commod>natl_u</feed_commod>
+        <feed_recipe>natl_u</feed_recipe>
+        <product_commod>uox</product_commod>
         <tails_assay>0.003</tails_assay>
-        <swu_capacity>1e9</swu_capacity>
+        <swu_capacity>1e100</swu_capacity>
         <initial_reserves>1e100</initial_reserves>
-      </EnrichmentFacility>
+      </Enrichment>
     </config>
   </prototype>
 
@@ -38,15 +38,14 @@
               <info>
                   <buf_size>1e100</buf_size>
                   <efficiencies>
-                      <comp>U</comp> <eff>0</eff>
-                      <comp>Pu</comp> <eff>.98</eff>
+                      <comp>Pu</comp> <eff>.99</eff>
                   </efficiencies>
               </info>
           </streams>
 
           <leftover_commod>waste</leftover_commod>
-          <throughput>66000.001</throughput>
-          <feedbuf_size>1e100</feedbuf_size>
+          <throughput>30001</throughput>
+          <feedbuf_size>30001</feedbuf_size>
           <feed_commods> <val>spent_uox</val> </feed_commods>
           <feed_commod_prefs> <val>2.0</val> </feed_commod_prefs>
       </Separations>
@@ -59,14 +58,14 @@
       <FuelFab>
         <fill_commod>depleted_u</fill_commod>
         <fill_recipe>depleted_u</fill_recipe>
-        <fill_size>110000</fill_size>
+        <fill_size>30001</fill_size>
 
         <fiss_commods><val>sep_stream</val></fiss_commods>
-        <fiss_size>11000</fiss_size>
+        <fiss_size>15000</fiss_size>
 
         <spectrum>thermal</spectrum>
         <outcommod>mox</outcommod>
-        <throughput>22000</throughput>
+        <throughput>30001</throughput>
       </FuelFab>
     </config>
   </prototype>
@@ -81,11 +80,11 @@
         <fuel_outcommods> <val>spent_uox</val>  <val>waste</val></fuel_outcommods>
         <fuel_prefs>      <val>1.0</val>        <val>2.0</val></fuel_prefs>
 
-        <cycle_time>16</cycle_time>
+        <cycle_time>17</cycle_time>
         <refuel_time>2</refuel_time>
-        <assem_size>11000</assem_size>
-        <n_assem_core>7</n_assem_core>
-        <n_assem_batch>2</n_assem_batch>
+        <assem_size>30000</assem_size>
+        <n_assem_core>3</n_assem_core>
+        <n_assem_batch>1</n_assem_batch>
       </Reactor>
     </config>
   </prototype>
@@ -95,7 +94,7 @@
     <config>
       <Sink>
         <in_commods><val>waste</val></in_commods>
-        <capacity>1e10</capacity>
+        <capacity>1e100</capacity>
       </Sink>
     </config>
   </prototype>
@@ -106,7 +105,7 @@
       <Source>
         <out_commod>depleted_u</out_commod>
         <recipe_name>depleted_u</recipe_name>
-        <capacity>1e10</capacity>
+        <capacity>1e100</capacity>
       </Source>
     </config>
   </prototype>
