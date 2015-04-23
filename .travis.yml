@@ -27,9 +27,8 @@ install:
   - conda info -a
   
   # install cyclus
-  - git clone https://github.com/gidden/cyclus ../cyclus
+  - git clone https://github.com/cyclus/cyclus ../cyclus
   - cd ../cyclus
-  - git checkout origin/travis
   - ./.travis-install.sh
   - cd ../cycamore
 
