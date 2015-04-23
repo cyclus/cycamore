@@ -32,8 +32,8 @@ install:
   # build cyclus
   - pwd=$PWD
   - echo "pwd $pwd"
-  - cd $HOME
-  - git clone git@github.com:gidden/cyclus
+  - cd ..
+  - git clone https://github.com/gidden/cyclus
   - cd cyclus
   - git checkout origin/travis
   - unzip -j ciclus.zip "*/cyclus/*" -d conda-recipe
