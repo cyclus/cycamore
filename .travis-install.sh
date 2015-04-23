@@ -8,7 +8,7 @@ msg=`git log --pretty=oneline -1`
 echo "Building commit: $msg" 
 
 # setup conda recipe
-wget https://github.com/gidden/ciclus/archive/travis.zip -O ciclus.zip
+wget https://github.com/cyclus/ciclus/archive/master.zip -O ciclus.zip
 unzip -j ciclus.zip "*/cycamore/*" -d conda-recipe
 sed -i  "s/- cyclus/- cyclus 0.0/g" conda-recipe/meta.yaml
 
