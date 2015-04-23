@@ -107,7 +107,7 @@ TEST_F(SourceTest, Response) {
   // 1 trade
   src_facility->GetMatlTrades(trades, responses);
   EXPECT_EQ(responses.size(), 1);
-  EXPECT_EQ(responses[0].second->quantity(), qty + 1);
+  EXPECT_EQ(responses[0].second->quantity(), qty);
   EXPECT_EQ(responses[0].second->comp(), recipe);
 
   // 2 trades, total qty = capacity
