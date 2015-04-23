@@ -10,6 +10,8 @@ unzip -j ciclus.zip "*/cycamore/*" -d conda-recipe
 sed -i  "s/- cyclus/- cyclus 0.0/g" conda-recipe/meta.yaml
 
 # build
+"src/CMakeLists.txt:"
+cat src/CMakeLists.txt
 cmd="conda build --no-test conda-recipe"
 echo "cmd: $cmd"
 $cmd
