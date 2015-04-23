@@ -1,5 +1,9 @@
 #!/bin/bash
 
+# log
+msg=`git log --pretty=oneline -1`
+echo "Building commit: $msg" 
+
 # setup conda recipe
 wget https://github.com/gidden/ciclus/archive/travis.zip -O ciclus.zip
 unzip -j ciclus.zip "*/cycamore/*" -d conda-recipe
