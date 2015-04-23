@@ -131,7 +131,7 @@ TEST(ReactorTests, RefuelTimes) {
 
   QueryResult qr = sim.db().Query("Transactions", NULL);
   int cyclet = 4;
-  int refuelt = 2;
+  int refuelt = 3;
   int n_assem_want = simdur/(cyclet+refuelt)+1; // +1 for initial core
   EXPECT_EQ(n_assem_want, qr.rows.size());
 }
