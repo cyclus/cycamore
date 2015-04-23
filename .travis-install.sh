@@ -1,6 +1,7 @@
 #!/bin/bash
 
-set -x
+set -x # print cmds
+set -e # exit as soon as an error occurs
 
 # log
 msg=`git log --pretty=oneline -1`
@@ -13,16 +14,6 @@ sed -i  "s/- cyclus/- cyclus 0.0/g" conda-recipe/meta.yaml
 
 # build
 conda build --no-test conda-recipe
-status=$?
-echo "status: $status"
-if [[ $status != 0 ]]; then
-    exit $status
-fi
 
 # install
 conda install --use-local cycamore=0.0
-status=$?
-echo "status: $status"
-if [[ $status != 0 ]]; then
-    exit $status
-fi
