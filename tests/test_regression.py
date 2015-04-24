@@ -375,3 +375,93 @@ class TestGrowth(TestRegression):
         assert_equal(depl_time[np.where(agent_ids == source1_id[0])], 2)
         assert_equal(depl_time[np.where(agent_ids == source1_id[1])], 3)
 
+class TestRecycle(TestRegression):
+    """This class tests the input/recycle.xml file.
+    """
+    def __init__(self, *args, **kwargs):
+        super(TestRecycle, self).__init__(*args, **kwargs)
+
+        # this test requires separations which isn't supported by hdf5
+        # so we force sqlite:
+        base, _ = os.path.splitext(self.outf)
+        self.ext = '.sqlite'
+        self.outf = base + self.ext
+        self.inf = "../input/recycle.xml"
+        self.sql = """
+            SELECT t.time as time,SUM(c.massfrac*r.quantity) as qty FROM transactions as t
+            JOIN resources as r ON t.resourceid=r.resourceid AND r.simid=t.simid
+            JOIN agententry as send ON t.senderid=send.agentid AND send.simid=t.simid
+            JOIN agententry as recv ON t.receiverid=recv.agentid AND recv.simid=t.simid
+            JOIN compositions as c ON c.qualid=r.qualid AND c.simid=r.simid
+            WHERE send.prototype=? AND recv.prototype=? AND c.nucid=?
+            GROUP BY t.time;"""
+
+    def do_compare(self, fromfac, tofac, nuclide, exp_invs):
+        conn = sqlite3.connect(self.outf)
+        c = conn.cursor()
+        eps = 1e-10
+        simdur = len(exp_invs)
+
+        invs = [0.0] * simdur
+        for i, row in enumerate(c.execute(self.sql, (fromfac, tofac, nuclide))):
+            t = row[0]
+            invs[t] = row[1]
+
+        expfname = 'exp_recycle_{0}-{1}-{2}.dat'.format(fromfac, tofac, nuclide)
+        with open(expfname, 'w') as f:
+            for t, val in enumerate(exp_invs):
+                f.write('{0} {1}\n'.format(t, val))
+        obsfname = 'obs_recycle_{0}-{1}-{2}.dat'.format(fromfac, tofac, nuclide)
+        with open(obsfname, 'w') as f:
+            for t, val in enumerate(invs):
+                f.write('{0} {1}\n'.format(t, val))
+
+        i = 0
+        for exp, obs in zip(invs, exp_invs):
+            i += 1
+            self.assertAlmostEquals(exp, obs, msg='mismatch at t={0}'.format(i))
+
+        os.remove(expfname)
+        os.remove(obsfname)
+
+    def test_pu239_sep_repo(self):
+        simdur = 600
+        exp = [0.0] * simdur
+        exp[18] = 1.700222672
+        exp[37] = 1.700222672
+        exp[56] = 1.700222672
+        exp[75] = 1.700222672
+        exp[94] = 1.700222672
+        exp[113] = 1.700222672
+        exp[132] = 1.700222672
+        exp[151] = 1.700222672
+        exp[170] = 1.700222672
+        exp[189] = 1.700222672
+        exp[208] = 1.700222672
+        exp[227] = 1.700222672
+        exp[246] = 1.700222672
+        exp[284] = 1.700222672
+        exp[303] = 1.700222672
+        exp[322] = 1.700222672
+        exp[341] = 1.700222672
+        exp[360] = 1.700222672
+        exp[379] = 1.700222672
+        exp[398] = 1.700222672
+        exp[417] = 1.700222672
+        exp[436] = 1.700222672
+        exp[474] = 1.700222672
+        exp[493] = 1.700222672
+        exp[512] = 1.700222672
+        exp[531] = 1.700222672
+        exp[550] = 1.700222672
+        exp[569] = 1.700222672
+        exp[588] = 1.700222672
+        self.do_compare('separations', 'repo', 942390000, exp)
+
+    def test_pu239_reactor_repo(self):
+        simdur = 600
+        exp = [0.0] * simdur
+        exp[264] = 420.42772559790944
+        exp[454] = 420.42772559790944
+        self.do_compare('reactor', 'repo', 942390000, exp)
+
