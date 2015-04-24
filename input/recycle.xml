@@ -1,5 +1,4 @@
 <simulation>
-  <schematype>flat</schematype>
   <control>
     <duration>600</duration>
     <startmonth>1</startmonth>
@@ -110,12 +109,40 @@
     </config>
   </prototype>
 
-  <agent> <name>repo1</name>     <prototype>repo</prototype> </agent>
-  <agent> <name>r1</name>        <prototype>reactor</prototype> </agent>
-  <agent> <name>depleted1</name> <prototype>depleted_src</prototype> </agent>
-  <agent> <name>fab1</name>      <prototype>fuelfab</prototype> </agent>
-  <agent> <name>sep1</name>      <prototype>separations</prototype> </agent>
-  <agent> <name>enrich1</name>   <prototype>enrichment</prototype> </agent>
+  <region>
+    <name>SingleRegion</name>
+    <config><NullRegion/></config>
+    <institution>
+      <name>SingleInstitution</name>
+      <initialfacilitylist>
+        <entry>
+          <prototype>repo</prototype>
+          <number>1</number>
+        </entry>
+        <entry>
+          <prototype>reactor</prototype>
+          <number>1</number>
+        </entry>
+        <entry>
+          <prototype>depleted_src</prototype>
+          <number>1</number>
+        </entry>
+        <entry>
+          <prototype>fuelfab</prototype>
+          <number>1</number>
+        </entry>
+        <entry>
+          <prototype>separations</prototype>
+          <number>1</number>
+        </entry>
+        <entry>
+          <prototype>enrichment</prototype>
+          <number>1</number>
+        </entry>
+      </initialfacilitylist>
+      <config><NullInst/></config>
+    </institution>
+  </region>
 
   <recipe>
     <name>natl_u</name>
