@@ -1,5 +1,4 @@
 <simulation>
-  <schematype>flat</schematype>
   <control>
     <duration>600</duration>
     <startmonth>1</startmonth>
@@ -7,6 +6,8 @@
   </control>
 
   <archetypes>
+    <spec> <lib>agents</lib> <name>NullInst</name></spec>
+    <spec> <lib>agents</lib> <name>NullRegion</name></spec>
     <spec> <lib>cycamore</lib> <name>Source</name></spec>
     <spec> <lib>cycamore</lib> <name>Sink</name></spec>
     <spec> <lib>cycamore</lib> <name>Enrichment</name> </spec>
@@ -15,7 +16,7 @@
     <spec> <lib>cycamore</lib> <name>Separations</name> </spec>
   </archetypes>
 
-  <prototype>
+  <facility>
     <name>enrichment</name>
     <config>
       <Enrichment>
@@ -28,9 +29,9 @@
         <initial_feed>1e100</initial_feed>
       </Enrichment>
     </config>
-  </prototype>
+  </facility>
 
-  <prototype>
+  <facility>
     <name>separations</name>
     <config>
       <Separations>
@@ -51,9 +52,9 @@
           <feed_commod_prefs> <val>2.0</val> </feed_commod_prefs>
       </Separations>
     </config>
-  </prototype>
+  </facility>
 
-  <prototype>
+  <facility>
     <name>fuelfab</name>
     <config>
       <FuelFab>
@@ -69,9 +70,9 @@
         <throughput>30001</throughput>
       </FuelFab>
     </config>
-  </prototype>
+  </facility>
 
-  <prototype>
+  <facility>
     <name>reactor</name>
     <config>
       <Reactor>
@@ -88,9 +89,9 @@
         <n_assem_batch>1</n_assem_batch>
       </Reactor>
     </config>
-  </prototype>
+  </facility>
 
-  <prototype>
+  <facility>
     <name>repo</name>
     <config>
       <Sink>
@@ -98,9 +99,9 @@
         <capacity>1e100</capacity>
       </Sink>
     </config>
-  </prototype>
+  </facility>
 
-  <prototype>
+  <facility>
     <name>depleted_src</name>
     <config>
       <Source>
@@ -108,14 +109,42 @@
         <outrecipe>depleted_u</outrecipe>
       </Source>
     </config>
-  </prototype>
+  </facility>
 
-  <agent> <name>repo1</name>     <prototype>repo</prototype> </agent>
-  <agent> <name>r1</name>        <prototype>reactor</prototype> </agent>
-  <agent> <name>depleted1</name> <prototype>depleted_src</prototype> </agent>
-  <agent> <name>fab1</name>      <prototype>fuelfab</prototype> </agent>
-  <agent> <name>sep1</name>      <prototype>separations</prototype> </agent>
-  <agent> <name>enrich1</name>   <prototype>enrichment</prototype> </agent>
+  <region>
+    <name>SingleRegion</name>
+    <config><NullRegion/></config>
+    <institution>
+      <name>SingleInstitution</name>
+      <initialfacilitylist>
+        <entry>
+          <prototype>repo</prototype>
+          <number>1</number>
+        </entry>
+        <entry>
+          <prototype>reactor</prototype>
+          <number>1</number>
+        </entry>
+        <entry>
+          <prototype>depleted_src</prototype>
+          <number>1</number>
+        </entry>
+        <entry>
+          <prototype>fuelfab</prototype>
+          <number>1</number>
+        </entry>
+        <entry>
+          <prototype>separations</prototype>
+          <number>1</number>
+        </entry>
+        <entry>
+          <prototype>enrichment</prototype>
+          <number>1</number>
+        </entry>
+      </initialfacilitylist>
+      <config><NullInst/></config>
+    </institution>
+  </region>
 
   <recipe>
     <name>natl_u</name>
