@@ -33,13 +33,17 @@ conda info -a
 cd ..
 
 cd $CORE
+cp conda-recipe/meta.yaml conda-recipe/.orig.meta.yaml
 sed -i  "s/version: 0.0/version: $VERSION/g" conda-recipe/meta.yaml
+sed -i  "s/string: nightly/string: 0/g" conda-recipe/meta.yaml
 conda build --no-test conda-recipe
-sed -i  "s/version: $VERSION/version: 0.0/g" conda-recipe/meta.yaml
+mv conda-recipe/.orig.meta.yaml conda-recipe/meta.yaml
 binstar upload --force -u cyclus $CONDA/conda-bld/linux-64/cyclus-$VERSION-0.tar.bz2
 
 cd $CYCAMORE
+cp conda-recipe/meta.yaml conda-recipe/.orig.meta.yaml
 sed -i  "s/version: 0.0/version: $VERSION/g" conda-recipe/meta.yaml
+sed -i  "s/string: nightly/string: 0/g" conda-recipe/meta.yaml
 conda build --no-test conda-recipe
-sed -i  "s/version: $VERSION/version: 0.0/g" conda-recipe/meta.yaml
+mv conda-recipe/.orig.meta.yaml conda-recipe/meta.yaml
 binstar upload --force -u cyclus $CONDA/conda-bld/linux-64/cycamore-$VERSION-0.tar.bz2
