@@ -42,7 +42,7 @@ cp $CORE/tests/input/stub_example.xml $STUB/input/example.xml
 cp $CORE/stubs/stub_* $STUB/src/
 
 # conda release
-
+./conda_upload.sh
 
 echo "
 *-----------------------------------------------------------------------------*

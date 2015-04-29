@@ -37,13 +37,13 @@ cp conda-recipe/meta.yaml conda-recipe/.orig.meta.yaml
 sed -i  "s/version: 0.0/version: $VERSION/g" conda-recipe/meta.yaml
 sed -i  "s/string: nightly/string: 0/g" conda-recipe/meta.yaml
 conda build --no-test conda-recipe
-mv conda-recipe/.orig.meta.yaml conda-recipe/meta.yaml
 binstar upload --force -u cyclus $CONDA/conda-bld/linux-64/cyclus-$VERSION-0.tar.bz2
+mv conda-recipe/.orig.meta.yaml conda-recipe/meta.yaml
 
 cd $CYCAMORE
 cp conda-recipe/meta.yaml conda-recipe/.orig.meta.yaml
 sed -i  "s/version: 0.0/version: $VERSION/g" conda-recipe/meta.yaml
 sed -i  "s/string: nightly/string: 0/g" conda-recipe/meta.yaml
 conda build --no-test conda-recipe
-mv conda-recipe/.orig.meta.yaml conda-recipe/meta.yaml
 binstar upload --force -u cyclus $CONDA/conda-bld/linux-64/cycamore-$VERSION-0.tar.bz2
+mv conda-recipe/.orig.meta.yaml conda-recipe/meta.yaml
