@@ -21,6 +21,9 @@ test:
     - nose
     - pytables
 
+build:
+  string: nightly
+
 about:
   home: Cyclus
   license: BSD 3 Clause
