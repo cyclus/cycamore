@@ -62,7 +62,7 @@ std::string Sink::str() {
 void Sink::EnterNotify() {
   cyclus::Facility::EnterNotify();
   
-  buypol_.Init(this, &inventory, std::string("inv"), -1, 1, 1, capacity);
+  buypol_.Init(this, &inventory, std::string("inv"), capacity);
   std::vector<std::string>::iterator it;
   cyclus::Composition::Ptr c;
   for (it = in_commods.begin(); it != in_commods.end(); it++) {  
