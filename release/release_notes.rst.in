@@ -12,18 +12,14 @@ Major features
 ==============
 !--- TODO: Fill in major features --!
 
-
 Summary
 =======
 
 Since v@PREV_VERSION@,
 
-* Core: @CORE_SUMMARY@
+* Cyclus: @CORE_SUMMARY@
 
 * Cycamore: @CYCA_SUMMARY@
-
-33 commits resulted in 15 changed files encompassing a net 93
-line insertions(+) and 91 deletions(-).
 
 Contributors
 ============

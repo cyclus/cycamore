@@ -1,9 +1,28 @@
+#!/bin/bash
+
+set -e
+
+die() {
+    echo >&2 "$@"
+    exit 1
+}
+
+# check input
+CORE=${CORE_DIR?"Environment variable CORE_DIR must be set to the cyclus repository directory."}
+CYCA=${CYCAMORE_DIR?"Environment variable CYCAMORE_DIR must be set to the cycamore repository directory."}
+[ "$#" -eq 2 ] || die "Input requires from version and to version, e.g., 
+$ ./make_release_notes.sh 0.2.0 0.3.0
+" 
+PREV=$1
+VERSION=$2
+echo "Making release notes template for Cyclus stack verison $VERSION"
+
+# setup
 FILE=release_notes.rst
 cp release_notes.rst.in $FILE
-
 HERE=$PWD
-CORE=~/work/cyclus/cyclus
-CYCA=~/work/cyclus/cycamore
+sed -i "s/@PREV_VERSION@/$PREV/g" $FILE 
+sed -i "s/@VERSION@/$VERSION/g" $FILE 
 
 # cyclus summary
 cd $CORE
