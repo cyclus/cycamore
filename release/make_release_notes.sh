@@ -31,7 +31,6 @@ SUMMARY=`git diff --stat 1.2.0...1.3.0-rc1 | tail -n1`
 CORECONTRIB=`git log --format='%aN' 1.2.0...1.3.0-rc1 | sort -u`
 cd $HERE
 TXT="$NCOMMITS commits resulting in $SUMMARY"
-echo "txt: $TXT"
 sed -i "s/@CORE_SUMMARY@/$TXT/g" $FILE 
 
 # cycamore summary
