@@ -15,7 +15,7 @@ $ ./make_release_notes.sh 0.2.0 0.3.0
 " 
 PREV=$1
 VERSION=$2
-echo "Making release notes template for Cyclus stack verison $VERSION"
+echo "Making release notes template for Cyclus stack verison $VERSION from $PREV"
 
 # setup
 FILE=release_notes.rst
@@ -51,3 +51,8 @@ echo "$TXT" > .contribs
 sed -i '/@CONTRIBUTORS@/r .contribs' $FILE 
 sed -i '/@CONTRIBUTORS@/d' $FILE 
 rm .contribs
+
+echo "
+A release notes template is available in release_notes.rst. You still need
+to update it with features, etc.!  
+"

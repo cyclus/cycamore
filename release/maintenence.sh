@@ -11,11 +11,10 @@ die() {
 CORE=${CORE_DIR?"Environment variable CORE_DIR must be set to the cyclus repository directory."}
 CYCA=${CYCAMORE_DIR?"Environment variable CYCAMORE_DIR must be set to the cycamore repository directory."}
 STUB=${STUB_DIR?"Environment variable STUB_DIR must be set to the cycstub repository directory."}
-[ "$#" -eq 2 ] || die "Input requires from version and to version, e.g., 
-$ ./maintence.sh 0.2.0 0.3.0
+[ "$#" -eq 1 ] || die "Input requires version, e.g., 
+$ ./maintence.sh 0.3.0
 " 
-PREV=$1
-VERSION=$2
+VERSION=$1
 echo "Performing maintence updates for Cyclus stack verison $VERSION"
 
 # pyne
@@ -43,12 +42,6 @@ cd $CORE
 # cycstub
 cp $CORE/tests/input/stub_example.xml $STUB/input/example.xml
 cp $CORE/stubs/stub_* $STUB/src/
-
-# conda release
-./conda_upload.sh $VERSION
-
-# release notes
-./make_release_notes.sh $PREV $VERSION
 
 echo "
 *-----------------------------------------------------------------------------*
