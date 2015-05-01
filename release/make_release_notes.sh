@@ -48,6 +48,6 @@ echo "$CORECONTRIB" > .contribs
 echo "$CYCACONTRIB" >> .contribs
 TXT=`cat .contribs | sort -u | awk '{print "* " $0}'`
 echo "$TXT" > .contribs
-sed -i '/@CONTRIBUTORS@/r contribs' $FILE 
+sed -i '/@CONTRIBUTORS@/r .contribs' $FILE 
 sed -i '/@CONTRIBUTORS@/d' $FILE 
 rm .contribs
