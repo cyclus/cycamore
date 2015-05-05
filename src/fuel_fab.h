@@ -54,6 +54,7 @@ namespace cycamore {
 /// @endcode
 class FuelFab : public cyclus::Facility {
 #pragma cyclus note { \
+"niche": "fabrication", \
 "doc": \
   "FuelFab takes in 2 streams of material and mixes them in ratios in order to" \
   " supply material that matches some neutronics properties of reqeusted" \
