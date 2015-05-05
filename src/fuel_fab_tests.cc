@@ -837,6 +837,52 @@ TEST(FuelFabTests, SwapTopup_FissConstrained) {
   EXPECT_NEAR(max_provide, m->quantity(), 1e-10) << "matched trade uses more fiss than available";
 }
 
+// Before this test and a fix, the fuel fab (partially) assumed each entire material
+// buffer had the same composition as the material on top of the buffer when
+// calculating stream mixing ratios for material to supply.  This problem was
+// compounded by the fact that material weights are computed on an atom basis
+// and mixing is done on a mass basis - corresponding conversions resulted in
+// the fab being matched for more than it could actually supply - due to
+// thinking it had an inventory of higher quality material than was actually
+// the case.  This test makes sure that doesn't happen again.
+TEST(FuelFabTests, HomogenousBuffers) {
+  std::string config = 
+     "<fill_commod>natu</fill_commod>"
+     "<fill_recipe>natu</fill_recipe>"
+     "<fill_size>40</fill_size>"
+     ""
+     "<fiss_commods> <val>stream1</val> </fiss_commods>"
+     "<fiss_size>4</fiss_size>"
+     "<fiss_recipe>spentuox</fiss_recipe>"
+     ""
+     "<outcommod>out</outcommod>"
+     "<spectrum>thermal</spectrum>"
+     "<throughput>1e10</throughput>"
+     ;
+
+  CompMap m;
+  m[id("u235")] = 7;
+  m[id("u238")] = 86;
+  // the zr90 is important to force the atom-mass basis conversion to push the
+  // dre to overmatch in the direction we want.
+  m[id("zr90")] = 7;
+  Composition::Ptr c = Composition::CreateFromMass(m);
+
+  int simdur = 5;
+  cyclus::MockSim sim(cyclus::AgentSpec(":cycamore:FuelFab"), config, simdur);
+  sim.AddSource("stream1").start(0).lifetime(1).capacity(.01).recipe("special").Finalize();
+  sim.AddSource("stream1").start(1).lifetime(1).capacity(3.98).recipe("natu").Finalize();
+  sim.AddSource("natu").lifetime(1).Finalize();
+  sim.AddSink("out").start(2).capacity(4).lifetime(1).recipe("uox").Finalize();
+  sim.AddSink("out").start(2).capacity(4).lifetime(1).recipe("uox").Finalize();
+  sim.AddRecipe("uox", c_uox());
+  sim.AddRecipe("spentuox", c_pustream());
+  sim.AddRecipe("natu", c_natu());
+  sim.AddRecipe("special", c);
+  ASSERT_NO_THROW(sim.Run());
+}
+
 } // namespace fuelfabtests
 } // namespace cycamore
+
 

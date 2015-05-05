@@ -35,6 +35,7 @@ cyclus::Material::Ptr SepMaterial(std::map<int, double> effs,
 /// room is again available in the output streams.
 class Separations : public cyclus::Facility {
 #pragma cyclus note { \
+  "niche": "separations", \
   "doc": \
     "Separations processes feed material into one or more streams containing" \
     " specific elements and/or nuclides.  It uses mass-based efficiencies." \

@@ -225,7 +225,20 @@ void FuelFab::AcceptMatlTrades(const std::vector<
       throw cyclus::ValueError("cycamore::FuelFab was overmatched on requests");
     }
   }
+
   req_inventories_.clear();
+
+  // IMPORTANT - each buffer needs to be a single homogenous composition or
+  // the inventory mixing constraints for bids don't work
+  if (fill.count() > 1) {
+    fill.Push(cyclus::toolkit::Squash(fill.PopN(fill.count())));
+  }
+  if (fiss.count() > 1) {
+    fiss.Push(cyclus::toolkit::Squash(fiss.PopN(fiss.count())));
+  }
+  if (topup.count() > 1) {
+    topup.Push(cyclus::toolkit::Squash(topup.PopN(topup.count())));
+  }
 }
 
 std::set<cyclus::BidPortfolio<Material>::Ptr> FuelFab::GetMatlBids(
@@ -339,9 +352,10 @@ void FuelFab::GetMatlTrades(
         responses) {
   using cyclus::Trade;
 
+  // guard against cases where a buffer is empty - this is okay because some trades
+  // may not need that particular buffer.
   double w_fill = 0;
-  if (fill.count() >
-      0) {  // it's possible to only need fissile inventory for a trade
+  if (fill.count() > 0) {
     w_fill = CosiWeight(fill.Peek()->comp(), spectrum);
   }
   double w_topup = 0;
@@ -357,6 +371,7 @@ void FuelFab::GetMatlTrades(
   double tot = 0;
   for (int i = 0; i < trades.size(); i++) {
     Material::Ptr tgt = trades[i].request->target();
+
     double w_tgt = CosiWeight(tgt->comp(), spectrum);
     double qty = trades[i].amt;
     double wfiss = w_fiss;
@@ -371,10 +386,18 @@ void FuelFab::GetMatlTrades(
 
     if (fiss.count() == 0) {
       // use straight filler to satisfy this request
-      responses.push_back(std::make_pair(trades[i], fill.Pop(qty)));
+      double fillqty = qty;
+      if (std::abs(fillqty - fill.quantity()) < cyclus::eps()) {
+        fillqty = std::min(fill.quantity(), qty);
+      }
+      responses.push_back(std::make_pair(trades[i], fill.Pop(fillqty)));
     } else if (fill.count() == 0 && ValidWeights(w_fill, w_tgt, w_fiss)) {
       // use straight fissile to satisfy this request
-      responses.push_back(std::make_pair(trades[i], fiss.Pop(qty)));
+      double fissqty = qty;
+      if (std::abs(fissqty - fiss.quantity()) < cyclus::eps()) {
+        fissqty = std::min(fiss.quantity(), qty);
+      }
+      responses.push_back(std::make_pair(trades[i], fiss.Pop(fissqty)));
     } else if (ValidWeights(w_fill, w_tgt, w_fiss)) {
       double fiss_frac = HighFrac(w_fill, w_tgt, w_fiss);
       double fill_frac = LowFrac(w_fill, w_tgt, w_fiss);
@@ -383,10 +406,19 @@ void FuelFab::GetMatlTrades(
       fill_frac =
           AtomToMassFrac(fill_frac, fill.Peek()->comp(), fiss.Peek()->comp());
 
-      Material::Ptr m = fiss.Pop(fiss_frac * qty);
+      double fissqty = fiss_frac*qty;
+      if (std::abs(fissqty - fiss.quantity()) < cyclus::eps()) {
+        fissqty = std::min(fiss.quantity(), fiss_frac*qty);
+      }
+      double fillqty = fill_frac*qty;
+      if (std::abs(fillqty - fill.quantity()) < cyclus::eps()) {
+        fillqty = std::min(fill.quantity(), fill_frac*qty);
+      }
+
+      Material::Ptr m = fiss.Pop(fissqty);
       // this if block prevents zero qty ResBuf pop exceptions
       if (fill_frac > 0) {
-        m->Absorb(fill.Pop(fill_frac * qty));
+        m->Absorb(fill.Pop(fillqty));
       }
       responses.push_back(std::make_pair(trades[i], m));
     } else {
@@ -397,10 +429,19 @@ void FuelFab::GetMatlTrades(
       fiss_frac =
           AtomToMassFrac(fiss_frac, fiss.Peek()->comp(), topup.Peek()->comp());
 
-      Material::Ptr m = fiss.Pop(fiss_frac * qty);
+      double fissqty = fiss_frac*qty;
+      if (std::abs(fissqty - fiss.quantity()) < cyclus::eps()) {
+        fissqty = std::min(fiss.quantity(), fiss_frac*qty);
+      }
+      double topupqty = topup_frac*qty;
+      if (std::abs(topupqty - topup.quantity()) < cyclus::eps()) {
+        topupqty = std::min(topup.quantity(), topup_frac*qty);
+      }
+
+      Material::Ptr m = fiss.Pop(fissqty);
       // this if block prevents zero qty ResBuf pop exceptions
       if (topup_frac > 0) {
-        m->Absorb(topup.Pop(topup_frac * qty));
+        m->Absorb(topup.Pop(topupqty));
       }
       responses.push_back(std::make_pair(trades[i], m));
     }
