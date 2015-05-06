@@ -74,20 +74,24 @@ class GrowthRegion : public cyclus::Region {
   #pragma cyclus var {"tooltip": "commodity in demand", \
                       "doc": "name of the commodity experiencing a " \
                              "growth in demand", \
+                      "uilabel": "Growth Commodity", \
                       "uitype": "commodity"}
   std::string commodity_name;
 
   #pragma cyclus var {"tooltip": "demand type", \
+                      "uilabel": "Demand Growth Function Form", \
                       "doc": "mathematical description of demand growth " \
                              "(i.e., linear, exponential, piecewise)"}
   std::vector<std::string> demand_types;
 
   #pragma cyclus var {"tooltip": "demand parameters", \
+                      "uilabel": "Demand Growth Function Parameters",                     \
                       "doc": "parameters that define the behavior of the " \
                              "demand type function"}
   std::vector<std::string> demand_params;
 
   #pragma cyclus var {"tooltip": "demand times", \
+                      "uilabel": "Demand Growth Piecewise Function Times", \
                       "doc": "vector describing the length of times " \
                              "regarding the piecewise demand type"}
   std::vector<int> demand_times;
