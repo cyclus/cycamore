@@ -67,7 +67,7 @@ class DeployInst : public cyclus::Institution {
            " Although a new prototype is created in the Prototypes table for each lifetime with the suffix '_life_[lifetime]'," \
            " all deployed agents themselves will have the same original prototype name (and so will the Agents tables).", \
     "default": [], \
-    "uilabel": "Lifetimes"
+    "uilabel": "Lifetimes" \
   }
   std::vector<int> lifetimes;
 };
