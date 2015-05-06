@@ -71,6 +71,7 @@ class Source : public cyclus::Facility,
   #pragma cyclus var { \
     "tooltip": "source output commodity", \
     "doc": "Output commodity on which the source offers material.", \
+    "uilabel": "Output Commodity", \
     "uitype": "outcommodity", \
   }
   std::string outcommod;
@@ -79,6 +80,7 @@ class Source : public cyclus::Facility,
     "tooltip": "name of material recipe to provide", \
     "doc": "Name of composition recipe that this source provides regardless of requested composition." \
            " If empty, source creates and provides whatever compositions are requested.", \
+    "uilabel": "Output Recipe", \
     "default": "", \
     "uitype": "recipe", \
   }
@@ -88,6 +90,7 @@ class Source : public cyclus::Facility,
     "default": 1e299, \
     "tooltip": "per time step throughput", \
     "units": "kg/(time step)", \
+    "uilabel": "Maximum Throughput", \
     "doc": "amount of commodity that can be supplied at each time step", \
   }
   double throughput;
@@ -97,6 +100,7 @@ class Source : public cyclus::Facility,
            " Every trade decreases this value by the supplied material quantity'." \
            " When it reaches zero, the source cannot provide any more material.", \
     "default": 1e299, \
+    "uilabel": "Initial Inventory", \
     "units": "kg", \
   }
   double inventory_size;
