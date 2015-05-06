@@ -24,8 +24,15 @@ class Sink : public cyclus::Facility  {
 
   virtual ~Sink();
 
-  #pragma cyclus note {"doc": "A sink facility that accepts specified " \
-                              "amounts of commodities from other agents"}
+  #pragma cyclus note { \
+    "doc": \
+    " A sink facility that accepts materials and products with a fixed\n"\
+    " throughput (per time step) capacity and a lifetime capacity defined by\n"\
+    " a total inventory size. The inventory size and throughput capacity\n"\
+    " both default to infinite. If a recipe is provided, it will request\n"\
+    " material with that recipe. Requests are made for any number of\n"\
+    " specified commodities.\n" \
+    }
 
   #pragma cyclus decl
 
