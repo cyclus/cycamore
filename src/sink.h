@@ -166,11 +166,13 @@ class Sink : public cyclus::Facility  {
   /// all facilities must have at least one input commodity
   #pragma cyclus var {"tooltip": "input commodities", \
                       "doc": "commodities that the sink facility accepts", \
+                      "uilabel": "List of Input Commodities", \
                       "uitype": ["oneormore", "incommodity"]}
   std::vector<std::string> in_commods;
 
   /// monthly acceptance capacity
   #pragma cyclus var {"default": 1e299, "tooltip": "sink capacity", \
+                      "uilabel": "Maximum Throughput", \
                       "doc": "capacity the sink facility can " \
                              "accept at each time step"}
   double capacity;
@@ -178,12 +180,14 @@ class Sink : public cyclus::Facility  {
   #pragma cyclus var {"default": "", "tooltip": "requested composition", \
                       "doc": "name of recipe to use for material requests, where " \
                              "the default (empty string) is to accept everything", \
+                       "uilabel": "Input Recipe", \
                       "uitype": "recipe"}
   std::string recipe_name;
 
   /// max inventory size
   #pragma cyclus var {"default": 1e299, \
                       "tooltip": "sink maximum inventory size", \
+                      "uilabel": "Maximum Inventory", \
                       "doc": "total maximum inventory size of sink facility"}
   double max_inv_size;
 
