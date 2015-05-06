@@ -162,7 +162,7 @@ class FuelFab : public cyclus::Facility {
   std::vector<std::string> fiss_commods;
   #pragma cyclus var { \
     "default": [], \
-    "uilabel":, "Fissile Stream Preferences", \
+    "uilabel": "Fissile Stream Preferences", \
     "doc": "Fissile stream commodity request preferences for each of the given fissile commodities (same order)." \
            " If unspecified, default is to use zero for all preferences.", \
   }
