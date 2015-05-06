@@ -75,7 +75,7 @@ class GrowthRegion : public cyclus::Region {
                       "doc": "name of the commodity experiencing a " \
                              "growth in demand", \
                       "uilabel": "Growth Commodity", \
-                      "uitype": "commodity"}
+  }
   std::string commodity_name;
 
   #pragma cyclus var {"tooltip": "demand type", \
