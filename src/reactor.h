@@ -324,12 +324,16 @@ class Reactor : public cyclus::Facility,
 
   // should be hidden in ui (internal only). True if fuel has already been
   // discharged this cycle.
-  #pragma cyclus var {"default": 0, "doc": "This should NEVER be set manually."}
+#pragma cyclus var {"default": 0, "doc": "This should NEVER be set manually.", \
+                    "internal": True \
+  }
   bool discharged;
 
   // This variable should be hidden/unavailable in ui.  Maps resource object
   // id's to the index for the incommod through which they were received.
-  #pragma cyclus var {"default": {}, "doc": "This should NEVER be set manually."}
+#pragma cyclus var {"default": {}, "doc": "This should NEVER be set manually.", \
+                    "internal": True \
+  }
   std::map<int, int> res_indexes;
 };
 
