@@ -106,14 +106,14 @@ class Separations : public cyclus::Facility {
   #pragma cyclus var { \
     "doc": "Ordered list of commodities on which to request feed material to separate." \
            " Order only matters for matching up with feed commodity preferences if specified.", \
-    "uilabel": "List of Feed Commodities", \
+    "uilabel": "Feed Commodity List", \
     "uitype": ["oneormore", "incommodity"], \
   }
   std::vector<std::string> feed_commods;
 
   #pragma cyclus var { \
     "default": [], \
-    "uilabel": "Feed Commodity Preferences", \
+    "uilabel": "Feed Commodity Preference List", \
     "doc": "Feed commodity request preferences for each of the given feed commodities (same order)." \
            " If unspecified, default is to use zero for all preferences.", \
   }
@@ -122,7 +122,7 @@ class Separations : public cyclus::Facility {
   #pragma cyclus var { \
     "doc": "Name for recipe to be used in feed requests." \
            " Empty string results in use of a dummy recipe.", \
-    "uilabel": "Feed Commodity Recipes", \
+    "uilabel": "Feed Commodity Recipe List", \
     "uitype": "recipe", \
     "default": "", \
   }
@@ -130,7 +130,7 @@ class Separations : public cyclus::Facility {
 
   #pragma cyclus var { \
     "doc" : "Maximum amount of feed material to keep on hand.", \
-    "uilabel": "Maximum Feed Inventories",                     \
+    "uilabel": "Maximum Feed Inventory",                     \
     "units" : "kg", \
   }
   double feedbuf_size;

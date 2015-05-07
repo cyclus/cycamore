@@ -223,19 +223,19 @@ class Reactor : public cyclus::Facility,
   /////// fuel specifications /////////
   #pragma cyclus var { \
     "uitype": ["oneormore", "incommodity"], \
-    "uilabels": "Fresh Fuel Commodity List", \
+    "uilabel": "Fresh Fuel Commodity List", \
     "doc": "Ordered list of input commodities on which to requesting fuel.", \
   }
   std::vector<std::string> fuel_incommods;
   #pragma cyclus var { \
     "uitype": ["oneormore", "recipe"], \
-    "uilabel": "Fresh Fuel Recipes", \
+    "uilabel": "Fresh Fuel Recipe List", \
     "doc": "Fresh fuel recipes to request for each of the given fuel input commodities (same order).", \
   }
   std::vector<std::string> fuel_inrecipes;
   #pragma cyclus var { \
     "uitype": ["oneormore", "recipe"], \
-    "uilabel": "Spent Fuel Recipes", \
+    "uilabel": "Spent Fuel Recipe List", \
     "doc": "Spent fuel recipes corresponding to the given fuel input commodities (same order)." \
            " Fuel received via a particular input commodity is transmuted to the recipe specified" \
            " here after being burned during a cycle.", \
@@ -250,7 +250,7 @@ class Reactor : public cyclus::Facility,
   std::vector<std::string> fuel_outcommods;
   #pragma cyclus var { \
     "default": [], \
-    "uilabels": "Fresh Fuel Preferences", \
+    "uilabel": "Fresh Fuel Preference List", \
     "doc": "The preference for each type of fresh fuel requested corresponding to each input" \
            " commodity (same order).  If no preferences are specified, zero is" \
            " used for all fuel requests (default).", \
