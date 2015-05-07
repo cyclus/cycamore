@@ -43,7 +43,7 @@ class DeployInst : public cyclus::Institution {
  protected:
   #pragma cyclus var { \
     "doc": "Ordered list of prototypes to build.", \
-    "uitype": ("onormore", "prototype"), \
+    "uitype": ("oneormore", "prototype"), \
     "uilabel": "Prototypes to deploy", \
   }
   std::vector<std::string> prototypes;
