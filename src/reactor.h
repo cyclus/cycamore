@@ -207,7 +207,7 @@ class Reactor : public cyclus::Facility,
   #pragma cyclus var { \
     "doc": "The duration of a full refueling period - the minimum time between" \
            " a cycle end and the start of the next cycle.", \
-    "uilabel": "Refueling Outage Length", \
+    "uilabel": "Refueling Outage Duration", \
     "units": "time steps", \
   }
   int refuel_time;
