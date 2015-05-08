@@ -227,7 +227,7 @@ class Reactor : public cyclus::Facility,
   }
   std::vector<std::string> fuel_outrecipes;
   #pragma cyclus var { \
-    "uitype": ["oneormore", "incommodity"], \
+    "uitype": ["oneormore", "outcommodity"], \
     "doc": "Output commodities on which to offer spent fuel originally received as each particular " \
            " input commodity (same order)." \
   }

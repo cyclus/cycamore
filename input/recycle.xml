@@ -36,13 +36,15 @@
     <config>
       <Separations>
           <streams>
-              <commod>sep_stream</commod>
-              <info>
-                  <buf_size>1e100</buf_size>
-                  <efficiencies>
-                      <comp>Pu</comp> <eff>.99</eff>
-                  </efficiencies>
-              </info>
+              <item>
+                  <commod>sep_stream</commod>
+                  <info>
+                      <buf_size>1e100</buf_size>
+                      <efficiencies>
+                         <item><comp>Pu</comp> <eff>.99</eff></item>
+                      </efficiencies>
+                  </info>
+              </item>
           </streams>
 
           <leftover_commod>waste</leftover_commod>
