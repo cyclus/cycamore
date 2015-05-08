@@ -263,43 +263,50 @@ class Enrichment : public cyclus::Facility {
   #pragma cyclus var { \
     "tooltip": "feed commodity",					\
     "doc": "feed commodity that the enrichment facility accepts",	\
+    "uilabel": "Feed Commodity",                                    \
     "uitype": "incommodity" \
   }
   std::string feed_commod;
   #pragma cyclus var { \
     "tooltip": "product commodity",					\
     "doc": "product commodity that the enrichment facility generates",	 \
+    "uilabel": "Product Commodity",                                     \
     "uitype": "outcommodity" \
   }
   std::string product_commod;
   #pragma cyclus var { \
     "tooltip": "feed recipe",						\
     "doc": "recipe for enrichment facility feed commodity",		\
+    "uilabel": "Feed Recipe",                                   \
     "uitype": "recipe" \
   }
   std::string feed_recipe;
   #pragma cyclus var { \
     "tooltip": "tails commodity",					\
     "doc": "tails commodity supplied by enrichment facility",		\
+    "uilabel": "Tails Commodity",                                   \
     "uitype": "outcommodity" \
   }
   std::string tails_commod;
   #pragma cyclus var { \
     "default": 0.03, "tooltip": "tails assay",				\
-    "doc": "tails assay from the enrichment process"			\
+    "uilabel": "Tails Assay",                               \
+    "doc": "tails assay from the enrichment process",       \
   }
   double tails_assay;
   #pragma cyclus var { \
     "default": 1e299,						       \
     "tooltip": "SWU capacity (kgSWU/month)",			       \
+    "uilabel": "SWU Capacity",                                         \
     "doc": "separative work unit (SWU) capacity of enrichment "	       \
-           "facility (kgSWU/month) "					       \
+           "facility (kgSWU/month) "                                         \
   }
   double swu_capacity;
   #pragma cyclus var { \
     "default": 1e299, "tooltip": "max inventory of feed material (kg)", \
+    "uilabel": "Maximum Feed Inventory",                                \
     "doc": "maximum total inventory of natural uranium in "		\
-           "the enrichment facility (kg)"				\
+           "the enrichment facility (kg)"     \
   }
   double max_feed_inventory;
  
@@ -307,6 +314,7 @@ class Enrichment : public cyclus::Facility {
     "default": 1.0,						\
     "tooltip": "maximum allowed enrichment fraction",		\
     "doc": "maximum allowed weight fraction of U235 in product",\
+    "uilabel": "Maximum Allowed Enrichment", \
     "schema": '<optional>'				     	   \
         '          <element name="max_enrich">'			   \
         '              <data type="double">'			   \
@@ -320,6 +328,7 @@ class Enrichment : public cyclus::Facility {
 
   #pragma cyclus var {							\
     "default": 0, "tooltip": "initial uranium reserves (kg)",		\
+    "uilabel": "Initial Feed Inventory", \
     "doc": "amount of natural uranium stored at the enrichment "       \
            "facility at the beginning of the simulation (kg)"		\
   }
@@ -328,6 +337,7 @@ class Enrichment : public cyclus::Facility {
     "default": 1,		       \
     "userlevel": 10,							\
     "tooltip": "order material requests by U235 content",		\
+    "uilabel": "Prefer feed with higher U235 content", \
     "doc": "turn on preference ordering for input material "		\
            "so that EF chooses higher U235 content first" \
   }
