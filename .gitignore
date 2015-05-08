@@ -10,3 +10,4 @@ rs.cred
 *.h5
 *.dat
 tests/run_inputs.py
+cyclus.sqlite

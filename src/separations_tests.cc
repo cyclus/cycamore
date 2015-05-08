@@ -44,16 +44,18 @@ TEST(SeparationsTests, SepMaterial) {
 }
 
 TEST(SeparationsTests, SepMixElemAndNuclide) {
-  std::string config = 
+  std::string config =
       "<streams>"
-      "    <commod>stream1</commod>"
-      "    <info>"
-      "        <buf_size>-1</buf_size>"
-      "        <efficiencies>"
-      "            <comp>U</comp> <eff>0.6</eff>"
-      "            <comp>Pu239</comp> <eff>.7</eff>"
-      "        </efficiencies>"
-      "    </info>"
+      "    <item>"
+      "        <commod>stream1</commod>"
+      "        <info>"
+      "            <buf_size>-1</buf_size>"
+      "            <efficiencies>"
+      "                <item><comp>U</comp> <eff>0.6</eff></item>"
+      "                <item><comp>Pu239</comp> <eff>.7</eff></item>"
+      "            </efficiencies>"
+      "        </info>"
+      "    </item>"
       "</streams>"
       ""
       "<leftover_commod>waste</leftover_commod>"
