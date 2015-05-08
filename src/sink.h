@@ -42,21 +42,13 @@ class Sink : public cyclus::Facility  {
 
   virtual void Tock();
 
-  /// @brief SinkFacilities request Materials of their given commodity. Note
-  /// that it is assumed the Sink operates on a single resource type!
-  virtual std::set<cyclus::RequestPortfolio<cyclus::Material>::Ptr>
-      GetMatlRequests();
+  virtual void EnterNotify();
 
   /// @brief SinkFacilities request Products of their given
   /// commodity. Note that it is assumed the Sink operates on a single
   /// resource type!
   virtual std::set<cyclus::RequestPortfolio<cyclus::Product>::Ptr>
       GetGenRsrcRequests();
-
-  /// @brief SinkFacilities place accepted trade Materials in their Inventory
-  virtual void AcceptMatlTrades(
-      const std::vector< std::pair<cyclus::Trade<cyclus::Material>,
-      cyclus::Material::Ptr> >& responses);
 
   /// @brief SinkFacilities place accepted trade Materials in their Inventory
   virtual void AcceptGenRsrcTrades(
@@ -128,6 +120,8 @@ class Sink : public cyclus::Facility  {
   /// this facility holds material in storage.
   #pragma cyclus var {'capacity': 'max_inv_size'}
   cyclus::toolkit::ResourceBuff inventory;
+
+  cyclus::toolkit::MatlBuyPolicy buypol_;
 };
 
 }  // namespace cycamore

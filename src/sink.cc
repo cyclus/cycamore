@@ -1,8 +1,11 @@
 // Implements the Sink class
 #include <algorithm>
 #include <sstream>
+#include <vector>
 
 #include <boost/lexical_cast.hpp>
+
+#include "composition.h"
 
 #include "sink.h"
 
@@ -56,37 +59,16 @@ std::string Sink::str() {
   return "" + ss.str();
 }
 
-// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-std::set<cyclus::RequestPortfolio<cyclus::Material>::Ptr>
-Sink::GetMatlRequests() {
-  using cyclus::Material;
-  using cyclus::RequestPortfolio;
-  using cyclus::Request;
-  using cyclus::Composition;
-
-  std::set<RequestPortfolio<Material>::Ptr> ports;
-  RequestPortfolio<Material>::Ptr port(new RequestPortfolio<Material>());
-  double amt = RequestAmt();
-  Material::Ptr mat;
-
-  if (recipe_name.empty()) {
-    mat = cyclus::NewBlankMaterial(amt);
-  } else {
-    Composition::Ptr rec = this->context()->GetRecipe(recipe_name);
-    mat = cyclus::Material::CreateUntracked(amt, rec); 
-  } 
-
-  if (amt > cyclus::eps()) {
-    std::vector<std::string>::const_iterator it;
-    std::vector<Request<Material>*> mutuals;
-    for (it = in_commods.begin(); it != in_commods.end(); ++it) {
-      mutuals.push_back(port->AddRequest(mat, this, *it));
-    }
-    port->AddMutualReqs(mutuals);
-    ports.insert(port);
-  }  // if amt > eps
-
-  return ports;
+void Sink::EnterNotify() {
+  cyclus::Facility::EnterNotify();
+  
+  buypol_.Init(this, &inventory, std::string("inv"), capacity);
+  std::vector<std::string>::iterator it;
+  cyclus::Composition::Ptr c;
+  for (it = in_commods.begin(); it != in_commods.end(); it++) {  
+    buypol_.Set(*it, c);
+  }
+  buypol_.Start();
 }
 
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -120,15 +102,6 @@ Sink::GetGenRsrcRequests() {
 }
 
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-void Sink::AcceptMatlTrades(
-    const std::vector< std::pair<cyclus::Trade<cyclus::Material>,
-                                 cyclus::Material::Ptr> >& responses) {
-  std::vector< std::pair<cyclus::Trade<cyclus::Material>,
-                         cyclus::Material::Ptr> >::const_iterator it;
-  for (it = responses.begin(); it != responses.end(); ++it) {
-    inventory.Push(it->second);
-  }
-}
 
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 void Sink::AcceptGenRsrcTrades(
