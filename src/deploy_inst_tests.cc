@@ -109,7 +109,35 @@ TEST(DeployInstTests, FiniteLifetimes) {
   EXPECT_EQ(8, stmt->GetInt(0));
 }
 
-// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+TEST(DeployInstTests, NoDupProtos) {
+  std::string config = 
+     "<prototypes>  <val>foobar</val> <val>foobar</val> <val>foobar</val> </prototypes>"
+     "<build_times> <val>1</val>      <val>1</val>      <val>2</val>      </build_times>"
+     "<n_build>     <val>1</val>      <val>7</val>      <val>3</val>      </n_build>"
+     "<lifetimes>   <val>1</val>      <val>1</val>      <val>-1</val>     </lifetimes>"
+     ;
+
+  int simdur = 5;
+  cyclus::MockSim sim(cyclus::AgentSpec(":cycamore:DeployInst"), config, simdur);
+  sim.DummyProto("foobar");
+  int id = sim.Run();
+
+  // don't duplicate same prototypes with same custom lifetime
+  cyclus::SqlStatement::Ptr stmt = sim.db().db().Prepare(
+      "SELECT COUNT(*) FROM Prototypes WHERE Prototype = 'foobar_life_1';"
+      );
+  stmt->Step();
+  EXPECT_EQ(1, stmt->GetInt(0));
+
+  // don't duplicate custom lifetimes that are identical to original prototype
+  // lifetime.
+  stmt = sim.db().db().Prepare(
+      "SELECT COUNT(*) FROM Prototypes WHERE Prototype = 'foobar';"
+      );
+  stmt->Step();
+  EXPECT_EQ(1, stmt->GetInt(0));
+}
+
 // required to get functionality in cyclus agent unit tests library
 cyclus::Agent* DeployInstitutionConstructor(cyclus::Context* ctx) {
   return new cycamore::DeployInst(ctx);

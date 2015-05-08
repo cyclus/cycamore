@@ -98,6 +98,7 @@ class Separations : public cyclus::Facility {
  private:
   #pragma cyclus var { \
     "doc" : "Maximum quantity of feed material that can be processed per time step.", \
+    "uilabel": "Maximum Separations Throughput", \
     "units": "kg", \
   }
   double throughput;
@@ -105,12 +106,14 @@ class Separations : public cyclus::Facility {
   #pragma cyclus var { \
     "doc": "Ordered list of commodities on which to request feed material to separate." \
            " Order only matters for matching up with feed commodity preferences if specified.", \
+    "uilabel": "Feed Commodity List", \
     "uitype": ["oneormore", "incommodity"], \
   }
   std::vector<std::string> feed_commods;
 
   #pragma cyclus var { \
     "default": [], \
+    "uilabel": "Feed Commodity Preference List", \
     "doc": "Feed commodity request preferences for each of the given feed commodities (same order)." \
            " If unspecified, default is to use zero for all preferences.", \
   }
@@ -119,6 +122,7 @@ class Separations : public cyclus::Facility {
   #pragma cyclus var { \
     "doc": "Name for recipe to be used in feed requests." \
            " Empty string results in use of a dummy recipe.", \
+    "uilabel": "Feed Commodity Recipe List", \
     "uitype": "recipe", \
     "default": "", \
   }
@@ -126,6 +130,7 @@ class Separations : public cyclus::Facility {
 
   #pragma cyclus var { \
     "doc" : "Maximum amount of feed material to keep on hand.", \
+    "uilabel": "Maximum Feed Inventory",                     \
     "units" : "kg", \
   }
   double feedbuf_size;
@@ -139,6 +144,7 @@ class Separations : public cyclus::Facility {
     "doc" : "Maximum amount of leftover separated material (not included in" \
             " any other stream) that can be stored." \
             " If full, the facility halts operation until space becomes available.", \
+    "uilabel": "Maximum Leftover Inventory", \
     "default": 1e299, \
     "units": "kg", \
   }
@@ -148,6 +154,7 @@ class Separations : public cyclus::Facility {
     "doc": "Commodity on which to trade the leftover separated material stream." \
            " This MUST NOT be the same as any commodity used to define the other separations streams.", \
     "uitype": "outcommodity", \
+    "uilabel": "Leftover Commodity", \
     "default": "default-waste-stream", \
   }
   std::string leftover_commod;
@@ -160,6 +167,7 @@ class Separations : public cyclus::Facility {
   #pragma cyclus var { \
     "alias": ["streams", "commod", ["info", "buf_size", ["efficiencies", "comp", "eff"]]], \
     "uitype": ["oneormore", "outcommodity", ["pair", "double", ["oneormore", "nuclide", "double"]]], \
+    "uilabel": "Separations Streams and Efficiencies", \
     "doc": "Output streams for separations." \
            " Each stream must have a unique name identifying the commodity on which its material is traded," \
            " a max buffer capacity in kg (neg values indicate infinite size)," \

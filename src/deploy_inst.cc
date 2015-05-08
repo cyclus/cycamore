@@ -10,6 +10,7 @@ DeployInst::~DeployInst() {}
 void DeployInst::Build(cyclus::Agent* parent) {
   cyclus::Institution::Build(parent);
   BuildSched::iterator it;
+  std::set<std::string> protos;
   for (int i = 0; i < prototypes.size(); i++) {
     std::string proto = prototypes[i];
 
@@ -18,11 +19,20 @@ void DeployInst::Build(cyclus::Agent* parent) {
 
     if (lifetimes.size() == prototypes.size()) {
       cyclus::Agent* a = context()->CreateAgent<Agent>(proto);
-      a->lifetime(lifetimes[i]);
+      if (a->lifetime() != lifetimes[i]) {
+        a->lifetime(lifetimes[i]);
 
-      ss << "_life_" << lifetimes[i];
-      proto = ss.str();
-      context()->AddPrototype(proto, a);
+        if (lifetimes[i] == -1) {
+          ss << "_life_forever";
+        } else {
+          ss << "_life_" << lifetimes[i];
+        }
+        proto = ss.str();
+        if (protos.count(proto) == 0) {
+          protos.insert(proto);
+          context()->AddPrototype(proto, a);
+        }
+      }
     }
 
     int t = build_times[i];

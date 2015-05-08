@@ -43,27 +43,31 @@ class DeployInst : public cyclus::Institution {
  protected:
   #pragma cyclus var { \
     "doc": "Ordered list of prototypes to build.", \
-    "uitype": ("onormore", "prototype"), \
+    "uitype": ("oneormore", "prototype"), \
+    "uilabel": "Prototypes to deploy", \
   }
   std::vector<std::string> prototypes;
 
   #pragma cyclus var { \
-    "doc": "Time step on which to build agents given in prototypes (same order).", \
+    "doc": "Time step on which to deploy agents given in prototype list (same order).", \
+    "uilabel": "Deployment times", \
   }
   std::vector<int> build_times;
 
   #pragma cyclus var { \
-    "doc": "Number of each prototype in prototypes var to build (same order).", \
+    "doc": "Number of each prototype given in prototype list that should be deployed (same order).", \
+    "uilabel": "Number to deploy", \
   }
   std::vector<int> n_build;
 
   #pragma cyclus var { \
-    "doc": "Lifetimes for each prototype in protos (same order)." \
+    "doc": "Lifetimes for each prototype in prototype list (same order)." \
            " These lifetimes override the lifetimes in the original prototype definition." \
            " If unspecified, lifetimes from the original prototype definitions are used." \
            " Although a new prototype is created in the Prototypes table for each lifetime with the suffix '_life_[lifetime]'," \
            " all deployed agents themselves will have the same original prototype name (and so will the Agents tables).", \
     "default": [], \
+    "uilabel": "Lifetimes" \
   }
   std::vector<int> lifetimes;
 };
