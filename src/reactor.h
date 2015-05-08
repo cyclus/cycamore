@@ -284,7 +284,7 @@ class Reactor : public cyclus::Facility,
   std::vector<std::string> pref_change_commods;
   #pragma cyclus var { \
     "default": [], \
-    "uilabel":, "Changed Fresh Fuel Preference",                        \
+    "uilabel": "Changed Fresh Fuel Preference",                        \
     "doc": "The new/changed request preference for a particular fresh fuel." \
            " Same order as and direct correspondence to the specified preference change times.", \
   }
