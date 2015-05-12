@@ -58,15 +58,14 @@ void Enrichment::Build(cyclus::Agent* parent) {
 
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 void Enrichment::Tick() {
-  LOG(cyclus::LEV_INFO3, "EnrFac") << prototype() << " is ticking {";
-  LOG(cyclus::LEV_INFO3, "EnrFac") << "}";
   current_swu_capacity = SwuCapacity();
 }
 
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 void Enrichment::Tock() {
-  LOG(cyclus::LEV_INFO3, "EnrFac") << prototype() << " is tocking {";
-  LOG(cyclus::LEV_INFO3, "EnrFac") << "}";
+  using cyclus::toolkit::RecordTimeSeries;
+  RecordTimeSeries<cyclus::toolkit::ENRICH_SWU>(this, intra_timestep_swu_);
+  RecordTimeSeries<cyclus::toolkit::ENRICH_FEED>(this, intra_timestep_feed_);
 }
 
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -247,6 +246,9 @@ void Enrichment::GetMatlTrades(
   using cyclus::Material;
   using cyclus::Trade;
 
+  intra_timestep_swu_ = 0;
+  intra_timestep_feed_ = 0;
+
   std::vector< Trade<Material> >::const_iterator it;
   for (it = trades.begin(); it != trades.end(); ++it) {
     double qty = it->amt;
@@ -270,7 +272,7 @@ void Enrichment::GetMatlTrades(
     }
     responses.push_back(std::make_pair(*it, response));	
   }
-  
+
   if (cyclus::IsNegative(tails.quantity())) {
     std::stringstream ss;
     ss << "is being asked to provide more than its current inventory.";
@@ -399,6 +401,8 @@ cyclus::Material::Ptr Enrichment::Enrich_(
 
   current_swu_capacity -= swu_req;
 
+  intra_timestep_swu_ += swu_req;
+  intra_timestep_feed_ += feed_req;
   RecordEnrichment_(feed_req, swu_req);
 
   LOG(cyclus::LEV_INFO5, "EnrFac") << prototype() <<
