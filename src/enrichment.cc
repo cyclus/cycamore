@@ -1,5 +1,5 @@
 // Implements the Enrichment class
-#include "enrichment_facility.h"
+#include "enrichment.h"
 
 #include <algorithm>
 #include <cmath>
