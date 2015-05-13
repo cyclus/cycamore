@@ -71,7 +71,7 @@ class Sink : public cyclus::Facility  {
   ///  @param size the storage size
   inline void SetMaxInventorySize(double size) {
     max_inv_size = size;
-    inventory.set_capacity(size);
+    inventory.capacity(size);
   }
 
   /// @return the maximum inventory storage size
@@ -127,7 +127,7 @@ class Sink : public cyclus::Facility  {
 
   /// this facility holds material in storage.
   #pragma cyclus var {'capacity': 'max_inv_size'}
-  cyclus::toolkit::ResourceBuff inventory;
+  cyclus::toolkit::ResBuf<cyclus::Resource> inventory;
 };
 
 }  // namespace cycamore
