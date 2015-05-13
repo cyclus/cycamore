@@ -349,6 +349,11 @@ class Enrichment : public cyclus::Facility {
   cyclus::toolkit::ResBuf<cyclus::Material> inventory;  // natural u
   #pragma cyclus var {}
   cyclus::toolkit::ResBuf<cyclus::Material> tails;  // depleted u
+
+  // used to total intra-timestep swu and natu usage for meeting requests -
+  // these help enable time series generation.
+  double intra_timestep_swu_;
+  double intra_timestep_feed_;
   
   friend class EnrichmentTest;
   // ---

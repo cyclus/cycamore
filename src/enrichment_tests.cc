@@ -9,7 +9,7 @@
 #include "infile_tree.h"
 #include "env.h"
 
-#include "enrichment_facility_tests.h"
+#include "enrichment_tests.h"
 
 using cyclus::QueryResult;
 using cyclus::Cond;
