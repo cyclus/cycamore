@@ -30,14 +30,15 @@ class Source : public cyclus::Facility,
 
   #pragma cyclus note { \
     "doc": "This facility acts as a source of material with a fixed throughput (per\n" \
-           " time step) capacity and a lifetime capacity defined by a total inventory\n" \
-           " size.  It offers its material as a single commodity. If a composition\n" \
-           " recipe is specified, it provides that single material composition to\n" \
-           " requesters.  If unspecified, the source provides materials with the exact\n" \
-           " requested compositions.  The inventory size and throughput both default to\n" \
-           " infinite.  Supplies material results in corresponding decrease in\n" \
-           " inventory, and when the inventory size reaches zero, the source can provide\n" \
-           " no more material.\n" \
+           "time step) capacity and a lifetime capacity defined by a total inventory\n" \
+           "size.  It offers its material as a single commodity. If a composition\n" \
+           "recipe is specified, it provides that single material composition to\n" \
+           "requesters.  If unspecified, the source provides materials with the exact\n" \
+           "requested compositions.  The inventory size and throughput both default to\n" \
+           "infinite.  Supplies material results in corresponding decrease in\n" \
+           "inventory, and when the inventory size reaches zero, the source can provide\n" \
+           "no more material.\n" \
+           "", \
   }
 
   #pragma cyclus def clone
