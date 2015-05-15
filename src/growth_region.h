@@ -47,9 +47,6 @@ class GrowthRegion : public cyclus::Region {
   /// facilities be built
   void AddCommodityDemand(cyclus::toolkit::Commodity commod);
 
-  /// perform module-specific tasks when entering the simulation
-  virtual void Build(cyclus::Agent* parent);
-
   /// On each tick, the GrowthRegion queries its supply demand manager
   /// to determine if there exists some demand. If demand for a
   /// commodity exists, then the correct build order for that demand
@@ -69,16 +66,17 @@ class GrowthRegion : public cyclus::Region {
   inline cyclus::toolkit::SupplyDemandManager* sdmanager() {
     return &sdmanager_;
   }
-
+  
  protected:
-  #pragma cyclus var {"tooltip": "commodity in demand", \
-                      "doc": "name of the commodity experiencing a " \
-                             "growth in demand", \
-                      "uilabel": "Growth Commodity", \
-  }
+  #pragma cyclus var {"tooltip": "commodity in demand",                \
+    "doc": "name of the commodity experiencing a "                     \
+    "growth in demand",                                                \
+    "uilabel": "Growth Commodity",                                     \
+    }
   std::string commodity_name;
-
-  #pragma cyclus var {"tooltip": "demand type", \
+  
+  
+  #pragma cyclus var {"tooltip": "demand type",                   \
                       "uilabel": "Demand Growth Function Form", \
                       "doc": "mathematical description of demand growth " \
                              "(i.e., linear, exponential, piecewise)"}
@@ -96,14 +94,14 @@ class GrowthRegion : public cyclus::Region {
                              "regarding the piecewise demand type"}
   std::vector<int> demand_times;
 
-  cyclus::toolkit::Commodity commod_;
-
   /// manager for building things
   cyclus::toolkit::BuildingManager buildmanager_;
 
   /// manager for Supply and demand
   cyclus::toolkit::SupplyDemandManager sdmanager_;
 
+  cyclus::toolkit::Commodity commod_;
+  
   /// register a child
   void Register_(cyclus::Agent* agent);
 

@@ -27,13 +27,6 @@ void GrowthRegion::AddCommodityDemand(cyclus::toolkit::Commodity commod) {
   sdmanager_.RegisterCommodity(commod, pff.GetFunctionPtr());
 }
 
-// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-void GrowthRegion::Build(cyclus::Agent* parent) {
-  cyclus::Region::Build(parent);
-  commod_ = cyclus::toolkit::Commodity(commodity_name);
-  AddCommodityDemand(commod_);
-}
-
 void GrowthRegion::EnterNotify() {
   cyclus::Region::EnterNotify();
   std::set<cyclus::Agent*>::iterator it;
