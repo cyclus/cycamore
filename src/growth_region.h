@@ -57,9 +57,6 @@ class GrowthRegion : public cyclus::Region {
   /// enter the simulation and register any children present
   virtual void EnterNotify();
 
-  /// register a new child
-  virtual void BuildNotify(Agent* m);
-
   /// unregister a child
   virtual void DecomNotify(Agent* m);
 

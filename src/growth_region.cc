@@ -38,10 +38,6 @@ void GrowthRegion::EnterNotify() {
   AddCommodityDemand(commod_);
 }
 
-void GrowthRegion::BuildNotify(Agent* a) {
-  Register_(a);
-}
-
 void GrowthRegion::DecomNotify(Agent* a) {
   Unregister_(a);
 }
