@@ -94,11 +94,6 @@ class GrowthRegion : public cyclus::Region {
   /// @param commodity the commodity being demanded
   /// @param unmetdemand the unmet demand
   void OrderBuilds(cyclus::toolkit::Commodity& commodity, double unmetdemand);
-
-  /// orders builder to build a prototype
-  /// @param builder the agent that can build buildee
-  /// @param prototype the agent to be built
-  void OrderBuild(cyclus::Agent* builder, cyclus::Agent* prototype);
 };
 
 }  // namespace cycamore
