@@ -23,7 +23,7 @@ class TestRegression(TestCase):
     """
     def __init__(self, *args, **kwargs):
         super(TestRegression, self).__init__(*args, **kwargs)
-        self.ext = '.h5' if platform.system() == 'Linux' else '.sqlite'
+        self.ext = '.sqlite'
         self.outf = str(uuid.uuid4()) + self.ext
         self.inf = None
 
