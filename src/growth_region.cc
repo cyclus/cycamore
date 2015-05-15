@@ -3,15 +3,12 @@
 
 namespace cycamore {
 
-// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 GrowthRegion::GrowthRegion(cyclus::Context* ctx) : cyclus::Region(ctx) {
   cyclus::Warn<cyclus::EXPERIMENTAL_WARNING>("the GrowthRegion is experimental.");
 }
 
-// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 GrowthRegion::~GrowthRegion() {}
 
-// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 void GrowthRegion::AddCommodityDemand(cyclus::toolkit::Commodity commod) {
   // instantiate demand function
   cyclus::toolkit::PiecewiseFunctionFactory pff;
@@ -85,7 +82,6 @@ void GrowthRegion::Unregister_(cyclus::Agent* agent) {
     buildmanager_.Unregister(b_cast);
 }
 
-// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 void GrowthRegion::Tick() {
   int time = context()->time();
   double demand = sdmanager_.Demand(commod_, time);
@@ -106,7 +102,6 @@ void GrowthRegion::Tick() {
   cyclus::Region::Tick();
 }
 
-// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 void GrowthRegion::OrderBuilds(cyclus::toolkit::Commodity& commodity,
                                double unmetdemand) {
   using std::vector;
@@ -138,7 +133,6 @@ void GrowthRegion::OrderBuilds(cyclus::toolkit::Commodity& commodity,
   }
 }
 
-// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 extern "C" cyclus::Agent* ConstructGrowthRegion(cyclus::Context* ctx) {
   return new GrowthRegion(ctx);
 }
