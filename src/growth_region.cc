@@ -44,6 +44,8 @@ void GrowthRegion::EnterNotify() {
 
   std::map<std::string, Demand>::iterator it;
   for (it = commodity_demand.begin(); it != commodity_demand.end(); ++it) {
+    LOG(cyclus::LEV_INFO3, "greg") << "Adding demand for commodity "
+                                   << it->first;
     AddCommodityDemand_(it->first, it->second);
   }
 }

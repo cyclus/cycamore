@@ -353,6 +353,9 @@ class TestGrowth(TestRegression):
     Sources are allowed in the ManagerInst, with capacities of 2 and 1.1,
     respectively. At t=1, a 2-capacity Source is expected to be built, and at
     t=2 and t=3, 1-capacity Sources are expected to be built.
+
+    A linear growth demand (y = 0x + 3) for a second comodity is provided at t=2
+    to test the demand for multiple commodities.
     """
     def __init__(self, *args, **kwargs):
         super(TestGrowth, self).__init__(*args, **kwargs)
@@ -361,19 +364,24 @@ class TestGrowth(TestRegression):
     def test_deployment(self):
         agent_ids = self.to_ary(self.agent_entry, "AgentId")
         proto = self.to_ary(self.agent_entry, "Prototype")
-        depl_time = self.to_ary(self.agent_entry, "EnterTime")
+        enter_time = self.to_ary(self.agent_entry, "EnterTime")
         
         source1_id = self.find_ids("Source1", self.agent_entry, 
                                    spec_col="Prototype")
         source2_id = self.find_ids("Source2", self.agent_entry, 
                                    spec_col="Prototype")
+        source3_id = self.find_ids("Source3", self.agent_entry, 
+                                   spec_col="Prototype")
     
         assert_equal(len(source2_id), 1)
         assert_equal(len(source1_id), 2)
+        assert_equal(len(source3_id), 3)
 
-        assert_equal(depl_time[np.where(agent_ids == source2_id[0])], 1)
-        assert_equal(depl_time[np.where(agent_ids == source1_id[0])], 2)
-        assert_equal(depl_time[np.where(agent_ids == source1_id[1])], 3)
+        assert_equal(enter_time[np.where(agent_ids == source2_id[0])], 1)
+        assert_equal(enter_time[np.where(agent_ids == source1_id[0])], 2)
+        assert_equal(enter_time[np.where(agent_ids == source1_id[1])], 3)
+        for x in source3_id:
+            yield assert_equal, enter_time[np.where(agent_ids == x)], 2
 
 class TestRecycle(TestRegression):
     """This class tests the input/recycle.xml file.
