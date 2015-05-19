@@ -103,11 +103,11 @@ void GrowthRegion::Tick() {
 
     LOG(cyclus::LEV_INFO3, "greg") << "GrowthRegion: " << prototype()
                                    << " at time: " << time
-                                   << " has the following values regaring "
+                                   << " has the following values regarding "
                                    << " commodity: " << commod.name();
-    LOG(cyclus::LEV_INFO3, "greg") << "  *demand = " << demand;
-    LOG(cyclus::LEV_INFO3, "greg") << "  *supply = " << supply;
-    LOG(cyclus::LEV_INFO3, "greg") << "  * unmetdemand = " << unmetdemand;
+    LOG(cyclus::LEV_INFO3, "greg") << "  * demand = " << demand;
+    LOG(cyclus::LEV_INFO3, "greg") << "  * supply = " << supply;
+    LOG(cyclus::LEV_INFO3, "greg") << "  * unmet demand = " << unmetdemand;
     
     if (unmetdemand > 0) {
       OrderBuilds(commod, unmetdemand);
