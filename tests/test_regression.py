@@ -354,7 +354,7 @@ class TestGrowth(TestRegression):
     respectively. At t=1, a 2-capacity Source is expected to be built, and at
     t=2 and t=3, 1-capacity Sources are expected to be built.
 
-    A linear growth demand (y = 0x + 3) for a second comodity is provided at t=2
+    A linear growth demand (y = 0x + 3) for a second commodity is provided at t=2
     to test the demand for multiple commodities.
     """
     def __init__(self, *args, **kwargs):
