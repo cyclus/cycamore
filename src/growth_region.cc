@@ -3,53 +3,51 @@
 
 namespace cycamore {
 
-// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 GrowthRegion::GrowthRegion(cyclus::Context* ctx) : cyclus::Region(ctx) {
   cyclus::Warn<cyclus::EXPERIMENTAL_WARNING>("the GrowthRegion is experimental.");
 }
 
-// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 GrowthRegion::~GrowthRegion() {}
 
-// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-void GrowthRegion::AddCommodityDemand(cyclus::toolkit::Commodity commod) {
-  // instantiate demand function
+void GrowthRegion::AddCommodityDemand_(std::string commod,
+                                       Demand& demand) {
+  
+  
   cyclus::toolkit::PiecewiseFunctionFactory pff;
-  int ndemands = demand_types.size();
-  for (int i = 0; i < ndemands; i++) {
-    cyclus::toolkit::BasicFunctionFactory bff;
-    bool continuous = (i != 0);  // the first entry is not continuous
-    pff.AddFunction(bff.GetFunctionPtr(demand_types[i], demand_params[i]),
-                                       demand_times[i], continuous);
+  cyclus::toolkit::BasicFunctionFactory bff;
+  bool continuous = false;
+  int time;
+  std::string type, params;
+  Demand::const_iterator it;
+  for (it = demand.begin(); it != demand.end(); it++) {
+    time = it->first;
+    type = it->second.first;
+    params = it->second.second;
+    pff.AddFunction(bff.GetFunctionPtr(type, params), time, continuous);
+    continuous = true; // only the first entry is not continuous
   }
 
-  // register the commodity anddemand
-  sdmanager_.RegisterCommodity(commod, pff.GetFunctionPtr());
-}
-
-// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-void GrowthRegion::Build(cyclus::Agent* parent) {
-  cyclus::Region::Build(parent);
-  commod_ = cyclus::toolkit::Commodity(commodity_name);
-  AddCommodityDemand(commod_);
+  // register the commodity and demand
+  cyclus::toolkit::Commodity c(commod);
+  sdmanager_.RegisterCommodity(c, pff.GetFunctionPtr());
 }
 
 void GrowthRegion::EnterNotify() {
   cyclus::Region::EnterNotify();
-  std::set<cyclus::Agent*>::iterator it;
-  for (it = cyclus::Agent::children().begin();
-       it != cyclus::Agent::children().end();
-       ++it) {
-    Agent* a = *it;
+  std::set<cyclus::Agent*>::iterator ait;
+  for (ait = cyclus::Agent::children().begin();
+       ait != cyclus::Agent::children().end();
+       ++ait) {
+    Agent* a = *ait;
     Register_(a);
   }
 
-  commod_ = cyclus::toolkit::Commodity(commodity_name);
-  AddCommodityDemand(commod_);
-}
-
-void GrowthRegion::BuildNotify(Agent* a) {
-  Register_(a);
+  std::map<std::string, Demand>::iterator it;
+  for (it = commodity_demand.begin(); it != commodity_demand.end(); ++it) {
+    LOG(cyclus::LEV_INFO3, "greg") << "Adding demand for commodity "
+                                   << it->first;
+    AddCommodityDemand_(it->first, it->second);
+  }
 }
 
 void GrowthRegion::DecomNotify(Agent* a) {
@@ -92,60 +90,69 @@ void GrowthRegion::Unregister_(cyclus::Agent* agent) {
     buildmanager_.Unregister(b_cast);
 }
 
-// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 void GrowthRegion::Tick() {
+  double demand, supply, unmetdemand;
+  cyclus::toolkit::Commodity commod;
   int time = context()->time();
-  double demand = sdmanager_.Demand(commod_, time);
-  double supply = sdmanager_.Supply(commod_);
-  double unmetdemand = demand - supply;
+  std::map<std::string, Demand>::iterator it;
+  for (it = commodity_demand.begin(); it != commodity_demand.end(); ++it) {
+    commod = cyclus::toolkit::Commodity(it->first);
+    demand = sdmanager_.Demand(commod, time);
+    supply = sdmanager_.Supply(commod);
+    unmetdemand = demand - supply;
 
-  LOG(cyclus::LEV_INFO3, "greg") << "GrowthRegion: " << prototype()
-                                 << " at time: " << time
-                                 << " has the following values regaring "
-                                 << " commodity: " << commod_.name();
-  LOG(cyclus::LEV_INFO3, "greg") << "  *demand = " << demand;
-  LOG(cyclus::LEV_INFO3, "greg") << "  *supply = " << supply;
-  LOG(cyclus::LEV_INFO3, "greg") << "  * unmetdemand = " << unmetdemand;
-
-  if (unmetdemand > 0) {
-    OrderBuilds(commod_, unmetdemand);
+    LOG(cyclus::LEV_INFO3, "greg") << "GrowthRegion: " << prototype()
+                                   << " at time: " << time
+                                   << " has the following values regarding "
+                                   << " commodity: " << commod.name();
+    LOG(cyclus::LEV_INFO3, "greg") << "  * demand = " << demand;
+    LOG(cyclus::LEV_INFO3, "greg") << "  * supply = " << supply;
+    LOG(cyclus::LEV_INFO3, "greg") << "  * unmet demand = " << unmetdemand;
+    
+    if (unmetdemand > 0) {
+      OrderBuilds(commod, unmetdemand);
+    }
   }
   cyclus::Region::Tick();
 }
 
-// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 void GrowthRegion::OrderBuilds(cyclus::toolkit::Commodity& commodity,
                                double unmetdemand) {
   using std::vector;
   vector<cyclus::toolkit::BuildOrder> orders =
     buildmanager_.MakeBuildDecision(commodity, unmetdemand);
 
-  LOG(cyclus::LEV_INFO3, "greg") << "The build orders have been determined. "
-                                 << orders.size()
-                                 << " different type(s) of prototypes will be built.";
+  LOG(cyclus::LEV_INFO3, "greg")
+      << "The build orders have been determined. "
+      << orders.size()
+      << " different type(s) of prototypes will be built.";
 
+  cyclus::toolkit::BuildOrder* order;
+  cyclus::Institution* instcast;
+  cyclus::Agent* agentcast;
   for (int i = 0; i < orders.size(); i++) {
-    cyclus::toolkit::BuildOrder order = orders.at(i);
-    cyclus::Institution* instcast = dynamic_cast<cyclus::Institution*>(order.builder);
-    cyclus::Agent* agentcast = dynamic_cast<cyclus::Agent*>(order.producer);
+    order = &orders.at(i);
+    instcast = dynamic_cast<cyclus::Institution*>(order->builder);
+    agentcast = dynamic_cast<cyclus::Agent*>(order->producer);
     if (!instcast || !agentcast) {
-      throw cyclus::CastError("growth_region.has tried to incorrectly cast an already known entity.");
+      throw cyclus::CastError("growth_region has tried to incorrectly "
+                              "cast an already known entity.");
     }
 
-    LOG(cyclus::LEV_INFO3, "greg") << "A build order for " << order.number
-                                   << " prototype(s) of type "
-                                   << dynamic_cast<cyclus::Agent*>(agentcast)->prototype()
-                                   << " from builder " << instcast->prototype()
-                                   << " is being placed.";
+    LOG(cyclus::LEV_INFO3, "greg")
+        << "A build order for " << order->number
+        << " prototype(s) of type "
+        << dynamic_cast<cyclus::Agent*>(agentcast)->prototype()
+        << " from builder " << instcast->prototype()
+        << " is being placed.";
 
-    for (int j = 0; j < order.number; j++) {
+    for (int j = 0; j < order->number; j++) {
       LOG(cyclus::LEV_DEBUG2, "greg") << "Ordering build number: " << j + 1;
       context()->SchedBuild(instcast, agentcast->prototype());
     }
   }
 }
 
-// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 extern "C" cyclus::Agent* ConstructGrowthRegion(cyclus::Context* ctx) {
   return new GrowthRegion(ctx);
 }
