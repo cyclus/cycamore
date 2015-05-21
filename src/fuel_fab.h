@@ -128,11 +128,11 @@ class FuelFab : public cyclus::Facility {
 
  private:
   #pragma cyclus var { \
-    "doc": "Commodity on which to request material for filler stream.", \
-    "uilabel": "Filler Stream Commodity", \
-    "uitype": "incommodity", \
+    "doc": "Ordered list of commodities on which to requesting filler stream material.", \
+    "uilabel": "Filler Stream Commodities", \
+    "uitype": ["oneormore", "incommodity"], \
   }
-  std::string fill_commod;
+ std::vector<std::string> fill_commods;
   #pragma cyclus var { \
     "doc": "Name of recipe to be used in filler material stream requests.", \
     "uilabel": "Filler Stream Recipe", \
@@ -140,11 +140,12 @@ class FuelFab : public cyclus::Facility {
   }
   std::string fill_recipe;
   #pragma cyclus var { \
-    "doc": "Filler material stream request preference.", \
-    "uilabel": "Filler Stream Preference", \
-    "default": 0, \
+    "default": [], \
+    "uilabel": "Filler Stream Preferences", \
+    "doc": "Filler stream commodity request preferences for each of the given filler commodities (same order)." \
+           " If unspecified, default is to use 1.0 for all preferences.", \
   }
-  double fill_pref;
+  std::vector<double> fill_commod_prefs;
   #pragma cyclus var { \
     "doc": "Size of filler material stream inventory.", \
     "uilabel": "Filler Stream Inventory Capacity", \
@@ -164,7 +165,7 @@ class FuelFab : public cyclus::Facility {
     "default": [], \
     "uilabel": "Fissile Stream Preferences", \
     "doc": "Fissile stream commodity request preferences for each of the given fissile commodities (same order)." \
-           " If unspecified, default is to use zero for all preferences.", \
+           " If unspecified, default is to use 1.0 for all preferences.", \
   }
   std::vector<double> fiss_commod_prefs;
   #pragma cyclus var { \

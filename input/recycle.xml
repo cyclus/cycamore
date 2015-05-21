@@ -60,7 +60,7 @@
     <name>fuelfab</name>
     <config>
       <FuelFab>
-        <fill_commod>depleted_u</fill_commod>
+        <fill_commods> <val>depleted_u</val> </fill_commods>
         <fill_recipe>depleted_u</fill_recipe>
         <fill_size>30001</fill_size>
 
