@@ -79,16 +79,20 @@
     <name>SingleRegion</name>
     <config>
       <GrowthRegion>
-        <commodity_name>power</commodity_name>
-        <demand_types>
-          <val>linear</val>
-        </demand_types>
-        <demand_params>
-          <val>10 0</val>
-        </demand_params>
-        <demand_times>
-          <val>1</val>
-        </demand_times>
+        <growth>
+          <item>
+            <commod>power</commod>
+            <piecewise_function>
+              <piece>
+                <start>1</start>
+                <function>
+                  <type>linear</type>
+                  <params>10 0</params>
+                </function>
+              </piece>
+            </piecewise_function>
+          </item>
+        </growth>
       </GrowthRegion>
     </config>
     <institution>

@@ -10,4 +10,4 @@ def test_inputs():
     for f in files:
         testf = ri.TestFile(ri.cyclus_path, f, "-v0") 
         testf.run()
-        yield assert_true, testf.passed
+        yield assert_true, testf.passed, "Failed running {}".format(f)
