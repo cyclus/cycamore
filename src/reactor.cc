@@ -109,6 +109,9 @@ void Reactor::Tick() {
   // they
   // can't go at the beginnin of the Tock is so that resource exchange has a
   // chance to occur after the discharge on this same time step.
+  std::cout << context()->time() << ": " << "fresh.count=" << fresh.count() << "\n";
+  std::cout << "    core.count=" << core.count() << "\n";
+  std::cout << "    spent.count=" << spent.count() << "\n";
 
   if (retired()) {
     Record("RETIRED", "");
@@ -120,6 +123,12 @@ void Reactor::Tick() {
       if (!Discharge()) {
         break;
       }
+    }
+    // in case a cycle lands exactly on our last time step, we will need to
+    // burn a batch from fresh inventory on this time step.  When retired,
+    // this batch also needs to be discharged to spent fuel inventory.
+    while (fresh.count() > 0 && spent.space() >= assem_size) {
+      spent.Push(fresh.Pop());
     }
     return;
   }
@@ -183,7 +192,9 @@ std::set<cyclus::RequestPortfolio<Material>::Ptr> Reactor::GetMatlRequests() {
   int n_assem_order = n_assem_core - core.count() + n_assem_fresh - fresh.count();
 
   if (exit_time() != -1) {
-    int tleft = exit_time() - context()->time();
+    // the +1 accounts for the fact that the reactor is alive and gets to
+    // operate during its exit_time time step.
+    int tleft = exit_time() - context()->time() + 1;
     int tleftcycle = cycle_time + refuel_time - cycle_step;
     double ncyclesleft = static_cast<double>(tleft - tleftcycle) /
                          static_cast<double>(cycle_time + refuel_time);
