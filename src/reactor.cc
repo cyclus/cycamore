@@ -191,13 +191,13 @@ std::set<cyclus::RequestPortfolio<Material>::Ptr> Reactor::GetMatlRequests() {
   if (exit_time() != -1) {
     // the +1 accounts for the fact that the reactor is alive and gets to
     // operate during its exit_time time step.
-    int tleft = exit_time() - context()->time() + 1;
-    int tleftcycle = cycle_time + refuel_time - cycle_step;
-    double ncyclesleft = static_cast<double>(tleft - tleftcycle) /
+    int t_left = exit_time() - context()->time() + 1;
+    int t_left_cycle = cycle_time + refuel_time - cycle_step;
+    double n_cycles_left = static_cast<double>(t_left - t_left_cycle) /
                          static_cast<double>(cycle_time + refuel_time);
-    ncyclesleft = ceil(ncyclesleft);
-    int nneed = std::max(0.0, ncyclesleft * n_assem_batch - n_assem_fresh);
-    n_assem_order = std::min(n_assem_order, nneed);
+    n_cycles_left = ceil(n_cycles_left);
+    int n_need = std::max(0.0, n_cycles_left * n_assem_batch - n_assem_fresh);
+    n_assem_order = std::min(n_assem_order, n_need);
   }
 
   if (n_assem_order == 0) {
