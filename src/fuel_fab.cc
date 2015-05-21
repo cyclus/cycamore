@@ -1,4 +1,5 @@
 #include "fuel_fab.h"
+#include <sstream>
 
 using cyclus::Material;
 using cyclus::Composition;
@@ -131,10 +132,26 @@ FuelFab::FuelFab(cyclus::Context* ctx)
 void FuelFab::EnterNotify() {
   cyclus::Facility::EnterNotify();
 
-  if (fiss_commod_prefs.size() == 0) {
+  if (fiss_commod_prefs.empty()) {
     for (int i = 0; i < fiss_commods.size(); i++) {
-      fiss_commod_prefs.push_back(0);
+      fiss_commod_prefs.push_back(1);
     }
+  } else if (fiss_commod_prefs.size() != fiss_commods.size()) {
+    std::stringstream ss;
+    ss << "prototype '" << prototype() << "' has " << fiss_commod_prefs.size()
+       << " fiss_commod_prefs vals, expected " << fiss_commods.size();
+    throw cyclus::ValidationError(ss.str());
+  }
+
+  if (fill_commod_prefs.empty()) {
+    for (int i = 0; i < fill_commods.size(); i++) {
+      fill_commod_prefs.push_back(1);
+    }
+  } else if (fill_commod_prefs.size() != fill_commods.size()) {
+    std::stringstream ss;
+    ss << "prototype '" << prototype() << "' has " << fill_commod_prefs.size()
+       << " fill_commod_prefs vals, expected " << fill_commods.size();
+    throw cyclus::ValidationError(ss.str());
   }
 }
 
@@ -173,9 +190,15 @@ std::set<cyclus::RequestPortfolio<Material>::Ptr> FuelFab::GetMatlRequests() {
       Composition::Ptr c = context()->GetRecipe(fill_recipe);
       m = Material::CreateUntracked(fill.space(), c);
     }
-    cyclus::Request<Material>* r =
-        port->AddRequest(m, this, fill_commod, fill_pref, exclusive);
-    req_inventories_[r] = "fill";
+
+    std::vector<cyclus::Request<Material>*> reqs;
+    for (int i = 0; i < fill_commods.size(); i++) {
+      std::string commod = fill_commods[i];
+      double pref = fill_commod_prefs[i];
+      reqs.push_back(port->AddRequest(m, this, commod, pref, exclusive));
+      req_inventories_[reqs.back()] = "fill";
+    }
+    port->AddMutualReqs(reqs);
     ports.insert(port);
   }
 
