@@ -109,9 +109,6 @@ void Reactor::Tick() {
   // they
   // can't go at the beginnin of the Tock is so that resource exchange has a
   // chance to occur after the discharge on this same time step.
-  std::cout << context()->time() << ": " << "fresh.count=" << fresh.count() << "\n";
-  std::cout << "    core.count=" << core.count() << "\n";
-  std::cout << "    spent.count=" << spent.count() << "\n";
 
   if (retired()) {
     Record("RETIRED", "");
