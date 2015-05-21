@@ -528,12 +528,12 @@ TEST(FuelFabTests, CorrectMixing) {
   conds[0] = Cond("Commodity", "==", std::string("natu"));
   qr = sim.db().Query("Transactions", &conds);
   m = sim.GetMaterial(qr.GetVal<int>("ResourceId"));
-  EXPECT_NEAR(9.73958936, m->quantity(), 1e-6) << "mixed wrong amount of Nat. U stream";
+  EXPECT_NEAR(9.7463873197, m->quantity(), 1e-6) << "mixed wrong amount of Nat. U stream";
 
   conds[0] = Cond("Commodity", "==", std::string("pustream"));
   qr = sim.db().Query("Transactions", &conds);
   m = sim.GetMaterial(qr.GetVal<int>("ResourceId"));
-  EXPECT_NEAR(0.2604106, m->quantity(), 1e-6) << "mixed wrong amount of Pu stream";
+  EXPECT_NEAR(0.25361268029, m->quantity(), 1e-6) << "mixed wrong amount of Pu stream";
 }
 
 // fuel is requested requiring more filler than is available with plenty of

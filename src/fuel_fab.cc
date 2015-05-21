@@ -497,6 +497,7 @@ double CosiWeight(cyclus::Composition::Ptr c, const std::string& spectrum) {
     double nu_u233 = 2.5;
     double nu_u235 = 2.43;
     double nu_u238 = 0;
+    double nu_pu241 = nu_pu239;
 
     static std::map<int, double> absorb_xs;
     static std::map<int, double> fiss_xs;
@@ -523,6 +524,8 @@ double CosiWeight(cyclus::Composition::Ptr c, const std::string& spectrum) {
         nu = nu_u233;
       } else if (nuc == 942390000) {
         nu = nu_pu239;
+      } else if (nuc == 942410000) {
+        nu = nu_pu241;
       }
 
       double fiss = 0;
@@ -551,6 +554,7 @@ double CosiWeight(cyclus::Composition::Ptr c, const std::string& spectrum) {
     double nu_u233 = 2.63;
     double nu_u235 = 2.58;
     double nu_u238 = 0;
+    double nu_pu241 = nu_pu239;
 
     static std::map<int, double> absorb_xs;
     static std::map<int, double> fiss_xs;
@@ -581,6 +585,8 @@ double CosiWeight(cyclus::Composition::Ptr c, const std::string& spectrum) {
         nu = nu_u233;
       } else if (nuc == 942390000) {
         nu = nu_pu239;
+      } else if (nuc == 942410000) {
+        nu = nu_pu241;
       }
 
       double fiss = 0;
@@ -609,6 +615,7 @@ double CosiWeight(cyclus::Composition::Ptr c, const std::string& spectrum) {
     double nu_u233 = 2.63;
     double nu_u235 = 2.58;
     double nu_u238 = 0;
+    double nu_pu241 = nu_pu239;
 
     double fiss_u238 = simple_xs(922380000, "fission", spectrum);
     double absorb_u238 = simple_xs(922380000, "absorption", spectrum);
@@ -629,6 +636,8 @@ double CosiWeight(cyclus::Composition::Ptr c, const std::string& spectrum) {
         nu = nu_u233;
       } else if (nuc == 942390000) {
         nu = nu_pu239;
+      } else if (nuc == 942410000) {
+        nu = nu_pu241;
       }
 
       double fiss = 0;
