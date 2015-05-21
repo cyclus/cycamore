@@ -50,7 +50,7 @@ class ManagerInst
   #pragma cyclus var { \
     "tooltip": "producer facility prototypes",                          \
     "uilabel": "Producer Prototype List",                               \
-    "uitype": ["none", "prototype"],                                    \
+    "uitype": ["oneormore", "prototype"],                                    \
     "doc": "A set of facility prototypes that this institution can build. " \
     "All prototypes in this list must be based on an archetype that "   \
     "implements the cyclus::toolkit::CommodityProducer interface",      \
