@@ -42,6 +42,15 @@ namespace cycamore {
 /// becomes full, the reactor will halt operation at the end of the next cycle
 /// until there is more room.  Each time step, the reactor will try to trade
 /// away as much of its spent fuel inventory as possible.
+///
+/// When the reactor reaches the end of its lifetime, it will discharge all
+/// material from its core and trade away all its spent fuel as quickly as
+/// possible.  Full decommissioning will be delayed until all spent fuel is
+/// gone.  If the reactor has a full core when it is decommissioned (i.e. is
+/// mid-cycle) when the reactor is decommissioned, half (rounded up to nearest
+/// int) of its assemblies are transmuted to their respective burnt
+/// compositions.
+
 class Reactor : public cyclus::Facility,
   public cyclus::toolkit::CommodityProducer {
 #pragma cyclus note { \
@@ -83,7 +92,16 @@ class Reactor : public cyclus::Facility,
   " operational cycle before the next begins.  If the spent fuel inventory" \
   " becomes full, the reactor will halt operation at the end of the next cycle" \
   " until there is more room.  Each time step, the reactor will try to trade" \
-  " away as much of its spent fuel inventory as possible.", \
+  " away as much of its spent fuel inventory as possible." \
+  "\n\n" \
+  "When the reactor reaches the end of its lifetime, it will discharge all" \
+  " material from its core and trade away all its spent fuel as quickly as" \
+  " possible.  Full decommissioning will be delayed until all spent fuel is" \
+  " gone.  If the reactor has a full core when it is decommissioned (i.e. is" \
+  " mid-cycle) when the reactor is decommissioned, half (rounded up to nearest" \
+  " int) of its assemblies are transmuted to their respective burnt" \
+  " compositions." \
+  "", \
 }
 
  public:
@@ -93,6 +111,7 @@ class Reactor : public cyclus::Facility,
   virtual void Tick();
   virtual void Tock();
   virtual void EnterNotify();
+  virtual bool CheckDecommissionCondition();
 
   virtual void AcceptMatlTrades(const std::vector<std::pair<
       cyclus::Trade<cyclus::Material>, cyclus::Material::Ptr> >& responses);
@@ -117,6 +136,10 @@ class Reactor : public cyclus::Facility,
   std::string fuel_outrecipe(cyclus::Material::Ptr m);
   double fuel_pref(cyclus::Material::Ptr m);
 
+  bool retired() {
+    return exit_time() != -1 && context()->time() >= exit_time();
+  }
+
   /// Store fuel info index for the given resource received on incommod.
   void index_res(cyclus::Resource::Ptr m, std::string incommod);
 
@@ -130,6 +153,10 @@ class Reactor : public cyclus::Facility,
   /// Transmute the batch that is about to be discharged from the core to its
   /// fully burnt state as defined by its outrecipe.
   void Transmute();
+
+  /// Transmute the specified number of assemblies in the core to their
+  /// fully burnt state as defined by their outrecipe.
+  void Transmute(int n_assem);
 
   /// Records a reactor event to the output db with the given name and note val.
   void Record(std::string name, std::string val);
@@ -335,6 +362,9 @@ class Reactor : public cyclus::Facility,
                       "internal": True \
   }
   std::map<int, int> res_indexes;
+
+  // populated lazily and no need to persist.
+  std::set<std::string> uniq_outcommods_;
 };
 
 } // namespace cycamore
