@@ -53,6 +53,9 @@ def install_cycamore(args):
         check_windows_cmake(cmake_cmd)
         rtn = subprocess.check_call(cmake_cmd, cwd=absexpanduser(args.build_dir), shell=(os.name=='nt'))
 
+    if args.config_only:
+        return
+
     make_cmd = ['make']
     if args.threads:
         make_cmd += ['-j' + str(args.threads)]
@@ -99,6 +102,9 @@ def main():
 
     test = 'run tests after building'
     parser.add_argument('--test', action='store_true', help=test)
+
+    config_only = 'only configure the package, do not build or install'
+    parser.add_argument('--config-only', action='store_true', help=config_only)
 
     build_only = 'only build the package, do not install'
     parser.add_argument('--build-only', action='store_true', help=build_only)
