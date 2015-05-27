@@ -1,0 +1,6 @@
+<map id="cycamore::Enrichment::GetMatlTrades" name="cycamore::Enrichment::GetMatlTrades">
+<area shape="rect" id="node2" href="$classcycamore_1_1Enrichment.html#a1fbea71ac2c3f5919a087a0f59ccb3f5" title="cycamore::Enrichment\l::Enrich_" alt="" coords="209,70,362,111"/>
+<area shape="rect" id="node3" href="$classcycamore_1_1NatUConverter.html#aaf40b222890cc4352804dca29c4b9e49" title="provides a conversion for the amount of natural Uranium required " alt="" coords="411,5,586,46"/>
+<area shape="rect" id="node4" href="$classcycamore_1_1Enrichment.html#a80491fbf53e153fdab35b1a6a6ecaff4" title="calculates the feed assay based on the unenriched inventory " alt="" coords="422,70,575,111"/>
+<area shape="rect" id="node5" href="$classcycamore_1_1Enrichment.html#a9df63f8e1b302cfd087acbec77b2c592" title="records and enrichment with the cyclus::Recorder " alt="" coords="422,135,575,177"/>
+</map>

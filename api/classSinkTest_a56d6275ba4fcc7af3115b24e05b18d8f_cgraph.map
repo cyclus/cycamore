@@ -1,0 +1,5 @@
+<map id="SinkTest::SetUpSink" name="SinkTest::SetUpSink">
+<area shape="rect" id="node2" href="$classcycamore_1_1Sink.html#ade27ef8edf1a00c08bf6e6bc48416292" title="add a commodity to the set of input commodities " alt="" coords="219,5,429,32"/>
+<area shape="rect" id="node3" href="$classcycamore_1_1Sink.html#ae2f7fe270d9f74ad616cd8112cea8ba5" title="sets the capacity of a material generated at any given time step " alt="" coords="237,56,411,83"/>
+<area shape="rect" id="node4" href="$classcycamore_1_1Sink.html#a559393ac1f46bd4af8de9fd13a5e36e9" title="sets the size of the storage inventory for received material " alt="" coords="201,107,447,133"/>
+</map>

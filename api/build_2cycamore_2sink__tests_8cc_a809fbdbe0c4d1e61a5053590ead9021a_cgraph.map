@@ -1,0 +1,5 @@
+<map id="TEST_F" name="TEST_F">
+<area shape="rect" id="node2" href="$classcycamore_1_1Sink.html#ade27ef8edf1a00c08bf6e6bc48416292" title="add a commodity to the set of input commodities " alt="" coords="132,5,343,32"/>
+<area shape="rect" id="node3" href="$classcycamore_1_1Sink.html#a5dfe99c2135f31459bb679b6e62d5f72" title="SinkFacilities request Materials of their given commodity. " alt="" coords="126,56,349,83"/>
+<area shape="rect" id="node4" href="$classcycamore_1_1Sink.html#a2b41ef61e5bfb65cd8a9c84efa3acedc" title="determines the amount to request " alt="" coords="397,56,592,83"/>
+</map>

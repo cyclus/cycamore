@@ -1,0 +1,7 @@
+<map id="Graphical Class Hierarchy" name="Graphical Class Hierarchy">
+<area shape="rect" id="node2" href="$classcycamore_1_1FillConverter.html" title="cycamore::FillConverter" alt="" coords="143,5,305,32"/>
+<area shape="rect" id="node3" href="$classcycamore_1_1FissConverter.html" title="cycamore::FissConverter" alt="" coords="139,56,309,83"/>
+<area shape="rect" id="node4" href="$classcycamore_1_1NatUConverter.html" title="The NatUConverter is a simple Converter class for material to determine the amount of natural uranium..." alt="" coords="137,107,311,133"/>
+<area shape="rect" id="node5" href="$classcycamore_1_1SWUConverter.html" title="The SWUConverter is a simple Converter class for material to determine the amount of SWU required for..." alt="" coords="136,157,312,184"/>
+<area shape="rect" id="node6" href="$classcycamore_1_1TopupConverter.html" title="cycamore::TopupConverter" alt="" coords="134,208,314,235"/>
+</map>

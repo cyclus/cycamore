@@ -1,0 +1,7 @@
+<map id="cycamore::Reactor::Tick" name="cycamore::Reactor::Tick">
+<area shape="rect" id="node2" href="$classcycamore_1_1Reactor.html#a6032a42566c065d1e82723d281887a4c" title="Discharge a batch from the core if there is room in the spent fuel inventory. " alt="" coords="236,5,377,46"/>
+<area shape="rect" id="node3" href="$classcycamore_1_1Reactor.html#a88583fdb3ddf5aff7d2c768a3af47073" title="Records a reactor event to the output db with the given name and note val. " alt="" coords="440,63,581,105"/>
+<area shape="rect" id="node4" href="$classcycamore_1_1Reactor.html#ad77513b1634218d96cd07d98ba1d78bd" title="Top up core inventory as much as possible. " alt="" coords="222,121,391,148"/>
+<area shape="rect" id="node5" href="$classcycamore_1_1Reactor.html#a91efa749e030853adef70b83887ad2f6" title="cycamore::Reactor::\lretired" alt="" coords="236,173,377,214"/>
+<area shape="rect" id="node6" href="$classcycamore_1_1Reactor.html#a62ac26b334219281c766ede6aaee7362" title="Transmute the batch that is about to be discharged from the core to its fully burnt state as defined ..." alt="" coords="236,238,377,279"/>
+</map>

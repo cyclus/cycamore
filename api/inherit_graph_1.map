@@ -1,0 +1,9 @@
+<map id="Graphical Class Hierarchy" name="Graphical Class Hierarchy">
+<area shape="rect" id="node2" href="$classcycamore_1_1Reactor.html" title="Reactor is a simple, general reactor based on static compositional transformations to model fuel burn..." alt="" coords="207,5,340,32"/>
+<area shape="rect" id="node3" href="$classcycamore_1_1Source.html" title="This facility acts as a source of material with a fixed throughput (per time step) capacity and a lif..." alt="" coords="209,56,337,83"/>
+<area shape="rect" id="node4" href="$classTestProducer.html" title="TestProducer" alt="" coords="223,107,323,133"/>
+<area shape="rect" id="node6" href="$classcycamore_1_1Enrichment.html" title="The Enrichment facility is a simple Agent that enriches natural uranium in a Cyclus simulation..." alt="" coords="197,208,350,235"/>
+<area shape="rect" id="node7" href="$classcycamore_1_1FuelFab.html" title="FuelFab takes in 2 streams of material and mixes them in ratios in order to supply material that matc..." alt="" coords="206,259,341,285"/>
+<area shape="rect" id="node8" href="$classcycamore_1_1Separations.html" title="Separations processes feed material into one or more streams containing specific elements and/or nucl..." alt="" coords="195,309,351,336"/>
+<area shape="rect" id="node9" href="$classcycamore_1_1Sink.html" title="This facility acts as a sink of materials and products with a fixed throughput (per time step) capaci..." alt="" coords="217,157,330,184"/>
+</map>
