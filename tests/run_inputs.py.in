@@ -5,12 +5,11 @@ import subprocess
 from subprocess import Popen, PIPE, STDOUT
 import os
 import re
- 
-def main():
-    """This function finds input files, runs them, and prints a summary"""
-    flag = check_inputs()
-    input_path = "@input_path@"
-    cyclus_path =  "@cyclus_path@/cyclus"
+
+cyclus_path =  "@cyclus_path@/cyclus"
+input_path = "@input_path@"
+    
+def main_body(flag):
     files, catalogs, catalognames = get_files(input_path)
     copy_catalogs(catalogs,cyclus_path.strip("cyclus"))
     summ = Summary()
@@ -20,7 +19,12 @@ def main():
         summ.add_to_summary(file_to_test)
     clean_catalogs(cyclus_path.strip("cyclus"),catalognames)
     summ.print_summary()
-
+ 
+def main():
+    """This function finds input files, runs them, and prints a summary"""
+    flag = check_inputs()
+    main_body(flag)
+ 
 def check_inputs():
     """This function checks the input arguments"""
     if len(sys.argv) > 2: 
@@ -38,19 +42,19 @@ def check_inputs():
 
 def print_usage() :
     """This prints the proper way to treat the command line interface"""
-    print 'Usage: python run_inputs.py\n' + \
-            'Allowed Options : \n' + \
-            '-v arg                    output log verbosity. \n' + \
-            '                    \
-            Can be text: \n' + \
-            '                    \
-              LEV_ERROR (least verbose, default), LEV_WARN,\n' + \
-            '                    \
-              LEV_INFO1 (through 5), and LEV_DEBUG1 (through 5).\n' + \
-            '                    \
-            Or an integer:\n'+ \
-            '                    \
-              0 (LEV_ERROR equiv) through 11 (LEV_DEBUG5 equiv)\n'
+    print(""" Usage: python run_inputs.py\n 
+            Allowed Options : \n 
+            -v arg                    output log verbosity. \n 
+                                
+            Can be text: \n 
+                                
+              LEV_ERROR (least verbose, default), LEV_WARN,\n 
+                                
+              LEV_INFO1 (through 5), and LEV_DEBUG1 (through 5).\n 
+                                
+            Or an integer:\n
+                                
+              0 (LEV_ERROR equiv) through 11 (LEV_DEBUG5 equiv)\n""")
  
 def get_files(path):
     """This function walks the 'path' tree and finds input files"""
@@ -70,10 +74,10 @@ def get_files(path):
                     inputs.append(os.path.join(root, name))
             else :
                 files.remove(name)
-    print "The catalogs to be moved are:"
-    print catalogs
-    print "The files to be tested are:"
-    print inputs
+    print("The catalogs to be moved are:")
+    print(catalogs)
+    print("The files to be tested are:")
+    print(inputs)
     return inputs, catalogs, catalognames
 
 def copy_catalogs(catalogs,cyclus_path) :
@@ -103,11 +107,11 @@ class Summary():
 
     def print_summary(self) :
         """Prints the summary"""
-        print "Input files passed = " + str(len(self.passed))
-        print "Input files failed = " + str(len(self.failed))
-        print "Failed input files : " 
+        print("Input files passed = " + str(len(self.passed)))
+        print("Input files failed = " + str(len(self.failed)))
+        print("Failed input files : ") 
         for test in self.failed : 
-            print test
+            print(test)
 
 class TestFile():
     """An object representing the inputxml file to test"""
@@ -132,22 +136,22 @@ class TestFile():
                     shell=True, stdout=PIPE, stderr=STDOUT)
             io_tuple = p.communicate()
             output = io_tuple[0]
-        except subprocess.CalledProcessError, e:
+        except subprocess.CalledProcessError as e:
             print(e)
-        return output
+        return str(output)
         
     def no_errors(self, output):
         """returns true if there were no errors or segfaults running this TestFile"""
         to_ret = True
-        print "Input file " + self.infile 
+        print("Input file " + self.infile) 
         if re.search("No such file or directory",output) :
-            print "Cyclus executable not found in path."
+            print("Cyclus executable not found in path.")
         elif re.search("ERROR",output) or re.search("Segmentation fault",output):
             to_ret = False
-            print " resulted in errors: "
-            print output
+            print(" resulted in errors: ")
+            print(output)
         else :
-            print " passed. "
+            print(" passed. ")
         return to_ret 
 
 if __name__ == '__main__' : main()

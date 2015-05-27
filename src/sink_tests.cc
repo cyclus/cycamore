@@ -176,6 +176,40 @@ TEST_F(SinkTest, Accept) {
   src_facility->AcceptMatlTrades(responses);
   EXPECT_DOUBLE_EQ(qty, src_facility->InventorySize());
 }
+// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+TEST_F(SinkTest, InRecipe){
+// Create a context
+  using cyclus::RequestPortfolio;
+  using cyclus::Material;
+  using cyclus::Request;
+  cyclus::Recorder rec;
+  cyclus::Timer ti;
+  cyclus::Context ctx(&ti, &rec);
+
+  // define some test material in the context
+  cyclus::CompMap m;
+  m[922350000] = 1;
+  m[922580000] = 2;
+
+  cyclus::Composition::Ptr c = cyclus::Composition::CreateFromMass(m);
+  ctx.AddRecipe("some_u",c) ;
+
+  // create a sink facility to interact with the DRE
+  cycamore::Sink* snk = new cycamore::Sink(&ctx);
+  snk->AddCommodity("some_u");
+
+  std::set<RequestPortfolio<Material>::Ptr> ports =
+    snk->GetMatlRequests();
+  ASSERT_EQ(ports.size(), 1);
+
+  const std::vector<Request<Material>*>& requests =
+    ports.begin()->get()->requests();
+  ASSERT_EQ(requests.size(), 1);
+
+  Request<Material>* req = *requests.begin();
+  EXPECT_EQ(req->requester(), snk);
+  EXPECT_EQ(req->commodity(),"some_u");
+}
 
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 TEST_F(SinkTest, Print) {

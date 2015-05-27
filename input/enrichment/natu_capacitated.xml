@@ -10,8 +10,8 @@
   <archetypes>
     <spec><lib>cycamore</lib><name>Sink</name></spec>
     <spec><lib>cycamore</lib><name>Source</name></spec>
-    <spec><lib>cycamore</lib><name>EnrichmentFacility</name></spec>
-    <spec><lib>cycamore</lib><name>BatchReactor</name></spec>
+    <spec><lib>cycamore</lib><name>Reactor</name></spec>
+    <spec><lib>cycamore</lib><name>Enrichment</name></spec>
     <spec><lib>cycamore</lib><name>GrowthRegion</name></spec>
     <spec><lib>cycamore</lib><name>ManagerInst</name></spec>
   </archetypes>
@@ -20,9 +20,9 @@
     <name>Source</name>
     <config>
       <Source>
-        <out_commod>natl_u</out_commod>
-        <capacity>1000</capacity>
-        <recipe_name>natl_u</recipe_name>
+        <outcommod>natl_u</outcommod>
+        <outrecipe>natl_u</outrecipe>
+        <throughput>1000</throughput>
       </Source>
     </config>
   </facility>
@@ -30,35 +30,35 @@
   <facility>
     <name>Enrichment</name>
     <config>
-      <EnrichmentFacility>
-        <in_commod>natl_u</in_commod>
-        <in_recipe>natl_u</in_recipe>
-        <max_inv_size>100</max_inv_size>
-        <out_commod>enriched_u</out_commod>
+      <Enrichment>
+        <feed_commod>natl_u</feed_commod>
+        <feed_recipe>natl_u</feed_recipe>
+        <max_feed_inventory>100</max_feed_inventory>
+        <product_commod>enriched_u</product_commod>
+        <tails_commod>ef_tails</tails_commod>
         <tails_assay>0.003</tails_assay>
-      </EnrichmentFacility>
+      </Enrichment>
     </config>
   </facility>
 
   <facility>
     <name>Reactor</name>
     <config>
-      <BatchReactor>
-        <fuel>
-          <incommodity>enriched_u</incommodity>
-          <inrecipe>fuel_recipe</inrecipe>
-          <outcommodity>waste</outcommodity>
-          <outrecipe>used_fuel_recipe</outrecipe>
-        </fuel>
-        <processtime>1</processtime>
-        <nbatches>1</nbatches>
-        <batchsize>2</batchsize>
-        <commodity_production>
-          <commodity>power</commodity>
-          <capacity>10</capacity>
-          <cost>10</cost>
-        </commodity_production>
-      </BatchReactor>
+      <Reactor>
+        <fuel_inrecipes>  <val>fuel_recipe</val>      </fuel_inrecipes>
+        <fuel_outrecipes> <val>used_fuel_recipe</val> </fuel_outrecipes>
+        <fuel_incommods>  <val>enriched_u</val>       </fuel_incommods>
+        <fuel_outcommods> <val>waste</val>            </fuel_outcommods>
+
+        <cycle_time>1</cycle_time>
+        <refuel_time>0</refuel_time>
+        <assem_size>2</assem_size>
+        <n_assem_core>1</n_assem_core>
+        <n_assem_batch>1</n_assem_batch>
+
+        <power_name>power</power_name>
+        <power_cap>10</power_cap>
+      </Reactor>
     </config>
   </facility>
 
@@ -78,16 +78,20 @@
     <name>SingleRegion</name>
     <config>
       <GrowthRegion>
-        <commodity_name>power</commodity_name>
-        <demand_types>
-          <val>linear</val>
-        </demand_types>
-        <demand_params>
-          <val>10 0</val>
-        </demand_params>
-        <demand_times>
-          <val>1</val>
-        </demand_times>
+        <growth>
+          <item>
+            <commod>power</commod>
+            <piecewise_function>
+              <piece>
+                <start>1</start>
+                <function>
+                  <type>linear</type>
+                  <params>10 0</params>
+                </function>
+              </piece>
+            </piecewise_function>
+          </item>
+        </growth>
       </GrowthRegion>
     </config>
     <institution>
@@ -111,6 +115,7 @@
           <prototypes>
             <val>Source</val>
             <val>Enrichment</val>
+            <val>Reactor</val>
             <val>Sink</val>
           </prototypes>
         </ManagerInst>

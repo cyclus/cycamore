@@ -31,9 +31,9 @@
     <lifetime>5</lifetime>
     <config>
       <Source>
-        <out_commod>commodity</out_commod>
-        <recipe_name>commod_recipe</recipe_name>
-        <capacity>1</capacity>
+        <outcommod>commodity</outcommod>
+        <outrecipe>commod_recipe</outrecipe>
+        <throughput>1</throughput>
       </Source>
     </config>
   </facility>

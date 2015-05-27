@@ -1,9 +1,17 @@
 """A set of tools for use in integration tests."""
 import os
+import tempfile
+import subprocess
+import sys
 from hashlib import sha1
-
 import numpy as np
 import tables
+from nose.tools import assert_equal
+
+if sys.version_info[0] >= 3:
+    str_types = (bytes, str)
+else:
+    str_types = (str, unicode)
 
 def hasher(x):
     return int(sha1(x.encode()).hexdigest(), 16)
@@ -49,38 +57,26 @@ def exit_times(agent_id, exit_table):
 
     return exit_times
 
-def create_sim_input(ref_input, k_factor_in, k_factor_out):
-    """Creates xml input file from a reference xml input file.
-
-    Changes k_factor_in and k_factor_out in a simulation input
-    files for KFacility.
-
-    Args:
-        ref_input: A reference xml input file with k_factors.
-        k_factor_in: A new k_factor for requests.
-        k_factor_out: A new conversion factor for offers.
-
-    Returns:
-        A path to the created file. It is created in the same
-        directory as the reference input file.
+def run_cyclus(cyclus, cwd, in_path, out_path):
+    """Runs cyclus with various inputs and creates output databases
     """
-    # File to be created
-    fw_path = ref_input.split(".xml")[0] + "_" + str(k_factor_in) + \
-              "_" + str(k_factor_out) + ".xml"
-    fw = open(fw_path, "w")
-    fr = open(ref_input, "r")
-    for f in fr:
-        if f.count("k_factor_in"):
-            f = f.split("<")[0] + "<k_factor_in>" + str(k_factor_in) + \
-                "</k_factor_in>\n"
-        elif f.count("k_factor_out"):
-            f = f.split("<")[0] + "<k_factor_out>" + str(k_factor_out) + \
-                "</k_factor_out>\n"
+    holdsrtn = [1]  # needed because nose does not send() to test generator
+    # make sure the output target directory exists
+    cmd = [cyclus, "-o", out_path, "--input-file", in_path]
+    check_cmd(cmd, cwd, holdsrtn)
 
-        fw.write(f)
-
-    # Closing open files
-    fr.close()
-    fw.close()
-
-    return fw_path
+def check_cmd(args, cwd, holdsrtn):
+    """Runs a command in a subprocess and verifies that it executed properly.
+    """
+    if not isinstance(args, str_types):
+        args = " ".join(args)
+    print("TESTING: running command in {0}:\n\n{1}\n".format(cwd, args))
+    env = dict(os.environ)
+    env['_'] = subprocess.check_output(['which', 'cyclus'], cwd=cwd).strip()
+    with tempfile.NamedTemporaryFile() as f:
+        rtn = subprocess.call(args, shell=True, cwd=cwd, stdout=f, stderr=f, env=env)
+        if rtn != 0:
+            f.seek(0)
+            print("STDOUT + STDERR:\n\n" + f.read().decode())
+    holdsrtn[0] = rtn
+    assert_equal(rtn, 0)

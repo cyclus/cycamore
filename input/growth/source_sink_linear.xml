@@ -18,9 +18,9 @@
     <name>Source1</name>
     <config>
       <Source>
-        <out_commod>commodity</out_commod>
-        <recipe_name>commod_recipe</recipe_name>
-        <capacity>1.1</capacity>
+        <outcommod>commodity</outcommod>
+        <outrecipe>commod_recipe</outrecipe>
+        <throughput>1.1</throughput>
       </Source>
     </config>
   </facility>
@@ -29,9 +29,9 @@
     <name>Source2</name>
     <config>
       <Source>
-        <out_commod>commodity</out_commod>
-        <recipe_name>commod_recipe</recipe_name>
-        <capacity>2</capacity>
+        <outcommod>commodity</outcommod>
+        <outrecipe>commod_recipe</outrecipe>
+        <throughput>2</throughput>
       </Source>
     </config>
   </facility>
@@ -51,16 +51,20 @@
     <name>SingleRegion</name>
     <config>
       <GrowthRegion>
-        <commodity_name>commodity</commodity_name>
-        <demand_types>
-          <val>linear</val>
-        </demand_types>
-        <demand_params>
-          <val>1 2</val>
-        </demand_params>
-        <demand_times>
-          <val>0</val>
-        </demand_times>
+        <growth>
+          <item>
+            <commod>commodity1</commod>
+            <piecewise_function>
+              <piece>
+                <start>0</start>
+                <function>
+                  <type>linear</type>
+                  <params>1 2</params>
+                </function>
+              </piece>
+            </piecewise_function>
+          </item>
+        </growth>
       </GrowthRegion>
     </config>
     <institution>
