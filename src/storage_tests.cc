@@ -19,7 +19,6 @@ void StorageTest::InitParameters(){
   in_c1 = "in_c1";
   out_c1 = "out_c1";
   in_r1 = "in_r1";
-  out_r1 = "out_r1";
   process_time = 10;
   max_inv_size = 200;
   capacity = 20;
@@ -30,17 +29,12 @@ void StorageTest::InitParameters(){
   v[922380000] = 2;
   cyclus::Composition::Ptr recipe = cyclus::Composition::CreateFromAtom(v);
   tc_.get()->AddRecipe(in_r1, recipe);
-
-  v[94239] = 0.25;
-  recipe = cyclus::Composition::CreateFromAtom(v);
-  tc_.get()->AddRecipe(out_r1, recipe);
 }
 
 void StorageTest::SetUpStorage(){
   src_facility_->in_commod_(in_c1);
   src_facility_->out_commod_(out_c1);
   src_facility_->in_recipe_(in_r1);
-  src_facility_->out_recipe_(out_r1);
   src_facility_->process_time_(process_time);
   src_facility_->max_inv_size_(max_inv_size);
   src_facility_->capacity_(capacity);
@@ -52,7 +46,6 @@ void StorageTest::TestInitState(Storage* fac){
   EXPECT_EQ(max_inv_size, fac->max_inv_size_());
   EXPECT_EQ(capacity, fac->capacity_());
   EXPECT_EQ(out_c1, fac->out_commod_());
-  EXPECT_EQ(out_r1, fac->out_recipe_());
   EXPECT_EQ(in_c1, fac->in_commod_());
   EXPECT_EQ(in_r1, fac->in_recipe_());
   EXPECT_EQ(cost, fac->cost_());
@@ -200,9 +193,7 @@ TEST_F(StorageTest, NoProcessTime) {
 }
 
 TEST_F(StorageTest, NoConvert) {
-  // test what happens if no recipe change specified
-  src_facility_->out_recipe_(in_r1);
-  EXPECT_EQ(src_facility_->in_recipe_(), src_facility_->out_recipe_());
+// Make sure no conversion occurs
 
   double cap = src_facility_->current_capacity();
   cyclus::Composition::Ptr rec = tc_.get()->GetRecipe(in_r1);
