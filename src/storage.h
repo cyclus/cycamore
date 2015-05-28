@@ -14,22 +14,21 @@ class Storage;
 namespace storage {
 /// @class Storage
 ///
-/// This Facility is intended to convert a resource from one commodity to 
-/// another. It also has an optional delay parameter. It can therefore be used 
-/// quite easily as a storage facility. 
+/// This Facility is intended to hold materials for a user specified
+/// amount of time in order to model a storage facility with a certain
+/// process time or holdup time.
 /// The Storage class inherits from the Facility class and is
 /// dynamically loaded by the Agent class when requested.
 ///
 /// @section intro Introduction
 /// This Agent was initially developed to support the fco code-to-code 
-/// comparsion.
+/// comparison.
 /// It's very similar to the "NullFacility" of years 
-/// past. Its purpose is to convert a commodity from one commodity to another 
-/// after some period of delay time. This facility is very good for use as a 
-/// storage facility or fuel fabrication.
+/// past. Its purpose is to hold materials and release them only  
+/// after some period of delay time.
 ///
 /// @section agentparams Agent Parameters
-/// in_commod is a string naming the commodity that this facility recieves
+/// in_commod is a string naming the commodity that this facility receives
 /// out_commod is a string naming the commodity that in_commod is stocks into
 /// process_time is the number of timesteps between receiving and offering
 /// in_recipe (optional) describes the incoming resource by recipe
@@ -38,15 +37,16 @@ namespace storage {
 /// @section optionalparams Optional Parameters
 /// max_inv_size is the maximum capacity of the inventory storage
 /// capacity is the maximum processing capacity per timestep
+/// cost is the cost per kg to process the given materials
 ///
-/// @section detailed Detailed Behavior
+/// @section detailed Detailed Behaviour
 /// 
 /// Tick:
 /// Nothing really happens on the tick. 
 ///
 /// Tock:
 /// On the tock, any material that has been waiting for long enough (delay 
-/// time) is stocks and placed in the stocks buffer.
+/// time) is placed in the stocks buffer.
 ///
 /// Any brand new inventory that was received in this timestep is placed into 
 /// the processing queue to begin waiting. 
@@ -82,7 +82,7 @@ class Storage
   #pragma cyclus note {"doc": "A storage facility converts from one " \
                               "commodity to another, with an optional delay."}
 
-  /// A verbose printer for the Storage
+  /// A verbose printer for the Storage Facility
   virtual std::string str();
 
   // --- Facility Members ---
@@ -90,19 +90,17 @@ class Storage
   // --- Agent Members ---
   virtual void EnterNotify();
 
-  /// The handleTick function specific to the Storage.
-  /// @param time the time of the tick  
+  /// The handleTick function specific to the Storage Facility.
   virtual void Tick();
 
-  /// The handleTick function specific to the Storage.
-  /// @param time the time of the tock
+  /// The handleTick function specific to the Storage Facility.
   virtual void Tock();
 
-  /// @brief The Storage request Materials of its given
+  /// @brief The Storage Facility requests Materials of its desired
   /// commodity.
   virtual std::set<cyclus::RequestPortfolio<cyclus::Material>::Ptr> GetMatlRequests();
 
-  /// @brief The Storage place accepted trade Materials in their
+  /// @brief The Storage Facility places accepted trade Materials into
   /// Inventory
   virtual void AcceptMatlTrades(
       const std::vector< std::pair<cyclus::Trade<cyclus::Material>,
@@ -110,7 +108,7 @@ class Storage
 
   /// @brief Responds to each request for this facility's commodity.  If a given
   /// request is more than this facility's inventory capacity, it will
-  /// offer its minimum of its capacities.
+  /// offer the minimum of its capacities.
   virtual std::set<cyclus::BidPortfolio<cyclus::Material>::Ptr>
       GetMatlBids(cyclus::CommodMap<cyclus::Material>::type&
                   commod_requests);

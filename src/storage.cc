@@ -7,7 +7,7 @@ namespace storage {
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 Storage::Storage(cyclus::Context* ctx)
     : cyclus::Facility(ctx) {
-  cyclus::Warn<cyclus::EXPERIMENTAL_WARNING>("the Storage is experimental.");
+  cyclus::Warn<cyclus::EXPERIMENTAL_WARNING>("The Storage Facility is experimental.");
     };
 
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -123,8 +123,8 @@ Storage::GetMatlRequests() {
   double amt = mat->quantity();
 
   if (amt > cyclus::eps()) {
-    //CapacityConstraint<Material> cc(amt);
-    //port->AddConstraint(cc);
+    CapacityConstraint<Material> cc(amt);
+    port->AddConstraint(cc);
 
     port->AddRequest(mat, this, in_commod_());
 
@@ -178,7 +178,6 @@ void Storage::GetMatlTrades(
   std::vector< Trade<Material> >::const_iterator it;
   for (it = trades.begin(); it != trades.end(); ++it) {
     std::string commodity = it->request->commodity();
-    //double qty = it->amt;
     double qty = stocks.quantity();
     // create a material pointer representing what you can offer
     if ( qty > 0 ) {
@@ -259,8 +258,8 @@ cyclus::BidPortfolio<cyclus::Material>::Ptr Storage::GetBids_(
       port->AddBid(req, offer, this);
     }
 
-    //CapacityConstraint<Material> cc(buffer->quantity());
-    //port->AddConstraint(cc);
+    CapacityConstraint<Material> cc(buffer->quantity());
+    port->AddConstraint(cc);
   }
 
   return port;
