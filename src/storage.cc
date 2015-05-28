@@ -102,7 +102,7 @@ void Storage::Tock() {
   BeginProcessing_(); // place unprocessed inventory into processing
 
   if( ready() >= 0 || process_time_() == 0 ) {
-    Convert_(capacity_()); // place processing into stocks
+    ProcessMat_(capacity_()); // place processing into stocks
   }
 
   LOG(cyclus::LEV_INFO3, "ComCnv") << "}";
@@ -304,7 +304,7 @@ void Storage::BeginProcessing_(){
 }
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-void Storage::Convert_(double cap){
+void Storage::ProcessMat_(double cap){
   using cyclus::Material;
   using cyclus::ResCast;
   using cyclus::toolkit::ResourceBuff;
@@ -319,19 +319,8 @@ void Storage::Convert_(double cap){
       // pop appropriate amount of material from processing 
       std::vector<Material::Ptr> to_conv = 
         ResCast<Material>(processing[t].PopQty(to_pop));
-      // if an out_recipe was provided, transmute it
-      std::vector<Material::Ptr>::iterator mat; 
-      if( out_recipe == "" ){
-        // if no out recipe, then no transmute needed
+      // Push process ready material into stocks
         stocks.PushAll(to_conv);
-      } else { 
-        // transmute each mat
-        for(mat=to_conv.begin(); mat!=to_conv.end(); ++mat) {
-          (*mat)->Transmute(context()->GetRecipe(out_recipe));
-          // put it in the stocks
-          stocks.Push(*mat);
-        }
-      }
 
       AdvanceUnconverted_(t);
       LOG(cyclus::LEV_INFO1, "ComCnv") << "Storage " << prototype() 
