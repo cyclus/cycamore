@@ -21,7 +21,7 @@ void StorageTest::InitParameters(){
   in_r1 = "in_r1";
   process_time = 10;
   max_inv_size = 200;
-  capacity = 20;
+  throughput = 20;
   cost = 1;
 
   cyclus::CompMap v;
@@ -37,14 +37,14 @@ void StorageTest::SetUpStorage(){
   src_facility_->in_recipe_(in_r1);
   src_facility_->process_time_(process_time);
   src_facility_->max_inv_size_(max_inv_size);
-  src_facility_->capacity_(capacity);
+  src_facility_->throughput_(throughput);
   src_facility_->cost_(cost);
 }
 
 void StorageTest::TestInitState(Storage* fac){
   EXPECT_EQ(process_time, fac->process_time_());
   EXPECT_EQ(max_inv_size, fac->max_inv_size_());
-  EXPECT_EQ(capacity, fac->capacity_());
+  EXPECT_EQ(throughput, fac->throughput_());
   EXPECT_EQ(out_c1, fac->out_commod_());
   EXPECT_EQ(in_c1, fac->in_commod_());
   EXPECT_EQ(in_r1, fac->in_recipe_());
@@ -98,11 +98,11 @@ TEST_F(StorageTest, InitialState) {
 
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 TEST_F(StorageTest, CurrentCapacity) {
-  EXPECT_EQ(capacity, src_facility_->current_capacity());
+  EXPECT_EQ(throughput, src_facility_->current_capacity());
   src_facility_->max_inv_size_(1e299);
   EXPECT_EQ(1e299, src_facility_->max_inv_size_());
-  EXPECT_EQ(capacity, src_facility_->capacity_());
-  EXPECT_EQ(capacity, src_facility_->current_capacity());
+  EXPECT_EQ(throughput, src_facility_->throughput_());
+  EXPECT_EQ(throughput, src_facility_->current_capacity());
 }
 
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -251,19 +251,19 @@ TEST_F(StorageTest, MultipleSmallBatches) {
 
 TEST_F(StorageTest, ChangeCapacity) {
   src_facility_->max_inv_size_(10000);
-  // Set capacity, add first batch
-  src_facility_->capacity_(300);
-  double cap1 = src_facility_->capacity_();
+  // Set throughput, add first batch
+  src_facility_->throughput_(300);
+  double cap1 = src_facility_->throughput_();
   cyclus::Composition::Ptr rec = tc_.get()->GetRecipe(in_r1);
   cyclus::Material::Ptr mat1 = cyclus::Material::CreateUntracked(cap1, rec);
   TestAddMat(src_facility_, mat1);
   EXPECT_NO_THROW(src_facility_->Tock());
   TestBuffers(src_facility_,0,cap1,0);
   
-  // Increase capacity, add second and third batches
+  // Increase throughput, add second and third batches
   tc_.get()->time(2);
-  src_facility_->capacity_(500);
-  double cap2 = src_facility_->capacity_();
+  src_facility_->throughput_(500);
+  double cap2 = src_facility_->throughput_();
   cyclus::Material::Ptr mat2 = cyclus::Material::CreateUntracked(cap2,rec);
   TestAddMat(src_facility_, mat2);
   EXPECT_NO_THROW(src_facility_->Tock());
@@ -279,8 +279,8 @@ TEST_F(StorageTest, ChangeCapacity) {
   EXPECT_NO_THROW(src_facility_->Tock());
   TestBuffers(src_facility_,0,0,cap1);  
   
-  // Decrease capacity and move portion of second batch to stocks
-  src_facility_->capacity_(400);
+  // Decrease throughput and move portion of second batch to stocks
+  src_facility_->throughput_(400);
   tc_.get()->time(process_time+2);
   EXPECT_NO_THROW(src_facility_->Tock());   
   TestBuffers(src_facility_,0,0,cap1+400);
