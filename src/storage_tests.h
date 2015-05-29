@@ -32,7 +32,7 @@ class StorageTest : public ::testing::Test {
   std::string in_r1;
 
   int process_time;
-  double capacity, max_inv_size, cost;
+  double throughput, max_inv_size, cost;
 };
 } // namespace storage
 #endif // STORAGE_TESTS_H_

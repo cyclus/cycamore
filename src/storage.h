@@ -30,12 +30,12 @@ namespace storage {
 /// @section agentparams Agent Parameters
 /// in_commod is a string naming the commodity that this facility receives
 /// out_commod is a string naming the commodity that in_commod is stocks into
-/// process_time is the number of timesteps between receiving and offering
+/// process_time is the minimum number of timesteps between receiving and offering
 /// in_recipe (optional) describes the incoming resource by recipe
 /// 
 /// @section optionalparams Optional Parameters
 /// max_inv_size is the maximum capacity of the inventory storage
-/// capacity is the maximum processing capacity per timestep
+/// throughput is the maximum processing capacity per timestep
 ///
 /// @section detailed Detailed Behaviour
 /// 
@@ -111,7 +111,7 @@ class Storage
       GetMatlBids(cyclus::CommodMap<cyclus::Material>::type&
                   commod_requests);
 
-  /// @brief respond to each trade with a material of out_commod and out_recipe
+  /// @brief respond to each trade with a material of out_commod
   ///
   /// @param trades all trades in which this trader is the supplier
   /// @param responses a container to populate with responses to each trade
@@ -125,7 +125,7 @@ class Storage
   /* --- Storage Members --- */
 
   /* --- */
-  /// @brief the processing time required for a full process
+  /// @brief the minimum processing time required for a full process
   inline void process_time_(int t) { process_time = t; }
   inline int process_time_() const { return process_time; }
 
@@ -134,8 +134,8 @@ class Storage
   inline double max_inv_size_() const { return max_inv_size; }
 
   /// @brief the maximum amount processed per timestep
-  inline void capacity_(double c) { capacity = c; }
-  inline double capacity_() const { return capacity; }
+  inline void throughput_(double c) { throughput = c; }
+  inline double throughput_() const { return throughput; }
 
   /// @brief the cost per unit out_commod
   inline void cost_(double c) { cost = c; }
@@ -155,7 +155,7 @@ class Storage
 
   /// @brief current maximum amount that can be added to processing
   inline double current_capacity() const { 
-    return std::min(capacity, max_inv_size - inventory.quantity()); }
+    return std::min(throughput, max_inv_size - inventory.quantity()); }
 
   /// @brief returns the time key for ready materials
   int ready(){ return context()->time() - process_time ; }
@@ -190,7 +190,7 @@ class Storage
   /// @param cap current conversion capacity 
   void ProcessMat_(double cap);
 
-  /// @brief any ready resources in processing get pushed off to next timestep
+  /// @brief any ready resources remaining in processing get pushed off to next timestep
   /// @param time the timestep whose buffer remains unprocessed 
   void AdvanceUnconverted_(int time);
 
@@ -224,13 +224,13 @@ class Storage
 
   #pragma cyclus var {"default": 0,\
                       "tooltip":"process time (timesteps)",\
-                      "doc":"the time it takes to convert a received commodity (timesteps)."}
+                      "doc":"the minimum holding time for a received commodity (timesteps)."}
   int process_time;
 
   #pragma cyclus var {"default": 1e299,\
-                     "tooltip":"capacity per timestep (kg)",\
+                     "tooltip":"throughput per timestep (kg)",\
                      "doc":"the max amount that can be processed per timestep (kg)"}
-  double capacity;
+  double throughput;
 
   #pragma cyclus var {"default": 0,\
                      "tooltip":"cost per kg of production",\
