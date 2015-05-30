@@ -150,26 +150,32 @@ std::set<cyclus::RequestPortfolio<Material>::Ptr>
 Separations::GetMatlRequests() {
   using cyclus::RequestPortfolio;
   std::set<RequestPortfolio<Material>::Ptr> ports;
-  bool exclusive = false;
 
-  if (feed.space() > cyclus::eps()) {
-    RequestPortfolio<Material>::Ptr port(new RequestPortfolio<Material>());
-
-    Material::Ptr m = cyclus::NewBlankMaterial(feed.space());
-    if (!feed_recipe.empty()) {
-      Composition::Ptr c = context()->GetRecipe(feed_recipe);
-      m = Material::CreateUntracked(feed.space(), c);
-    }
-
-    std::vector<cyclus::Request<Material>*> reqs;
-    for (int i = 0; i < feed_commods.size(); i++) {
-      std::string commod = feed_commods[i];
-      double pref = feed_commod_prefs[i];
-      reqs.push_back(port->AddRequest(m, this, commod, pref, exclusive));
-    }
-    port->AddMutualReqs(reqs);
-    ports.insert(port);
+  int t = context()->time();
+  int t_exit = exit_time();
+  if (t_exit >= 0 && (feed.quantity() >= (t_exit - t) * throughput)) {
+    return ports; // already have enough feed for remainder of life
+  } else if (feed.space() < cyclus::eps()) {
+    return ports;
   }
+
+  bool exclusive = false;
+  RequestPortfolio<Material>::Ptr port(new RequestPortfolio<Material>());
+
+  Material::Ptr m = cyclus::NewBlankMaterial(feed.space());
+  if (!feed_recipe.empty()) {
+    Composition::Ptr c = context()->GetRecipe(feed_recipe);
+    m = Material::CreateUntracked(feed.space(), c);
+  }
+
+  std::vector<cyclus::Request<Material>*> reqs;
+  for (int i = 0; i < feed_commods.size(); i++) {
+    std::string commod = feed_commods[i];
+    double pref = feed_commod_prefs[i];
+    reqs.push_back(port->AddRequest(m, this, commod, pref, exclusive));
+  }
+  port->AddMutualReqs(reqs);
+  ports.insert(port);
 
   return ports;
 }
@@ -280,6 +286,21 @@ std::set<cyclus::BidPortfolio<Material>::Ptr> Separations::GetMatlBids(
 }
 
 void Separations::Tock() {}
+
+bool Separations::CheckDecommissionCondition() {
+  if (leftover.count() > 0) {
+    return false;
+  }
+
+  std::map<std::string, ResBuf<Material> >::iterator it;
+  for (it = streambufs.begin(); it != streambufs.end(); ++it) {
+    if (it->second.count() > 0) {
+      return false;
+    }
+  }
+
+  return true;
+}
 
 extern "C" cyclus::Agent* ConstructSeparations(cyclus::Context* ctx) {
   return new Separations(ctx);
