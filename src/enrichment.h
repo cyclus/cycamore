@@ -289,7 +289,7 @@ class Enrichment : public cyclus::Facility {
   }
   std::string tails_commod;
   #pragma cyclus var { \
-    "default": 0.03, "tooltip": "tails assay",				\
+    "default": 0.003, "tooltip": "tails assay",				\
     "uilabel": "Tails Assay",                               \
     "doc": "tails assay from the enrichment process",       \
   }
