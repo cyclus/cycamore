@@ -233,7 +233,7 @@ TEST_F(EnrichmentTest, TradeTails) {
     "   <tails_commod>tails</tails_commod> "
     "   <tails_assay>0.003</tails_assay> ";
 
-  // 1-source to EF, 2-Enrich, add to tails, 3-tails avail. for trade
+  // time 1-source to EF, 2-Enrich, add to tails, 3-tails avail. for trade
   int simdur = 3;
   cyclus::MockSim sim(cyclus::AgentSpec
 		      (":cycamore:Enrichment"), config, simdur);
@@ -258,6 +258,51 @@ TEST_F(EnrichmentTest, TradeTails) {
   // Should be exactly one tails transaction
   EXPECT_EQ(1, qr.rows.size());
   
+}
+// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+TEST_F(EnrichmentTest, TailsQty) {
+  // this tests whether tails are being traded at correct quantity when
+  // requested amount is larger than single element buffer size.
+
+  std::string config = 
+    "   <feed_commod>natu</feed_commod> "
+    "   <feed_recipe>natu1</feed_recipe> "
+    "   <product_commod>enr_u</product_commod> "
+    "   <tails_commod>tails</tails_commod> "
+    "   <tails_assay>0.003</tails_assay> ";
+
+  // time 1-source to EF, 2-Enrich, add to tails, 3-tails avail. for trade
+  int simdur = 4;
+  cyclus::MockSim sim(cyclus::AgentSpec
+		      (":cycamore:Enrichment"), config, simdur);
+  sim.AddRecipe("natu1", c_natu1());
+  sim.AddRecipe("leu", c_leu());
+  
+  sim.AddSource("natu")
+    .recipe("natu1")
+    .Finalize();
+  sim.AddSink("enr_u")
+    .recipe("leu")
+    .capacity(0.5)
+    .Finalize();
+  sim.AddSink("enr_u")
+    .recipe("leu")
+    .capacity(0.5)
+    .Finalize();
+  sim.AddSink("tails")
+    .Finalize();
+
+  int id = sim.Run();
+
+  std::vector<Cond> conds;
+  conds.push_back(Cond("Commodity", "==", std::string("tails")));
+  QueryResult qr = sim.db().Query("Transactions", &conds);
+  Material::Ptr m = sim.GetMaterial(qr.GetVal<int>("ResourceId"));
+  
+  // Total tails should be 8.168 for a capacity of 1.0 (half from each LEU sink)
+  EXPECT_NEAR(8.168, m->quantity(), 0.1) <<
+     //  EXPECT_NEAR(one_sink_qty * 2, m1->quantity(), 0.1) <<
+    "Not providing the requested quantity" ;
 }
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 TEST_F(EnrichmentTest, BidPrefs) {
