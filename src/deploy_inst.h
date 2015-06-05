@@ -49,18 +49,18 @@ class DeployInst : public cyclus::Institution {
   std::vector<std::string> prototypes;
 
   #pragma cyclus var { \
-    "doc": "Time step on which to deploy agents given in prototype list (same order).", \
-    "uilabel": "Deployment times", \
-  }
-  std::vector<int> build_times;
-
-  #pragma cyclus var { \
     "doc": "Number of each prototype given in prototype list that should be deployed (same order).", \
     "uilabel": "Number to deploy", \
   }
   std::vector<int> n_build;
 
   #pragma cyclus var { \
+    "doc": "Time step on which to deploy agents given in prototype list (same order).", \
+    "uilabel": "Deployment times", \
+  }
+  std::vector<int> build_times;
+
+#pragma cyclus var {							\
     "doc": "Lifetimes for each prototype in prototype list (same order)." \
            " These lifetimes override the lifetimes in the original prototype definition." \
            " If unspecified, lifetimes from the original prototype definitions are used." \
