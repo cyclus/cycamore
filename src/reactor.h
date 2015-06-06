@@ -172,24 +172,6 @@ class Reactor : public cyclus::Facility,
   /// Returns all spent assemblies indexed by outcommod without removing them
   /// from the spent fuel buffer.
   std::map<std::string, cyclus::toolkit::MatVec> PeekSpent();
-
-  //////////// power params ////////////
-  #pragma cyclus var { \
-    "default": 0, \
-    "doc": "Amount of electrical power the facility produces when operating " \
-           "normally.", \
-    "uilabel": "Nominal Reactor Power", \
-    "units": "MWe", \
-  }
-  double power_cap;
-
-  #pragma cyclus var { \
-    "default": "power", \
-    "uilabel": "Power Commodity Name", \
-    "doc": "The name of the 'power' commodity used in conjunction with a " \
-           "deployment curve.", \
-  }
-  std::string power_name;
   
   /////// fuel specifications /////////
   #pragma cyclus var { \
@@ -327,6 +309,24 @@ class Reactor : public cyclus::Facility,
     "units": "time steps", \
   }
   int cycle_step;
+
+  //////////// power params ////////////
+  #pragma cyclus var { \
+    "default": 0, \
+    "doc": "Amount of electrical power the facility produces when operating " \
+           "normally.", \
+    "uilabel": "Nominal Reactor Power", \
+    "units": "MWe", \
+  }
+  double power_cap;
+
+  #pragma cyclus var { \
+    "default": "power", \
+    "uilabel": "Power Commodity Name", \
+    "doc": "The name of the 'power' commodity used in conjunction with a " \
+           "deployment curve.", \
+  }
+  std::string power_name;
 
   /////////// preference changes ///////////
   #pragma cyclus var { \

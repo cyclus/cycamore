@@ -331,7 +331,7 @@ class Enrichment : public cyclus::Facility {
   }
   double max_enrich;
 
- #pragma cyclus var { \
+  #pragma cyclus var { \
     "default": 1,		       \
     "userlevel": 10,							\
     "tooltip": "Rank Material Requests by U235 Content",		\
@@ -341,12 +341,12 @@ class Enrichment : public cyclus::Facility {
   }
   bool order_prefs;
 
-    #pragma cyclus var { \
+  #pragma cyclus var {						       \
     "default": 1e299,						       \
     "tooltip": "SWU capacity (kgSWU/month)",			       \
     "uilabel": "SWU Capacity",                                         \
-    "doc": "separative work unit (SWU) capacity of enrichment "	       \
-           "facility (kgSWU/month) "                                         \
+    "doc": "separative work unit (SWU) capacity of enrichment "		\
+           "facility (kgSWU/timestep) "                                     \
   }
   double swu_capacity;
 
