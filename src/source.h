@@ -79,8 +79,9 @@ class Source : public cyclus::Facility,
 
   #pragma cyclus var { \
     "tooltip": "name of material recipe to provide", \
-    "doc": "Name of composition recipe that this source provides regardless of requested composition." \
-           " If empty, source creates and provides whatever compositions are requested.", \
+    "doc": "Name of composition recipe that this source provides regardless " \
+           "of requested composition. If empty, source creates and provides " \
+           "whatever compositions are requested.", \
     "uilabel": "Output Recipe", \
     "default": "", \
     "uitype": "recipe", \
@@ -88,6 +89,17 @@ class Source : public cyclus::Facility,
   std::string outrecipe;
 
   #pragma cyclus var { \
+    "doc": "Total amount of material this source has remaining." \
+           " Every trade decreases this value by the supplied material " \
+           "quantity.  When it reaches zero, the source cannot provide any " \
+           " more material.", \
+    "default": 1e299, \
+    "uilabel": "Initial Inventory", \
+    "units": "kg", \
+  }
+  double inventory_size;
+
+  #pragma cyclus var {  \
     "default": 1e299, \
     "tooltip": "per time step throughput", \
     "units": "kg/(time step)", \
@@ -96,15 +108,6 @@ class Source : public cyclus::Facility,
   }
   double throughput;
 
-  #pragma cyclus var { \
-    "doc": "Total amount of material this source has remaining." \
-           " Every trade decreases this value by the supplied material quantity'." \
-           " When it reaches zero, the source cannot provide any more material.", \
-    "default": 1e299, \
-    "uilabel": "Initial Inventory", \
-    "units": "kg", \
-  }
-  double inventory_size;
 };
 
 }  // namespace cycamore

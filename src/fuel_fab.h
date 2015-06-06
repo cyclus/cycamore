@@ -172,7 +172,7 @@ class FuelFab : public cyclus::Facility {
     "doc": "Name for recipe to be used in fissile stream requests." \
            " Empty string results in use of an empty dummy recipe.", \
     "uitype": "recipe", \
-    "uilabel": "Fissile Stream Recipes", \
+    "uilabel": "Fissile Stream Recipe", \
     "default": "", \
   }
   std::string fiss_recipe;
