@@ -260,9 +260,9 @@ TEST_F(EnrichmentTest, TradeTails) {
   
 }
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-TEST_F(EnrichmentTest, TailsQty) {
+  TEST_F(EnrichmentTest, TailsQty) {
   // this tests whether tails are being traded at correct quantity when
-  // requested amount is larger than single element buffer size.
+  // requested amount is larger than qty in a single tails-buffer element
 
   std::string config = 
     "   <feed_commod>natu</feed_commod> "
@@ -272,7 +272,7 @@ TEST_F(EnrichmentTest, TailsQty) {
     "   <tails_assay>0.003</tails_assay> ";
 
   // time 1-source to EF, 2-Enrich, add to tails, 3-tails avail. for trade
-  int simdur = 4;
+  int simdur = 3;
   cyclus::MockSim sim(cyclus::AgentSpec
 		      (":cycamore:Enrichment"), config, simdur);
   sim.AddRecipe("natu1", c_natu1());
@@ -299,11 +299,21 @@ TEST_F(EnrichmentTest, TailsQty) {
   QueryResult qr = sim.db().Query("Transactions", &conds);
   Material::Ptr m = sim.GetMaterial(qr.GetVal<int>("ResourceId"));
   
-  // Total tails should be 8.168 for a capacity of 1.0 (half from each LEU sink)
-  EXPECT_NEAR(8.168, m->quantity(), 0.1) <<
-     //  EXPECT_NEAR(one_sink_qty * 2, m1->quantity(), 0.1) <<
+  // Should be 2 tails transactions, one from each LEU sink, each 4.084kg.
+  EXPECT_EQ(2, qr.rows.size());
+
+  cyclus::SqlStatement::Ptr stmt = sim.db().db().Prepare(
+      "SELECT SUM(r.Quantity) FROM Transactions AS t"
+      " INNER JOIN Resources AS r ON r.ResourceId = t.ResourceId"
+      " WHERE t.Commodity = ?;"
+      );
+
+  stmt->BindText(1, "tails");
+  stmt->Step();
+  EXPECT_NEAR(8.168,stmt->GetDouble(0), 0.01) <<
     "Not providing the requested quantity" ;
 }
+
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 TEST_F(EnrichmentTest, BidPrefs) {
   // This tests that natu sources are preference-ordered by
@@ -394,7 +404,7 @@ TEST_F(EnrichmentTest, BidPrefs) {
   // should trade with both to meet its capacity limit
   EXPECT_EQ(2, qr.rows.size());
   }
-  
+
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 TEST_F(EnrichmentTest, ZeroU235) {
   // Test that offers of natu with no u235 content are rejected
