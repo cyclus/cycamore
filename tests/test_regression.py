@@ -137,7 +137,7 @@ class TestPhysorEnrichment(TestRegression):
                     self.to_ary(enr, "Time") == t]) for t in range(4)]
         assert_array_almost_equal(exp, obs, decimal=2)
 
-    def test_xactions(self):
+    def test_xactions1(self):
         # reactor 1 transactions
         exp = [1, 1, 1, 1]
         txs = [0, 0, 0, 0]
@@ -148,6 +148,7 @@ class TestPhysorEnrichment(TestRegression):
         msg = "Testing that first reactor gets less than it wants."      
         assert_array_almost_equal(exp, txs, decimal=2, err_msg=msg)
 
+    def test_xactions2(self):
         # reactor 2 transactions
         exp = [1, 0.8, 0.2, 1]
         txs = [0, 0, 0, 0]
