@@ -129,7 +129,6 @@ IF(NOT CYCLUS_DOC_ONLY)
     # include all the directories we just found
     INCLUDE_DIRECTORIES(${CYCAMORE_INCLUDE_DIRS})
 
-
     # ------------------------- Add the Agents -----------------------------------
     ADD_SUBDIRECTORY(src)
 
@@ -139,12 +138,6 @@ IF(NOT CYCLUS_DOC_ONLY)
     SET(GENERATED_TEST_LIST "" CACHE INTERNAL "")
     SET(GENERATED_FILTER_LIST "" CACHE INTERNAL "")
     SET(GENERATED_TEST_SOURCE_LIST "" CACHE INTERNAL "")
-
-    # The gtest include file directories.
-    SET(GTEST_INCLUDE_DIRS "${CYCAMORE_INCLUDE_DIRS}")
-
-    # Alerts CMake to any tests we need to worry about
-    INCLUDE_DIRECTORIES(${GTEST_INCLUDE_DIRS})
 
     # Create an executable for all the gtests
     # Options for testing
