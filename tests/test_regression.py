@@ -428,7 +428,8 @@ class TestRecycle(TestRegression):
         i = 0
         for exp, obs in zip(invs, exp_invs):
             i += 1
-            self.assertAlmostEquals(exp, obs, msg='mismatch at t={0}'.format(i))
+            self.assertAlmostEquals(
+                exp, obs, msg='mismatch at t={}, {} != {}'.format(i, exp, obs))
 
         os.remove(expfname)
         os.remove(obsfname)
