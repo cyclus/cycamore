@@ -192,8 +192,6 @@ std::set<cyclus::BidPortfolio<cyclus::Material>::Ptr> Enrichment::GetMatlBids(
 	Request<Material>* req = *it;
 	tails_port->AddBid(req, m, this);
 	}
-      //      Request<Material>* req = *it;
-      //      tails_port->AddBid(req, tails.Peek(), this);
     }
     // overbidding (bidding on every offer)
     // add an overall capacity constraint 
