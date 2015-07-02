@@ -172,6 +172,7 @@ std::set<cyclus::BidPortfolio<cyclus::Material>::Ptr> Enrichment::GetMatlBids(
   using cyclus::Converter;
   using cyclus::Material;
   using cyclus::Request;
+  using cyclus::toolkit::MatVec;
 
   std::set<BidPortfolio<Material>::Ptr> ports;
 
@@ -182,8 +183,15 @@ std::set<cyclus::BidPortfolio<cyclus::Material>::Ptr> Enrichment::GetMatlBids(
       out_requests[tails_commod];
     std::vector<Request<Material>*>::iterator it;
     for (it = tails_requests.begin(); it != tails_requests.end(); ++it) {
-      Request<Material>* req = *it;
-      tails_port->AddBid(req, tails.Peek(), this);
+      // offer bids for all tails material, keeping discrete quantities
+      // to preserve possible variation in composition 
+      MatVec mats = tails.PopN(tails.count());
+      tails.Push(mats);
+      for (int k = 0; k < mats.size(); k++) {
+        Material::Ptr m = mats[k];
+	Request<Material>* req = *it;
+	tails_port->AddBid(req, m, this);
+	}
     }
     // overbidding (bidding on every offer)
     // add an overall capacity constraint 
