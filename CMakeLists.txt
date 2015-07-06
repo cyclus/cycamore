@@ -80,7 +80,6 @@ IF(NOT CYCLUS_DOC_ONLY)
       CYCAMORE_INCLUDE_DIRS 
       ${CYCAMORE_INCLUDE_DIRS} 
       ${CYCLUS_CORE_INCLUDE_DIR} # INSTALL_PATH/include/cyclus
-      ${CYCLUS_ROOT_DIR}/include # INSTALL_PATH/include for gtest includes
       )
     SET(LIBS ${LIBS} ${CYCLUS_CORE_LIBRARIES})
 
