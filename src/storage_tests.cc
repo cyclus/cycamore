@@ -51,11 +51,6 @@ void StorageTest::TestInitState(Storage* fac){
   EXPECT_EQ(cost, fac->cost_());
 }
 
-void StorageTest::TestRequest(Storage* fac, double cap){
-  cyclus::Material::Ptr req = fac->Request_();
-  EXPECT_EQ(cap, req->quantity());
-}
-
 void StorageTest::TestAddMat(Storage* fac, 
     cyclus::Material::Ptr mat){
   double amt = mat->quantity();
@@ -76,8 +71,8 @@ void StorageTest::TestBuffers(Storage* fac, double inv,
 
 void StorageTest::TestStocks(Storage* fac, cyclus::CompMap v){
 
-  cyclus::toolkit::ResourceBuff* buffer = &fac->stocks;
-  Material::Ptr final_mat = cyclus::ResCast<Material>(buffer->Pop(cyclus::toolkit::ResourceBuff::BACK));
+  cyclus::toolkit::ResBuf<cyclus::Material>* buffer = &fac->stocks;
+  Material::Ptr final_mat = cyclus::ResCast<Material>(buffer->PopBack());
   cyclus::CompMap final_comp = final_mat->comp()->atom();
   EXPECT_EQ(final_comp,v);
 
@@ -109,11 +104,6 @@ TEST_F(StorageTest, CurrentCapacity) {
 TEST_F(StorageTest, Print) {
   EXPECT_NO_THROW(std::string s = src_facility_->str());
   // Test Storage specific aspects of the print method here
-}
-
-// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-TEST_F(StorageTest, Request) { 
-  TestRequest(src_facility_, src_facility_->current_capacity());
 }
 
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -194,7 +184,6 @@ TEST_F(StorageTest, NoProcessTime) {
 
 TEST_F(StorageTest, NoConvert) {
 // Make sure no conversion occurs
-
   double cap = src_facility_->current_capacity();
   cyclus::Composition::Ptr rec = tc_.get()->GetRecipe(in_r1);
   cyclus::Material::Ptr mat = cyclus::Material::CreateUntracked(cap, rec);

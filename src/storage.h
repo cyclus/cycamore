@@ -14,21 +14,19 @@ class Storage;
 namespace storage {
 /// @class Storage
 ///
-/// This Facility is intended to hold materials for a user specified
-/// amount of time in order to model a storage facility with a certain
-/// process time or holdup time.
-/// The Storage class inherits from the Facility class and is
+/// This Facility is intended to store resources for a user specified process
+/// time. The Storage class inherits from the Facility class and is
 /// dynamically loaded by the Agent class when requested.
 ///
 /// @section intro Introduction
 /// This Agent was initially developed to support the fco code-to-code 
-/// comparison.
+/// comparsion.
 /// It's very similar to the "NullFacility" of years 
-/// past. Its purpose is to hold materials and release them only  
+/// past. Its purpose is to store commodities and reintroduce them to the simulation 
 /// after some period of delay time.
 ///
 /// @section agentparams Agent Parameters
-/// in_commod is a string naming the commodity that this facility receives
+/// in_commod is a string naming the commodity that this facility recieves
 /// out_commod is a string naming the commodity that in_commod is stocks into
 /// process_time is the minimum number of timesteps between receiving and offering
 /// in_recipe (optional) describes the incoming resource by recipe
@@ -37,14 +35,14 @@ namespace storage {
 /// max_inv_size is the maximum capacity of the inventory storage
 /// throughput is the maximum processing capacity per timestep
 ///
-/// @section detailed Detailed Behaviour
+/// @section detailed Detailed Behavior
 /// 
 /// Tick:
 /// Nothing really happens on the tick. 
 ///
 /// Tock:
 /// On the tock, any material that has been waiting for long enough (delay 
-/// time) is placed in the stocks buffer.
+/// time) is stocks and placed in the stocks buffer.
 ///
 /// Any brand new inventory that was received in this timestep is placed into 
 /// the processing queue to begin waiting. 
@@ -80,45 +78,20 @@ class Storage
   #pragma cyclus note {"doc": "A storage facility converts from one " \
                               "commodity to another, with an optional delay."}
 
-  /// A verbose printer for the Storage Facility
+  /// A verbose printer for the Storage
   virtual std::string str();
 
   // --- Facility Members ---
   
   // --- Agent Members ---
+  /// Sets up the Storage Facility's trade requests
   virtual void EnterNotify();
 
-  /// The handleTick function specific to the Storage Facility.
+  /// The handleTick function specific to the Storage.
   virtual void Tick();
 
-  /// The handleTick function specific to the Storage Facility.
+  /// The handleTick function specific to the Storage.
   virtual void Tock();
-
-  /// @brief The Storage Facility requests Materials of its desired
-  /// commodity.
-  virtual std::set<cyclus::RequestPortfolio<cyclus::Material>::Ptr> GetMatlRequests();
-
-  /// @brief The Storage Facility places accepted trade Materials into
-  /// Inventory
-  virtual void AcceptMatlTrades(
-      const std::vector< std::pair<cyclus::Trade<cyclus::Material>,
-      cyclus::Material::Ptr> >& responses);
-
-  /// @brief Responds to each request for this facility's commodity.  If a given
-  /// request is more than this facility's inventory capacity, it will
-  /// offer the minimum of its capacities.
-  virtual std::set<cyclus::BidPortfolio<cyclus::Material>::Ptr>
-      GetMatlBids(cyclus::CommodMap<cyclus::Material>::type&
-                  commod_requests);
-
-  /// @brief respond to each trade with a material of out_commod
-  ///
-  /// @param trades all trades in which this trader is the supplier
-  /// @param responses a container to populate with responses to each trade
-  virtual void GetMatlTrades(
-    const std::vector< cyclus::Trade<cyclus::Material> >& trades,
-    std::vector<std::pair<cyclus::Trade<cyclus::Material>,
-    cyclus::Material::Ptr> >& responses);
 
   /* --- */
 
@@ -165,23 +138,6 @@ class Storage
   ///   @param mat the material to add to the incoming inventory.
   ///   @throws if there is trouble with pushing to the inventory buffer.
   void AddMat_(cyclus::Material::Ptr mat);
-
-  ///   @brief generates a request for this facility given its current state. The
-  ///   quantity of the material will be equal to the remaining inventory size.
-  ///   @return a material that this facility will request
-  cyclus::Material::Ptr Request_();
-
-  /// @brief gathers information about bids
-  /// @param commod_requests the materials that have been requested
-  cyclus::BidPortfolio<cyclus::Material>::Ptr GetBids_(
-        cyclus::CommodMap<cyclus::Material>::type& commod_requests, 
-        std::string commod, 
-        cyclus::toolkit::ResourceBuff* buffer);
-
-  /// @brief suggests, based on the buffer, a material response to an offer
-  cyclus::Material::Ptr TradeResponse_(
-      double qty, 
-      cyclus::toolkit::ResourceBuff* buffer);
 
   /// @brief Move all unprocessed inventory to processing
   void BeginProcessing_();
@@ -243,13 +199,19 @@ class Storage
   double max_inv_size; 
 
 
-  cyclus::toolkit::ResourceBuff inventory;
-  cyclus::toolkit::ResourceBuff stocks;
+  cyclus::toolkit::ResBuf<cyclus::Material> inventory;
+  cyclus::toolkit::ResBuf<cyclus::Material> stocks;
 
-  /// @brief map from ready time to resource buffers
-  std::map<int, cyclus::toolkit::ResourceBuff> processing;
+  //// @brief map from ready time to resource buffers
+  std::map<int, cyclus::toolkit::ResBuf<cyclus::Material> > processing;
 
   cyclus::toolkit::CommodityRecipeContext crctx_;
+
+  //// A policy for requesting material
+  cyclus::toolkit::MatlBuyPolicy buy_policy;
+
+  //// A policy for sending material
+  cyclus::toolkit::MatlSellPolicy sell_policy;
 
 
   friend class StorageTest;

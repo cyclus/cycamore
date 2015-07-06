@@ -36,4 +36,3 @@ class StorageTest : public ::testing::Test {
 };
 } // namespace storage
 #endif // STORAGE_TESTS_H_
-
