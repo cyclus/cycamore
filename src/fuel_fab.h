@@ -54,6 +54,7 @@ namespace cycamore {
 /// @endcode
 class FuelFab : public cyclus::Facility {
 #pragma cyclus note { \
+"niche": "fabrication", \
 "doc": \
   "FuelFab takes in 2 streams of material and mixes them in ratios in order to" \
   " supply material that matches some neutronics properties of reqeusted" \
@@ -127,22 +128,27 @@ class FuelFab : public cyclus::Facility {
 
  private:
   #pragma cyclus var { \
-    "doc": "Commodity on which to request material for filler stream.", \
-    "uitype": "incommodity", \
+    "doc": "Ordered list of commodities on which to requesting filler stream material.", \
+    "uilabel": "Filler Stream Commodities", \
+    "uitype": ["oneormore", "incommodity"], \
   }
-  std::string fill_commod;
+  std::vector<std::string> fill_commods;
+  #pragma cyclus var { \
+    "default": [], \
+    "uilabel": "Filler Stream Preferences", \
+    "doc": "Filler stream commodity request preferences for each of the given filler commodities (same order)." \
+           " If unspecified, default is to use 1.0 for all preferences.", \
+  }
+  std::vector<double> fill_commod_prefs;
   #pragma cyclus var { \
     "doc": "Name of recipe to be used in filler material stream requests.", \
+    "uilabel": "Filler Stream Recipe", \
     "uitype": "recipe", \
   }
   std::string fill_recipe;
   #pragma cyclus var { \
-    "doc": "Filler material stream request preference.", \
-    "default": 0, \
-  }
-  double fill_pref;
-  #pragma cyclus var { \
     "doc": "Size of filler material stream inventory.", \
+    "uilabel": "Filler Stream Inventory Capacity", \
     "units": "kg", \
   }
   double fill_size;
@@ -151,24 +157,28 @@ class FuelFab : public cyclus::Facility {
 
   #pragma cyclus var { \
     "doc": "Ordered list of commodities on which to requesting fissile stream material.", \
+    "uilabel": "Fissile Stream Commodities", \
     "uitype": ["oneormore", "incommodity"], \
   }
   std::vector<std::string> fiss_commods;
   #pragma cyclus var { \
     "default": [], \
+    "uilabel": "Fissile Stream Preferences", \
     "doc": "Fissile stream commodity request preferences for each of the given fissile commodities (same order)." \
-           " If unspecified, default is to use zero for all preferences.", \
+           " If unspecified, default is to use 1.0 for all preferences.", \
   }
   std::vector<double> fiss_commod_prefs;
   #pragma cyclus var { \
     "doc": "Name for recipe to be used in fissile stream requests." \
            " Empty string results in use of an empty dummy recipe.", \
     "uitype": "recipe", \
+    "uilabel": "Fissile Stream Recipe", \
     "default": "", \
   }
   std::string fiss_recipe;
   #pragma cyclus var { \
     "doc": "Size of fissile material stream inventory.", \
+    "uilabel": "Fissile Stream Inventory Capacity", \
     "units": "kg", \
   }
   double fiss_size;
@@ -178,24 +188,28 @@ class FuelFab : public cyclus::Facility {
   #pragma cyclus var { \
     "doc": "Commodity on which to request material for top-up stream." \
            " This MUST be set if 'topup_size > 0'.", \
+    "uilabel": "Top-up Stream Commodity", \
     "default": "", \
     "uitype": "incommodity", \
   }
   std::string topup_commod;
   #pragma cyclus var { \
+    "doc": "Top-up material stream request preference.", \
+    "uilabel": "Top-up Stream Preference", \
+    "default": 0, \
+  }
+  double topup_pref;
+  #pragma cyclus var { \
     "doc": "Name of recipe to be used in top-up material stream requests." \
            " This MUST be set if 'topup_size > 0'.", \
+    "uilabel": "Top-up Stream Recipe", \
     "uitype": "recipe", \
     "default": "", \
   }
   std::string topup_recipe;
   #pragma cyclus var { \
-    "doc": "Top-up material stream request preference.", \
-    "default": 0, \
-  }
-  double topup_pref;
-  #pragma cyclus var { \
     "doc": "Size of top-up material stream inventory.", \
+    "uilabel": "Top-up Stream Inventory Capacity", \
     "units": "kg", \
     "default": 0, \
   }
@@ -204,22 +218,26 @@ class FuelFab : public cyclus::Facility {
   cyclus::toolkit::ResBuf<cyclus::Material> topup;
 
   #pragma cyclus var { \
-    "doc": "The type of cross-sections to use for composition property calculation." \
-           " Use 'fission_spectrum_ave' for fast reactor compositions or 'thermal' for thermal reactors.", \
-  }
-  std::string spectrum;
-
-  #pragma cyclus var { \
     "doc": "Commodity on which to offer/supply mixed fuel material.", \
+    "uilabel": "Output Commodity", \
     "uitype": "outcommodity", \
   }
   std::string outcommod;
 
   #pragma cyclus var { \
     "doc": "Maximum number of kg of fuel material that can be supplied per time step.", \
+    "uilabel": "Maximum Throughput", \
     "units": "kg", \
   }
   double throughput;
+
+  #pragma cyclus var {		\
+    "uilabel": "Spectrum type", \
+    "categorical": ['fission_spectrum_ave','thermal'], \
+    "doc": "The type of cross-sections to use for composition property calculation." \
+           " Use 'fission_spectrum_ave' for fast reactor compositions or 'thermal' for thermal reactors.", \
+  }
+  std::string spectrum;
 
   // intra-time-step state - no need to be a state var
   // map<request, inventory name>

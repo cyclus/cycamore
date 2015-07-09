@@ -30,14 +30,15 @@ class Source : public cyclus::Facility,
 
   #pragma cyclus note { \
     "doc": "This facility acts as a source of material with a fixed throughput (per\n" \
-           " time step) capacity and a lifetime capacity defined by a total inventory\n" \
-           " size.  It offers its material as a single commodity. If a composition\n" \
-           " recipe is specified, it provides that single material composition to\n" \
-           " requesters.  If unspecified, the source provides materials with the exact\n" \
-           " requested compositions.  The inventory size and throughput both default to\n" \
-           " infinite.  Supplies material results in corresponding decrease in\n" \
-           " inventory, and when the inventory size reaches zero, the source can provide\n" \
-           " no more material.\n" \
+           "time step) capacity and a lifetime capacity defined by a total inventory\n" \
+           "size.  It offers its material as a single commodity. If a composition\n" \
+           "recipe is specified, it provides that single material composition to\n" \
+           "requesters.  If unspecified, the source provides materials with the exact\n" \
+           "requested compositions.  The inventory size and throughput both default to\n" \
+           "infinite.  Supplies material results in corresponding decrease in\n" \
+           "inventory, and when the inventory size reaches zero, the source can provide\n" \
+           "no more material.\n" \
+           "", \
   }
 
   #pragma cyclus def clone
@@ -71,35 +72,42 @@ class Source : public cyclus::Facility,
   #pragma cyclus var { \
     "tooltip": "source output commodity", \
     "doc": "Output commodity on which the source offers material.", \
+    "uilabel": "Output Commodity", \
     "uitype": "outcommodity", \
   }
   std::string outcommod;
 
   #pragma cyclus var { \
     "tooltip": "name of material recipe to provide", \
-    "doc": "Name of composition recipe that this source provides regardless of requested composition." \
-           " If empty, source creates and provides whatever compositions are requested.", \
+    "doc": "Name of composition recipe that this source provides regardless " \
+           "of requested composition. If empty, source creates and provides " \
+           "whatever compositions are requested.", \
+    "uilabel": "Output Recipe", \
     "default": "", \
     "uitype": "recipe", \
   }
   std::string outrecipe;
 
   #pragma cyclus var { \
+    "doc": "Total amount of material this source has remaining." \
+           " Every trade decreases this value by the supplied material " \
+           "quantity.  When it reaches zero, the source cannot provide any " \
+           " more material.", \
+    "default": 1e299, \
+    "uilabel": "Initial Inventory", \
+    "units": "kg", \
+  }
+  double inventory_size;
+
+  #pragma cyclus var {  \
     "default": 1e299, \
     "tooltip": "per time step throughput", \
     "units": "kg/(time step)", \
+    "uilabel": "Maximum Throughput", \
     "doc": "amount of commodity that can be supplied at each time step", \
   }
   double throughput;
 
-  #pragma cyclus var { \
-    "doc": "Total amount of material this source has remaining." \
-           " Every trade decreases this value by the supplied material quantity'." \
-           " When it reaches zero, the source cannot provide any more material.", \
-    "default": 1e299, \
-    "units": "kg", \
-  }
-  double inventory_size;
 };
 
 }  // namespace cycamore

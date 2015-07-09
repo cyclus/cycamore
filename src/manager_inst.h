@@ -47,9 +47,14 @@ class ManagerInst
   /// unregister a child
   void Unregister_(cyclus::Agent* agent);
 
-  #pragma cyclus var {"tooltip": "facility prototypes", \
-                      "doc": "a facility to be managed by the institution", \
-                      "uitype": ["none", "prototype"]}
+  #pragma cyclus var { \
+    "tooltip": "producer facility prototypes",                          \
+    "uilabel": "Producer Prototype List",                               \
+    "uitype": ["oneormore", "prototype"],                                    \
+    "doc": "A set of facility prototypes that this institution can build. " \
+    "All prototypes in this list must be based on an archetype that "   \
+    "implements the cyclus::toolkit::CommodityProducer interface",      \
+    }
   std::vector<std::string> prototypes;
 };
 

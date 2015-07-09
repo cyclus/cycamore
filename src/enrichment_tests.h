@@ -10,7 +10,7 @@
 #include "exchange_context.h"
 #include "material.h"
 
-#include "enrichment_facility.h"
+#include "enrichment.h"
 
 namespace cycamore {
 

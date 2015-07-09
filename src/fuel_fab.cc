@@ -1,4 +1,5 @@
 #include "fuel_fab.h"
+#include <sstream>
 
 using cyclus::Material;
 using cyclus::Composition;
@@ -126,15 +127,35 @@ class TopupConverter : public cyclus::Converter<cyclus::Material> {
 };
 
 FuelFab::FuelFab(cyclus::Context* ctx)
-    : cyclus::Facility(ctx), fill_size(0), fiss_size(0), throughput(0) {}
+    : cyclus::Facility(ctx), fill_size(0), fiss_size(0), throughput(0) {
+  cyclus::Warn<cyclus::EXPERIMENTAL_WARNING>(
+      "the FuelFab archetype "
+      "is experimental");
+}
 
 void FuelFab::EnterNotify() {
   cyclus::Facility::EnterNotify();
 
-  if (fiss_commod_prefs.size() == 0) {
+  if (fiss_commod_prefs.empty()) {
     for (int i = 0; i < fiss_commods.size(); i++) {
-      fiss_commod_prefs.push_back(0);
+      fiss_commod_prefs.push_back(1);
     }
+  } else if (fiss_commod_prefs.size() != fiss_commods.size()) {
+    std::stringstream ss;
+    ss << "prototype '" << prototype() << "' has " << fiss_commod_prefs.size()
+       << " fiss_commod_prefs vals, expected " << fiss_commods.size();
+    throw cyclus::ValidationError(ss.str());
+  }
+
+  if (fill_commod_prefs.empty()) {
+    for (int i = 0; i < fill_commods.size(); i++) {
+      fill_commod_prefs.push_back(1);
+    }
+  } else if (fill_commod_prefs.size() != fill_commods.size()) {
+    std::stringstream ss;
+    ss << "prototype '" << prototype() << "' has " << fill_commod_prefs.size()
+       << " fill_commod_prefs vals, expected " << fill_commods.size();
+    throw cyclus::ValidationError(ss.str());
   }
 }
 
@@ -173,9 +194,15 @@ std::set<cyclus::RequestPortfolio<Material>::Ptr> FuelFab::GetMatlRequests() {
       Composition::Ptr c = context()->GetRecipe(fill_recipe);
       m = Material::CreateUntracked(fill.space(), c);
     }
-    cyclus::Request<Material>* r =
-        port->AddRequest(m, this, fill_commod, fill_pref, exclusive);
-    req_inventories_[r] = "fill";
+
+    std::vector<cyclus::Request<Material>*> reqs;
+    for (int i = 0; i < fill_commods.size(); i++) {
+      std::string commod = fill_commods[i];
+      double pref = fill_commod_prefs[i];
+      reqs.push_back(port->AddRequest(m, this, commod, pref, exclusive));
+      req_inventories_[reqs.back()] = "fill";
+    }
+    port->AddMutualReqs(reqs);
     ports.insert(port);
   }
 
@@ -225,7 +252,20 @@ void FuelFab::AcceptMatlTrades(const std::vector<
       throw cyclus::ValueError("cycamore::FuelFab was overmatched on requests");
     }
   }
+
   req_inventories_.clear();
+
+  // IMPORTANT - each buffer needs to be a single homogenous composition or
+  // the inventory mixing constraints for bids don't work
+  if (fill.count() > 1) {
+    fill.Push(cyclus::toolkit::Squash(fill.PopN(fill.count())));
+  }
+  if (fiss.count() > 1) {
+    fiss.Push(cyclus::toolkit::Squash(fiss.PopN(fiss.count())));
+  }
+  if (topup.count() > 1) {
+    topup.Push(cyclus::toolkit::Squash(topup.PopN(topup.count())));
+  }
 }
 
 std::set<cyclus::BidPortfolio<Material>::Ptr> FuelFab::GetMatlBids(
@@ -339,9 +379,10 @@ void FuelFab::GetMatlTrades(
         responses) {
   using cyclus::Trade;
 
+  // guard against cases where a buffer is empty - this is okay because some trades
+  // may not need that particular buffer.
   double w_fill = 0;
-  if (fill.count() >
-      0) {  // it's possible to only need fissile inventory for a trade
+  if (fill.count() > 0) {
     w_fill = CosiWeight(fill.Peek()->comp(), spectrum);
   }
   double w_topup = 0;
@@ -357,6 +398,7 @@ void FuelFab::GetMatlTrades(
   double tot = 0;
   for (int i = 0; i < trades.size(); i++) {
     Material::Ptr tgt = trades[i].request->target();
+
     double w_tgt = CosiWeight(tgt->comp(), spectrum);
     double qty = trades[i].amt;
     double wfiss = w_fiss;
@@ -371,10 +413,18 @@ void FuelFab::GetMatlTrades(
 
     if (fiss.count() == 0) {
       // use straight filler to satisfy this request
-      responses.push_back(std::make_pair(trades[i], fill.Pop(qty)));
+      double fillqty = qty;
+      if (std::abs(fillqty - fill.quantity()) < cyclus::eps()) {
+        fillqty = std::min(fill.quantity(), qty);
+      }
+      responses.push_back(std::make_pair(trades[i], fill.Pop(fillqty)));
     } else if (fill.count() == 0 && ValidWeights(w_fill, w_tgt, w_fiss)) {
       // use straight fissile to satisfy this request
-      responses.push_back(std::make_pair(trades[i], fiss.Pop(qty)));
+      double fissqty = qty;
+      if (std::abs(fissqty - fiss.quantity()) < cyclus::eps()) {
+        fissqty = std::min(fiss.quantity(), qty);
+      }
+      responses.push_back(std::make_pair(trades[i], fiss.Pop(fissqty)));
     } else if (ValidWeights(w_fill, w_tgt, w_fiss)) {
       double fiss_frac = HighFrac(w_fill, w_tgt, w_fiss);
       double fill_frac = LowFrac(w_fill, w_tgt, w_fiss);
@@ -383,10 +433,19 @@ void FuelFab::GetMatlTrades(
       fill_frac =
           AtomToMassFrac(fill_frac, fill.Peek()->comp(), fiss.Peek()->comp());
 
-      Material::Ptr m = fiss.Pop(fiss_frac * qty);
+      double fissqty = fiss_frac*qty;
+      if (std::abs(fissqty - fiss.quantity()) < cyclus::eps()) {
+        fissqty = std::min(fiss.quantity(), fiss_frac*qty);
+      }
+      double fillqty = fill_frac*qty;
+      if (std::abs(fillqty - fill.quantity()) < cyclus::eps()) {
+        fillqty = std::min(fill.quantity(), fill_frac*qty);
+      }
+
+      Material::Ptr m = fiss.Pop(fissqty);
       // this if block prevents zero qty ResBuf pop exceptions
       if (fill_frac > 0) {
-        m->Absorb(fill.Pop(fill_frac * qty));
+        m->Absorb(fill.Pop(fillqty));
       }
       responses.push_back(std::make_pair(trades[i], m));
     } else {
@@ -397,10 +456,19 @@ void FuelFab::GetMatlTrades(
       fiss_frac =
           AtomToMassFrac(fiss_frac, fiss.Peek()->comp(), topup.Peek()->comp());
 
-      Material::Ptr m = fiss.Pop(fiss_frac * qty);
+      double fissqty = fiss_frac*qty;
+      if (std::abs(fissqty - fiss.quantity()) < cyclus::eps()) {
+        fissqty = std::min(fiss.quantity(), fiss_frac*qty);
+      }
+      double topupqty = topup_frac*qty;
+      if (std::abs(topupqty - topup.quantity()) < cyclus::eps()) {
+        topupqty = std::min(topup.quantity(), topup_frac*qty);
+      }
+
+      Material::Ptr m = fiss.Pop(fissqty);
       // this if block prevents zero qty ResBuf pop exceptions
       if (topup_frac > 0) {
-        m->Absorb(topup.Pop(topup_frac * qty));
+        m->Absorb(topup.Pop(topupqty));
       }
       responses.push_back(std::make_pair(trades[i], m));
     }
@@ -433,6 +501,7 @@ double CosiWeight(cyclus::Composition::Ptr c, const std::string& spectrum) {
     double nu_u233 = 2.5;
     double nu_u235 = 2.43;
     double nu_u238 = 0;
+    double nu_pu241 = nu_pu239;
 
     static std::map<int, double> absorb_xs;
     static std::map<int, double> fiss_xs;
@@ -459,6 +528,8 @@ double CosiWeight(cyclus::Composition::Ptr c, const std::string& spectrum) {
         nu = nu_u233;
       } else if (nuc == 942390000) {
         nu = nu_pu239;
+      } else if (nuc == 942410000) {
+        nu = nu_pu241;
       }
 
       double fiss = 0;
@@ -487,6 +558,7 @@ double CosiWeight(cyclus::Composition::Ptr c, const std::string& spectrum) {
     double nu_u233 = 2.63;
     double nu_u235 = 2.58;
     double nu_u238 = 0;
+    double nu_pu241 = nu_pu239;
 
     static std::map<int, double> absorb_xs;
     static std::map<int, double> fiss_xs;
@@ -517,6 +589,8 @@ double CosiWeight(cyclus::Composition::Ptr c, const std::string& spectrum) {
         nu = nu_u233;
       } else if (nuc == 942390000) {
         nu = nu_pu239;
+      } else if (nuc == 942410000) {
+        nu = nu_pu241;
       }
 
       double fiss = 0;
@@ -545,6 +619,7 @@ double CosiWeight(cyclus::Composition::Ptr c, const std::string& spectrum) {
     double nu_u233 = 2.63;
     double nu_u235 = 2.58;
     double nu_u238 = 0;
+    double nu_pu241 = nu_pu239;
 
     double fiss_u238 = simple_xs(922380000, "fission", spectrum);
     double absorb_u238 = simple_xs(922380000, "absorption", spectrum);
@@ -565,6 +640,8 @@ double CosiWeight(cyclus::Composition::Ptr c, const std::string& spectrum) {
         nu = nu_u233;
       } else if (nuc == 942390000) {
         nu = nu_pu239;
+      } else if (nuc == 942410000) {
+        nu = nu_pu241;
       }
 
       double fiss = 0;

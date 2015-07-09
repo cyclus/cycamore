@@ -461,6 +461,52 @@ TEST(ReactorTests, RecipeChange) {
   EXPECT_TRUE(0 < mq.mass(id("H1")));
 }
 
+TEST(ReactorTests, Retire) {
+  std::string config = 
+     "  <fuel_inrecipes>  <val>lwr_fresh</val>  </fuel_inrecipes>  "
+     "  <fuel_outrecipes> <val>lwr_spent</val>  </fuel_outrecipes>  "
+     "  <fuel_incommods>  <val>enriched_u</val> </fuel_incommods>  "
+     "  <fuel_outcommods> <val>waste</val>      </fuel_outcommods>  "
+     ""
+     "  <cycle_time>7</cycle_time>  "
+     "  <refuel_time>0</refuel_time>  "
+     "  <assem_size>300</assem_size>  "
+     "  <n_assem_fresh>1</n_assem_fresh>  "
+     "  <n_assem_core>3</n_assem_core>  "
+     "  <n_assem_batch>1</n_assem_batch>  "
+     "";
+
+  int dur = 50;
+  int life = 36;
+  cyclus::MockSim sim(cyclus::AgentSpec(":cycamore:Reactor"), config, dur, life);
+  sim.AddSource("enriched_u").Finalize();
+  sim.AddSink("waste").Finalize();
+  sim.AddRecipe("lwr_fresh", c_uox());
+  sim.AddRecipe("lwr_spent", c_spentuox());
+  int id = sim.Run();
+
+  int ncore = 3;
+  int nbatch = 1;
+
+  // reactor should stop requesting new fresh fuel as it approaches retirement
+  int nassem_recv =
+      static_cast<int>(ceil(static_cast<double>(life) / 7.0)) * nbatch +
+      (ncore - nbatch);
+
+  std::vector<Cond> conds;
+  conds.push_back(Cond("ReceiverId", "==", id));
+  QueryResult qr = sim.db().Query("Transactions", &conds);
+  EXPECT_EQ(nassem_recv, qr.rows.size())
+      << "failed to stop ordering near retirement";
+
+  // reactor should discharge all fuel before/by retirement
+  conds.clear();
+  conds.push_back(Cond("SenderId", "==", id));
+  qr = sim.db().Query("Transactions", &conds);
+  EXPECT_EQ(nassem_recv, qr.rows.size())
+      << "failed to discharge all material by retirement time";
+}
+
 } // namespace reactortests
 } // namespace cycamore
 

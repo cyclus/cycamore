@@ -182,7 +182,7 @@ TEST(FuelFabTests, ValidWeights) {
 // request (and receive) a specific recipe for fissile stream correctly.
 TEST(FuelFabTests, FissRecipe) {
   std::string config = 
-     "<fill_commod>dummy</fill_commod>"
+     "<fill_commods> <val>dummy</val> </fill_commods>"
      "<fill_recipe>natu</fill_recipe>"
      "<fill_size>1</fill_size>"
      ""
@@ -217,7 +217,7 @@ TEST(FuelFabTests, FissRecipe) {
 // fissile material inventory.
 TEST(FuelFabTests, MultipleFissStreams) {
   std::string config = 
-     "<fill_commod>dummy</fill_commod>"
+     "<fill_commods> <val>dummy</val> </fill_commods>"
      "<fill_recipe>natu</fill_recipe>"
      "<fill_size>1</fill_size>"
      ""
@@ -258,7 +258,7 @@ TEST(FuelFabTests, MultipleFissStreams) {
 // fissile stream preferences can be specified.
 TEST(FuelFabTests, FissStreamPrefs) {
   std::string config = 
-     "<fill_commod>dummy</fill_commod>"
+     "<fill_commods> <val>dummy</val> </fill_commods>"
      "<fill_recipe>natu</fill_recipe>"
      "<fill_size>1</fill_size>"
      ""
@@ -299,7 +299,7 @@ TEST(FuelFabTests, FissStreamPrefs) {
 // zero throughput must not result in a zero capacity constraint excception.
 TEST(FuelFabTests, ZeroThroughput) {
   std::string config = 
-     "<fill_commod>natu</fill_commod>"
+     "<fill_commods> <val>natu</val> </fill_commods>"
      "<fill_recipe>natu</fill_recipe>"
      "<fill_size>3.9</fill_size>"
      ""
@@ -332,7 +332,7 @@ TEST(FuelFabTests, ZeroThroughput) {
 // enforced after they are full.
 TEST(FuelFabTests, FillAllInventories) {
   std::string config = 
-     "<fill_commod>natu</fill_commod>"
+     "<fill_commods> <val>natu</val> </fill_commods>"
      "<fill_recipe>natu</fill_recipe>"
      "<fill_size>3.9</fill_size>"
      ""
@@ -382,7 +382,7 @@ TEST(FuelFabTests, FillAllInventories) {
 // inventory quantity.
 TEST(FuelFabTests, ProvideStraightFiss_WithZeroFill) {
   std::string config = 
-     "<fill_commod>nothing</fill_commod>"
+     "<fill_commods> <val>nothing</val> </fill_commods>"
      "<fill_recipe>natu</fill_recipe>"
      "<fill_size>100</fill_size>"
      ""
@@ -412,7 +412,7 @@ TEST(FuelFabTests, ProvideStraightFiss_WithZeroFill) {
 
 TEST(FuelFabTests, ProvideStraightFill_ZeroFiss) {
   std::string config = 
-     "<fill_commod>anything</fill_commod>"
+     "<fill_commods> <val>anything</val> </fill_commods>"
      "<fill_recipe>natu</fill_recipe>"
      "<fill_size>100</fill_size>"
      ""
@@ -444,7 +444,7 @@ TEST(FuelFabTests, ProvideStraightFill_ZeroFiss) {
 // requests and with ample material inventory.
 TEST(FuelFabTests, ThroughputLimit) {
   std::string config = 
-     "<fill_commod>anything</fill_commod>"
+     "<fill_commods> <val>anything</val> </fill_commods>"
      "<fill_recipe>natu</fill_recipe>"
      "<fill_size>100</fill_size>"
      ""
@@ -490,7 +490,7 @@ TEST(FuelFabTests, ThroughputLimit) {
 // supplied fuel has proper equivalence weights as requested.
 TEST(FuelFabTests, CorrectMixing) {
   std::string config = 
-     "<fill_commod>natu</fill_commod>"
+     "<fill_commods> <val>natu</val> </fill_commods>"
      "<fill_recipe>natu</fill_recipe>"
      "<fill_size>100</fill_size>"
      ""
@@ -528,19 +528,19 @@ TEST(FuelFabTests, CorrectMixing) {
   conds[0] = Cond("Commodity", "==", std::string("natu"));
   qr = sim.db().Query("Transactions", &conds);
   m = sim.GetMaterial(qr.GetVal<int>("ResourceId"));
-  EXPECT_NEAR(9.73958936, m->quantity(), 1e-6) << "mixed wrong amount of Nat. U stream";
+  EXPECT_NEAR(9.7463873197, m->quantity(), 1e-6) << "mixed wrong amount of Nat. U stream";
 
   conds[0] = Cond("Commodity", "==", std::string("pustream"));
   qr = sim.db().Query("Transactions", &conds);
   m = sim.GetMaterial(qr.GetVal<int>("ResourceId"));
-  EXPECT_NEAR(0.2604106, m->quantity(), 1e-6) << "mixed wrong amount of Pu stream";
+  EXPECT_NEAR(0.25361268029, m->quantity(), 1e-6) << "mixed wrong amount of Pu stream";
 }
 
 // fuel is requested requiring more filler than is available with plenty of
 // fissile.
 TEST(FuelFabTests, FillConstrained) {
   std::string config = 
-     "<fill_commod>natu</fill_commod>"
+     "<fill_commods> <val>natu</val> </fill_commods>"
      "<fill_recipe>natu</fill_recipe>"
      "<fill_size>1</fill_size>"
      ""
@@ -585,7 +585,7 @@ TEST(FuelFabTests, FillConstrained) {
 // plenty of filler.
 TEST(FuelFabTests, FissConstrained) {
   std::string config = 
-     "<fill_commod>natu</fill_commod>"
+     "<fill_commods> <val>natu</val> </fill_commods>"
      "<fill_recipe>natu</fill_recipe>"
      "<fill_size>10000</fill_size>"
      ""
@@ -629,7 +629,7 @@ TEST(FuelFabTests, FissConstrained) {
 // swap to topup inventory because fissile has too low reactivity.
 TEST(FuelFabTests, SwapTopup) {
   std::string config = 
-     "<fill_commod>natu</fill_commod>"
+     "<fill_commods> <val>natu</val> </fill_commods>"
      "<fill_recipe>natu</fill_recipe>"
      "<fill_size>10000</fill_size>"
      ""
@@ -679,7 +679,7 @@ TEST(FuelFabTests, SwapTopup) {
 
 TEST(FuelFabTests, SwapTopup_ZeroFill) {
   std::string config = 
-     "<fill_commod>natu</fill_commod>"
+     "<fill_commods> <val>natu</val> </fill_commods>"
      "<fill_recipe>natu</fill_recipe>"
      "<fill_size>0</fill_size>"
      ""
@@ -734,7 +734,7 @@ TEST(FuelFabTests, SwapTopup_ZeroFill) {
 // fiss).
 TEST(FuelFabTests, SwapTopup_TopupConstrained) {
   std::string config = 
-     "<fill_commod>natu</fill_commod>"
+     "<fill_commods> <val>natu</val> </fill_commods>"
      "<fill_recipe>natu</fill_recipe>"
      "<fill_size>10000</fill_size>"
      ""
@@ -788,7 +788,7 @@ TEST(FuelFabTests, SwapTopup_TopupConstrained) {
 // small fiss inventory.
 TEST(FuelFabTests, SwapTopup_FissConstrained) {
   std::string config = 
-     "<fill_commod>natu</fill_commod>"
+     "<fill_commods> <val>natu</val> </fill_commods>"
      "<fill_recipe>natu</fill_recipe>"
      "<fill_size>0</fill_size>"
      ""
@@ -837,6 +837,52 @@ TEST(FuelFabTests, SwapTopup_FissConstrained) {
   EXPECT_NEAR(max_provide, m->quantity(), 1e-10) << "matched trade uses more fiss than available";
 }
 
+// Before this test and a fix, the fuel fab (partially) assumed each entire material
+// buffer had the same composition as the material on top of the buffer when
+// calculating stream mixing ratios for material to supply.  This problem was
+// compounded by the fact that material weights are computed on an atom basis
+// and mixing is done on a mass basis - corresponding conversions resulted in
+// the fab being matched for more than it could actually supply - due to
+// thinking it had an inventory of higher quality material than was actually
+// the case.  This test makes sure that doesn't happen again.
+TEST(FuelFabTests, HomogenousBuffers) {
+  std::string config = 
+     "<fill_commods> <val>natu</val> </fill_commods>"
+     "<fill_recipe>natu</fill_recipe>"
+     "<fill_size>40</fill_size>"
+     ""
+     "<fiss_commods> <val>stream1</val> </fiss_commods>"
+     "<fiss_size>4</fiss_size>"
+     "<fiss_recipe>spentuox</fiss_recipe>"
+     ""
+     "<outcommod>out</outcommod>"
+     "<spectrum>thermal</spectrum>"
+     "<throughput>1e10</throughput>"
+     ;
+
+  CompMap m;
+  m[id("u235")] = 7;
+  m[id("u238")] = 86;
+  // the zr90 is important to force the atom-mass basis conversion to push the
+  // dre to overmatch in the direction we want.
+  m[id("zr90")] = 7;
+  Composition::Ptr c = Composition::CreateFromMass(m);
+
+  int simdur = 5;
+  cyclus::MockSim sim(cyclus::AgentSpec(":cycamore:FuelFab"), config, simdur);
+  sim.AddSource("stream1").start(0).lifetime(1).capacity(.01).recipe("special").Finalize();
+  sim.AddSource("stream1").start(1).lifetime(1).capacity(3.98).recipe("natu").Finalize();
+  sim.AddSource("natu").lifetime(1).Finalize();
+  sim.AddSink("out").start(2).capacity(4).lifetime(1).recipe("uox").Finalize();
+  sim.AddSink("out").start(2).capacity(4).lifetime(1).recipe("uox").Finalize();
+  sim.AddRecipe("uox", c_uox());
+  sim.AddRecipe("spentuox", c_pustream());
+  sim.AddRecipe("natu", c_natu());
+  sim.AddRecipe("special", c);
+  ASSERT_NO_THROW(sim.Run());
+}
+
 } // namespace fuelfabtests
 } // namespace cycamore
+
 
