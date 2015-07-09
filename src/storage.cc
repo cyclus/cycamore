@@ -7,7 +7,7 @@ namespace storage {
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 Storage::Storage(cyclus::Context* ctx)
     : cyclus::Facility(ctx) {
-  cyclus::Warn<cyclus::EXPERIMENTAL_WARNING>("the Storage is experimental.");
+  cyclus::Warn<cyclus::EXPERIMENTAL_WARNING>("The Storage Facility is experimental.");
     };
 
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -153,7 +153,6 @@ void Storage::ProcessMat_(double cap){
     try {
       double to_pop = std::min(cap, processing[t].quantity());
 
-      // pop appropriate amount of material from processing 
       // Push process ready material to stocks
       stocks.Push(processing[t].Pop(to_pop));
 

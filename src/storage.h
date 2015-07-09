@@ -14,19 +14,21 @@ class Storage;
 namespace storage {
 /// @class Storage
 ///
-/// This Facility is intended to store resources for a user specified process
-/// time. The Storage class inherits from the Facility class and is
+/// This Facility is intended to hold materials for a user specified
+/// amount of time in order to model a storage facility with a certain
+/// process time or holdup time.
+/// The Storage class inherits from the Facility class and is
 /// dynamically loaded by the Agent class when requested.
 ///
 /// @section intro Introduction
 /// This Agent was initially developed to support the fco code-to-code 
-/// comparsion.
+/// comparison.
 /// It's very similar to the "NullFacility" of years 
-/// past. Its purpose is to store commodities and reintroduce them to the simulation 
+/// past. Its purpose is to hold materials and release them only  
 /// after some period of delay time.
 ///
 /// @section agentparams Agent Parameters
-/// in_commod is a string naming the commodity that this facility recieves
+/// in_commod is a string naming the commodity that this facility receives
 /// out_commod is a string naming the commodity that in_commod is stocks into
 /// process_time is the minimum number of timesteps between receiving and offering
 /// in_recipe (optional) describes the incoming resource by recipe
@@ -42,7 +44,7 @@ namespace storage {
 ///
 /// Tock:
 /// On the tock, any material that has been waiting for long enough (delay 
-/// time) is stocks and placed in the stocks buffer.
+/// time) is placed in the stocks buffer.
 ///
 /// Any brand new inventory that was received in this timestep is placed into 
 /// the processing queue to begin waiting. 
@@ -78,7 +80,7 @@ class Storage
   #pragma cyclus note {"doc": "A storage facility converts from one " \
                               "commodity to another, with an optional delay."}
 
-  /// A verbose printer for the Storage
+  /// A verbose printer for the Storage Facility
   virtual std::string str();
 
   // --- Facility Members ---
