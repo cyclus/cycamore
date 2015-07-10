@@ -3,6 +3,7 @@
 
 #include <string>
 #include "cyclus.h"
+#include "cycamore_version.h"
 
 namespace cycamore {
 
@@ -105,6 +106,8 @@ class FuelFab : public cyclus::Facility {
  public:
   FuelFab(cyclus::Context* ctx);
   virtual ~FuelFab(){};
+
+  virtual std::string version() { return CYCAMORE_VERSION; }
 
 #pragma cyclus
 

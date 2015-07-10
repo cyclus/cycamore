@@ -4,6 +4,7 @@
 #include <string>
 
 #include "cyclus.h"
+#include "cycamore_version.h"
 
 namespace cycamore {
 
@@ -50,6 +51,8 @@ class NatUConverter : public cyclus::Converter<cyclus::Material> {
   NatUConverter(double feed_commod, double tails) : feed_(feed_commod),
     tails_(tails) {}
   virtual ~NatUConverter() {}
+
+  virtual std::string version() { return CYCAMORE_VERSION; }
 
   /// @brief provides a conversion for the amount of natural Uranium required
   virtual double convert(

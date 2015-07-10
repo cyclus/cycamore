@@ -5,6 +5,7 @@
 #include <vector>
 
 #include "cyclus.h"
+#include "cycamore_version.h"
 
 namespace cycamore {
 
@@ -27,6 +28,8 @@ class Source : public cyclus::Facility,
   Source(cyclus::Context* ctx);
 
   virtual ~Source();
+
+  virtual std::string version() { return CYCAMORE_VERSION; }
 
   #pragma cyclus note { \
     "doc": "This facility acts as a source of material with a fixed throughput (per\n" \

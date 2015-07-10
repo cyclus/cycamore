@@ -83,12 +83,28 @@ MACRO(USE_CYCLUS lib_root src_root)
         SET(INCL_ARGS "${INCL_ARGS}:${DIR}")
     ENDFOREACH(DIR ${DIRS})
 
+
     # set cpp path
     IF("${CMAKE_CXX_COMPILER_ID}" STREQUAL "Clang")
         SET(PREPROCESSOR "--cpp-path=clang++")
     ELSE()
         SET(PREPROCESSOR "--cpp-path=cpp")
     ENDIF()
+
+    # copy custom headers
+    FOREACH(fname ${CUSTOM_HEADERS})
+        SET(src "${CMAKE_CURRENT_SOURCE_DIR}/${fname}")
+        SET(dst "${BUILD_DIR}/${fname}")
+        MESSAGE(STATUS "Copying ${src} to ${dst}.")
+        EXECUTE_PROCESS(COMMAND "cp" "${src}" "${dst}")
+        ADD_CUSTOM_COMMAND(
+            OUTPUT "${dst}"
+            COMMAND "cp" "${src}" "${dst}"
+            DEPENDS "${src}"
+            COMMENT "Copying ${src} to ${dst}."
+            )
+    ENDFOREACH()
+    MESSAGE("dstcustomheaders: ${CUSTOM_HEADERS}")
 
     # process header
     SET(ORIG "--pass3-use-orig")
@@ -123,6 +139,7 @@ MACRO(USE_CYCLUS lib_root src_root)
             DEPENDS ${HIN}
             DEPENDS ${CCIN}
             DEPENDS ${CYCPP}
+            DEPENDS ${CUSTOM_HEADERS}
             COMMENT "Executing ${CYCPP} ${HIN} ${PREPROCESSOR} ${HFLAG} ${ORIG} ${INCL_ARGS}"
             COMMENT "Executing ${CYCPP} ${CCIN} ${PREPROCESSOR} ${CCFLAG} ${ORIG} ${INCL_ARGS}"
             )
@@ -137,6 +154,7 @@ MACRO(USE_CYCLUS lib_root src_root)
             COMMAND ${CYCPP} ${CCIN} ${PREPROCESSOR} ${CCFLAG} ${ORIG} ${INCL_ARGS}
             DEPENDS ${CCIN}
             DEPENDS ${CYCPP}
+            DEPENDS ${CUSTOM_HEADERS}
             COMMENT "Executing ${CYCPP} ${CCIN} ${PREPROCESSOR} ${CCFLAG} ${ORIG} ${INCL_ARGS}"
             )
     ENDIF(EXISTS "${HIN}")
@@ -161,6 +179,7 @@ MACRO(USE_CYCLUS lib_root src_root)
                 DEPENDS ${CCIN}
                 DEPENDS ${HTIN}
                 DEPENDS ${CCTIN}
+                DEPENDS ${CUSTOM_HEADERS}
                 COMMENT "Copying ${HTIN} to ${HTOUT}."
                 COMMENT "Copying ${CCTIN} to ${CCTOUT}."
                 )
@@ -176,6 +195,7 @@ MACRO(USE_CYCLUS lib_root src_root)
             COMMAND ${CMD} ${CCTIN} ${CCTOUT}
             DEPENDS ${CCTIN}
             DEPENDS ${CCIN}
+            DEPENDS ${CUSTOM_HEADERS}
             COMMENT "Copying ${CCTIN} to ${CCTOUT}."
             )
         SET("${lib_root}_TEST_CC" "${${lib_root}_TEST_CC}" "${CCOUT}" "${CCTOUT}"

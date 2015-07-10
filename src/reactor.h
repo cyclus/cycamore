@@ -2,6 +2,7 @@
 #define CYCAMORE_SRC_REACTOR_H_
 
 #include "cyclus.h"
+#include "cycamore_version.h"
 
 namespace cycamore {
 
@@ -107,6 +108,8 @@ class Reactor : public cyclus::Facility,
  public:
   Reactor(cyclus::Context* ctx);
   virtual ~Reactor(){};
+
+  virtual std::string version() { return CYCAMORE_VERSION; }
 
   virtual void Tick();
   virtual void Tock();
