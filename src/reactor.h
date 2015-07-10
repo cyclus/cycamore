@@ -196,7 +196,8 @@ class Reactor : public cyclus::Facility,
     "uilabel": "Fresh Fuel Preference List", \
     "doc": "The preference for each type of fresh fuel requested corresponding"\
            " to each input commodity (same order).  If no preferences are " \
-           "specified, zero is used for all fuel requests (default).", \
+           "specified, cyclus::kDefaultPref is used for all fuel " \
+           "requests (default).", \
   }
   std::vector<double> fuel_prefs;
   #pragma cyclus var { \
