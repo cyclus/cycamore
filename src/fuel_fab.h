@@ -199,9 +199,10 @@ class FuelFab : public cyclus::Facility {
   #pragma cyclus var { \
     "doc": "Top-up material stream request preference.", \
     "uilabel": "Top-up Stream Preference", \
-    "default": 0, \
+    "default": 0.01, \
   }
   double topup_pref;
+  
   #pragma cyclus var { \
     "doc": "Name of recipe to be used in top-up material stream requests." \
            " This MUST be set if 'topup_size > 0'.", \

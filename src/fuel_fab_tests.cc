@@ -267,7 +267,7 @@ TEST(FuelFabTests, FissStreamPrefs) {
      "<fill_size>1</fill_size>"
      ""
      "<fiss_commods>      <val>stream1</val> <val>stream2</val> <val>stream3</val> </fiss_commods>"
-     "<fiss_commod_prefs> <val>1.0</val>     <val>0.0</val>     <val>2.0</val> </fiss_commod_prefs>"
+     "<fiss_commod_prefs> <val>1.0</val>     <val>0.1</val>     <val>2.0</val> </fiss_commod_prefs>"
      "<fiss_size>1.5</fiss_size>"
      ""
      "<outcommod>dummyout</outcommod>"
