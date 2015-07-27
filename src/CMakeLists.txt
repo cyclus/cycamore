@@ -3,7 +3,7 @@
 EXECUTE_PROCESS(COMMAND git describe --tags OUTPUT_VARIABLE cycamore_version OUTPUT_STRIP_TRAILING_WHITESPACE)
 CONFIGURE_FILE(cycamore_version.h.in "${CMAKE_CURRENT_SOURCE_DIR}/cycamore_version.h" @ONLY)
 
-SET(CUSTOM_HEADERS "cycamore_version.h")
+SET(CYCLUS_CUSTOM_HEADERS "cycamore_version.h")
 
 USE_CYCLUS("cycamore" "reactor")
 
