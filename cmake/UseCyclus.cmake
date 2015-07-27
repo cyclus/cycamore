@@ -38,6 +38,10 @@
 #   test_driver : (optional) the custom test driver to use with unit tests,
 #                 or NONE
 #
+# The CYCLUS_CUSTOM_HEADERS variable can optionally be set to contain one or
+# more (space separated) header files before calling the USE_CYCLUS
+# macro to add shared headers used by the archetype library being built.
+#
 # The following vars are updated.
 #
 # CYCLUS_LIBRARIES   : updated to include <lib_root>_LIB
