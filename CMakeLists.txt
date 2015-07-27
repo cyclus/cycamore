@@ -81,7 +81,6 @@ IF(NOT CYCLUS_DOC_ONLY)
     SET(LIBS ${LIBS} ${CYCLUS_CORE_LIBRARIES})
 
     # Include macros installed with cyclus core
-    SET(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} ${CYCLUS_CORE_INCLUDE_DIR}/../../share/cyclus/cmake)
     INCLUDE(UseCyclus)
 
     # Find LibXML++ and dependencies
