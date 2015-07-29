@@ -6,6 +6,7 @@
 #include <vector>
 
 #include "cyclus.h"
+#include "cycamore_version.h"
 
 // forward declarations
 namespace cycamore {
@@ -42,6 +43,8 @@ class GrowthRegion : public cyclus::Region {
 
   /// The default destructor for the GrowthRegion
   virtual ~GrowthRegion();
+
+  virtual std::string version() { return CYCAMORE_VERSION; }
 
   #pragma cyclus
 
