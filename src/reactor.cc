@@ -113,6 +113,17 @@ void Reactor::Tick() {
   if (retired()) {
     Record("RETIRED", "");
 
+    // record the last time series entry if the reactor was operating at the
+    // time of retirement.
+    if (exit_time() == context()->time()) {
+      if (cycle_step > 0 && cycle_step <= cycle_time &&
+          core.count() == n_assem_core) {
+        cyclus::toolkit::RecordTimeSeries<cyclus::toolkit::POWER>(this, power_cap);
+      } else {
+        cyclus::toolkit::RecordTimeSeries<cyclus::toolkit::POWER>(this, 0);
+      }
+    }
+
     if (context()->time() == exit_time()) { // only need to transmute once
       Transmute(ceil(static_cast<double>(n_assem_core) / 2.0));
     }
@@ -196,7 +207,7 @@ std::set<cyclus::RequestPortfolio<Material>::Ptr> Reactor::GetMatlRequests() {
     double n_cycles_left = static_cast<double>(t_left - t_left_cycle) /
                          static_cast<double>(cycle_time + refuel_time);
     n_cycles_left = ceil(n_cycles_left);
-    int n_need = std::max(0.0, n_cycles_left * n_assem_batch - n_assem_fresh);
+    int n_need = std::max(0.0, n_cycles_left * n_assem_batch - n_assem_fresh + n_assem_core - core.count());
     n_assem_order = std::min(n_assem_order, n_need);
   }
 
