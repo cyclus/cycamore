@@ -142,7 +142,7 @@ class Separations : public cyclus::Facility {
     "doc" : "Maximum quantity of feed material that can be processed per time "\
             "step.", \
     "uilabel": "Maximum Separations Throughput", \
-    "units": "kg", \
+    "units": "kg/(time step)", \
   }
   double throughput;
 
