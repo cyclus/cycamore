@@ -113,6 +113,14 @@ void Reactor::Tick() {
   if (retired()) {
     Record("RETIRED", "");
 
+    // record last power entry
+    if (cycle_step >= 0 && cycle_step < cycle_time &&
+        core.count() + fresh.count() >= n_assem_core) {
+      cyclus::toolkit::RecordTimeSeries<cyclus::toolkit::POWER>(this, power_cap);
+    } else {
+      cyclus::toolkit::RecordTimeSeries<cyclus::toolkit::POWER>(this, 0);
+    }
+
     if (context()->time() == exit_time()) { // only need to transmute once
       Transmute(ceil(static_cast<double>(n_assem_core) / 2.0));
     }
@@ -127,6 +135,7 @@ void Reactor::Tick() {
     while (fresh.count() > 0 && spent.space() >= assem_size) {
       spent.Push(fresh.Pop());
     }
+
     return;
   }
 
