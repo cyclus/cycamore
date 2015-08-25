@@ -199,7 +199,7 @@ class FuelFab : public cyclus::Facility {
   #pragma cyclus var { \
     "doc": "Top-up material stream request preference.", \
     "uilabel": "Top-up Stream Preference", \
-    "default": 0.01, \
+    "default": 1.0, \
   }
   double topup_pref; // default must be in range (0, cyclus::kDefaultPref)
   
