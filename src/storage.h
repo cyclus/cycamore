@@ -2,6 +2,7 @@
 #define CYCLUS_STORAGES_STORAGE_H_
 
 #include <string>
+#include <list>
 
 #include "cyclus.h"
 
@@ -16,7 +17,7 @@ namespace storage {
 ///
 /// This Facility is intended to hold materials for a user specified
 /// amount of time in order to model a storage facility with a certain
-/// process time or holdup time.
+/// residence time or holdup time.
 /// The Storage class inherits from the Facility class and is
 /// dynamically loaded by the Agent class when requested.
 ///
@@ -30,7 +31,7 @@ namespace storage {
 /// @section agentparams Agent Parameters
 /// in_commod is a string naming the commodity that this facility receives
 /// out_commod is a string naming the commodity that in_commod is stocks into
-/// process_time is the minimum number of timesteps between receiving and offering
+/// residence_time is the minimum number of timesteps between receiving and offering
 /// in_recipe (optional) describes the incoming resource by recipe
 /// 
 /// @section optionalparams Optional Parameters
@@ -65,15 +66,8 @@ class Storage
   : public cyclus::Facility,
     public cyclus::toolkit::CommodityProducer {
  public:  
-  /// Constructor for Storage Class
   /// @param ctx the cyclus context for access to simulation-wide parameters
   Storage(cyclus::Context* ctx);
-
-  /// The Prime Directive
-  /// Generates code that handles all input file reading and restart operations
-  /// (e.g., reading from the database, instantiating a new object, etc.).
-  /// @warning The Prime Directive must have a space before it! (A fix will be
-  /// in 2.0 ^TM)
   
   #pragma cyclus decl
 
@@ -95,14 +89,11 @@ class Storage
   /// The handleTick function specific to the Storage.
   virtual void Tock();
 
-  /* --- */
-
   /* --- Storage Members --- */
 
-  /* --- */
   /// @brief the minimum processing time required for a full process
-  inline void process_time_(int t) { process_time = t; }
-  inline int process_time_() const { return process_time; }
+  inline void residence_time_(int t) { residence_time = t; }
+  inline int residence_time_() const { return residence_time; }
 
   /// @brief the maximum amount allowed in inventory
   inline void max_inv_size_(double c) { max_inv_size = c; }
@@ -112,13 +103,9 @@ class Storage
   inline void throughput_(double c) { throughput = c; }
   inline double throughput_() const { return throughput; }
 
-  /// @brief the cost per unit out_commod
-  inline void cost_(double c) { cost = c; }
-  inline double cost_() const { return cost; }
-
   /// @brief the in commodity
-  inline void in_commod_(std::string c) { in_commod = c; }
-  inline std::string in_commod_() const { return in_commod; }
+  inline void in_commods_(std::vector<std::string> c) { in_commods = c; }
+  inline std::vector<std::string> in_commods_() const { return in_commods; }
 
   /// @brief the out commodity
   inline void out_commod_(std::string c) { out_commod = c; }
@@ -130,10 +117,14 @@ class Storage
 
   /// @brief current maximum amount that can be added to processing
   inline double current_capacity() const { 
-    return std::min(throughput, max_inv_size - inventory.quantity()); }
+    return (max_inv_size - processing.quantity() - stocks.quantity()); }
+
+  /// @brief the batch handling identifier
+  inline void batch_handling_(std::string c) { batch_handling = c; }
+  inline std::string batch_handling_() const { return batch_handling; }
 
   /// @brief returns the time key for ready materials
-  int ready(){ return context()->time() - process_time ; }
+  int ready_time(){ return context()->time() - residence_time; }
 
  protected:
   ///   @brief adds a material into the incoming commodity inventory
@@ -144,32 +135,26 @@ class Storage
   /// @brief Move all unprocessed inventory to processing
   void BeginProcessing_();
 
-  /// @brief Move one ready resource in processing
-  /// @param cap current conversion capacity 
+  /// @brief Move as many ready resources as allowable into stocks
+  /// @param cap current throughput capacity 
   void ProcessMat_(double cap);
 
   /// @brief any ready resources remaining in processing get pushed off to next timestep
   /// @param time the timestep whose buffer remains unprocessed 
-  void AdvanceUnconverted_(int time);
+  // void AdvanceUnconverted_(int time);
 
-  /// @brief report the resource quantity in processing at a certain time
+  /// @brief move ready resources from processing to ready at a certain time
   /// @param time the time of interest
-  double ProcessingAmt_(int time);
-
-  /// @brief this facility's commodity-recipe context
-  inline void crctx(const cyclus::toolkit::CommodityRecipeContext& crctx) {
-    crctx_ = crctx;
-  }
-
-  inline cyclus::toolkit::CommodityRecipeContext crctx() const {
-    return crctx_;
-  }
+  void ReadyMatl_(int time);
 
   /* --- Module Members --- */
 
   #pragma cyclus var {"tooltip":"input commodity",\
                       "doc":"commodity accepted by this facility"}
-  std::string in_commod;
+  std::vector<std::string> in_commods;
+
+  #pragma cyclus var {"default": []}
+  std::vector<double> in_commod_prefs;
 
   #pragma cyclus var {"tooltip":"output commodity",\
                       "doc":"commodity produced by this facility"}
@@ -181,33 +166,36 @@ class Storage
   std::string in_recipe;
 
   #pragma cyclus var {"default": 0,\
-                      "tooltip":"process time (timesteps)",\
+                      "tooltip":"residence time (timesteps)",\
                       "doc":"the minimum holding time for a received commodity (timesteps)."}
-  int process_time;
+  int residence_time;
 
   #pragma cyclus var {"default": 1e299,\
                      "tooltip":"throughput per timestep (kg)",\
                      "doc":"the max amount that can be processed per timestep (kg)"}
   double throughput;
 
-  #pragma cyclus var {"default": 0,\
-                     "tooltip":"cost per kg of production",\
-                     "doc":"cost per kg of produced out_commod"}
-  double cost;
-
   #pragma cyclus var {"default": 1e299,\
                       "tooltip":"maximum inventory size (kg)",\
                       "doc":"the amount of material that can be in storage"}
   double max_inv_size; 
 
+  #pragma cyclus var {"default": "discrete",\
+                      "tooltip":"Determines how Storage handles batches",\
+                      "doc":"Determines if Storage will divide resource objects {discrete} or {divide}"}
+  std::string batch_handling;                    
+
 
   cyclus::toolkit::ResBuf<cyclus::Material> inventory;
   cyclus::toolkit::ResBuf<cyclus::Material> stocks;
+  cyclus::toolkit::ResBuf<cyclus::Material> ready;
 
-  //// @brief map from ready time to resource buffers
-  std::map<int, cyclus::toolkit::ResBuf<cyclus::Material> > processing;
+  //// list of input times for materials entering the processing buffer
+  #pragma cyclus var{"default": [],\
+                      "internal": True}
+  std::list<int> entry_times;
 
-  cyclus::toolkit::CommodityRecipeContext crctx_;
+  cyclus::toolkit::ResBuf<cyclus::Material> processing;
 
   //// A policy for requesting material
   cyclus::toolkit::MatlBuyPolicy buy_policy;

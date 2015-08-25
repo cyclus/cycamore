@@ -21,18 +21,17 @@ class StorageTest : public ::testing::Test {
   void InitParameters();
   void SetUpStorage();
   void TestInitState(storage::Storage* fac);
-  void TestRequest(storage::Storage* fac, double cap);
   void TestAddMat(storage::Storage* fac, 
       cyclus::Material::Ptr mat);
   void TestBuffers(storage::Storage* fac, double inv, double 
-      proc, double stocks);
+      proc, double ready, double stocks);
   void TestStocks(storage::Storage* fac, cyclus::CompMap v);
 
   std::string in_c1, out_c1;
   std::string in_r1;
 
-  int process_time;
-  double throughput, max_inv_size, cost;
+  int residence_time;
+  double throughput, max_inv_size, in_commod_prefs;
 };
 } // namespace storage
 #endif // STORAGE_TESTS_H_
