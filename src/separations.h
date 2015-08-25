@@ -113,7 +113,8 @@ class Separations : public cyclus::Facility {
     "uilabel": "Feed Commodity Preference List", \
     "doc": "Feed commodity request preferences for each of the given feed " \
            "commodities (same order)." \
-           " If unspecified, default is to use zero for all preferences.", \
+           " If unspecified, default is to use 1.0 for all "\
+           "preferences.",                                                     \
   }
   std::vector<double> feed_commod_prefs;
 
