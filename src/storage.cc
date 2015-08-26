@@ -73,7 +73,7 @@ std::string Storage::str() {
   }
   ss << cyclus::Facility::str();
   ss << " has facility parameters {" << "\n"
-//     << "     Input Commodities = " << in_commods_() << ",\n"
+     << "     Input Commodities = " << in_commods_() << ",\n"
      << "     Output Commodity = " << out_commod_() << ",\n"
      << "     Residence Time = " << residence_time_() << ",\n"
      << "     Throughput = " << throughput_() << ",\n"
@@ -176,10 +176,9 @@ void Storage::ProcessMat_(double cap){
       else {
         stocks.Push(ready.Pop(max_pop));
       }
-
-      //AdvanceUnconverted_(t);
+      
       LOG(cyclus::LEV_INFO1, "ComCnv") << "Storage " << prototype() 
-                                        << " moved resources " 
+                                        << " moved resources" 
                                         << " from ready to stocks" 
                                         << " at t= " << context()->time();
     } catch (cyclus::Error& e) {
@@ -202,22 +201,6 @@ void Storage::ReadyMatl_(int time) {
 
   ready.Push(processing.PopN(to_ready));
 }
-
-//- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-// void Storage::AdvanceUnconverted_(int time){
-  // using cyclus::Material;
-  // using cyclus::ResCast;
-
-  // double to_pop = ProcessingAmt_(time);
-  // if ( to_pop > 0 ) {
-  //   try {
-  //     processing[time+1].Push(processing[time].Pop(to_pop));
-  //   } catch (cyclus::Error& e) {
-  //     e.msg(Agent::InformErrorMsg(e.msg()));
-  //     throw e;
-  //   }
-  // }
-// }
 
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 extern "C" cyclus::Agent* ConstructStorage(cyclus::Context* ctx) {
