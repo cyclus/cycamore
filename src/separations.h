@@ -82,7 +82,7 @@ class Separations : public cyclus::Facility {
       std::vector<std::pair<cyclus::Trade<cyclus::Material>,
                             cyclus::Material::Ptr> >& responses);
 
-  bool CheckDecommissionCondition();
+  virtual bool CheckDecommissionCondition();
 
   #pragma cyclus clone
   #pragma cyclus initfromcopy
