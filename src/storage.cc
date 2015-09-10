@@ -73,7 +73,6 @@ std::string Storage::str() {
   }
   ss << cyclus::Facility::str();
   ss << " has facility parameters {" << "\n"
-     << "     Input Commodities = " << in_commods_() << ",\n"
      << "     Output Commodity = " << out_commod_() << ",\n"
      << "     Residence Time = " << residence_time_() << ",\n"
      << "     Throughput = " << throughput_() << ",\n"
@@ -176,7 +175,7 @@ void Storage::ProcessMat_(double cap){
       else {
         stocks.Push(ready.Pop(max_pop));
       }
-      
+
       LOG(cyclus::LEV_INFO1, "ComCnv") << "Storage " << prototype() 
                                         << " moved resources" 
                                         << " from ready to stocks" 
