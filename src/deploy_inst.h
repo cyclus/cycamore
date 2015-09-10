@@ -6,6 +6,7 @@
 #include <map>
 
 #include "cyclus.h"
+#include "cycamore_version.h"
 
 namespace cycamore {
 
@@ -34,6 +35,8 @@ class DeployInst : public cyclus::Institution {
   DeployInst(cyclus::Context* ctx);
 
   virtual ~DeployInst();
+
+  virtual std::string version() { return CYCAMORE_VERSION; }
 
   #pragma cyclus
 

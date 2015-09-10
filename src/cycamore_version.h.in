@@ -4,5 +4,6 @@
 #define CYCAMORE_VERSION_MAJOR 1
 #define CYCAMORE_VERSION_MINOR 1
 #define CYCAMORE_VERSION_MICRO 1
+#define CYCAMORE_VERSION "@cycamore_version@"
 
 #endif  // CYCAMORE_SRC_VERSION_H_

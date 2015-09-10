@@ -3,6 +3,7 @@
 
 #include <string>
 #include "cyclus.h"
+#include "cycamore_version.h"
 
 namespace cycamore {
 
@@ -106,6 +107,8 @@ class FuelFab : public cyclus::Facility {
   FuelFab(cyclus::Context* ctx);
   virtual ~FuelFab(){};
 
+  virtual std::string version() { return CYCAMORE_VERSION; }
+
 #pragma cyclus
 
   virtual void Tick(){};
@@ -196,9 +199,10 @@ class FuelFab : public cyclus::Facility {
   #pragma cyclus var { \
     "doc": "Top-up material stream request preference.", \
     "uilabel": "Top-up Stream Preference", \
-    "default": 0, \
+    "default": 1.0, \
   }
-  double topup_pref;
+  double topup_pref; // default must be in range (0, cyclus::kDefaultPref)
+  
   #pragma cyclus var { \
     "doc": "Name of recipe to be used in top-up material stream requests." \
            " This MUST be set if 'topup_size > 0'.", \

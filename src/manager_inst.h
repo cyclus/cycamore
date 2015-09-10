@@ -2,6 +2,7 @@
 #define CYCAMORE_SRC_MANAGER_INST_H_
 
 #include "cyclus.h"
+#include "cycamore_version.h"
 
 namespace cycamore {
 
@@ -19,6 +20,8 @@ class ManagerInst
 
   /// Default destructor
   virtual ~ManagerInst();
+
+  virtual std::string version() { return CYCAMORE_VERSION; }
 
   #pragma cyclus
 
