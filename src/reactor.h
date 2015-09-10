@@ -2,6 +2,7 @@
 #define CYCAMORE_SRC_REACTOR_H_
 
 #include "cyclus.h"
+#include "cycamore_version.h"
 
 namespace cycamore {
 
@@ -108,6 +109,8 @@ class Reactor : public cyclus::Facility,
   Reactor(cyclus::Context* ctx);
   virtual ~Reactor(){};
 
+  virtual std::string version() { return CYCAMORE_VERSION; }
+
   virtual void Tick();
   virtual void Tock();
   virtual void EnterNotify();
@@ -193,7 +196,8 @@ class Reactor : public cyclus::Facility,
     "uilabel": "Fresh Fuel Preference List", \
     "doc": "The preference for each type of fresh fuel requested corresponding"\
            " to each input commodity (same order).  If no preferences are " \
-           "specified, zero is used for all fuel requests (default).", \
+           "specified, 1.0 is used for all fuel " \
+           "requests (default).", \
   }
   std::vector<double> fuel_prefs;
   #pragma cyclus var { \
