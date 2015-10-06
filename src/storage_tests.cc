@@ -376,15 +376,16 @@ TEST_F(StorageTest,DifferentRecipe){
   EXPECT_NO_THROW(src_facility_->Tock());
   TestBuffers(src_facility_,0,0,0,cap);
 }
-/*
+
 TEST_F(StorageTest, BehaviorTest){
   // Verify Storage behavior
 
   std::string config =
     "   <in_commods> <val>spent_fuel</val> </in_commods> "
-    "   <out_commods> <val>dry_spent</val> </out_commods> ";
+    "   <out_commods> <val>dry_spent</val> </out_commods> "
+    "   <residence_time>2</residence_time>";
 
-  int simdur = 1;
+  int simdur = 3;
 
   cyclus::MockSim sim(cyclus::AgentSpec (":cycamore:Storage"), config, simdur);
 
@@ -401,7 +402,7 @@ TEST_F(StorageTest, BehaviorTest){
   int n_trans = qr.rows.size();
   EXPECT_EQ(1, n_trans) << "expected 1 transactions, got " << n_trans;
 
-}*/
+}
 
 } // namespace storage
 
