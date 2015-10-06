@@ -40,7 +40,7 @@ void Storage::InitFrom(cyclus::QueryableBackend* b){
   #pragma cyclus impl initfromdb storage::Storage
 
   using cyclus::toolkit::Commodity;
-  Commodity commod = Commodity(out_commods[0]);
+  Commodity commod = Commodity(out_commods_());
   cyclus::toolkit::CommodityProducer::Add(commod);
   cyclus::toolkit::CommodityProducer::SetCapacity(commod, throughput);
 }
@@ -58,7 +58,7 @@ void Storage::EnterNotify() {
   }
   buy_policy.Start();
 
-  sell_policy.Init(this, &stocks, std::string("stocks")).Set(out_commods[0]).Start();
+  sell_policy.Init(this, &stocks, std::string("stocks")).Set(out_commods_()).Start();
 }
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -66,19 +66,19 @@ std::string Storage::str() {
   std::stringstream ss;
   std::string ans;
   if (cyclus::toolkit::CommodityProducer::
-      Produces(cyclus::toolkit::Commodity(out_commods[0]))){
+      Produces(cyclus::toolkit::Commodity(out_commods_()))){
     ans = "yes";
   } else {
     ans = "no";
   }
   ss << cyclus::Facility::str();
   ss << " has facility parameters {" << "\n"
-     << "     Output Commodity = " << out_commods[0] << ",\n"
+     << "     Output Commodity = " << out_commods_() << ",\n"
      << "     Residence Time = " << residence_time_() << ",\n"
      << "     Throughput = " << throughput_() << ",\n"
      << " commod producer members: " << " produces "
-     << out_commods[0] << "?:" << ans
-     << " throughput: " << cyclus::toolkit::CommodityProducer::Capacity(out_commods[0])
+     << out_commods_() << "?:" << ans
+     << " throughput: " << cyclus::toolkit::CommodityProducer::Capacity(out_commods_())
      << "'}";
   return ss.str();
 }

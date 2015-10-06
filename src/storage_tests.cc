@@ -46,7 +46,7 @@ void StorageTest::TestInitState(Storage* fac){
   EXPECT_EQ(max_inv_size, fac->max_inv_size_());
   EXPECT_EQ(throughput, fac->throughput_());
   EXPECT_EQ(out_c1, fac->out_commods_());
-//  EXPECT_EQ(in_c1, fac->in_commods_());
+  //EXPECT_EQ(in_c1, fac->in_commods_());
   EXPECT_EQ(in_r1, fac->in_recipe_());
   EXPECT_EQ(in_commod_prefs, fac->in_commod_prefs_());
 }
@@ -382,7 +382,7 @@ TEST_F(StorageTest, BehaviorTest){
 
   std::string config =
     "   <in_commods> <val>spent_fuel</val> </in_commods> "
-    "   <out_commods>dry_spent</out_commods> ";
+    "   <out_commods> <val>dry_spent</val> </out_commods> ";
 
   int simdur = 1;
 

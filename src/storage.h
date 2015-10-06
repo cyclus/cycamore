@@ -113,8 +113,12 @@ class Storage
   inline double in_commod_prefs_() const { return in_commod_prefs.front(); }
 
   /// @brief the out commodity
-  inline void out_commods_(std::string c) { out_commods.front() = c; }
-  inline std::string out_commods_() const { return out_commods.front(); }
+  inline void out_commods_(std::string c) { out_commods.push_back(c); }
+  inline std::string out_commods_() const {
+    if (out_commods.size() == 0){
+      return "out_commod";
+    }
+     return out_commods.front(); }
 
   /// @brief the in recipe
   inline void in_recipe_(std::string c) { in_recipe = c; }
