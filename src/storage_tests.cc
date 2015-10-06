@@ -32,23 +32,23 @@ void StorageTest::InitParameters(){
 }
 
 void StorageTest::SetUpStorage(){
- // src_facility_->in_commods_(in_c1);
-  src_facility_->out_commod_(out_c1);
+  src_facility_->in_commods_(in_c1);
+  src_facility_->out_commods_(out_c1);
   src_facility_->in_recipe_(in_r1);
   src_facility_->residence_time_(residence_time);
   src_facility_->max_inv_size_(max_inv_size);
   src_facility_->throughput_(throughput);
- // src_facility_->in_commod_prefs_(in_commod_prefs);
+  src_facility_->in_commod_prefs_(in_commod_prefs);
 }
 
 void StorageTest::TestInitState(Storage* fac){
   EXPECT_EQ(residence_time, fac->residence_time_());
   EXPECT_EQ(max_inv_size, fac->max_inv_size_());
   EXPECT_EQ(throughput, fac->throughput_());
-  EXPECT_EQ(out_c1, fac->out_commod_());
+  EXPECT_EQ(out_c1, fac->out_commods_());
 //  EXPECT_EQ(in_c1, fac->in_commods_());
   EXPECT_EQ(in_r1, fac->in_recipe_());
-//  EXPECT_EQ(in_commod_prefs, fac->in_commod_prefs_());
+  EXPECT_EQ(in_commod_prefs, fac->in_commod_prefs_());
 }
 
 void StorageTest::TestAddMat(Storage* fac, 
@@ -239,7 +239,7 @@ TEST_F(StorageTest, MultipleSmallBatches) {
 
 
 TEST_F(StorageTest, ChangeCapacity) {
-  src_facility_->batch_handling_("divide");
+  src_facility_->batch_handling_(0);
   src_facility_->max_inv_size_(10000);
   // Set throughput, add first batch
   src_facility_->throughput_(300);
@@ -376,6 +376,32 @@ TEST_F(StorageTest,DifferentRecipe){
   EXPECT_NO_THROW(src_facility_->Tock());
   TestBuffers(src_facility_,0,0,0,cap);
 }
+/*
+TEST_F(StorageTest, BehaviorTest){
+  // Verify Storage behavior
+
+  std::string config =
+    "   <in_commods> <val>spent_fuel</val> </in_commods> "
+    "   <out_commods>dry_spent</out_commods> ";
+
+  int simdur = 1;
+
+  cyclus::MockSim sim(cyclus::AgentSpec (":cycamore:Storage"), config, simdur);
+
+
+  sim.AddSource("spent_fuel").Finalize();
+  sim.AddSink("dry_spent").Finalize();
+
+  int id = sim.Run();
+
+  // return all transactions where our sstorage facility is the sender
+  std::vector<cyclus::Cond> conds;
+  conds.push_back(cyclus::Cond("Commodity", "==", std::string("spent_fuel")));
+  cyclus::QueryResult qr = sim.db().Query("Transactions", &conds);
+  int n_trans = qr.rows.size();
+  EXPECT_EQ(1, n_trans) << "expected 1 transactions, got " << n_trans;
+
+}*/
 
 } // namespace storage
 

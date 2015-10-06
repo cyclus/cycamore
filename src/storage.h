@@ -3,6 +3,7 @@
 
 #include <string>
 #include <list>
+#include <vector>
 
 #include "cyclus.h"
 
@@ -29,8 +30,8 @@ namespace storage {
 /// after some period of delay time.
 ///
 /// @section agentparams Agent Parameters
-/// in_commod is a string naming the commodity that this facility receives
-/// out_commod is a string naming the commodity that in_commod is stocks into
+/// in_commods is a vector of strings naming the commodities that this facility receives
+/// out_commods is a string naming the commodity that in_commod is stocks into
 /// residence_time is the minimum number of timesteps between receiving and offering
 /// in_recipe (optional) describes the incoming resource by recipe
 /// 
@@ -104,12 +105,16 @@ class Storage
   inline double throughput_() const { return throughput; }
 
   /// @brief the in commodity
-  inline void in_commods_(std::vector<std::string> c) { in_commods = c; }
+  inline void in_commods_(std::string c) { in_commods.push_back(c); }
   inline std::vector<std::string> in_commods_() const { return in_commods; }
 
+  /// @brief the in commodity preferences
+  inline void in_commod_prefs_(double c) { in_commod_prefs.push_back(c); }
+  inline double in_commod_prefs_() const { return in_commod_prefs.front(); }
+
   /// @brief the out commodity
-  inline void out_commod_(std::string c) { out_commod = c; }
-  inline std::string out_commod_() const { return out_commod; }
+  inline void out_commods_(std::string c) { out_commods.front() = c; }
+  inline std::string out_commods_() const { return out_commods.front(); }
 
   /// @brief the in recipe
   inline void in_recipe_(std::string c) { in_recipe = c; }
@@ -120,8 +125,8 @@ class Storage
     return (max_inv_size - processing.quantity() - stocks.quantity()); }
 
   /// @brief the batch handling identifier
-  inline void batch_handling_(std::string c) { batch_handling = c; }
-  inline std::string batch_handling_() const { return batch_handling; }
+  inline void batch_handling_(bool c) { batch_handling = c; }
+  inline bool batch_handling_() const { return batch_handling; }
 
   /// @brief returns the time key for ready materials
   int ready_time(){ return context()->time() - residence_time; }
@@ -158,7 +163,7 @@ class Storage
 
   #pragma cyclus var {"tooltip":"output commodity",\
                       "doc":"commodity produced by this facility"}
-  std::string out_commod;
+  std::vector<std::string> out_commods;
 
   #pragma cyclus var {"default":"",\
                       "tooltip":"input recipe",\
@@ -180,14 +185,19 @@ class Storage
                       "doc":"the amount of material that can be in storage"}
   double max_inv_size; 
 
-  #pragma cyclus var {"default": "discrete",\
-                      "tooltip":"Determines how Storage handles batches",\
-                      "doc":"Determines if Storage will divide resource objects {discrete} or {divide}"}
-  std::string batch_handling;                    
+  #pragma cyclus var {"default": True,\
+                      "tooltip":"Bool to determine how Storage handles batches",\
+                      "doc":"Determines if Storage will divide resource objects {discrete} or {continuous}. "\
+                      "True for discrete, false for continuous. Default to discrete"}
+  bool batch_handling;                    
 
-
+  #pragma cyclus var {"tooltip":"Incoming material buffer"}
   cyclus::toolkit::ResBuf<cyclus::Material> inventory;
+
+  #pragma cyclus var {"tooltip":"Output material buffer"}
   cyclus::toolkit::ResBuf<cyclus::Material> stocks;
+
+  #pragma cyclus var {"tooltip":"Buffer for material held for required residence_time"}
   cyclus::toolkit::ResBuf<cyclus::Material> ready;
 
   //// list of input times for materials entering the processing buffer

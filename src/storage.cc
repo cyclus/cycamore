@@ -40,7 +40,7 @@ void Storage::InitFrom(cyclus::QueryableBackend* b){
   #pragma cyclus impl initfromdb storage::Storage
 
   using cyclus::toolkit::Commodity;
-  Commodity commod = Commodity(out_commod);
+  Commodity commod = Commodity(out_commods[0]);
   cyclus::toolkit::CommodityProducer::Add(commod);
   cyclus::toolkit::CommodityProducer::SetCapacity(commod, throughput);
 }
@@ -58,7 +58,7 @@ void Storage::EnterNotify() {
   }
   buy_policy.Start();
 
-  sell_policy.Init(this, &stocks, std::string("stocks")).Set(out_commod).Start();
+  sell_policy.Init(this, &stocks, std::string("stocks")).Set(out_commods[0]).Start();
 }
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -66,19 +66,19 @@ std::string Storage::str() {
   std::stringstream ss;
   std::string ans;
   if (cyclus::toolkit::CommodityProducer::
-      Produces(cyclus::toolkit::Commodity(out_commod_()))){
+      Produces(cyclus::toolkit::Commodity(out_commods[0]))){
     ans = "yes";
   } else {
     ans = "no";
   }
   ss << cyclus::Facility::str();
   ss << " has facility parameters {" << "\n"
-     << "     Output Commodity = " << out_commod_() << ",\n"
+     << "     Output Commodity = " << out_commods[0] << ",\n"
      << "     Residence Time = " << residence_time_() << ",\n"
      << "     Throughput = " << throughput_() << ",\n"
      << " commod producer members: " << " produces "
-     << out_commod << "?:" << ans
-     << " throughput: " << cyclus::toolkit::CommodityProducer::Capacity(out_commod_())
+     << out_commods[0] << "?:" << ans
+     << " throughput: " << cyclus::toolkit::CommodityProducer::Capacity(out_commods[0])
      << "'}";
   return ss.str();
 }
@@ -160,7 +160,7 @@ void Storage::ProcessMat_(double cap){
 
       double max_pop = std::min(cap, ready.quantity());
 
-      if ( batch_handling_() == "discrete" ) {
+      if ( batch_handling_() ) {
         if (max_pop == ready.quantity()) {
           stocks.Push(ready.PopN(ready.count()));
         }
