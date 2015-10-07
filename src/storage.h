@@ -162,7 +162,7 @@ class Storage
                       "doc":"commodity accepted by this facility"}
   std::vector<std::string> in_commods;
 
-  #pragma cyclus var {"default": []}
+  #pragma cyclus var {"default": [1]}
   std::vector<double> in_commod_prefs;
 
   #pragma cyclus var {"tooltip":"output commodity",\

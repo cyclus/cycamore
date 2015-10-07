@@ -383,12 +383,12 @@ TEST_F(StorageTest, BehaviorTest){
   std::string config =
     "   <in_commods> <val>spent_fuel</val> </in_commods> "
     "   <out_commods> <val>dry_spent</val> </out_commods> "
-    "   <residence_time>2</residence_time>";
+    "   <residence_time>2</residence_time>"
+    "   <max_inv_size>10</max_inv_size>";
 
   int simdur = 3;
 
   cyclus::MockSim sim(cyclus::AgentSpec (":cycamore:Storage"), config, simdur);
-
 
   sim.AddSource("spent_fuel").Finalize();
   sim.AddSink("dry_spent").Finalize();
@@ -397,7 +397,7 @@ TEST_F(StorageTest, BehaviorTest){
 
   // return all transactions where our sstorage facility is the sender
   std::vector<cyclus::Cond> conds;
-  conds.push_back(cyclus::Cond("Commodity", "==", std::string("spent_fuel")));
+  conds.push_back(cyclus::Cond("Commodity", "==", std::string("dry_spent")));
   cyclus::QueryResult qr = sim.db().Query("Transactions", &conds);
   int n_trans = qr.rows.size();
   EXPECT_EQ(1, n_trans) << "expected 1 transactions, got " << n_trans;
