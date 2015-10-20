@@ -52,6 +52,9 @@ void Storage::EnterNotify() {
 
   //dummy comp, use in_recipe if provided
   cyclus::Composition::Ptr comp;
+  if (in_recipe != "") {
+    comp = context()->GetRecipe(in_recipe);
+  }
 
   for(int i=0; i!=in_commods.size(); ++i) {
     buy_policy.Set(in_commods[i],comp,in_commod_prefs[i]);

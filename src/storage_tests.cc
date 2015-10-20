@@ -383,7 +383,7 @@ TEST_F(StorageTest, BehaviorTest){
   std::string config =
     "   <in_commods> <val>spent_fuel</val> </in_commods> "
     "   <out_commods> <val>dry_spent</val> </out_commods> "
-    "   <residence_time>2</residence_time>"
+    "   <residence_time>1</residence_time>"
     "   <max_inv_size>10</max_inv_size>";
 
   int simdur = 3;
