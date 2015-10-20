@@ -51,7 +51,8 @@ void Storage::EnterNotify() {
   buy_policy.Init(this, &inventory, std::string("inventory"));
 
   //dummy comp, use in_recipe if provided
-  cyclus::Composition::Ptr comp;
+  cyclus::CompMap v;
+  cyclus::Composition::Ptr comp = cyclus::Composition::CreateFromAtom(v);
   if (in_recipe != "") {
     comp = context()->GetRecipe(in_recipe);
   }
