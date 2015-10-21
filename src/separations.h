@@ -2,6 +2,7 @@
 #define CYCAMORE_SRC_SEPARATIONS_H_
 
 #include "cyclus.h"
+#include "cycamore_version.h"
 
 namespace cycamore {
 
@@ -61,6 +62,8 @@ class Separations : public cyclus::Facility {
   Separations(cyclus::Context* ctx);
   virtual ~Separations(){};
 
+  virtual std::string version() { return CYCAMORE_VERSION; }
+
   virtual void Tick();
   virtual void Tock();
   virtual void EnterNotify();
@@ -78,6 +81,8 @@ class Separations : public cyclus::Facility {
       const std::vector<cyclus::Trade<cyclus::Material> >& trades,
       std::vector<std::pair<cyclus::Trade<cyclus::Material>,
                             cyclus::Material::Ptr> >& responses);
+
+  virtual bool CheckDecommissionCondition();
 
   #pragma cyclus clone
   #pragma cyclus initfromcopy
@@ -110,7 +115,8 @@ class Separations : public cyclus::Facility {
     "uilabel": "Feed Commodity Preference List", \
     "doc": "Feed commodity request preferences for each of the given feed " \
            "commodities (same order)." \
-           " If unspecified, default is to use zero for all preferences.", \
+           " If unspecified, default is to use 1.0 for all "\
+           "preferences.",                                                     \
   }
   std::vector<double> feed_commod_prefs;
 
@@ -139,7 +145,7 @@ class Separations : public cyclus::Facility {
     "doc" : "Maximum quantity of feed material that can be processed per time "\
             "step.", \
     "uilabel": "Maximum Separations Throughput", \
-    "units": "kg", \
+    "units": "kg/(time step)", \
   }
   double throughput;
 

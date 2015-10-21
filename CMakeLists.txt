@@ -71,18 +71,17 @@ IF(NOT CYCLUS_DOC_ONLY)
     SET(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} ${CYCAMORE_SOURCE_DIR}/cmake)
     MESSAGE("CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH}")
 
-    # Include macros
-    INCLUDE(UseCyclus)
-
     # Find cyclus
     FIND_PACKAGE(Cyclus REQUIRED)
     SET(
       CYCAMORE_INCLUDE_DIRS 
       ${CYCAMORE_INCLUDE_DIRS} 
       ${CYCLUS_CORE_INCLUDE_DIR} # INSTALL_PATH/include/cyclus
-      ${CYCLUS_ROOT_DIR}/include # INSTALL_PATH/include for gtest includes
       )
     SET(LIBS ${LIBS} ${CYCLUS_CORE_LIBRARIES})
+
+    # Include macros installed with cyclus core
+    INCLUDE(UseCyclus)
 
     # Find LibXML++ and dependencies
     FIND_PACKAGE(LibXML++ REQUIRED)
