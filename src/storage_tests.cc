@@ -404,6 +404,41 @@ TEST_F(StorageTest, BehaviorTest){
 
 }
 
+TEST_F(StorageTest, MultipleCommods){
+  // Verify Storage accepting Multiple Commods
+
+  std::string config =
+    "   <in_commods> <val>spent_fuel</val>"
+    "                <val>spent_fuel2</val> </in_commods>"
+    "   <in_commod_prefs> <val>1</val>"
+    "                     <val>1</val> </in_commod_prefs>"
+    "   <out_commods> <val>dry_spent</val> </out_commods> "
+    "   <max_inv_size>10</max_inv_size>";
+
+  int simdur = 2;
+
+  cyclus::MockSim sim(cyclus::AgentSpec (":cycamore:Storage"), config, simdur);
+
+  sim.AddSource("spent_fuel").capacity(5).Finalize();
+  sim.AddSource("spent_fuel2").capacity(5).Finalize();
+  sim.AddSink("dry_spent").Finalize();
+
+  int id = sim.Run();
+
+  // return all transactions where our sstorage facility is the acceptor
+  std::vector<cyclus::Cond> conds;
+  conds.push_back(cyclus::Cond("Commodity", "==", std::string("spent_fuel")));
+  cyclus::QueryResult qr = sim.db().Query("Transactions", &conds);
+  int n_trans = qr.rows.size();
+  EXPECT_EQ(1, n_trans) << "expected 1 transactions, got " << n_trans;
+
+  std::vector<cyclus::Cond> conds2;
+  conds2.push_back(cyclus::Cond("Commodity", "==", std::string("spent_fuel2")));
+  cyclus::QueryResult qr2 = sim.db().Query("Transactions", &conds2);
+  int n_trans2 = qr2.rows.size();
+  EXPECT_EQ(1, n_trans2) << "expected 1 transactions, got " << n_trans;
+}
+
 } // namespace storage
 
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
