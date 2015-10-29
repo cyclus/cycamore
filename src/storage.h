@@ -1,43 +1,43 @@
-#ifndef CYCLUS_COMMODCONVERTERS_COMMODCONVERTER_H_
-#define CYCLUS_COMMODCONVERTERS_COMMODCONVERTER_H_
+#ifndef CYCLUS_STORAGES_STORAGE_H_
+#define CYCLUS_STORAGES_STORAGE_H_
 
 #include <string>
+#include <list>
+#include <vector>
 
 #include "cyclus.h"
 
 // forward declaration
-namespace commodconverter {
-class CommodConverter;
-} // namespace commodconverter
+namespace storage {
+class Storage;
+} // namespace storage
 
 
-namespace commodconverter {
-/// @class CommodConverter
+namespace storage {
+/// @class Storage
 ///
-/// This Facility is intended to convert a resource from one commodity to 
-/// another. It also has an optional delay parameter. It can therefore be used 
-/// quite easily as a storage facility. 
-/// The CommodConverter class inherits from the Facility class and is
+/// This Facility is intended to hold materials for a user specified
+/// amount of time in order to model a storage facility with a certain
+/// residence time or holdup time.
+/// The Storage class inherits from the Facility class and is
 /// dynamically loaded by the Agent class when requested.
 ///
 /// @section intro Introduction
 /// This Agent was initially developed to support the fco code-to-code 
-/// comparsion.
+/// comparison.
 /// It's very similar to the "NullFacility" of years 
-/// past. Its purpose is to convert a commodity from one commodity to another 
-/// after some period of delay time. This facility is very good for use as a 
-/// storage facility or fuel fabrication.
+/// past. Its purpose is to hold materials and release them only  
+/// after some period of delay time.
 ///
 /// @section agentparams Agent Parameters
-/// in_commod is a string naming the commodity that this facility recieves
-/// out_commod is a string naming the commodity that in_commod is stocks into
-/// process_time is the number of timesteps between receiving and offering
+/// in_commods is a vector of strings naming the commodities that this facility receives
+/// out_commods is a string naming the commodity that in_commod is stocks into
+/// residence_time is the minimum number of timesteps between receiving and offering
 /// in_recipe (optional) describes the incoming resource by recipe
-/// out_recipe (optional) describes the outgoing resource by recipe
 /// 
 /// @section optionalparams Optional Parameters
 /// max_inv_size is the maximum capacity of the inventory storage
-/// capacity is the maximum processing capacity per timestep
+/// throughput is the maximum processing capacity per timestep
 ///
 /// @section detailed Detailed Behavior
 /// 
@@ -46,7 +46,7 @@ namespace commodconverter {
 ///
 /// Tock:
 /// On the tock, any material that has been waiting for long enough (delay 
-/// time) is stocks and placed in the stocks buffer.
+/// time) is placed in the stocks buffer.
 ///
 /// Any brand new inventory that was received in this timestep is placed into 
 /// the processing queue to begin waiting. 
@@ -63,110 +63,77 @@ namespace commodconverter {
 ///
 /// Sending Resources:
 /// Matched resources are sent immediately.
-class CommodConverter 
+class Storage 
   : public cyclus::Facility,
     public cyclus::toolkit::CommodityProducer {
  public:  
-  /// Constructor for CommodConverter Class
   /// @param ctx the cyclus context for access to simulation-wide parameters
-  CommodConverter(cyclus::Context* ctx);
-
-  /// The Prime Directive
-  /// Generates code that handles all input file reading and restart operations
-  /// (e.g., reading from the database, instantiating a new object, etc.).
-  /// @warning The Prime Directive must have a space before it! (A fix will be
-  /// in 2.0 ^TM)
+  Storage(cyclus::Context* ctx);
   
   #pragma cyclus decl
 
-  #pragma cyclus note {"doc": "A commodconverter facility converts from one " \
+  #pragma cyclus note {"doc": "A storage facility converts from one " \
                               "commodity to another, with an optional delay."}
 
-  /// A verbose printer for the CommodConverter
+  /// A verbose printer for the Storage Facility
   virtual std::string str();
 
   // --- Facility Members ---
   
   // --- Agent Members ---
+  /// Sets up the Storage Facility's trade requests
   virtual void EnterNotify();
 
-  /// The handleTick function specific to the CommodConverter.
-  /// @param time the time of the tick  
+  /// The handleTick function specific to the Storage.
   virtual void Tick();
 
-  /// The handleTick function specific to the CommodConverter.
-  /// @param time the time of the tock
+  /// The handleTick function specific to the Storage.
   virtual void Tock();
 
-  /// @brief The CommodConverter request Materials of its given
-  /// commodity.
-  virtual std::set<cyclus::RequestPortfolio<cyclus::Material>::Ptr> GetMatlRequests();
+  /* --- Storage Members --- */
 
-  /// @brief The CommodConverter place accepted trade Materials in their
-  /// Inventory
-  virtual void AcceptMatlTrades(
-      const std::vector< std::pair<cyclus::Trade<cyclus::Material>,
-      cyclus::Material::Ptr> >& responses);
-
-  /// @brief Responds to each request for this facility's commodity.  If a given
-  /// request is more than this facility's inventory capacity, it will
-  /// offer its minimum of its capacities.
-  virtual std::set<cyclus::BidPortfolio<cyclus::Material>::Ptr>
-      GetMatlBids(cyclus::CommodMap<cyclus::Material>::type&
-                  commod_requests);
-
-  /// @brief respond to each trade with a material of out_commod and out_recipe
-  ///
-  /// @param trades all trades in which this trader is the supplier
-  /// @param responses a container to populate with responses to each trade
-  virtual void GetMatlTrades(
-    const std::vector< cyclus::Trade<cyclus::Material> >& trades,
-    std::vector<std::pair<cyclus::Trade<cyclus::Material>,
-    cyclus::Material::Ptr> >& responses);
-
-  /* --- */
-
-  /* --- CommodConverter Members --- */
-
-  /* --- */
-  /// @brief the processing time required for a full process
-  inline void process_time_(int t) { process_time = t; }
-  inline int process_time_() const { return process_time; }
+  /// @brief the minimum processing time required for a full process
+  inline void residence_time_(int t) { residence_time = t; }
+  inline int residence_time_() const { return residence_time; }
 
   /// @brief the maximum amount allowed in inventory
   inline void max_inv_size_(double c) { max_inv_size = c; }
   inline double max_inv_size_() const { return max_inv_size; }
 
   /// @brief the maximum amount processed per timestep
-  inline void capacity_(double c) { capacity = c; }
-  inline double capacity_() const { return capacity; }
-
-  /// @brief the cost per unit out_commod
-  inline void cost_(double c) { cost = c; }
-  inline double cost_() const { return cost; }
+  inline void throughput_(double c) { throughput = c; }
+  inline double throughput_() const { return throughput; }
 
   /// @brief the in commodity
-  inline void in_commod_(std::string c) { in_commod = c; }
-  inline std::string in_commod_() const { return in_commod; }
+  inline void in_commods_(std::string c) { in_commods.push_back(c); }
+  inline std::vector<std::string> in_commods_() const { return in_commods; }
+
+  /// @brief the in commodity preferences
+  inline void in_commod_prefs_(double c) { in_commod_prefs.push_back(c); }
+  inline double in_commod_prefs_() const { return in_commod_prefs.front(); }
 
   /// @brief the out commodity
-  inline void out_commod_(std::string c) { out_commod = c; }
-  inline std::string out_commod_() const { return out_commod; }
+  inline void out_commods_(std::string c) { out_commods.push_back(c); }
+  inline std::string out_commods_() const {
+    if (out_commods.size() == 0){
+      return "out_commod";
+    }
+     return out_commods.front(); }
 
   /// @brief the in recipe
   inline void in_recipe_(std::string c) { in_recipe = c; }
   inline std::string in_recipe_() const { return in_recipe; }
 
-  /// @brief the out recipe
-  inline void out_recipe_(std::string c) { out_recipe = c; }
-  inline std::string out_recipe_() const { return out_recipe; }
-
   /// @brief current maximum amount that can be added to processing
   inline double current_capacity() const { 
-    return std::min(capacity, max_inv_size - inventory.quantity()); }
+    return (max_inv_size - processing.quantity() - stocks.quantity()); }
+
+  /// @brief the batch handling identifier
+  inline void batch_handling_(bool c) { batch_handling = c; }
+  inline bool batch_handling_() const { return batch_handling; }
 
   /// @brief returns the time key for ready materials
-  int ready(){ return context()->time() - process_time ; }
+  int ready_time(){ return context()->time() - residence_time; }
 
  protected:
   ///   @brief adds a material into the incoming commodity inventory
@@ -174,100 +141,86 @@ class CommodConverter
   ///   @throws if there is trouble with pushing to the inventory buffer.
   void AddMat_(cyclus::Material::Ptr mat);
 
-  ///   @brief generates a request for this facility given its current state. The
-  ///   quantity of the material will be equal to the remaining inventory size.
-  ///   @return a material that this facility will request
-  cyclus::Material::Ptr Request_();
-
-  /// @brief gathers information about bids
-  /// @param commod_requests the materials that have been requested
-  cyclus::BidPortfolio<cyclus::Material>::Ptr GetBids_(
-        cyclus::CommodMap<cyclus::Material>::type& commod_requests, 
-        std::string commod, 
-        cyclus::toolkit::ResourceBuff* buffer);
-
-  /// @brief suggests, based on the buffer, a material response to an offer
-  cyclus::Material::Ptr TradeResponse_(
-      double qty, 
-      cyclus::toolkit::ResourceBuff* buffer);
-
   /// @brief Move all unprocessed inventory to processing
   void BeginProcessing_();
 
-  /// @brief Convert one ready resource in processing
-  /// @param cap current conversion capacity 
-  void Convert_(double cap);
+  /// @brief Move as many ready resources as allowable into stocks
+  /// @param cap current throughput capacity 
+  void ProcessMat_(double cap);
 
-  /// @brief any ready resources in processing get pushed off to next timestep
+  /// @brief any ready resources remaining in processing get pushed off to next timestep
   /// @param time the timestep whose buffer remains unprocessed 
-  void AdvanceUnconverted_(int time);
+  // void AdvanceUnconverted_(int time);
 
-  /// @brief report the resource quantity in processing at a certain time
+  /// @brief move ready resources from processing to ready at a certain time
   /// @param time the time of interest
-  double ProcessingAmt_(int time);
-
-  /// @brief this facility's commodity-recipe context
-  inline void crctx(const cyclus::toolkit::CommodityRecipeContext& crctx) {
-    crctx_ = crctx;
-  }
-
-  inline cyclus::toolkit::CommodityRecipeContext crctx() const {
-    return crctx_;
-  }
+  void ReadyMatl_(int time);
 
   /* --- Module Members --- */
 
   #pragma cyclus var {"tooltip":"input commodity",\
                       "doc":"commodity accepted by this facility"}
-  std::string in_commod;
+  std::vector<std::string> in_commods;
+
+  #pragma cyclus var {"default": [1]}
+  std::vector<double> in_commod_prefs;
 
   #pragma cyclus var {"tooltip":"output commodity",\
                       "doc":"commodity produced by this facility"}
-  std::string out_commod;
+  std::vector<std::string> out_commods;
 
   #pragma cyclus var {"default":"",\
                       "tooltip":"input recipe",\
                       "doc":"recipe accepted by this facility"}
   std::string in_recipe;
 
-  #pragma cyclus var {"default":"",\
-                      "tooltip":"output recipe",\
-                      "doc":"recipe to be generated by this facility"}
-  std::string out_recipe;
-
   #pragma cyclus var {"default": 0,\
-                      "tooltip":"process time (timesteps)",\
-                      "doc":"the time it takes to convert a received commodity (timesteps)."}
-  int process_time;
+                      "tooltip":"residence time (timesteps)",\
+                      "doc":"the minimum holding time for a received commodity (timesteps)."}
+  int residence_time;
 
   #pragma cyclus var {"default": 1e299,\
-                     "tooltip":"capacity per timestep (kg)",\
+                     "tooltip":"throughput per timestep (kg)",\
                      "doc":"the max amount that can be processed per timestep (kg)"}
-  double capacity;
-
-  #pragma cyclus var {"default": 0,\
-                     "tooltip":"cost per kg of production",\
-                     "doc":"cost per kg of produced out_commod"}
-  double cost;
+  double throughput;
 
   #pragma cyclus var {"default": 1e299,\
                       "tooltip":"maximum inventory size (kg)",\
                       "doc":"the amount of material that can be in storage"}
   double max_inv_size; 
 
+  #pragma cyclus var {"default": True,\
+                      "tooltip":"Bool to determine how Storage handles batches",\
+                      "doc":"Determines if Storage will divide resource objects {discrete} or {continuous}. "\
+                      "True for discrete, false for continuous. Default to discrete"}
+  bool batch_handling;                    
 
-  cyclus::toolkit::ResourceBuff inventory;
-  cyclus::toolkit::ResourceBuff stocks;
+  #pragma cyclus var {"tooltip":"Incoming material buffer"}
+  cyclus::toolkit::ResBuf<cyclus::Material> inventory;
 
-  /// @brief map from ready time to resource buffers
-  std::map<int, cyclus::toolkit::ResourceBuff> processing;
+  #pragma cyclus var {"tooltip":"Output material buffer"}
+  cyclus::toolkit::ResBuf<cyclus::Material> stocks;
 
-  cyclus::toolkit::CommodityRecipeContext crctx_;
+  #pragma cyclus var {"tooltip":"Buffer for material held for required residence_time"}
+  cyclus::toolkit::ResBuf<cyclus::Material> ready;
+
+  //// list of input times for materials entering the processing buffer
+  #pragma cyclus var{"default": [],\
+                      "internal": True}
+  std::list<int> entry_times;
+
+  cyclus::toolkit::ResBuf<cyclus::Material> processing;
+
+  //// A policy for requesting material
+  cyclus::toolkit::MatlBuyPolicy buy_policy;
+
+  //// A policy for sending material
+  cyclus::toolkit::MatlSellPolicy sell_policy;
 
 
-  friend class CommodConverterTest;
+  friend class StorageTest;
 };
 
-}  // namespace commodconverter
+}  // namespace storage
 
-#endif  // CYCLUS_COMMODCONVERTERS_COMMODCONVERTER_H_
+#endif  // CYCLUS_STORAGES_STORAGE_H_
