@@ -72,8 +72,16 @@ class Storage
   
   #pragma cyclus decl
 
-  #pragma cyclus note {"doc": "A storage facility converts from one " \
-                              "commodity to another, with an optional delay."}
+  #pragma cyclus note {"doc": "Storage is a simple facility which accepts any number of commodities " \
+                              "and holds them for a user specified amount of time. The commodities accepted "\
+                              "are chosen based on the specified preferences list. Once the desired amount of material "\
+                              "has entered the facility it is passed into a 'processing' buffer where it is held until "\
+                              "the residence time has passed. The material is then passed into a 'ready' buffer where it is "\
+                              "queued for removal. Currently, all input commodities are lumped into a single output commodity. "\
+                              "Storage also has the functionality to handle materials in discrete or continuous batches. Discrete "\
+                              "mode, which is the default, does not split or combine material batches. Continuous mode, however, "\
+                              "divides material batches if necessary in order to push materials through the facility as quickly "\
+                              "as possible."}
 
   /// A verbose printer for the Storage Facility
   virtual std::string str();
@@ -159,40 +167,58 @@ class Storage
   /* --- Module Members --- */
 
   #pragma cyclus var {"tooltip":"input commodity",\
-                      "doc":"commodity accepted by this facility"}
+                      "doc":"commodities accepted by this facility",\
+                      "uilabel":"Input Commodities",\
+                      "uitype":["oneormore","incommodity"]}
   std::vector<std::string> in_commods;
 
-  #pragma cyclus var {"default": [1]}
+  #pragma cyclus var {"default": [1],\
+                      "doc":"preferences for each of the given commodities, in the same order."\
+                      "Defauts to 1 if unspecified",\
+                      "uilabel":"In Commody Preferences"}
   std::vector<double> in_commod_prefs;
 
   #pragma cyclus var {"tooltip":"output commodity",\
-                      "doc":"commodity produced by this facility"}
+                      "doc":"commodity produced by this facility. Multiple commodity tracking is"\
+                      " currently not supported, one output commodity catches all input commodities.",\
+                      "uilabel":"Output Commodities",\
+                      "uitype":["oneormore","outcommodity"]}
   std::vector<std::string> out_commods;
 
   #pragma cyclus var {"default":"",\
                       "tooltip":"input recipe",\
-                      "doc":"recipe accepted by this facility"}
+                      "doc":"recipe accepted by this facility, if unspecified a dummy recipe is used",\
+                      "uilabel":"Input Recipe",\
+                      "uitype":"recipe"}
   std::string in_recipe;
 
   #pragma cyclus var {"default": 0,\
                       "tooltip":"residence time (timesteps)",\
-                      "doc":"the minimum holding time for a received commodity (timesteps)."}
+                      "doc":"the minimum holding time for a received commodity (timesteps).",\
+                      "units":"time steps",\
+                      "uilabel":"Residence Time"}
   int residence_time;
 
   #pragma cyclus var {"default": 1e299,\
                      "tooltip":"throughput per timestep (kg)",\
-                     "doc":"the max amount that can be processed per timestep (kg)"}
+                     "doc":"the max amount that can be moved through the facility per timestep (kg)",\
+                     "uilabel":"Throughput",\
+                     "units":"kg"}
   double throughput;
 
   #pragma cyclus var {"default": 1e299,\
                       "tooltip":"maximum inventory size (kg)",\
-                      "doc":"the amount of material that can be in storage"}
+                      "doc":"the maximum amount of material that can be in all storage buffer stages",\
+                      "uilabel":"Maximum Inventory Size",\
+                      "units":"kg"}
   double max_inv_size; 
 
   #pragma cyclus var {"default": True,\
                       "tooltip":"Bool to determine how Storage handles batches",\
-                      "doc":"Determines if Storage will divide resource objects {discrete} or {continuous}. "\
-                      "True for discrete, false for continuous. Default to discrete"}
+                      "doc":"Determines if Storage will divide resource objects. "\
+                      "If true, batches are handled as discrete quanta, neither split nor combined. "\
+                      "Otherwise, batches may be divided during processing. Default to true (discrete)",\
+                      "uilabel":"Batch Handling"}
   bool batch_handling;                    
 
   #pragma cyclus var {"tooltip":"Incoming material buffer"}
@@ -209,6 +235,7 @@ class Storage
                       "internal": True}
   std::list<int> entry_times;
 
+  #pragma cyclus var {"tooltip":"Buffer for material still waiting for required residence_time"}
   cyclus::toolkit::ResBuf<cyclus::Material> processing;
 
   //// A policy for requesting material
