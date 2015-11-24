@@ -172,7 +172,7 @@ class Storage
                       "uitype":["oneormore","incommodity"]}
   std::vector<std::string> in_commods;
 
-  #pragma cyclus var {"default": [1],\
+  #pragma cyclus var {"default": [],\
                       "doc":"preferences for each of the given commodities, in the same order."\
                       "Defauts to 1 if unspecified",\
                       "uilabel":"In Commody Preferences"}

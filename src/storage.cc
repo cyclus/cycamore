@@ -57,6 +57,12 @@ void Storage::EnterNotify() {
     comp = context()->GetRecipe(in_recipe);
   }
 
+  if (in_commod_prefs.size() == 0){
+    for (int i=0; i < in_commods.size(); ++i){
+      in_commod_prefs.push_back(1);
+    }
+  }
+
   for(int i=0; i!=in_commods.size(); ++i) {
     buy_policy.Set(in_commods[i],comp,in_commod_prefs[i]);
   }
