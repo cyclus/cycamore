@@ -30,5 +30,5 @@ if [ -z \"\$CYCLUS_RNG_SCHEMA\" ]; then
   export CYCLUS_RNG_SCHEMA=\"$PREFIX/share/cyclus/cyclus.rng.in\"
 fi
 $PREFIX/bin/cycamore_unit_tests_base \$*
-" > $PREFIX/bin/cyclus_unit_tests
+" > $PREFIX/bin/cycamore_unit_tests
 chmod 755 $PREFIX/bin/cycamore_unit_tests
