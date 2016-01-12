@@ -243,7 +243,8 @@ std::set<cyclus::BidPortfolio<Material>::Ptr> Separations::GetMatlBids(
       for (int k = 0; k < mats.size(); k++) {
         Material::Ptr m = mats[k];
         tot_bid += m->quantity();
-        port->AddBid(req, m, this, exclusive);
+          if(m->quantity() > 0)
+              port->AddBid(req, m, this, exclusive);
         if (tot_bid >= req->target()->quantity()) {
           break;
         }
@@ -270,7 +271,8 @@ std::set<cyclus::BidPortfolio<Material>::Ptr> Separations::GetMatlBids(
       for (int k = 0; k < mats.size(); k++) {
         Material::Ptr m = mats[k];
         tot_bid += m->quantity();
-        port->AddBid(req, m, this, exclusive);
+          if(m->quantity() > 0)
+              port->AddBid(req, m, this, exclusive);
         if (tot_bid >= req->target()->quantity()) {
           break;
         }
