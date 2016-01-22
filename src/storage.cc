@@ -84,8 +84,8 @@ std::string Storage::str() {
   ss << cyclus::Facility::str();
   ss << " has facility parameters {" << "\n"
      << "     Output Commodity = " << out_commods_() << ",\n"
-     << "     Residence Time = " << residence_time_() << ",\n"
-     << "     Throughput = " << throughput_() << ",\n"
+     << "     Residence Time = " << residence_time << ",\n"
+     << "     Throughput = " << throughput << ",\n"
      << " commod producer members: " << " produces "
      << out_commods_() << "?:" << ans
      << " throughput: " << cyclus::toolkit::CommodityProducer::Capacity(out_commods_())
@@ -113,11 +113,11 @@ void Storage::Tock() {
 
   BeginProcessing_(); // place unprocessed inventory into processing
 
-  if( ready_time() >= 0 || residence_time_() == 0  && !inventory.empty() ) {
+  if( ready_time() >= 0 || residence_time == 0  && !inventory.empty() ) {
     ReadyMatl_(ready_time());  // place processing into ready
   }
 
-  ProcessMat_(throughput_()); // place ready into stocks
+  ProcessMat_(throughput); // place ready into stocks
 
   LOG(cyclus::LEV_INFO3, "ComCnv") << "}";
 }
@@ -170,7 +170,7 @@ void Storage::ProcessMat_(double cap){
 
       double max_pop = std::min(cap, ready.quantity());
 
-      if ( batch_handling_() ) {
+      if ( discrete_handling ) {
         if (max_pop == ready.quantity()) {
           stocks.Push(ready.PopN(ready.count()));
         }

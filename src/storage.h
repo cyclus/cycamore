@@ -100,25 +100,9 @@ class Storage
 
   /* --- Storage Members --- */
 
-  /// @brief the minimum processing time required for a full process
-  inline void residence_time_(int t) { residence_time = t; }
-  inline int residence_time_() const { return residence_time; }
-
-  /// @brief the maximum amount allowed in inventory
-  inline void max_inv_size_(double c) { max_inv_size = c; }
-  inline double max_inv_size_() const { return max_inv_size; }
-
-  /// @brief the maximum amount processed per timestep
-  inline void throughput_(double c) { throughput = c; }
-  inline double throughput_() const { return throughput; }
-
   /// @brief the in commodity
   inline void in_commods_(std::string c) { in_commods.push_back(c); }
   inline std::vector<std::string> in_commods_() const { return in_commods; }
-
-  /// @brief the in commodity preferences
-  inline void in_commod_prefs_(double c) { in_commod_prefs.push_back(c); }
-  inline double in_commod_prefs_() const { return in_commod_prefs.front(); }
 
   /// @brief the out commodity
   inline void out_commods_(std::string c) { out_commods.push_back(c); }
@@ -128,17 +112,9 @@ class Storage
     }
      return out_commods.front(); }
 
-  /// @brief the in recipe
-  inline void in_recipe_(std::string c) { in_recipe = c; }
-  inline std::string in_recipe_() const { return in_recipe; }
-
   /// @brief current maximum amount that can be added to processing
   inline double current_capacity() const { 
     return (max_inv_size - processing.quantity() - stocks.quantity()); }
-
-  /// @brief the batch handling identifier
-  inline void batch_handling_(bool c) { batch_handling = c; }
-  inline bool batch_handling_() const { return batch_handling; }
 
   /// @brief returns the time key for ready materials
   int ready_time(){ return context()->time() - residence_time; }
@@ -155,10 +131,6 @@ class Storage
   /// @brief Move as many ready resources as allowable into stocks
   /// @param cap current throughput capacity 
   void ProcessMat_(double cap);
-
-  /// @brief any ready resources remaining in processing get pushed off to next timestep
-  /// @param time the timestep whose buffer remains unprocessed 
-  // void AdvanceUnconverted_(int time);
 
   /// @brief move ready resources from processing to ready at a certain time
   /// @param time the time of interest
@@ -213,13 +185,14 @@ class Storage
                       "units":"kg"}
   double max_inv_size; 
 
-  #pragma cyclus var {"default": True,\
+  #pragma cyclus var {"default": False,\
                       "tooltip":"Bool to determine how Storage handles batches",\
-                      "doc":"Determines if Storage will divide resource objects. "\
+                      "doc":"Determines if Storage will divide resource objects. Only controls material "\
+                      "handling within this facility, has no effect on DRE material handling. "\
                       "If true, batches are handled as discrete quanta, neither split nor combined. "\
-                      "Otherwise, batches may be divided during processing. Default to true (discrete)",\
+                      "Otherwise, batches may be divided during processing. Default to false (continuous))",\
                       "uilabel":"Batch Handling"}
-  bool batch_handling;                    
+  bool discrete_handling;                    
 
   #pragma cyclus var {"tooltip":"Incoming material buffer"}
   cyclus::toolkit::ResBuf<cyclus::Material> inventory;
