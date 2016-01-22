@@ -40,14 +40,14 @@ void Storage::InitFrom(cyclus::QueryableBackend* b){
   #pragma cyclus impl initfromdb storage::Storage
 
   using cyclus::toolkit::Commodity;
-  Commodity commod = Commodity(out_commods_());
+  Commodity commod = Commodity(out_commods.front());
   cyclus::toolkit::CommodityProducer::Add(commod);
   cyclus::toolkit::CommodityProducer::SetCapacity(commod, throughput);
 }
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 void Storage::EnterNotify() {
-  Facility::EnterNotify();
+  cyclus::Facility::EnterNotify();
   buy_policy.Init(this, &inventory, std::string("inventory"));
 
   //dummy comp, use in_recipe if provided
@@ -62,13 +62,27 @@ void Storage::EnterNotify() {
       in_commod_prefs.push_back(1);
     }
   }
+  else if (in_commod_prefs.size() != in_commods.size()) {
+    std::stringstream ss;
+    ss << "in_commod_prefs has " << in_commod_prefs.size() << " values, expected "
+       << in_commods.size();
+    throw cyclus::ValueError(ss.str());
+  }
 
   for(int i=0; i!=in_commods.size(); ++i) {
     buy_policy.Set(in_commods[i],comp,in_commod_prefs[i]);
   }
   buy_policy.Start();
 
-  sell_policy.Init(this, &stocks, std::string("stocks")).Set(out_commods_()).Start();
+  if (out_commods.size() == 1) {
+  sell_policy.Init(this, &stocks, std::string("stocks")).Set(out_commods.front()).Start();
+  }
+  else {
+    std::stringstream ss;
+    ss << "out_commods has " << out_commods.size() << " values, expected 1.";
+    throw cyclus::ValueError(ss.str());
+  }
+
 }
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -76,19 +90,19 @@ std::string Storage::str() {
   std::stringstream ss;
   std::string ans;
   if (cyclus::toolkit::CommodityProducer::
-      Produces(cyclus::toolkit::Commodity(out_commods_()))){
+      Produces(cyclus::toolkit::Commodity(out_commods.front()))){
     ans = "yes";
   } else {
     ans = "no";
   }
   ss << cyclus::Facility::str();
   ss << " has facility parameters {" << "\n"
-     << "     Output Commodity = " << out_commods_() << ",\n"
+     << "     Output Commodity = " << out_commods.front() << ",\n"
      << "     Residence Time = " << residence_time << ",\n"
      << "     Throughput = " << throughput << ",\n"
      << " commod producer members: " << " produces "
-     << out_commods_() << "?:" << ans
-     << " throughput: " << cyclus::toolkit::CommodityProducer::Capacity(out_commods_())
+     << out_commods.front() << "?:" << ans
+     << " throughput: " << cyclus::toolkit::CommodityProducer::Capacity(out_commods.front())
      << "'}";
   return ss.str();
 }

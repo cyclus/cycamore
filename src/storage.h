@@ -100,18 +100,6 @@ class Storage
 
   /* --- Storage Members --- */
 
-  /// @brief the in commodity
-  inline void in_commods_(std::string c) { in_commods.push_back(c); }
-  inline std::vector<std::string> in_commods_() const { return in_commods; }
-
-  /// @brief the out commodity
-  inline void out_commods_(std::string c) { out_commods.push_back(c); }
-  inline std::string out_commods_() const {
-    if (out_commods.size() == 0){
-      return "out_commod";
-    }
-     return out_commods.front(); }
-
   /// @brief current maximum amount that can be added to processing
   inline double current_capacity() const { 
     return (max_inv_size - processing.quantity() - stocks.quantity()); }

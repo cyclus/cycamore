@@ -27,6 +27,7 @@ class StorageTest : public ::testing::Test {
       proc, double ready, double stocks);
   void TestStocks(storage::Storage* fac, cyclus::CompMap v);
 
+  std::vector<std::string> in_c1, out_c1;
   std::string in_r1;
 
   int residence_time;

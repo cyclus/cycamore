@@ -17,6 +17,8 @@ void StorageTest::TearDown() {
 
 void StorageTest::InitParameters(){
   in_r1 = "in_r1";
+  in_c1.push_back("in_c1");
+  out_c1.push_back("out_c1");
   residence_time = 10;
   max_inv_size = 200;
   throughput = 20;
@@ -31,6 +33,8 @@ void StorageTest::InitParameters(){
 
 void StorageTest::SetUpStorage(){
   src_facility_->in_recipe = in_r1;
+  src_facility_->in_commods = in_c1;
+  src_facility_->out_commods = out_c1;
   src_facility_->residence_time = residence_time;
   src_facility_->max_inv_size = max_inv_size;
   src_facility_->throughput = throughput;
