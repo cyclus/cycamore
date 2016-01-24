@@ -98,15 +98,6 @@ class Storage
   /// The handleTick function specific to the Storage.
   virtual void Tock();
 
-  /* --- Storage Members --- */
-
-  /// @brief current maximum amount that can be added to processing
-  inline double current_capacity() const { 
-    return (max_inv_size - processing.quantity() - stocks.quantity()); }
-
-  /// @brief returns the time key for ready materials
-  int ready_time(){ return context()->time() - residence_time; }
-
  protected:
   ///   @brief adds a material into the incoming commodity inventory
   ///   @param mat the material to add to the incoming inventory.
@@ -123,6 +114,15 @@ class Storage
   /// @brief move ready resources from processing to ready at a certain time
   /// @param time the time of interest
   void ReadyMatl_(int time);
+
+    /* --- Storage Members --- */
+
+  /// @brief current maximum amount that can be added to processing
+  inline double current_capacity() const { 
+    return (max_inv_size - processing.quantity() - stocks.quantity()); }
+
+  /// @brief returns the time key for ready materials
+  int ready_time(){ return context()->time() - residence_time; }
 
   /* --- Module Members --- */
 
