@@ -76,6 +76,16 @@ void StorageTest::TestStocks(Storage* fac, cyclus::CompMap v){
 
 }
 
+void StorageTest::TestCurrentCap(Storage* fac, double inv){
+
+  EXPECT_EQ(inv, fac->current_capacity());
+}
+
+void StorageTest::TestReadyTime(Storage* fac, int t){
+
+  EXPECT_EQ(t, fac->ready_time());
+}
+
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 TEST_F(StorageTest, clone) {
   Storage* cloned_fac =
@@ -91,7 +101,7 @@ TEST_F(StorageTest, InitialState) {
 
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 TEST_F(StorageTest, CurrentCapacity){
-  EXPECT_EQ(max_inv_size, src_facility_->current_capacity());
+  TestCurrentCap(src_facility_,max_inv_size);
   max_inv_size = 1e299;
   SetUpStorage();
   TestInitState(src_facility_);
@@ -105,7 +115,7 @@ TEST_F(StorageTest, Print) {
 
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 TEST_F(StorageTest, AddMats) { 
-  double cap = src_facility_->current_capacity();
+  double cap = max_inv_size;
   cyclus::Material::Ptr mat = cyclus::NewBlankMaterial(0.5*cap);
   TestAddMat(src_facility_, mat);
 
@@ -148,12 +158,12 @@ TEST_F(StorageTest, Tock) {
   
   tc_.get()->time(residence_time);
   EXPECT_EQ(residence_time, tc_.get()->time());
-  EXPECT_EQ(0, src_facility_->ready_time());
+  TestReadyTime(src_facility_,0);
   src_facility_->Tock();
   TestBuffers(src_facility_,0,0,0,cap);
 
   tc_.get()->time(residence_time+1);
-  EXPECT_EQ(1, src_facility_->ready_time());
+  TestReadyTime(src_facility_,1);
   src_facility_->Tock();
   TestBuffers(src_facility_,0,0,0,cap);
 
@@ -190,7 +200,7 @@ TEST_F(StorageTest, NoConvert) {
   EXPECT_NO_THROW(src_facility_->Tock());
 
   tc_.get()->time(residence_time);
-  EXPECT_EQ(0, src_facility_->ready_time());
+  TestReadyTime(src_facility_,0);
   EXPECT_NO_THROW(src_facility_->Tock());
   TestBuffers(src_facility_,0,0,0,cap);
   cyclus::CompMap in_rec;
@@ -226,7 +236,7 @@ TEST_F(StorageTest, MultipleSmallBatches) {
 
   // Move first batch to stocks
   tc_.get()->time(residence_time);
-  EXPECT_EQ(0,src_facility_->ready_time());
+  TestReadyTime(src_facility_,0);
   EXPECT_NO_THROW(src_facility_->Tock());
   TestBuffers(src_facility_,0,0.3*cap,0,0.2*cap);
 

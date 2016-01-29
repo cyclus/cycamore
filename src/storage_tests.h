@@ -26,6 +26,8 @@ class StorageTest : public ::testing::Test {
   void TestBuffers(storage::Storage* fac, double inv, double 
       proc, double ready, double stocks);
   void TestStocks(storage::Storage* fac, cyclus::CompMap v);
+  void TestReadyTime(storage::Storage* fac, int t);
+  void TestCurrentCap(storage::Storage* fac, double inv);
 
   std::vector<std::string> in_c1, out_c1;
   std::string in_r1;
