@@ -88,21 +88,26 @@ void Storage::EnterNotify() {
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 std::string Storage::str() {
   std::stringstream ss;
-  std::string ans;
+  std::string ans, out_str;
+  if (out_commods.size() == 1) {
+    out_str = out_commods.front();
+  }
+  else {
+    out_str = "";
+  }
   if (cyclus::toolkit::CommodityProducer::
-      Produces(cyclus::toolkit::Commodity(out_commods.front()))){
+      Produces(cyclus::toolkit::Commodity(out_str))){
     ans = "yes";
   } else {
     ans = "no";
   }
   ss << cyclus::Facility::str();
   ss << " has facility parameters {" << "\n"
-     << "     Output Commodity = " << out_commods.front() << ",\n"
+     << "     Output Commodity = " << out_str << ",\n"
      << "     Residence Time = " << residence_time << ",\n"
      << "     Throughput = " << throughput << ",\n"
      << " commod producer members: " << " produces "
-     << out_commods.front() << "?:" << ans
-     << " throughput: " << cyclus::toolkit::CommodityProducer::Capacity(out_commods.front())
+     << out_str << "?:" << ans
      << "'}";
   return ss.str();
 }
