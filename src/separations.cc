@@ -243,7 +243,12 @@ std::set<cyclus::BidPortfolio<Material>::Ptr> Separations::GetMatlBids(
       for (int k = 0; k < mats.size(); k++) {
         Material::Ptr m = mats[k];
         tot_bid += m->quantity();
-        port->AddBid(req, m, this, exclusive);
+
+        // this fix the problem of the cyclus exchange manager which crashes when a bid with a quantity <=0 is offered.
+        if(m->quantity() > cyclus::eps()){
+          port->AddBid(req, m, this, exclusive);
+        }
+
         if (tot_bid >= req->target()->quantity()) {
           break;
         }
@@ -270,7 +275,12 @@ std::set<cyclus::BidPortfolio<Material>::Ptr> Separations::GetMatlBids(
       for (int k = 0; k < mats.size(); k++) {
         Material::Ptr m = mats[k];
         tot_bid += m->quantity();
-        port->AddBid(req, m, this, exclusive);
+
+        // this fix the problem of the cyclus exchange manager which crashes when a bid with a quantity <=0 is offered.
+        if(m->quantity() > cyclus::eps()){
+          port->AddBid(req, m, this, exclusive);
+        }
+
         if (tot_bid >= req->target()->quantity()) {
           break;
         }
