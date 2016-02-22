@@ -7,7 +7,7 @@ University of Wisconsin - Madison are intended to be support innovative
 fuel cycle simulations with the Cyclus fuel cycle simulator.
 
 To see user and developer documentation for this code, please visit
-the `Cycamore Homepage`_.
+the `Cyclus Homepage`_.
 
 ********************************
 Building and Installing Cycamore
@@ -128,10 +128,9 @@ like:
 
 .. _`CMake`: http://www.cmake.org
 .. _`apt-get`: http://linux.die.net/man/8/apt-get
-.. _`Cyclus Homepage`: http://cyclus.github.com
+.. _`Cyclus Homepage`: http://fuelcycle.org
 .. _`Cyclus repo`: https://github.com/cyclus/cyclus
 .. _`Cyclus readme`: http://github.com/cyclus/cyclus
-.. _`Cycamore Homepage`: http://cycamore.github.com
 .. _`Cycamore repo`: https://github.com/cyclus/cycamore
 .. _`Cycamore readme`: https://github.com/cyclus/cycamore
 
