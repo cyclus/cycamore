@@ -66,6 +66,9 @@ void Enrichment::Tock() {
   using cyclus::toolkit::RecordTimeSeries;
   RecordTimeSeries<cyclus::toolkit::ENRICH_SWU>(this, intra_timestep_swu_);
   RecordTimeSeries<cyclus::toolkit::ENRICH_FEED>(this, intra_timestep_feed_);
+  
+  intra_timestep_swu_ = 0;
+  intra_timestep_feed_ = 0;
 }
 
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -253,9 +256,6 @@ void Enrichment::GetMatlTrades(
 
   using cyclus::Material;
   using cyclus::Trade;
-
-  intra_timestep_swu_ = 0;
-  intra_timestep_feed_ = 0;
 
   std::vector< Trade<Material> >::const_iterator it;
   for (it = trades.begin(); it != trades.end(); ++it) {
