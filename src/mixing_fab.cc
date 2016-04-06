@@ -19,6 +19,36 @@ namespace cycamore {
        "is experimental");
   }
   
+  //********************************************//
+  cyclus::Inventories MixingFab::SnapshotInv() {
+    cyclus::Inventories invs;
+    
+    // these inventory names are intentionally convoluted so as to not clash
+    // with the user-specified stream commods that are used as the MixingFab
+    // streams inventory names.
+    invs["output-inv-name"] = output.PopNRes(output.count());
+    output.Push(invs["output-inv-name"]);
+    
+    
+    
+    for( int i = 0; i < commods_name.size(); i++){
+      std::string inv_name = "input-" + std::to_string(i) + "inv-name";
+      invs[inv_name] = commods_inv[i].PopNRes(commods_inv[i].count());
+      commods_inv[i].Push(invs[inv_name]);
+    }
+    return invs;
+  }
+  
+  //********************************************//
+  void MixingFab::InitInv(cyclus::Inventories& inv) {
+    inv["output-inv-name"] = output.PopNRes(output.count());
+    output.Push(inv["output-inv-name"]);
+    
+    for( int i = 0; i < commods_name.size(); i++){
+      std::string inv_name = "input-" + std::to_string(i) + "inv-name";
+      commods_inv[i].Push(inv[inv_name]);
+    }
+  }
   
   
 //********************************************//
@@ -52,6 +82,10 @@ namespace cycamore {
         commods_frac[i] *= 1./frac_sum;
       }
       
+    }
+    
+    for( int i = 0; i < commods_name.size(); i++){
+      commods_inv[i].capacity(commods_size[i]);
     }
 
     
