@@ -91,6 +91,30 @@ namespace cycamore {
     
   }
   
+  void MixingFab::Tick(){
+    
+    if(output.quantity() < output.capacity()){
+      
+      double tgt_qty = output.capacity() - output.quantity();
+      
+      Material::Ptr m;
+      for( int i = 0; i < commods_name.size(); i++){
+        Composition::Ptr c_ = commods_inv[i].Peek()->comp();
+        Material::Ptr m_ = commods_inv[i].Pop(commods_frac[i] *tgt_qty);
+        m->Absorb(m_);
+      }
+      output.Push(m);
+      
+      // IMPORTANT - output buffer needs to be a single homogenous composition or
+      // the inventory mixing constraints for bids don't work
+      if (output.count() > 1) {
+        output.Push(cyclus::toolkit::Squash(output.PopN(output.count())));
+      }
+      
+    }
+    
+    
+  }
   
 //********************************************//
   std::set<cyclus::RequestPortfolio<Material>::Ptr> MixingFab::GetMatlRequests() {
@@ -151,43 +175,41 @@ namespace cycamore {
   
 //********************************************//
   std::set<cyclus::BidPortfolio<Material>::Ptr> MixingFab::GetMatlBids(
-    cyclus::CommodMap<Material>::type& commods_requests) {
+    cyclus::CommodMap<Material>::type& commod_requests) {
+    using cyclus::Bid;
     using cyclus::BidPortfolio;
+    using cyclus::CapacityConstraint;
+    using cyclus::Material;
+    using cyclus::Request;
+    
+    
+    double max_qty = std::min(throughput, output.quantity());
+    LOG(cyclus::LEV_INFO3, "MixingFab") << prototype() << " is bidding up to "
+    << max_qty << " kg of " << outcommod;
+    LOG(cyclus::LEV_INFO5, "MixingFab") << "stats: " << str();
     
     std::set<BidPortfolio<Material>::Ptr> ports;
-    std::vector<cyclus::Request<Material>*>& reqs = commods_requests[outcommod];
-    
-    
-    if (throughput == 0) {
+    if (max_qty < cyclus::eps()) {
       return ports;
-    } else if (reqs.size() == 0) {
+    } else if (commod_requests.count(outcommod) == 0) {
       return ports;
     }
     
     BidPortfolio<Material>::Ptr port(new BidPortfolio<Material>());
-    for (int j = 0; j < reqs.size(); j++) {
-      cyclus::Request<Material>* req = reqs[j];
-      
-      double tgt_qty = req->target()->quantity();
-      double max_qty = 1e200;
-      Material::Ptr m;
-      for( int i = 0; i < commods_name.size(); i++){
-        Composition::Ptr c_ = commods_inv[i].Peek()->comp();
-        Material::Ptr m_ = Material::CreateUntracked(commods_frac[i] * tgt_qty, c_);
-        m->Absorb(m_);
-        
-        max_qty = std::min(max_qty, commods_inv[i].quantity() /commods_frac[i]);
-      }
-      
-      bool exclusive = false;
-      port->AddBid(req, m, this, exclusive);
-      cyclus::CapacityConstraint<Material> cc(max_qty);
-      port->AddConstraint(cc);
-      ports.insert(port);
-      
+    std::vector<Request<Material>*>& requests = commod_requests[outcommod];
+    std::vector<Request<Material>*>::iterator it;
+    
+    for (it = requests.begin(); it != requests.end(); ++it) {
+      Request<Material>* req = *it;
+      Material::Ptr target = req->target();
+      double qty = std::min(target->quantity(), max_qty);
+      Material::Ptr m = Material::CreateUntracked(qty, target->comp());
+      port->AddBid(req, m, this);
     }
     
-    
+    CapacityConstraint<Material> cc(max_qty);
+    port->AddConstraint(cc);
+    ports.insert(port);
     
     return ports;
   }
@@ -205,22 +227,7 @@ namespace cycamore {
       Material::Ptr tgt = trades[i].request->target();
       
       double qty = trades[i].amt;
-      
-      tot += qty;
-      if (tot > throughput + cyclus::eps()) {
-        std::stringstream ss;
-        ss << "FuelFab was matched above throughput limit: " << tot << " > "
-        << throughput;
-        throw cyclus::ValueError(ss.str());
-      }
-      
-      Material::Ptr m;
-      for( int i = 0; i < commods_name.size(); i++){
-        if(commods_frac[i] * qty > 0){
-          m->Absorb( commods_inv[i].Pop( commods_frac[i] * qty) );
-        }
-      }
-      
+      Material::Ptr m = output.Pop(qty);
       responses.push_back(std::make_pair(trades[i], m));
     }
   }

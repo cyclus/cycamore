@@ -16,7 +16,7 @@ class MixingFab : public cyclus::Facility {
   MixingFab(cyclus::Context* ctx);
   virtual ~MixingFab() {};
   
-  virtual void Tick(){};
+  virtual void Tick();
   virtual void Tock(){};
   virtual void EnterNotify();
   
