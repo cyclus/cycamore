@@ -13,8 +13,8 @@ namespace cycamore {
   
 class MixingFab : public cyclus::Facility {
   public:
-    MixingFab(cyclus::Context* ctx) {};
-    virtual MixingFab() {};
+    MixingFab(cyclus::Context* ctx);
+    virtual ~MixingFab() {};
     
   #pragma cyclus
   
@@ -52,7 +52,7 @@ class MixingFab : public cyclus::Facility {
   "uilabel": " Stream Inventory Capacity", \
   "units": "kg", \
   }
-  std:vector<double> commods_size;
+  std::vector<double> commods_size;
   
   
   #pragma cyclus var {"capacity": "commods_size"}
@@ -61,8 +61,8 @@ class MixingFab : public cyclus::Facility {
   
   #pragma cyclus var { \
     "default": [], \
-    "uilabel": "Comodity Fraction", \
-    "doc": "Mixing frqction of each commodity requested (same order)." \
+    "uilabel": "Commodities Mass Fraction", \
+    "doc": "Mixing mass fraction of each commodity requested (same order)." \
     " If unspecified, default is to use 1/N for each fraction.", \
   }
   std::vector<double> commods_frac;
@@ -86,6 +86,8 @@ class MixingFab : public cyclus::Facility {
   // intra-time-step state - no need to be a state var
   // map<request, inventory name>
   std::map<cyclus::Request<cyclus::Material>*, std::string> req_inventories_;
+  
+
  };
   
   

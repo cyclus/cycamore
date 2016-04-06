@@ -9,6 +9,8 @@ USE_CYCLUS("cycamore" "reactor")
 
 USE_CYCLUS("cycamore" "fuel_fab")
 
+USE_CYCLUS("cycamore" "mixing_fab")
+
 USE_CYCLUS("cycamore" "enrichment")
 
 USE_CYCLUS("cycamore" "separations")
