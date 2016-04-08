@@ -52,11 +52,11 @@ typedef std::map<std::string, Stream> StreamSet;
 
 void Separations::EnterNotify() {
   cyclus::Facility::EnterNotify();
+  std::map<int, double> efficiency_;
+
   StreamSet::iterator it;
   std::map< int, double>::iterator it2;
 
-  
-  std::map<int, double> efficiency;
 
   for (it = streams_.begin(); it != streams_.end(); ++it) {
     std::string name = it->first;
@@ -67,12 +67,12 @@ void Separations::EnterNotify() {
     }
     
     for( it2 = stream.second.begin(); it2 != stream.second.end(); it2++  ){
-      efficiency[it2->first] += it2->second;
+      efficiency_[it2->first] += it2->second;
     }
     
   }
   
-  for( it2 = efficiency.begin(); it2 != efficiency.end(); it2++  ){
+  for( it2 = efficiency_.begin(); it2 != efficiency_.end(); it2++  ){
     if( it2->second > 1){
       std::stringstream ss;
       ss << "In " << prototype() << ": Nuclei " << it2->first << " has a cumulativ seperation efficiency greater than 1 ";
