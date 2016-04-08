@@ -72,12 +72,26 @@ void Separations::EnterNotify() {
     
   }
   
+  std::vector<int> eff_pb_;
   for( it2 = efficiency_.begin(); it2 != efficiency_.end(); it2++  ){
     if( it2->second > 1){
-      std::stringstream ss;
-      ss << "In " << prototype() << ": Nuclei " << it2->first << " has a cumulativ seperation efficiency greater than 1 ";
-      throw cyclus::ValueError(ss.str());
+      eff_pb_.push_back(it2->first);
     }
+  }
+  
+  if(eff_pb_.size() > 0){
+    std::stringstream ss;
+    ss << "In " << prototype() << ": Nuclide";
+    if(eff_pb_.size() == 1){
+      ss << " " << eff_pb_[0] << " has a cumulative separation efficiency greater than 1 !";
+    } else {
+      ss << "s {" << eff_pb_[0];
+      for(int i = 1; i < eff_pb_.size(); i++){
+        ss << ", " << eff_pb_[i];
+      }
+      ss << "} have a repsective cumulative separation efficiency greater than 1 !";
+    }
+    throw cyclus::ValueError(ss.str());
   }
 
 
