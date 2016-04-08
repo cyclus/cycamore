@@ -20,14 +20,14 @@ class MixingFab : public cyclus::Facility {
   virtual void Tock(){};
   virtual void EnterNotify();
   
-  virtual std::set<cyclus::BidPortfolio<cyclus::Material>::Ptr> GetMatlBids(
+/*  virtual std::set<cyclus::BidPortfolio<cyclus::Material>::Ptr> GetMatlBids(
                                                                             cyclus::CommodMap<cyclus::Material>::type& commods_requests);
-  
-  virtual void GetMatlTrades(
+  */
+/*  virtual void GetMatlTrades(
                              const std::vector<cyclus::Trade<cyclus::Material> >& trades,
                              std::vector<std::pair<cyclus::Trade<cyclus::Material>,
                              cyclus::Material::Ptr> >& responses);
-  
+  */
   virtual void AcceptMatlTrades(const std::vector<std::pair<
                                 cyclus::Trade<cyclus::Material>, cyclus::Material::Ptr> >& responses);
   
@@ -60,7 +60,7 @@ class MixingFab : public cyclus::Facility {
     "uilabel": "Stream Commodities", \
     "uitype": ["oneormore", "incommodity"], \
   }
-  std::vector<std::string> commods_name;
+  std::vector<std::string> in_commods;
   
   #pragma cyclus var { \
   "doc": "Size of material stream inventory.", \
@@ -72,7 +72,7 @@ class MixingFab : public cyclus::Facility {
   
   // custom SnapshotInv and InitInv and EnterNotify are used to persist this
   // state var.
-  std::vector< cyclus::toolkit::ResBuf<cyclus::Material> > commods_inv;
+  std::map<std::string, cyclus::toolkit::ResBuf<cyclus::Material> > streambufs;
 
   
   #pragma cyclus var { \
@@ -120,6 +120,9 @@ class MixingFab : public cyclus::Facility {
   // map<request, inventory name>
   std::map<cyclus::Request<cyclus::Material>*, std::string> req_inventories_;
   
+  //// A policy for sending material
+  cyclus::toolkit::MatlSellPolicy sell_policy;
+
 
  };
   

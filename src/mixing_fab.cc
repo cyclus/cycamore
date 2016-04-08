@@ -3,11 +3,16 @@
 
 using cyclus::Material;
 using cyclus::Composition;
+using cyclus::toolkit::ResBuf;
+
 using pyne::simple_xs;
 
 #define SHOW(X)                                                     \
 std::cout << std::setprecision(17) << __FILE__ << ":" << __LINE__ \
 << ": " #X " = " << X << "\n"
+
+#define cyDBGL		std::cout << __FILE__ << " : " << __LINE__ << " [" << __FUNCTION__ << "]" << std::endl;
+//#define cyDBGL		;
 
 namespace cycamore {
   
@@ -29,12 +34,10 @@ namespace cycamore {
     invs["output-inv-name"] = output.PopNRes(output.count());
     output.Push(invs["output-inv-name"]);
     
-    
-    
-    for( int i = 0; i < commods_name.size(); i++){
-      std::string inv_name = "input-" + std::to_string(i) + "inv-name";
-      invs[inv_name] = commods_inv[i].PopNRes(commods_inv[i].count());
-      commods_inv[i].Push(invs[inv_name]);
+    std::map<std::string, ResBuf<Material> >::iterator it;
+    for (it = streambufs.begin(); it != streambufs.end(); ++it) {
+      invs[it->first] = it->second.PopNRes(it->second.count());
+      it->second.Push(invs[it->first]);
     }
     return invs;
   }
@@ -44,9 +47,9 @@ namespace cycamore {
     inv["output-inv-name"] = output.PopNRes(output.count());
     output.Push(inv["output-inv-name"]);
     
-    for( int i = 0; i < commods_name.size(); i++){
-      std::string inv_name = "input-" + std::to_string(i) + "inv-name";
-      commods_inv[i].Push(inv[inv_name]);
+    cyclus::Inventories::iterator it;
+    for (it = inv.begin(); it != inv.end(); ++it) {
+      streambufs[it->first].Push(it->second);
     }
   }
   
@@ -54,16 +57,16 @@ namespace cycamore {
 //********************************************//
   void MixingFab::EnterNotify() {
     cyclus::Facility::EnterNotify();
-    
+
     if (commods_frac.empty()) {
-      for (int i = 0; i < commods_name.size(); i++) {
-        commods_frac.push_back(1/commods_name.size());
+      for (int i = 0; i < in_commods.size(); i++) {
+        commods_frac.push_back(1/in_commods.size());
       }
     
-    } else if (commods_frac.size() != commods_name.size()) {
+    } else if (commods_frac.size() != in_commods.size()) {
       std::stringstream ss;
       ss << "prototype '" << prototype() << "' has " << commods_frac.size()
-      << " commodity frqction values, expected " << commods_name.size();
+      << " commodity frqction values, expected " << in_commods.size();
       throw cyclus::ValidationError(ss.str());
     
     } else {
@@ -74,7 +77,7 @@ namespace cycamore {
       if(frac_sum != 1.) {
         std::stringstream ss;
         ss << "prototype '" << prototype() << "' has " << commods_frac.size()
-        << " commodity frqction values, expected " << commods_name.size();
+        << " commodity frqction values, expected " << in_commods.size();
         cyclus::Warn<cyclus::VALUE_WARNING>(ss.str());
       }
       
@@ -84,54 +87,69 @@ namespace cycamore {
       
     }
     
-    for( int i = 0; i < commods_name.size(); i++){
-      commods_inv[i].capacity(commods_size[i]);
+    for( int i = 0; i < in_commods.size(); i++){
+      std::string name = in_commods[i];
+      double cap = commods_size[i];
+      if (cap >= 0) {
+        streambufs[name].capacity(cap);
+      }
     }
+    
+    
+    sell_policy.Init(this, &output, "output").Set(outcommod).Start();
 
     
+
   }
   
+  //********************************************//
   void MixingFab::Tick(){
     
     if(output.quantity() < output.capacity()){
-      
-      double tgt_qty = output.capacity() - output.quantity();
-      
-      Material::Ptr m;
-      for( int i = 0; i < commods_name.size(); i++){
-        Composition::Ptr c_ = commods_inv[i].Peek()->comp();
-        Material::Ptr m_ = commods_inv[i].Pop(commods_frac[i] *tgt_qty);
-        m->Absorb(m_);
+
+      double tgt_qty = output.space();
+
+      for( int i = 0; i < in_commods.size(); i++){
+        std::string name = in_commods[i];
+        tgt_qty = std::min(tgt_qty, streambufs[name].quantity()/ commods_frac[i] );
       }
-      output.Push(m);
       
-      // IMPORTANT - output buffer needs to be a single homogenous composition or
-      // the inventory mixing constraints for bids don't work
-      if (output.count() > 1) {
-        output.Push(cyclus::toolkit::Squash(output.PopN(output.count())));
+      tgt_qty = std::min(tgt_qty, throughput);
+
+      if(tgt_qty > 0){
+        Material::Ptr m = cyclus::NewBlankMaterial(tgt_qty);
+        for( int i = 0; i < in_commods.size(); i++){
+
+          std::string name = in_commods[i];
+          Material::Ptr m_ = streambufs[name].Pop(commods_frac[i] *tgt_qty);
+
+          m->Absorb(m_);
+        }
+
+        output.Push(m);
       }
       
     }
-    
     
   }
   
 //********************************************//
   std::set<cyclus::RequestPortfolio<Material>::Ptr> MixingFab::GetMatlRequests() {
     using cyclus::RequestPortfolio;
-    
+
     std::set<RequestPortfolio<Material>::Ptr> ports;
     
-    for( int i = 0; i > commods_name.size(); i++){
-      
-      if (commods_inv[i].space() > cyclus::eps()) {
+    for( int i = 0; i < in_commods.size(); i++){
+      std::string name = in_commods[i];
+
+      if (streambufs[name].space() > cyclus::eps()) {
         RequestPortfolio<Material>::Ptr port(new RequestPortfolio<Material>());
         
-        Material::Ptr m = cyclus::NewBlankMaterial(commods_inv[i].space());
+        Material::Ptr m = cyclus::NewBlankMaterial(streambufs[name].space());
         
         cyclus::Request<Material>* r;
-        r = port->AddRequest(m, this, commods_name[i], 1., false);
-        req_inventories_[r] = std::to_string(i);
+        r = port->AddRequest(m, this, in_commods[i], 1., false);
+        req_inventories_[r] = name;
         ports.insert(port);
       }
       
@@ -151,30 +169,28 @@ namespace cycamore {
       cyclus::Request<Material>* req = trade->first.request;
       Material::Ptr m = trade->second;
       
-      int i = std::atoi(req_inventories_[req].c_str());
-      
-      if( i > commods_name.size()-1){
-        throw cyclus::ValueError("cycamore::MixingFab was overmatched on requests");
+      std::string name = req_inventories_[req];
+      bool assigned = false;
+      std::map<std::string, cyclus::toolkit::ResBuf<cyclus::Material> >::iterator it;
+
+      for( it = streambufs.begin(); it != streambufs.end(); it++ ){
+        if( name == it->first){
+          it->second.Push(m);
+          assigned = true;
+          break;
+        }
       }
-      else {
-        commods_inv[i].Push(m);
+      if( !assigned ){
+        throw cyclus::ValueError("cycamore::MixingFab was overmatched on requests");
       }
     }
     
     req_inventories_.clear();
     
-    // IMPORTANT - each buffer needs to be a single homogenous composition or
-    // the inventory mixing constraints for bids don't work
-    for( int i = 0; i < commods_name[i].size(); i++){
-      if (commods_inv[i].count() > 1) {
-        commods_inv[i].Push(cyclus::toolkit::Squash(commods_inv[i].PopN(commods_inv[i].count())));
-      }
-    }
-    
   }
   
 //********************************************//
-  std::set<cyclus::BidPortfolio<Material>::Ptr> MixingFab::GetMatlBids(
+/*  std::set<cyclus::BidPortfolio<Material>::Ptr> MixingFab::GetMatlBids(
     cyclus::CommodMap<Material>::type& commod_requests) {
     using cyclus::Bid;
     using cyclus::BidPortfolio;
@@ -183,7 +199,7 @@ namespace cycamore {
     using cyclus::Request;
     
     
-    double max_qty = std::min(throughput, output.quantity());
+    double max_qty = output.quantity();
     LOG(cyclus::LEV_INFO3, "MixingFab") << prototype() << " is bidding up to "
     << max_qty << " kg of " << outcommod;
     LOG(cyclus::LEV_INFO5, "MixingFab") << "stats: " << str();
@@ -200,6 +216,7 @@ namespace cycamore {
     std::vector<Request<Material>*>::iterator it;
     
     for (it = requests.begin(); it != requests.end(); ++it) {
+      
       Request<Material>* req = *it;
       Material::Ptr target = req->target();
       double qty = std::min(target->quantity(), max_qty);
@@ -207,15 +224,16 @@ namespace cycamore {
       port->AddBid(req, m, this);
     }
     
+    std::cout << max_qty << std::endl;
     CapacityConstraint<Material> cc(max_qty);
     port->AddConstraint(cc);
     ports.insert(port);
     
     return ports;
   }
-
+*/
 //********************************************//
-  void MixingFab::GetMatlTrades(
+/*  void MixingFab::GetMatlTrades(
                               const std::vector<cyclus::Trade<Material> >& trades,
                               std::vector<std::pair<cyclus::Trade<Material>, Material::Ptr> >&
                               responses) {
@@ -230,7 +248,7 @@ namespace cycamore {
       Material::Ptr m = output.Pop(qty);
       responses.push_back(std::make_pair(trades[i], m));
     }
-  }
+  }*/
 
 extern "C" cyclus::Agent* ConstructMixingFab(cyclus::Context* ctx) {
   return new MixingFab(ctx);
