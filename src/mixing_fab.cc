@@ -117,13 +117,15 @@ namespace cycamore {
       tgt_qty = std::min(tgt_qty, throughput);
 
       if(tgt_qty > 0){
-        Material::Ptr m = cyclus::NewBlankMaterial(tgt_qty);
+        Material::Ptr m;
         for( int i = 0; i < in_commods.size(); i++){
-
           std::string name = in_commods[i];
-          Material::Ptr m_ = streambufs[name].Pop(commods_frac[i] *tgt_qty);
-
-          m->Absorb(m_);
+          if(i==0){
+            m = streambufs[name].Pop(commods_frac[i] *tgt_qty)
+          } else{
+            Material::Ptr m_ = streambufs[name].Pop(commods_frac[i] *tgt_qty);
+            m->Absorb(m_);
+          }
         }
 
         output.Push(m);
