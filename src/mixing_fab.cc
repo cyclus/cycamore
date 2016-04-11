@@ -121,8 +121,8 @@ namespace cycamore {
         for( int i = 0; i < in_commods.size(); i++){
           std::string name = in_commods[i];
           if(i==0){
-            m = streambufs[name].Pop(commods_frac[i] *tgt_qty)
-          } else{
+            m = streambufs[name].Pop(commods_frac[i] *tgt_qty);
+          } else {
             Material::Ptr m_ = streambufs[name].Pop(commods_frac[i] *tgt_qty);
             m->Absorb(m_);
           }
