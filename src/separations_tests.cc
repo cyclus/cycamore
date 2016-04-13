@@ -42,7 +42,153 @@ TEST(SeparationsTests, SepMaterial) {
   EXPECT_DOUBLE_EQ(effs[id("Am241")] * mqorig.mass("Am241"), mqsep.mass("Am241"));
   EXPECT_DOUBLE_EQ(0, mqsep.mass("Am242"));
 }
+  
+TEST(SeparationsTests, SeparationEfficiency) {
+  std::string config =
+      "<streams>"
+      "    <item>"
+      "        <commod>stream1</commod>"
+      "        <info>"
+      "            <buf_size>-1</buf_size>"
+      "            <efficiencies>"
+      "                <item><comp>U</comp> <eff>0.1</eff></item>"
+      "                <item><comp>Pu239</comp> <eff>.2</eff></item>"
+      "            </efficiencies>"
+      "        </info>"
+      "    </item>"
+      "    <item>"
+      "        <commod>stream1</commod>"
+      "        <info>"
+      "            <buf_size>-1</buf_size>"
+      "            <efficiencies>"
+      "                <item><comp>U</comp> <eff>0.2</eff></item>"
+      "                <item><comp>Pu239</comp> <eff>.1</eff></item>"
+      "            </efficiencies>"
+      "        </info>"
+      "    </item>"
+      "    <item>"
+      "        <commod>stream1</commod>"
+      "        <info>"
+      "            <buf_size>-1</buf_size>"
+      "            <efficiencies>"
+      "                <item><comp>U</comp> <eff>0.7</eff></item>"
+      "                <item><comp>Pu239</comp> <eff>.5</eff></item>"
+      "            </efficiencies>"
+      "        </info>"
+      "    </item>"
+      "</streams>"
+      ""
+      "<leftover_commod>waste</leftover_commod>"
+      "<throughput>100</throughput>"
+      "<feedbuf_size>100</feedbuf_size>"
+      "<feed_commods> <val>feed</val> </feed_commods>"
+      ;
+  
+  
+  int simdur = 2;
+  cyclus::MockSim sim(cyclus::AgentSpec(":cycamore:Separations"), config, simdur);
+  
+  EXPECT_NO_THROW(sim.Run());
+}
 
+  
+TEST(SeparationsTests, SeparationEfficiencyThrowing) {
+  int simdur = 2;
+  std::string config =
+      "<streams>"
+      "    <item>"
+      "        <commod>stream1</commod>"
+      "        <info>"
+      "            <buf_size>-1</buf_size>"
+      "            <efficiencies>"
+      "                <item><comp>U</comp> <eff>1.6</eff></item>"
+      "                <item><comp>Pu239</comp> <eff>.7</eff></item>"
+      "            </efficiencies>"
+      "        </info>"
+      "    </item>"
+      "</streams>"
+      ""
+      "<leftover_commod>waste</leftover_commod>"
+      "<throughput>100</throughput>"
+      "<feedbuf_size>100</feedbuf_size>"
+      "<feed_commods> <val>feed</val> </feed_commods>"
+      ;
+
+  
+  cyclus::MockSim sim1(cyclus::AgentSpec(":cycamore:Separations"), config, simdur);
+  
+  EXPECT_THROW(sim1.Run(), cyclus::ValueError);
+  
+  config =
+    "<streams>"
+    "    <item>"
+    "        <commod>stream1</commod>"
+    "        <info>"
+    "            <buf_size>-1</buf_size>"
+    "            <efficiencies>"
+    "                <item><comp>U</comp> <eff>0.6</eff></item>"
+    "                <item><comp>Pu239</comp> <eff>.7</eff></item>"
+    "            </efficiencies>"
+    "        </info>"
+    "    </item>"
+    "    <item>"
+    "        <commod>stream2</commod>"
+    "        <info>"
+    "            <buf_size>-1</buf_size>"
+    "            <efficiencies>"
+    "                <item><comp>U</comp> <eff>0.1</eff></item>"
+    "                <item><comp>Pu239</comp> <eff>.7</eff></item>"
+    "            </efficiencies>"
+    "        </info>"
+    "    </item>"
+    "</streams>"
+    ""
+    "<leftover_commod>waste</leftover_commod>"
+    "<throughput>100</throughput>"
+    "<feedbuf_size>100</feedbuf_size>"
+    "<feed_commods> <val>feed</val> </feed_commods>"
+    ;
+  
+  cyclus::MockSim sim2(cyclus::AgentSpec(":cycamore:Separations"), config, simdur);
+  
+  EXPECT_THROW(sim2.Run(), cyclus::ValueError);
+  
+  config =
+      "<streams>"
+      "    <item>"
+      "        <commod>stream1</commod>"
+      "        <info>"
+      "            <buf_size>-1</buf_size>"
+      "            <efficiencies>"
+      "                <item><comp>U</comp> <eff>0.6</eff></item>"
+      "                <item><comp>Pu239</comp> <eff>.7</eff></item>"
+      "            </efficiencies>"
+      "        </info>"
+      "    </item>"
+      "    <item>"
+      "        <commod>stream2</commod>"
+      "        <info>"
+      "            <buf_size>-1</buf_size>"
+      "            <efficiencies>"
+      "                <item><comp>U</comp> <eff>0.6</eff></item>"
+      "                <item><comp>Pu239</comp> <eff>.7</eff></item>"
+      "            </efficiencies>"
+      "        </info>"
+      "    </item>"
+      "</streams>"
+      ""
+      "<leftover_commod>waste</leftover_commod>"
+      "<throughput>100</throughput>"
+      "<feedbuf_size>100</feedbuf_size>"
+      "<feed_commods> <val>feed</val> </feed_commods>"
+      ;
+  
+  cyclus::MockSim sim3(cyclus::AgentSpec(":cycamore:Separations"), config, simdur);
+  
+  EXPECT_THROW(sim3.Run(), cyclus::ValueError);
+  
+}
+  
 TEST(SeparationsTests, SepMixElemAndNuclide) {
   std::string config =
       "<streams>"
