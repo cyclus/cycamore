@@ -20,6 +20,8 @@ namespace cycamore {
   
   
 class MixingFab : public cyclus::Facility {
+  friend class MixingFabTest;
+
   public:
   MixingFab(cyclus::Context* ctx);
   virtual ~MixingFab() {};
@@ -100,10 +102,10 @@ class MixingFab : public cyclus::Facility {
     "default": 1e299, \
     "units": "kg", \
   }
-  double outputbuf_size;
+  double output_buf_size;
   
   #pragma cyclus var { \
-    "capacity" : "outputbuf_size", \
+    "capacity" : "output_buf_size", \
   }
   cyclus::toolkit::ResBuf<cyclus::Material> output;
   
