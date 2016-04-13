@@ -81,16 +81,17 @@ void Separations::EnterNotify() {
   
   if(eff_pb_.size() > 0){
     std::stringstream ss;
-    ss << "In " << prototype() << ": Nuclide";
-    if(eff_pb_.size() == 1){
-      ss << " " << eff_pb_[0] << " has a cumulative separation efficiency greater than 1 !";
-    } else {
-      ss << "s {" << eff_pb_[0];
-      for(int i = 1; i < eff_pb_.size(); i++){
-        ss << ", " << eff_pb_[i];
+    ss << "In " << prototype() << ", ";
+    ss << "the following nuclide(s) have a cumulative separation efficiency greater than 1:";
+    for(int i = 0; i < eff_pb_.size(); i++){
+      ss << "\n" << eff_pb_[i];
+      if( i < eff_pb_.size()-1 ){
+        ss << ",";
+      } else{
+        ss << ".";
       }
-      ss << "} have a repsective cumulative separation efficiency greater than 1 !";
     }
+    
     throw cyclus::ValueError(ss.str());
   }
 
