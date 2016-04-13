@@ -8,7 +8,15 @@
 
 namespace cycamore {
   
-  
+  /// Mixing takes in N streams of material and mixes them in ratios accordingly
+  /// to the ratios prodided by the user.
+  ///
+  /// The FuelFab has N input inventories: one for each streams to be mixed,
+  /// and one output stream.
+  ///
+  /// The supplying of mixed material is constrained by available inventory of
+  /// mixed material quantities.
+  /// @endcode
   
   
 class MixingFab : public cyclus::Facility {
@@ -20,14 +28,6 @@ class MixingFab : public cyclus::Facility {
   virtual void Tock(){};
   virtual void EnterNotify();
   
-/*  virtual std::set<cyclus::BidPortfolio<cyclus::Material>::Ptr> GetMatlBids(
-                                                                            cyclus::CommodMap<cyclus::Material>::type& commods_requests);
-  */
-/*  virtual void GetMatlTrades(
-                             const std::vector<cyclus::Trade<cyclus::Material> >& trades,
-                             std::vector<std::pair<cyclus::Trade<cyclus::Material>,
-                             cyclus::Material::Ptr> >& responses);
-  */
   virtual void AcceptMatlTrades(const std::vector<std::pair<
                                 cyclus::Trade<cyclus::Material>, cyclus::Material::Ptr> >& responses);
   
@@ -67,7 +67,7 @@ class MixingFab : public cyclus::Facility {
   "uilabel": " Stream Inventory Capacity", \
   "units": "kg", \
   }
-  std::vector<double> commods_size;
+  std::vector<double> in_buf_size;
   
   
   // custom SnapshotInv and InitInv and EnterNotify are used to persist this
@@ -81,7 +81,7 @@ class MixingFab : public cyclus::Facility {
     "doc": "Mixing mass fraction of each commodity requested (same order)." \
     " If unspecified, default is to use 1/N for each fraction.", \
   }
-  std::vector<double> commods_frac;
+  std::vector<double> mixing_frac;
   
   
   #pragma cyclus var { \
@@ -89,7 +89,7 @@ class MixingFab : public cyclus::Facility {
     "uilabel": "Output Commodity", \
     "uitype": "outcommodity", \
   }
-  std::string outcommod;
+  std::string out_commod;
 
   
   #pragma cyclus var { \

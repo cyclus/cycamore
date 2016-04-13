@@ -7,13 +7,6 @@ using cyclus::toolkit::ResBuf;
 
 using pyne::simple_xs;
 
-#define SHOW(X)                                                     \
-std::cout << std::setprecision(17) << __FILE__ << ":" << __LINE__ \
-<< ": " #X " = " << X << "\n"
-
-#define cyDBGL		std::cout << __FILE__ << " : " << __LINE__ << " [" << __FUNCTION__ << "]" << std::endl;
-//#define cyDBGL		;
-
 namespace cycamore {
   
   
@@ -58,47 +51,45 @@ namespace cycamore {
   void MixingFab::EnterNotify() {
     cyclus::Facility::EnterNotify();
 
-    if (commods_frac.empty()) {
+    if (mixing_frac.empty()) {
       for (int i = 0; i < in_commods.size(); i++) {
-        commods_frac.push_back(1/in_commods.size());
+        mixing_frac.push_back(1/in_commods.size());
       }
     
-    } else if (commods_frac.size() != in_commods.size()) {
+    } else if (mixing_frac.size() != in_commods.size()) {
       std::stringstream ss;
-      ss << "prototype '" << prototype() << "' has " << commods_frac.size()
+      ss << "prototype '" << prototype() << "' has " << mixing_frac.size()
       << " commodity frqction values, expected " << in_commods.size();
       throw cyclus::ValidationError(ss.str());
     
     } else {
       double frac_sum = 0;
-      for( int i = 0; i < commods_frac.size(); i++)
-        frac_sum += commods_frac[i];
+      for( int i = 0; i < mixing_frac.size(); i++)
+        frac_sum += mixing_frac[i];
       
       if(frac_sum != 1.) {
         std::stringstream ss;
-        ss << "prototype '" << prototype() << "' has " << commods_frac.size()
+        ss << "prototype '" << prototype() << "' has " << mixing_frac.size()
         << " commodity frqction values, expected " << in_commods.size();
         cyclus::Warn<cyclus::VALUE_WARNING>(ss.str());
       }
       
-      for( int i = 0; i < commods_frac.size(); i++){
-        commods_frac[i] *= 1./frac_sum;
+      for( int i = 0; i < mixing_frac.size(); i++){
+        mixing_frac[i] *= 1./frac_sum;
       }
       
     }
     
     for( int i = 0; i < in_commods.size(); i++){
       std::string name = in_commods[i];
-      double cap = commods_size[i];
+      double cap = in_buf_size[i];
       if (cap >= 0) {
         streambufs[name].capacity(cap);
       }
     }
     
     
-    sell_policy.Init(this, &output, "output").Set(outcommod).Start();
-
-    
+    sell_policy.Init(this, &output, "output").Set(out_commod).Start();
 
   }
   
@@ -111,7 +102,7 @@ namespace cycamore {
 
       for( int i = 0; i < in_commods.size(); i++){
         std::string name = in_commods[i];
-        tgt_qty = std::min(tgt_qty, streambufs[name].quantity()/ commods_frac[i] );
+        tgt_qty = std::min(tgt_qty, streambufs[name].quantity()/ mixing_frac[i] );
       }
       
       tgt_qty = std::min(tgt_qty, throughput);
@@ -121,9 +112,9 @@ namespace cycamore {
         for( int i = 0; i < in_commods.size(); i++){
           std::string name = in_commods[i];
           if(i==0){
-            m = streambufs[name].Pop(commods_frac[i] *tgt_qty);
+            m = streambufs[name].Pop(mixing_frac[i] *tgt_qty);
           } else {
-            Material::Ptr m_ = streambufs[name].Pop(commods_frac[i] *tgt_qty);
+            Material::Ptr m_ = streambufs[name].Pop(mixing_frac[i] *tgt_qty);
             m->Absorb(m_);
           }
         }
@@ -191,66 +182,6 @@ namespace cycamore {
     
   }
   
-//********************************************//
-/*  std::set<cyclus::BidPortfolio<Material>::Ptr> MixingFab::GetMatlBids(
-    cyclus::CommodMap<Material>::type& commod_requests) {
-    using cyclus::Bid;
-    using cyclus::BidPortfolio;
-    using cyclus::CapacityConstraint;
-    using cyclus::Material;
-    using cyclus::Request;
-    
-    
-    double max_qty = output.quantity();
-    LOG(cyclus::LEV_INFO3, "MixingFab") << prototype() << " is bidding up to "
-    << max_qty << " kg of " << outcommod;
-    LOG(cyclus::LEV_INFO5, "MixingFab") << "stats: " << str();
-    
-    std::set<BidPortfolio<Material>::Ptr> ports;
-    if (max_qty < cyclus::eps()) {
-      return ports;
-    } else if (commod_requests.count(outcommod) == 0) {
-      return ports;
-    }
-    
-    BidPortfolio<Material>::Ptr port(new BidPortfolio<Material>());
-    std::vector<Request<Material>*>& requests = commod_requests[outcommod];
-    std::vector<Request<Material>*>::iterator it;
-    
-    for (it = requests.begin(); it != requests.end(); ++it) {
-      
-      Request<Material>* req = *it;
-      Material::Ptr target = req->target();
-      double qty = std::min(target->quantity(), max_qty);
-      Material::Ptr m = Material::CreateUntracked(qty, target->comp());
-      port->AddBid(req, m, this);
-    }
-    
-    std::cout << max_qty << std::endl;
-    CapacityConstraint<Material> cc(max_qty);
-    port->AddConstraint(cc);
-    ports.insert(port);
-    
-    return ports;
-  }
-*/
-//********************************************//
-/*  void MixingFab::GetMatlTrades(
-                              const std::vector<cyclus::Trade<Material> >& trades,
-                              std::vector<std::pair<cyclus::Trade<Material>, Material::Ptr> >&
-                              responses) {
-    using cyclus::Trade;
-    
-    std::vector<cyclus::Trade<cyclus::Material> >::const_iterator it;
-    double tot = 0;
-    for (int i = 0; i < trades.size(); i++) {
-      Material::Ptr tgt = trades[i].request->target();
-      
-      double qty = trades[i].amt;
-      Material::Ptr m = output.Pop(qty);
-      responses.push_back(std::make_pair(trades[i], m));
-    }
-  }*/
 
 extern "C" cyclus::Agent* ConstructMixingFab(cyclus::Context* ctx) {
   return new MixingFab(ctx);
