@@ -97,17 +97,16 @@ class TestRegression(TestCase):
             print("removing {0}".format(self.outf))
             os.remove(self.outf)
 
-class TestPhysorEnrichment(TestRegression):
+class _PhysorEnrichment(TestRegression):
     """This class tests the 1_Enrichment_2_Reactor.xml file related to the
     Cyclus Physor 2014 publication. The number of key facilities, the enrichment
     values, and the transactions to each reactor are tested.
     """
     def __init__(self, *args, **kwargs):
-        super(TestPhysorEnrichment, self).__init__(*args, **kwargs)
-        self.inf = "../input/physor/1_Enrichment_2_Reactor.xml"
+        super(_PhysorEnrichment, self).__init__(*args, **kwargs)
 
     def setUp(self):
-        super(TestPhysorEnrichment, self).setUp()
+        super(_PhysorEnrichment, self).setUp()
         tbl = self.agent_entry
         self.rx_id = self.find_ids(":cycamore:Reactor", tbl)
         self.enr_id = self.find_ids(":cycamore:Enrichment", tbl)
@@ -137,7 +136,7 @@ class TestPhysorEnrichment(TestRegression):
                     self.to_ary(enr, "Time") == t]) for t in range(4)]
         assert_array_almost_equal(exp, obs, decimal=2)
 
-    def test_xactions(self):
+    def test_xactions1(self):
         # reactor 1 transactions
         exp = [1, 1, 1, 1]
         txs = [0, 0, 0, 0]
@@ -148,6 +147,7 @@ class TestPhysorEnrichment(TestRegression):
         msg = "Testing that first reactor gets less than it wants."      
         assert_array_almost_equal(exp, txs, decimal=2, err_msg=msg)
 
+    def test_xactions2(self):
         # reactor 2 transactions
         exp = [1, 0.8, 0.2, 1]
         txs = [0, 0, 0, 0]
@@ -157,18 +157,27 @@ class TestPhysorEnrichment(TestRegression):
 
         msg = "Testing that second reactor gets what it wants."      
         assert_array_almost_equal(exp, txs, decimal=2, err_msg=msg)
+
+class TestCBCPhysorEnrichment(_PhysorEnrichment):
+    def __init__(self, *args, **kwargs):
+        super(TestCBCPhysorEnrichment, self).__init__(*args, **kwargs)
+        self.inf = "../input/physor/1_Enrichment_2_Reactor.xml"
+
+class TestGreedyPhysorEnrichment(_PhysorEnrichment):
+    def __init__(self, *args, **kwargs):
+        super(TestGreedyPhysorEnrichment, self).__init__(*args, **kwargs)
+        self.inf = "../input/physor/greedy_1_Enrichment_2_Reactor.xml"
         
-class TestPhysorSources(TestRegression):
+class _PhysorSources(TestRegression):
     """This class tests the 2_Sources_3_Reactor.xml file related to the Cyclus
     Physor 2014 publication. Reactor deployment and transactions between
     suppliers and reactors are tested.
     """
     def __init__(self, *args, **kwargs):
-        super(TestPhysorSources, self).__init__(*args, **kwargs)
-        self.inf = "../input/physor/2_Sources_3_Reactors.xml"
+        super(_PhysorSources, self).__init__(*args, **kwargs)
 
     def setUp(self):
-        super(TestPhysorSources, self).setUp()
+        super(_PhysorSources, self).setUp()
         
         # identify each reactor and supplier by id
         tbl = self.agent_entry
@@ -230,6 +239,16 @@ class TestPhysorSources(TestRegression):
             if tx['ReceiverId'] == self.r3 and tx['SenderId'] == self.suox:
                 txs[tx['Time']] += self.rsrc_qtys[tx['ResourceId']]
         assert_array_almost_equal(uox_exp, txs)
+
+class TestCBCPhysorSources(_PhysorSources):
+    def __init__(self, *args, **kwargs):
+        super(TestCBCPhysorSources, self).__init__(*args, **kwargs)
+        self.inf = "../input/physor/2_Sources_3_Reactors.xml"
+
+class TestGreedyPhysorSources(_PhysorSources):
+    def __init__(self, *args, **kwargs):
+        super(TestGreedyPhysorSources, self).__init__(*args, **kwargs)
+        self.inf = "../input/physor/greedy_2_Sources_3_Reactors.xml"
 
 class TestDynamicCapacitated(TestRegression):
     """Tests dynamic capacity restraints involving changes in the number of
@@ -383,18 +402,17 @@ class TestGrowth(TestRegression):
         for x in source3_id:
             yield assert_equal, enter_time[np.where(agent_ids == x)], 2
 
-class TestRecycle(TestRegression):
+class _Recycle(TestRegression):
     """This class tests the input/recycle.xml file.
     """
     def __init__(self, *args, **kwargs):
-        super(TestRecycle, self).__init__(*args, **kwargs)
+        super(_Recycle, self).__init__(*args, **kwargs)
 
         # this test requires separations which isn't supported by hdf5
         # so we force sqlite:
         base, _ = os.path.splitext(self.outf)
         self.ext = '.sqlite'
         self.outf = base + self.ext
-        self.inf = "../input/recycle.xml"
         self.sql = """
             SELECT t.time as time,SUM(c.massfrac*r.quantity) as qty FROM transactions as t
             JOIN resources as r ON t.resourceid=r.resourceid AND r.simid=t.simid
@@ -426,9 +444,10 @@ class TestRecycle(TestRegression):
 
         i = 0
         for exp, obs in zip(invs, exp_invs):
+            self.assertAlmostEquals(
+                exp, obs, msg='mismatch at t={}, {} != {}'.format(i, exp, obs))
             i += 1
-            self.assertAlmostEquals(exp, obs, msg='mismatch at t={0}'.format(i))
-
+            
         os.remove(expfname)
         os.remove(obsfname)
 
@@ -474,3 +493,16 @@ class TestRecycle(TestRegression):
         exp[549] = 420.42772559790944
         self.do_compare('reactor', 'repo', 942390000, exp)
 
+class TestGreedyRecycle(_Recycle):
+    """This class tests the input/recycle.xml file.
+    """
+    def __init__(self, *args, **kwargs):
+        super(TestGreedyRecycle, self).__init__(*args, **kwargs)
+        self.inf = "../input/greedy_recycle.xml"
+
+class TestCbcRecycle(_Recycle):
+    """This class tests the input/recycle.xml file.
+    """
+    def __init__(self, *args, **kwargs):
+        super(TestCbcRecycle, self).__init__(*args, **kwargs)
+        self.inf = "../input/recycle.xml"
