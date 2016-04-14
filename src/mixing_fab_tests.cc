@@ -53,11 +53,11 @@ namespace cycamore {
   }
   
   void MixingFabTest::InitParameters(){
-    in_com.push_back("in_c1"); in_frac.push_back(0.80); in_cap.push_back(3);
-    in_com.push_back("in_c2"); in_frac.push_back(0.15); in_cap.push_back(2);
-    in_com.push_back("in_c3"); in_frac.push_back(0.05); in_cap.push_back(1);
+    in_com.push_back("in_c1"); in_frac.push_back(0.80); in_cap.push_back(30);
+    in_com.push_back("in_c2"); in_frac.push_back(0.15); in_cap.push_back(20);
+    in_com.push_back("in_c3"); in_frac.push_back(0.05); in_cap.push_back(10);
     
-    out_com = "out_com"; out_cap = 3;
+    out_com = "out_com"; out_cap = 50;
     
     throughput = 20;
   }
@@ -74,7 +74,7 @@ namespace cycamore {
   }
   
   void MixingFabTest::TestInitState(MixingFab* fac){
-    for (int i = 0; i<in_com.size(); i++) {
+    for (int i = 0; i < in_com.size(); i++) {
       EXPECT_EQ(in_com[i], fac->in_commods[i]);
       EXPECT_EQ(in_frac[i], fac->mixing_frac[i]);
       EXPECT_EQ(in_cap[i], fac->in_buf_size[i]);
@@ -87,10 +87,11 @@ namespace cycamore {
   }
   
   void MixingFabTest::SetInputInv(cycamore::MixingFab *fac, std::vector< Material::Ptr > mat){
-    for (int i = 0; i<in_com.size(); i++) {
+    for (int i = 0; i < in_com.size(); i++) {
       fac->streambufs[in_com[i]].Push(mat[i]) ;
     }
   }
+
   
   void MixingFabTest::TestBuffers(MixingFab* fac,
                                   std::vector<double> in_inv,
@@ -167,22 +168,17 @@ namespace cycamore {
   }
   
   
-    // throughput is properly restricted when faced with many fuel
-    // requests and with ample material inventory.
-  TEST_F(MixingFabTest, Mixing) {
+  TEST_F(MixingFabTest, MixingComposition) {
     throughput = 1e200;
     SetUpMixingFab();
-
+    
     std::vector<Material::Ptr> mat;
-    mat.push_back(Material::CreateUntracked(in_frac[0], c_natu()));
-    mat.push_back(Material::CreateUntracked(in_frac[1], c_pustream()));
-    mat.push_back(Material::CreateUntracked(in_frac[2], c_uox()));
-
+    mat.push_back(Material::CreateUntracked(in_cap[0], c_natu()));
+    mat.push_back(Material::CreateUntracked(in_cap[1], c_pustream()));
+    mat.push_back(Material::CreateUntracked(in_cap[2], c_uox()));
     
     SetInputInv(mf_facility_, mat);
     mf_facility_->Tick();
-    
-    
     
     CompMap v_0 = c_natu()->mass();
     Normalize(&v_0, in_frac[0]);
@@ -196,7 +192,29 @@ namespace cycamore {
     
     TestOutputComposition(mf_facility_, v);
     
+  }
+
+  TEST_F(MixingFabTest, Throughput) {
+    throughput = 0.5;
+    SetUpMixingFab();
+    
+    std::vector<Material::Ptr> mat;
+    mat.push_back(Material::CreateUntracked(in_cap[0], c_natu()));
+    mat.push_back(Material::CreateUntracked(in_cap[1], c_pustream()));
+    mat.push_back(Material::CreateUntracked(in_cap[2], c_uox()));
+    SetInputInv(mf_facility_, mat);
+    
+    mf_facility_->Tick();
+    
+    std::vector<double> cap;
+    for(int i = 0; i < in_com.size(); i++ ){
+      cap.push_back(in_cap[i]-0.5*in_frac[i]);
     }
+    
+    TestBuffers(mf_facility_, cap, 0.5);
+    
+  }
+
 } // namespace cycamore
   
   

@@ -8,10 +8,10 @@
 
 namespace cycamore {
   
-  /// Mixing takes in N streams of material and mixes them in ratios accordingly
+  /// MixingFab takes in N streams of material and mixes them accordingly
   /// to the ratios prodided by the user.
   ///
-  /// The FuelFab has N input inventories: one for each streams to be mixed,
+  /// The MixingFab has N input inventories: one for each streams to be mixed,
   /// and one output stream.
   ///
   /// The supplying of mixed material is constrained by available inventory of
@@ -20,6 +20,19 @@ namespace cycamore {
   
   
 class MixingFab : public cyclus::Facility {
+#pragma cyclus note {   	  \
+"niche": "mixing facility",				  \
+"doc":								\
+"Mixing takes in N streams of material and mixes them accordingly" \
+"to the ratios prodided by the user." \
+"\n\n " \
+"The MixingFab has N input inventories: one for each streams to be mixed,"\
+"and one output stream."\
+"\n\n" \
+"The supplying of mixed material is constrained by available inventory of"\
+"mixed material quantities.", \
+    }
+  
   friend class MixingFabTest;
 
   public:
@@ -58,14 +71,14 @@ class MixingFab : public cyclus::Facility {
     
     
   #pragma cyclus var { \
-    "doc": "Ordered list of commodities on which to requesting stream material.", \
+    "doc": "Ordered list of commodities on which to requesting stream material, each commodity corresponds to a input stream.", \
     "uilabel": "Stream Commodities", \
     "uitype": ["oneormore", "incommodity"], \
   }
   std::vector<std::string> in_commods;
   
   #pragma cyclus var { \
-  "doc": "Size of material stream inventory.", \
+  "doc": "Size of each material stream inventory.", \
   "uilabel": " Stream Inventory Capacity", \
   "units": "kg", \
   }
@@ -111,7 +124,7 @@ class MixingFab : public cyclus::Facility {
   
   
   #pragma cyclus var { \
-    "doc": "Maximum number of kg of fuel material that can be supplied per time step.", \
+    "doc": "Maximum number of kg of fuel material that can be mixed per time step.", \
     "uilabel": "Maximum Throughput", \
     "units": "kg", \
   }
