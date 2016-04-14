@@ -52,7 +52,12 @@ typedef std::map<std::string, Stream> StreamSet;
 
 void Separations::EnterNotify() {
   cyclus::Facility::EnterNotify();
+  std::map<int, double> efficiency_;
+
   StreamSet::iterator it;
+  std::map< int, double>::iterator it2;
+
+
   for (it = streams_.begin(); it != streams_.end(); ++it) {
     std::string name = it->first;
     Stream stream = it->second;
@@ -60,7 +65,36 @@ void Separations::EnterNotify() {
     if (cap >= 0) {
       streambufs[name].capacity(cap);
     }
+    
+    for( it2 = stream.second.begin(); it2 != stream.second.end(); it2++  ){
+      efficiency_[it2->first] += it2->second;
+    }
+    
   }
+  
+  std::vector<int> eff_pb_;
+  for( it2 = efficiency_.begin(); it2 != efficiency_.end(); it2++  ){
+    if( it2->second > 1){
+      eff_pb_.push_back(it2->first);
+    }
+  }
+  
+  if(eff_pb_.size() > 0){
+    std::stringstream ss;
+    ss << "In " << prototype() << ", ";
+    ss << "the following nuclide(s) have a cumulative separation efficiency greater than 1:";
+    for(int i = 0; i < eff_pb_.size(); i++){
+      ss << "\n    " << eff_pb_[i];
+      if( i < eff_pb_.size()-1 ){
+        ss << ",";
+      } else{
+        ss << ".";
+      }
+    }
+    
+    throw cyclus::ValueError(ss.str());
+  }
+
 
   if (feed_commod_prefs.size() == 0) {
     for (int i = 0; i < feed_commods.size(); i++) {
