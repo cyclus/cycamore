@@ -66,7 +66,7 @@ namespace cycamore {
   
   void MixingFabTest::SetUpMixingFab(){
     mf_facility_->in_commods = in_com;
-    mf_facility_->mixing_frac = in_frac;
+    mf_facility_->mixing_ratio = in_frac;
     mf_facility_->in_buf_size = in_cap;
     
     mf_facility_->out_commod = out_com;
@@ -78,7 +78,7 @@ namespace cycamore {
   void MixingFabTest::TestInitState(MixingFab* fac){
     for (int i = 0; i < in_com.size(); i++) {
       EXPECT_EQ(in_com[i], fac->in_commods[i]);
-      EXPECT_EQ(in_frac[i], fac->mixing_frac[i]);
+      EXPECT_EQ(in_frac[i], fac->mixing_ratio[i]);
       EXPECT_EQ(in_cap[i], fac->in_buf_size[i]);
     }
     
@@ -141,7 +141,7 @@ namespace cycamore {
     std::string config =
     "<in_commods> <val>stream1</val> <val>stream2</val> <val>stream3</val> </in_commods>"
     "<in_buf_size> <val>2.5</val> <val>3</val> <val>5</val></in_buf_size>"
-    "<mixing_frac> <val>0.8</val> <val>0.15</val> <val>0.05</val></mixing_frac>"
+    "<mixing_ratio> <val>0.8</val> <val>0.15</val> <val>0.05</val></mixing_ratio>"
     ""
     "<out_commod>dummyout</out_commod>"
     "<outputbuf_size>0</outputbuf_size>"

@@ -76,6 +76,13 @@ class MixingFab : public cyclus::Facility {
     "uitype": ["oneormore", "incommodity"], \
   }
   std::vector<std::string> in_commods;
+  #pragma cyclus var { \
+    "default": [], \
+    "uilabel": " Stream Preferences", \
+    "doc": "Stream commodity request preferences for each of the given commodities (same order)." \
+    " If unspecified, default is to use 1.0 for all preferences.", \
+  }
+  std::vector<double> fill_commod_prefs;
   
   #pragma cyclus var { \
   "doc": "Size of each material stream inventory.", \
@@ -94,9 +101,11 @@ class MixingFab : public cyclus::Facility {
     "default": [], \
     "uilabel": "Commodities Mass Fraction", \
     "doc": "Mixing mass fraction of each commodity requested (same order)." \
-    " If unspecified, default is to use 1/N for each fraction.", \
+    " If unspecified, default is to use 1/N for each fraction." \
+    " Stream ratios can total to any arbitrary value " \
+    "and will be automatically normalized internally." \
   }
-  std::vector<double> mixing_frac;
+  std::vector<double> mixing_ratio;
   
   
   #pragma cyclus var { \
@@ -124,6 +133,7 @@ class MixingFab : public cyclus::Facility {
   
   
   #pragma cyclus var { \
+    "default": 1e299, \
     "doc": "Maximum number of kg of fuel material that can be mixed per time step.", \
     "uilabel": "Maximum Throughput", \
     "units": "kg", \

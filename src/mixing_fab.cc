@@ -48,31 +48,43 @@ void MixingFab::InitInv(cyclus::Inventories& inv) {
 void MixingFab::EnterNotify() {
   cyclus::Facility::EnterNotify();
 
-  if (mixing_frac.empty()) {
+  if(fill_commod_prefs.empty()){
     for (int i = 0; i < in_commods.size(); i++) {
-      mixing_frac.push_back(1/in_commods.size());
+      fill_commod_prefs.push_back(1);
+    }
+  } else if (fill_commod_prefs.size() != in_commods.size()) {
+    std::stringstream ss;
+    ss << "prototype '" << prototype() << "' has " << mixing_ratio.size()
+    << " commodity preferences values, expected " << in_commods.size();
+    throw cyclus::ValidationError(ss.str());
+  }
+    
+  
+  if (mixing_ratio.empty()) {
+    for (int i = 0; i < in_commods.size(); i++) {
+      mixing_ratio.push_back(1/in_commods.size());
     }
   
-  } else if (mixing_frac.size() != in_commods.size()) {
+  } else if (mixing_ratio.size() != in_commods.size()) {
     std::stringstream ss;
-    ss << "prototype '" << prototype() << "' has " << mixing_frac.size()
-    << " commodity frqction values, expected " << in_commods.size();
+    ss << "prototype '" << prototype() << "' has " << mixing_ratio.size()
+    << " commodity fraction values, expected " << in_commods.size();
     throw cyclus::ValidationError(ss.str());
   
   } else {
     double frac_sum = 0;
-    for( int i = 0; i < mixing_frac.size(); i++)
-      frac_sum += mixing_frac[i];
+    for( int i = 0; i < mixing_ratio.size(); i++)
+      frac_sum += mixing_ratio[i];
     
     if(frac_sum != 1.) {
       std::stringstream ss;
-      ss << "prototype '" << prototype() << "' has " << mixing_frac.size()
-      << " commodity frqction values, expected " << in_commods.size();
+      ss << "prototype '" << prototype() << "' has " << mixing_ratio.size()
+      << " commodity fraction values, expected " << in_commods.size();
       cyclus::Warn<cyclus::VALUE_WARNING>(ss.str());
     }
     
-    for( int i = 0; i < mixing_frac.size(); i++){
-      mixing_frac[i] *= 1./frac_sum;
+    for( int i = 0; i < mixing_ratio.size(); i++){
+      mixing_ratio[i] *= 1./frac_sum;
     }
     
   }
@@ -98,7 +110,7 @@ void MixingFab::Tick(){
 
     for( int i = 0; i < in_commods.size(); i++){
       std::string name = in_commods[i];
-      tgt_qty = std::min(tgt_qty, streambufs[name].quantity()/ mixing_frac[i] );
+      tgt_qty = std::min(tgt_qty, streambufs[name].quantity()/ mixing_ratio[i] );
     }
     
     tgt_qty = std::min(tgt_qty, throughput);
@@ -108,9 +120,9 @@ void MixingFab::Tick(){
       for( int i = 0; i < in_commods.size(); i++){
         std::string name = in_commods[i];
         if(i==0){
-          m = streambufs[name].Pop(mixing_frac[i] *tgt_qty);
+          m = streambufs[name].Pop(mixing_ratio[i] *tgt_qty);
         } else {
-          Material::Ptr m_ = streambufs[name].Pop(mixing_frac[i] *tgt_qty);
+          Material::Ptr m_ = streambufs[name].Pop(mixing_ratio[i] *tgt_qty);
           m->Absorb(m_);
         }
       }
