@@ -91,7 +91,7 @@ def main():
     uninst = 'uninstall'
     parser.add_argument('--uninstall', action='store_true', help=uninst, default=False)
 
-    clean = 'attempt to remove the build directory before building'
+    clean = 'remove the build directory before building'
     parser.add_argument('--clean-build', action='store_true', help=clean)
 
     threads = "the number of threads to use in the make step"
