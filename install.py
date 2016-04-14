@@ -28,7 +28,7 @@ def check_windows_cmake(cmake_cmd):
 def install_cycamore(args):
     if not os.path.exists(args.build_dir):
         os.mkdir(args.build_dir)
-    elif args.replace:
+    elif args.clean_build:
         shutil.rmtree(args.build_dir)
         os.mkdir(args.build_dir)
 
@@ -91,8 +91,8 @@ def main():
     uninst = 'uninstall'
     parser.add_argument('--uninstall', action='store_true', help=uninst, default=False)
 
-    replace = 'whether or not to remove the build directory if it exists'
-    parser.add_argument('--replace', type=bool, help=replace, default=False)
+    clean = 'remove the build directory before building'
+    parser.add_argument('--clean-build', action='store_true', help=clean)
 
     threads = "the number of threads to use in the make step"
     parser.add_argument('-j', '--threads', type=int, help=threads)
