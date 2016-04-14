@@ -44,7 +44,7 @@ TEST(SeparationsTests, SepMaterial) {
 }
 
   
-// Test if a total separation of 1 and less works as expected.
+// Check that cumulative separations efficiency for a single nuclide of less than or equal to one does not trigger an error.
 TEST(SeparationsTests, SeparationEfficiency) {
 
   int simdur = 2;
@@ -88,7 +88,7 @@ TEST(SeparationsTests, SeparationEfficiency) {
   
   cyclus::MockSim sim1(cyclus::AgentSpec(":cycamore:Separations"), config, simdur);
   
-  EXPECT_NO_THROW(sim1.Run()) << "Cumulative separation efficiency smaler than 1 is throwing an error but should not.\n";
+  EXPECT_NO_THROW(sim1.Run()) << "Cumulative separation efficiency smaler than 1 is throwing an error but should not.";
   
   
   config =
@@ -134,14 +134,14 @@ TEST(SeparationsTests, SeparationEfficiency) {
   
   cyclus::MockSim sim2(cyclus::AgentSpec(":cycamore:Separations"), config, simdur);
   
-  EXPECT_NO_THROW(sim2.Run()) << "Cumulative separation efficiency of 1 is throwing an error but should not.\n";
+  EXPECT_NO_THROW(sim2.Run()) << "Cumulative separation efficiency of 1 is throwing an error but should not.";
 }
 
-  
+// Check that an error is correctly thrown when separations efficiency of greater than one.
 TEST(SeparationsTests, SeparationEfficiencyThrowing) {
   int simdur = 2;
 
-  // Check if a unique separation efficiency greater than 1 throw an error as expected.
+  // Check that single separations efficiency for a single nuclide of greater than one does not trigger an error.
   std::string config =
       "<streams>"
       "    <item>"
@@ -164,9 +164,9 @@ TEST(SeparationsTests, SeparationEfficiencyThrowing) {
 
   cyclus::MockSim sim1(cyclus::AgentSpec(":cycamore:Separations"), config, simdur);
   
-  EXPECT_THROW(sim1.Run(), cyclus::ValueError) << "Direct separation efficiency greater than 1 is no throwing an error but should.\n";
+  EXPECT_THROW(sim1.Run(), cyclus::ValueError) << "Direct separation efficiency greater than 1 is not throwing an error but should.";
   
-  // Check if a cumulative separation efficiency greater than 1 for a unique nuclide throw an error as expected.
+// Check if a cumulative separation efficiency greater than 1 for a unique nuclide throw an error as expected.
   config =
     "<streams>"
     "    <item>"
@@ -199,8 +199,8 @@ TEST(SeparationsTests, SeparationEfficiencyThrowing) {
   
   cyclus::MockSim sim2(cyclus::AgentSpec(":cycamore:Separations"), config, simdur);
   
-  EXPECT_THROW(sim2.Run(), cyclus::ValueError) << "Single cumulative separation efficiency greater than 1 is no throwing an error but should.\n";
-  // Check if a cumulative separation efficiency greater than 1 for multiple nuclides throw an error as expected.
+  EXPECT_THROW(sim2.Run(), cyclus::ValueError) << "Single cumulative separation efficiency greater than 1 is not throwing an error but should.";
+// Check if a cumulative separation efficiency greater than 1 for multiple nuclides throw an error as expected.
   config =
       "<streams>"
       "    <item>"
@@ -233,7 +233,7 @@ TEST(SeparationsTests, SeparationEfficiencyThrowing) {
   
   cyclus::MockSim sim3(cyclus::AgentSpec(":cycamore:Separations"), config, simdur);
   
-  EXPECT_THROW(sim3.Run(), cyclus::ValueError) << "Multiple cumulative separation efficiencies greater than 1 are no throwing an error but should.\n";
+  EXPECT_THROW(sim3.Run(), cyclus::ValueError) << "Multiple cumulative separation efficiencies greater than 1 are not throwing an error but should.";
 }
   
 TEST(SeparationsTests, SepMixElemAndNuclide) {
