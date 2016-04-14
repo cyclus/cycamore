@@ -23,7 +23,6 @@ namespace cycamore {
     void SetUpMixingFab();
     void SetInputInv(MixingFab* fac, std::vector<Material::Ptr> mat);
     
-    
     void TestInitState(MixingFab* fac);
     void TestBuffers(MixingFab* fac,
                                     std::vector<double> in_inv,

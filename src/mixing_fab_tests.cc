@@ -1,7 +1,9 @@
-
-#include <gtest/gtest.h>
 #include "mixing_fab_tests.h"
 
+
+#include <gtest/gtest.h>
+#include "equality_helpers.h"
+#include "cyclus.h"
 
 using pyne::nucname::id;
 using cyclus::Composition;
@@ -110,7 +112,13 @@ namespace cycamore {
     Normalize(&v,1);
     Normalize(&final_comp,1);
     
-    EXPECT_EQ(final_comp,v);
+    cyclus::CompMap sum_v = Add(v, final_comp);
+    
+    CompMap::iterator it;
+    for(it = sum_v.begin(); it != sum_v.end(); it ++){
+      EXPECT_DOUBLE_EQ(final_comp[it->first],v[it->first]);
+    }
+
     
   }
   
