@@ -21,16 +21,16 @@ namespace cycamore {
   
 class MixingFab : public cyclus::Facility {
 #pragma cyclus note {   	  \
-"niche": "mixing facility",				  \
-"doc":								\
-"Mixing takes in N streams of material and mixes them accordingly" \
-"to the ratios prodided by the user." \
-"\n\n " \
-"The MixingFab has N input inventories: one for each streams to be mixed,"\
-"and one output stream."\
-"\n\n" \
-"The supplying of mixed material is constrained by available inventory of"\
-"mixed material quantities.", \
+    "niche": "mixing facility",				  \
+    "doc":								\
+    " the archetype basically mixes N streams with fixed, static,"\
+    "user-specified ratios into a single output stream" \
+    "\n\n " \
+    "The MixingFab has N input inventories: one for each streams to be mixed,"\
+    "and one output stream."\
+    "\n\n" \
+    "The supplying of mixed material is constrained by available inventory of"\
+    "mixed material quantities.", \
     }
   
   friend class MixingFabTest;
@@ -67,7 +67,7 @@ class MixingFab : public cyclus::Facility {
   virtual void InitInv(cyclus::Inventories& inv);
 
   
-  private:
+  protected:
     
     
   #pragma cyclus var { \

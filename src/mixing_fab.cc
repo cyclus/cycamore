@@ -48,7 +48,7 @@ void MixingFab::InitInv(cyclus::Inventories& inv) {
 void MixingFab::EnterNotify() {
   cyclus::Facility::EnterNotify();
 
-  if(fill_commod_prefs.empty()){
+  if(fill_commod_prefs.size() == 0){
     for (int i = 0; i < in_commods.size(); i++) {
       fill_commod_prefs.push_back(1);
     }
@@ -60,9 +60,9 @@ void MixingFab::EnterNotify() {
   }
     
   
-  if (mixing_ratio.empty()) {
+  if (mixing_ratio.size() == 0) {
     for (int i = 0; i < in_commods.size(); i++) {
-      mixing_ratio.push_back(1/in_commods.size());
+      mixing_ratio.push_back(1./in_commods.size());
     }
   
   } else if (mixing_ratio.size() != in_commods.size()) {
