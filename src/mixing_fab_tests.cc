@@ -56,11 +56,23 @@ namespace cycamore {
     
   public:
     typedef cyclus::toolkit::ResBuf<cyclus::Material> InvBuffer;
+    
     cyclus::TestContext tc_;
     MixingFab* mf_facility_;
     
-    virtual void SetUp();
-    virtual void TearDown();
+    virtual void SetUp(){
+      mf_facility_ = new MixingFab(tc_.get());
+      
+      std::vector<std::string> in_com_ = { "in_c1", "in_c2", "in_c3" };
+      SetStream_comds(in_com_);
+
+      std::vector<double> in_cap_ = { 30, 20, 10 };
+      SetStream_capacity(in_cap_);
+      
+      SetOutStream_comds("out_com");
+
+    }
+    virtual void TearDown() { delete mf_facility_; }
     
     std::vector<std::string> in_com;
     std::vector<double> in_frac;
@@ -79,90 +91,33 @@ namespace cycamore {
     void SetStream_capacity(std::vector<double> cap)       { in_cap  = cap;    mf_facility_->in_buf_size  = cap; }
     
     void SetOutStream_comds(std::string com)  { out_com = com; mf_facility_->out_commod      = com; }
-    void SetOutStream_capacity(double cap)    { out_cap = cap; mf_facility_->output_buf_size = cap; }
-    void SetInputInv(std::vector<Material::Ptr> mat);
-    
+    void SetOutStream_capacity(double cap)    { out_cap = cap; mf_facility_->out_buf_size = cap; }
+    void SetInputInv(std::vector< Material::Ptr > mat){
+      for (int i = 0; i < in_com.size(); i++) {
+        mf_facility_->streambufs[in_com[i]].Push(mat[i]) ;
+      }
+    }
     
     std::vector<std::string>  GetStream_comds() { return mf_facility_->in_commods; }
     std::vector<double> GetStream_ratio()       { return mf_facility_->mixing_ratio; }
     std::vector<double> GetStream_capacity()    { return mf_facility_->in_buf_size; }
     
     std::string GetOutStream_comds()  { return mf_facility_->out_commod; }
-    double GetOutStream_capacity()    { return mf_facility_->output_buf_size; }
+    double GetOutStream_capacity()    { return mf_facility_->out_buf_size; }
     double GetThroughput()    { return mf_facility_->throughput; }
     
     
     InvBuffer* GetOutPutBuffer() { return &mf_facility_->output;}
     std::map<std::string, InvBuffer > GetStreamBuffer() { return mf_facility_->streambufs;}
-    
-    
-    
-    
+  
   };
   
-  
-  void MixingFabTest::SetUp() {
-    mf_facility_ = new MixingFab(tc_.get());
- 
-  }
-  
-  void MixingFabTest::TearDown() {
-    delete mf_facility_;
-  }
 
-  
-  void MixingFabTest::SetInputInv(std::vector< Material::Ptr > mat){
-    for (int i = 0; i < in_com.size(); i++) {
-      mf_facility_->streambufs[in_com[i]].Push(mat[i]) ;
-    }
-  }
-  
-  
-  
-  // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-  TEST_F(MixingFabTest, InitialState) {
-    // Test things about the initial state of the facility here
-    std::vector<std::string> in_com_ = { "in_c1", "in_c2", "in_c3" };
-    std::vector<double> in_frac_ = { 0.80, 0.15, 0.05 };
-    std::vector<double> in_cap_ = { 30, 20, 10 };
-    
-    SetStream_comds(in_com_);
-    SetStream_ratio(in_frac_);
-    SetStream_capacity(in_cap_);
-    
-    SetOutStream_comds("out_com");
-    SetOutStream_capacity(50);
-    
-    SetThroughput(1e200);
-    
-    
-    std::vector<std::string> strm_comds_ = GetStream_comds();
-    std::vector<double> strm_ratio_ = GetStream_ratio();
-    std::vector<double> strm_cap_   = GetStream_capacity();
-    
-    for (int i = 0; i < in_com.size(); i++) {
-      EXPECT_EQ(in_com[i],  strm_comds_[i]);
-      EXPECT_EQ(in_frac[i], strm_ratio_[i]);
-      EXPECT_EQ(in_cap[i],  strm_cap_[i]);
-    }
-    
-    EXPECT_EQ(out_com, GetOutStream_comds());
-    EXPECT_EQ(out_cap, GetOutStream_capacity());
-    
-    EXPECT_EQ(throughput, GetThroughput());
-      }
 
   // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-  TEST_F(MixingFabTest, StreamRatio) {
-    // Test things about the mixing ratio of the facility here
-    
-    std::vector<std::string> in_com_ = { "in_c1", "in_c2", "in_c3" };
-    std::vector<double> in_cap_ = { 30, 20, 10 };
-    
-    SetStream_comds(in_com_);
-    SetStream_capacity(in_cap_);
-    
-    SetOutStream_comds("out_com");
+  // Checking that ratios correctly default to 1/N.
+  TEST_F(MixingFabTest, StreamDefaultRatio) {
+  
     SetOutStream_capacity(50);
     
     SetThroughput(1e200);
@@ -170,44 +125,42 @@ namespace cycamore {
     mf_facility_->EnterNotify();
     double ext_val = 1/3.;
     std::vector<double> strm_ratio_ = GetStream_ratio();
+    
+    //
     for (int i = 0; i < in_com.size(); i++) {
       EXPECT_DOUBLE_EQ(ext_val, strm_ratio_[i]);
     }
-    
-    
-    
-    in_com_ = { "in_c1", "in_c2", "in_c3" };
+  }
+    // Test things about the mixing ratio normalisation.
+  TEST_F(MixingFabTest, StreamRatio) {
+   
+    // Checking renormalisation when sum of ratio is grester tham 1.
+    std::vector<double> in_cap_ = { 30, 20, 10 };
     std::vector<double> in_frac_ = { 2, 1, 5 };
     in_cap_ = { 30, 20, 10 };
     
-    SetStream_comds(in_com_);
     SetStream_ratio(in_frac_);
     SetStream_capacity(in_cap_);
     
-    SetOutStream_comds("out_com");
     SetOutStream_capacity(50);
     
     SetThroughput(1e200);
     
     mf_facility_->EnterNotify();
     
-    strm_ratio_ = GetStream_ratio();
+    std::vector<double> strm_ratio_ = GetStream_ratio();
     double sum = 0;
     for (int i = 0; i < in_com.size(); i++) {
       sum += strm_ratio_[i];
     }
-    
-    EXPECT_DOUBLE_EQ(sum, 1) << "Normalisation of the mising ratio went wrong!";
-    
-    in_com_ = { "in_c1", "in_c2", "in_c3" };
+
+    EXPECT_DOUBLE_EQ(sum, 1) << "Ratios normalized incorrectly: want 1, got " << sum;
+
+    // Checking renormalisation when sum of ratio is smaller tham 1.
     in_frac_ = { 0.1, 0.2, 0.5 };
-    in_cap_ = { 30, 20, 10 };
     
-    SetStream_comds(in_com_);
     SetStream_ratio(in_frac_);
-    SetStream_capacity(in_cap_);
     
-    SetOutStream_comds("out_com");
     SetOutStream_capacity(50);
     
     SetThroughput(1e200);
@@ -219,8 +172,8 @@ namespace cycamore {
     for (int i = 0; i < in_com.size(); i++) {
       sum += strm_ratio_[i];
     }
-    
-    EXPECT_DOUBLE_EQ(sum, 1) << "Normalisation of the mising ratio went wrong!";
+
+    EXPECT_DOUBLE_EQ(sum, 1) << "Ratios normalized incorrectly: want 1, got " << sum;
   
     
   }
@@ -251,9 +204,13 @@ namespace cycamore {
     sim.AddRecipe("pustream", c_uox());
     int id = sim.Run();
     
+    // Checking the number of transaction is as expected 3.
     QueryResult qr = sim.db().Query("Transactions", NULL);
     EXPECT_EQ(3, qr.rows.size());
     
+    
+    
+    // Checking that all input stream get one transaction each.
     std::vector<Cond> conds;
     conds.push_back(Cond("Commodity", "==", std::string("stream1")));
     qr = sim.db().Query("Transactions", &conds);
@@ -271,15 +228,10 @@ namespace cycamore {
   
   TEST_F(MixingFabTest, MixingComposition) {
     
-    std::vector<std::string> in_com_ = { "in_c1", "in_c2", "in_c3" };
     std::vector<double> in_frac_ = { 0.80, 0.15, 0.05 };
-    std::vector<double> in_cap_ = { 30, 20, 10 };
     
-    SetStream_comds(in_com_);
     SetStream_ratio(in_frac_);
-    SetStream_capacity(in_cap_);
     
-    SetOutStream_comds("out_com");
     SetOutStream_capacity(50);
     
     SetThroughput(1e200);
@@ -319,15 +271,10 @@ namespace cycamore {
 
   TEST_F(MixingFabTest, Throughput) {
     
-    std::vector<std::string> in_com_ = { "in_c1", "in_c2", "in_c3" };
     std::vector<double> in_frac_ = { 0.80, 0.15, 0.05 };
-    std::vector<double> in_cap_ = { 30, 20, 10 };
     
-    SetStream_comds(in_com_);
     SetStream_ratio(in_frac_);
-    SetStream_capacity(in_cap_);
     
-    SetOutStream_comds("out_com");
     SetOutStream_capacity(50);
     
     SetThroughput(0.5);
@@ -353,34 +300,14 @@ namespace cycamore {
       double buf_ratio = in_frac[i];
       double buf_inv = streambuf[buf_com].quantity();
       
-      EXPECT_EQ( buf_size - 0.5*buf_ratio, buf_inv) << " one (or more) input buffer inventory is not equal to the buffer size times the mixing ratio.";
+      // checking that each input buf was reduce of the correct amount (constrained by the throughput"
+      EXPECT_EQ( buf_size - 0.5*buf_ratio, buf_inv) << " one (or more) input buffer inventory was not drawn from in the correct ratio.";
     }
     
     
     // output buffer size should be equal to the throuput size
-    EXPECT_EQ(throughput, GetOutPutBuffer()->quantity()) << " output buffer inventory is not equal to the buffer size.";
+    EXPECT_EQ(throughput, GetOutPutBuffer()->quantity()) << " mixing was not correctly constrained by throughput.";
     
   }
 
 } // namespace cycamore
-  
-  
-  
-  
-  
-  
-  
-  
-  
-  
-  
-  
-  
-  
-  
-  
-  
-  
-  
-
-
