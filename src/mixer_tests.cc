@@ -1,4 +1,4 @@
-#include "mixing_fab.h"
+#include "mixer.h"
 
 #include "context.h"
 #include "facility_tests.h"
@@ -51,17 +51,17 @@ namespace cycamore {
   };
   
   
-  class MixingFabTest : public ::testing::Test {
+  class MixerTest : public ::testing::Test {
     
     
   public:
     typedef cyclus::toolkit::ResBuf<cyclus::Material> InvBuffer;
     
     cyclus::TestContext tc_;
-    MixingFab* mf_facility_;
+    Mixer* mf_facility_;
     
     virtual void SetUp(){
-      mf_facility_ = new MixingFab(tc_.get());
+      mf_facility_ = new Mixer(tc_.get());
       
       std::vector<std::string> in_com_ = { "in_c1", "in_c2", "in_c3" };
       SetStream_comds(in_com_);
@@ -116,7 +116,7 @@ namespace cycamore {
 
   // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
   // Checking that ratios correctly default to 1/N.
-  TEST_F(MixingFabTest, StreamDefaultRatio) {
+  TEST_F(MixerTest, StreamDefaultRatio) {
   
     SetOutStream_capacity(50);
     
@@ -132,7 +132,7 @@ namespace cycamore {
     }
   }
     // Test things about the mixing ratio normalisation.
-  TEST_F(MixingFabTest, StreamRatio) {
+  TEST_F(MixerTest, StreamRatio) {
    
     // Checking renormalisation when sum of ratio is grester tham 1.
     std::vector<double> in_cap_ = { 30, 20, 10 };
@@ -179,7 +179,7 @@ namespace cycamore {
   }
 
   // Check the correct mixing composition
-  TEST_F(MixingFabTest, MixingComposition) {
+  TEST_F(MixerTest, MixingComposition) {
     
     std::vector<double> in_frac_ = { 0.80, 0.15, 0.05 };
     
@@ -225,7 +225,7 @@ namespace cycamore {
   
   
   // Check the throughput constrain
-  TEST_F(MixingFabTest, Throughput) {
+  TEST_F(MixerTest, Throughput) {
     
     std::vector<double> in_frac_ = { 0.80, 0.15, 0.05 };
     
@@ -268,7 +268,7 @@ namespace cycamore {
 
   // multiple input streams can be correctly requested and used as
   //  material inventory.
-  TEST(MixingFabTests, MultipleFissStreams) {
+  TEST(MixerTests, MultipleFissStreams) {
     std::string config =
     "<in_commods> <val>stream1</val> <val>stream2</val> <val>stream3</val> </in_commods>"
     "<in_buf_size> <val>2.5</val> <val>3</val> <val>5</val></in_buf_size>"
@@ -280,7 +280,7 @@ namespace cycamore {
     ;
     
     int simdur = 1;
-    cyclus::MockSim sim(cyclus::AgentSpec(":cycamore:MixingFab"), config, simdur);
+    cyclus::MockSim sim(cyclus::AgentSpec(":cycamore:Mixer"), config, simdur);
     sim.AddSource("stream1").recipe("unatstream").capacity(1).Finalize();
     sim.AddSource("stream2").recipe("uoxstream").capacity(1).Finalize();
     sim.AddSource("stream3").recipe("pustream").capacity(1).Finalize();
@@ -314,7 +314,7 @@ namespace cycamore {
   
   // multiple input streams can be correctly requested and used as
   //  material inventory.
-  TEST(MixingFabTests, CompleteMixingProcess) {
+  TEST(MixerTests, CompleteMixingProcess) {
     std::string config =
     "<in_commods> <val>stream1</val> <val>stream2</val> <val>stream3</val> </in_commods>"
     "<in_buf_size> <val>2.5</val> <val>3</val> <val>5</val></in_buf_size>"
@@ -326,7 +326,7 @@ namespace cycamore {
     ;
     
     int simdur = 2;
-    cyclus::MockSim sim(cyclus::AgentSpec(":cycamore:MixingFab"), config, simdur);
+    cyclus::MockSim sim(cyclus::AgentSpec(":cycamore:Mixer"), config, simdur);
     sim.AddSource("stream1").recipe("unatstream").capacity(1).Finalize();
     sim.AddSource("stream2").recipe("uoxstream").capacity(1).Finalize();
     sim.AddSource("stream3").recipe("pustream").capacity(1).Finalize();

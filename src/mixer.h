@@ -8,27 +8,26 @@
 
 namespace cycamore {
   
-  /// MixingFab basically mixes N streams with fixed, static, user-specified
-  /// ratios into a single output stream. The MixingFab has N input inventories:
-  /// one for each streams to be mixed, and one output stream. The supplying of
-  /// mixed material is constrained by available inventory of mixed material
-  /// quantities.
-class MixingFab : public cyclus::Facility {
+/// Mixer mixes N streams with fixed, static, user-specified
+/// ratios into a single output stream. The Mixer has N input inventories:
+/// one for each streams to be mixed, and one output stream. The supplying of
+/// mixed material is constrained by available inventory of mixed material
+/// quantities.
+class Mixer : public cyclus::Facility {
 #pragma cyclus note {   	  \
     "niche": "mixing facility",				  \
-    "doc":								\
-    "MixingFab basically mixes N streams with fixed, static, user-specified" \
-    " ratios into a single output stream. The MixingFab has N input inventories:"\
-    " one for each streams to be mixed, and one output stream. The supplying of"\
-    " mixed material is constrained by available inventory of mixed material"\
-    " quantities.", \
+    "doc": "Mixer mixes N streams with fixed, static, user-specified" \
+           " ratios into a single output stream. The Mixer has N input inventories:"\
+           " one for each streams to be mixed, and one output stream. The supplying of"\
+           " mixed material is constrained by available inventory of mixed material"\
+           " quantities.", \
     }
   
-  friend class MixingFabTest;
+  friend class MixerTest;
 
   public:
-  MixingFab(cyclus::Context* ctx);
-  virtual ~MixingFab() {};
+  Mixer(cyclus::Context* ctx);
+  virtual ~Mixer() {};
   
   virtual void Tick();
   virtual void Tock(){};
@@ -57,10 +56,8 @@ class MixingFab : public cyclus::Facility {
   virtual cyclus::Inventories SnapshotInv();
   virtual void InitInv(cyclus::Inventories& inv);
 
-  
   protected:
-    
-    
+  
   #pragma cyclus var { \
     "doc": "Ordered list of commodities on which to request material stream" \
     " material, each commodity corresponds to an input stream.", \
@@ -68,38 +65,36 @@ class MixingFab : public cyclus::Facility {
     "uitype": ["oneormore", "incommodity"], \
   }
   std::vector<std::string> in_commods;
+  
   #pragma cyclus var { \
     "default": [], \
-    "uilabel": " Stream Preferences", \
+    "uilabel": "Stream Preferences", \
     "doc": "Stream commodity request preferences for each of the given commodities (same order)." \
-    " If unspecified, default is to use 1.0 for all preferences.", \
+           " If unspecified, default is 1.0 for all preferences.", \
   }
   std::vector<double> fill_commod_prefs;
   
   #pragma cyclus var { \
   "doc": "Size of input material stream inventory - i.e. the quantity of each" \
-  " stream type to keep on-hand)", \
-  "uilabel": " Stream Inventory Capacity", \
+         " stream type to keep on-hand)", \
+  "uilabel": "Stream Inventory Capacity", \
   "units": "kg", \
   }
   std::vector<double> in_buf_size;
-  
   
   // custom SnapshotInv and InitInv and EnterNotify are used to persist this
   // state var.
   std::map<std::string, cyclus::toolkit::ResBuf<cyclus::Material> > streambufs;
 
-  
   #pragma cyclus var { \
     "default": [], \
     "uilabel": "Commodities Mass Fraction", \
-    "doc": "Massic mixing ratio of each input commodity requested (same order)." \
-    " If unspecified, default is to use 1/N for each fraction." \
-    " Stream ratios can total to any arbitrary value " \
-    "and will be automatically normalized internally." \
+    "doc": "Mass mixing ratio of each input commodity requested (same order)." \
+           " If unspecified, default is to use 1/N for each fraction." \
+           " Stream ratios can total to any arbitrary value" \
+           " and will be automatically normalized internally." \
   }
   std::vector<double> mixing_ratio;
-  
   
   #pragma cyclus var { \
     "doc": "Commodity on which to offer/supply mixed fuel material.", \
@@ -108,11 +103,10 @@ class MixingFab : public cyclus::Facility {
   }
   std::string out_commod;
 
-  
   #pragma cyclus var { \
     "doc" : "Maximum amount of mixed material that can be stored." \
-    " If full, the facility halts operation until space becomes " \
-    "available.", \
+            " If full, the facility halts operation until space becomes" \
+            " available.", \
     "uilabel": "Maximum Leftover Inventory", \
     "default": 1e299, \
     "units": "kg", \
@@ -124,7 +118,6 @@ class MixingFab : public cyclus::Facility {
   }
   cyclus::toolkit::ResBuf<cyclus::Material> output;
   
-  
   #pragma cyclus var { \
     "default": 1e299, \
     "doc": "Maximum number of kg of fuel material that can be mixed per time step.", \
@@ -133,14 +126,12 @@ class MixingFab : public cyclus::Facility {
   }
   double throughput;
   
-  
   // intra-time-step state - no need to be a state var
   // map<request, inventory name>
   std::map<cyclus::Request<cyclus::Material>*, std::string> req_inventories_;
   
   //// A policy for sending material
   cyclus::toolkit::MatlSellPolicy sell_policy;
-
 
  };
   
