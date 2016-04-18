@@ -342,7 +342,7 @@ namespace cycamore {
     conds.push_back(Cond("Commodity", "==", std::string("mixedstream")));
     QueryResult qr = sim.db().Query("Transactions", &conds);
     EXPECT_EQ(1, qr.rows.size());
-    }
+  }
 
   
   
