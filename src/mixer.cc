@@ -47,7 +47,7 @@ void Mixer::InitInv(cyclus::Inventories& inv) {
 void Mixer::EnterNotify() {
   cyclus::Facility::EnterNotify();
 
-  if (fill_commod_prefs.emtpy()) {
+  if (fill_commod_prefs.empty()) {
     for (int i = 0; i < in_commods.size(); i++) {
       fill_commod_prefs.push_back(1);
     }
