@@ -22,11 +22,7 @@ Reactor::Reactor(cyclus::Context* ctx)
       cycle_step(0),
       power_cap(0),
       power_name("power"),
-      discharged(false) {
-  cyclus::Warn<cyclus::EXPERIMENTAL_WARNING>(
-      "the Reactor archetype "
-      "is experimental");
-}
+      discharged(false) { }
 
 #pragma cyclus def clone cycamore::Reactor
 

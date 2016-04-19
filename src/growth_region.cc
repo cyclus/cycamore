@@ -3,9 +3,7 @@
 
 namespace cycamore {
 
-GrowthRegion::GrowthRegion(cyclus::Context* ctx) : cyclus::Region(ctx) {
-  cyclus::Warn<cyclus::EXPERIMENTAL_WARNING>("the GrowthRegion is experimental.");
-}
+GrowthRegion::GrowthRegion(cyclus::Context* ctx) : cyclus::Region(ctx) { }
 
 GrowthRegion::~GrowthRegion() {}
 

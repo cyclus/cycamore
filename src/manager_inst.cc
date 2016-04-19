@@ -4,9 +4,7 @@
 namespace cycamore {
 
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-ManagerInst::ManagerInst(cyclus::Context* ctx) : cyclus::Institution(ctx) {
-  cyclus::Warn<cyclus::EXPERIMENTAL_WARNING>("the ManagerInst agent is experimental.");
-}
+ManagerInst::ManagerInst(cyclus::Context* ctx) : cyclus::Institution(ctx) { }
 
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 ManagerInst::~ManagerInst() {}

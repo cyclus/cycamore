@@ -11,11 +11,7 @@ using cyclus::CompMap;
 
 namespace cycamore {
 
-Separations::Separations(cyclus::Context* ctx) : cyclus::Facility(ctx) {
-  cyclus::Warn<cyclus::EXPERIMENTAL_WARNING>(
-      "the Separations archetype "
-      "is experimental");
-}
+Separations::Separations(cyclus::Context* ctx) : cyclus::Facility(ctx) { }
 
 cyclus::Inventories Separations::SnapshotInv() {
   cyclus::Inventories invs;
