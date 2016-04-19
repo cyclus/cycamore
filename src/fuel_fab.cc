@@ -127,11 +127,7 @@ class TopupConverter : public cyclus::Converter<cyclus::Material> {
 };
 
 FuelFab::FuelFab(cyclus::Context* ctx)
-    : cyclus::Facility(ctx), fill_size(0), fiss_size(0), throughput(0) {
-  cyclus::Warn<cyclus::EXPERIMENTAL_WARNING>(
-      "the FuelFab archetype "
-      "is experimental");
-}
+    : cyclus::Facility(ctx), fill_size(0), fiss_size(0), throughput(0) { }
 
 void FuelFab::EnterNotify() {
   cyclus::Facility::EnterNotify();
