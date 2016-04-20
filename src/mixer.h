@@ -1,6 +1,6 @@
 
-#ifndef CYCAMORE_SRC_MIXING_FAB_H_
-#define CYCAMORE_SRC_MIXING_FAB_H_
+#ifndef CYCAMORE_SRC_MIXER_H_
+#define CYCAMORE_SRC_MIXER_H_
 
 #include <string>
 #include "cyclus.h"
@@ -61,26 +61,26 @@ class Mixer : public cyclus::Facility {
   #pragma cyclus var { \
     "doc": "Ordered list of commodities on which to request material stream" \
     " material, each commodity corresponds to an input stream.", \
-    "uilabel": "Stream Commodities", \
+    "uilabel": "Input Commodities", \
     "uitype": ["oneormore", "incommodity"], \
   }
   std::vector<std::string> in_commods;
   
   #pragma cyclus var { \
     "default": [], \
-    "uilabel": "Stream Preferences", \
+    "uilabel": "Input Preferences", \
     "doc": "Stream commodity request preferences for each of the given commodities (same order)." \
            " If unspecified, default is 1.0 for all preferences.", \
   }
-  std::vector<double> fill_commod_prefs;
+  std::vector<double> in_commod_prefs;
   
   #pragma cyclus var { \
   "doc": "Size of input material stream inventory - i.e. the quantity of each" \
          " stream type to keep on-hand)", \
-  "uilabel": "Stream Inventory Capacity", \
+  "uilabel": "Input Inventory Capacity", \
   "units": "kg", \
   }
-  std::vector<double> in_buf_size;
+  std::vector<double> in_buf_sizes;
   
   // custom SnapshotInv and InitInv and EnterNotify are used to persist this
   // state var.
@@ -94,7 +94,7 @@ class Mixer : public cyclus::Facility {
            " Stream ratios can total to any arbitrary value" \
            " and will be automatically normalized internally." \
   }
-  std::vector<double> mixing_ratio;
+  std::vector<double> mixing_ratios;
   
   #pragma cyclus var { \
     "doc": "Commodity on which to offer/supply mixed fuel material.", \
@@ -139,4 +139,4 @@ class Mixer : public cyclus::Facility {
 } // namespace cycamore
 
 
-#endif  // CYCAMORE_SRC_MIXING_FAB_H_
+#endif  // CYCAMORE_SRC_MIXER_H_

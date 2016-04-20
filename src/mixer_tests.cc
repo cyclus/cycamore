@@ -87,8 +87,8 @@ namespace cycamore {
     void SetThroughput(double thpt) { throughput = thpt; mf_facility_->throughput = thpt;}
     
     void SetStream_comds(std::vector<std::string> comds)   { in_com  = comds;  mf_facility_->in_commods   = comds; }
-    void SetStream_ratio(std::vector<double> ratio)        { in_frac = ratio;  mf_facility_->mixing_ratio = ratio; }
-    void SetStream_capacity(std::vector<double> cap)       { in_cap  = cap;    mf_facility_->in_buf_size  = cap; }
+    void SetStream_ratio(std::vector<double> ratio)        { in_frac = ratio;  mf_facility_->mixing_ratios = ratio; }
+    void SetStream_capacity(std::vector<double> cap)       { in_cap  = cap;    mf_facility_->in_buf_sizes  = cap; }
     
     void SetOutStream_comds(std::string com)  { out_com = com; mf_facility_->out_commod      = com; }
     void SetOutStream_capacity(double cap)    { out_cap = cap; mf_facility_->out_buf_size = cap; }
@@ -99,8 +99,8 @@ namespace cycamore {
     }
     
     std::vector<std::string>  GetStream_comds() { return mf_facility_->in_commods; }
-    std::vector<double> GetStream_ratio()       { return mf_facility_->mixing_ratio; }
-    std::vector<double> GetStream_capacity()    { return mf_facility_->in_buf_size; }
+    std::vector<double> GetStream_ratio()       { return mf_facility_->mixing_ratios; }
+    std::vector<double> GetStream_capacity()    { return mf_facility_->in_buf_sizes; }
     
     std::string GetOutStream_comds()  { return mf_facility_->out_commod; }
     double GetOutStream_capacity()    { return mf_facility_->out_buf_size; }
@@ -271,8 +271,8 @@ namespace cycamore {
   TEST(MixerTests, MultipleFissStreams) {
     std::string config =
     "<in_commods> <val>stream1</val> <val>stream2</val> <val>stream3</val> </in_commods>"
-    "<in_buf_size> <val>2.5</val> <val>3</val> <val>5</val></in_buf_size>"
-    "<mixing_ratio> <val>0.8</val> <val>0.15</val> <val>0.05</val></mixing_ratio>"
+    "<in_buf_sizes> <val>2.5</val> <val>3</val> <val>5</val></in_buf_sizes>"
+    "<mixing_ratios> <val>0.8</val> <val>0.15</val> <val>0.05</val></mixing_ratios>"
     ""
     "<out_commod>dummyout</out_commod>"
     "<outputbuf_size>0</outputbuf_size>"
@@ -317,8 +317,8 @@ namespace cycamore {
   TEST(MixerTests, CompleteMixingProcess) {
     std::string config =
     "<in_commods> <val>stream1</val> <val>stream2</val> <val>stream3</val> </in_commods>"
-    "<in_buf_size> <val>2.5</val> <val>3</val> <val>5</val></in_buf_size>"
-    "<mixing_ratio> <val>0.8</val> <val>0.15</val> <val>0.05</val></mixing_ratio>"
+    "<in_buf_sizes> <val>2.5</val> <val>3</val> <val>5</val></in_buf_sizes>"
+    "<mixing_ratios> <val>0.8</val> <val>0.15</val> <val>0.05</val></mixing_ratios>"
     ""
     "<out_commod>mixedstream</out_commod>"
     "<outputbuf_size>10</outputbuf_size>"
