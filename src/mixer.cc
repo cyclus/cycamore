@@ -1,19 +1,12 @@
 #include "mixer.h"
 #include <sstream>
 
-
 namespace cycamore {
-
-using cyclus::Material;
-using cyclus::Composition;
-using cyclus::toolkit::ResBuf;
-
   
 Mixer::Mixer(cyclus::Context* ctx)
 : cyclus::Facility(ctx), throughput(0) {
   cyclus::Warn<cyclus::EXPERIMENTAL_WARNING>(
-     "the Mixer archetype "
-     "is experimental");
+     "the Mixer archetype is experimental");
 }
 
 cyclus::Inventories Mixer::SnapshotInv() {
@@ -25,7 +18,7 @@ cyclus::Inventories Mixer::SnapshotInv() {
   invs["output-inv-name"] = output.PopNRes(output.count());
   output.Push(invs["output-inv-name"]);
   
-  std::map<std::string, ResBuf<Material> >::iterator it;
+  std::map<std::string, cyclus::toolkit::ResBuf<cyclus::Material> >::iterator it;
   for (it = streambufs.begin(); it != streambufs.end(); ++it) {
     invs[it->first] = it->second.PopNRes(it->second.count());
     it->second.Push(invs[it->first]);
@@ -43,7 +36,6 @@ void Mixer::InitInv(cyclus::Inventories& inv) {
   }
 }
 
-
 void Mixer::EnterNotify() {
   cyclus::Facility::EnterNotify();
 
@@ -58,12 +50,10 @@ void Mixer::EnterNotify() {
     throw cyclus::ValidationError(ss.str());
   }
     
-  
   if (mixing_ratios.empty()) {
     for (int i = 0; i < in_commods.size(); i++) {
       mixing_ratios.push_back(1./in_commods.size());
     }
-  
   } else if (mixing_ratios.size() != in_commods.size()) {
     std::stringstream ss;
     ss << "prototype '" << prototype() << "' has " << mixing_ratios.size()
@@ -72,7 +62,7 @@ void Mixer::EnterNotify() {
   
   } else {
     double frac_sum = 0.0;
-    for ( int i = 0; i < mixing_ratios.size(); i++)
+    for (int i = 0; i < mixing_ratios.size(); i++)
       frac_sum += mixing_ratios[i];
     
     if (frac_sum != 1.0) {
@@ -82,21 +72,20 @@ void Mixer::EnterNotify() {
       cyclus::Warn<cyclus::VALUE_WARNING>(ss.str());
     }
     
-    for ( int i = 0; i < mixing_ratios.size(); i++) {
-      mixing_ratios[i]*= 1./frac_sum;
+    for (int i = 0; i < mixing_ratios.size(); i++) {
+      mixing_ratios[i] *= 1./frac_sum;
     }
     
   }
   
-  for ( int i = 0; i < in_commods.size(); i++) {
+  for (int i = 0; i < in_commods.size(); i++) {
     std::string name = in_commods[i];
     double cap = in_buf_sizes[i];
     if (cap >= 0) {
       streambufs[name].capacity(cap);
     }
   }
-  
-  
+
   sell_policy.Init(this, &output, "output").Set(out_commod).Start();
 
 }
@@ -107,21 +96,22 @@ void Mixer::Tick() {
 
     double tgt_qty = output.space();
 
-    for ( int i = 0; i < in_commods.size(); i++) {
+    for (int i = 0; i < in_commods.size(); i++) {
       std::string name = in_commods[i];
-      tgt_qty = std::min(tgt_qty, streambufs[name].quantity()/mixing_ratios[i] );
+      tgt_qty = std::min(tgt_qty, streambufs[name].quantity()/mixing_ratios[i]);
     }
     
     tgt_qty = std::min(tgt_qty, throughput);
 
     if (tgt_qty > 0) {
-      Material::Ptr m;
-      for ( int i = 0; i < in_commods.size(); i++) {
+      cyclus::Material::Ptr m;
+      for (int i = 0; i < in_commods.size(); i++) {
         std::string name = in_commods[i];
         if (i==0) {
           m = streambufs[name].Pop(mixing_ratios[i]*tgt_qty);
         } else {
-          Material::Ptr m_ = streambufs[name].Pop(mixing_ratios[i]*tgt_qty);
+          cyclus::Material::Ptr m_ = streambufs[name].Pop(mixing_ratios[i]
+                                                          *tgt_qty);
           m->Absorb(m_);
         }
       }
@@ -133,20 +123,22 @@ void Mixer::Tick() {
   
 }
 
-std::set<cyclus::RequestPortfolio<Material>::Ptr> Mixer::GetMatlRequests() {
+std::set<cyclus::RequestPortfolio<cyclus::Material>::Ptr> Mixer::GetMatlRequests() {
   using cyclus::RequestPortfolio;
 
-  std::set<RequestPortfolio<Material>::Ptr> ports;
+  std::set<RequestPortfolio<cyclus::Material>::Ptr> ports;
   
-  for ( int i = 0; i < in_commods.size(); i++) {
+  for (int i = 0; i < in_commods.size(); i++) {
     std::string name = in_commods[i];
 
     if (streambufs[name].space() > cyclus::eps()) {
-      RequestPortfolio<Material>::Ptr port(new RequestPortfolio<Material>());
+      RequestPortfolio<cyclus::Material>::Ptr port(new RequestPortfolio<
+                                                   cyclus::Material>());
       
-      Material::Ptr m = cyclus::NewBlankMaterial(streambufs[name].space());
+      cyclus::Material::Ptr m;
+      m = cyclus::NewBlankMaterial(streambufs[name].space());
       
-      cyclus::Request<Material>* r;
+      cyclus::Request<cyclus::Material>* r;
       r = port->AddRequest(m, this, in_commods[i], 1.0, false);
       req_inventories_[r] = name;
       ports.insert(port);
@@ -157,37 +149,36 @@ std::set<cyclus::RequestPortfolio<Material>::Ptr> Mixer::GetMatlRequests() {
 }
 
 void Mixer::AcceptMatlTrades(const std::vector<
-  std::pair<cyclus::Trade<Material>, Material::Ptr> >& responses) {
+                             std::pair<cyclus::Trade<cyclus::Material>,
+                             cyclus::Material::Ptr> >& responses) {
   
   std::vector<std::pair<cyclus::Trade<cyclus::Material>,
   cyclus::Material::Ptr> >::const_iterator trade;
 
   for (trade = responses.begin(); trade != responses.end(); ++trade) {
     
-    cyclus::Request<Material>* req = trade->first.request;
-    Material::Ptr m = trade->second;
+    cyclus::Request<cyclus::Material>* req = trade->first.request;
+    cyclus::Material::Ptr m = trade->second;
     
     std::string name = req_inventories_[req];
     bool assigned = false;
     std::map<std::string, cyclus::toolkit::ResBuf<cyclus::Material> >::iterator it;
 
-    for ( it = streambufs.begin(); it != streambufs.end(); it++ ) {
-      if ( name == it->first) {
+    for (it = streambufs.begin(); it != streambufs.end(); it++ ) {
+      if (name == it->first) {
         it->second.Push(m);
         assigned = true;
         break;
       }
     }
-    if ( !assigned ) {
+    if (!assigned) {
       throw cyclus::ValueError("cycamore::Mixer was overmatched on requests");
     }
   }
   
   req_inventories_.clear();
-  
 }
   
-
 extern "C" cyclus::Agent* ConstructMixer(cyclus::Context* ctx) {
   return new Mixer(ctx);
 }

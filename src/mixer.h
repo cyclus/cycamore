@@ -1,4 +1,3 @@
-
 #ifndef CYCAMORE_SRC_MIXER_H_
 #define CYCAMORE_SRC_MIXER_H_
 
@@ -17,10 +16,10 @@ class Mixer : public cyclus::Facility {
 #pragma cyclus note {   	  \
     "niche": "mixing facility",				  \
     "doc": "Mixer mixes N streams with fixed, static, user-specified" \
-           " ratios into a single output stream. The Mixer has N input inventories:"\
-           " one for each streams to be mixed, and one output stream. The supplying of"\
-           " mixed material is constrained by available inventory of mixed material"\
-           " quantities.", \
+           " ratios into a single output stream. The Mixer has N input"\
+           " inventories: one for each streams to be mixed, and one output"\
+           " stream. The supplying of mixed material is constrained by "\
+           " available inventory of mixed material quantities.", \
     }
   
   friend class MixerTest;
@@ -34,11 +33,11 @@ class Mixer : public cyclus::Facility {
   virtual void EnterNotify();
   
   virtual void AcceptMatlTrades(const std::vector<std::pair<
-                                cyclus::Trade<cyclus::Material>, cyclus::Material::Ptr> >& responses);
+                                cyclus::Trade<cyclus::Material>,
+                                cyclus::Material::Ptr> >& responses);
   
   virtual std::set<cyclus::RequestPortfolio<cyclus::Material>::Ptr>
       GetMatlRequests();
-
 
   #pragma cyclus clone
   #pragma cyclus initfromcopy
@@ -69,7 +68,8 @@ class Mixer : public cyclus::Facility {
   #pragma cyclus var { \
     "default": [], \
     "uilabel": "Input Preferences", \
-    "doc": "Stream commodity request preferences for each of the given commodities (same order)." \
+    "doc": "Stream commodity request preferences for each of the given" \
+           "commodities (same order)." \
            " If unspecified, default is 1.0 for all preferences.", \
   }
   std::vector<double> in_commod_prefs;
@@ -134,9 +134,7 @@ class Mixer : public cyclus::Facility {
   cyclus::toolkit::MatlSellPolicy sell_policy;
 
  };
-  
-  
-} // namespace cycamore
 
+} // namespace cycamore
 
 #endif  // CYCAMORE_SRC_MIXER_H_
