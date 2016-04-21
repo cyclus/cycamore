@@ -52,7 +52,7 @@ void Mixer::EnterNotify() {
     
   if (mixing_ratios.empty()) {
     for (int i = 0; i < in_commods.size(); i++) {
-      mixing_ratios.push_back(1./in_commods.size());
+      mixing_ratios.push_back(1.0/in_commods.size());
     }
   } else if (mixing_ratios.size() != in_commods.size()) {
     std::stringstream ss;
@@ -73,7 +73,7 @@ void Mixer::EnterNotify() {
     }
     
     for (int i = 0; i < mixing_ratios.size(); i++) {
-      mixing_ratios[i] *= 1./frac_sum;
+      mixing_ratios[i] *= 1.0/frac_sum;
     }
     
   }

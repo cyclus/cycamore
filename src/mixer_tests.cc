@@ -154,7 +154,7 @@ namespace cycamore {
     SetThroughput(1e200);
     
     mf_facility_->EnterNotify();
-    double ext_val = 1/3.;
+    double ext_val = 1.0/3.0;
     std::vector<double> strm_ratio_ = GetStream_ratio();
     
     //
@@ -180,7 +180,7 @@ namespace cycamore {
     mf_facility_->EnterNotify();
     
     std::vector<double> strm_ratio_ = GetStream_ratio();
-    double sum = 0;
+    double sum = 0.0;
     for (int i = 0; i < in_com.size(); i++) {
       sum += strm_ratio_[i];
     }
