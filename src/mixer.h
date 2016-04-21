@@ -2,11 +2,11 @@
 #define CYCAMORE_SRC_MIXER_H_
 
 #include <string>
-#include "cyclus.h"
 #include "cycamore_version.h"
+#include "cyclus.h"
 
 namespace cycamore {
-  
+
 /// Mixer mixes N streams with fixed, static, user-specified
 /// ratios into a single output stream. The Mixer has N input inventories:
 /// one for each streams to be mixed, and one output stream. The supplying of
@@ -21,23 +21,23 @@ class Mixer : public cyclus::Facility {
            " stream. The supplying of mixed material is constrained by "\
            " available inventory of mixed material quantities.", \
     }
-  
+
   friend class MixerTest;
 
-  public:
+ public:
   Mixer(cyclus::Context* ctx);
-  virtual ~Mixer() {};
-  
+  virtual ~Mixer(){};
+
   virtual void Tick();
   virtual void Tock(){};
   virtual void EnterNotify();
-  
-  virtual void AcceptMatlTrades(const std::vector<std::pair<
-                                cyclus::Trade<cyclus::Material>,
-                                cyclus::Material::Ptr> >& responses);
-  
+
+  virtual void AcceptMatlTrades(
+      const std::vector<std::pair<cyclus::Trade<cyclus::Material>,
+                                  cyclus::Material::Ptr> >& responses);
+
   virtual std::set<cyclus::RequestPortfolio<cyclus::Material>::Ptr>
-      GetMatlRequests();
+  GetMatlRequests();
 
   #pragma cyclus clone
   #pragma cyclus initfromcopy
@@ -51,12 +51,11 @@ class Mixer : public cyclus::Facility {
   //
   //     #pragma cyclus snapshotinv
   //     #pragma cyclus initinv
-  
+
   virtual cyclus::Inventories SnapshotInv();
   virtual void InitInv(cyclus::Inventories& inv);
 
-  protected:
-  
+ protected:
   #pragma cyclus var { \
     "doc": "Ordered list of commodities on which to request material stream" \
     " material, each commodity corresponds to an input stream.", \
@@ -64,7 +63,7 @@ class Mixer : public cyclus::Facility {
     "uitype": ["oneormore", "incommodity"], \
   }
   std::vector<std::string> in_commods;
-  
+
   #pragma cyclus var { \
     "default": [], \
     "uilabel": "Input Preferences", \
@@ -73,15 +72,15 @@ class Mixer : public cyclus::Facility {
            " If unspecified, default is 1.0 for all preferences.", \
   }
   std::vector<double> in_commod_prefs;
-  
+
   #pragma cyclus var { \
-  "doc": "Size of input material stream inventory - i.e. the quantity of each" \
-         " stream type to keep on-hand)", \
-  "uilabel": "Input Inventory Capacity", \
-  "units": "kg", \
+    "doc": "Size of input material stream inventory - i.e. the quantity of each" \
+           " stream type to keep on-hand)", \
+    "uilabel": "Input Inventory Capacity", \
+    "units": "kg", \
   }
   std::vector<double> in_buf_sizes;
-  
+
   // custom SnapshotInv and InitInv and EnterNotify are used to persist this
   // state var.
   std::map<std::string, cyclus::toolkit::ResBuf<cyclus::Material> > streambufs;
@@ -95,12 +94,10 @@ class Mixer : public cyclus::Facility {
            " and will be automatically normalized internally." \
   }
   std::vector<double> mixing_ratios;
-  
-  #pragma cyclus var { \
-    "doc": "Commodity on which to offer/supply mixed fuel material.", \
-    "uilabel": "Output Commodity", \
-    "uitype": "outcommodity", \
-  }
+
+  #pragma cyclus var {                                                 \
+    "doc" : "Commodity on which to offer/supply mixed fuel material.", \
+    "uilabel" : "Output Commodity", "uitype" : "outcommodity", }
   std::string out_commod;
 
   #pragma cyclus var { \
@@ -112,12 +109,10 @@ class Mixer : public cyclus::Facility {
     "units": "kg", \
   }
   double out_buf_size;
-  
-  #pragma cyclus var { \
-    "capacity" : "out_buf_size", \
-  }
+
+  #pragma cyclus var { "capacity" : "out_buf_size", }
   cyclus::toolkit::ResBuf<cyclus::Material> output;
-  
+
   #pragma cyclus var { \
     "default": 1e299, \
     "doc": "Maximum number of kg of fuel material that can be mixed per time step.", \
@@ -125,16 +120,15 @@ class Mixer : public cyclus::Facility {
     "units": "kg", \
   }
   double throughput;
-  
+
   // intra-time-step state - no need to be a state var
   // map<request, inventory name>
   std::map<cyclus::Request<cyclus::Material>*, std::string> req_inventories_;
-  
+
   //// A policy for sending material
   cyclus::toolkit::MatlSellPolicy sell_policy;
+};
 
- };
-
-} // namespace cycamore
+}  // namespace cycamore
 
 #endif  // CYCAMORE_SRC_MIXER_H_
