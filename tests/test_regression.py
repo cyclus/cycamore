@@ -2,7 +2,6 @@
 
 import os
 import platform
-from unittest import TestCase
 
 import tables
 import uuid
@@ -14,7 +13,7 @@ from nose.tools import assert_equal, assert_true
 import helper
 from helper import check_cmd, run_cyclus, table_exist
 
-class TestRegression(TestCase):
+class TestRegression(object):
     """A base class for all regression tests. A derived class is required for
     each new input file to be tested. Each derived class *must* declare an `inf`
     member in their `__init__` function that points to the input file to be
@@ -22,15 +21,9 @@ class TestRegression(TestCase):
     examples.
     """
     def __init__(self, *args, **kwargs):
-        super(TestRegression, self).__init__(*args, **kwargs)
         self.ext = '.sqlite'
         self.outf = str(uuid.uuid4()) + self.ext
         self.inf = None
-
-    def __del__(self):
-        if os.path.isfile(self.outf):
-            print("removing {0}".format(self.outf))
-            os.remove(self.outf)
 
     def setUp(self):
         if not self.inf:
@@ -295,6 +288,9 @@ class TestDynamicCapacitated(TestRegression):
         self.resource_ids = self.to_ary(self.resources, "ResourceId")
         self.quantities = self.to_ary(self.resources, "Quantity")
 
+    def tearDown(self): 
+        super(TestDynamicCapacitated, self).tearDown()
+
     def test_source_deployment(self):
         # test number of sources
         assert_equal(len(self.source_id), 3)
@@ -380,7 +376,14 @@ class TestGrowth(TestRegression):
         super(TestGrowth, self).__init__(*args, **kwargs)
         self.inf = "./input/growth.xml"
 
+    def setUp(self): 
+        super(TestGrowth, self).setUp()
+
+    def tearDown(self): 
+        super(TestGrowth, self).tearDown()
+
     def test_deployment(self):
+        pass
         agent_ids = self.to_ary(self.agent_entry, "AgentId")
         proto = self.to_ary(self.agent_entry, "Prototype")
         enter_time = self.to_ary(self.agent_entry, "EnterTime")
@@ -400,7 +403,7 @@ class TestGrowth(TestRegression):
         assert_equal(enter_time[np.where(agent_ids == source1_id[0])], 2)
         assert_equal(enter_time[np.where(agent_ids == source1_id[1])], 3)
         for x in source3_id:
-            yield assert_equal, enter_time[np.where(agent_ids == x)], 2
+            assert_equal(enter_time[np.where(agent_ids == x)], 2)
 
 class _Recycle(TestRegression):
     """This class tests the input/recycle.xml file.
@@ -444,8 +447,8 @@ class _Recycle(TestRegression):
 
         i = 0
         for exp, obs in zip(invs, exp_invs):
-            self.assertAlmostEquals(
-                exp, obs, msg='mismatch at t={}, {} != {}'.format(i, exp, obs))
+            assert_almost_equal(
+                exp, obs, err_msg='mismatch at t={}, {} != {}'.format(i, exp, obs))
             i += 1
             
         os.remove(expfname)
