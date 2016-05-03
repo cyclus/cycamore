@@ -343,10 +343,9 @@ std::set<cyclus::BidPortfolio<Material>::Ptr> FuelFab::GetMatlBids(
       bool exclusive = false;
       port->AddBid(req, m1, this, exclusive);
     } else {// else can't meet the target - don't bid
-      LOG(cyclus::LEV_INFO1, "Bid")
-          << prototype() << " was not able to build "
-                            " the requested material quality is too low/high "
-                            "to match the reactivity requested.";
+      cyclus::Warn<cyclus::VALUE_WARNING>(
+          "Input stream weights/reactivity do not "
+          "span the requested material weight.");
     }
   }
 
