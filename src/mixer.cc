@@ -66,8 +66,9 @@ void Mixer::EnterNotify() {
 
     if (frac_sum != 1.0) {
       std::stringstream ss;
-      ss << "prototype '" << prototype() << "' has " << mixing_ratios.size()
-         << " commodity fraction values, expected " << in_commods.size();
+      ss << "prototype '" << prototype() << "': the sum of mixing fractions is "
+                                            "not 1, renormalization will be "
+                                            "done.";
       cyclus::Warn<cyclus::VALUE_WARNING>(ss.str());
     }
 
