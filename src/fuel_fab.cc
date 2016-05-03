@@ -342,7 +342,13 @@ std::set<cyclus::BidPortfolio<Material>::Ptr> FuelFab::GetMatlBids(
 
       bool exclusive = false;
       port->AddBid(req, m1, this, exclusive);
-    }  // else can't meet the target - don't bid
+    } else {  // else can't meet the target - don't bid
+      std::stringstream ss;
+      ss << "prototype '" << prototype()
+         << "': Input stream weights/reactivity do not span "
+            "the requested material weight.";
+      cyclus::Warn<cyclus::VALUE_WARNING>(ss.str());
+    }
   }
 
   cyclus::Converter<Material>::Ptr fissconv(
