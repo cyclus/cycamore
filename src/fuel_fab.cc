@@ -343,8 +343,10 @@ std::set<cyclus::BidPortfolio<Material>::Ptr> FuelFab::GetMatlBids(
       bool exclusive = false;
       port->AddBid(req, m1, this, exclusive);
     } else {// else can't meet the target - don't bid
-      LOG(cyclus::LEV_INFO1, "Bid") << prototype() << " was not able to build "
-      " requested material quality is too low/high to match de reactivity requested";
+      LOG(cyclus::LEV_INFO1, "Bid")
+          << prototype() << " was not able to build "
+                            " the requested material quality is too low/high "
+                            "to match the reactivity requested.";
     }
   }
 
