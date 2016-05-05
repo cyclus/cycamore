@@ -218,13 +218,15 @@ std::set<cyclus::BidPortfolio<cyclus::Material>::Ptr> Enrichment::GetMatlBids(
     for (it = commod_requests.begin(); it != commod_requests.end(); ++it) {
       Request<Material>* req = *it;
       Material::Ptr mat = req->target();
-      double request_enrich = cyclus::toolkit::UraniumAssay(mat) ;
-
-      if (ValidReq(req->target()) && (request_enrich <= max_enrich)) {
+      double request_enrich = cyclus::toolkit::UraniumAssay(mat);
+      if (ValidReq(req->target()) &&
+          ((request_enrich < max_enrich) ||
+	   (cyclus::AlmostEq(request_enrich, max_enrich)))) {
         Material::Ptr offer = Offer_(req->target());
         commod_port->AddBid(req, offer, this);
       }
     }
+
     Converter<Material>::Ptr sc(new SWUConverter(FeedAssay(), tails_assay));
     Converter<Material>::Ptr nc(new NatUConverter(FeedAssay(), tails_assay));
     CapacityConstraint<Material> swu(swu_capacity, sc);
