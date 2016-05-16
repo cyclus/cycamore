@@ -342,7 +342,10 @@ std::set<cyclus::BidPortfolio<Material>::Ptr> FuelFab::GetMatlBids(
 
       bool exclusive = false;
       port->AddBid(req, m1, this, exclusive);
-    } else {  // else can't meet the target - don't bid
+    } else if (fiss.count() > 0 && fill.count() > 0 || fiss.count() > 0 && topup.count() > 0) {
+      // else can't meet the target weight - don't bid.  Just a plain else
+      // doesn't work because we set w_fiss = w_fill if we don't have any fiss
+      // or fill inventory.
       std::stringstream ss;
       ss << "prototype '" << prototype()
          << "': Input stream weights/reactivity do not span "
