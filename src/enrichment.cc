@@ -278,7 +278,7 @@ void Enrichment::GetMatlTrades(
 				       << " just received an order"
 				       << " for " << it->amt
 				       << " of " << tails_commod;
-      response = tails.Pop(qty);    
+      response = tails.Pop(std::min(qty, tails.quantity()));    
     } else {
       LOG(cyclus::LEV_INFO5, "EnrFac") << prototype()
 				       << " just received an order"
