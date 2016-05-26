@@ -158,6 +158,8 @@ class Enrichment : public cyclus::Facility {
   ///     Destructor for the Enrichment class
   virtual ~Enrichment();
 
+  virtual std::string version() { return CYCAMORE_VERSION; }
+
   #pragma cyclus
 
   ///     Print information about this agent
