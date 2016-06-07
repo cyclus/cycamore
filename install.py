@@ -55,7 +55,8 @@ def install_cycamore(args):
         if args.D is not None:
             cmake_cmd += ['-D' + x for x in args.D]
         check_windows_cmake(cmake_cmd)
-        rtn = subprocess.check_call(cmake_cmd, cwd=absexpanduser(args.build_dir), shell=(os.name=='nt'))
+        rtn = subprocess.check_call(cmake_cmd, cwd=absexpanduser(args.build_dir), 
+                shell=(os.name=='nt'))
 
     if args.config_only:
         return
@@ -130,7 +131,7 @@ def main():
     parser.add_argument('--build_type', help=build_type)
 
     parser.add_argument('-D', metavar='VAR', action='append',
-                                    help='Set enviornment variable(s).')
+            help='Set enviornment variable(s).')
 
     args = parser.parse_args()
     if args.uninstall:
