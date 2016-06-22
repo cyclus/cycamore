@@ -50,8 +50,6 @@ def install_cycamore(args):
             cmake_cmd += ['-DCYCLUS_ROOT_DIR='+absexpanduser(args.cyclus_root)]
         if args.build_type:
             cmake_cmd += ['-DCMAKE_BUILD_TYPE=' + args.build_type]
-        if args.build_type:
-            cmake_cmd += ['-DCMAKE_BUILD_TYPE=' + args.build_type]
         if args.D is not None:
             cmake_cmd += ['-D' + x for x in args.D]
         check_windows_cmake(cmake_cmd)
