@@ -103,8 +103,8 @@ void Separations::Tick() {
   if (feed.count() == 0) {
     return;
   }
-
-  Material::Ptr mat = feed.Pop(std::min(throughput, feed.quantity()));
+  double pop_qty = std::min(throughput, feed.quantity());
+  Material::Ptr mat = feed.Pop(pop_qty,cyclus::eps()*pop_qty);
   double orig_qty = mat->quantity();
 
   StreamSet::iterator it;
@@ -221,11 +221,11 @@ void Separations::GetMatlTrades(
     std::string commod = trades[i].request->commodity();
     if (commod == leftover_commod) {
       double amt = std::min(leftover.quantity(), trades[i].amt);
-      Material::Ptr m = leftover.Pop(amt);
+      Material::Ptr m = leftover.Pop(amt, cyclus::eps()*amt);
       responses.push_back(std::make_pair(trades[i], m));
     } else if (streambufs.count(commod) > 0) {
       double amt = std::min(streambufs[commod].quantity(), trades[i].amt);
-      Material::Ptr m = streambufs[commod].Pop(amt);
+      Material::Ptr m = streambufs[commod].Pop(amt,cyclus::eps()*amt);
       responses.push_back(std::make_pair(trades[i], m));
     } else {
       throw ValueError("invalid commodity " + commod +

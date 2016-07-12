@@ -278,7 +278,8 @@ void Enrichment::GetMatlTrades(
 				       << " just received an order"
 				       << " for " << it->amt
 				       << " of " << tails_commod;
-      response = tails.Pop(std::min(qty, tails.quantity()));    
+      double pop_qty = std::min(qty, tails.quantity());
+      response = tails.Pop( pop_qty, cyclus::eps()*pop_qty );
     } else {
       LOG(cyclus::LEV_INFO5, "EnrFac") << prototype()
 				       << " just received an order"
@@ -380,7 +381,8 @@ cyclus::Material::Ptr Enrichment::Enrich_(
 
   // Determine the composition of the natural uranium
   // (ie. U-235+U-238/TotalMass)
-  Material::Ptr natu_matl=inventory.Pop(inventory.quantity());
+  double pop_qty = inventory.quantity();
+  Material::Ptr natu_matl = inventory.Pop(pop_qty, cyclus::eps()*pop_qty);
   inventory.Push(natu_matl);
   
   cyclus::toolkit::MatQuery mq(natu_matl);
@@ -397,7 +399,7 @@ cyclus::Material::Ptr Enrichment::Enrich_(
     if (cyclus::AlmostEq(feed_req, inventory.quantity())) {
       r = cyclus::toolkit::Squash(inventory.PopN(inventory.count()));
     } else {
-      r = inventory.Pop(feed_req);
+      r = inventory.Pop(feed_req, cyclus::eps()*feed_req);
     }
   } catch (cyclus::Error& e) {
     NatUConverter nc(FeedAssay(), tails_assay);
@@ -468,7 +470,8 @@ double Enrichment::FeedAssay() {
   if (inventory.empty()) {
     return 0;
   }
-  cyclus::Material::Ptr fission_matl = inventory.Pop(inventory.quantity());
+  double pop_qty = inventory.quantity();
+  cyclus::Material::Ptr fission_matl = inventory.Pop(pop_qty, cyclus::eps()*pop_qty);
   inventory.Push(fission_matl);
   return cyclus::toolkit::UraniumAssay(fission_matl); 
 }
