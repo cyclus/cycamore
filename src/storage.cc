@@ -119,7 +119,7 @@ void Storage::Tick() {
 
   LOG(cyclus::LEV_INFO3, "ComCnv") << prototype() << " is ticking {";
 
-  if (current_capacity() > cyclus::eps_rsrc()()) {
+  if (current_capacity() > cyclus::eps_rsrc()) {
     LOG(cyclus::LEV_INFO4, "ComCnv") << " has capacity for " << current_capacity()
                                        << " kg of material.";
   }

@@ -129,7 +129,7 @@ Mixer::GetMatlRequests() {
   for (int i = 0; i < in_commods.size(); i++) {
     std::string name = in_commods[i];
 
-    if (streambufs[name].space() > cyclus::eps_rsrc()()) {
+    if (streambufs[name].space() > cyclus::eps_rsrc()) {
       RequestPortfolio<cyclus::Material>::Ptr port(
           new RequestPortfolio<cyclus::Material>());
 

@@ -86,7 +86,7 @@ std::set<cyclus::RequestPortfolio<cyclus::Material>::Ptr>
   Material::Ptr mat = Request_();
   double amt = mat->quantity();
 
-  if (amt > cyclus::eps_rsrc()()) {
+  if (amt > cyclus::eps_rsrc()) {
     port->AddRequest(mat, this, feed_commod);
     ports.insert(port);
   }
