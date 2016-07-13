@@ -202,7 +202,7 @@ void Storage::ProcessMat_(double cap){
         }
       }
       else {
-        stocks.Push(ready.Pop(max_pop,cyclus::eps_rsrc()()*max_pop));
+        stocks.Push(ready.Pop(max_pop,cyclus::eps_rsrc()));
       }
 
       LOG(cyclus::LEV_INFO1, "ComCnv") << "Storage " << prototype() 

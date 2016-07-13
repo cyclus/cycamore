@@ -422,14 +422,14 @@ void FuelFab::GetMatlTrades(
       if (std::abs(fillqty - fill.quantity()) < cyclus::eps_rsrc()()) {
         fillqty = std::min(fill.quantity(), qty);
       }
-      responses.push_back(std::make_pair(trades[i], fill.Pop(fillqty, cyclus::eps_rsrc()()*fillqty)));
+      responses.push_back(std::make_pair(trades[i], fill.Pop(fillqty, cyclus::eps_rsrc())));
     } else if (fill.count() == 0 && ValidWeights(w_fill, w_tgt, w_fiss)) {
       // use straight fissile to satisfy this request
       double fissqty = qty;
       if (std::abs(fissqty - fiss.quantity()) < cyclus::eps_rsrc()()) {
         fissqty = std::min(fiss.quantity(), qty);
       }
-      responses.push_back(std::make_pair(trades[i], fiss.Pop(fissqty,cyclus::eps_rsrc()()*fissqty)));
+      responses.push_back(std::make_pair(trades[i], fiss.Pop(fissqty,cyclus::eps_rsrc())));
     } else if (ValidWeights(w_fill, w_tgt, w_fiss)) {
       double fiss_frac = HighFrac(w_fill, w_tgt, w_fiss);
       double fill_frac = LowFrac(w_fill, w_tgt, w_fiss);
@@ -447,10 +447,10 @@ void FuelFab::GetMatlTrades(
         fillqty = std::min(fill.quantity(), fill_frac*qty);
       }
 
-      Material::Ptr m = fiss.Pop(fissqty,cyclus::eps_rsrc()()*fissqty);
+      Material::Ptr m = fiss.Pop(fissqty,cyclus::eps_rsrc());
       // this if block prevents zero qty ResBuf pop exceptions
       if (fill_frac > 0) {
-        m->Absorb(fill.Pop(fillqty,cyclus::eps_rsrc()()*fillqty));
+        m->Absorb(fill.Pop(fillqty,cyclus::eps_rsrc()));
       }
       responses.push_back(std::make_pair(trades[i], m));
     } else {
@@ -470,10 +470,10 @@ void FuelFab::GetMatlTrades(
         topupqty = std::min(topup.quantity(), topup_frac*qty);
       }
 
-      Material::Ptr m = fiss.Pop(fissqty,cyclus::eps_rsrc()()*fissqty);
+      Material::Ptr m = fiss.Pop(fissqty,cyclus::eps_rsrc());
       // this if block prevents zero qty ResBuf pop exceptions
       if (topup_frac > 0) {
-        m->Absorb(topup.Pop(topupqty,cyclus::eps_rsrc()()*topupqty));
+        m->Absorb(topup.Pop(topupqty,cyclus::eps_rsrc()));
       }
       responses.push_back(std::make_pair(trades[i], m));
     }
