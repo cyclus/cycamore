@@ -77,7 +77,7 @@ class Mixer : public cyclus::Facility {
     "doc": "Size of input material stream inventory - i.e. the quantity of each" \
            " stream type to keep on-hand)", \
     "uilabel": "Input Inventory Capacity", \
-    "units": "kg", \
+    "units": [ "", "kg"],                  \
   }
   std::vector<double> in_buf_sizes;
 
