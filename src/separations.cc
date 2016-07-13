@@ -104,7 +104,7 @@ void Separations::Tick() {
     return;
   }
   double pop_qty = std::min(throughput, feed.quantity());
-  Material::Ptr mat = feed.Pop(pop_qty,cyclus::eps()*pop_qty);
+  Material::Ptr mat = feed.Pop(pop_qty,cyclus::eps_rsrc()()*pop_qty);
   double orig_qty = mat->quantity();
 
   StreamSet::iterator it;
@@ -185,7 +185,7 @@ Separations::GetMatlRequests() {
   int t_exit = exit_time();
   if (t_exit >= 0 && (feed.quantity() >= (t_exit - t) * throughput)) {
     return ports; // already have enough feed for remainder of life
-  } else if (feed.space() < cyclus::eps()) {
+  } else if (feed.space() < cyclus::eps_rsrc()()) {
     return ports;
   }
 
@@ -221,11 +221,11 @@ void Separations::GetMatlTrades(
     std::string commod = trades[i].request->commodity();
     if (commod == leftover_commod) {
       double amt = std::min(leftover.quantity(), trades[i].amt);
-      Material::Ptr m = leftover.Pop(amt, cyclus::eps()*amt);
+      Material::Ptr m = leftover.Pop(amt, cyclus::eps_rsrc()()*amt);
       responses.push_back(std::make_pair(trades[i], m));
     } else if (streambufs.count(commod) > 0) {
       double amt = std::min(streambufs[commod].quantity(), trades[i].amt);
-      Material::Ptr m = streambufs[commod].Pop(amt,cyclus::eps()*amt);
+      Material::Ptr m = streambufs[commod].Pop(amt,cyclus::eps_rsrc()()*amt);
       responses.push_back(std::make_pair(trades[i], m));
     } else {
       throw ValueError("invalid commodity " + commod +
@@ -258,7 +258,7 @@ std::set<cyclus::BidPortfolio<Material>::Ptr> Separations::GetMatlBids(
     std::vector<Request<Material>*>& reqs = commod_requests[commod];
     if (reqs.size() == 0) {
       continue;
-    } else if (streambufs[commod].quantity() < cyclus::eps()) {
+    } else if (streambufs[commod].quantity() < cyclus::eps_rsrc()()) {
       continue;
     }
 
@@ -275,7 +275,7 @@ std::set<cyclus::BidPortfolio<Material>::Ptr> Separations::GetMatlBids(
         tot_bid += m->quantity();
 
         // this fix the problem of the cyclus exchange manager which crashes when a bid with a quantity <=0 is offered.
-        if(m->quantity() > cyclus::eps()){
+        if(m->quantity() > cyclus::eps_rsrc()()){
           port->AddBid(req, m, this, exclusive);
         }
 
@@ -293,7 +293,7 @@ std::set<cyclus::BidPortfolio<Material>::Ptr> Separations::GetMatlBids(
 
   // bid leftovers
   std::vector<Request<Material>*>& reqs = commod_requests[leftover_commod];
-  if (reqs.size() > 0 && leftover.quantity() >= cyclus::eps()) {
+  if (reqs.size() > 0 && leftover.quantity() >= cyclus::eps_rsrc()()) {
     MatVec mats = leftover.PopN(leftover.count());
     leftover.Push(mats);
 
@@ -307,7 +307,7 @@ std::set<cyclus::BidPortfolio<Material>::Ptr> Separations::GetMatlBids(
         tot_bid += m->quantity();
 
         // this fix the problem of the cyclus exchange manager which crashes when a bid with a quantity <=0 is offered.
-        if(m->quantity() > cyclus::eps()){
+        if(m->quantity() > cyclus::eps_rsrc()()){
           port->AddBid(req, m, this, exclusive);
         }
 

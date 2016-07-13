@@ -119,7 +119,7 @@ void Storage::Tick() {
 
   LOG(cyclus::LEV_INFO3, "ComCnv") << prototype() << " is ticking {";
 
-  if (current_capacity() > cyclus::eps()) {
+  if (current_capacity() > cyclus::eps_rsrc()()) {
     LOG(cyclus::LEV_INFO4, "ComCnv") << " has capacity for " << current_capacity()
                                        << " kg of material.";
   }
@@ -202,7 +202,7 @@ void Storage::ProcessMat_(double cap){
         }
       }
       else {
-        stocks.Push(ready.Pop(max_pop,cyclus::eps()*max_pop));
+        stocks.Push(ready.Pop(max_pop,cyclus::eps_rsrc()()*max_pop));
       }
 
       LOG(cyclus::LEV_INFO1, "ComCnv") << "Storage " << prototype() 

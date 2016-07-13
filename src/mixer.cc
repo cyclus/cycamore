@@ -106,11 +106,11 @@ void Mixer::Tick() {
         std::string name = in_commods[i];
         if (i == 0) {
           double pop_qty = mixing_ratios[i] * tgt_qty; 
-          m = streambufs[name].Pop(pop_qty, cyclus::eps()*pop_qty);
+          m = streambufs[name].Pop(pop_qty, cyclus::eps_rsrc()()*pop_qty);
         } else {
           double pop_qty = mixing_ratios[i] * tgt_qty;
           cyclus::Material::Ptr m_ =
-              streambufs[name].Pop(pop_qty, cyclus::eps()*pop_qty);
+              streambufs[name].Pop(pop_qty, cyclus::eps_rsrc()()*pop_qty);
           m->Absorb(m_);
         }
       }
@@ -129,7 +129,7 @@ Mixer::GetMatlRequests() {
   for (int i = 0; i < in_commods.size(); i++) {
     std::string name = in_commods[i];
 
-    if (streambufs[name].space() > cyclus::eps()) {
+    if (streambufs[name].space() > cyclus::eps_rsrc()()) {
       RequestPortfolio<cyclus::Material>::Ptr port(
           new RequestPortfolio<cyclus::Material>());
 

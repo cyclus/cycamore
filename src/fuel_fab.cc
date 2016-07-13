@@ -162,7 +162,7 @@ std::set<cyclus::RequestPortfolio<Material>::Ptr> FuelFab::GetMatlRequests() {
 
   bool exclusive = false;
 
-  if (fiss.space() > cyclus::eps()) {
+  if (fiss.space() > cyclus::eps_rsrc()()) {
     RequestPortfolio<Material>::Ptr port(new RequestPortfolio<Material>());
 
     Material::Ptr m = cyclus::NewBlankMaterial(fiss.space());
@@ -182,7 +182,7 @@ std::set<cyclus::RequestPortfolio<Material>::Ptr> FuelFab::GetMatlRequests() {
     ports.insert(port);
   }
 
-  if (fill.space() > cyclus::eps()) {
+  if (fill.space() > cyclus::eps_rsrc()()) {
     RequestPortfolio<Material>::Ptr port(new RequestPortfolio<Material>());
 
     Material::Ptr m = cyclus::NewBlankMaterial(fill.space());
@@ -202,7 +202,7 @@ std::set<cyclus::RequestPortfolio<Material>::Ptr> FuelFab::GetMatlRequests() {
     ports.insert(port);
   }
 
-  if (topup.space() > cyclus::eps()) {
+  if (topup.space() > cyclus::eps_rsrc()()) {
     RequestPortfolio<Material>::Ptr port(new RequestPortfolio<Material>());
 
     Material::Ptr m = cyclus::NewBlankMaterial(topup.space());
@@ -409,7 +409,7 @@ void FuelFab::GetMatlTrades(
     double wfiss = w_fiss;
 
     tot += qty;
-    if (tot > throughput + cyclus::eps()) {
+    if (tot > throughput + cyclus::eps_rsrc()()) {
       std::stringstream ss;
       ss << "FuelFab was matched above throughput limit: " << tot << " > "
          << throughput;
@@ -419,17 +419,17 @@ void FuelFab::GetMatlTrades(
     if (fiss.count() == 0) {
       // use straight filler to satisfy this request
       double fillqty = qty;
-      if (std::abs(fillqty - fill.quantity()) < cyclus::eps()) {
+      if (std::abs(fillqty - fill.quantity()) < cyclus::eps_rsrc()()) {
         fillqty = std::min(fill.quantity(), qty);
       }
-      responses.push_back(std::make_pair(trades[i], fill.Pop(fillqty, cyclus::eps()*fillqty)));
+      responses.push_back(std::make_pair(trades[i], fill.Pop(fillqty, cyclus::eps_rsrc()()*fillqty)));
     } else if (fill.count() == 0 && ValidWeights(w_fill, w_tgt, w_fiss)) {
       // use straight fissile to satisfy this request
       double fissqty = qty;
-      if (std::abs(fissqty - fiss.quantity()) < cyclus::eps()) {
+      if (std::abs(fissqty - fiss.quantity()) < cyclus::eps_rsrc()()) {
         fissqty = std::min(fiss.quantity(), qty);
       }
-      responses.push_back(std::make_pair(trades[i], fiss.Pop(fissqty,cyclus::eps()*fissqty)));
+      responses.push_back(std::make_pair(trades[i], fiss.Pop(fissqty,cyclus::eps_rsrc()()*fissqty)));
     } else if (ValidWeights(w_fill, w_tgt, w_fiss)) {
       double fiss_frac = HighFrac(w_fill, w_tgt, w_fiss);
       double fill_frac = LowFrac(w_fill, w_tgt, w_fiss);
@@ -439,18 +439,18 @@ void FuelFab::GetMatlTrades(
           AtomToMassFrac(fill_frac, fill.Peek()->comp(), fiss.Peek()->comp());
 
       double fissqty = fiss_frac*qty;
-      if (std::abs(fissqty - fiss.quantity()) < cyclus::eps()) {
+      if (std::abs(fissqty - fiss.quantity()) < cyclus::eps_rsrc()()) {
         fissqty = std::min(fiss.quantity(), fiss_frac*qty);
       }
       double fillqty = fill_frac*qty;
-      if (std::abs(fillqty - fill.quantity()) < cyclus::eps()) {
+      if (std::abs(fillqty - fill.quantity()) < cyclus::eps_rsrc()()) {
         fillqty = std::min(fill.quantity(), fill_frac*qty);
       }
 
-      Material::Ptr m = fiss.Pop(fissqty,cyclus::eps()*fissqty);
+      Material::Ptr m = fiss.Pop(fissqty,cyclus::eps_rsrc()()*fissqty);
       // this if block prevents zero qty ResBuf pop exceptions
       if (fill_frac > 0) {
-        m->Absorb(fill.Pop(fillqty,cyclus::eps()*fillqty));
+        m->Absorb(fill.Pop(fillqty,cyclus::eps_rsrc()()*fillqty));
       }
       responses.push_back(std::make_pair(trades[i], m));
     } else {
@@ -462,18 +462,18 @@ void FuelFab::GetMatlTrades(
           AtomToMassFrac(fiss_frac, fiss.Peek()->comp(), topup.Peek()->comp());
 
       double fissqty = fiss_frac*qty;
-      if (std::abs(fissqty - fiss.quantity()) < cyclus::eps()) {
+      if (std::abs(fissqty - fiss.quantity()) < cyclus::eps_rsrc()()) {
         fissqty = std::min(fiss.quantity(), fiss_frac*qty);
       }
       double topupqty = topup_frac*qty;
-      if (std::abs(topupqty - topup.quantity()) < cyclus::eps()) {
+      if (std::abs(topupqty - topup.quantity()) < cyclus::eps_rsrc()()) {
         topupqty = std::min(topup.quantity(), topup_frac*qty);
       }
 
-      Material::Ptr m = fiss.Pop(fissqty,cyclus::eps()*fissqty);
+      Material::Ptr m = fiss.Pop(fissqty,cyclus::eps_rsrc()()*fissqty);
       // this if block prevents zero qty ResBuf pop exceptions
       if (topup_frac > 0) {
-        m->Absorb(topup.Pop(topupqty,cyclus::eps()*topupqty));
+        m->Absorb(topup.Pop(topupqty,cyclus::eps_rsrc()()*topupqty));
       }
       responses.push_back(std::make_pair(trades[i], m));
     }
@@ -690,23 +690,23 @@ double AtomToMassFrac(double atomfrac, Composition::Ptr c1,
   return mass1 / (mass1 + mass2);
 }
 
-double HighFrac(double w_low, double w_target, double w_high, double eps) {
+double HighFrac(double w_low, double w_target, double w_high, double eps_rsrc()) {
   if (!ValidWeights(w_low, w_target, w_high)) {
     throw cyclus::ValueError("low and high weights cannot meet target");
   } else if (w_low == w_high && w_target == w_low) {
     return 1;
   }
   double f = std::abs((w_target - w_low) / (w_high - w_low));
-  if (1 - f < eps) {
+  if (1 - f < eps_rsrc()) {
     return 1;
-  } else if (f < eps) {
+  } else if (f < eps_rsrc()) {
     return 0;
   }
   return f;
 }
 
-double LowFrac(double w_low, double w_target, double w_high, double eps) {
-  return 1 - HighFrac(w_low, w_target, w_high, eps);
+double LowFrac(double w_low, double w_target, double w_high, double eps_rsrc()) {
+  return 1 - HighFrac(w_low, w_target, w_high, eps_rsrc());
 }
 
 // Returns true if the given weights can be used to linearly interpolate valid
