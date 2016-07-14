@@ -17,3 +17,11 @@ deployment:
     commands:
       - docker login -e $DOCKER_EMAIL -u $DOCKER_USER -p $DOCKER_PASS
       - docker push cyclus/cycamore:latest
+  
+  master:
+    branch: master
+    commands:
+      - docker login -e $DOCKER_EMAIL -u $DOCKER_USER -p $DOCKER_PASS
+      - rm Dockerfile && ln -s docker/master-ci/Dockerfile #place the correct Dockerfile
+      - docker build -t cyclus/cycamore:stable .
+      - docker push cyclus/cycamore:stable
