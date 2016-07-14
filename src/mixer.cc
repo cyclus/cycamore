@@ -105,17 +105,15 @@ void Mixer::Tick() {
       cyclus::Material::Ptr m;
       for (int i = 0; i < in_commods.size(); i++) {
         std::string name = in_commods[i];
+        double pop_qty = mixing_ratios[i] * tgt_qty;
         if (i == 0) {
-          double pop_qty = mixing_ratios[i] * tgt_qty;
           m = streambufs[name].Pop(pop_qty, cyclus::eps_rsrc());
         } else {
-          double pop_qty = mixing_ratios[i] * tgt_qty;
           cyclus::Material::Ptr m_ =
               streambufs[name].Pop(pop_qty, cyclus::eps_rsrc());
           m->Absorb(m_);
         }
       }
-
       output.Push(m);
     }
   }
