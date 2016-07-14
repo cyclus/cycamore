@@ -390,9 +390,8 @@ void FuelFab::GetMatlTrades(
         responses) {
   using cyclus::Trade;
 
-  // guard against cases where a buffer is empty - this is okay because some
-  // trades
-  // may not need that particular buffer.
+  // guard against cases where a buffer is empty - this is okay because some 
+  // trades may not need that particular buffer.
   double w_fill = 0;
   if (fill.count() > 0) {
     w_fill = CosiWeight(fill.Peek()->comp(), spectrum);
