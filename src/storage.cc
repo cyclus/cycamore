@@ -5,10 +5,10 @@
 namespace storage {
 
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-Storage::Storage(cyclus::Context* ctx)
-    : cyclus::Facility(ctx) {
-  cyclus::Warn<cyclus::EXPERIMENTAL_WARNING>("The Storage Facility is experimental.");
-    };
+Storage::Storage(cyclus::Context* ctx) : cyclus::Facility(ctx) {
+  cyclus::Warn<cyclus::EXPERIMENTAL_WARNING>(
+      "The Storage Facility is experimental.");
+};
 
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 // pragmas
@@ -29,15 +29,13 @@ Storage::Storage(cyclus::Context* ctx)
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 void Storage::InitFrom(Storage* m) {
-
-  #pragma cyclus impl initfromcopy storage::Storage
+#pragma cyclus impl initfromcopy storage::Storage
   cyclus::toolkit::CommodityProducer::Copy(m);
 }
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-void Storage::InitFrom(cyclus::QueryableBackend* b){
-
-  #pragma cyclus impl initfromdb storage::Storage
+void Storage::InitFrom(cyclus::QueryableBackend* b) {
+#pragma cyclus impl initfromdb storage::Storage
 
   using cyclus::toolkit::Commodity;
   Commodity commod = Commodity(out_commods.front());
@@ -50,39 +48,38 @@ void Storage::EnterNotify() {
   cyclus::Facility::EnterNotify();
   buy_policy.Init(this, &inventory, std::string("inventory"));
 
-  //dummy comp, use in_recipe if provided
+  // dummy comp, use in_recipe if provided
   cyclus::CompMap v;
   cyclus::Composition::Ptr comp = cyclus::Composition::CreateFromAtom(v);
   if (in_recipe != "") {
     comp = context()->GetRecipe(in_recipe);
   }
 
-  if (in_commod_prefs.size() == 0){
-    for (int i=0; i < in_commods.size(); ++i){
+  if (in_commod_prefs.size() == 0) {
+    for (int i = 0; i < in_commods.size(); ++i) {
       in_commod_prefs.push_back(1);
     }
-  }
-  else if (in_commod_prefs.size() != in_commods.size()) {
+  } else if (in_commod_prefs.size() != in_commods.size()) {
     std::stringstream ss;
-    ss << "in_commod_prefs has " << in_commod_prefs.size() << " values, expected "
-       << in_commods.size();
+    ss << "in_commod_prefs has " << in_commod_prefs.size()
+       << " values, expected " << in_commods.size();
     throw cyclus::ValueError(ss.str());
   }
 
-  for(int i=0; i!=in_commods.size(); ++i) {
-    buy_policy.Set(in_commods[i],comp,in_commod_prefs[i]);
+  for (int i = 0; i != in_commods.size(); ++i) {
+    buy_policy.Set(in_commods[i], comp, in_commod_prefs[i]);
   }
   buy_policy.Start();
 
   if (out_commods.size() == 1) {
-  sell_policy.Init(this, &stocks, std::string("stocks")).Set(out_commods.front()).Start();
-  }
-  else {
+    sell_policy.Init(this, &stocks, std::string("stocks"))
+        .Set(out_commods.front())
+        .Start();
+  } else {
     std::stringstream ss;
     ss << "out_commods has " << out_commods.size() << " values, expected 1.";
     throw cyclus::ValueError(ss.str());
   }
-
 }
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -91,37 +88,36 @@ std::string Storage::str() {
   std::string ans, out_str;
   if (out_commods.size() == 1) {
     out_str = out_commods.front();
-  }
-  else {
+  } else {
     out_str = "";
   }
-  if (cyclus::toolkit::CommodityProducer::
-      Produces(cyclus::toolkit::Commodity(out_str))){
+  if (cyclus::toolkit::CommodityProducer::Produces(
+          cyclus::toolkit::Commodity(out_str))) {
     ans = "yes";
   } else {
     ans = "no";
   }
   ss << cyclus::Facility::str();
-  ss << " has facility parameters {" << "\n"
+  ss << " has facility parameters {"
+     << "\n"
      << "     Output Commodity = " << out_str << ",\n"
      << "     Residence Time = " << residence_time << ",\n"
      << "     Throughput = " << throughput << ",\n"
-     << " commod producer members: " << " produces "
-     << out_str << "?:" << ans
-     << "'}";
+     << " commod producer members: "
+     << " produces " << out_str << "?:" << ans << "'}";
   return ss.str();
 }
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-void Storage::Tick() { 
+void Storage::Tick() {
   // Set available capacity for Buy Policy
   inventory.capacity(current_capacity());
 
   LOG(cyclus::LEV_INFO3, "ComCnv") << prototype() << " is ticking {";
 
-  if (current_capacity() > cyclus::eps()) {
-    LOG(cyclus::LEV_INFO4, "ComCnv") << " has capacity for " << current_capacity()
-                                       << " kg of material.";
+  if (current_capacity() > cyclus::eps_rsrc()) {
+    LOG(cyclus::LEV_INFO4, "ComCnv")
+        << " has capacity for " << current_capacity() << " kg of material.";
   }
   LOG(cyclus::LEV_INFO3, "ComCnv") << "}";
 }
@@ -130,22 +126,21 @@ void Storage::Tick() {
 void Storage::Tock() {
   LOG(cyclus::LEV_INFO3, "ComCnv") << prototype() << " is tocking {";
 
-  BeginProcessing_(); // place unprocessed inventory into processing
+  BeginProcessing_();  // place unprocessed inventory into processing
 
-  if( ready_time() >= 0 || residence_time == 0  && !inventory.empty() ) {
+  if (ready_time() >= 0 || residence_time == 0 && !inventory.empty()) {
     ReadyMatl_(ready_time());  // place processing into ready
   }
 
-  ProcessMat_(throughput); // place ready into stocks
+  ProcessMat_(throughput);  // place ready into stocks
 
   LOG(cyclus::LEV_INFO3, "ComCnv") << "}";
 }
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 void Storage::AddMat_(cyclus::Material::Ptr mat) {
-
   LOG(cyclus::LEV_INFO5, "ComCnv") << prototype() << " is initially holding "
-                                << inventory.quantity() << " total.";
+                                   << inventory.quantity() << " total.";
 
   try {
     inventory.Push(mat);
@@ -154,22 +149,22 @@ void Storage::AddMat_(cyclus::Material::Ptr mat) {
     throw e;
   }
 
-  LOG(cyclus::LEV_INFO5, "ComCnv") << prototype() << " added " << mat->quantity()
-                                << " of material to its inventory, which is holding "
-                                << inventory.quantity() << " total.";
-
+  LOG(cyclus::LEV_INFO5, "ComCnv")
+      << prototype() << " added " << mat->quantity()
+      << " of material to its inventory, which is holding "
+      << inventory.quantity() << " total.";
 }
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-void Storage::BeginProcessing_(){
-  while( inventory.count() > 0 ){
+void Storage::BeginProcessing_() {
+  while (inventory.count() > 0) {
     try {
       processing.Push(inventory.Pop());
       entry_times.push_back(context()->time());
 
-      LOG(cyclus::LEV_DEBUG2, "ComCnv") << "Storage " << prototype() 
-                                      << " added resources to processing at t= "
-                                      << context()->time();
+      LOG(cyclus::LEV_DEBUG2, "ComCnv")
+          << "Storage " << prototype()
+          << " added resources to processing at t= " << context()->time();
     } catch (cyclus::Error& e) {
       e.msg(Agent::InformErrorMsg(e.msg()));
       throw e;
@@ -178,37 +173,34 @@ void Storage::BeginProcessing_(){
 }
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-void Storage::ProcessMat_(double cap){
+void Storage::ProcessMat_(double cap) {
   using cyclus::Material;
   using cyclus::ResCast;
   using cyclus::toolkit::ResBuf;
   using cyclus::toolkit::Manifest;
 
-  if ( !ready.empty() ){
-    try { 
-
+  if (!ready.empty()) {
+    try {
       double max_pop = std::min(cap, ready.quantity());
 
-      if ( discrete_handling ) {
+      if (discrete_handling) {
         if (max_pop == ready.quantity()) {
           stocks.Push(ready.PopN(ready.count()));
-        }
-        else {
+        } else {
           double cap_pop = ready.Peek()->quantity();
-          while(cap_pop<=max_pop && !ready.empty() ){
+          while (cap_pop <= max_pop && !ready.empty()) {
             stocks.Push(ready.Pop());
             cap_pop += ready.empty() ? 0 : ready.Peek()->quantity();
           }
         }
-      }
-      else {
-        stocks.Push(ready.Pop(max_pop));
+      } else {
+        stocks.Push(ready.Pop(max_pop, cyclus::eps_rsrc()));
       }
 
-      LOG(cyclus::LEV_INFO1, "ComCnv") << "Storage " << prototype() 
-                                        << " moved resources" 
-                                        << " from ready to stocks" 
-                                        << " at t= " << context()->time();
+      LOG(cyclus::LEV_INFO1, "ComCnv") << "Storage " << prototype()
+                                       << " moved resources"
+                                       << " from ready to stocks"
+                                       << " at t= " << context()->time();
     } catch (cyclus::Error& e) {
       e.msg(Agent::InformErrorMsg(e.msg()));
       throw e;
@@ -222,7 +214,7 @@ void Storage::ReadyMatl_(int time) {
 
   int to_ready = 0;
 
-  while(!entry_times.empty() && entry_times.front()<=time){
+  while (!entry_times.empty() && entry_times.front() <= time) {
     entry_times.pop_front();
     ++to_ready;
   }
@@ -235,4 +227,4 @@ extern "C" cyclus::Agent* ConstructStorage(cyclus::Context* ctx) {
   return new Storage(ctx);
 }
 
-} // namespace storage
+}  // namespace storage

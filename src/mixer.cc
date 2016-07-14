@@ -1,4 +1,5 @@
 #include <sstream>
+
 #include "mixer.h"
 
 namespace cycamore {
@@ -104,15 +105,15 @@ void Mixer::Tick() {
       cyclus::Material::Ptr m;
       for (int i = 0; i < in_commods.size(); i++) {
         std::string name = in_commods[i];
+        double pop_qty = mixing_ratios[i] * tgt_qty;
         if (i == 0) {
-          m = streambufs[name].Pop(mixing_ratios[i] * tgt_qty);
+          m = streambufs[name].Pop(pop_qty, cyclus::eps_rsrc());
         } else {
           cyclus::Material::Ptr m_ =
-              streambufs[name].Pop(mixing_ratios[i] * tgt_qty);
+              streambufs[name].Pop(pop_qty, cyclus::eps_rsrc());
           m->Absorb(m_);
         }
       }
-
       output.Push(m);
     }
   }
@@ -127,7 +128,7 @@ Mixer::GetMatlRequests() {
   for (int i = 0; i < in_commods.size(); i++) {
     std::string name = in_commods[i];
 
-    if (streambufs[name].space() > cyclus::eps()) {
+    if (streambufs[name].space() > cyclus::eps_rsrc()) {
       RequestPortfolio<cyclus::Material>::Ptr port(
           new RequestPortfolio<cyclus::Material>());
 
