@@ -11,7 +11,7 @@ using cyclus::CompMap;
 
 namespace cycamore {
 
-Separations::Separations(cyclus::Context* ctx) : cyclus::Facility(ctx) { }
+Separations::Separations(cyclus::Context* ctx) : cyclus::Facility(ctx) {}
 
 cyclus::Inventories Separations::SnapshotInv() {
   cyclus::Inventories invs;
@@ -51,8 +51,7 @@ void Separations::EnterNotify() {
   std::map<int, double> efficiency_;
 
   StreamSet::iterator it;
-  std::map< int, double>::iterator it2;
-
+  std::map<int, double>::iterator it2;
 
   for (it = streams_.begin(); it != streams_.end(); ++it) {
     std::string name = it->first;
@@ -61,36 +60,35 @@ void Separations::EnterNotify() {
     if (cap >= 0) {
       streambufs[name].capacity(cap);
     }
-    
-    for( it2 = stream.second.begin(); it2 != stream.second.end(); it2++  ){
+
+    for (it2 = stream.second.begin(); it2 != stream.second.end(); it2++) {
       efficiency_[it2->first] += it2->second;
     }
-    
   }
-  
+
   std::vector<int> eff_pb_;
-  for( it2 = efficiency_.begin(); it2 != efficiency_.end(); it2++  ){
-    if( it2->second > 1){
+  for (it2 = efficiency_.begin(); it2 != efficiency_.end(); it2++) {
+    if (it2->second > 1) {
       eff_pb_.push_back(it2->first);
     }
   }
-  
-  if(eff_pb_.size() > 0){
+
+  if (eff_pb_.size() > 0) {
     std::stringstream ss;
     ss << "In " << prototype() << ", ";
-    ss << "the following nuclide(s) have a cumulative separation efficiency greater than 1:";
-    for(int i = 0; i < eff_pb_.size(); i++){
+    ss << "the following nuclide(s) have a cumulative separation efficiency "
+          "greater than 1:";
+    for (int i = 0; i < eff_pb_.size(); i++) {
       ss << "\n    " << eff_pb_[i];
-      if( i < eff_pb_.size()-1 ){
+      if (i < eff_pb_.size() - 1) {
         ss << ",";
-      } else{
+      } else {
         ss << ".";
       }
     }
-    
+
     throw cyclus::ValueError(ss.str());
   }
-
 
   if (feed_commod_prefs.size() == 0) {
     for (int i = 0; i < feed_commods.size(); i++) {
@@ -104,7 +102,7 @@ void Separations::Tick() {
     return;
   }
   double pop_qty = std::min(throughput, feed.quantity());
-  Material::Ptr mat = feed.Pop(pop_qty,cyclus::eps_rsrc());
+  Material::Ptr mat = feed.Pop(pop_qty, cyclus::eps_rsrc());
   double orig_qty = mat->quantity();
 
   StreamSet::iterator it;
@@ -184,7 +182,7 @@ Separations::GetMatlRequests() {
   int t = context()->time();
   int t_exit = exit_time();
   if (t_exit >= 0 && (feed.quantity() >= (t_exit - t) * throughput)) {
-    return ports; // already have enough feed for remainder of life
+    return ports;  // already have enough feed for remainder of life
   } else if (feed.space() < cyclus::eps_rsrc()) {
     return ports;
   }
@@ -225,7 +223,7 @@ void Separations::GetMatlTrades(
       responses.push_back(std::make_pair(trades[i], m));
     } else if (streambufs.count(commod) > 0) {
       double amt = std::min(streambufs[commod].quantity(), trades[i].amt);
-      Material::Ptr m = streambufs[commod].Pop(amt,cyclus::eps_rsrc());
+      Material::Ptr m = streambufs[commod].Pop(amt, cyclus::eps_rsrc());
       responses.push_back(std::make_pair(trades[i], m));
     } else {
       throw ValueError("invalid commodity " + commod +
@@ -234,8 +232,9 @@ void Separations::GetMatlTrades(
   }
 }
 
-void Separations::AcceptMatlTrades(const std::vector<
-    std::pair<cyclus::Trade<Material>, Material::Ptr> >& responses) {
+void Separations::AcceptMatlTrades(
+    const std::vector<std::pair<cyclus::Trade<Material>, Material::Ptr> >&
+        responses) {
   std::vector<std::pair<cyclus::Trade<cyclus::Material>,
                         cyclus::Material::Ptr> >::const_iterator trade;
 
@@ -274,8 +273,9 @@ std::set<cyclus::BidPortfolio<Material>::Ptr> Separations::GetMatlBids(
         Material::Ptr m = mats[k];
         tot_bid += m->quantity();
 
-        // this fix the problem of the cyclus exchange manager which crashes when a bid with a quantity <=0 is offered.
-        if(m->quantity() > cyclus::eps_rsrc()){
+        // this fix the problem of the cyclus exchange manager which crashes
+        // when a bid with a quantity <=0 is offered.
+        if (m->quantity() > cyclus::eps_rsrc()) {
           port->AddBid(req, m, this, exclusive);
         }
 
@@ -306,8 +306,9 @@ std::set<cyclus::BidPortfolio<Material>::Ptr> Separations::GetMatlBids(
         Material::Ptr m = mats[k];
         tot_bid += m->quantity();
 
-        // this fix the problem of the cyclus exchange manager which crashes when a bid with a quantity <=0 is offered.
-        if(m->quantity() > cyclus::eps_rsrc()){
+        // this fix the problem of the cyclus exchange manager which crashes
+        // when a bid with a quantity <=0 is offered.
+        if (m->quantity() > cyclus::eps_rsrc()) {
           port->AddBid(req, m, this, exclusive);
         }
 
