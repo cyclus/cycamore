@@ -18,8 +18,8 @@ deployment:
       - docker login -e $DOCKER_EMAIL -u $DOCKER_USER -p $DOCKER_PASS
       - docker push cyclus/cycamore:latest
   
-  ci-testing:
-    branch: ci-testing
+  master:
+    branch: master
     commands:
       - docker login -e $DOCKER_EMAIL -u $DOCKER_USER -p $DOCKER_PASS
       - rm Dockerfile && ln -s docker/master-ci/Dockerfile #place the correct Dockerfile
