@@ -17,9 +17,7 @@ void SourceTest::SetUp() {
   SetUpSource();
 }
 
-void SourceTest::TearDown() {
-  delete src_facility;
-}
+void SourceTest::TearDown() { delete src_facility; }
 
 void SourceTest::InitParameters() {
   commod = "commod";
@@ -38,12 +36,12 @@ void SourceTest::SetUpSource() {
 
 TEST_F(SourceTest, Clone) {
   cyclus::Context* ctx = tc.get();
-  cycamore::Source* cloned_fac = dynamic_cast<cycamore::Source*>
-                                         (src_facility->Clone());
+  cycamore::Source* cloned_fac =
+      dynamic_cast<cycamore::Source*>(src_facility->Clone());
 
-  EXPECT_EQ(outcommod(src_facility),  outcommod(cloned_fac));
+  EXPECT_EQ(outcommod(src_facility), outcommod(cloned_fac));
   EXPECT_EQ(throughput(src_facility), throughput(cloned_fac));
-  EXPECT_EQ(outrecipe(src_facility),  outrecipe(cloned_fac));
+  EXPECT_EQ(outrecipe(src_facility), outrecipe(cloned_fac));
 
   delete cloned_fac;
 }
@@ -61,8 +59,8 @@ TEST_F(SourceTest, AddBids) {
 
   int nreqs = 5;
 
-  boost::shared_ptr< cyclus::ExchangeContext<Material> >
-      ec = GetContext(nreqs, commod);
+  boost::shared_ptr<cyclus::ExchangeContext<Material> > ec =
+      GetContext(nreqs, commod);
 
   std::set<BidPortfolio<Material>::Ptr> ports =
       src_facility->GetMatlBids(ec.get()->commod_requests);
@@ -74,7 +72,7 @@ TEST_F(SourceTest, AddBids) {
   EXPECT_EQ(port->bidder(), src_facility);
   EXPECT_EQ(port->bids().size(), nreqs);
 
-  const std::set< CapacityConstraint<Material> >& constrs = port->constraints();
+  const std::set<CapacityConstraint<Material> >& constrs = port->constraints();
   ASSERT_TRUE(constrs.size() > 0);
   EXPECT_EQ(constrs.size(), 1);
   EXPECT_EQ(*constrs.begin(), CapacityConstraint<Material>(capacity));
@@ -87,9 +85,10 @@ TEST_F(SourceTest, Response) {
   using cyclus::Trade;
   using test_helpers::get_mat;
 
-  std::vector< cyclus::Trade<cyclus::Material> > trades;
-  std::vector<std::pair<cyclus::Trade<cyclus::Material>,
-                        cyclus::Material::Ptr> > responses;
+  std::vector<cyclus::Trade<cyclus::Material> > trades;
+  std::vector<
+      std::pair<cyclus::Trade<cyclus::Material>, cyclus::Material::Ptr> >
+      responses;
 
   // Null response
   EXPECT_NO_THROW(src_facility->GetMatlTrades(trades, responses));
@@ -98,8 +97,7 @@ TEST_F(SourceTest, Response) {
   double qty = capacity / 3;
   Request<Material>* request =
       Request<Material>::Create(get_mat(), trader, commod);
-  Bid<Material>* bid =
-      Bid<Material>::Create(request, get_mat(), src_facility);
+  Bid<Material>* bid = Bid<Material>::Create(request, get_mat(), src_facility);
 
   Trade<Material> trade(request, bid, qty);
   trades.push_back(trade);
@@ -123,7 +121,7 @@ TEST_F(SourceTest, Response) {
   delete bid;
 }
 
-boost::shared_ptr< cyclus::ExchangeContext<cyclus::Material> >
+boost::shared_ptr<cyclus::ExchangeContext<cyclus::Material> >
 SourceTest::GetContext(int nreqs, std::string commod) {
   using cyclus::Material;
   using cyclus::Request;
@@ -131,15 +129,15 @@ SourceTest::GetContext(int nreqs, std::string commod) {
   using test_helpers::get_mat;
 
   double qty = 3;
-  boost::shared_ptr< ExchangeContext<Material> >
-      ec(new ExchangeContext<Material>());
+  boost::shared_ptr<ExchangeContext<Material> > ec(
+      new ExchangeContext<Material>());
   for (int i = 0; i < nreqs; i++) {
     ec->AddRequest(Request<Material>::Create(get_mat(), trader, commod));
   }
   return ec;
 }
 
-} // namespace cycamore
+}  // namespace cycamore
 
 cyclus::Agent* SourceConstructor(cyclus::Context* ctx) {
   return new cycamore::Source(ctx);
@@ -154,4 +152,3 @@ static int cyclus_agent_tests_connected = ConnectAgentTests();
 
 INSTANTIATE_TEST_CASE_P(SourceFac, FacilityTests, Values(&SourceConstructor));
 INSTANTIATE_TEST_CASE_P(SourceFac, AgentTests, Values(&SourceConstructor));
-
