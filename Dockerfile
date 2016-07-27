@@ -1,1 +1,1 @@
-docker/cycamore-ci/Dockerfile
+docker/master-ci/Dockerfile
