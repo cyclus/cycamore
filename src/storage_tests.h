@@ -3,11 +3,11 @@
 
 #include <gtest/gtest.h>
 
-#include "storage.h"
-
+#include "agent_tests.h"
 #include "context.h"
 #include "facility_tests.h"
-#include "agent_tests.h"
+
+#include "storage.h"
 
 namespace storage {
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -21,10 +21,9 @@ class StorageTest : public ::testing::Test {
   void InitParameters();
   void SetUpStorage();
   void TestInitState(storage::Storage* fac);
-  void TestAddMat(storage::Storage* fac, 
-      cyclus::Material::Ptr mat);
-  void TestBuffers(storage::Storage* fac, double inv, double 
-      proc, double ready, double stocks);
+  void TestAddMat(storage::Storage* fac, cyclus::Material::Ptr mat);
+  void TestBuffers(storage::Storage* fac, double inv, double proc, double ready,
+                   double stocks);
   void TestStocks(storage::Storage* fac, cyclus::CompMap v);
   void TestReadyTime(storage::Storage* fac, int t);
   void TestCurrentCap(storage::Storage* fac, double inv);
@@ -36,6 +35,5 @@ class StorageTest : public ::testing::Test {
   double throughput, max_inv_size;
   bool discrete_handling;
 };
-} // namespace storage
-#endif // STORAGE_TESTS_H_
-
+}  // namespace storage
+#endif  // STORAGE_TESTS_H_
