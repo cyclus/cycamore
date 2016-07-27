@@ -22,7 +22,7 @@ Reactor::Reactor(cyclus::Context* ctx)
       cycle_step(0),
       power_cap(0),
       power_name("power"),
-      discharged(false) { }
+      discharged(false) {}
 
 #pragma cyclus def clone cycamore::Reactor
 
@@ -39,12 +39,12 @@ Reactor::Reactor(cyclus::Context* ctx)
 #pragma cyclus def initinv cycamore::Reactor
 
 void Reactor::InitFrom(Reactor* m) {
-  #pragma cyclus impl initfromcopy cycamore::Reactor
+#pragma cyclus impl initfromcopy cycamore::Reactor
   cyclus::toolkit::CommodityProducer::Copy(m);
 }
 
 void Reactor::InitFrom(cyclus::QueryableBackend* b) {
-  #pragma cyclus impl initfromdb cycamore::Reactor
+#pragma cyclus impl initfromdb cycamore::Reactor
 
   namespace tk = cyclus::toolkit;
   tk::CommodityProducer::Add(tk::Commodity(power_name),
@@ -114,13 +114,14 @@ void Reactor::Tick() {
     if (exit_time() == context()->time()) {
       if (cycle_step > 0 && cycle_step <= cycle_time &&
           core.count() == n_assem_core) {
-        cyclus::toolkit::RecordTimeSeries<cyclus::toolkit::POWER>(this, power_cap);
+        cyclus::toolkit::RecordTimeSeries<cyclus::toolkit::POWER>(this,
+                                                                  power_cap);
       } else {
         cyclus::toolkit::RecordTimeSeries<cyclus::toolkit::POWER>(this, 0);
       }
     }
 
-    if (context()->time() == exit_time()) { // only need to transmute once
+    if (context()->time() == exit_time()) {  // only need to transmute once
       Transmute(ceil(static_cast<double>(n_assem_core) / 2.0));
     }
     while (core.count() > 0) {
@@ -193,7 +194,8 @@ std::set<cyclus::RequestPortfolio<Material>::Ptr> Reactor::GetMatlRequests() {
 
   // second min expression reduces assembles to amount needed until
   // retirement if it is near.
-  int n_assem_order = n_assem_core - core.count() + n_assem_fresh - fresh.count();
+  int n_assem_order =
+      n_assem_core - core.count() + n_assem_fresh - fresh.count();
 
   if (exit_time() != -1) {
     // the +1 accounts for the fact that the reactor is alive and gets to
@@ -201,9 +203,10 @@ std::set<cyclus::RequestPortfolio<Material>::Ptr> Reactor::GetMatlRequests() {
     int t_left = exit_time() - context()->time() + 1;
     int t_left_cycle = cycle_time + refuel_time - cycle_step;
     double n_cycles_left = static_cast<double>(t_left - t_left_cycle) /
-                         static_cast<double>(cycle_time + refuel_time);
+                           static_cast<double>(cycle_time + refuel_time);
     n_cycles_left = ceil(n_cycles_left);
-    int n_need = std::max(0.0, n_cycles_left * n_assem_batch - n_assem_fresh + n_assem_core - core.count());
+    int n_need = std::max(0.0, n_cycles_left * n_assem_batch - n_assem_fresh +
+                                   n_assem_core - core.count());
     n_assem_order = std::min(n_assem_order, n_need);
   }
 
@@ -248,8 +251,9 @@ void Reactor::GetMatlTrades(
   PushSpent(mats);  // return leftovers back to spent buffer
 }
 
-void Reactor::AcceptMatlTrades(const std::vector<
-    std::pair<cyclus::Trade<Material>, Material::Ptr> >& responses) {
+void Reactor::AcceptMatlTrades(
+    const std::vector<std::pair<cyclus::Trade<Material>, Material::Ptr> >&
+        responses) {
   std::vector<std::pair<cyclus::Trade<cyclus::Material>,
                         cyclus::Material::Ptr> >::const_iterator trade;
 
