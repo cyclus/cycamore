@@ -1,12 +1,12 @@
 #ifndef CYCAMORE_SRC_DEPLOY_INST_H_
 #define CYCAMORE_SRC_DEPLOY_INST_H_
 
-#include <utility>
-#include <set>
 #include <map>
+#include <set>
+#include <utility>
 
-#include "cyclus.h"
 #include "cycamore_version.h"
+#include "cyclus.h"
 
 namespace cycamore {
 
@@ -20,7 +20,7 @@ typedef std::map<int, std::vector<std::string> > BuildSched;
 // combination of the same or different build times, build number, and
 // lifetimes.
 class DeployInst : public cyclus::Institution {
-  #pragma cyclus note { \
+#pragma cyclus note { \
     "doc": \
       "Builds and manages agents (facilities) according to a manually" \
       " specified deployment schedule. Deployed agents are automatically" \
@@ -31,6 +31,7 @@ class DeployInst : public cyclus::Institution {
       " any combination of the same or different build times, build number," \
       " and lifetimes. " \
   }
+
  public:
   DeployInst(cyclus::Context* ctx);
 
@@ -38,34 +39,31 @@ class DeployInst : public cyclus::Institution {
 
   virtual std::string version() { return CYCAMORE_VERSION; }
 
-  #pragma cyclus
+#pragma cyclus
 
   virtual void Build(cyclus::Agent* parent);
 
   virtual void EnterNotify();
 
  protected:
-  #pragma cyclus var { \
-    "doc": "Ordered list of prototypes to build.", \
-    "uitype": ("oneormore", "prototype"), \
-    "uilabel": "Prototypes to deploy", \
-  }
+#pragma cyclus var {                              \
+  "doc" : "Ordered list of prototypes to build.", \
+  "uitype" : ("oneormore", "prototype"), "uilabel" : "Prototypes to deploy", }
   std::vector<std::string> prototypes;
 
-  #pragma cyclus var { \
+#pragma cyclus var { \
     "doc": "Time step on which to deploy agents given in prototype list " \
            "(same order).",						\
     "uilabel": "Deployment times",					\
   }
   std::vector<int> build_times;
 
-  #pragma cyclus var { \
+#pragma cyclus var { \
     "doc": "Number of each prototype given in prototype list that should be " \
            "deployed (same order).", \
     "uilabel": "Number to deploy", \
   }
   std::vector<int> n_build;
-
 
 #pragma cyclus var {							\
     "doc": "Lifetimes for each prototype in prototype list (same order)." \
