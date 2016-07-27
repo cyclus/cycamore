@@ -1,6 +1,6 @@
-#include <sstream>
-
 #include "mixer.h"
+
+#include <sstream>
 
 namespace cycamore {
 
