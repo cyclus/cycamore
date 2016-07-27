@@ -2,8 +2,9 @@
 
 #include "agent_tests.h"
 #include "context.h"
-#include "deploy_inst.h"
 #include "institution_tests.h"
+
+#include "deploy_inst.h"
 
 // make sure that the deployed agent's prototype name is identical to the
 // originally specified prototype name - this is important to test because
