@@ -2,6 +2,7 @@
 #define CYCAMORE_SRC_FUEL_FAB_H_
 
 #include <string>
+
 #include "cyclus.h"
 #include "cycamore_version.h"
 
