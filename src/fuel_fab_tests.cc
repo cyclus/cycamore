@@ -1,7 +1,9 @@
 #include "fuel_fab.h"
 
-#include <gtest/gtest.h>
 #include <sstream>
+
+#include <gtest/gtest.h>
+
 #include "cyclus.h"
 
 using pyne::nucname::id;
