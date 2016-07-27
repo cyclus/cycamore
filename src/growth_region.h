@@ -5,8 +5,8 @@
 #include <utility>
 #include <vector>
 
-#include "cyclus.h"
 #include "cycamore_version.h"
+#include "cyclus.h"
 
 // forward declarations
 namespace cycamore {
@@ -19,8 +19,8 @@ class GrowthRegion;
 namespace cycamore {
 
 /// A container of (time, (demand type, demand parameters))
-typedef std::vector<
-  std::pair<int, std::pair<std::string, std::string> > > Demand;
+typedef std::vector<std::pair<int, std::pair<std::string, std::string> > >
+    Demand;
 
 /// This region determines if there is a need to meet a certain
 /// capacity (as defined via input) at each time step. If there is
@@ -37,6 +37,7 @@ typedef std::vector<
 /// @warning The growth region is experimental
 class GrowthRegion : public cyclus::Region {
   friend class GrowthRegionTests;
+
  public:
   /// The default constructor for the GrowthRegion
   GrowthRegion(cyclus::Context* ctx);
@@ -46,9 +47,9 @@ class GrowthRegion : public cyclus::Region {
 
   virtual std::string version() { return CYCAMORE_VERSION; }
 
-  #pragma cyclus
+#pragma cyclus
 
-  #pragma cyclus note {"doc": "A region that governs a scenario in which " \
+#pragma cyclus note {"doc": "A region that governs a scenario in which " \
                               "there is growth in demand for a commodity. "}
 
   /// On each tick, the GrowthRegion queries its supply demand manager
@@ -67,9 +68,9 @@ class GrowthRegion : public cyclus::Region {
   inline cyclus::toolkit::SupplyDemandManager* sdmanager() {
     return &sdmanager_;
   }
-  
- protected:  
-  #pragma cyclus var { \
+
+ protected:
+#pragma cyclus var { \
     "alias": ["growth", "commod", \
               ["piecewise_function",                                    \
                ["piece", "start", ["function", "type", "params"]]]],    \
@@ -101,14 +102,16 @@ class GrowthRegion : public cyclus::Region {
     "  * The parameters associated with each function type can be found on their " \
     "respective documentation pages.",                                  \
   }
-  std::map<std::string, std::vector<std::pair<int, std::pair<std::string, std::string> > > > commodity_demand; // must match Demand typedef
-  
+  std::map<std::string,
+           std::vector<std::pair<int, std::pair<std::string, std::string> > > >
+      commodity_demand;  // must match Demand typedef
+
   /// manager for building things
   cyclus::toolkit::BuildingManager buildmanager_;
 
   /// manager for Supply and demand
   cyclus::toolkit::SupplyDemandManager sdmanager_;
-  
+
   /// register a child
   void Register_(cyclus::Agent* agent);
 
