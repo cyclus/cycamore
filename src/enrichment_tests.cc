@@ -1,6 +1,8 @@
-#include <gtest/gtest.h>
+#include "enrichment_tests.h"
 
 #include <sstream>
+
+#include <gtest/gtest.h>
 
 #include "agent_tests.h"
 #include "env.h"
@@ -9,7 +11,6 @@
 #include "resource_helpers.h"
 #include "toolkit/mat_query.h"
 
-#include "enrichment_tests.h"
 
 using cyclus::QueryResult;
 using cyclus::Cond;
