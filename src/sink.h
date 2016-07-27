@@ -6,8 +6,8 @@
 #include <utility>
 #include <vector>
 
-#include "cyclus.h"
 #include "cycamore_version.h"
+#include "cyclus.h"
 
 namespace cycamore {
 
@@ -18,7 +18,7 @@ class Context;
 /// total inventory size.  The inventory size and throughput capacity both
 /// default to infinite. If a recipe is provided, it will request material with
 /// that recipe. Requests are made for any number of specified commodities.
-class Sink : public cyclus::Facility  {
+class Sink : public cyclus::Facility {
  public:
   Sink(cyclus::Context* ctx);
 
@@ -26,7 +26,7 @@ class Sink : public cyclus::Facility  {
 
   virtual std::string version() { return CYCAMORE_VERSION; }
 
-  #pragma cyclus note { \
+#pragma cyclus note { \
     "doc": \
     " A sink facility that accepts materials and products with a fixed\n"\
     " throughput (per time step) capacity and a lifetime capacity defined by\n"\
@@ -36,7 +36,7 @@ class Sink : public cyclus::Facility  {
     " specified commodities.\n" \
     }
 
-  #pragma cyclus decl
+#pragma cyclus decl
 
   virtual std::string str();
 
@@ -47,23 +47,23 @@ class Sink : public cyclus::Facility  {
   /// @brief SinkFacilities request Materials of their given commodity. Note
   /// that it is assumed the Sink operates on a single resource type!
   virtual std::set<cyclus::RequestPortfolio<cyclus::Material>::Ptr>
-      GetMatlRequests();
+  GetMatlRequests();
 
   /// @brief SinkFacilities request Products of their given
   /// commodity. Note that it is assumed the Sink operates on a single
   /// resource type!
   virtual std::set<cyclus::RequestPortfolio<cyclus::Product>::Ptr>
-      GetGenRsrcRequests();
+  GetGenRsrcRequests();
 
   /// @brief SinkFacilities place accepted trade Materials in their Inventory
   virtual void AcceptMatlTrades(
-      const std::vector< std::pair<cyclus::Trade<cyclus::Material>,
-      cyclus::Material::Ptr> >& responses);
+      const std::vector<std::pair<cyclus::Trade<cyclus::Material>,
+                                  cyclus::Material::Ptr> >& responses);
 
   /// @brief SinkFacilities place accepted trade Materials in their Inventory
   virtual void AcceptGenRsrcTrades(
-      const std::vector< std::pair<cyclus::Trade<cyclus::Product>,
-      cyclus::Product::Ptr> >& responses);
+      const std::vector<std::pair<cyclus::Trade<cyclus::Product>,
+                                  cyclus::Product::Ptr> >& responses);
 
   ///  add a commodity to the set of input commodities
   ///  @param name the commodity name
@@ -95,18 +95,20 @@ class Sink : public cyclus::Facility  {
   inline double Capacity() const { return capacity; }
 
   /// @return the input commodities
-  inline const std::vector<std::string>&
-      input_commodities() const { return in_commods; }
+  inline const std::vector<std::string>& input_commodities() const {
+    return in_commods;
+  }
 
  private:
-  /// all facilities must have at least one input commodity
-  #pragma cyclus var {"tooltip": "input commodities", \
-                      "doc": "commodities that the sink facility accepts", \
-                      "uilabel": "List of Input Commodities", \
-                      "uitype": ["oneormore", "incommodity"]}
+/// all facilities must have at least one input commodity
+#pragma cyclus var {                                    \
+  "tooltip" : "input commodities",                      \
+  "doc" : "commodities that the sink facility accepts", \
+  "uilabel" : "List of Input Commodities",              \
+  "uitype" :["oneormore", "incommodity"] }
   std::vector<std::string> in_commods;
 
-  #pragma cyclus var {"default": "", "tooltip": "requested composition", \
+#pragma cyclus var {"default": "", "tooltip": "requested composition", \
                       "doc": "name of recipe to use for material requests, " \
                              "where the default (empty string) is to accept " \
                              "everything", \
@@ -114,22 +116,22 @@ class Sink : public cyclus::Facility  {
                       "uitype": "recipe"}
   std::string recipe_name;
 
-  /// max inventory size
-  #pragma cyclus var {"default": 1e299, \
-                      "tooltip": "sink maximum inventory size", \
-                      "uilabel": "Maximum Inventory", \
-                      "doc": "total maximum inventory size of sink facility"}
+/// max inventory size
+#pragma cyclus var {                                            \
+  "default" : 1e299, "tooltip" : "sink maximum inventory size", \
+  "uilabel" : "Maximum Inventory",                              \
+  "doc" : "total maximum inventory size of sink facility" }
   double max_inv_size;
 
-  /// monthly acceptance capacity
-  #pragma cyclus var {"default": 1e299, "tooltip": "sink capacity", \
+/// monthly acceptance capacity
+#pragma cyclus var {"default": 1e299, "tooltip": "sink capacity", \
                       "uilabel": "Maximum Throughput", \
                       "doc": "capacity the sink facility can " \
                              "accept at each time step"}
   double capacity;
 
-  /// this facility holds material in storage.
-  #pragma cyclus var {'capacity': 'max_inv_size'}
+/// this facility holds material in storage.
+#pragma cyclus var { 'capacity' : 'max_inv_size' }
   cyclus::toolkit::ResBuf<cyclus::Resource> inventory;
 };
 

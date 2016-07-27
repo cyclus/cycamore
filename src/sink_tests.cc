@@ -1,12 +1,12 @@
+#include "sink_tests.h"
+
 #include <gtest/gtest.h>
 
-#include "facility_tests.h"
 #include "agent_tests.h"
-#include "resource_helpers.h"
+#include "facility_tests.h"
 #include "infile_tree.h"
+#include "resource_helpers.h"
 #include "xml_parser.h"
-
-#include "sink_tests.h"
 
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 void SinkTest::SetUp() {
@@ -17,9 +17,7 @@ void SinkTest::SetUp() {
 }
 
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-void SinkTest::TearDown() {
-  delete src_facility;
-}
+void SinkTest::TearDown() { delete src_facility; }
 
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 void SinkTest::InitParameters() {
@@ -48,22 +46,21 @@ TEST_F(SinkTest, InitialState) {
   EXPECT_DOUBLE_EQ(capacity_, src_facility->RequestAmt());
   EXPECT_DOUBLE_EQ(0.0, src_facility->InventorySize());
   std::string arr[] = {commod1_, commod2_};
-  std::vector<std::string> vexp (arr, arr + sizeof(arr) / sizeof(arr[0]) );
+  std::vector<std::string> vexp(arr, arr + sizeof(arr) / sizeof(arr[0]));
   EXPECT_EQ(vexp, src_facility->input_commodities());
 }
 
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 TEST_F(SinkTest, Clone) {
   using cycamore::Sink;
-  Sink* cloned_fac = dynamic_cast<cycamore::Sink*>
-                             (src_facility->Clone());
+  Sink* cloned_fac = dynamic_cast<cycamore::Sink*>(src_facility->Clone());
 
   EXPECT_DOUBLE_EQ(0.0, cloned_fac->InventorySize());
   EXPECT_DOUBLE_EQ(capacity_, cloned_fac->Capacity());
   EXPECT_DOUBLE_EQ(inv_, cloned_fac->MaxInventorySize());
   EXPECT_DOUBLE_EQ(capacity_, cloned_fac->RequestAmt());
   std::string arr[] = {commod1_, commod2_};
-  std::vector<std::string> vexp (arr, arr + sizeof(arr) / sizeof(arr[0]) );
+  std::vector<std::string> vexp(arr, arr + sizeof(arr) / sizeof(arr[0]));
   EXPECT_EQ(vexp, cloned_fac->input_commodities());
 
   delete cloned_fac;
@@ -95,7 +92,7 @@ TEST_F(SinkTest, DISABLED_XMLInit) {
 
   // EXPECT_NO_THROW(fac.InitFrom(&engine););
   std::string arr[] = {commod1_, commod2_};
-  std::vector<std::string> vexp (arr, arr + sizeof(arr) / sizeof(arr[0]) );
+  std::vector<std::string> vexp(arr, arr + sizeof(arr) / sizeof(arr[0]));
   EXPECT_EQ(vexp, fac.input_commodities());
   EXPECT_DOUBLE_EQ(capacity_, fac.Capacity());
   EXPECT_DOUBLE_EQ(inv_, fac.MaxInventorySize());
@@ -111,7 +108,7 @@ TEST_F(SinkTest, Requests) {
   using cyclus::Material;
 
   std::string arr[] = {commod1_, commod2_};
-  std::vector<std::string> commods (arr, arr + sizeof(arr) / sizeof(arr[0]) );
+  std::vector<std::string> commods(arr, arr + sizeof(arr) / sizeof(arr[0]));
 
   std::set<RequestPortfolio<Material>::Ptr> ports =
       src_facility->GetMatlRequests();
@@ -128,7 +125,7 @@ TEST_F(SinkTest, Requests) {
     EXPECT_EQ(req->commodity(), commods[i]);
   }
 
-  const std::set< CapacityConstraint<Material> >& constraints =
+  const std::set<CapacityConstraint<Material> >& constraints =
       ports.begin()->get()->constraints();
   EXPECT_EQ(constraints.size(), 0);
 }
@@ -153,17 +150,16 @@ TEST_F(SinkTest, Accept) {
   using test_helpers::get_mat;
 
   double qty = qty_ * 2;
-  std::vector< std::pair<cyclus::Trade<cyclus::Material>,
-                         cyclus::Material::Ptr> > responses;
+  std::vector<
+      std::pair<cyclus::Trade<cyclus::Material>, cyclus::Material::Ptr> >
+      responses;
 
-  Request<Material>* req1 =
-      Request<Material>::Create(get_mat(922350000, qty_), src_facility,
-                                commod1_);
+  Request<Material>* req1 = Request<Material>::Create(get_mat(922350000, qty_),
+                                                      src_facility, commod1_);
   Bid<Material>* bid1 = Bid<Material>::Create(req1, get_mat(), trader);
 
-  Request<Material>* req2 =
-      Request<Material>::Create(get_mat(922350000, qty_), src_facility,
-                                commod2_);
+  Request<Material>* req2 = Request<Material>::Create(get_mat(922350000, qty_),
+                                                      src_facility, commod2_);
   Bid<Material>* bid2 =
       Bid<Material>::Create(req2, get_mat(922350000, qty_), trader);
 
@@ -177,8 +173,8 @@ TEST_F(SinkTest, Accept) {
   EXPECT_DOUBLE_EQ(qty, src_facility->InventorySize());
 }
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-TEST_F(SinkTest, InRecipe){
-// Create a context
+TEST_F(SinkTest, InRecipe) {
+  // Create a context
   using cyclus::RequestPortfolio;
   using cyclus::Material;
   using cyclus::Request;
@@ -192,23 +188,22 @@ TEST_F(SinkTest, InRecipe){
   m[922580000] = 2;
 
   cyclus::Composition::Ptr c = cyclus::Composition::CreateFromMass(m);
-  ctx.AddRecipe("some_u",c) ;
+  ctx.AddRecipe("some_u", c);
 
   // create a sink facility to interact with the DRE
   cycamore::Sink* snk = new cycamore::Sink(&ctx);
   snk->AddCommodity("some_u");
 
-  std::set<RequestPortfolio<Material>::Ptr> ports =
-    snk->GetMatlRequests();
+  std::set<RequestPortfolio<Material>::Ptr> ports = snk->GetMatlRequests();
   ASSERT_EQ(ports.size(), 1);
 
   const std::vector<Request<Material>*>& requests =
-    ports.begin()->get()->requests();
+      ports.begin()->get()->requests();
   ASSERT_EQ(requests.size(), 1);
 
   Request<Material>* req = *requests.begin();
   EXPECT_EQ(req->requester(), snk);
-  EXPECT_EQ(req->commodity(),"some_u");
+  EXPECT_EQ(req->commodity(), "some_u");
 }
 
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -

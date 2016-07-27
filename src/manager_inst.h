@@ -1,8 +1,8 @@
 #ifndef CYCAMORE_SRC_MANAGER_INST_H_
 #define CYCAMORE_SRC_MANAGER_INST_H_
 
-#include "cyclus.h"
 #include "cycamore_version.h"
+#include "cyclus.h"
 
 namespace cycamore {
 
@@ -10,10 +10,9 @@ namespace cycamore {
 /// @section introduction Introduction
 /// @section detailedBehavior Detailed Behavior
 /// @warning The ManagerInst is experimental
-class ManagerInst
-    : public cyclus::Institution,
-      public cyclus::toolkit::CommodityProducerManager,
-      public cyclus::toolkit::Builder {
+class ManagerInst : public cyclus::Institution,
+                    public cyclus::toolkit::CommodityProducerManager,
+                    public cyclus::toolkit::Builder {
  public:
   /// Default constructor
   ManagerInst(cyclus::Context* ctx);
@@ -23,9 +22,9 @@ class ManagerInst
 
   virtual std::string version() { return CYCAMORE_VERSION; }
 
-  #pragma cyclus
+#pragma cyclus
 
-  #pragma cyclus note {"doc": "An institution that owns and operates a " \
+#pragma cyclus note {"doc": "An institution that owns and operates a " \
                               "manually entered list of facilities in " \
                               "the input file"}
 
@@ -40,8 +39,7 @@ class ManagerInst
 
   /// write information about a commodity producer to a stream
   /// @param producer the producer
-  void WriteProducerInformation(cyclus::toolkit::CommodityProducer*
-                                producer);
+  void WriteProducerInformation(cyclus::toolkit::CommodityProducer* producer);
 
  private:
   /// register a child
@@ -50,7 +48,7 @@ class ManagerInst
   /// unregister a child
   void Unregister_(cyclus::Agent* agent);
 
-  #pragma cyclus var { \
+#pragma cyclus var { \
     "tooltip": "producer facility prototypes",                          \
     "uilabel": "Producer Prototype List",                               \
     "uitype": ["oneormore", "prototype"],                                    \

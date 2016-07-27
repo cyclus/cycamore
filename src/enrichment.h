@@ -3,8 +3,8 @@
 
 #include <string>
 
-#include "cyclus.h"
 #include "cycamore_version.h"
+#include "cyclus.h"
 
 namespace cycamore {
 
@@ -14,16 +14,15 @@ namespace cycamore {
 /// determine the amount of SWU required for their proposed enrichment
 class SWUConverter : public cyclus::Converter<cyclus::Material> {
  public:
-  SWUConverter(double feed_commod, double tails) : feed_(feed_commod),
-    tails_(tails) {}
+  SWUConverter(double feed_commod, double tails)
+      : feed_(feed_commod), tails_(tails) {}
   virtual ~SWUConverter() {}
 
   /// @brief provides a conversion for the SWU required
   virtual double convert(
-      cyclus::Material::Ptr m,
-      cyclus::Arc const * a = NULL,
-      cyclus::ExchangeTranslationContext<cyclus::Material>
-          const * ctx = NULL) const {
+      cyclus::Material::Ptr m, cyclus::Arc const* a = NULL,
+      cyclus::ExchangeTranslationContext<cyclus::Material> const* ctx =
+          NULL) const {
     cyclus::toolkit::Assays assays(feed_, cyclus::toolkit::UraniumAssay(m),
                                    tails_);
     return cyclus::toolkit::SwuRequired(m->quantity(), assays);
@@ -32,9 +31,7 @@ class SWUConverter : public cyclus::Converter<cyclus::Material> {
   /// @returns true if Converter is a SWUConverter and feed and tails equal
   virtual bool operator==(Converter& other) const {
     SWUConverter* cast = dynamic_cast<SWUConverter*>(&other);
-    return cast != NULL &&
-    feed_ == cast->feed_ &&
-    tails_ == cast->tails_;
+    return cast != NULL && feed_ == cast->feed_ && tails_ == cast->tails_;
   }
 
  private:
@@ -48,18 +45,17 @@ class SWUConverter : public cyclus::Converter<cyclus::Material> {
 /// enrichment
 class NatUConverter : public cyclus::Converter<cyclus::Material> {
  public:
-  NatUConverter(double feed_commod, double tails) : feed_(feed_commod),
-    tails_(tails) {}
+  NatUConverter(double feed_commod, double tails)
+      : feed_(feed_commod), tails_(tails) {}
   virtual ~NatUConverter() {}
 
   virtual std::string version() { return CYCAMORE_VERSION; }
 
   /// @brief provides a conversion for the amount of natural Uranium required
   virtual double convert(
-      cyclus::Material::Ptr m,
-      cyclus::Arc const * a = NULL,
-      cyclus::ExchangeTranslationContext<cyclus::Material>
-          const * ctx = NULL) const {
+      cyclus::Material::Ptr m, cyclus::Arc const* a = NULL,
+      cyclus::ExchangeTranslationContext<cyclus::Material> const* ctx =
+          NULL) const {
     cyclus::toolkit::Assays assays(feed_, cyclus::toolkit::UraniumAssay(m),
                                    tails_);
     cyclus::toolkit::MatQuery mq(m);
@@ -75,9 +71,7 @@ class NatUConverter : public cyclus::Converter<cyclus::Material> {
   /// @returns true if Converter is a NatUConverter and feed and tails equal
   virtual bool operator==(Converter& other) const {
     NatUConverter* cast = dynamic_cast<NatUConverter*>(&other);
-    return cast != NULL &&
-    feed_ == cast->feed_ &&
-    tails_ == cast->tails_;
+    return cast != NULL && feed_ == cast->feed_ && tails_ == cast->tails_;
   }
 
  private:
@@ -149,6 +143,7 @@ class Enrichment : public cyclus::Facility {
   "Accumulated tails inventory is offered for trading as a specifiable " \
   "output commodity.", \
 }
+
  public:
   // --- Module Members ---
   ///    Constructor for the Enrichment class
@@ -160,7 +155,7 @@ class Enrichment : public cyclus::Facility {
 
   virtual std::string version() { return CYCAMORE_VERSION; }
 
-  #pragma cyclus
+#pragma cyclus
 
   ///     Print information about this agent
   virtual std::string str();
@@ -187,25 +182,24 @@ class Enrichment : public cyclus::Facility {
   /// @brief The Enrichment request Materials of its given
   /// commodity.
   virtual std::set<cyclus::RequestPortfolio<cyclus::Material>::Ptr>
-      GetMatlRequests();
+  GetMatlRequests();
 
   /// @brief The Enrichment adjusts preferences for offers of
   /// natural uranium it has received to maximize U-235 content
   /// Any offers that have zero U-235 content are not accepted
   virtual void AdjustMatlPrefs(cyclus::PrefMap<cyclus::Material>::type& prefs);
- 
+
   /// @brief The Enrichment place accepted trade Materials in their
   /// Inventory
   virtual void AcceptMatlTrades(
-      const std::vector< std::pair<cyclus::Trade<cyclus::Material>,
-      cyclus::Material::Ptr> >& responses);
+      const std::vector<std::pair<cyclus::Trade<cyclus::Material>,
+                                  cyclus::Material::Ptr> >& responses);
 
   /// @brief Responds to each request for this facility's commodity.  If a given
   /// request is more than this facility's inventory or SWU capacity, it will
   /// offer its minimum of its capacities.
-  virtual std::set<cyclus::BidPortfolio<cyclus::Material>::Ptr>
-    GetMatlBids(cyclus::CommodMap<cyclus::Material>::type&
-    commod_requests);
+  virtual std::set<cyclus::BidPortfolio<cyclus::Material>::Ptr> GetMatlBids(
+      cyclus::CommodMap<cyclus::Material>::type& commod_requests);
 
   /// @brief respond to each trade with a material enriched to the appropriate
   /// level given this facility's inventory
@@ -213,9 +207,9 @@ class Enrichment : public cyclus::Facility {
   /// @param trades all trades in which this trader is the supplier
   /// @param responses a container to populate with responses to each trade
   virtual void GetMatlTrades(
-    const std::vector< cyclus::Trade<cyclus::Material> >& trades,
-    std::vector<std::pair<cyclus::Trade<cyclus::Material>,
-    cyclus::Material::Ptr> >& responses);
+      const std::vector<cyclus::Trade<cyclus::Material> >& trades,
+      std::vector<std::pair<cyclus::Trade<cyclus::Material>,
+                            cyclus::Material::Ptr> >& responses);
   // ---
 
   ///  @brief Determines if a particular material is a valid request to respond
@@ -224,11 +218,11 @@ class Enrichment : public cyclus::Facility {
   ///  @return true if the above description is met by the material
   bool ValidReq(const cyclus::Material::Ptr mat);
 
-   inline void SetMaxInventorySize(double size) {
+  inline void SetMaxInventorySize(double size) {
     max_feed_inventory = size;
     inventory.capacity(size);
   }
- 
+
   inline void SwuCapacity(double capacity) {
     swu_capacity = capacity;
     current_swu_capacity = swu_capacity;
@@ -238,8 +232,8 @@ class Enrichment : public cyclus::Facility {
 
   inline const cyclus::toolkit::ResBuf<cyclus::Material>& Tails() const {
     return tails;
-  } 
-  
+  }
+
  private:
   ///   @brief adds a material into the natural uranium inventory
   ///   @throws if the material is not the same composition as the feed_recipe
@@ -264,47 +258,37 @@ class Enrichment : public cyclus::Facility {
 
   ///  @brief records and enrichment with the cyclus::Recorder
   void RecordEnrichment_(double natural_u, double swu);
-  
-  #pragma cyclus var { \
-    "tooltip": "feed commodity",					\
-    "doc": "feed commodity that the enrichment facility accepts",	\
-    "uilabel": "Feed Commodity",                                    \
-    "uitype": "incommodity" \
-  }
+
+#pragma cyclus var {                                             \
+  "tooltip" : "feed commodity",                                  \
+  "doc" : "feed commodity that the enrichment facility accepts", \
+  "uilabel" : "Feed Commodity", "uitype" : "incommodity" }
   std::string feed_commod;
-  
-  #pragma cyclus var { \
-    "tooltip": "feed recipe",						\
-    "doc": "recipe for enrichment facility feed commodity",		\
-    "uilabel": "Feed Recipe",                                   \
-    "uitype": "recipe" \
-  }
+
+#pragma cyclus var {                                       \
+  "tooltip" : "feed recipe",                               \
+  "doc" : "recipe for enrichment facility feed commodity", \
+  "uilabel" : "Feed Recipe", "uitype" : "recipe" }
   std::string feed_recipe;
-  
-  #pragma cyclus var { \
-    "tooltip": "product commodity",					\
-    "doc": "product commodity that the enrichment facility generates",	 \
-    "uilabel": "Product Commodity",                                     \
-    "uitype": "outcommodity" \
-  }
+
+#pragma cyclus var {                                                  \
+  "tooltip" : "product commodity",                                    \
+  "doc" : "product commodity that the enrichment facility generates", \
+  "uilabel" : "Product Commodity", "uitype" : "outcommodity" }
   std::string product_commod;
-  
-  #pragma cyclus var {							\
-    "tooltip": "tails commodity",					\
-    "doc": "tails commodity supplied by enrichment facility",		\
-    "uilabel": "Tails Commodity",                                   \
-    "uitype": "outcommodity" \
-  }
+
+#pragma cyclus var {                                         \
+  "tooltip" : "tails commodity",                             \
+  "doc" : "tails commodity supplied by enrichment facility", \
+  "uilabel" : "Tails Commodity", "uitype" : "outcommodity" }
   std::string tails_commod;
 
-  #pragma cyclus var {							\
-    "default": 0.003, "tooltip": "tails assay",				\
-    "uilabel": "Tails Assay",                               \
-    "doc": "tails assay from the enrichment process",       \
-  }
+#pragma cyclus var {                                                       \
+  "default" : 0.003, "tooltip" : "tails assay", "uilabel" : "Tails Assay", \
+  "doc" : "tails assay from the enrichment process", }
   double tails_assay;
-  
-  #pragma cyclus var {							\
+
+#pragma cyclus var {							\
     "default": 0, "tooltip": "initial uranium reserves (kg)",		\
     "uilabel": "Initial Feed Inventory",				\
     "doc": "amount of natural uranium stored at the enrichment "	\
@@ -312,31 +296,22 @@ class Enrichment : public cyclus::Facility {
   }
   double initial_feed;
 
-  #pragma cyclus var {							\
+#pragma cyclus var {							\
     "default": 1e299, "tooltip": "max inventory of feed material (kg)", \
     "uilabel": "Maximum Feed Inventory",                                \
     "doc": "maximum total inventory of natural uranium in "		\
            "the enrichment facility (kg)"     \
   }
   double max_feed_inventory;
- 
-  #pragma cyclus var { \
-    "default": 1.0,						\
-    "tooltip": "maximum allowed enrichment fraction",		\
-    "doc": "maximum allowed weight fraction of U235 in product",\
-    "uilabel": "Maximum Allowed Enrichment", \
-    "schema": '<optional>'				     	   \
-        '          <element name="max_enrich">'			   \
-        '              <data type="double">'			   \
-        '                  <param name="minInclusive">0</param>'   \
-        '                  <param name="maxInclusive">1</param>'   \
-        '              </data>'					   \
-        '          </element>'					   \
-        '      </optional>'					   \
-  }
+
+#pragma cyclus var {                                                  \
+  "default" : 1.0, "tooltip" : "maximum allowed enrichment fraction", \
+  "doc" : "maximum allowed weight fraction of U235 in product",       \
+  "uilabel" : "Maximum Allowed Enrichment",                           \
+  "schema" : '<optional>' '          <element name="max_enrich">' '              <data type="double">' '                  <param name="minInclusive">0</param>' '                  <param name="maxInclusive">1</param>' '              </data>' '          </element>' '      </optional>' }
   double max_enrich;
 
-  #pragma cyclus var { \
+#pragma cyclus var { \
     "default": 1,		       \
     "userlevel": 10,							\
     "tooltip": "Rank Material Requests by U235 Content",		\
@@ -346,7 +321,7 @@ class Enrichment : public cyclus::Facility {
   }
   bool order_prefs;
 
-  #pragma cyclus var {						       \
+#pragma cyclus var {						       \
     "default": 1e299,						       \
     "tooltip": "SWU capacity (kgSWU/month)",			       \
     "uilabel": "SWU Capacity",                                         \
@@ -357,20 +332,20 @@ class Enrichment : public cyclus::Facility {
 
   double current_swu_capacity;
 
-  #pragma cyclus var { 'capacity': 'max_feed_inventory' }
+#pragma cyclus var { 'capacity' : 'max_feed_inventory' }
   cyclus::toolkit::ResBuf<cyclus::Material> inventory;  // natural u
-  #pragma cyclus var {}
+#pragma cyclus var {}
   cyclus::toolkit::ResBuf<cyclus::Material> tails;  // depleted u
 
   // used to total intra-timestep swu and natu usage for meeting requests -
   // these help enable time series generation.
   double intra_timestep_swu_;
   double intra_timestep_feed_;
-  
+
   friend class EnrichmentTest;
   // ---
 };
- 
+
 }  // namespace cycamore
 
-#endif // CYCAMORE_SRC_ENRICHMENT_FACILITY_H_
+#endif  // CYCAMORE_SRC_ENRICHMENT_FACILITY_H_

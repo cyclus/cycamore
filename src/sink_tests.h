@@ -3,9 +3,9 @@
 
 #include <gtest/gtest.h>
 
-#include "sink.h"
-
 #include "test_context.h"
+
+#include "sink.h"
 
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 class SinkTest : public ::testing::Test {

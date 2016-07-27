@@ -10,8 +10,7 @@ namespace cycamore {
 
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 Sink::Sink(cyclus::Context* ctx)
-    : cyclus::Facility(ctx),
-      capacity(std::numeric_limits<double>::max()) {
+    : cyclus::Facility(ctx), capacity(std::numeric_limits<double>::max()) {
   SetMaxInventorySize(std::numeric_limits<double>::max());
 }
 
@@ -46,8 +45,7 @@ std::string Sink::str() {
   string msg = "";
   msg += "accepts commodities ";
   for (vector<string>::iterator commod = in_commods.begin();
-       commod != in_commods.end();
-       commod++) {
+       commod != in_commods.end(); commod++) {
     msg += (commod == in_commods.begin() ? "{" : ", ");
     msg += (*commod);
   }
@@ -73,8 +71,8 @@ Sink::GetMatlRequests() {
     mat = cyclus::NewBlankMaterial(amt);
   } else {
     Composition::Ptr rec = this->context()->GetRecipe(recipe_name);
-    mat = cyclus::Material::CreateUntracked(amt, rec); 
-  } 
+    mat = cyclus::Material::CreateUntracked(amt, rec);
+  }
 
   if (amt > cyclus::eps()) {
     std::vector<std::string>::const_iterator it;
@@ -98,8 +96,7 @@ Sink::GetGenRsrcRequests() {
   using cyclus::Request;
 
   std::set<RequestPortfolio<Product>::Ptr> ports;
-  RequestPortfolio<Product>::Ptr
-      port(new RequestPortfolio<Product>());
+  RequestPortfolio<Product>::Ptr port(new RequestPortfolio<Product>());
   double amt = RequestAmt();
 
   if (amt > cyclus::eps()) {
@@ -121,10 +118,10 @@ Sink::GetGenRsrcRequests() {
 
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 void Sink::AcceptMatlTrades(
-    const std::vector< std::pair<cyclus::Trade<cyclus::Material>,
-                                 cyclus::Material::Ptr> >& responses) {
-  std::vector< std::pair<cyclus::Trade<cyclus::Material>,
-                         cyclus::Material::Ptr> >::const_iterator it;
+    const std::vector<std::pair<cyclus::Trade<cyclus::Material>,
+                                cyclus::Material::Ptr> >& responses) {
+  std::vector<std::pair<cyclus::Trade<cyclus::Material>,
+                        cyclus::Material::Ptr> >::const_iterator it;
   for (it = responses.begin(); it != responses.end(); ++it) {
     inventory.Push(it->second);
   }
@@ -132,10 +129,10 @@ void Sink::AcceptMatlTrades(
 
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 void Sink::AcceptGenRsrcTrades(
-    const std::vector< std::pair<cyclus::Trade<cyclus::Product>,
-                                 cyclus::Product::Ptr> >& responses) {
-  std::vector< std::pair<cyclus::Trade<cyclus::Product>,
-                         cyclus::Product::Ptr> >::const_iterator it;
+    const std::vector<std::pair<cyclus::Trade<cyclus::Product>,
+                                cyclus::Product::Ptr> >& responses) {
+  std::vector<std::pair<cyclus::Trade<cyclus::Product>,
+                        cyclus::Product::Ptr> >::const_iterator it;
   for (it = responses.begin(); it != responses.end(); ++it) {
     inventory.Push(it->second);
   }
@@ -151,8 +148,7 @@ void Sink::Tick() {
   // inform the simulation about what the sink facility will be requesting
   if (requestAmt > cyclus::eps()) {
     for (vector<string>::iterator commod = in_commods.begin();
-         commod != in_commods.end();
-         commod++) {
+         commod != in_commods.end(); commod++) {
       LOG(cyclus::LEV_INFO4, "SnkFac") << " will request " << requestAmt
                                        << " kg of " << *commod << ".";
     }
@@ -167,10 +163,10 @@ void Sink::Tock() {
   // On the tock, the sink facility doesn't really do much.
   // Maybe someday it will record things.
   // For now, lets just print out what we have at each timestep.
-  LOG(cyclus::LEV_INFO4, "SnkFac") << "Sink " << this->id()
-                                   << " is holding " << inventory.quantity()
-                                   << " units of material at the close of month "
-                                   << context()->time() << ".";
+  LOG(cyclus::LEV_INFO4, "SnkFac")
+      << "Sink " << this->id() << " is holding " << inventory.quantity()
+      << " units of material at the close of month " << context()->time()
+      << ".";
   LOG(cyclus::LEV_INFO3, "SnkFac") << "}";
 }
 

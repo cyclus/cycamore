@@ -1,7 +1,7 @@
 #include "source.h"
 
-#include <sstream>
 #include <limits>
+#include <sstream>
 
 #include <boost/lexical_cast.hpp>
 
@@ -15,12 +15,12 @@ Source::Source(cyclus::Context* ctx)
 Source::~Source() {}
 
 void Source::InitFrom(Source* m) {
-  #pragma cyclus impl initfromcopy cycamore::Source
+#pragma cyclus impl initfromcopy cycamore::Source
   cyclus::toolkit::CommodityProducer::Copy(m);
 }
 
 void Source::InitFrom(cyclus::QueryableBackend* b) {
-  #pragma cyclus impl initfromdb cycamore::Source
+#pragma cyclus impl initfromdb cycamore::Source
   namespace tk = cyclus::toolkit;
   tk::CommodityProducer::Add(tk::Commodity(outcommod),
                              tk::CommodInfo(throughput, throughput));
@@ -37,11 +37,11 @@ std::string Source::str() {
     ans = "no";
   }
   ss << cyclus::Facility::str() << " supplies commodity '" << outcommod
-     << "' with recipe '" << outrecipe << "' at a throughput of "
-     << throughput << " kg per time step "
+     << "' with recipe '" << outrecipe << "' at a throughput of " << throughput
+     << " kg per time step "
      << " commod producer members: "
-     << " produces " << outcommod << "?: " << ans
-     << " throughput: " << cyclus::toolkit::CommodityProducer::Capacity(outcommod)
+     << " produces " << outcommod << "?: " << ans << " throughput: "
+     << cyclus::toolkit::CommodityProducer::Capacity(outcommod)
      << " cost: " << cyclus::toolkit::CommodityProducer::Cost(outcommod);
   return ss.str();
 }

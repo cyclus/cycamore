@@ -1,8 +1,8 @@
 #ifndef CYCAMORE_SRC_SEPARATIONS_H_
 #define CYCAMORE_SRC_SEPARATIONS_H_
 
-#include "cyclus.h"
 #include "cycamore_version.h"
+#include "cyclus.h"
 
 namespace cycamore {
 
@@ -58,6 +58,7 @@ class Separations : public cyclus::Facility {
     " room is again available in the output streams." \
     "", \
 }
+
  public:
   Separations(cyclus::Context* ctx);
   virtual ~Separations(){};
@@ -68,8 +69,9 @@ class Separations : public cyclus::Facility {
   virtual void Tock();
   virtual void EnterNotify();
 
-  virtual void AcceptMatlTrades(const std::vector<std::pair<
-      cyclus::Trade<cyclus::Material>, cyclus::Material::Ptr> >& responses);
+  virtual void AcceptMatlTrades(
+      const std::vector<std::pair<cyclus::Trade<cyclus::Material>,
+                                  cyclus::Material::Ptr> >& responses);
 
   virtual std::set<cyclus::RequestPortfolio<cyclus::Material>::Ptr>
   GetMatlRequests();
@@ -84,13 +86,13 @@ class Separations : public cyclus::Facility {
 
   virtual bool CheckDecommissionCondition();
 
-  #pragma cyclus clone
-  #pragma cyclus initfromcopy
-  #pragma cyclus infiletodb
-  #pragma cyclus initfromdb
-  #pragma cyclus schema
-  #pragma cyclus annotations
-  #pragma cyclus snapshot
+#pragma cyclus clone
+#pragma cyclus initfromcopy
+#pragma cyclus infiletodb
+#pragma cyclus initfromdb
+#pragma cyclus schema
+#pragma cyclus annotations
+#pragma cyclus snapshot
   // the following pragmas are ommitted and the functions are written
   // manually in order to handle the vector of resource buffers:
   //
@@ -101,7 +103,7 @@ class Separations : public cyclus::Facility {
   virtual void InitInv(cyclus::Inventories& inv);
 
  private:
-  #pragma cyclus var { \
+#pragma cyclus var { \
     "doc": "Ordered list of commodities on which to request feed material to " \
            "separate. Order only matters for matching up with feed commodity " \
            "preferences if specified.", \
@@ -110,7 +112,7 @@ class Separations : public cyclus::Facility {
   }
   std::vector<std::string> feed_commods;
 
-  #pragma cyclus var { \
+#pragma cyclus var { \
     "default": [], \
     "uilabel": "Feed Commodity Preference List", \
     "doc": "Feed commodity request preferences for each of the given feed " \
@@ -120,7 +122,7 @@ class Separations : public cyclus::Facility {
   }
   std::vector<double> feed_commod_prefs;
 
-  #pragma cyclus var { \
+#pragma cyclus var { \
     "doc": "Name for recipe to be used in feed requests." \
            " Empty string results in use of a dummy recipe.", \
     "uilabel": "Feed Commodity Recipe List", \
@@ -129,19 +131,15 @@ class Separations : public cyclus::Facility {
   }
   std::string feed_recipe;
 
-  #pragma cyclus var { \
-    "doc" : "Maximum amount of feed material to keep on hand.", \
-    "uilabel": "Maximum Feed Inventory",                     \
-    "units" : "kg", \
-  }
+#pragma cyclus var {                                          \
+  "doc" : "Maximum amount of feed material to keep on hand.", \
+  "uilabel" : "Maximum Feed Inventory", "units" : "kg", }
   double feedbuf_size;
 
-  #pragma cyclus var { \
-    "capacity" : "feedbuf_size", \
-  }
+#pragma cyclus var { "capacity" : "feedbuf_size", }
   cyclus::toolkit::ResBuf<cyclus::Material> feed;
 
-  #pragma cyclus var { \
+#pragma cyclus var { \
     "doc" : "Maximum quantity of feed material that can be processed per time "\
             "step.", \
     "uilabel": "Maximum Separations Throughput", \
@@ -149,7 +147,7 @@ class Separations : public cyclus::Facility {
   }
   double throughput;
 
-  #pragma cyclus var { \
+#pragma cyclus var { \
     "doc": "Commodity on which to trade the leftover separated material " \
            "stream. This MUST NOT be the same as any commodity used to define "\
            "the other separations streams.", \
@@ -159,7 +157,7 @@ class Separations : public cyclus::Facility {
   }
   std::string leftover_commod;
 
-  #pragma cyclus var { \
+#pragma cyclus var { \
     "doc" : "Maximum amount of leftover separated material (not included in" \
             " any other stream) that can be stored." \
             " If full, the facility halts operation until space becomes " \
@@ -170,12 +168,10 @@ class Separations : public cyclus::Facility {
   }
   double leftoverbuf_size;
 
- #pragma cyclus var { \
-    "capacity" : "leftoverbuf_size", \
-  }
+#pragma cyclus var { "capacity" : "leftoverbuf_size", }
   cyclus::toolkit::ResBuf<cyclus::Material> leftover;
 
-  #pragma cyclus var { \
+#pragma cyclus var { \
     "alias": ["streams", "commod", ["info", "buf_size", ["efficiencies", "comp", "eff"]]], \
     "uitype": ["oneormore", "outcommodity", ["pair", "double", ["oneormore", "nuclide", "double"]]], \
     "uilabel": "Separations Streams and Efficiencies", \

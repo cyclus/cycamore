@@ -34,10 +34,10 @@ TEST_F(ManagerInstTests, producerexists) {
   using std::set;
   ctx_->AddPrototype("foop", producer);
   set<cyclus::toolkit::CommodityProducer*>::iterator it;
-  for (it = src_inst->cyclus::toolkit::CommodityProducerManager::
-          producers().begin();
-       it != src_inst->cyclus::toolkit::CommodityProducerManager::
-          producers().end();
+  for (it = src_inst->cyclus::toolkit::CommodityProducerManager::producers()
+                .begin();
+       it !=
+       src_inst->cyclus::toolkit::CommodityProducerManager::producers().end();
        it++) {
     EXPECT_EQ(dynamic_cast<TestProducer*>(*it)->prototype(),
               producer->prototype());

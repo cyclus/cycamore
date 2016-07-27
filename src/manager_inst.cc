@@ -4,25 +4,20 @@
 namespace cycamore {
 
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-ManagerInst::ManagerInst(cyclus::Context* ctx) : cyclus::Institution(ctx) { }
+ManagerInst::ManagerInst(cyclus::Context* ctx) : cyclus::Institution(ctx) {}
 
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 ManagerInst::~ManagerInst() {}
 
-void ManagerInst::BuildNotify(Agent* a) {
-  Register_(a);
-}
+void ManagerInst::BuildNotify(Agent* a) { Register_(a); }
 
-void ManagerInst::DecomNotify(Agent* a) {
-  Unregister_(a);
-}
+void ManagerInst::DecomNotify(Agent* a) { Unregister_(a); }
 
 void ManagerInst::EnterNotify() {
   cyclus::Institution::EnterNotify();
   std::set<cyclus::Agent*>::iterator sit;
   for (sit = cyclus::Agent::children().begin();
-       sit != cyclus::Agent::children().end();
-       ++sit) {
+       sit != cyclus::Agent::children().end(); ++sit) {
     Agent* a = *sit;
     Register_(a);
   }
@@ -47,9 +42,8 @@ void ManagerInst::Register_(Agent* a) {
 
   CommodityProducer* cp_cast = dynamic_cast<CommodityProducer*>(a);
   if (cp_cast != NULL) {
-    LOG(cyclus::LEV_INFO3, "mani") << "Registering agent "
-                                   << a->prototype() << a->id()
-                                   << " as a commodity producer.";
+    LOG(cyclus::LEV_INFO3, "mani") << "Registering agent " << a->prototype()
+                                   << a->id() << " as a commodity producer.";
     CommodityProducerManager::Register(cp_cast);
   }
 }
@@ -59,28 +53,26 @@ void ManagerInst::Unregister_(Agent* a) {
   using cyclus::toolkit::CommodityProducerManager;
 
   CommodityProducer* cp_cast = dynamic_cast<CommodityProducer*>(a);
-  if (cp_cast != NULL)
-    CommodityProducerManager::Unregister(cp_cast);
+  if (cp_cast != NULL) CommodityProducerManager::Unregister(cp_cast);
 }
 
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 void ManagerInst::WriteProducerInformation(
-  cyclus::toolkit::CommodityProducer* producer) {
+    cyclus::toolkit::CommodityProducer* producer) {
   using std::set;
-  set<cyclus::toolkit::Commodity,
-      cyclus::toolkit::CommodityCompare> commodities =
-          producer->ProducedCommodities();
-  set<cyclus::toolkit::Commodity, cyclus::toolkit::CommodityCompare>::
-      iterator it;
+  set<cyclus::toolkit::Commodity, cyclus::toolkit::CommodityCompare>
+      commodities = producer->ProducedCommodities();
+  set<cyclus::toolkit::Commodity, cyclus::toolkit::CommodityCompare>::iterator
+      it;
 
   LOG(cyclus::LEV_DEBUG3, "maninst") << " Clone produces " << commodities.size()
                                      << " commodities.";
   for (it = commodities.begin(); it != commodities.end(); it++) {
     LOG(cyclus::LEV_DEBUG3, "maninst") << " Commodity produced: " << it->name();
-    LOG(cyclus::LEV_DEBUG3, "maninst") << "           capacity: " <<
-                                       producer->Capacity(*it);
-    LOG(cyclus::LEV_DEBUG3, "maninst") << "               cost: " <<
-                                       producer->Cost(*it);
+    LOG(cyclus::LEV_DEBUG3, "maninst") << "           capacity: "
+                                       << producer->Capacity(*it);
+    LOG(cyclus::LEV_DEBUG3, "maninst") << "               cost: "
+                                       << producer->Cost(*it);
   }
 }
 

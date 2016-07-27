@@ -1,4 +1,4 @@
-#include "mixer.h"
+#include <gtest/gtest.h>
 
 #include "agent_tests.h"
 #include "context.h"
@@ -6,7 +6,7 @@
 #include "equality_helpers.h"
 #include "facility_tests.h"
 
-#include <gtest/gtest.h>
+#include "mixer.h"
 
 namespace cycamore {
 

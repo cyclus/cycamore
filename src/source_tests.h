@@ -44,6 +44,6 @@ class SourceTest : public ::testing::Test {
       int nreqs, std::string commodity);
 };
 
-} // namespace cycamore
+}  // namespace cycamore
 
 #endif  // CYCAMORE_SRC_SOURCE_TESTS_H_
