@@ -30,9 +30,9 @@ RUN apt-get install -y --force-yes \
 
 # build cyclus deb
 RUN git clone https://github.com/cyclus/cyclus.git /cyclus
+WORKDIR cyclus
 RUN git fetch
 RUN git checkout develop
-WORKDIR cyclus
 RUN ./install.py --prefix="/usr/local"
 
 COPY . /cycamore 
