@@ -1,4 +1,3 @@
-
 FROM ubuntu:14.04
 
 RUN echo "1"
@@ -30,9 +29,16 @@ RUN apt-get install -y --force-yes \
     python-nose
 
 # build cyclus deb
-COPY . /cyclus 
+RUN git clone https://github.com/cyclus/cyclus.git /cyclus
+RUN git fetch
+RUN git checkout develop
 WORKDIR cyclus
-RUN mkdir deb
-WORKDIR /cyclus/deb
+RUN ./install.py --prefix="/usr/local"
+
+COPY . /cycamore 
+WORKDIR cycamore
+RUN mkdir -p deb
+WORKDIR /cycamore/deb
 RUN cmake -DCMAKE_INSTALL_PREFIX=/usr -DCPACK_SYSTEM_NAME=ubuntu.14.04 ..
 RUN cpack -v ..
+
