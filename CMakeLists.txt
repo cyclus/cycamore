@@ -230,32 +230,65 @@ IF(NOT CYCLUS_DOC_ONLY)
     #  COMPONENT data
     # )
 
-    # Here we set some components for installation with cpack
-    SET(CPACK_COMPONENTS_ALL cycamore testing libraries data core)
-
+    ##############################################################################################
+    ####################################### begin cpack ##########################################
+    ##############################################################################################
+    
+    
     # Here's where we package it with CPack
     SET(CPACK_PACKAGE_DESCRIPTION_SUMMARY "Cycamore : The Cyclus Additional Module Repository.")
+    
+    # Here we set some components for installation with cpack
+    SET(CPACK_COMPONENTS_ALL cycamore testing libraries data core)
+    SET(CPACK_GENERATOR "DEB")
+
     SET(CPACK_DEBIAN_PACKAGE_MAINTAINER "CNERG, UW-Madison") #required
     SET(CPACK_PACKAGE_VENDOR "CNERG, UW-Madison")
     SET(CPACK_PACKAGE_DESCRIPTION_FILE "${CMAKE_CURRENT_SOURCE_DIR}/README.rst")
     SET(CPACK_RESOURCE_FILE_LICENSE "${CMAKE_CURRENT_SOURCE_DIR}/LICENSE.rst")
+    
+    
     SET(CPACK_PACKAGE_VERSION_MAJOR "1")
     SET(CPACK_PACKAGE_VERSION_MINOR "0")
-    #SET(CPACK_PACKAGE_VERSION_PATCH "0") # should use commit number here  ?
-    SET(CPACK_PACKAGE_INSTALL_DIRECTORY "cycamore${CPACK_VERSION_MAJOR}.${CPACK_VERSION_MINOR}")
-    SET(CPACK_PACKAGE_NAME "${CMAKE_PROJECT_NAME}")
+    SET(CPACK_PACKAGE_VERSION_PATCH "0")
+    
+    # Recover git hash
+    FIND_PROGRAM( GIT_EXECUTABLE NAMES git git.cmd PATHS ${GIT_DIR}  ENV PATHS $ENV{GIT_DIR} )
+    EXECUTE_PROCESS( 
+      COMMAND ${GIT_EXECUTABLE} "log" "-n" "1" "--pretty=\"%h\"" 
+      WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR} 
+      OUTPUT_VARIABLE GIT_COMMIT_HASH 
+      OUTPUT_STRIP_TRAILING_WHITESPACE
+      )
+    STRING( REGEX REPLACE "^\"(.*)\"$" "\\1" GIT_COMMIT_HASH ${GIT_COMMIT_HASH} )
+    MESSAGE("git HASH is: #${GIT_COMMIT_HASH}")
 
+    # Names
+    set(CPACK_PACKAGE_NAME "cycamore")
+    SET(
+      CPACK_PACKAGE_INSTALL_DIRECTORY
+      "cycamore_${CPACK_PACKAGE_VERSION_MAJOR}.${CPACK_PACKAGE_VERSION_MINOR}.${CPACK_PACKAGE_VERSION_PATCH}"
+      )
+    set(
+      CPACK_PACKAGE_VERSION 
+      "${CPACK_PACKAGE_VERSION_MAJOR}.${CPACK_PACKAGE_VERSION_MINOR}.${CPACK_PACKAGE_VERSION_PATCH}_${GIT_COMMIT_HASH}"
+      )
+    
+    # Configuration
     CONFIGURE_FILE("${CYCAMORE_SOURCE_DIR}/cmake/CycamoreCPackOptions.cmake.in"
         "${CYCAMORE_BINARY_DIR}/cmake/CycamoreCPackOptions.cmake" @ONLY)
     SET(CPACK_PROJECT_CONFIG_FILE "${CYCAMORE_BINARY_DIR}/cmake/CycamoreCPackOptions.cmake")
     SET(CPACK_PACKAGE_EXECUTABLES "cycamore" "cycamore_unit_tests")
-
 
     INCLUDE(CPack)
 
     SET(ROOT_DIR ${CYCLUS_ROOT_DIR})
     SET(PROJ_DIR ${PROJECT_BINARY_DIR})
     SET(CORE_SHARE_DIR ${CYCLUS_CORE_SHARE_DIR})
+    
+    ##############################################################################################
+    ######################################## end cpack ###########################################
+    ##############################################################################################
 
 ENDIF(NOT CYCLUS_DOC_ONLY)
 
