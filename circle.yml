@@ -18,6 +18,18 @@ deployment:
       - docker login -e $DOCKER_EMAIL -u $DOCKER_USER -p $DOCKER_PASS
       - docker push cyclus/cycamore:latest
   
+  master:
+    branch: master
+    commands:
+      - docker login -e $DOCKER_EMAIL -u $DOCKER_USER -p $DOCKER_PASS
+      # Update cyclus/cylus:stable docker container
+      - rm Dockerfile && ln -s docker/master-ci/Dockerfile # place the correct Dockerfile
+      - docker build -t cyclus/cycamore:stable .
+      - docker push cyclus/cycamore:stable
+  
+    
+    
+    
   ci-testing:
     branch: ci-testing
     commands:
@@ -26,3 +38,25 @@ deployment:
       - rm Dockerfile && ln -s docker/develop-ci/Dockerfile #place the correct Dockerfile
       - docker build -t cyclus/cycamore:ci-test .
       - docker push cyclus/cycamore:ci-test
+
+  deb_generation:
+    branch: deb_generation
+    commands:
+        ## DEB GENERATION
+          #ubuntu 14.04
+      - rm Dockerfile && ln -s docker/release-ci/ubuntu-14.04/Dockerfile # place the correct Dockerfile
+      - docker build -t deb/ubuntu-14 .: # build cycamore against ubuntu 14.04 in the docker container
+          timeout: 1200 # set 20 minute timeout (to avoid CI to fail)
+      - docker create --name=deb-14.04 deb/ubuntu-14 # build deb in docker
+      - docker cp deb-14.04:/cycamore/deb ./ # extract deb
+      - scp ./deb/cycamore-*-ubuntu.??.04.deb root@dory.fuelcycle.org:./cyclus-deb/ # push the deb on dory
+      - rm -rf deb  # clean the deb folder
+          # Ubuntu 16.04
+      - rm Dockerfile && ln -s docker/release-ci/ubuntu-16.04/Dockerfile # place the correct Dockerfile
+      - docker build -t deb/ubuntu-16 .: # build cycamore against ubuntu 16.04 in the docker container
+          timeout: 1200 # set 20 minute timeout (to avoid CI to fail)
+      - docker create --name=deb-16.04 deb/ubuntu-16 #build deb in docker
+      - docker cp deb-16.04:/cycamore/deb ./ # extract deb
+      - scp ./deb/cycamore-*-ubuntu.??.04.deb root@dory.fuelcycle.org:./cyclus-deb/ # push the deb on dory
+      - rm -rf deb  # clean the deb folder
+        ## END DEB GENERATION
