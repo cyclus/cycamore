@@ -38,6 +38,6 @@ COPY . /cycamore
 WORKDIR cycamore
 RUN mkdir -p deb
 WORKDIR /cycamore/deb
-RUN cmake -DCMAKE_INSTALL_PREFIX=/usr/local -DCPACK_SYSTEM_NAME=ubuntu.XX.04 ..
+RUN cmake -DCMAKE_INSTALL_PREFIX=/usr/local -DCPACK_SYSTEM_NAME=HASH-ubuntu.XX.04 ..
 RUN cpack -v ..
 
