@@ -46,12 +46,11 @@ deployment:
           #ubuntu 14.04
       - rm Dockerfile && ln -s docker/release-ci/ubuntu-14.04/Dockerfile # place the correct Dockerfile
       - docker build -t deb/ubuntu-14 .: # build cycamore against ubuntu 14.04 in the docker container
-          timeout: 1200 # set 20 minute timeout (to avoid CI to fail)
+          timeout: 1200 # set 20 minute timeout (avoid CircleCI to fail)
       - docker create --name=deb-14.04 deb/ubuntu-14 # build deb in docker
       - docker cp deb-14.04:/cycamore/deb ./ # extract deb
       - ls -alh deb/
-      - scp ./deb/cycamore-*-ubuntu.??.04.deb root@dory.fuelcycle.org:./cyclus-deb/: # push the deb on dory
-          timeout: 1200 # set 20 minute timeout (to avoid CI to fail)
+      - scp ./deb/cycamore-*-ubuntu.??.04.deb root@dory.fuelcycle.org:./cyclus-deb/ # push the deb on dory
       - rm -rf deb  # clean the deb folder
           # Ubuntu 16.04
       - rm Dockerfile && ln -s docker/release-ci/ubuntu-16.04/Dockerfile # place the correct Dockerfile
@@ -59,7 +58,6 @@ deployment:
           timeout: 1200 # set 20 minute timeout (to avoid CI to fail)
       - docker create --name=deb-16.04 deb/ubuntu-16 #build deb in docker
       - docker cp deb-16.04:/cycamore/deb ./ # extract deb
-      - scp ./deb/cycamore-*-ubuntu.??.04.deb root@dory.fuelcycle.org:./cyclus-deb/: # push the deb on dory
-          timeout: 1200 # set 20 minute timeout (to avoid CI to fail)
+      - scp ./deb/cycamore-*-ubuntu.??.04.deb root@dory.fuelcycle.org:./cyclus-deb/ # push the deb on dory
       - rm -rf deb  # clean the deb folder
         ## END DEB GENERATION
