@@ -38,10 +38,6 @@ deployment:
       - rm Dockerfile && ln -s docker/develop-ci/Dockerfile #place the correct Dockerfile
       - docker build -t cyclus/cycamore:ci-test .
       - docker push cyclus/cycamore:ci-test
-
-  deb_generation:
-    branch: deb_generation
-    commands:
         ## DEB GENERATION
           #ubuntu 14.04
       - rm Dockerfile && ln -s docker/release-ci/ubuntu-14.04/Dockerfile # place the correct Dockerfile
