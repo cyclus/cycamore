@@ -230,6 +230,24 @@ IF(NOT CYCLUS_DOC_ONLY)
     #  COMPONENT data
     # )
 
+
+    ##############################################################################################
+    ################################## begin uninstall target ####################################
+    ##############################################################################################
+ 
+    CONFIGURE_FILE(
+        "${CMAKE_CURRENT_SOURCE_DIR}/config/cmake_uninstall.cmake.in"
+        "${CMAKE_CURRENT_BINARY_DIR}/cmake_uninstall.cmake"
+        IMMEDIATE @ONLY
+        )
+
+    ADD_CUSTOM_TARGET(uninstall
+        COMMAND ${CMAKE_COMMAND} -P ${CMAKE_CURRENT_BINARY_DIR}/cmake_uninstall.cmake)
+
+    ##############################################################################################
+    ################################### end uninstall target #####################################
+    ##############################################################################################
+ 
     ##############################################################################################
     ####################################### begin cpack ##########################################
     ##############################################################################################
@@ -242,14 +260,15 @@ IF(NOT CYCLUS_DOC_ONLY)
     SET(CPACK_COMPONENTS_ALL cycamore testing libraries data core)
     SET(CPACK_GENERATOR "DEB")
 
+    # Organisation
     SET(CPACK_DEBIAN_PACKAGE_MAINTAINER "CNERG, UW-Madison") #required
     SET(CPACK_PACKAGE_VENDOR "CNERG, UW-Madison")
     SET(CPACK_PACKAGE_DESCRIPTION_FILE "${CMAKE_CURRENT_SOURCE_DIR}/README.rst")
     SET(CPACK_RESOURCE_FILE_LICENSE "${CMAKE_CURRENT_SOURCE_DIR}/LICENSE.rst")
     
-    
+    # Version
     SET(CPACK_PACKAGE_VERSION_MAJOR "1")
-    SET(CPACK_PACKAGE_VERSION_MINOR "0")
+    SET(CPACK_PACKAGE_VERSION_MINOR "4")
     SET(CPACK_PACKAGE_VERSION_PATCH "0")
     
     # Recover git hash
@@ -264,12 +283,12 @@ IF(NOT CYCLUS_DOC_ONLY)
     MESSAGE("git HASH is: #${GIT_COMMIT_HASH}")
 
     # Names
-    set(CPACK_PACKAGE_NAME "cycamore")
+    SET(CPACK_PACKAGE_NAME "cycamore")
     SET(
       CPACK_PACKAGE_INSTALL_DIRECTORY
       "cycamore_${CPACK_PACKAGE_VERSION_MAJOR}.${CPACK_PACKAGE_VERSION_MINOR}.${CPACK_PACKAGE_VERSION_PATCH}"
       )
-    set(
+    SET(
       CPACK_PACKAGE_VERSION 
       "${CPACK_PACKAGE_VERSION_MAJOR}.${CPACK_PACKAGE_VERSION_MINOR}.${CPACK_PACKAGE_VERSION_PATCH}_${GIT_COMMIT_HASH}"
       )
@@ -303,12 +322,3 @@ IF(DOXYGEN_FOUND)
 ELSE(DOXYGEN_FOUND)
     MESSAGE(STATUS "WARNING: Doxygen not found - doc won't be created")
 ENDIF(DOXYGEN_FOUND)
-
-# uninstall target
-configure_file(
-    "${CMAKE_CURRENT_SOURCE_DIR}/config/cmake_uninstall.cmake.in"
-    "${CMAKE_CURRENT_BINARY_DIR}/cmake_uninstall.cmake"
-    IMMEDIATE @ONLY)
-
-add_custom_target(uninstall
-    COMMAND ${CMAKE_COMMAND} -P ${CMAKE_CURRENT_BINARY_DIR}/cmake_uninstall.cmake)
