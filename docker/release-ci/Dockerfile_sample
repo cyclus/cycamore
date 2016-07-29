@@ -26,7 +26,8 @@ RUN apt-get install -y --force-yes \
     python \
     python-tables \
     python-numpy \
-    python-nose
+    python-nose \
+    wget
 
 # build cyclus deb
 RUN wget -r --no-parent -A 'cyclus-1.4.0_*-ubuntu.XX.04.deb' http://dory.fuelcycle.org:4848
