@@ -30,14 +30,14 @@ RUN apt-get install -y --force-yes \
     wget
 
 # build cyclus deb
-RUN wget -r --no-parent -A 'cyclus-1.4.0-*-ubuntu.CYCAMORE_UBUNTU_MAJOR_VERSION.04.deb' http://dory.fuelcycle.org:4848
+RUN wget -r --no-parent -A 'cyclus-1.4.0_*_ubuntu.CYCAMORE_UBUNTU_MAJOR_VERSION.04.deb' http://dory.fuelcycle.org:4848
 run mv dory.fuelcycle.org:4848/* ./; rm -rf dory.fuelcycle.org:4848
-RUN dpkg -i cyclus-1.4.0-*-ubuntu.CYCAMORE_UBUNTU_MAJOR_VERSION.04.deb
+RUN dpkg -i cyclus-1.4.0_*_ubuntu.CYCAMORE_UBUNTU_MAJOR_VERSION.04.deb
 
 COPY . /cycamore 
 WORKDIR cycamore
 RUN mkdir -p deb
 WORKDIR /cycamore/deb
-RUN cmake -DCMAKE_INSTALL_PREFIX=/usr/local -DCPACK_HASH_NAME=CYCAMORE_REPO_HASH --DCPACK_SYSTEM_NAME=ubuntu.CYCAMORE_UBUNTU_MAJOR_VERSION.04 ..
+RUN cmake -DCMAKE_INSTALL_PREFIX=/usr/local -DCPACK_HASH_NAME=CYCAMORE_REPO_HASH -DCPACK_SYSTEM_NAME=ubuntu.CYCAMORE_UBUNTU_MAJOR_VERSION.04 ..
 RUN cpack -v ..
 
