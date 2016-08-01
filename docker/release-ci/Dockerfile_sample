@@ -30,7 +30,7 @@ RUN apt-get install -y --force-yes \
     wget
 
 # build cyclus deb
-RUN wget -r --no-parent -A 'cyclus-1.4.0_*-ubuntu.CYCAMORE_UBUNTU_MAJOR_VERSION.04.deb' http://dory.fuelcycle.org:4848
+RUN wget -r --no-parent -A 'cyclus-1.4.0-*-ubuntu.CYCAMORE_UBUNTU_MAJOR_VERSION.04.deb' http://dory.fuelcycle.org:4848
 run mv dory.fuelcycle.org:4848/* ./; rm -rf dory.fuelcycle.org:4848
 RUN dpkg -i cyclus-1.4.0-*-ubuntu.CYCAMORE_UBUNTU_MAJOR_VERSION.04.deb
 
