@@ -9,7 +9,7 @@ dependencies:
 test:
   override:
     - docker run cyclus/cycamore:latest cycamore_unit_tests
-      #    - docker run cyclus/cycamore:latest nosetests3 -w /cycamore/tests
+    - docker run cyclus/cycamore:latest nosetests3 -w /cycamore/tests
 
 deployment:
   develop:
