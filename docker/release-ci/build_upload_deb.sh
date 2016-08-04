@@ -4,7 +4,7 @@ if [ $# -ne 1 ]; then
   echo "illegal number of parameters"
 fi
 
-sed -e s/CYCAMORE_UBUNTU_MAJOR_VERSION/${1}/g docker/release-ci/Dockerfile_sample > Dockerfile_
+sed -e s/CYCAMORE_UBUNTU_MAJOR_VERSION/${1}/g docker/release-ci/Dockerfile_template > Dockerfile_
 sed -e s/CYCAMORE_REPO_HASH/`git rev-parse --short HEAD`/g Dockerfile_ > Dockerfile
 rm Dockerfile_
 
