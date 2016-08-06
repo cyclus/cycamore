@@ -1,1 +1,1 @@
-docker/master-ci/Dockerfile
+docker/develop-ci/Dockerfile
