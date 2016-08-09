@@ -1,7 +1,6 @@
 FROM ubuntu:CYCAMORE_UBUNTU_MAJOR_VERSION.04
 
-RUN echo "1"
-
+# Because we used specific Ubuntu version can't use cyclus-deps docker container
 RUN apt-get -y --force-yes update
 
 RUN apt-get install -y --force-yes \
@@ -29,7 +28,6 @@ RUN apt-get install -y --force-yes \
     python-nose \
     wget
 
-# build cyclus deb
 RUN wget -r --no-parent -A 'cyclus_1.4.0_*_ubuntu.CYCAMORE_UBUNTU_MAJOR_VERSION.04.deb' http://dory.fuelcycle.org:4848
 run mv dory.fuelcycle.org:4848/* ./; rm -rf dory.fuelcycle.org:4848
 RUN dpkg -i cyclus_1.4.0_*_ubuntu.CYCAMORE_UBUNTU_MAJOR_VERSION.04.deb
@@ -38,6 +36,8 @@ COPY . /cycamore
 WORKDIR cycamore
 RUN mkdir -p deb
 WORKDIR /cycamore/deb
-RUN cmake -DCMAKE_INSTALL_PREFIX=/usr/local -DCPACK_HASH_NAME=CYCAMORE_REPO_HASH -DCPACK_SYSTEM_NAME=ubuntu.CYCAMORE_UBUNTU_MAJOR_VERSION.04 ..
+RUN cmake -DCPACK_PACKAGING_INSTALL_PREFIX=/usr/local -DCMAKE_INSTALL_PREFIX=/usr/local -DCPACK_HASH_NAME=CYCAMORE_REPO_HASH -DCPACK_SYSTEM_NAME=ubuntu.CYCAMORE_UBUNTU_MAJOR_VERSION.04 ..
+
+# Build the deb file in the docker container
 RUN cpack -v ..
 
