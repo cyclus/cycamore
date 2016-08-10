@@ -23,6 +23,7 @@ Package                Minimum Version
 `CMake`                2.8
 `boost`                1.34.1
 `libxml2`              2
+`libgtest`             1.7.0-3
 `Cyclus`               0.1
 ====================   ==================
 
@@ -63,6 +64,7 @@ list of required package names are:
 
   #. libboost-all-dev
   #. libxml++2.6-dev
+  #. libgtest-dev
 
 So, for example, in order to install libxml++ on your system, you will
 type:
