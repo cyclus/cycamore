@@ -33,4 +33,3 @@ SET(TestSource ${cycamore_TEST_CC} PARENT_SCOPE)
 
 # install header files
 FILE(GLOB h_files "${CMAKE_CURRENT_SOURCE_DIR}/*.h")
-INSTALL(FILES ${h_files} DESTINATION include/cycamore COMPONENT cycamore)
