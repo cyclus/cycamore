@@ -40,6 +40,19 @@ void Mixer::InitInv(cyclus::Inventories& inv) {
 void Mixer::EnterNotify() {
   cyclus::Facility::EnterNotify();
 
+  for (int i = 0; i < streams_.size(); i++) {
+    mixing_ratios.push_back(streams_[i]->first->first);
+    in_buf_sizes.push_back(streams_[i]->first->second);
+    
+    std::vector<pair<string, pref> stream_commods_;
+    for (int j = 0; j <  streams_[i]->second.size(); j++) {
+        stream_commods_.push_back(streams_[i]->second[j]);
+    }
+    in_commods.push_back(stream_commods_);
+  }
+
+
+
   if (in_commod_prefs.empty()) {
     for (int i = 0; i < in_commods.size(); i++) {
       in_commod_prefs.push_back(1);
@@ -79,7 +92,7 @@ void Mixer::EnterNotify() {
   }
 
   for (int i = 0; i < in_commods.size(); i++) {
-    std::string name = in_commods[i];
+    std::string name = "in_stream_" + std::to_string(i);
     double cap = in_buf_sizes[i];
     if (cap >= 0) {
       streambufs[name].capacity(cap);
@@ -94,7 +107,7 @@ void Mixer::Tick() {
     double tgt_qty = output.space();
 
     for (int i = 0; i < in_commods.size(); i++) {
-      std::string name = in_commods[i];
+      std::string name = "in_stream_" + std::to_string(i);
       tgt_qty =
           std::min(tgt_qty, streambufs[name].quantity() / mixing_ratios[i]);
     }
@@ -124,10 +137,10 @@ Mixer::GetMatlRequests() {
   using cyclus::RequestPortfolio;
 
   std::set<RequestPortfolio<cyclus::Material>::Ptr> ports;
-
+  
   for (int i = 0; i < in_commods.size(); i++) {
-    std::string name = in_commods[i];
-
+    std::string name = "in_stream_" + std::to_string(i);
+    
     if (streambufs[name].space() > cyclus::eps_rsrc()) {
       RequestPortfolio<cyclus::Material>::Ptr port(
           new RequestPortfolio<cyclus::Material>());
@@ -135,9 +148,14 @@ Mixer::GetMatlRequests() {
       cyclus::Material::Ptr m;
       m = cyclus::NewBlankMaterial(streambufs[name].space());
 
-      cyclus::Request<cyclus::Material>* r;
-      r = port->AddRequest(m, this, in_commods[i], 1.0, false);
-      req_inventories_[r] = name;
+      std::vector<cyclus::Request<Material>*> reqs;      
+      for (int j = 0; j < in_commods[i].size(); j++) {
+        std::string commod = in_commods[i][j]->first;
+        double prefs = in_commods[i][j]->second;
+        reqs = port->AddRequest(m, this, commod , pref, false);
+        req_inventories_[reqs.back()] = name;
+      }
+      port->AddMutualReqs(reqs);  
       ports.insert(port);
     }
   }
