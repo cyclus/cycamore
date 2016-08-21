@@ -62,10 +62,9 @@ class Mixer : public cyclus::Facility {
     "uilabel": "", \
     "doc": "", \
   }
-  std::vector<std::pair<std::pair<std::double, double>, std::vector<std::pair<std::string, double> > > > > streams_;
+  std::vector<std::pair<std::pair<double, double>, std::vector<std::pair<std::string, double> > > > streams_;
 
-  // internal storage of the fraction values
-  std::vector<std::vector<pair<string, pref> > > in_commods;
+  std::vector<std::vector<std::pair<std::string, double> > > in_commods;
   std::vector<double> in_buf_sizes;
   std::vector<double> mixing_ratios;
 
