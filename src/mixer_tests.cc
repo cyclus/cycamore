@@ -12,8 +12,8 @@ namespace cycamore {
 
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
-typedef std::vector<std::pair<std::pair<double, double>,
-                              std::vector<std::pair<std::string, double>>>>
+typedef std::vector<
+    std::pair<std::pair<double, double>, std::map<std::string, double> > >
     t_instream;
 
 cyclus::Composition::Ptr c_pustream() {
@@ -55,13 +55,22 @@ class MixerTest : public ::testing::Test {
   virtual void SetUp() {
     mf_facility_ = new Mixer(tc_.get());
 
-    std::vector<std::vector<std::pair<std::string, double> >> in_commods;
-    std::vector<std::pair<std::string, double> > in_com = {std::pair<std::string, double>("in_c1",1)};
-    in_commods.push_back(in_com);
-    in_com = {std::pair<std::string, double>("in_c2",1)};
-    in_commods.push_back(in_com);
-    in_com = {std::pair<std::string, double>("in_c3",1)};
-    in_commods.push_back(in_com);
+    std::vector<std::map<std::string, double> > in_commods;
+    {
+      std::map<std::string, double> in_com;
+      in_com.insert(std::pair<std::string, double>("in_c1", 1));
+      in_commods.push_back(in_com);
+    }
+    {
+      std::map<std::string, double> in_com;
+      in_com.insert(std::pair<std::string, double>("in_c2", 1));
+      in_commods.push_back(in_com);
+    }
+    {
+      std::map<std::string, double> in_com;
+      in_com.insert(std::pair<std::string, double>("in_c3", 1));
+      in_commods.push_back(in_com);
+    }
     
     std::vector<double> in_ratios = {1, 1, 1};
     std::vector<double> in_caps = {30, 20, 10};
@@ -71,7 +80,7 @@ class MixerTest : public ::testing::Test {
   }
   virtual void TearDown() { delete mf_facility_; }
 
-  std::vector<std::vector<std::pair<std::string, double> >> in_coms;
+  std::vector<std::map<std::string, double> > in_coms;
   std::vector<double> in_frac;
   std::vector<double> in_cap;
 
@@ -95,18 +104,16 @@ class MixerTest : public ::testing::Test {
       in_cap.push_back(streams[i].first.second);
     }
   }
-  
-  void SetIn_stream(
-      std::vector<std::vector<std::pair<std::string, double> > > in_stream,
-      std::vector<double> ratios, std::vector<double> caps) {
+
+  void SetIn_stream(std::vector<std::map<std::string, double> > in_stream,
+                    std::vector<double> ratios, std::vector<double> caps) {
     t_instream instream_tmp;
     for (int i = 0; i < in_stream.size(); i++) {
       std::pair<double, double> info_mtp =
           std::pair<double, double>(ratios[i], caps[i]);
       instream_tmp.push_back(
-          std::pair<std::pair<double, double>,
-                    std::vector<std::pair<std::string, double> > >(info_mtp,
-                                                              in_stream[i]));
+          std::pair<std::pair<double, double>, std::map<std::string, double> >(
+              info_mtp, in_stream[i]));
     }
     SetIn_stream(instream_tmp);
   }
@@ -316,36 +323,42 @@ TEST_F(MixerTest, Throughput) {
 TEST(MixerTests, MultipleFissStreams) {
   std::string config =
       "<in_streams>"
-      "<stream>"
-      "<info>"
-      "<mixing_ratio>0.8</mixing_ratio>"
-      "<buf_size>2.5</buf_size>"
-      "</info>"
-      "<commodities>"
-      "<commodity>stream1</commodity>"
-      "<pref>1</pref>"
-      "</commodities>"
-      "</stream>"
-      "<stream>"
-      "<info>"
-      "<mixing_ratio>0.15</mixing_ratio>"
-      "<buf_size>3</buf_size>"
-      "</info>"
-      "<commodities>"
-      "<commodity>stream2</commodity>"
-      "<pref>1</pref>"
-      "</commodities>"
-      "</stream>"
-      "<stream>"
-      "<info>"
-      "<mixing_ratio>0.05</mixing_ratio>"
-      "<buf_size>5</buf_size>"
-      "</info>"
-      "<commodities>"
-      "<commodity>stream3</commodity>"
-      "<pref>1</pref>"
-      "</commodities>"
-      "</stream>"
+        "<stream>"
+          "<info>"
+            "<mixing_ratio>0.8</mixing_ratio>"
+            "<buf_size>2.5</buf_size>"
+          "</info>"
+          "<commodities>"
+            "<item>"
+              "<commodity>stream1</commodity>"
+              "<pref>1</pref>"
+            "</item>"
+          "</commodities>"
+        "</stream>"
+        "<stream>"
+          "<info>"
+            "<mixing_ratio>0.15</mixing_ratio>"
+            "<buf_size>3</buf_size>"
+          "</info>"
+          "<commodities>"
+            "<item>"
+              "<commodity>stream2</commodity>"
+              "<pref>1</pref>"
+            "</item>"
+          "</commodities>"
+        "</stream>"
+        "<stream>"
+          "<info>"
+            "<mixing_ratio>0.05</mixing_ratio>"
+            "<buf_size>5</buf_size>"
+          "</info>"
+          "<commodities>"
+            "<item>"
+              "<commodity>stream3</commodity>"
+              "<pref>1</pref>"
+            "</item>"
+          "</commodities>"
+        "</stream>"
       "</in_streams>"
       "<out_commod>mixedstream</out_commod>"
       "<outputbuf_size>0</outputbuf_size>"
@@ -397,8 +410,10 @@ TEST(MixerTests, CompleteMixingProcess) {
             "<buf_size>2.5</buf_size>"
           "</info>"
           "<commodities>"
-            "<commodity>stream1<commodity>"
-            "<pref>1</pref>"
+            "<item>"
+              "<commodity>stream1</commodity>"
+              "<pref>1</pref>"
+            "</item>"
           "</commodities>"
         "</stream>"
         "<stream>"
@@ -407,8 +422,10 @@ TEST(MixerTests, CompleteMixingProcess) {
             "<buf_size>3</buf_size>"
           "</info>"
           "<commodities>"
-            "<commodity>stream2<commodity>"
-            "<pref>1</pref>"
+            "<item>"
+              "<commodity>stream2</commodity>"
+              "<pref>1</pref>"
+            "</item>"
           "</commodities>"
         "</stream>"
         "<stream>"
@@ -417,15 +434,16 @@ TEST(MixerTests, CompleteMixingProcess) {
             "<buf_size>5</buf_size>"
           "</info>"
           "<commodities>"
-            "<commodity>stream3<commodity>"
-            "<pref>1</pref>"
+            "<item>"
+              "<commodity>stream3</commodity>"
+              "<pref>1</pref>"
+            "</item>"
           "</commodities>"
         "</stream>"
       "</in_streams>"
       "<out_commod>mixedstream</out_commod>"
       "<outputbuf_size>10</outputbuf_size>"
       "<throughput>1</throughput>";
-
   int simdur = 2;
   cyclus::MockSim sim(cyclus::AgentSpec(":cycamore:Mixer"), config, simdur);
   sim.AddSource("stream1").recipe("unatstream").capacity(1).Finalize();

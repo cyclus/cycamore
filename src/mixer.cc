@@ -54,12 +54,7 @@ void Mixer::EnterNotify() {
     if (cap >= 0) {
       streambufs[name].capacity(cap);
     }
-
-    std::vector<std::pair<std::string, double> > stream_commods_;
-    for (int j = 0; j < streams_[i].second.size(); j++) {
-      stream_commods_.push_back(streams_[i].second[j]);
-    }
-    in_commods.push_back(stream_commods_);
+    in_commods.push_back(streams_[i].second);
   }
 
   // ratio normalisation
@@ -140,10 +135,12 @@ Mixer::GetMatlRequests() {
       cyclus::Material::Ptr m;
       m = cyclus::NewBlankMaterial(streambufs[name].space());
 
-      std::vector<cyclus::Request<cyclus::Material>*> reqs;      
-      for (int j = 0; j < in_commods[i].size(); j++) {
-        std::string commod = in_commods[i][j].first;
-        double pref = in_commods[i][j].second;
+      std::vector<cyclus::Request<cyclus::Material>*> reqs;
+      
+      std::map<std::string, double>::iterator it;
+      for (it = in_commods[i].begin() ; it != in_commods[i].end(); it++) {
+        std::string commod = it->first;
+        double pref = it->second;
         reqs.push_back(port->AddRequest(m, this, commod , pref, false));
         req_inventories_[reqs.back()] = name;
       }

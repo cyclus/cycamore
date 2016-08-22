@@ -58,13 +58,13 @@ class Mixer : public cyclus::Facility {
  protected:
 #pragma cyclus var { \
     "alias": ["in_streams", [ "stream", [ "info", "mixing_ratio", "buf_size"], [ "commodities", "commodity", "pref"]]], \
-    "uitype": ["oneormore", [ "pair", ["pair", "double", "double"],  ["oneormore", "incommod", "double"]]], \
+    "uitype": ["oneormore", [ "pair", ["pair", "double", "double"], ["oneormore", "incommodity", "double"]]], \
     "uilabel": "", \
     "doc": "", \
   }
-  std::vector<std::pair<std::pair<double, double>, std::vector<std::pair<std::string, double> > > > streams_;
+  std::vector<std::pair<std::pair<double, double>, std::map<std::string, double> > > streams_;
 
-  std::vector<std::vector<std::pair<std::string, double> > > in_commods;
+  std::vector<std::map<std::string, double> > in_commods;
   std::vector<double> in_buf_sizes;
   std::vector<double> mixing_ratios;
 
