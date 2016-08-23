@@ -40,22 +40,25 @@ void Mixer::InitInv(cyclus::Inventories& inv) {
 void Mixer::EnterNotify() {
   cyclus::Facility::EnterNotify();
 
-  if (in_commod_prefs.empty()) {
-    for (int i = 0; i < in_commods.size(); i++) {
-      in_commod_prefs.push_back(1);
+  mixing_ratios.clear();
+  in_buf_sizes.clear();
+  in_commods.clear();
+
+  // initialisation internal variable
+  for (int i = 0; i < streams_.size(); i++) {
+    mixing_ratios.push_back(streams_[i].first.first);
+    in_buf_sizes.push_back(streams_[i].first.second);
+
+    std::string name = "in_stream_" + std::to_string(i);
+    double cap = in_buf_sizes[i];
+    if (cap >= 0) {
+      streambufs[name].capacity(cap);
     }
-  } else if (in_commod_prefs.size() != in_commods.size()) {
-    std::stringstream ss;
-    ss << "prototype '" << prototype() << "' has " << mixing_ratios.size()
-       << " commodity preferences values, expected " << in_commods.size();
-    throw cyclus::ValidationError(ss.str());
+    in_commods.push_back(streams_[i].second);
   }
 
-  if (mixing_ratios.empty()) {
-    for (int i = 0; i < in_commods.size(); i++) {
-      mixing_ratios.push_back(1.0 / in_commods.size());
-    }
-  } else if (mixing_ratios.size() != in_commods.size()) {
+  // ratio normalisation
+  if (mixing_ratios.size() != in_commods.size()) {
     std::stringstream ss;
     ss << "prototype '" << prototype() << "' has " << mixing_ratios.size()
        << " commodity fraction values, expected " << in_commods.size();
@@ -72,17 +75,14 @@ void Mixer::EnterNotify() {
                                             "done.";
       cyclus::Warn<cyclus::VALUE_WARNING>(ss.str());
     }
-
-    for (int i = 0; i < mixing_ratios.size(); i++) {
-      mixing_ratios[i] *= 1.0 / frac_sum;
-    }
-  }
-
-  for (int i = 0; i < in_commods.size(); i++) {
-    std::string name = in_commods[i];
-    double cap = in_buf_sizes[i];
-    if (cap >= 0) {
-      streambufs[name].capacity(cap);
+    if (frac_sum != 0) {
+      for (int i = 0; i < mixing_ratios.size(); i++) {
+        mixing_ratios[i] *= 1.0 / frac_sum;
+      }
+    } else {
+      for (int i = 0; i < mixing_ratios.size(); i++) {
+        mixing_ratios[i] = 1.0 / (mixing_ratios.size());
+      }
     }
   }
 
@@ -93,8 +93,8 @@ void Mixer::Tick() {
   if (output.quantity() < output.capacity()) {
     double tgt_qty = output.space();
 
-    for (int i = 0; i < in_commods.size(); i++) {
-      std::string name = in_commods[i];
+    for (int i = 0; i < mixing_ratios.size(); i++) {
+      std::string name = "in_stream_" + std::to_string(i);
       tgt_qty =
           std::min(tgt_qty, streambufs[name].quantity() / mixing_ratios[i]);
     }
@@ -103,8 +103,8 @@ void Mixer::Tick() {
 
     if (tgt_qty > 0) {
       cyclus::Material::Ptr m;
-      for (int i = 0; i < in_commods.size(); i++) {
-        std::string name = in_commods[i];
+      for (int i = 0; i < mixing_ratios.size(); i++) {
+        std::string name = "in_stream_" + std::to_string(i);
         double pop_qty = mixing_ratios[i] * tgt_qty;
         if (i == 0) {
           m = streambufs[name].Pop(pop_qty, cyclus::eps_rsrc());
@@ -124,10 +124,10 @@ Mixer::GetMatlRequests() {
   using cyclus::RequestPortfolio;
 
   std::set<RequestPortfolio<cyclus::Material>::Ptr> ports;
-
+  
   for (int i = 0; i < in_commods.size(); i++) {
-    std::string name = in_commods[i];
-
+    std::string name = "in_stream_" + std::to_string(i);
+    
     if (streambufs[name].space() > cyclus::eps_rsrc()) {
       RequestPortfolio<cyclus::Material>::Ptr port(
           new RequestPortfolio<cyclus::Material>());
@@ -135,9 +135,16 @@ Mixer::GetMatlRequests() {
       cyclus::Material::Ptr m;
       m = cyclus::NewBlankMaterial(streambufs[name].space());
 
-      cyclus::Request<cyclus::Material>* r;
-      r = port->AddRequest(m, this, in_commods[i], 1.0, false);
-      req_inventories_[r] = name;
+      std::vector<cyclus::Request<cyclus::Material>*> reqs;
+      
+      std::map<std::string, double>::iterator it;
+      for (it = in_commods[i].begin() ; it != in_commods[i].end(); it++) {
+        std::string commod = it->first;
+        double pref = it->second;
+        reqs.push_back(port->AddRequest(m, this, commod , pref, false));
+        req_inventories_[reqs.back()] = name;
+      }
+      port->AddMutualReqs(reqs);  
       ports.insert(port);
     }
   }
