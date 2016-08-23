@@ -81,7 +81,7 @@ void Mixer::EnterNotify() {
       }
     } else {
       for (int i = 0; i < mixing_ratios.size(); i++) {
-        mixing_ratios[i] = 1.0 / (mixing_ratios.size() - 1);
+        mixing_ratios[i] = 1.0 / (mixing_ratios.size());
       }
     }
   }

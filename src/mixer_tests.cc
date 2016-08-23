@@ -363,10 +363,8 @@ TEST(MixerTests, MultipleFissStreams) {
       "<out_commod>mixedstream</out_commod>"
       "<outputbuf_size>0</outputbuf_size>"
       "<throughput>0</throughput>";
-  std::cout << "1" << std::endl;
   int simdur = 1;
   cyclus::MockSim sim(cyclus::AgentSpec(":cycamore:Mixer"), config, simdur);
-  std::cout << "2" << std::endl;
   sim.AddSource("stream1").recipe("unatstream").capacity(1).Finalize();
   sim.AddSource("stream2").recipe("uoxstream").capacity(1).Finalize();
   sim.AddSource("stream3").recipe("pustream").capacity(1).Finalize();
@@ -375,28 +373,23 @@ TEST(MixerTests, MultipleFissStreams) {
   sim.AddRecipe("pustream", c_uox());
   int id = sim.Run();
 
-  std::cout << "3" << std::endl;
   // Checking the number of transaction is as expected 3.
   cyclus::QueryResult qr = sim.db().Query("Transactions", NULL);
   EXPECT_EQ(3, qr.rows.size());
 
-  std::cout << "4" << std::endl;
   // Checking that all input stream get one transaction each.
   std::vector<cyclus::Cond> conds;
   conds.push_back(cyclus::Cond("Commodity", "==", std::string("stream1")));
   qr = sim.db().Query("Transactions", &conds);
   EXPECT_EQ(1, qr.rows.size());
 
-  std::cout << "5" << std::endl;
   conds[0] = cyclus::Cond("Commodity", "==", std::string("stream2"));
   qr = sim.db().Query("Transactions", &conds);
   EXPECT_EQ(1, qr.rows.size());
 
-  std::cout << "6" << std::endl;
   conds[0] = cyclus::Cond("Commodity", "==", std::string("stream3"));
   qr = sim.db().Query("Transactions", &conds);
   EXPECT_EQ(1, qr.rows.size());
-  std::cout << "7" << std::endl;
 }
 
 // multiple input streams can be correctly requested and used as
