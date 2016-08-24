@@ -18,7 +18,7 @@ Each subdirectory contains a Dockerfile that does something useful:
   is also uploaded on the Docker hub as the ``cyclus/Cycamore:stable`` when
   merging a PR on the `master` branch of Cycamore Github repository.
 
-* ``dev-ci`` contains a script which allows to build the Dockerfile require
+* ``deb-ci`` contains a script which allows to build the Dockerfile require
   to generate a Cycamore Debian package for the installation of Cycamore on
   ubuntu. The script take the major version number of ubuntu as a parameter. It
   builds Cycamore on the corresponding Ubuntu-LTS version, after installing all
