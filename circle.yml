@@ -26,9 +26,6 @@ deployment:
       - rm Dockerfile && ln -s docker/master-ci/Dockerfile # place the correct Dockerfile
       - docker build -t cyclus/cycamore:stable .
       - docker push cyclus/cycamore:stable
-  deb_generation:
-    branch: deb_generation
-    commands:
       # DEB GENERATION
         #ubuntu 14.04
       - docker/deb-ci/build_upload_deb.sh 14 :
