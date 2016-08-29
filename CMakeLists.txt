@@ -295,8 +295,12 @@ IF(NOT CYCLUS_DOC_ONLY)
     SET(CPACK_PACKAGE_FILE_NAME "${CPACK_PACKAGE_FILE_NAME}_${CPACK_SYSTEM_NAME}")
 
     # Configuration
-    CONFIGURE_FILE("${CYCAMORE_SOURCE_DIR}/cmake/CycamoreCPackOptions.cmake.in"
-        "${CYCAMORE_BINARY_DIR}/cmake/CycamoreCPackOptions.cmake" @ONLY)
+    SET(CPACK_INCLUDE_TOPLEVEL_DIRECTORY "1")
+    SET(CPACK_DEBIAN_PACKAGE_SHLIBDEPS OFF)
+    CONFIGURE_FILE(
+      "${CYCAMORE_SOURCE_DIR}/cmake/CycamoreCPackOptions.cmake.in"
+      "${CYCAMORE_BINARY_DIR}/cmake/CycamoreCPackOptions.cmake" @ONLY
+      )
     SET(CPACK_PROJECT_CONFIG_FILE "${CYCAMORE_BINARY_DIR}/cmake/CycamoreCPackOptions.cmake")
     SET(CPACK_PACKAGE_EXECUTABLES "cycamore" "cycamore_unit_tests")
 
