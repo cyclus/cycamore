@@ -1,5 +1,4 @@
-
-FROM cyclus/cyclus
+FROM cyclus/cyclus:latest
 
 COPY . /cycamore
 WORKDIR /cycamore

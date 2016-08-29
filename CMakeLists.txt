@@ -230,32 +230,90 @@ IF(NOT CYCLUS_DOC_ONLY)
     #  COMPONENT data
     # )
 
-    # Here we set some components for installation with cpack
-    SET(CPACK_COMPONENTS_ALL cycamore testing libraries data core)
 
+    ##############################################################################################
+    ################################## begin uninstall target ####################################
+    ##############################################################################################
+ 
+    CONFIGURE_FILE(
+        "${CMAKE_CURRENT_SOURCE_DIR}/config/cmake_uninstall.cmake.in"
+        "${CMAKE_CURRENT_BINARY_DIR}/cmake_uninstall.cmake"
+        IMMEDIATE @ONLY
+        )
+
+    ADD_CUSTOM_TARGET(uninstall
+        COMMAND ${CMAKE_COMMAND} -P ${CMAKE_CURRENT_BINARY_DIR}/cmake_uninstall.cmake)
+
+    ##############################################################################################
+    ################################### end uninstall target #####################################
+    ##############################################################################################
+ 
+    ##############################################################################################
+    ####################################### begin cpack ##########################################
+    ##############################################################################################
+    
+    
     # Here's where we package it with CPack
     SET(CPACK_PACKAGE_DESCRIPTION_SUMMARY "Cycamore : The Cyclus Additional Module Repository.")
+    
+    # Here we set some components for installation with cpack
+    SET(CPACK_COMPONENTS_ALL cycamore testing libraries data core)
+    SET(CPACK_GENERATOR "DEB")
+
+    # Organisation
     SET(CPACK_DEBIAN_PACKAGE_MAINTAINER "CNERG, UW-Madison") #required
     SET(CPACK_PACKAGE_VENDOR "CNERG, UW-Madison")
     SET(CPACK_PACKAGE_DESCRIPTION_FILE "${CMAKE_CURRENT_SOURCE_DIR}/README.rst")
     SET(CPACK_RESOURCE_FILE_LICENSE "${CMAKE_CURRENT_SOURCE_DIR}/LICENSE.rst")
+    
+    # Version
     SET(CPACK_PACKAGE_VERSION_MAJOR "1")
-    SET(CPACK_PACKAGE_VERSION_MINOR "0")
-    #SET(CPACK_PACKAGE_VERSION_PATCH "0") # should use commit number here  ?
-    SET(CPACK_PACKAGE_INSTALL_DIRECTORY "cycamore${CPACK_VERSION_MAJOR}.${CPACK_VERSION_MINOR}")
-    SET(CPACK_PACKAGE_NAME "${CMAKE_PROJECT_NAME}")
+    SET(CPACK_PACKAGE_VERSION_MINOR "4")
+    SET(CPACK_PACKAGE_VERSION_PATCH "0")
+    
+    # Dependencies
+    SET(CPACK_DEBIAN_PACKAGE_DEPENDS "cyclus (>= 1.4.0)")
+    SET(CPACK_DEBIAN_PACKAGE_DEPENDS "${CPACK_DEBIAN_PACKAGE_DEPENDS}, libtcmalloc-minimal4 (>= 2.1)")
+    SET(CPACK_DEBIAN_PACKAGE_DEPENDS "${CPACK_DEBIAN_PACKAGE_DEPENDS}, libboost-filesystem-dev (>= 1.54.0)")
+    SET(CPACK_DEBIAN_PACKAGE_DEPENDS "${CPACK_DEBIAN_PACKAGE_DEPENDS}, libboost-program-options-dev (>= 1.54.0)")
+    SET(CPACK_DEBIAN_PACKAGE_DEPENDS "${CPACK_DEBIAN_PACKAGE_DEPENDS}, libboost-serialization-dev (>= 1.54.0)")
+    SET(CPACK_DEBIAN_PACKAGE_DEPENDS "${CPACK_DEBIAN_PACKAGE_DEPENDS}, libhdf5-dev (>= 1.8.11)")
+    SET(CPACK_DEBIAN_PACKAGE_DEPENDS "${CPACK_DEBIAN_PACKAGE_DEPENDS}, libxml++2.6-dev (>= 2.36.0)")
+    SET(CPACK_DEBIAN_PACKAGE_DEPENDS "${CPACK_DEBIAN_PACKAGE_DEPENDS}, coinor-libcbc-dev (>= 2.8.7)")
+    MESSAGE("CPACK_DEBIAN_PACKAGE_DEPENDS ${CPACK_DEBIAN_PACKAGE_DEPENDS}")
+    
+    # Names
+    SET(CPACK_PACKAGE_NAME "cycamore")
+    SET(CPACK_PACKAGE_INSTALL_DIRECTORY "cycamore_${CPACK_PACKAGE_VERSION_MAJOR}")
+    SET(CPACK_PACKAGE_INSTALL_DIRECTORY "${CPACK_PACKAGE_INSTALL_DIRECTORY}.${CPACK_PACKAGE_VERSION_MINOR}")
+    SET(CPACK_PACKAGE_INSTALL_DIRECTORY "${CPACK_PACKAGE_INSTALL_DIRECTORY}.${CPACK_PACKAGE_VERSION_PATCH}")
+    
+    SET(CPACK_PACKAGE_FILE_NAME "${CPACK_PACKAGE_NAME}")
+    SET(CPACK_PACKAGE_FILE_NAME "${CPACK_PACKAGE_FILE_NAME}_${CPACK_PACKAGE_VERSION_MAJOR}")
+    SET(CPACK_PACKAGE_FILE_NAME "${CPACK_PACKAGE_FILE_NAME}.${CPACK_PACKAGE_VERSION_MINOR}")
+    SET(CPACK_PACKAGE_FILE_NAME "${CPACK_PACKAGE_FILE_NAME}.${CPACK_PACKAGE_VERSION_PATCH}")
+    SET(CPACK_PACKAGE_FILE_NAME "${CPACK_PACKAGE_FILE_NAME}_${CPACK_HASH_NAME}")
+    SET(CPACK_PACKAGE_FILE_NAME "${CPACK_PACKAGE_FILE_NAME}_${CPACK_SYSTEM_NAME}")
 
-    CONFIGURE_FILE("${CYCAMORE_SOURCE_DIR}/cmake/CycamoreCPackOptions.cmake.in"
-        "${CYCAMORE_BINARY_DIR}/cmake/CycamoreCPackOptions.cmake" @ONLY)
+    # Configuration
+    SET(CPACK_INCLUDE_TOPLEVEL_DIRECTORY "1")
+    SET(CPACK_DEBIAN_PACKAGE_SHLIBDEPS OFF)
+    CONFIGURE_FILE(
+      "${CYCAMORE_SOURCE_DIR}/cmake/CycamoreCPackOptions.cmake.in"
+      "${CYCAMORE_BINARY_DIR}/cmake/CycamoreCPackOptions.cmake" @ONLY
+      )
     SET(CPACK_PROJECT_CONFIG_FILE "${CYCAMORE_BINARY_DIR}/cmake/CycamoreCPackOptions.cmake")
     SET(CPACK_PACKAGE_EXECUTABLES "cycamore" "cycamore_unit_tests")
-
 
     INCLUDE(CPack)
 
     SET(ROOT_DIR ${CYCLUS_ROOT_DIR})
     SET(PROJ_DIR ${PROJECT_BINARY_DIR})
     SET(CORE_SHARE_DIR ${CYCLUS_CORE_SHARE_DIR})
+    
+    ##############################################################################################
+    ######################################## end cpack ###########################################
+    ##############################################################################################
 
 ENDIF(NOT CYCLUS_DOC_ONLY)
 
@@ -270,12 +328,3 @@ IF(DOXYGEN_FOUND)
 ELSE(DOXYGEN_FOUND)
     MESSAGE(STATUS "WARNING: Doxygen not found - doc won't be created")
 ENDIF(DOXYGEN_FOUND)
-
-# uninstall target
-configure_file(
-    "${CMAKE_CURRENT_SOURCE_DIR}/config/cmake_uninstall.cmake.in"
-    "${CMAKE_CURRENT_BINARY_DIR}/cmake_uninstall.cmake"
-    IMMEDIATE @ONLY)
-
-add_custom_target(uninstall
-    COMMAND ${CMAKE_COMMAND} -P ${CMAKE_CURRENT_BINARY_DIR}/cmake_uninstall.cmake)

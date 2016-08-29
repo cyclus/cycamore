@@ -1,1 +1,1 @@
-docker/cycamore-ci/Dockerfile
+docker/develop-ci/Dockerfile
