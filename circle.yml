@@ -27,8 +27,8 @@ deployment:
       - docker build -t cyclus/cycamore:stable .
       - docker push cyclus/cycamore:stable
 
-  deb-generation:
-    branch: deb-generation
+  deb_generation:
+    branch: deb_generation
     commands:
       # DEB GENERATION
         #ubuntu 14.04
