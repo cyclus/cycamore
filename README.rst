@@ -40,7 +40,6 @@ Package                Minimum Version
 `libxml2`              2
 ====================   ==================
 
-For detailed instructions on installing dependencies, see `Installing Dependencies <DEPENDENCIES.rst>`_.
 
 ******************************
 Quick Cycamore Installation
