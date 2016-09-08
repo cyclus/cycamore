@@ -55,53 +55,65 @@ flag:
 
 .. list-table::
 
-  * - ``-h, --help``                              
-    - show the help message and exit                                                                   
+  * - `-h`, `--help`
+    - show this help message and exit
 
-  * - ``--build_dir BUILD_DIR``                   
-    - where to place the build directory                                                               
+  * - `--build_dir BUILD_DIR`
+    - where to place the build directory
 
-  * - ``--uninstall``                             
-    - uninstall                                                                                        
+  * - `--uninstall`
+    - uninstall
 
-  * - ``--no-update``                             
-    - do not update the hash in version.cc                                                             
+  * - `--no-update`
+    - do not update the hash in version.cc
 
-  * - ``--clean-build``                           
-    - attempt to remove the build directory before building                                            
+  * - `--clean-build`
+    - attempt to remove the build directory before building
 
-  * - ``-j THREADS, --threads``                   
-    - THREADS the number of threads to use in the make step                                            
+  * - `-j THREADS`, `--threads THREADS`
+    - the number of threads to use in the make step
 
-  * - ``--prefix PREFIX``                         
-    - the relative path to the installation directory                                                  
+  * - `--prefix PREFIX`
+    - the relative path to the installation directory
 
-  * - ``--config-only``                           
-    - only configure the package, do not build or install                                              
+  * - `--config-only`
+    - only configure the package, do not build or install
 
-  * - ``--build-only``                            
-    - only build the package, do not install                                                           
+  * - `--build-only`
+    - only build the package, do not install
 
-  * - ``--test``                                  
-    - run tests after  building                                                                        
+  * - `--test`
+    - run tests after building
 
-  * - ``--coin_root COIN_ROOT``                   
-    - the relative path to the Coin-OR libraries directory                                             
+  * - `--allow-milps`
+    - Allows mixed integer linear programs by default
 
-  * - ``--boost_root BOOST_ROOT``                 
-    - the relative path to the Boost libraries directory                                               
+  * - `--dont-allow-milps`
+    - Don't Allows mixed integer linear programs by default
 
-  * - ``--hdf5_root HDF5_ROOT``                   
-    - the path to the HDF5 libraries directory                                                         
+  * - `--deps-root DEPS_ROOT`, `--deps_root DEPS_ROOT`
+    - the path to the directory containing all dependencies
 
-  * - ``--cmake_prefix_path CMAKE_PREFIX_PATH``   
-    - the cmake prefix path for use with FIND_PACKAGE, FIND_PATH, FIND_PROGRAM, or FIND_LIBRARY macros 
+  * - `--coin-root COIN_ROOT`, `--coin_root COIN_ROOT`
+    - the relative path to the Coin-OR libraries directory
 
-  * - ``--build_type BUILD_TYPE``                 
-    - change the CMAKE_BUILD_TYPE                                                                      
+  * - `--boost_root BOOST_ROOT`
+    - the relative path to the Boost libraries directory
 
-  * - ``-D VAR``                                  
-    - set environment variable(s).                                                                    
+  * - `--hdf5_root HDF5_ROOT`
+    - the path to the HDF5 libraries directory
+
+  * - `--cyclus-root CYCLUS_ROOT`, `--cyclus_root CYCLUS_ROOT`
+    - the relative path to Cyclus installation directory
+
+  * - `--cmake_prefix_path CMAKE_PREFIX_PATH`
+    - the cmake prefix path for use with FIND_PACKAGE, FIND_PATH, FIND_PROGRAM, or FIND_LIBRARY macros
+
+  * - `--build-type BUILD_TYPE`, `--build_type BUILD_TYPE`
+    - the CMAKE_BUILD_TYPE
+
+  * - `-D VAR`
+    - Set enviornment variable(s).
 
 
 For example, if you have installed coin-Cbc from source or otherwise have it
