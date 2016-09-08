@@ -79,13 +79,13 @@ Contributing
 We happily welcome new developers into the Cyclus Developer Team. If you are willing
 to contribute into Cyclus, please follow this procedure:
 
-#. Fork Cyclus repository,
+#. Fork Cycamore repository,
 
 #. Create a working branch on you fork from the `develop` branch,
 
-#. Implement your modification of the Cyclus source code,
+#. Implement your modification of the Cycamore source code,
 
-#. Submit a Pull request into `Cyclus/develop` branch,
+#. Submit a Pull request into `Cycamore/develop` branch,
 
 #. Wait for reviews/merge (the Puller cannot be the Merger).
 
