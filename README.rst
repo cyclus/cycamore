@@ -32,17 +32,28 @@ Dependencies
 ******************************
 
 In order to facilitate future compatibility with multiple platforms,
-Cyclus is built using `CMake`_. A full list of the Cyclus package
+Cyclus is built using `CMake`_. A full list of the Cycamore package
 dependencies is shown below:
 
 ====================   ==================
 Package                Minimum Version
 ====================   ==================
+`Cyclus`               1.4
 `CMake`                2.8
 `boost`                1.46.1
 `libxml2`              2
 ====================   ==================
 
+
+You can find the Cyclus Core which is require to use the Cycamore additionnal
+Modelus. You can download Cyclus from the git repository.
+(`GitHub Cyclus Repository <https://github.com/cyclus/cyclus>`_):
+
+- Clone the Cyclus Repo: ``git clone
+  https://github.com/cyclus/cyclus.git``,
+
+- Install Cyclus  in ``~/.local/``:
+  ``python install.py`` from the Cyclus folder.
 
 ******************************
 Quick Cycamore Installation
