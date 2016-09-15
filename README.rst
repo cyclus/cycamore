@@ -39,9 +39,6 @@ dependencies is shown below:
 Package                Minimum Version
 ====================   ==================
 `Cyclus`               1.4
-`CMake`                2.8
-`boost`                1.46.1
-`libxml2`              2
 ====================   ==================
 
 
