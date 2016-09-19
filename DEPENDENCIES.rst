@@ -63,7 +63,7 @@ installation procedure also assumes that you have root access to you computer.
 Installing Cyclus using Conda:
 ------------------------------
 
-1.  a.  If you don't have Conda, follow the :doc:`http://fuelcycle.org/user/install_conda.html <install_conda>` to prepare it for cyclus, then skip to step 2.
+1.  a.  If you don't have Conda, follow the `install conda documentation <http://fuelcycle.org/user/install_conda.html>`_ to prepare it for cyclus, then skip to step 2.
 
     b.  If you already have conda installed, installing |Cyclus| is even easier.
         You simply need to make sure that conda-forge is part of your channels.
