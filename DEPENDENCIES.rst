@@ -67,7 +67,7 @@ Installing Cyclus using Conda:
 
     b.  If you already have conda installed, installing |Cyclus| is even easier.
         You simply need to make sure that conda-forge is part of your channels.
-        Please edit the ``channels`` section of your :file:`~/.condarc` to include
+        Please edit the ``channels`` section of your ``~/.condarc`` to include
         the ``conda-forge`` channel.  For example,
 
         .. code-block:: yaml
