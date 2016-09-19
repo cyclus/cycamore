@@ -39,10 +39,10 @@ installation procedure also assumes that you have root access to you computer.
 
         $ sudo apt-get install libtcmalloc-minimal4 libboost-filesystem-dev libboost-program-options-dev libboost-serialization-dev libhdf5-dev libxml++2.6-dev coinor-libcbc-dev
   
-  WARNING: This dependency list is ONLY correct for the debian binary
-  installation, additional dependencies are required for to install from source.
-  If you need/want more information about dependency installation please read
-  `dependency installation documentation <put_a_link_there>`_.
+    WARNING: This dependency list is ONLY correct for the debian binary
+    installation, additional dependencies are required for to install from source.
+    If you need/want more information about dependency installation please read
+    `dependency installation documentation <put_a_link_there>`_.
 
 #.  Download the |Cyclus| Debian installation package corresponding to your
     Ubuntu version (`14.04
@@ -80,8 +80,6 @@ Installing Cyclus using Conda:
 
        $ conda install --yes cyclus
 
-       
-#.  .. include:: unit_test.rst
 
 
 Installing Cyclus from the source:
