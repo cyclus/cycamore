@@ -54,9 +54,9 @@ installation procedure also assumes that you have root access to you computer.
 
 #.  Install the package by running:
 
-     .. code-block:: bash 
+    .. code-block:: bash 
 
-        $ sudo dpkg -i CYCLUS_DEB_PACKAGE_MANE.deb
+       $ sudo dpkg -i CYCLUS_DEB_PACKAGE_MANE.deb
 
     where the actual filename is inserted in place of 'CYCLUS_DEB_PACKAGE_MANE.deb'.
 
