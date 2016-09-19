@@ -35,9 +35,9 @@ This installation procedure assumes that you are using Ubuntu (LTS) 14.04 or
 installation procedure also assumes that you have root access to you computer.
 
 #. Install |Cyclus| dependencies:
-   .. code-block:: bash 
 
-   $ sudo apt-get install libtcmalloc-minimal4 libboost-filesystem-dev libboost-program-options-dev libboost-serialization-dev libhdf5-dev libxml++2.6-dev coinor-libcbc-dev
+   .. code-block:: bash 
+      $ sudo apt-get install libtcmalloc-minimal4 libboost-filesystem-dev libboost-program-options-dev libboost-serialization-dev libhdf5-dev libxml++2.6-dev coinor-libcbc-dev
   
 
     WARNING: This dependency list is ONLY correct for the debian binary
