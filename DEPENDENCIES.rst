@@ -37,8 +37,9 @@ installation procedure also assumes that you have root access to you computer.
 #. Install |Cyclus| dependencies:
    .. code-block:: bash 
 
-      $ sudo apt-get install libtcmalloc-minimal4 libboost-filesystem-dev libboost-program-options-dev libboost-serialization-dev libhdf5-dev libxml++2.6-dev coinor-libcbc-dev
+   $ sudo apt-get install libtcmalloc-minimal4 libboost-filesystem-dev libboost-program-options-dev libboost-serialization-dev libhdf5-dev libxml++2.6-dev coinor-libcbc-dev
   
+
     WARNING: This dependency list is ONLY correct for the debian binary
     installation, additional dependencies are required for to install from source.
     If you need/want more information about dependency installation please read
