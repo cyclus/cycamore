@@ -1,6 +1,6 @@
-###########
-Cyclus Core
-###########
+#####################
+Cycamore Dependencies
+#####################
 
 
 To see user and developer documentation for this code, please visit

@@ -6,11 +6,14 @@ Additional modules for the Cyclus nuclear fuel cycle simulator from the
 University of Wisconsin - Madison are intended to be support innovative
 fuel cycle simulations with the Cyclus fuel cycle simulator.
 
-Cycamore require Cyclus. If you don't have installed Cyclus yet please checkout
+Cycamore requires Cyclus. If you have'nt yet installed Cyclus please check out
 the `Cyclus website <http://fuelcycle.org/>`_ or the `Cyclus repository <https://github.com/cyclus/cyclus>`_.
 
-Third party modules can also be installed (or developed) with additional
-facilities.  Please visit the Cyclus website for a list of contributed modules.
+Although Cycamore is meant to enable a basic fuel cycle simulation, you may want
+more functionality than it offers.  Third party modules can also be installed
+(or developed) with additional facilities.  Please visit the Cyclus website for
+a list of contributed modules
+<http://fuelcycle.org/user/index.html#third-party-archetypes>_.
 
 - **For general information about Cyclus, visit the**  `Cyclus Homepage`_,
 
@@ -20,7 +23,7 @@ facilities.  Please visit the Cyclus website for a list of contributed modules.
 - **To see user and developer documentation for this code, please visit
   the** `Users Guide <http://fuelcycle.org/user/index.html>`_, 
 
-- **If you would like to contribute to Cyclus, please check our** 
+- **If you would like to contribute to Cycamore, please check our** 
   `Contribution Guidelines <CONTRIBUTING.rst>`_.
 
 
@@ -51,6 +54,11 @@ Modelus. You can download Cyclus from the git repository.
 
 - Install Cyclus  in ``~/.local/``:
   ``python install.py`` from the Cyclus folder.
+
+We also provide installation instruction using Conda, Deb, as well as source
+installation from a tarball. Please wisit our `additionnal dependencies
+instruction <DEPENDENCIES.rst>`_.
+
 
 ******************************
 Quick Cycamore Installation

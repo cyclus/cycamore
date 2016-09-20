@@ -17,12 +17,22 @@ A full list of the Cycamore package dependencies is shown below:
 ====================   ==================
 Package                Minimum Version
 ====================   ==================
-`CMake`                2.8
-`boost`                1.46.1
-`libxml2`              2
 `Cyclus`               1.4
 ====================   ==================
 
+You can find the Cyclus Core which is require to use the Cycamore additionnal
+Modelus. You can download Cyclus from the git repository.
+(`GitHub Cyclus Repository <https://github.com/cyclus/cyclus>`_):
+
+- Clone the Cyclus Repo: ``git clone
+  https://github.com/cyclus/cyclus.git``,
+
+- Install Cyclus  in ``~/.local/``:
+  ``python install.py`` from the Cyclus folder.
+
+We also provide installation instruction using Conda, Deb, as well as source
+installation from a tarball. Please wisit our `additionnal dependencies
+instruction <DEPENDENCIES.rst>`_.
 
 
 ******************************
