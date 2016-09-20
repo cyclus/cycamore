@@ -12,8 +12,7 @@ the `Cyclus website <http://fuelcycle.org/>`_ or the `Cyclus repository <https:/
 Although Cycamore is meant to enable a basic fuel cycle simulation, you may want
 more functionality than it offers.  Third party modules can also be installed
 (or developed) with additional facilities.  Please visit the Cyclus website for
-a list of contributed modules
-<http://fuelcycle.org/user/index.html#third-party-archetypes>_.
+a list of `contributed modules <http://fuelcycle.org/user/index.html#third-party-archetypes>`_.
 
 - **For general information about Cyclus, visit the**  `Cyclus Homepage`_,
 
