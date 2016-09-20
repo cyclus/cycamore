@@ -23,7 +23,7 @@ a list of `contributed modules <http://fuelcycle.org/user/index.html#third-party
   the** `Users Guide <http://fuelcycle.org/user/index.html>`_, 
 
 - **If you would like to contribute to Cycamore, please check our** 
-  `Contribution Guidelines <CONTRIBUTING.rst>`_.
+  `Contribution Guidelines <https://github.com/cyclus/cyclus/blob/develop/CONTRIBUTING.rst>`_.
 
 
 .. contents:: Table of Contents
