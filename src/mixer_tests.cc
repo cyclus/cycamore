@@ -12,6 +12,10 @@ namespace cycamore {
 
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
+typedef std::vector<
+    std::pair<std::pair<double, double>, std::map<std::string, double> > >
+    t_instream;
+
 cyclus::Composition::Ptr c_pustream() {
   using pyne::nucname::id;
 
@@ -51,17 +55,32 @@ class MixerTest : public ::testing::Test {
   virtual void SetUp() {
     mf_facility_ = new Mixer(tc_.get());
 
-    std::vector<std::string> in_com_ = {"in_c1", "in_c2", "in_c3"};
-    SetStream_comds(in_com_);
-
-    std::vector<double> in_cap_ = {30, 20, 10};
-    SetStream_capacity(in_cap_);
-
+    std::vector<std::map<std::string, double> > in_commods;
+    {
+      std::map<std::string, double> in_com;
+      in_com.insert(std::pair<std::string, double>("in_c1", 1));
+      in_commods.push_back(in_com);
+    }
+    {
+      std::map<std::string, double> in_com;
+      in_com.insert(std::pair<std::string, double>("in_c2", 1));
+      in_commods.push_back(in_com);
+    }
+    {
+      std::map<std::string, double> in_com;
+      in_com.insert(std::pair<std::string, double>("in_c3", 1));
+      in_commods.push_back(in_com);
+    }
+    
+    std::vector<double> in_ratios = {1, 1, 1};
+    std::vector<double> in_caps = {30, 20, 10};
+    SetIn_stream(in_commods, in_ratios,  in_caps);
+  
     SetOutStream_comds("out_com");
   }
   virtual void TearDown() { delete mf_facility_; }
 
-  std::vector<std::string> in_com;
+  std::vector<std::map<std::string, double> > in_coms;
   std::vector<double> in_frac;
   std::vector<double> in_cap;
 
@@ -75,19 +94,44 @@ class MixerTest : public ::testing::Test {
     mf_facility_->throughput = thpt;
   }
 
-  void SetStream_comds(std::vector<std::string> comds) {
-    in_com = comds;
-    mf_facility_->in_commods = comds;
+  void SetIn_stream(t_instream streams) {
+    mf_facility_->streams_ = streams;
+    
+    in_frac.clear();
+    in_cap.clear();
+    for (int i = 0; i < streams.size(); i++) {
+      in_frac.push_back(streams[i].first.first);
+      in_cap.push_back(streams[i].first.second);
+    }
   }
 
-  void SetStream_ratio(std::vector<double> ratio) {
-    in_frac = ratio;
-    mf_facility_->mixing_ratios = ratio;
+  void SetIn_stream(std::vector<std::map<std::string, double> > in_stream,
+                    std::vector<double> ratios, std::vector<double> caps) {
+    t_instream instream_tmp;
+    for (int i = 0; i < in_stream.size(); i++) {
+      std::pair<double, double> info_mtp =
+          std::pair<double, double>(ratios[i], caps[i]);
+      instream_tmp.push_back(
+          std::pair<std::pair<double, double>, std::map<std::string, double> >(
+              info_mtp, in_stream[i]));
+    }
+    SetIn_stream(instream_tmp);
   }
 
-  void SetStream_capacity(std::vector<double> cap) {
-    in_cap = cap;
-    mf_facility_->in_buf_sizes = cap;
+  void SetStream_ratio(std::vector<double> new_ratios) {
+    for (int i = 0; i < new_ratios.size(); i++) {
+      mf_facility_->streams_[i].first.first = new_ratios[i];
+    }
+
+    mf_facility_->mixing_ratios = new_ratios;
+  }
+
+  void SetStream_capacity(std::vector<double> new_caps) {
+    for (int i = 0; i < new_caps.size(); i++) {
+      mf_facility_->streams_[i].first.second = new_caps[i];
+    }
+
+    mf_facility_->in_buf_sizes = new_caps;
   }
 
   void SetOutStream_comds(std::string com) {
@@ -101,13 +145,10 @@ class MixerTest : public ::testing::Test {
   }
 
   void SetInputInv(std::vector<cyclus::Material::Ptr> mat) {
-    for (int i = 0; i < in_com.size(); i++) {
-      mf_facility_->streambufs[in_com[i]].Push(mat[i]);
+    for (int i = 0; i < mat.size(); i++) {
+      std::string name = "in_stream_" + std::to_string(i);
+      mf_facility_->streambufs[name].Push(mat[i]);
     }
-  }
-
-  std::vector<std::string> GetStream_comds() {
-    return mf_facility_->in_commods;
   }
 
   std::vector<double> GetStream_ratio() { return mf_facility_->mixing_ratios; }
@@ -133,18 +174,18 @@ class MixerTest : public ::testing::Test {
 // Checking that ratios correctly default to 1/N.
 TEST_F(MixerTest, StreamDefaultRatio) {
   SetOutStream_capacity(50);
-
   SetThroughput(1e200);
-
   mf_facility_->EnterNotify();
+
   double ext_val = 1.0 / 3.0;
   std::vector<double> strm_ratio_ = GetStream_ratio();
 
   //
-  for (int i = 0; i < in_com.size(); i++) {
+  for (int i = 0; i < in_coms.size(); i++) {
     EXPECT_DOUBLE_EQ(ext_val, strm_ratio_[i]);
   }
 }
+
 // Test things about the mixing ratio normalisation.
 TEST_F(MixerTest, StreamRatio) {
   // Checking renormalisation when sum of ratio is grester tham 1.
@@ -154,16 +195,13 @@ TEST_F(MixerTest, StreamRatio) {
 
   SetStream_ratio(in_frac_);
   SetStream_capacity(in_cap_);
-
   SetOutStream_capacity(50);
-
   SetThroughput(1e200);
-
   mf_facility_->EnterNotify();
 
   std::vector<double> strm_ratio_ = GetStream_ratio();
   double sum = 0.0;
-  for (int i = 0; i < in_com.size(); i++) {
+  for (int i = 0; i < strm_ratio_.size(); i++) {
     sum += strm_ratio_[i];
   }
 
@@ -172,18 +210,15 @@ TEST_F(MixerTest, StreamRatio) {
 
   // Checking renormalisation when sum of ratio is smaller tham 1.
   in_frac_ = {0.1, 0.2, 0.5};
-
-  SetStream_ratio(in_frac_);
-
   SetOutStream_capacity(50);
-
   SetThroughput(1e200);
 
+  SetStream_ratio(in_frac_);
   mf_facility_->EnterNotify();
-
   strm_ratio_ = GetStream_ratio();
+
   sum = 0;
-  for (int i = 0; i < in_com.size(); i++) {
+  for (int i = 0; i < strm_ratio_.size(); i++) {
     sum += strm_ratio_[i];
   }
 
@@ -196,7 +231,6 @@ TEST_F(MixerTest, MixingComposition) {
   using cyclus::Material;
 
   std::vector<double> in_frac_ = {0.80, 0.15, 0.05};
-
   SetStream_ratio(in_frac_);
 
   SetOutStream_capacity(50);
@@ -212,11 +246,11 @@ TEST_F(MixerTest, MixingComposition) {
   mf_facility_->Tick();
 
   cyclus::CompMap v_0 = c_natu()->mass();
-  cyclus::compmath::Normalize(&v_0, in_frac[0]);
+  cyclus::compmath::Normalize(&v_0, in_frac_[0]);
   cyclus::CompMap v_1 = c_pustream()->mass();
-  cyclus::compmath::Normalize(&v_1, in_frac[1]);
+  cyclus::compmath::Normalize(&v_1, in_frac_[1]);
   cyclus::CompMap v_2 = c_uox()->mass();
-  cyclus::compmath::Normalize(&v_2, in_frac[2]);
+  cyclus::compmath::Normalize(&v_2, in_frac_[2]);
   cyclus::CompMap v = v_0;
   v = cyclus::compmath::Add(v, v_1);
   v = cyclus::compmath::Add(v, v_2);
@@ -224,6 +258,7 @@ TEST_F(MixerTest, MixingComposition) {
   InvBuffer* buffer = GetOutPutBuffer();
   Material::Ptr final_mat = cyclus::ResCast<Material>(buffer->PopBack());
   cyclus::CompMap final_comp = final_mat->comp()->mass();
+
 
   cyclus::compmath::Normalize(&v, 1);
   cyclus::compmath::Normalize(&final_comp, 1);
@@ -258,17 +293,17 @@ TEST_F(MixerTest, Throughput) {
   mf_facility_->Tick();
 
   std::vector<double> cap;
-  for (int i = 0; i < in_com.size(); i++) {
+  for (int i = 0; i < in_coms.size(); i++) {
     cap.push_back(in_cap[i] - 0.5 * in_frac[i]);
   }
 
   std::map<std::string, InvBuffer> streambuf = GetStreamBuffer();
 
-  for (int i = 0; i < in_com.size(); i++) {
-    std::string buf_com = in_com[i];
+  for (int i = 0; i < in_coms.size(); i++) {
+    std::string name = "in_stream_" + std::to_string(i);
     double buf_size = in_cap[i];
     double buf_ratio = in_frac[i];
-    double buf_inv = streambuf[buf_com].quantity();
+    double buf_inv = streambuf[name].quantity();
 
     // checking that each input buf was reduce of the correct amount
     // (constrained by the throughput"
@@ -287,25 +322,47 @@ TEST_F(MixerTest, Throughput) {
 //  material inventory.
 TEST(MixerTests, MultipleFissStreams) {
   std::string config =
-      "<in_commods>"
-      "<val>stream1</val>"
-      "<val>stream2</val>"
-      "<val>stream3</val>"
-      "</in_commods>"
-      "<in_buf_sizes>"
-      "<val>2.5</val>"
-      "<val>3</val>"
-      "<val>5</val>"
-      "</in_buf_sizes>"
-      "<mixing_ratios>"
-      "<val>0.8</val>"
-      "<val>0.15</val>"
-      "<val>0.05</val>"
-      "</mixing_ratios>"
-      "<out_commod>dummyout</out_commod>"
+      "<in_streams>"
+        "<stream>"
+          "<info>"
+            "<mixing_ratio>0.8</mixing_ratio>"
+            "<buf_size>2.5</buf_size>"
+          "</info>"
+          "<commodities>"
+            "<item>"
+              "<commodity>stream1</commodity>"
+              "<pref>1</pref>"
+            "</item>"
+          "</commodities>"
+        "</stream>"
+        "<stream>"
+          "<info>"
+            "<mixing_ratio>0.15</mixing_ratio>"
+            "<buf_size>3</buf_size>"
+          "</info>"
+          "<commodities>"
+            "<item>"
+              "<commodity>stream2</commodity>"
+              "<pref>1</pref>"
+            "</item>"
+          "</commodities>"
+        "</stream>"
+        "<stream>"
+          "<info>"
+            "<mixing_ratio>0.05</mixing_ratio>"
+            "<buf_size>5</buf_size>"
+          "</info>"
+          "<commodities>"
+            "<item>"
+              "<commodity>stream3</commodity>"
+              "<pref>1</pref>"
+            "</item>"
+          "</commodities>"
+        "</stream>"
+      "</in_streams>"
+      "<out_commod>mixedstream</out_commod>"
       "<outputbuf_size>0</outputbuf_size>"
       "<throughput>0</throughput>";
-
   int simdur = 1;
   cyclus::MockSim sim(cyclus::AgentSpec(":cycamore:Mixer"), config, simdur);
   sim.AddSource("stream1").recipe("unatstream").capacity(1).Finalize();
@@ -339,25 +396,47 @@ TEST(MixerTests, MultipleFissStreams) {
 //  material inventory.
 TEST(MixerTests, CompleteMixingProcess) {
   std::string config =
-      "<in_commods>"
-      "<val>stream1</val>"
-      "<val>stream2</val>"
-      "<val>stream3</val>"
-      "</in_commods>"
-      "<in_buf_sizes>"
-      "<val>2.5</val>"
-      "<val>3</val>"
-      "<val>5</val>"
-      "</in_buf_sizes>"
-      "<mixing_ratios>"
-      "<val>0.8</val>"
-      "<val>0.15</val>"
-      "<val>0.05</val>"
-      "</mixing_ratios>"
+      "<in_streams>"
+        "<stream>"
+          "<info>"
+            "<mixing_ratio>0.8</mixing_ratio>"
+            "<buf_size>2.5</buf_size>"
+          "</info>"
+          "<commodities>"
+            "<item>"
+              "<commodity>stream1</commodity>"
+              "<pref>1</pref>"
+            "</item>"
+          "</commodities>"
+        "</stream>"
+        "<stream>"
+          "<info>"
+            "<mixing_ratio>0.15</mixing_ratio>"
+            "<buf_size>3</buf_size>"
+          "</info>"
+          "<commodities>"
+            "<item>"
+              "<commodity>stream2</commodity>"
+              "<pref>1</pref>"
+            "</item>"
+          "</commodities>"
+        "</stream>"
+        "<stream>"
+          "<info>"
+            "<mixing_ratio>0.05</mixing_ratio>"
+            "<buf_size>5</buf_size>"
+          "</info>"
+          "<commodities>"
+            "<item>"
+              "<commodity>stream3</commodity>"
+              "<pref>1</pref>"
+            "</item>"
+          "</commodities>"
+        "</stream>"
+      "</in_streams>"
       "<out_commod>mixedstream</out_commod>"
       "<outputbuf_size>10</outputbuf_size>"
       "<throughput>1</throughput>";
-
   int simdur = 2;
   cyclus::MockSim sim(cyclus::AgentSpec(":cycamore:Mixer"), config, simdur);
   sim.AddSource("stream1").recipe("unatstream").capacity(1).Finalize();

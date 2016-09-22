@@ -39,13 +39,13 @@ class Mixer : public cyclus::Facility {
   virtual std::set<cyclus::RequestPortfolio<cyclus::Material>::Ptr>
   GetMatlRequests();
 
-  #pragma cyclus clone
-  #pragma cyclus initfromcopy
-  #pragma cyclus infiletodb
-  #pragma cyclus initfromdb
-  #pragma cyclus schema
-  #pragma cyclus annotations
-  #pragma cyclus snapshot
+#pragma cyclus clone
+#pragma cyclus initfromcopy
+#pragma cyclus infiletodb
+#pragma cyclus initfromdb
+#pragma cyclus schema
+#pragma cyclus annotations
+#pragma cyclus snapshot
   // the following pragmas are ommitted and the functions are written
   // manually in order to handle the vector of resource buffers:
   //
@@ -56,51 +56,29 @@ class Mixer : public cyclus::Facility {
   virtual void InitInv(cyclus::Inventories& inv);
 
  protected:
-  #pragma cyclus var { \
-    "doc": "Ordered list of commodities on which to request material stream" \
-    " material, each commodity corresponds to an input stream.", \
-    "uilabel": "Input Commodities", \
-    "uitype": ["oneormore", "incommodity"], \
+#pragma cyclus var { \
+    "alias": ["in_streams", [ "stream", [ "info", "mixing_ratio", "buf_size"], [ "commodities", "commodity", "pref"]]], \
+    "uitype": ["oneormore", [ "pair", ["pair", "double", "double"], ["oneormore", "incommodity", "double"]]], \
+    "uilabel": "", \
+    "doc": "", \
   }
-  std::vector<std::string> in_commods;
+  std::vector<std::pair<std::pair<double, double>, std::map<std::string, double> > > streams_;
 
-  #pragma cyclus var { \
-    "default": [], \
-    "uilabel": "Input Preferences", \
-    "doc": "Stream commodity request preferences for each of the given" \
-           "commodities (same order)." \
-           " If unspecified, default is 1.0 for all preferences.", \
-  }
-  std::vector<double> in_commod_prefs;
-
-  #pragma cyclus var { \
-    "doc": "Size of input material stream inventory - i.e. the quantity of each" \
-           " stream type to keep on-hand)", \
-    "uilabel": "Input Inventory Capacity", \
-    "units": "kg", \
-  }
+  std::vector<std::map<std::string, double> > in_commods;
   std::vector<double> in_buf_sizes;
+  std::vector<double> mixing_ratios;
 
   // custom SnapshotInv and InitInv and EnterNotify are used to persist this
   // state var.
   std::map<std::string, cyclus::toolkit::ResBuf<cyclus::Material> > streambufs;
 
-  #pragma cyclus var { \
-    "default": [], \
-    "uilabel": "Commodities Mass Fraction", \
-    "doc": "Mass mixing ratio of each input commodity requested (same order)." \
-           " If unspecified, default is to use 1/N for each fraction." \
-           " Stream ratios can total to any arbitrary value" \
-           " and will be automatically normalized internally." \
-  }
-  std::vector<double> mixing_ratios;
 
-  #pragma cyclus var {                                                 \
-    "doc" : "Commodity on which to offer/supply mixed fuel material.", \
-    "uilabel" : "Output Commodity", "uitype" : "outcommodity", }
+#pragma cyclus var {                                                 \
+  "doc" : "Commodity on which to offer/supply mixed fuel material.", \
+  "uilabel" : "Output Commodity", "uitype" : "outcommodity", }
   std::string out_commod;
 
-  #pragma cyclus var { \
+#pragma cyclus var { \
     "doc" : "Maximum amount of mixed material that can be stored." \
             " If full, the facility halts operation until space becomes" \
             " available.", \
@@ -110,10 +88,10 @@ class Mixer : public cyclus::Facility {
   }
   double out_buf_size;
 
-  #pragma cyclus var { "capacity" : "out_buf_size", }
+#pragma cyclus var { "capacity" : "out_buf_size", }
   cyclus::toolkit::ResBuf<cyclus::Material> output;
 
-  #pragma cyclus var { \
+#pragma cyclus var { \
     "default": 1e299, \
     "doc": "Maximum number of kg of fuel material that can be mixed per time step.", \
     "uilabel": "Maximum Throughput", \
