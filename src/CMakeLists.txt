@@ -23,6 +23,8 @@ USE_CYCLUS("cycamore" "deploy_inst")
 
 USE_CYCLUS("cycamore" "manager_inst")
 
+USE_CYCLUS("cycamore" "group_inst")
+
 USE_CYCLUS("cycamore" "growth_region")
 
 USE_CYCLUS("cycamore" "storage")
