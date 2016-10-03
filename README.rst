@@ -44,8 +44,8 @@ Package                Minimum Version
 ====================   ==================
 
 
-You can find the Cyclus Core which is require to use the Cycamore additionnal
-Modelus. You can download Cyclus from the git repository.
+You can find the Cyclus Core which is required to use the Cycamore additional
+Modules. You can download Cyclus from the git repository.
 (`GitHub Cyclus Repository <https://github.com/cyclus/cyclus>`_):
 
 - Clone the Cyclus Repo: ``git clone
@@ -54,9 +54,9 @@ Modelus. You can download Cyclus from the git repository.
 - Install Cyclus  in ``~/.local/``:
   ``python install.py`` from the Cyclus folder.
 
-We also provide installation instruction using Conda, Deb, as well as source
+We also provide installation instructions using Conda, Deb, as well as source
 installation from a tarball. Please wisit our `additionnal dependencies
-instruction <DEPENDENCIES.rst>`_.
+instructions <DEPENDENCIES.rst>`_.
 
 
 ******************************
