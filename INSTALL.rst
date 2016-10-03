@@ -31,7 +31,7 @@ Modelus. You can download Cyclus from the git repository.
   ``python install.py`` from the Cyclus folder.
 
 We also provide installation instruction using Conda, Deb, as well as source
-installation from a tarball. Please wisit our `additionnal dependencies
+installation from a tarball. Please wisit our `additional dependencies
 instruction <DEPENDENCIES.rst>`_.
 
 
@@ -53,8 +53,8 @@ Run the install script:
   python install.py
 
 
-If you successfully followed the instruction above Cycamore library have been
-generated and be placed in the  ``.local/`` in your home directory. 
+If you successfully followed the instructions above, then the Cycamore library
+has been generated and placed in the  ``.local/`` in your home directory. 
 
 Custom Cycamore installation
 ---------------------------
@@ -148,9 +148,8 @@ install.py python script and use directly ``cmake`` which should look like:
   make
   make install
 
-As usual you can custom you cmake installation using the proper cmake flag.
-All cmake variable can be listed using: ``cmake -LAH``.
-The main variable used are:
+you can customize your cmake installation using the proper cmake flag.  All
+cmake variables can be listed using: ``cmake -LAH``.  The main variable used are:
 
 .. list-table::
 
@@ -172,7 +171,7 @@ The main variable used are:
   * - ``HDF5_INCLUDE_DIRS`` 
     - set HDF5 include directory
 
-All variable can be set using ``-DMY_VARIABLE=MY_VARIABLES_VALUE``.
+All variables can be set using ``-DMY_VARIABLE=MY_VARIABLES_VALUE``.
 
 
 ******************************

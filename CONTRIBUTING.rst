@@ -45,7 +45,7 @@ Reviewing a Pull Request
 * Click the green "Merge Pull Request" button
 
   * Note: if the button is not available, the requester needs to merge or rebase
-    from the current HEAD of the blessed's "develop" (or "master") branch
+    from the current HEAD of the blessed "develop" (or "master") branch.
 
 Cautions
 ========
@@ -64,8 +64,9 @@ An Example
 Introduction
 ------------
 
-As this type of workflow can be complicated to converts from SVN and very complicated
-for brand new programmers, an example is provided.
+As this type of workflow can be complicated to new programmers as well as those
+accustomed to SVN, an example is provided.
+
 
 For the sake of simplicity, let us assume that we want a single "sandbox" branch
 in which we would like to work, i.e. where we can store all of our work that may not

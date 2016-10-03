@@ -6,7 +6,7 @@ Additional modules for the Cyclus nuclear fuel cycle simulator from the
 University of Wisconsin - Madison are intended to be support innovative
 fuel cycle simulations with the Cyclus fuel cycle simulator.
 
-Cycamore requires Cyclus. If you have'nt yet installed Cyclus please check out
+Cycamore requires Cyclus. If you haven't yet installed Cyclus please check out
 the `Cyclus website <http://fuelcycle.org/>`_ or the `Cyclus repository <https://github.com/cyclus/cyclus>`_.
 
 Although Cycamore is meant to enable a basic fuel cycle simulation, you may want
