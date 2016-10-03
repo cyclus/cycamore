@@ -3,7 +3,7 @@ Cycamore : The CYClus Additional MOdules REpository
 ###################################################
 
 Additional modules for the Cyclus nuclear fuel cycle simulator from the
-University of Wisconsin - Madison are intended to be support innovative
+University of Wisconsin - Madison are intended to support innovative
 fuel cycle simulations with the Cyclus fuel cycle simulator.
 
 Cycamore requires Cyclus. If you haven't yet installed Cyclus please check out
