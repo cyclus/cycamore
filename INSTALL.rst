@@ -38,6 +38,7 @@ instruction <DEPENDENCIES.rst>`_.
 ******************************
 Installation
 ******************************
+.. website_include_start
 
 Before going further on the installation procedure be sure you have installed
 all the required dependencies listed above.
@@ -173,6 +174,7 @@ cmake variables can be listed using: ``cmake -LAH``.  The main variable used are
 
 All variables can be set using ``-DMY_VARIABLE=MY_VARIABLES_VALUE``.
 
+.. website_include_end
 
 ******************************
 Running Tests
