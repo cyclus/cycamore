@@ -24,8 +24,8 @@ Package                Minimum Version
 Installing Dependencies
 ***********************
 
- The only Cycamore dependency is Cyclus. We support 3 main ways to install
- Cyclus.
+The only Cycamore dependency is Cyclus. We support 3 main ways to install
+Cyclus.
 
 Installing Cyclus using Deb package:
 ------------------------------------
@@ -61,24 +61,15 @@ installation procedure also assumes that you have root access to you computer.
 Installing Cyclus using Conda:
 ------------------------------
 
-1.  a.  If you don't have Conda, follow the `install conda documentation <http://fuelcycle.org/user/install_conda.html>`_ to prepare it for cyclus, then skip to step 2.
+1. If you don't have Conda, start by installing the Python 3.x version of
+   Anaconda_ (or miniconda_ for a more lightweight choice) to prepare it for
+   |Cyclus|.
 
-    b.  If you already have conda installed, installing |Cyclus| is even easier.
-        You simply need to make sure that conda-forge is part of your channels.
-        Please edit the ``channels`` section of your ``~/.condarc`` to include
-        the ``conda-forge`` channel.  For example,
+2. Once you have conda installed, installing |Cyclus| is straightforward.
 
-        .. code-block:: yaml
+   .. code-block:: bash
 
-            channels:
-              - conda-forge
-              - defaults
-      
-2.  Once this is done, install |Cyclus|  and Cycamore with the following comand.
-
-    .. code-block:: bash
-
-       $ conda install --yes cyclus
+      $ conda install -c conda-forge cyclus
 
 
 
