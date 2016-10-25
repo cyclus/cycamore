@@ -110,4 +110,6 @@ installation procedure also assumes that you have root access to you computer.
 .. _`Cyclus User Guide`: http://fuelcycle.org/user/index.html
 .. _`Cyclus repo`: https://github.com/cyclus/cyclus
 .. _`Cycamore Repo`: https://github.com/cyclus/cycamore
+.. _Anaconda: https://www.continuum.io/downloads
+.. _miniconda: http://conda.pydata.org/miniconda.html
 
