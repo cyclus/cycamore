@@ -37,14 +37,14 @@ The Cyclus Core supports two binary installation options:
 
 
 **Conda** is a cross-platform, user-space package manager aimed at simplifying
-the installation of open source software. The |Cyclus| project uses Conda to
-distribute pre-built |Cyclus| and Cycamore binaries.
+the installation of open source software. The Cyclus project uses Conda to
+distribute pre-built Cyclus and Cycamore binaries.
 
 The **Debian package manager** simplifies the installation of open source
 software. It contains all of the files required to use a specific software, as
 well as variety of information about it: maintainer, description, version,
-dependencies (other software or libraries required to use it).  The |Cyclus|
-team provides pre-built |Cyclus| and Cycamore Debian packages to simplify
+dependencies (other software or libraries required to use it).  The Cyclus
+team provides pre-built Cyclus and Cycamore Debian packages to simplify
 installation for the user. These packages are available for LTS Ubuntu version
 14.04 and 16.04 (though they may also work on other Linux systems).
 
