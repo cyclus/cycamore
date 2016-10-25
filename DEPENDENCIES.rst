@@ -28,7 +28,9 @@ Package                Minimum Version
 Installing Dependencies
 ***********************
 
-The Cyclus Cores supports two binary installations:
+The Cyclus Cores supports two binary installation options:
+
+.. website_include_binary_start
 
 #. `Conda`_ (Linux and Mac OSX)
 #. `Debian package manager`_ (Linux only)
@@ -46,13 +48,20 @@ team provides pre-built |Cyclus| and Cycamore Debian packages to simplify
 installation for the user. These packages are available for LTS Ubuntu version
 14.04 and 16.04 (though they may also work on other Linux systems).
 
+.. website_include_binary_end
+
+.. website_include_conda_start
+
 *********************
 Conda
 *********************
 
+
 1. If you don't have Conda, start by installing the Python 3.x version of
    Anaconda_ (or miniconda_ for a more lightweight choice) to prepare it for
    Cyclus.
+
+.. website_include_conda_end
 
 2. Once you have conda installed, installing Cyclus straightforward.
 
@@ -60,15 +69,19 @@ Conda
 
       $ conda install -c conda-forge cyclus
 
+
+.. website_include_deb_start
+
 **********************
 Debian Package Manager
 **********************
+
 
 This installation procedure assumes that you are using Ubuntu (LTS) 14.04 or
 16.04. This method has only been tested on those Ubuntu versions. This
 installation procedure also assumes that you have root access to you computer.
 
-#. Install |Cyclus| dependencies:
+#. Install Cyclus dependencies:
 
    .. code-block:: bash 
 
@@ -79,7 +92,7 @@ installation procedure also assumes that you have root access to you computer.
    If you need/want more information about dependency installation please read
    `dependency installation documentation <put_a_link_there>`_.
 
-#. Download the |Cyclus| Debian installation package corresponding to your
+#. Download the Cyclus Core Debian installation package corresponding to your
    Ubuntu version (`14.04
    <http://dory.fuelcycle.org:4848/ubuntu.14.04/cyclus_1.4.0.deb>`_ or
    `16.04
@@ -91,6 +104,7 @@ installation procedure also assumes that you have root access to you computer.
 
      $ sudo dpkg -i cyclus_1.4.0.deb
 
+.. website_include_deb_end
 
 .. _`Cyclus Homepage`: http://fuelcycle.org/
 .. _`Cyclus User Guide`: http://fuelcycle.org/user/index.html
