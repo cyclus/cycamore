@@ -1,6 +1,6 @@
-###########
+###########################
 Cycamore Installation Guide
-###########
+###########################
 
 Cycamore uses the CMake cross platform bailed-generator as a build system. To
 simplify the usage of cmake to build Cycamore from source, a python script is
@@ -58,7 +58,8 @@ If you successfully followed the instructions above, then the Cycamore library
 has been generated and placed in the  ``.local/`` in your home directory. 
 
 Custom Cycamore installation
----------------------------
+----------------------------
+
 The installation using the install script can be customized using the following
 flag:
 
