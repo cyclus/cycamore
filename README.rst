@@ -50,12 +50,11 @@ Package                Minimum Version
 
 There are a number of ways to install the Cyclus core:
 
-  - To install from source code, see the `Cyclus Core repository
-    <http://github.com/cyclus/cyclus>`_
+- To install from source code, see the `Cyclus Core repository
+  <http://github.com/cyclus/cyclus>`_
 
-  - To install from a binary distribution, see the instructions for
-    `Installing Cyclus from Binaries
-    <DEPENDENCIES.rst>`_
+- To install from a binary distribution, see the instructions for
+  `Installing Cyclus from Binaries <DEPENDENCIES.rst>`_
 
 ******************************
 Quick Cycamore Installation
