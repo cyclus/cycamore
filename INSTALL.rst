@@ -1,6 +1,6 @@
-###########
+###########################
 Cycamore Installation Guide
-###########
+###########################
 
 Cycamore uses the CMake cross platform bailed-generator as a build system. To
 simplify the usage of cmake to build Cycamore from source, a python script is
@@ -8,9 +8,9 @@ provided with the source.
 
 .. contents:: Table of Contents
 
-******************************
+************
 Dependencies
-******************************
+************
 
 A full list of the Cycamore package dependencies is shown below:
 
@@ -35,9 +35,9 @@ installation from a tarball. Please wisit our `additional dependencies
 instruction <DEPENDENCIES.rst>`_.
 
 
-******************************
+************
 Installation
-******************************
+************
 .. website_include_start
 
 Before going further on the installation procedure be sure you have installed
@@ -45,7 +45,7 @@ all the required dependencies listed above.
 
 
 Default installation
-------------------------
+--------------------
 
 Run the install script:
 
@@ -58,7 +58,7 @@ If you successfully followed the instructions above, then the Cycamore library
 has been generated and placed in the  ``.local/`` in your home directory. 
 
 Custom Cycamore installation
----------------------------
+----------------------------
 The installation using the install script can be customized using the following
 flag:
 
@@ -176,9 +176,9 @@ All variables can be set using ``-DMY_VARIABLE=MY_VARIABLES_VALUE``.
 
 .. website_include_end
 
-******************************
+*************
 Running Tests
-******************************
+*************
 
 Installing Cycamore will also install a test driver (i.e., an executable of all of
 our tests). We strongly recommend after installing a fresh install of Cycamore, or

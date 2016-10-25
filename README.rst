@@ -57,9 +57,9 @@ There are a number of ways to install the Cyclus core:
     `Installing Cyclus from Binaries
     <DEPENDENCIES.rst>`_
 
-******************************
+***************************
 Quick Cycamore Installation
-******************************
+***************************
 
 Assuming you have the dependencies installed correctly, installing Cyclus using
 github is fairly straightforward:
@@ -76,9 +76,9 @@ For more detailed installation procedure, and/or custom installation please
 refer to the `INSTALLATION guide <INSTALL.rst>`_.
 
 
-******************************
+*************
 Running Tests
-******************************
+*************
 
 Installing Cycamore will also install a test driver (i.e., an executable of all of
 our tests). You can run the tests yourself via:
@@ -87,9 +87,9 @@ our tests). You can run the tests yourself via:
 
     $ cycamore_unit_tests
 
-******************************
+************
 Contributing
-******************************
+************
 
 We happily welcome new developers into the Cyclus Developer Team. If you are willing
 to contribute into Cyclus, please follow this procedure:
