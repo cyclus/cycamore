@@ -112,4 +112,4 @@ installation procedure also assumes that you have root access to you computer.
 .. _`Cycamore Repo`: https://github.com/cyclus/cycamore
 .. _Anaconda: https://www.continuum.io/downloads
 .. _miniconda: http://conda.pydata.org/miniconda.html
-.. _`dependency installation documentation`: https://github.com/cyclus/cyclus/DEPENDENCIES.rst
+.. _`dependency installation documentation`: https://github.com/cyclus/cyclus/blob/develop/DEPENDENCIES.rst
