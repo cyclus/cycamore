@@ -90,7 +90,7 @@ installation procedure also assumes that you have root access to you computer.
    WARNING: This dependency list is ONLY correct for the debian binary
    installation, additional dependencies are required for to install from source.
    If you need/want more information about dependency installation please read the
-   `dependency installation documentation <DEPENDENCIES.rst>`_.
+   `dependency installation documentation`_.
 
 #. Download the Cyclus Core Debian installation package corresponding to your
    Ubuntu version (`14.04
@@ -112,4 +112,4 @@ installation procedure also assumes that you have root access to you computer.
 .. _`Cycamore Repo`: https://github.com/cyclus/cycamore
 .. _Anaconda: https://www.continuum.io/downloads
 .. _miniconda: http://conda.pydata.org/miniconda.html
-
+.. _`dependency installation documentation`: https://github.com/cyclus/cyclus/DEPENDENCIES.rst
