@@ -28,7 +28,7 @@ Package                Minimum Version
 Installing Dependencies
 ***********************
 
-The Cyclus Cores supports two binary installation options:
+The Cyclus Core supports two binary installation options:
 
 .. website_include_binary_start
 
@@ -52,9 +52,9 @@ installation for the user. These packages are available for LTS Ubuntu version
 
 .. website_include_conda_start
 
-*********************
+~~~~~~~~~~~~~~~~~~~~~
 Conda
-*********************
+~~~~~~~~~~~~~~~~~~~~~
 
 
 1. If you don't have Conda, start by installing the Python 3.x version of
@@ -72,9 +72,9 @@ Conda
 
 .. website_include_deb_start
 
-**********************
+~~~~~~~~~~~~~~~~~~~~~~
 Debian Package Manager
-**********************
+~~~~~~~~~~~~~~~~~~~~~~
 
 
 This installation procedure assumes that you are using Ubuntu (LTS) 14.04 or
