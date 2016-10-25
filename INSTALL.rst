@@ -1,6 +1,6 @@
-###########
+###########################
 Cycamore Installation Guide
-###########
+###########################
 
 Cycamore uses the CMake cross platform bailed-generator as a build system. To
 simplify the usage of cmake to build Cycamore from source, a python script is
@@ -8,11 +8,11 @@ provided with the source.
 
 .. contents:: Table of Contents
 
-******************************
+************
 Dependencies
-******************************
+************
 
-A full list of the Cycamore package dependencies is shown below:
+Cycamore's only dependency is the Cyclus Core.
 
 ====================   ==================
 Package                Minimum Version
@@ -20,19 +20,13 @@ Package                Minimum Version
 `Cyclus`               1.4
 ====================   ==================
 
-You can find the Cyclus Core which is require to use the Cycamore additionnal
-Modelus. You can download Cyclus from the git repository.
-(`GitHub Cyclus Repository <https://github.com/cyclus/cyclus>`_):
+There are a number of ways to install the Cyclus core:
 
-- Clone the Cyclus Repo: ``git clone
-  https://github.com/cyclus/cyclus.git``,
+- To install from source code, see the `Cyclus Core repository
+  <http://github.com/cyclus/cyclus>`_
 
-- Install Cyclus  in ``~/.local/``:
-  ``python install.py`` from the Cyclus folder.
-
-We also provide installation instruction using Conda, Deb, as well as source
-installation from a tarball. Please wisit our `additional dependencies
-instruction <DEPENDENCIES.rst>`_.
+- To install from a binary distribution, see the instructions for
+  `Installing Cyclus from Binaries <DEPENDENCIES.rst>`_
 
 
 ******************************
@@ -58,7 +52,8 @@ If you successfully followed the instructions above, then the Cycamore library
 has been generated and placed in the  ``.local/`` in your home directory. 
 
 Custom Cycamore installation
----------------------------
+----------------------------
+
 The installation using the install script can be customized using the following
 flag:
 
