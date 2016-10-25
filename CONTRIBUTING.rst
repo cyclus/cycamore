@@ -20,6 +20,12 @@ General Notes
 
 * See the `An Example`_ section below for a full walk through
 
+* In addition to a review of the algorithmic and logical changes in your
+  contribution, it will be reviewed on a variety of levels including such
+  things as style, documentation, tests, etc.  While such review can appear
+  tedious, these aspects are important for the long term success of the
+  project.
+
 Issuing a Pull Request
 ======================
 
@@ -45,7 +51,23 @@ Reviewing a Pull Request
 * Click the green "Merge Pull Request" button
 
   * Note: if the button is not available, the requester needs to merge or rebase
-    from the current HEAD of the blessed "develop" (or "master") branch.
+    from the current HEAD of the blessed's "develop" (or "master") branch
+
+Running Tests
+=============
+
+You can run the tests yourself using:
+  - for Cyclus:
+
+    .. code-block:: bash
+
+      $ cyclus_unit_tests
+
+  - for Cycamore:
+    
+    .. code-block:: bash
+
+      $ cycamore_unit_tests
 
 Cautions
 ========
@@ -55,7 +77,7 @@ Cautions
 
 * **DO NOT** rebase any commits that have been pulled/pushed anywhere else other
   than your own fork (especially if those commits have been integrated into the
-  blessed repository.  You should NEVER rebase commits that are a part of the
+  blessed repository).  You should NEVER rebase commits that are a part of the
   'master' branch. *If you do, we will never, ever accept your pull request*.
 
 An Example
@@ -64,9 +86,8 @@ An Example
 Introduction
 ------------
 
-As this type of workflow can be complicated to new programmers as well as those
-accustomed to SVN, an example is provided.
-
+As this type of workflow can be complicated to converts from SVN and very complicated
+for brand new programmers, an example is provided.
 
 For the sake of simplicity, let us assume that we want a single "sandbox" branch
 in which we would like to work, i.e. where we can store all of our work that may not
@@ -85,7 +106,7 @@ Acquiring a Fork of the Cyclus Repository
 
 A fork is *your* copy of Cyclus. Github offers an excellent
 `tutorial <http://help.github.com/fork-a-repo/>`_ on how to set one up. The rest of this
-example assumes you have set up the "upstream" repository as cyclus/core. Note that git
+example assumes you have set up the "upstream" repository as ``cyclus/core``. Note that git
 refers to your fork as "origin".
 
 First, let's make our "work" branch:
@@ -137,14 +158,15 @@ Perhaps you have found Nirvana. In any case, you've performed the final commit t
 so it's time to make a pull request online and wait for our developer friends to
 review and accept it.
 
-Sometimes, your pull request will be closed by the reviewer until further
-changes are made to appease the reviewer's concerns. This may be frustrating,
-but please act rationally, discuss the issues on the GitHub space made for your
-pull request, consult the `style guide <http://cyclus.github.com/devdoc/style_guide.html>`_,
-email the developer listhost for further advice, and make changes to your topic branch
-accordingly. The pull request will be updated with those changes when you push them
-to your fork.  When you think your request is ready for another review, you can
-reopen the review yourself with the button made available to you.
+Sometimes, your pull request will be held by the reviewer until further changes
+are made to appease the reviewer's concerns. This may be frustrating, but please
+act rationally, discuss the issues on the GitHub space made for your pull
+request, consult the `style guide
+<http://cyclus.github.com/devdoc/style_guide.html>`_, email the developer
+listhost for further advice, and make changes to your topic branch accordingly.
+The pull request will be updated with those changes when you push them to your
+fork.  When you think your request is ready for another review, you can reopen
+the review yourself with the button made available to you.
 
 See also
 --------

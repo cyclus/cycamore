@@ -6,8 +6,15 @@ Additional modules for the Cyclus nuclear fuel cycle simulator from the
 University of Wisconsin - Madison are intended to support innovative
 fuel cycle simulations with the Cyclus fuel cycle simulator.
 
-Cycamore requires Cyclus. If you haven't yet installed Cyclus please check out
-the `Cyclus website <http://fuelcycle.org/>`_ or the `Cyclus repository <https://github.com/cyclus/cyclus>`_.
+This README is intended primarily for those who intend to contribute to the
+development of Cycamore archetypes.  If you are interested in Cyclus as a user
+or in developing your own Cyclus archetyes, you may want to consult `Getting
+Started with Cyclus <http://fuelcycle.org/user/install.html>`_.
+
+This README provides basic information about:
+ - the dependency required by Cycamore
+ - installation of Cycamore from the command line
+ - how to run Cycamore unit tests
 
 Although Cycamore is meant to enable a basic fuel cycle simulation, you may want
 more functionality than it offers.  Third party modules can also be installed
@@ -29,13 +36,11 @@ a list of `contributed modules <http://fuelcycle.org/user/index.html#third-party
 .. contents:: Table of Contents
 
 
-******************************
+************
 Dependencies
-******************************
+************
 
-In order to facilitate future compatibility with multiple platforms,
-Cyclus is built using `CMake`_. A full list of the Cycamore package
-dependencies is shown below:
+Cycamore's only dependency is the Cyclus Core.
 
 ====================   ==================
 Package                Minimum Version
@@ -43,21 +48,14 @@ Package                Minimum Version
 `Cyclus`               1.4
 ====================   ==================
 
+There are a number of ways to install the Cyclus core:
 
-You can find the Cyclus Core which is required to use the Cycamore additional
-Modules. You can download Cyclus from the git repository.
-(`GitHub Cyclus Repository <https://github.com/cyclus/cyclus>`_):
+  - To install from source code, see the `Cyclus Core repository
+    <http://github.com/cyclus/cyclus>`_
 
-- Clone the Cyclus Repo: ``git clone
-  https://github.com/cyclus/cyclus.git``,
-
-- Install Cyclus  in ``~/.local/``:
-  ``python install.py`` from the Cyclus folder.
-
-We also provide installation instructions using Conda, Deb, as well as source
-installation from a tarball. Please wisit our `additionnal dependencies
-instructions <DEPENDENCIES.rst>`_.
-
+  - To install from a binary distribution, see the instructions for
+    `Installing Cyclus from Binaries
+    <DEPENDENCIES.rst>`_
 
 ******************************
 Quick Cycamore Installation
