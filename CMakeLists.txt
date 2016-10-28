@@ -13,6 +13,15 @@ ENDIF()
 # This project name is cycamore.
 PROJECT(CYCAMORE)
 
+# check for and enable c++11 support (required for cyclus)
+INCLUDE(CheckCXXCompilerFlag)
+CHECK_CXX_COMPILER_FLAG("-std=c++11" COMPILER_SUPPORTS_CXX11)
+IF(COMPILER_SUPPORTS_CXX11)
+    SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++11")
+ELSE()
+    MESSAGE(STATUS "The compiler ${CMAKE_CXX_COMPILER} has no C++11 support. Please use a different C++ compiler.")
+ENDIF()
+
 # quiets fortify_source warnings when not compiling with optimizations
 # in linux distros where compilers were compiled with fortify_source enabled by
 # default (e.g. Arch linux).
@@ -71,17 +80,21 @@ IF(NOT CYCLUS_DOC_ONLY)
     SET(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} ${CYCAMORE_SOURCE_DIR}/cmake)
     MESSAGE("CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH}")
 
-    # Include macros
-    INCLUDE(UseCyclus)
-
     # Find cyclus
     FIND_PACKAGE(Cyclus REQUIRED)
-    SET(CYCAMORE_INCLUDE_DIR ${CYCAMORE_INCLUDE_DIR} ${CYCLUS_CORE_INCLUDE_DIR})
+    SET(
+      CYCAMORE_INCLUDE_DIRS 
+      ${CYCAMORE_INCLUDE_DIRS} 
+      ${CYCLUS_CORE_INCLUDE_DIR} # INSTALL_PATH/include/cyclus
+      )
     SET(LIBS ${LIBS} ${CYCLUS_CORE_LIBRARIES})
+
+    # Include macros installed with cyclus core
+    INCLUDE(UseCyclus)
 
     # Find LibXML++ and dependencies
     FIND_PACKAGE(LibXML++ REQUIRED)
-    SET(CYCAMORE_INCLUDE_DIR ${CYCAMORE_INCLUDE_DIR} ${LibXML++_INCLUDE_DIR} ${Glibmm_INCLUDE_DIRS} ${LibXML++Config_INCLUDE_DIR})
+    SET(CYCAMORE_INCLUDE_DIRS ${CYCAMORE_INCLUDE_DIRS} ${LibXML++_INCLUDE_DIR} ${Glibmm_INCLUDE_DIRS} ${LibXML++Config_INCLUDE_DIR})
     SET(LIBS ${LIBS} ${LibXML++_LIBRARIES})
     MESSAGE("--LIBS: ${LIBS}")
 
@@ -90,12 +103,22 @@ IF(NOT CYCLUS_DOC_ONLY)
     # Include the boost header files, system, and filesystem libraries
     SET(Boost_USE_STATIC_LIBS       OFF)
     SET(Boost_USE_STATIC_RUNTIME    OFF)
-    FIND_PACKAGE(Boost COMPONENTS filesystem system REQUIRED)
-    SET(CYCAMORE_INCLUDE_DIR ${CYCAMORE_INCLUDE_DIR} ${Boost_INCLUDE_DIR})
+    #FIND_PACKAGE(Boost COMPONENTS filesystem system REQUIRED)
+    FIND_PACKAGE( Boost 1.46.1 COMPONENTS filesystem system REQUIRED)
+    MESSAGE("--    Boost Root: ${Boost_ROOT}")
+    MESSAGE("--    Boost Include directory: ${Boost_INCLUDE_DIR}")
+    MESSAGE("--    Boost Library directories: ${Boost_LIBRARY_DIRS}")
+    SET(LIBS ${LIBS} ${Boost_SYSTEM_LIBRARY})
+    MESSAGE("--    Boost System location: ${Boost_SYSTEM_LIBRARY}")
+    SET(LIBS ${LIBS} ${Boost_FILESYSTEM_LIBRARY})
+    MESSAGE("--    Boost Filesystem location: ${Boost_FILESYSTEM_LIBRARY}")
+    SET(CYCAMORE_INCLUDE_DIRS ${CYCAMORE_INCLUDE_DIRS} ${Boost_INCLUDE_DIR})
     SET(LIBS ${LIBS} ${Boost_FILESYSTEM_LIBRARY})
     SET(LIBS ${LIBS} ${Boost_SYSTEM_LIBRARY})
 
     # find lapack and link to it
+    # note there is no include directory variable:
+    # http://www.cmake.org/cmake/help/v3.0/module/FindLAPACK.html
     FIND_PACKAGE(LAPACK REQUIRED)
     set(LIBS ${LIBS} ${LAPACK_LIBRARIES})
     MESSAGE("\tFound LAPACK Libraries: ${LAPACK_LIBRARIES}")
@@ -103,6 +126,7 @@ IF(NOT CYCLUS_DOC_ONLY)
     # Find HDF5
     FIND_PACKAGE(HDF5 REQUIRED)
     ADD_DEFINITIONS(${HDF5_DEFINITIONS})
+    SET(CYCAMORE_INCLUDE_DIRS ${CYCAMORE_INCLUDE_DIRS} ${HDF5_INCLUDE_DIR})
     set(LIBS ${LIBS} ${HDF5_LIBRARIES})
     MESSAGE("--    HDF5 Root: ${HDF5_ROOT}")
     MESSAGE("--    HDF5 Include directory: ${HDF5_INCLUDE_DIR}")
@@ -111,19 +135,20 @@ IF(NOT CYCLUS_DOC_ONLY)
 
     # find coin and link to it
     FIND_PACKAGE(COIN REQUIRED)
+    SET(CYCAMORE_INCLUDE_DIRS ${CYCAMORE_INCLUDE_DIRS} ${COIN_INCLUDE_DIRS})
     set(LIBS ${LIBS} ${COIN_LIBRARIES})
+    MESSAGE("--    COIN Root: ${COIN_ROOT}")
+    MESSAGE("--    COIN Include directories: ${COIN_INCLUDE_DIRS}")
+    MESSAGE("--    COIN Libraries: ${COIN_LIBRARIES}")
 
     FIND_PACKAGE( Sqlite3 REQUIRED )
+    SET(CYCAMORE_INCLUDE_DIRS ${CYCAMORE_INCLUDE_DIRS} ${SQLITE3_INCLUDE_DIR})
     SET(LIBS ${LIBS} ${SQLITE3_LIBRARIES})
-
-    # include the agent directories
-    SET(CYCAMORE_INCLUDE_DIR ${CYCAMORE_INCLUDE_DIR} tests
-        ${CYCLUS_CORE_INCLUDE_DIR}/..)
+    MESSAGE("--    SQLITE3 Include directories: ${SQLITE3_INCLUDE_DIR}")
+    MESSAGE("--    SQLITE3 Libraries: ${SQLITE3_LIBRARIES}")
 
     # include all the directories we just found
-    INCLUDE_DIRECTORIES(${CYCAMORE_INCLUDE_DIR}
-        ${COIN_INCLUDE_DIRS})
-
+    INCLUDE_DIRECTORIES(${CYCAMORE_INCLUDE_DIRS})
 
     # ------------------------- Add the Agents -----------------------------------
     ADD_SUBDIRECTORY(src)
@@ -134,12 +159,6 @@ IF(NOT CYCLUS_DOC_ONLY)
     SET(GENERATED_TEST_LIST "" CACHE INTERNAL "")
     SET(GENERATED_FILTER_LIST "" CACHE INTERNAL "")
     SET(GENERATED_TEST_SOURCE_LIST "" CACHE INTERNAL "")
-
-    # The gtest include file directories.
-    SET(GTEST_INCLUDE_DIRS "${CYCAMORE_INCLUDE_DIR}")
-
-    # Alerts CMake to any tests we need to worry about
-    INCLUDE_DIRECTORIES(${GTEST_INCLUDE_DIRS})
 
     # Create an executable for all the gtests
     # Options for testing
@@ -211,32 +230,83 @@ IF(NOT CYCLUS_DOC_ONLY)
     #  COMPONENT data
     # )
 
-    # Here we set some components for installation with cpack
-    SET(CPACK_COMPONENTS_ALL cycamore testing libraries data core)
 
+    ##############################################################################################
+    ################################## begin uninstall target ####################################
+    ##############################################################################################
+ 
+    CONFIGURE_FILE(
+        "${CMAKE_CURRENT_SOURCE_DIR}/config/cmake_uninstall.cmake.in"
+        "${CMAKE_CURRENT_BINARY_DIR}/cmake_uninstall.cmake"
+        IMMEDIATE @ONLY
+        )
+
+    ADD_CUSTOM_TARGET(uninstall
+        COMMAND ${CMAKE_COMMAND} -P ${CMAKE_CURRENT_BINARY_DIR}/cmake_uninstall.cmake)
+
+    ##############################################################################################
+    ################################### end uninstall target #####################################
+    ##############################################################################################
+ 
+    ##############################################################################################
+    ####################################### begin cpack ##########################################
+    ##############################################################################################
+    
+    
     # Here's where we package it with CPack
     SET(CPACK_PACKAGE_DESCRIPTION_SUMMARY "Cycamore : The Cyclus Additional Module Repository.")
+    
+    # Here we set some components for installation with cpack
+    SET(CPACK_COMPONENTS_ALL cycamore testing libraries data core)
+    SET(CPACK_GENERATOR "DEB")
+
+    # Organisation
     SET(CPACK_DEBIAN_PACKAGE_MAINTAINER "CNERG, UW-Madison") #required
     SET(CPACK_PACKAGE_VENDOR "CNERG, UW-Madison")
     SET(CPACK_PACKAGE_DESCRIPTION_FILE "${CMAKE_CURRENT_SOURCE_DIR}/README.rst")
     SET(CPACK_RESOURCE_FILE_LICENSE "${CMAKE_CURRENT_SOURCE_DIR}/LICENSE.rst")
+    
+    # Version
     SET(CPACK_PACKAGE_VERSION_MAJOR "1")
-    SET(CPACK_PACKAGE_VERSION_MINOR "0")
-    #SET(CPACK_PACKAGE_VERSION_PATCH "0") # should use commit number here  ?
-    SET(CPACK_PACKAGE_INSTALL_DIRECTORY "cycamore${CPACK_VERSION_MAJOR}.${CPACK_VERSION_MINOR}")
-    SET(CPACK_PACKAGE_NAME "${CMAKE_PROJECT_NAME}")
+    SET(CPACK_PACKAGE_VERSION_MINOR "4")
+    SET(CPACK_PACKAGE_VERSION_PATCH "0")
+    
+    # Dependencies
+    SET(CPACK_DEBIAN_PACKAGE_DEPENDS "cyclus (>= 1.4.0)")
+    MESSAGE("CPACK_DEBIAN_PACKAGE_DEPENDS ${CPACK_DEBIAN_PACKAGE_DEPENDS}")
+    
+    # Names
+    SET(CPACK_PACKAGE_NAME "cycamore")
+    SET(CPACK_PACKAGE_INSTALL_DIRECTORY "cycamore_${CPACK_PACKAGE_VERSION_MAJOR}")
+    SET(CPACK_PACKAGE_INSTALL_DIRECTORY "${CPACK_PACKAGE_INSTALL_DIRECTORY}.${CPACK_PACKAGE_VERSION_MINOR}")
+    SET(CPACK_PACKAGE_INSTALL_DIRECTORY "${CPACK_PACKAGE_INSTALL_DIRECTORY}.${CPACK_PACKAGE_VERSION_PATCH}")
+    
+    SET(CPACK_PACKAGE_FILE_NAME "${CPACK_PACKAGE_NAME}")
+    SET(CPACK_PACKAGE_FILE_NAME "${CPACK_PACKAGE_FILE_NAME}_${CPACK_PACKAGE_VERSION_MAJOR}")
+    SET(CPACK_PACKAGE_FILE_NAME "${CPACK_PACKAGE_FILE_NAME}.${CPACK_PACKAGE_VERSION_MINOR}")
+    SET(CPACK_PACKAGE_FILE_NAME "${CPACK_PACKAGE_FILE_NAME}.${CPACK_PACKAGE_VERSION_PATCH}")
+    SET(CPACK_PACKAGE_FILE_NAME "${CPACK_PACKAGE_FILE_NAME}_${CPACK_HASH_NAME}")
+    SET(CPACK_PACKAGE_FILE_NAME "${CPACK_PACKAGE_FILE_NAME}_${CPACK_SYSTEM_NAME}")
 
-    CONFIGURE_FILE("${CYCAMORE_SOURCE_DIR}/cmake/CycamoreCPackOptions.cmake.in"
-        "${CYCAMORE_BINARY_DIR}/cmake/CycamoreCPackOptions.cmake" @ONLY)
+    # Configuration
+    SET(CPACK_INCLUDE_TOPLEVEL_DIRECTORY "1")
+    SET(CPACK_DEBIAN_PACKAGE_SHLIBDEPS OFF)
+    CONFIGURE_FILE(
+      "${CYCAMORE_SOURCE_DIR}/cmake/CycamoreCPackOptions.cmake.in"
+      "${CYCAMORE_BINARY_DIR}/cmake/CycamoreCPackOptions.cmake" @ONLY
+      )
     SET(CPACK_PROJECT_CONFIG_FILE "${CYCAMORE_BINARY_DIR}/cmake/CycamoreCPackOptions.cmake")
     SET(CPACK_PACKAGE_EXECUTABLES "cycamore" "cycamore_unit_tests")
-
 
     INCLUDE(CPack)
 
     SET(ROOT_DIR ${CYCLUS_ROOT_DIR})
     SET(PROJ_DIR ${PROJECT_BINARY_DIR})
     SET(CORE_SHARE_DIR ${CYCLUS_CORE_SHARE_DIR})
+    
+    ##############################################################################################
+    ######################################## end cpack ###########################################
+    ##############################################################################################
 
 ENDIF(NOT CYCLUS_DOC_ONLY)
 
@@ -251,12 +321,3 @@ IF(DOXYGEN_FOUND)
 ELSE(DOXYGEN_FOUND)
     MESSAGE(STATUS "WARNING: Doxygen not found - doc won't be created")
 ENDIF(DOXYGEN_FOUND)
-
-# uninstall target
-configure_file(
-    "${CMAKE_CURRENT_SOURCE_DIR}/config/cmake_uninstall.cmake.in"
-    "${CMAKE_CURRENT_BINARY_DIR}/cmake_uninstall.cmake"
-    IMMEDIATE @ONLY)
-
-add_custom_target(uninstall
-    COMMAND ${CMAKE_COMMAND} -P ${CMAKE_CURRENT_BINARY_DIR}/cmake_uninstall.cmake)

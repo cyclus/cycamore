@@ -4,6 +4,7 @@
 #include <string>
 
 #include "cyclus.h"
+#include "cycamore_version.h"
 
 namespace cycamore {
 
@@ -50,6 +51,8 @@ class NatUConverter : public cyclus::Converter<cyclus::Material> {
   NatUConverter(double feed_commod, double tails) : feed_(feed_commod),
     tails_(tails) {}
   virtual ~NatUConverter() {}
+
+  virtual std::string version() { return CYCAMORE_VERSION; }
 
   /// @brief provides a conversion for the amount of natural Uranium required
   virtual double convert(
@@ -154,6 +157,8 @@ class Enrichment : public cyclus::Facility {
 
   ///     Destructor for the Enrichment class
   virtual ~Enrichment();
+
+  virtual std::string version() { return CYCAMORE_VERSION; }
 
   #pragma cyclus
 
@@ -267,13 +272,7 @@ class Enrichment : public cyclus::Facility {
     "uitype": "incommodity" \
   }
   std::string feed_commod;
-  #pragma cyclus var { \
-    "tooltip": "product commodity",					\
-    "doc": "product commodity that the enrichment facility generates",	 \
-    "uilabel": "Product Commodity",                                     \
-    "uitype": "outcommodity" \
-  }
-  std::string product_commod;
+  
   #pragma cyclus var { \
     "tooltip": "feed recipe",						\
     "doc": "recipe for enrichment facility feed commodity",		\
@@ -281,28 +280,39 @@ class Enrichment : public cyclus::Facility {
     "uitype": "recipe" \
   }
   std::string feed_recipe;
+  
   #pragma cyclus var { \
+    "tooltip": "product commodity",					\
+    "doc": "product commodity that the enrichment facility generates",	 \
+    "uilabel": "Product Commodity",                                     \
+    "uitype": "outcommodity" \
+  }
+  std::string product_commod;
+  
+  #pragma cyclus var {							\
     "tooltip": "tails commodity",					\
     "doc": "tails commodity supplied by enrichment facility",		\
     "uilabel": "Tails Commodity",                                   \
     "uitype": "outcommodity" \
   }
   std::string tails_commod;
-  #pragma cyclus var { \
-    "default": 0.03, "tooltip": "tails assay",				\
+
+  #pragma cyclus var {							\
+    "default": 0.003, "tooltip": "tails assay",				\
     "uilabel": "Tails Assay",                               \
     "doc": "tails assay from the enrichment process",       \
   }
   double tails_assay;
-  #pragma cyclus var { \
-    "default": 1e299,						       \
-    "tooltip": "SWU capacity (kgSWU/month)",			       \
-    "uilabel": "SWU Capacity",                                         \
-    "doc": "separative work unit (SWU) capacity of enrichment "	       \
-           "facility (kgSWU/month) "                                         \
+  
+  #pragma cyclus var {							\
+    "default": 0, "tooltip": "initial uranium reserves (kg)",		\
+    "uilabel": "Initial Feed Inventory",				\
+    "doc": "amount of natural uranium stored at the enrichment "	\
+    "facility at the beginning of the simulation (kg)"			\
   }
-  double swu_capacity;
-  #pragma cyclus var { \
+  double initial_feed;
+
+  #pragma cyclus var {							\
     "default": 1e299, "tooltip": "max inventory of feed material (kg)", \
     "uilabel": "Maximum Feed Inventory",                                \
     "doc": "maximum total inventory of natural uranium in "		\
@@ -326,22 +336,24 @@ class Enrichment : public cyclus::Facility {
   }
   double max_enrich;
 
-  #pragma cyclus var {							\
-    "default": 0, "tooltip": "initial uranium reserves (kg)",		\
-    "uilabel": "Initial Feed Inventory", \
-    "doc": "amount of natural uranium stored at the enrichment "       \
-           "facility at the beginning of the simulation (kg)"		\
-  }
-  double initial_feed;
   #pragma cyclus var { \
     "default": 1,		       \
     "userlevel": 10,							\
-    "tooltip": "order material requests by U235 content",		\
+    "tooltip": "Rank Material Requests by U235 Content",		\
     "uilabel": "Prefer feed with higher U235 content", \
     "doc": "turn on preference ordering for input material "		\
            "so that EF chooses higher U235 content first" \
   }
   bool order_prefs;
+
+  #pragma cyclus var {						       \
+    "default": 1e299,						       \
+    "tooltip": "SWU capacity (kgSWU/month)",			       \
+    "uilabel": "SWU Capacity",                                         \
+    "doc": "separative work unit (SWU) capacity of enrichment "		\
+           "facility (kgSWU/timestep) "                                     \
+  }
+  double swu_capacity;
 
   double current_swu_capacity;
 

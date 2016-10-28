@@ -122,6 +122,7 @@ TEST(FuelFabTests, CosiWeight) {
 }
 
 TEST(FuelFabTests, CosiWeight_Mixed) {
+  cyclus::Env::SetNucDataPath();
   double w_fill = CosiWeight(c_natu(), "thermal");
   double w_fiss = CosiWeight(c_pustream(), "thermal");
   double w_target = CosiWeight(c_uox(), "thermal");
@@ -141,6 +142,7 @@ TEST(FuelFabTests, CosiWeight_Mixed) {
 }
 
 TEST(FuelFabTests, HighFrac) {
+  cyclus::Env::SetNucDataPath();
   double w_fill = CosiWeight(c_natu(), "thermal");
   double w_fiss = CosiWeight(c_pustream(), "thermal");
   double w_target = CosiWeight(c_uox(), "thermal");
@@ -154,6 +156,7 @@ TEST(FuelFabTests, HighFrac) {
 }
 
 TEST(FuelFabTests, LowFrac) {
+  cyclus::Env::SetNucDataPath();
   double w_fill = CosiWeight(c_natu(), "thermal");
   double w_fiss = CosiWeight(c_pustream(), "thermal");
   double w_target = CosiWeight(c_uox(), "thermal");
@@ -167,6 +170,7 @@ TEST(FuelFabTests, LowFrac) {
 }
 
 TEST(FuelFabTests, ValidWeights) {
+  cyclus::Env::SetNucDataPath();
   double w_fill = CosiWeight(c_natu(), "thermal");
   double w_fiss = CosiWeight(c_pustream(), "thermal");
   double w_target = CosiWeight(c_uox(), "thermal");
@@ -263,7 +267,7 @@ TEST(FuelFabTests, FissStreamPrefs) {
      "<fill_size>1</fill_size>"
      ""
      "<fiss_commods>      <val>stream1</val> <val>stream2</val> <val>stream3</val> </fiss_commods>"
-     "<fiss_commod_prefs> <val>1.0</val>     <val>0.0</val>     <val>2.0</val> </fiss_commod_prefs>"
+     "<fiss_commod_prefs> <val>1.0</val>     <val>0.1</val>     <val>2.0</val> </fiss_commod_prefs>"
      "<fiss_size>1.5</fiss_size>"
      ""
      "<outcommod>dummyout</outcommod>"
@@ -539,6 +543,7 @@ TEST(FuelFabTests, CorrectMixing) {
 // fuel is requested requiring more filler than is available with plenty of
 // fissile.
 TEST(FuelFabTests, FillConstrained) {
+  cyclus::Env::SetNucDataPath();
   std::string config = 
      "<fill_commods> <val>natu</val> </fill_commods>"
      "<fill_recipe>natu</fill_recipe>"
@@ -584,6 +589,7 @@ TEST(FuelFabTests, FillConstrained) {
 // fuel is requested requiring more fissile material than is available with
 // plenty of filler.
 TEST(FuelFabTests, FissConstrained) {
+  cyclus::Env::SetNucDataPath();
   std::string config = 
      "<fill_commods> <val>natu</val> </fill_commods>"
      "<fill_recipe>natu</fill_recipe>"
@@ -733,6 +739,7 @@ TEST(FuelFabTests, SwapTopup_ZeroFill) {
 // the fiss stream not having a high enough weight (so we must use topup with
 // fiss).
 TEST(FuelFabTests, SwapTopup_TopupConstrained) {
+  cyclus::Env::SetNucDataPath();
   std::string config = 
      "<fill_commods> <val>natu</val> </fill_commods>"
      "<fill_recipe>natu</fill_recipe>"
@@ -787,6 +794,7 @@ TEST(FuelFabTests, SwapTopup_TopupConstrained) {
 // test makes sure the provided fuel is much less than requested due to a
 // small fiss inventory.
 TEST(FuelFabTests, SwapTopup_FissConstrained) {
+  cyclus::Env::SetNucDataPath();
   std::string config = 
      "<fill_commods> <val>natu</val> </fill_commods>"
      "<fill_recipe>natu</fill_recipe>"

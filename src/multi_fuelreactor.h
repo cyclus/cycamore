@@ -6,7 +6,7 @@
 
 namespace cycamore {
 
-/// Reactor is a simple, general reactor based on static compositional
+/// MFReactor is a simple, general reactor based on static compositional
 /// transformations to model fuel burnup.  The user specifies a set of input
 /// fuels and corresponding burnt compositions that fuel is transformed to when
 /// it is discharged from the core.  No incremental transmutation takes place.
@@ -52,12 +52,12 @@ namespace cycamore {
 /// int) of its assemblies are transmuted to their respective burnt
 /// compositions.
 
-class Reactor : public cyclus::Facility,
+class MFReactor : public cyclus::Facility,
   public cyclus::toolkit::CommodityProducer {
 #pragma cyclus note { \
 "niche": "reactor", \
 "doc": \
-  "Reactor is a simple, general reactor based on static compositional" \
+  "MFReactor is a simple, general reactor based on static compositional" \
   " transformations to model fuel burnup.  The user specifies a set of input" \
   " fuels and corresponding burnt compositions that fuel is transformed to when" \
   " it is discharged from the core.  No incremental transmutation takes place." \
@@ -106,8 +106,8 @@ class Reactor : public cyclus::Facility,
 }
 
  public:
-  Reactor(cyclus::Context* ctx);
-  virtual ~Reactor(){};
+  MFReactor(cyclus::Context* ctx);
+  virtual ~MFReactor(){};
 
   virtual std::string version() { return CYCAMORE_VERSION; }
 
@@ -175,7 +175,27 @@ class Reactor : public cyclus::Facility,
   /// Returns all spent assemblies indexed by outcommod without removing them
   /// from the spent fuel buffer.
   std::map<std::string, cyclus::toolkit::MatVec> PeekSpent();
-  
+ 
+struct  
+
+  /////// Sub-Core specification:
+  std::vector<
+    std::pair<
+      
+
+
+
+
+
+
+
+
+
+
+
+
+
+
   /////// fuel specifications /////////
   #pragma cyclus var { \
     "uitype": ["oneormore", "incommodity"], \
@@ -319,7 +339,7 @@ class Reactor : public cyclus::Facility,
     "default": 0, \
     "doc": "Amount of electrical power the facility produces when operating " \
            "normally.", \
-    "uilabel": "Nominal Reactor Power", \
+    "uilabel": "Nominal MFReactor Power", \
     "units": "MWe", \
   }
   double power_cap;

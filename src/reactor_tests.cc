@@ -474,10 +474,13 @@ TEST(ReactorTests, Retire) {
      "  <n_assem_fresh>1</n_assem_fresh>  "
      "  <n_assem_core>3</n_assem_core>  "
      "  <n_assem_batch>1</n_assem_batch>  "
+     "  <power_cap>1</power_cap>  "
      "";
 
   int dur = 50;
   int life = 36;
+  int cycle_time = 7;
+  int refuel_time = 0;
   cyclus::MockSim sim(cyclus::AgentSpec(":cycamore:Reactor"), config, dur, life);
   sim.AddSource("enriched_u").Finalize();
   sim.AddSink("waste").Finalize();
@@ -505,6 +508,15 @@ TEST(ReactorTests, Retire) {
   qr = sim.db().Query("Transactions", &conds);
   EXPECT_EQ(nassem_recv, qr.rows.size())
       << "failed to discharge all material by retirement time";
+
+  // reactor should record power entry on the time step it retires if operating
+  int time_online = life / (cycle_time + refuel_time) * cycle_time + std::min(life % (cycle_time + refuel_time), cycle_time); 
+  conds.clear();
+  conds.push_back(Cond("AgentId", "==", id));
+  conds.push_back(Cond("Value", ">", 0));
+  qr = sim.db().Query("TimeSeriesPower", &conds);
+  EXPECT_EQ(time_online, qr.rows.size())
+      << "failed to generate power for the correct number of time steps";
 }
 
 } // namespace reactortests

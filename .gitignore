@@ -11,3 +11,6 @@ rs.cred
 *.dat
 tests/run_inputs.py
 cyclus.sqlite
+cycamore_version.h
+*.sqlite
+src/version.cc.in

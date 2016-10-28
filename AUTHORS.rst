@@ -9,6 +9,8 @@ This project has had contributions from the following people (in alphabetical or
 * Robert Flanagan
 * Matthew Gidden
 * Katy Huff
+* Meghan McGarry
+* Baptiste Mouginot
 * Arrielle Opotowsky
 * Olzhas Rahkimov
 * Anthony Scopatz

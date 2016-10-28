@@ -53,7 +53,7 @@
       <GrowthRegion>
         <growth>
           <item>
-            <commod>commodity1</commod>
+            <commod>commodity</commod>
             <piecewise_function>
               <piece>
                 <start>0</start>

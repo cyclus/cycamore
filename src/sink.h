@@ -7,6 +7,7 @@
 #include <vector>
 
 #include "cyclus.h"
+#include "cycamore_version.h"
 
 namespace cycamore {
 
@@ -19,10 +20,11 @@ class Context;
 /// that recipe. Requests are made for any number of specified commodities.
 class Sink : public cyclus::Facility  {
  public:
-
   Sink(cyclus::Context* ctx);
 
   virtual ~Sink();
+
+  virtual std::string version() { return CYCAMORE_VERSION; }
 
   #pragma cyclus note { \
     "doc": \
@@ -104,16 +106,10 @@ class Sink : public cyclus::Facility  {
                       "uitype": ["oneormore", "incommodity"]}
   std::vector<std::string> in_commods;
 
-  /// monthly acceptance capacity
-  #pragma cyclus var {"default": 1e299, "tooltip": "sink capacity", \
-                      "uilabel": "Maximum Throughput", \
-                      "doc": "capacity the sink facility can " \
-                             "accept at each time step"}
-  double capacity;
-
   #pragma cyclus var {"default": "", "tooltip": "requested composition", \
-                      "doc": "name of recipe to use for material requests, where " \
-                             "the default (empty string) is to accept everything", \
+                      "doc": "name of recipe to use for material requests, " \
+                             "where the default (empty string) is to accept " \
+                             "everything", \
                        "uilabel": "Input Recipe", \
                       "uitype": "recipe"}
   std::string recipe_name;
@@ -124,6 +120,13 @@ class Sink : public cyclus::Facility  {
                       "uilabel": "Maximum Inventory", \
                       "doc": "total maximum inventory size of sink facility"}
   double max_inv_size;
+
+  /// monthly acceptance capacity
+  #pragma cyclus var {"default": 1e299, "tooltip": "sink capacity", \
+                      "uilabel": "Maximum Throughput", \
+                      "doc": "capacity the sink facility can " \
+                             "accept at each time step"}
+  double capacity;
 
   /// this facility holds material in storage.
   #pragma cyclus var {'capacity': 'max_inv_size'}
