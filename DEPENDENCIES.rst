@@ -40,9 +40,9 @@ The Cyclus Core supports two binary installation options:
 the installation of open source software. The Cyclus project uses Conda to
 distribute pre-built Cyclus and Cycamore binaries.
 
-The **Debian package manager** simplifies the installation of open source
-software. It contains all of the files required to use a specific software, as
-well as variety of information about it: maintainer, description, version,
+The **Debian package manager** simplifies the installation of open-source
+software. It contains all of the files required to use specific software, as
+well as variety of relevant information: maintainer, description, version,
 dependencies (other software or libraries required to use it).  The Cyclus
 team provides pre-built Cyclus and Cycamore Debian packages to simplify
 installation for the user. These packages are available for LTS Ubuntu version
@@ -63,7 +63,7 @@ Conda
 
 .. website_include_conda_end
 
-2. Once you have conda installed, installing Cyclus straightforward.
+2. Once you have Conda installed, installing Cyclus straightforward.
 
    .. code-block:: bash
 
@@ -88,9 +88,9 @@ installation procedure also assumes that you have root access to you computer.
      $ sudo apt-get install libtcmalloc-minimal4 libboost-filesystem-dev libboost-program-options-dev libboost-serialization-dev libhdf5-dev libxml++2.6-dev coinor-libcbc-dev
   
    WARNING: This dependency list is ONLY correct for the debian binary
-   installation, additional dependencies are required for to install from source.
+   installation, additional dependencies are required to install from source.
    If you need/want more information about dependency installation please read the
-   `dependency installation documentation`_.
+   `dependency documentation`_.
 
 #. Download the Cyclus Core Debian installation package corresponding to your
    Ubuntu version (`14.04
