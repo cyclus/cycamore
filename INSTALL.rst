@@ -2,7 +2,7 @@
 Cycamore Installation Guide
 ###########################
 
-Cycamore uses the CMake cross platform bailed-generator as a build system. To
+Cycamore uses the CMake cross-platform build-generator. To
 simplify the usage of cmake to build Cycamore from source, a python script is
 provided with the source.
 
@@ -34,11 +34,11 @@ Installation
 ******************************
 .. website_include_start
 
-Before going further on the installation procedure be sure you have installed
-all the required dependencies listed above.
+Before going further with the installation procedure, be sure you have installed
+`Cyclus <http://github.com/cyclus/cyclus>`_.
 
 
-Default installation
+Default Installation
 ------------------------
 
 Run the install script:
@@ -49,9 +49,13 @@ Run the install script:
 
 
 If you successfully followed the instructions above, then the Cycamore library
-has been generated and placed in the  ``.local/`` in your home directory. 
+has been generated and placed in ``.local/`` in your home directory. 
 
-Custom Cycamore installation
+.. website_include_end
+
+.. website_custom_start
+
+Custom Cycamore Installation
 ----------------------------
 
 The installation using the install script can be customized using the following
@@ -129,11 +133,11 @@ installation flag. The otherwise identical process would look like:
     .../cycamore$  python install.py --coin_root=path/to/coin
 
 
-CMake Cycamore installation
+CMake Cycamore Installation
 ---------------------------
 
 If you are ``CMake`` aficionado you can also install Cycamore without using the
-install.py python script and use directly ``cmake`` which should look like:
+install.py python script and use ``cmake`` directly, which should look like:
 
 
 .. code-block:: bash
@@ -144,8 +148,8 @@ install.py python script and use directly ``cmake`` which should look like:
   make
   make install
 
-you can customize your cmake installation using the proper cmake flag.  All
-cmake variables can be listed using: ``cmake -LAH``.  The main variable used are:
+You can customize your cmake installation using the proper cmake flag.  All
+cmake variables can be listed using: ``cmake -LAH``.  The main variables used are:
 
 .. list-table::
 
@@ -169,15 +173,15 @@ cmake variables can be listed using: ``cmake -LAH``.  The main variable used are
 
 All variables can be set using ``-DMY_VARIABLE=MY_VARIABLES_VALUE``.
 
-.. website_include_end
+.. website_custom_end
 
 ******************************
 Running Tests
 ******************************
 
 Installing Cycamore will also install a test driver (i.e., an executable of all of
-our tests). We strongly recommend after installing a fresh install of Cycamore, or
-any modification on the source code to rerun those tests in order to insure the
+our tests). We strongly recommend after a fresh install of Cycamore, or after
+any modification on the source code, to rerun those tests in order to insure the
 proper functioning of Cycamore. You can run the tests yourself via:
 
 .. code-block:: bash
