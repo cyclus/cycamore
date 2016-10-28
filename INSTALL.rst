@@ -2,7 +2,7 @@
 Cycamore Installation Guide
 ###########################
 
-Cycamore uses the CMake cross platform bailed-generator as a build system. To
+Cycamore uses the CMake cross-platform build-generator. To
 simplify the usage of cmake to build Cycamore from source, a python script is
 provided with the source.
 
@@ -35,7 +35,7 @@ Installation
 .. website_include_start
 
 Before going further with the installation procedure, be sure you have installed
-all the required dependencies listed above.
+`Cyclus <http://github.com/cyclus/cyclus>`_.
 
 
 Default Installation
