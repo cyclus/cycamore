@@ -38,7 +38,7 @@ Before going further with the installation procedure, be sure you have installed
 all the required dependencies listed above.
 
 
-Default installation
+Default Installation
 ------------------------
 
 Run the install script:
@@ -55,7 +55,7 @@ has been generated and placed in ``.local/`` in your home directory.
 
 .. website_custom_start
 
-Custom Cycamore installation
+Custom Cycamore Installation
 ----------------------------
 
 The installation using the install script can be customized using the following
@@ -133,7 +133,7 @@ installation flag. The otherwise identical process would look like:
     .../cycamore$  python install.py --coin_root=path/to/coin
 
 
-CMake Cycamore installation
+CMake Cycamore Installation
 ---------------------------
 
 If you are ``CMake`` aficionado you can also install Cycamore without using the
