@@ -106,11 +106,12 @@ class Sink : public cyclus::Facility  {
                       "uitype": ["oneormore", "incommodity"]}
   std::vector<std::string> in_commods;
 
-  #pragma cyclus var {"default": "", "tooltip": "requested composition", \
+  #pragma cyclus var {"default": "", \
+                      "tooltip": "requested composition", \
                       "doc": "name of recipe to use for material requests, " \
                              "where the default (empty string) is to accept " \
                              "everything", \
-                       "uilabel": "Input Recipe", \
+                      "uilabel": "Input Recipe", \
                       "uitype": "recipe"}
   std::string recipe_name;
 
@@ -118,12 +119,17 @@ class Sink : public cyclus::Facility  {
   #pragma cyclus var {"default": 1e299, \
                       "tooltip": "sink maximum inventory size", \
                       "uilabel": "Maximum Inventory", \
+                      "uitype": "range", \
+                      "range": [0.0, 1e299], \
                       "doc": "total maximum inventory size of sink facility"}
   double max_inv_size;
 
   /// monthly acceptance capacity
-  #pragma cyclus var {"default": 1e299, "tooltip": "sink capacity", \
+  #pragma cyclus var {"default": 1e299, \ 
+                      "tooltip": "sink capacity", \
                       "uilabel": "Maximum Throughput", \
+                      "uitype": "range", \
+                      "range": [0.0, 1e299], \
                       "doc": "capacity the sink facility can " \
                              "accept at each time step"}
   double capacity;

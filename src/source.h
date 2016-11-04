@@ -97,6 +97,8 @@ class Source : public cyclus::Facility,
            "quantity.  When it reaches zero, the source cannot provide any " \
            " more material.", \
     "default": 1e299, \
+    "uitype": "range", \
+    "range": [0.0, 1e299], \
     "uilabel": "Initial Inventory", \
     "units": "kg", \
   }
@@ -107,6 +109,8 @@ class Source : public cyclus::Facility,
     "tooltip": "per time step throughput", \
     "units": "kg/(time step)", \
     "uilabel": "Maximum Throughput", \
+    "uitype": "range", \
+    "range": [0.0, 1e299], \
     "doc": "amount of commodity that can be supplied at each time step", \
   }
   double throughput;
