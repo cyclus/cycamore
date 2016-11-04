@@ -128,7 +128,7 @@ class Sink : public cyclus::Facility  {
   #pragma cyclus var {"default": 1e299, \ 
                       "tooltip": "sink capacity", \
                       "uilabel": "Maximum Throughput", \
-                      "uitype": "range" \
+                      "uitype": "range", \
                       "range": [0.0, 1e299], \
                       "doc": "capacity the sink facility can " \
                              "accept at each time step"}
