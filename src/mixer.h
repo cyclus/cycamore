@@ -84,6 +84,8 @@ class Mixer : public cyclus::Facility {
             " available.", \
     "uilabel": "Maximum Leftover Inventory", \
     "default": 1e299, \
+    "uitype": "range", \
+    "range": [0.0, 1e299], \
     "units": "kg", \
   }
   double out_buf_size;
@@ -95,6 +97,8 @@ class Mixer : public cyclus::Facility {
     "default": 1e299, \
     "doc": "Maximum number of kg of fuel material that can be mixed per time step.", \
     "uilabel": "Maximum Throughput", \
+    "uitype": "range", \
+    "range": [0.0, 1e299], \
     "units": "kg", \
   }
   double throughput;
