@@ -125,7 +125,7 @@ class Sink : public cyclus::Facility  {
   double max_inv_size;
 
   /// monthly acceptance capacity
-  #pragma cyclus var {"default": 1e299, \ 
+  #pragma cyclus var {"default": 1e299, \
                       "tooltip": "sink capacity", \
                       "uilabel": "Maximum Throughput", \
                       "uitype": "range", \
