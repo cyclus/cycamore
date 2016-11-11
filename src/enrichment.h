@@ -316,7 +316,7 @@ class Enrichment : public cyclus::Facility {
     "default": 1e299, "tooltip": "max inventory of feed material (kg)", \
     "uilabel": "Maximum Feed Inventory", \
     "uitype": "range", \
-    "range": [0.0, 1e299], \                                
+    "range": [0.0, 1e299], \
     "doc": "maximum total inventory of natural uranium in "		\
            "the enrichment facility (kg)"     \
   }
