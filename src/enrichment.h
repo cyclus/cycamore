@@ -325,7 +325,7 @@ class Enrichment : public cyclus::Facility {
   #pragma cyclus var { \
     "default": 1.0,						\
     "tooltip": "maximum allowed enrichment fraction",		\
-    "doc": "maximum allowed weight fraction of U235 in product",\
+    "doc": "maximum allowed weight fraction of U235 in product", \
     "uilabel": "Maximum Allowed Enrichment", \
     "schema": '<optional>'				     	   \
         '          <element name="max_enrich">'			   \
