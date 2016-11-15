@@ -8,6 +8,7 @@ This project has had contributions from the following people (in alphabetical or
 * Royal Elmore
 * Robert Flanagan
 * Matthew Gidden
+* Adam Glenn
 * Katy Huff
 * Jenny Littell
 * Meghan McGarry
