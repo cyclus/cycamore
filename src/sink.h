@@ -40,6 +40,8 @@ class Sink : public cyclus::Facility  {
 
   virtual std::string str();
 
+  virtual void EnterNotify();
+  
   virtual void Tick();
 
   virtual void Tock();
@@ -105,6 +107,14 @@ class Sink : public cyclus::Facility  {
                       "uilabel": "List of Input Commodities", \
                       "uitype": ["oneormore", "incommodity"]}
   std::vector<std::string> in_commods;
+
+  #pragma cyclus var {"default": [],\
+                      "doc":"preferences for each of the given commodities, in the same order."\
+                      "Defauts to 1 if unspecified",\
+                      "uilabel":"In Commody Preferences", \
+                      "range": [None, [1e-299, 1e299]], \
+                      "uitype":["oneormore", "range"]}
+  std::vector<double> in_commod_prefs;
 
   #pragma cyclus var {"default": "", \
                       "tooltip": "requested composition", \
