@@ -113,6 +113,7 @@ TEST_F(SinkTest, Requests) {
   std::string arr[] = {commod1_, commod2_};
   std::vector<std::string> commods (arr, arr + sizeof(arr) / sizeof(arr[0]) );
 
+  src_facility->EnterNotify();
   std::set<RequestPortfolio<Material>::Ptr> ports =
       src_facility->GetMatlRequests();
 
@@ -197,7 +198,8 @@ TEST_F(SinkTest, InRecipe){
   // create a sink facility to interact with the DRE
   cycamore::Sink* snk = new cycamore::Sink(&ctx);
   snk->AddCommodity("some_u");
-
+  snk->EnterNotify();
+  
   std::set<RequestPortfolio<Material>::Ptr> ports =
     snk->GetMatlRequests();
   ASSERT_EQ(ports.size(), 1);
