@@ -37,6 +37,23 @@ Sink::~Sink() {}
 #pragma cyclus def initfromcopy cycamore::Sink
 
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+void Sink::EnterNotify() {
+  cyclus::Facility::EnterNotify();
+
+  if (in_commod_prefs.size() == 0) {
+    for (int i = 0; i < in_commods.size(); ++i) {
+      in_commod_prefs.push_back(cyclus::kDefaultPref);
+    }
+  } else if (in_commod_prefs.size() != in_commods.size()) {
+    std::stringstream ss;
+    ss << "in_commod_prefs has " << in_commod_prefs.size()
+       << " values, expected " << in_commods.size();
+    throw cyclus::ValueError(ss.str());
+  }
+
+}
+
+// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 std::string Sink::str() {
   using std::string;
   using std::vector;
@@ -77,10 +94,9 @@ Sink::GetMatlRequests() {
   } 
 
   if (amt > cyclus::eps()) {
-    std::vector<std::string>::const_iterator it;
     std::vector<Request<Material>*> mutuals;
-    for (it = in_commods.begin(); it != in_commods.end(); ++it) {
-      mutuals.push_back(port->AddRequest(mat, this, *it));
+    for (int i = 0; i < in_commods.size(); i++) {
+      mutuals.push_back(port->AddRequest(mat, this, in_commods[i], in_commod_prefs[i]));
     }
     port->AddMutualReqs(mutuals);
     ports.insert(port);
