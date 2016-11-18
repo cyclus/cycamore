@@ -50,6 +50,11 @@ TEST_F(SinkTest, InitialState) {
   std::string arr[] = {commod1_, commod2_};
   std::vector<std::string> vexp (arr, arr + sizeof(arr) / sizeof(arr[0]) );
   EXPECT_EQ(vexp, src_facility->input_commodities());
+
+  src_facility->EnterNotify();
+  double pref[] = {cyclus::kDefaultPref, cyclus::kDefaultPref};
+  std::vector<double> vpref (pref, pref + sizeof(pref) / sizeof(pref[0]) );
+  EXPECT_EQ(vpref, src_facility->input_commodity_preferences());
 }
 
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -

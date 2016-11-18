@@ -100,6 +100,10 @@ class Sink : public cyclus::Facility  {
   inline const std::vector<std::string>&
       input_commodities() const { return in_commods; }
 
+  /// @return the input commodities preferences
+  inline const std::vector<double>&
+      input_commodity_preferences() const { return in_commod_prefs; }
+
  private:
   /// all facilities must have at least one input commodity
   #pragma cyclus var {"tooltip": "input commodities", \
