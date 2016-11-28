@@ -77,9 +77,9 @@ Debian Package Manager
 ~~~~~~~~~~~~~~~~~~~~~~
 
 
-This installation procedure assumes that you are using Ubuntu (LTS) 14.04 or
-16.04. This method has only been tested on those Ubuntu versions. This
-installation procedure also assumes that you have root access to you computer.
+This installation procedure assumes that you are using Ubuntu (LTS) 16.04. This
+method has only been tested on those Ubuntu versions. This installation
+procedure also assumes that you have root access to you computer.
 
 #. Install Cyclus dependencies:
 
@@ -92,10 +92,8 @@ installation procedure also assumes that you have root access to you computer.
    If you need/want more information about dependency installation please read the
    `dependency documentation`_.
 
-#. Download the Cyclus Core Debian installation package corresponding to your
-   Ubuntu version (`14.04
-   <http://dory.fuelcycle.org:4848/ubuntu.14.04/cyclus_1.4.0.deb>`_ or
-   `16.04
+#. Download the Cyclus Core Debian installation package - only ubuntu 16.04 is
+   actually supported (`cyclus.deb
    <http://dory.fuelcycle.org:4848/ubuntu.16.04/cyclus_1.4.0.deb>`_).
 
 #. Install the package by running:
