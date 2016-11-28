@@ -92,9 +92,9 @@ procedure also assumes that you have root access to you computer.
    If you need/want more information about dependency installation please read the
    `dependency documentation`_.
 
-#. Download the Cyclus Core Debian installation package - only ubuntu 16.04 is
-   actually supported (`cyclus.deb
-   <http://dory.fuelcycle.org:4848/ubuntu.16.04/cyclus_1.4.0.deb>`_).
+#. `Download <http://dory.fuelcycle.org:4848/ubuntu.16.04/cyclus_1.4.0.deb>`_
+   the Cyclus Core Debian installation package (only ubuntu 16.04 is actually
+   supported).
 
 #. Install the package by running:
 
