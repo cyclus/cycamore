@@ -270,12 +270,13 @@ class Reactor : public cyclus::Facility,
   }
   int n_assem_batch;
   #pragma cyclus var { \
+    "default": 3, \
     "uilabel": "Number of Assemblies in Core", \
     "doc": "Number of assemblies that constitute a full core.", \
   }
   int n_assem_core;
   #pragma cyclus var { \
-    "default": 0, \
+    "default": 3, \
     "uilabel": "Minimum Fresh Fuel Inventory", \
     "units": "assemblies", \
     "doc": "Number of fresh fuel assemblies to keep on-hand if possible.", \
@@ -292,6 +293,7 @@ class Reactor : public cyclus::Facility,
 
    ///////// cycle params ///////////
   #pragma cyclus var { \
+    "default": 18, \
     "doc": "The duration of a full operational cycle (excluding refueling " \
            "time) in time steps.", \
     "uilabel": "Cycle Length", \
@@ -299,6 +301,7 @@ class Reactor : public cyclus::Facility,
   }
   int cycle_time;
   #pragma cyclus var { \
+    "default": 1, \
     "doc": "The duration of a full refueling period - the minimum time between"\
            " the end of a cycle and the start of the next cycle.", \
     "uilabel": "Refueling Outage Duration", \

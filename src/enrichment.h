@@ -299,7 +299,9 @@ class Enrichment : public cyclus::Facility {
 
   #pragma cyclus var {							\
     "default": 0.003, "tooltip": "tails assay",				\
-    "uilabel": "Tails Assay",                               \
+    "uilabel": "Tails Assay",                             \
+    "uitype": "range"                               \
+    "range": [0.0, 0.003],                              \
     "doc": "tails assay from the enrichment process",       \
   }
   double tails_assay;
@@ -327,6 +329,8 @@ class Enrichment : public cyclus::Facility {
     "tooltip": "maximum allowed enrichment fraction",		\
     "doc": "maximum allowed weight fraction of U235 in product", \
     "uilabel": "Maximum Allowed Enrichment", \
+    "uitype": "range", \
+    "range": [0.0,1.0], \
     "schema": '<optional>'				     	   \
         '          <element name="max_enrich">'			   \
         '              <data type="double">'			   \
