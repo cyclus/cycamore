@@ -145,6 +145,9 @@ class Separations : public cyclus::Facility {
     "doc" : "Maximum quantity of feed material that can be processed per time "\
             "step.", \
     "uilabel": "Maximum Separations Throughput", \
+    "default": 1e299, \
+    "uitype": "range", \
+    "range": [0.0, 1e299], \
     "units": "kg/(time step)", \
   }
   double throughput;
@@ -166,6 +169,8 @@ class Separations : public cyclus::Facility {
             "available.", \
     "uilabel": "Maximum Leftover Inventory", \
     "default": 1e299, \
+    "uitype": "range", \
+    "range": [0.0, 1e299], \
     "units": "kg", \
   }
   double leftoverbuf_size;

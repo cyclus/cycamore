@@ -135,7 +135,9 @@ class Storage
   #pragma cyclus var {"default": [],\
                       "doc":"preferences for each of the given commodities, in the same order."\
                       "Defauts to 1 if unspecified",\
-                      "uilabel":"In Commody Preferences"}
+                      "uilabel":"In Commody Preferences", \
+                      "range": [None, [1e-299, 1e299]], \
+                      "uitype":["oneormore", "range"]}
   std::vector<double> in_commod_prefs;
 
   #pragma cyclus var {"tooltip":"output commodity",\
@@ -156,13 +158,17 @@ class Storage
                       "tooltip":"residence time (timesteps)",\
                       "doc":"the minimum holding time for a received commodity (timesteps).",\
                       "units":"time steps",\
-                      "uilabel":"Residence Time"}
+                      "uilabel":"Residence Time", \
+                      "uitype": "range", \
+                      "range": [0, 12000]}
   int residence_time;
 
   #pragma cyclus var {"default": 1e299,\
                      "tooltip":"throughput per timestep (kg)",\
                      "doc":"the max amount that can be moved through the facility per timestep (kg)",\
                      "uilabel":"Throughput",\
+                     "uitype": "range", \
+                     "range": [0.0, 1e299], \
                      "units":"kg"}
   double throughput;
 
@@ -170,15 +176,17 @@ class Storage
                       "tooltip":"maximum inventory size (kg)",\
                       "doc":"the maximum amount of material that can be in all storage buffer stages",\
                       "uilabel":"Maximum Inventory Size",\
+                      "uitype": "range", \
+                      "range": [0.0, 1e299], \
                       "units":"kg"}
   double max_inv_size; 
 
   #pragma cyclus var {"default": False,\
                       "tooltip":"Bool to determine how Storage handles batches",\
                       "doc":"Determines if Storage will divide resource objects. Only controls material "\
-                      "handling within this facility, has no effect on DRE material handling. "\
-                      "If true, batches are handled as discrete quanta, neither split nor combined. "\
-                      "Otherwise, batches may be divided during processing. Default to false (continuous))",\
+                            "handling within this facility, has no effect on DRE material handling. "\
+                            "If true, batches are handled as discrete quanta, neither split nor combined. "\
+                            "Otherwise, batches may be divided during processing. Default to false (continuous))",\
                       "uilabel":"Batch Handling"}
   bool discrete_handling;                    
 

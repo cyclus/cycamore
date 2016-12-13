@@ -232,6 +232,9 @@ class FuelFab : public cyclus::Facility {
     "doc": "Maximum number of kg of fuel material that can be supplied per time step.", \
     "uilabel": "Maximum Throughput", \
     "units": "kg", \
+    "default": 1e299, \
+    "uitype": "range", \
+    "range": [0.0, 1e299], \
   }
   double throughput;
 

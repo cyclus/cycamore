@@ -50,6 +50,11 @@ TEST_F(SinkTest, InitialState) {
   std::string arr[] = {commod1_, commod2_};
   std::vector<std::string> vexp (arr, arr + sizeof(arr) / sizeof(arr[0]) );
   EXPECT_EQ(vexp, src_facility->input_commodities());
+
+  src_facility->EnterNotify();
+  double pref[] = {cyclus::kDefaultPref, cyclus::kDefaultPref};
+  std::vector<double> vpref (pref, pref + sizeof(pref) / sizeof(pref[0]) );
+  EXPECT_EQ(vpref, src_facility->input_commodity_preferences());
 }
 
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -113,6 +118,7 @@ TEST_F(SinkTest, Requests) {
   std::string arr[] = {commod1_, commod2_};
   std::vector<std::string> commods (arr, arr + sizeof(arr) / sizeof(arr[0]) );
 
+  src_facility->EnterNotify();
   std::set<RequestPortfolio<Material>::Ptr> ports =
       src_facility->GetMatlRequests();
 
@@ -197,7 +203,8 @@ TEST_F(SinkTest, InRecipe){
   // create a sink facility to interact with the DRE
   cycamore::Sink* snk = new cycamore::Sink(&ctx);
   snk->AddCommodity("some_u");
-
+  snk->EnterNotify();
+  
   std::set<RequestPortfolio<Material>::Ptr> ports =
     snk->GetMatlRequests();
   ASSERT_EQ(ports.size(), 1);
@@ -211,6 +218,52 @@ TEST_F(SinkTest, InRecipe){
   EXPECT_EQ(req->commodity(),"some_u");
 }
 
+// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+TEST_F(SinkTest, BidPrefs) {
+  using cyclus::QueryResult;
+  using cyclus::Cond;
+
+  std::string config = 
+    "   <in_commods>"
+    "     <val>commods_1</val>"
+    "     <val>commods_2</val>"
+    "   </in_commods>"
+    "   <in_commod_prefs>"
+    "     <val>10</val> "
+    "     <val>1</val> "
+    "   </in_commod_prefs>"
+    "   <capacity>1</capacity>"
+    "   <input_capacity>1.0</input_capacity> ";
+
+  int simdur = 1;
+  cyclus::MockSim sim(cyclus::AgentSpec
+		      (":cycamore:Sink"), config, simdur);
+
+  sim.AddSource("commods_1")
+    .capacity(1)
+    .Finalize();
+
+  sim.AddSource("commods_2")
+    .capacity(1)
+    .Finalize();
+  
+  int id = sim.Run();
+
+  std::vector<Cond> conds;
+  conds.push_back(Cond("Commodity", "==", std::string("commods_1")));
+  QueryResult qr = sim.db().Query("Transactions", &conds);
+
+  // should trade only with #1 since it has highier priority
+  EXPECT_EQ(1, qr.rows.size());
+  
+  std::vector<Cond> conds2;
+  conds2.push_back(Cond("Commodity", "==", std::string("commods_2")));
+  QueryResult qr2 = sim.db().Query("Transactions", &conds2);
+
+  // should trade only with #1 since it has highier priority
+  EXPECT_EQ(0, qr2.rows.size());
+  
+}
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 TEST_F(SinkTest, Print) {
   EXPECT_NO_THROW(std::string s = src_facility->str());
