@@ -26,6 +26,9 @@ RUN apt-get install -y --force-yes \
     python-tables \
     python-numpy \
     python-nose \
+    python-pandas \
+    python-jinja2 \
+    cython \
     wget
 
 RUN wget -r --no-parent -A 'cyclus_1.5.0_*_ubuntu.CYCAMORE_UBUNTU_MAJOR_VERSION.04.deb' http://dory.fuelcycle.org:4848
