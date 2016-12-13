@@ -28,9 +28,9 @@ RUN apt-get install -y --force-yes \
     python-nose \
     wget
 
-RUN wget -r --no-parent -A 'cyclus_1.4.0_*_ubuntu.CYCAMORE_UBUNTU_MAJOR_VERSION.04.deb' http://dory.fuelcycle.org:4848
+RUN wget -r --no-parent -A 'cyclus_1.5.0_*_ubuntu.CYCAMORE_UBUNTU_MAJOR_VERSION.04.deb' http://dory.fuelcycle.org:4848
 run mv dory.fuelcycle.org:4848/* ./; rm -rf dory.fuelcycle.org:4848
-RUN dpkg -i cyclus_1.4.0_*_ubuntu.CYCAMORE_UBUNTU_MAJOR_VERSION.04.deb
+RUN dpkg -i cyclus_1.5.0_*_ubuntu.CYCAMORE_UBUNTU_MAJOR_VERSION.04.deb
 
 COPY . /cycamore 
 WORKDIR cycamore
