@@ -90,7 +90,7 @@ installation procedure also assumes that you have root access to you computer.
    WARNING: This dependency list is ONLY correct for the debian binary
    installation, additional dependencies are required to install from source.
    If you need/want more information about dependency installation please read the
-   `dependency documentation`_.
+   `dependency installation documentation`_.
 
 #. Download the Cyclus Core Debian installation package corresponding to your
    Ubuntu version (`14.04
