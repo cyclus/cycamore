@@ -96,15 +96,13 @@ installation procedure also assumes that you have root access to you computer.
    
    .. list-table::
 
-      * - python status
+      * - Python status
         - ubuntu 14.04
         - ubuntu 16.04
 
       * - no python
-        - `14.04
-   <http://dory.fuelcycle.org:4848/ubuntu/14.04/cyclus_latest.deb>`_ 
-        - `16.04
-   <http://dory.fuelcycle.org:4848/ubuntu/16.04/cyclus_latest.deb>`_
+        - `14.04 <http://dory.fuelcycle.org:4848/ubuntu/14.04/cyclus_latest.deb>`_ 
+        - `16.04 <http://dory.fuelcycle.org:4848/ubuntu/16.04/cyclus_latest.deb>`_
 
 #. Install the package by running:
 
