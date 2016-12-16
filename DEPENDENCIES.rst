@@ -94,15 +94,15 @@ installation procedure also assumes that you have root access to you computer.
 
 #. Download the Cyclus Core Debian installation package corresponding to your
    Ubuntu version (`14.04
-   <http://dory.fuelcycle.org:4848/ubuntu.14.04/cyclus_1.4.0.deb>`_ or
+   <http://dory.fuelcycle.org:4848/ubuntu/14.04/cyclus_latest.deb>`_ or
    `16.04
-   <http://dory.fuelcycle.org:4848/ubuntu.16.04/cyclus_1.4.0.deb>`_).
+   <http://dory.fuelcycle.org:4848/ubuntu/16.04/cyclus_latest.deb>`_).
 
 #. Install the package by running:
 
    .. code-block:: bash 
 
-     $ sudo dpkg -i cyclus_1.4.0.deb
+     $ sudo dpkg -i cyclus_latest.deb
 
 .. website_include_deb_end
 
