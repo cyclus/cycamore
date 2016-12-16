@@ -96,21 +96,17 @@ installation procedure also assumes that you have root access to you computer.
    
    .. list-table::
 
-      * - Python status
-        - Ubuntu 14.04
+      * - Ubuntu 14.04
         - Ubuntu 16.04
 
-      * - no Python
-        - `14.04 <http://dory.fuelcycle.org:4848/ubuntu/14.04/cyclus_latest.deb>`_ 
-        - `16.04 <http://dory.fuelcycle.org:4848/ubuntu/16.04/cyclus_latest.deb>`_
+      * - `No Python <http://dory.fuelcycle.org:4848/ubuntu/14.04/cyclus_latest.deb>`_ 
+        - `No Python <http://dory.fuelcycle.org:4848/ubuntu/16.04/cyclus_latest.deb>`_
 
-      * - Python 2.7
-        - `14.04 <http://dory.fuelcycle.org:4848/ubuntu/14.04/python2/cyclus_latest.deb>`_ 
-        - `16.04 <http://dory.fuelcycle.org:4848/ubuntu/16.04/python2/cyclus_latest.deb>`_
+      * - `Python 2.7 <http://dory.fuelcycle.org:4848/ubuntu/14.04/python2/cyclus_latest.deb>`_ 
+        - `Python 3.5 <http://dory.fuelcycle.org:4848/ubuntu/16.04/python2/cyclus_latest.deb>`_
 
-      * - Python 3.5
-        - `14.04 <http://dory.fuelcycle.org:4848/ubuntu/14.04/python3/cyclus_latest.deb>`_ 
-        - `16.04 <http://dory.fuelcycle.org:4848/ubuntu/16.04/python3/cyclus_latest.deb>`_
+      * - `Python 2.7 <http://dory.fuelcycle.org:4848/ubuntu/14.04/python3/cyclus_latest.deb>`_ 
+        - `Python 3.5 <http://dory.fuelcycle.org:4848/ubuntu/16.04/python3/cyclus_latest.deb>`_
 
         
 #. Install the package by running:
