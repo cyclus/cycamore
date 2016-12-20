@@ -92,12 +92,31 @@ installation procedure also assumes that you have root access to you computer.
    If you need/want more information about dependency installation please read the
    `dependency installation documentation`_.
 
-#. Download the Cyclus Core Debian installation package corresponding to your
-   Ubuntu version (`14.04
-   <http://dory.fuelcycle.org:4848/ubuntu/14.04/cyclus_latest.deb>`_ or
-   `16.04
-   <http://dory.fuelcycle.org:4848/ubuntu/16.04/cyclus_latest.deb>`_).
+#. Download the lastest version Cyclus Core Debian installation package:
+   
+   .. list-table::
 
+      * - Ubuntu 14.04
+        - `wihtout Python 
+          <http://dory.fuelcycle.org:4848/ubuntu/14.04/cyclus_latest.deb>`_ 
+        - `with Python 2.7 
+          <http://dory.fuelcycle.org:4848/ubuntu/14.04/python2/cyclus_latest.deb>`_ 
+        - `with Python 3.5 
+          <http://dory.fuelcycle.org:4848/ubuntu/14.04/python3/cyclus_latest.deb>`_ 
+
+      * - Ubuntu 16.04
+        - `without Python 
+          <http://dory.fuelcycle.org:4848/ubuntu/16.04/cyclus_latest.deb>`_
+        - `with Python 2.7 
+          <http://dory.fuelcycle.org:4848/ubuntu/16.04/python2/cyclus_latest.deb>`_
+        - `with Python 3.5 
+          <http://dory.fuelcycle.org:4848/ubuntu/16.04/python3/cyclus_latest.deb>`_
+
+   You can download previous/different version `here
+   <http://dory.fuelcycle.org:4848/>`_.
+    
+
+        
 #. Install the package by running:
 
    .. code-block:: bash 
