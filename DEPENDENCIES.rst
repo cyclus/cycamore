@@ -97,12 +97,11 @@ installation procedure also assumes that you have root access to you computer.
    .. list-table::
 
       * - Ubuntu 14.04
-        - `wihtout Python 
+        - `without Python 
           <http://dory.fuelcycle.org:4848/ubuntu/14.04/cyclus_latest.deb>`_ 
         - `with Python 2.7 
           <http://dory.fuelcycle.org:4848/ubuntu/14.04/python2/cyclus_latest.deb>`_ 
-        - `with Python 3.5 
-          <http://dory.fuelcycle.org:4848/ubuntu/14.04/python3/cyclus_latest.deb>`_ 
+        - 
 
       * - Ubuntu 16.04
         - `without Python 
