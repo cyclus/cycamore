@@ -330,7 +330,7 @@ class Reactor : public cyclus::Facility,
            "normally.", \
     "uilabel": "Nominal Reactor Power", \
     "uitype": "range", \
-    "range": [0.0, 10,000.00],  \
+    "range": [0.0, 2000.00],  \
     "units": "MWe", \
   }
   double power_cap;
