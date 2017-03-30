@@ -278,10 +278,10 @@ class Reactor : public cyclus::Facility,
   }
   int n_assem_core;
   #pragma cyclus var { \
-    "default": 3, \
+    "default": 0, \
     "uilabel": "Minimum Fresh Fuel Inventory", \
     "uitype": "range", \
-    "range": [1,3], \
+    "range": [0,3], \
     "units": "assemblies", \
     "doc": "Number of fresh fuel assemblies to keep on-hand if possible.", \
   }
