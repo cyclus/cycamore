@@ -151,7 +151,7 @@ class Storage
                       "tooltip":"input recipe",\
                       "doc":"recipe accepted by this facility, if unspecified a dummy recipe is used",\
                       "uilabel":"Input Recipe",\
-                      "uitype":"recipe"}
+                      "uitype":"inrecipe"}
   std::string in_recipe;
 
   #pragma cyclus var {"default": 0,\

@@ -204,7 +204,7 @@ struct
   }
   std::vector<std::string> fuel_incommods;
   #pragma cyclus var { \
-    "uitype": ["oneormore", "recipe"], \
+    "uitype": ["oneormore", "inrecipe"], \
     "uilabel": "Fresh Fuel Recipe List", \
     "doc": "Fresh fuel recipes to request for each of the given fuel input " \
            "commodities (same order).", \
@@ -228,7 +228,7 @@ struct
   }
   std::vector<std::string> fuel_outcommods;
   #pragma cyclus var {		       \
-    "uitype": ["oneormore", "recipe"], \
+    "uitype": ["oneormore", "outrecipe"], \
     "uilabel": "Spent Fuel Recipe List", \
     "doc": "Spent fuel recipes corresponding to the given fuel input " \
            "commodities (same order)." \
@@ -260,7 +260,7 @@ struct
     "doc": "The new input recipe to use for this recipe change." \
            " Same order as and direct correspondence to the specified recipe " \
            "change times.", \
-    "uitype": ["oneormore", "recipe"], \
+    "uitype": ["oneormore", "inrecipe"], \
   }
   std::vector<std::string> recipe_change_in;
   #pragma cyclus var { \
@@ -269,7 +269,7 @@ struct
     "doc": "The new output recipe to use for this recipe change." \
            " Same order as and direct correspondence to the specified recipe " \
            "change times.", \
-    "uitype": ["oneormore", "recipe"], \
+    "uitype": ["oneormore", "outrecipe"], \
   }
   std::vector<std::string> recipe_change_out;
   
@@ -375,7 +375,7 @@ struct
     "doc": "The new/changed request preference for a particular fresh fuel." \
            " Same order as and direct correspondence to the specified " \
            "preference change times.", \
-  }
+  }r
   std::vector<double> pref_change_values;
 
   // Resource inventories - these must be defined AFTER/BELOW the member vars
