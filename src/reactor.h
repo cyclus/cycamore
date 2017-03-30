@@ -175,7 +175,7 @@ class Reactor : public cyclus::Facility,
   /// Returns all spent assemblies indexed by outcommod without removing them
   /// from the spent fuel buffer.
   std::map<std::string, cyclus::toolkit::MatVec> PeekSpent();
-  
+
   /////// fuel specifications /////////
   #pragma cyclus var { \
     "uitype": ["oneormore", "incommodity"], \
@@ -252,11 +252,13 @@ class Reactor : public cyclus::Facility,
     "uitype": ["oneormore", "outrecipe"], \
   }
   std::vector<std::string> recipe_change_out;
-  
+
  //////////// inventory and core params ////////////
   #pragma cyclus var { \
     "doc": "Mass (kg) of a single assembly.",	\
     "uilabel": "Assembly Mass", \
+    "uitype": "range", \
+    "range": [1.0, 1e5], \
     "units": "kg", \
   }
   double assem_size;
