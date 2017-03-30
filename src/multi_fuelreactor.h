@@ -204,7 +204,7 @@ struct
   }
   std::vector<std::string> fuel_incommods;
   #pragma cyclus var { \
-    "uitype": ["oneormore", "inrecipe"], \
+    "uitype": ["oneormore", "recipe"], \
     "uilabel": "Fresh Fuel Recipe List", \
     "doc": "Fresh fuel recipes to request for each of the given fuel input " \
            "commodities (same order).", \
@@ -228,7 +228,7 @@ struct
   }
   std::vector<std::string> fuel_outcommods;
   #pragma cyclus var {		       \
-    "uitype": ["oneormore", "outrecipe"], \
+    "uitype": ["oneormore", "recipe"], \
     "uilabel": "Spent Fuel Recipe List", \
     "doc": "Spent fuel recipes corresponding to the given fuel input " \
            "commodities (same order)." \
@@ -260,7 +260,7 @@ struct
     "doc": "The new input recipe to use for this recipe change." \
            " Same order as and direct correspondence to the specified recipe " \
            "change times.", \
-    "uitype": ["oneormore", "inrecipe"], \
+    "uitype": ["oneormore", "recipe"], \
   }
   std::vector<std::string> recipe_change_in;
   #pragma cyclus var { \
@@ -269,7 +269,7 @@ struct
     "doc": "The new output recipe to use for this recipe change." \
            " Same order as and direct correspondence to the specified recipe " \
            "change times.", \
-    "uitype": ["oneormore", "outrecipe"], \
+    "uitype": ["oneormore", "recipe"], \
   }
   std::vector<std::string> recipe_change_out;
   
