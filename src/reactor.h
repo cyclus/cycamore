@@ -281,7 +281,7 @@ class Reactor : public cyclus::Facility,
     "default": 0, \
     "uilabel": "Minimum Fresh Fuel Inventory", \
     "uitype": "range", \
-    "range": [1,3], \
+    "range": [0,3], \
     "units": "assemblies", \
     "doc": "Number of fresh fuel assemblies to keep on-hand if possible.", \
   }
