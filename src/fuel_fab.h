@@ -202,7 +202,7 @@ class FuelFab : public cyclus::Facility {
     "default": 1.0, \
   }
   double topup_pref; // default must be in range (0, cyclus::kDefaultPref)
-  
+
   #pragma cyclus var { \
     "doc": "Name of recipe to be used in top-up material stream requests." \
            " This MUST be set if 'topup_size > 0'.", \
@@ -240,7 +240,8 @@ class FuelFab : public cyclus::Facility {
 
   #pragma cyclus var {		\
     "uilabel": "Spectrum type", \
-    "categorical": ['fission_spectrum_ave','thermal'], \
+    "uitype": "combobox", \
+    "categorical": ["fission_spectrum_ave", "thermal"], \
     "doc": "The type of cross-sections to use for composition property calculation." \
            " Use 'fission_spectrum_ave' for fast reactor compositions or 'thermal' for thermal reactors.", \
   }
