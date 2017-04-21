@@ -277,7 +277,7 @@ class Enrichment : public cyclus::Facility {
     "tooltip": "feed recipe",						\
     "doc": "recipe for enrichment facility feed commodity",		\
     "uilabel": "Feed Recipe",                                   \
-    "uitype": "recipe" \
+    "uitype": "inrecipe" \
   }
   std::string feed_recipe;
 

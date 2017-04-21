@@ -175,7 +175,7 @@ class Reactor : public cyclus::Facility,
   /// Returns all spent assemblies indexed by outcommod without removing them
   /// from the spent fuel buffer.
   std::map<std::string, cyclus::toolkit::MatVec> PeekSpent();
-  
+
   /////// fuel specifications /////////
   #pragma cyclus var { \
     "uitype": ["oneormore", "incommodity"], \
@@ -184,7 +184,7 @@ class Reactor : public cyclus::Facility,
   }
   std::vector<std::string> fuel_incommods;
   #pragma cyclus var { \
-    "uitype": ["oneormore", "recipe"], \
+    "uitype": ["oneormore", "inrecipe"], \
     "uilabel": "Fresh Fuel Recipe List", \
     "doc": "Fresh fuel recipes to request for each of the given fuel input " \
            "commodities (same order).", \
@@ -208,7 +208,7 @@ class Reactor : public cyclus::Facility,
   }
   std::vector<std::string> fuel_outcommods;
   #pragma cyclus var {		       \
-    "uitype": ["oneormore", "recipe"], \
+    "uitype": ["oneormore", "outrecipe"], \
     "uilabel": "Spent Fuel Recipe List", \
     "doc": "Spent fuel recipes corresponding to the given fuel input " \
            "commodities (same order)." \
@@ -240,7 +240,7 @@ class Reactor : public cyclus::Facility,
     "doc": "The new input recipe to use for this recipe change." \
            " Same order as and direct correspondence to the specified recipe " \
            "change times.", \
-    "uitype": ["oneormore", "recipe"], \
+    "uitype": ["oneormore", "inrecipe"], \
   }
   std::vector<std::string> recipe_change_in;
   #pragma cyclus var { \
@@ -249,14 +249,16 @@ class Reactor : public cyclus::Facility,
     "doc": "The new output recipe to use for this recipe change." \
            " Same order as and direct correspondence to the specified recipe " \
            "change times.", \
-    "uitype": ["oneormore", "recipe"], \
+    "uitype": ["oneormore", "outrecipe"], \
   }
   std::vector<std::string> recipe_change_out;
-  
+
  //////////// inventory and core params ////////////
   #pragma cyclus var { \
     "doc": "Mass (kg) of a single assembly.",	\
     "uilabel": "Assembly Mass", \
+    "uitype": "range", \
+    "range": [1.0, 1e5], \
     "units": "kg", \
   }
   double assem_size;

@@ -126,7 +126,7 @@ class Sink : public cyclus::Facility  {
                              "where the default (empty string) is to accept " \
                              "everything", \
                       "uilabel": "Input Recipe", \
-                      "uitype": "recipe"}
+                      "uitype": "inrecipe"}
   std::string recipe_name;
 
   /// max inventory size

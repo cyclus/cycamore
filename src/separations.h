@@ -124,7 +124,7 @@ class Separations : public cyclus::Facility {
     "doc": "Name for recipe to be used in feed requests." \
            " Empty string results in use of a dummy recipe.", \
     "uilabel": "Feed Commodity Recipe List", \
-    "uitype": "recipe", \
+    "uitype": "inrecipe", \
     "default": "", \
   }
   std::string feed_recipe;
