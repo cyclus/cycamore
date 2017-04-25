@@ -162,7 +162,7 @@ TEST_F(EnrichmentTest, CheckCapConstraint) {
   Material::Ptr m = sim.GetMaterial(qr.GetVal<int>("ResourceId"));
 
   EXPECT_EQ(1.0, qr.rows.size());
-  EXPECT_NEAR(5.0, m->quantity(), 0.01) <<
+  EXPECT_LE(5.0, m->quantity()) << 
     "traded quantity exceeds capacity constraint";
 }
 
@@ -299,7 +299,8 @@ TEST_F(EnrichmentTest, TradeTails) {
   QueryResult qr = sim.db().Query("Transactions", &conds);
   Material::Ptr m = sim.GetMaterial(qr.GetVal<int>("ResourceId"));
   
-  // Should be 2 tails transactions, one from each LEU sink, each 4.084kg.
+  // Should be 2 tails transactions, one from each LEU sink, each 4.125kg.
+  // Q * (e_p - e_f)/(e_f - e_t) = 0.5 * (0.04 - 0.007)/(0.007 - 0.003) = 4.125 
   EXPECT_EQ(2, qr.rows.size());
 
   cyclus::SqlStatement::Ptr stmt = sim.db().db().Prepare(
@@ -310,7 +311,7 @@ TEST_F(EnrichmentTest, TradeTails) {
 
   stmt->BindText(1, "tails");
   stmt->Step();
-  EXPECT_NEAR(8.168,stmt->GetDouble(0), 0.01) <<
+  EXPECT_NEAR(8.25,stmt->GetDouble(0), 0.01) <<
     "Not providing the requested quantity" ;
 }
 
@@ -579,7 +580,7 @@ TEST_F(EnrichmentTest, ValidReq) {
   using cyclus::toolkit::MatQuery;
   using cyclus::Composition;
   using cyclus::toolkit::Assays;
-  using cyclus::toolkit::UraniumAssay;
+  using cyclus::toolkit::UraniumAssayMass;
   using cyclus::toolkit::SwuRequired;
   using cyclus::toolkit::FeedQty;
   using cyclus::toolkit::MatQuery;
@@ -621,7 +622,7 @@ TEST_F(EnrichmentTest, Enrich) {
   using cyclus::toolkit::MatQuery;
   using cyclus::Composition;
   using cyclus::toolkit::Assays;
-  using cyclus::toolkit::UraniumAssay;
+  using cyclus::toolkit::UraniumAssayMass;
   using cyclus::toolkit::SwuRequired;
   using cyclus::toolkit::FeedQty;
 
@@ -634,7 +635,7 @@ TEST_F(EnrichmentTest, Enrich) {
   Material::Ptr target = cyclus::Material::CreateUntracked(
       qty + 10, cyclus::Composition::CreateFromMass(v));
 
-  Assays assays(feed_assay, UraniumAssay(target), tails_assay);
+  Assays assays(feed_assay, UraniumAssayMass(target), tails_assay);
   double swu_req = SwuRequired(qty, assays);
   double natu_req = FeedQty(qty, assays);
   double tails_qty = TailsQty(qty, assays);
@@ -676,7 +677,7 @@ TEST_F(EnrichmentTest, Response) {
   using cyclus::toolkit::Assays; 
   using cyclus::toolkit::FeedQty; 
   using cyclus::toolkit::SwuRequired;
-  using cyclus::toolkit::UraniumAssay;
+  using cyclus::toolkit::UraniumAssayMass;
 
   // problem set up
   std::vector< cyclus::Trade<cyclus::Material> > trades;
@@ -694,7 +695,7 @@ TEST_F(EnrichmentTest, Response) {
   Material::Ptr target = cyclus::Material::CreateUntracked(
       qty + 10, cyclus::Composition::CreateFromMass(v));
 
-  Assays assays(feed_assay, UraniumAssay(target), tails_assay);
+  Assays assays(feed_assay, UraniumAssayMass(target), tails_assay);
   double swu_req = SwuRequired(qty, assays);
   double natu_req = FeedQty(qty, assays);
   
