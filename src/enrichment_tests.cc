@@ -162,7 +162,7 @@ TEST_F(EnrichmentTest, CheckCapConstraint) {
   Material::Ptr m = sim.GetMaterial(qr.GetVal<int>("ResourceId"));
 
   EXPECT_EQ(1.0, qr.rows.size());
-  EXPECT_LE(5.0, m->quantity()) << 
+  EXPECT_LE(m->quantity(), 5.0) << 
     "traded quantity exceeds capacity constraint";
 }
 
@@ -177,7 +177,7 @@ TEST_F(EnrichmentTest, RequestEnrich) {
     "   <product_commod>enr_u</product_commod> "
     "   <tails_commod>tails</tails_commod> "
     "   <tails_assay>0.003</tails_assay> "
-    "   <max_enrich>0.20</max_enrich> ";
+    "   <max_enrich>0.19</max_enrich> ";
 
   int simdur = 2;
   cyclus::MockSim sim(cyclus::AgentSpec
@@ -467,7 +467,7 @@ void EnrichmentTest::InitParameters() {
   cyclus::CompMap v;
   v[922350000] = feed_assay;
   v[922380000] = 1 - feed_assay;
-  recipe = cyclus::Composition::CreateFromAtom(v);
+  recipe = cyclus::Composition::CreateFromMass(v);
   ctx->AddRecipe(feed_recipe, recipe);
 
   tails_assay = 0.002;
