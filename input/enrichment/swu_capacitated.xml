@@ -126,7 +126,7 @@
 
   <recipe>
     <name>natl_u</name>
-    <basis>atom</basis>
+    <basis>mass</basis>
     <nuclide>
       <id>922350000</id>
       <comp>0.7</comp>
@@ -139,7 +139,7 @@
 
   <recipe>
     <name>fuel_recipe</name>
-    <basis>atom</basis>
+    <basis>mass</basis>
     <nuclide>
       <id>922350000</id>
       <comp>4.5</comp>
