@@ -113,7 +113,7 @@ class _PhysorEnrichment(TestRegression):
         # this can be updated if/when we can call into the cyclus::toolkit's
         # enrichment module from python
         # with old BatchReactor: exp = [6.9, 10, 4.14, 6.9]
-        exp = [6.9, 10., 4.14, 6.9]
+        exp = [6.85, 9.94, 4.11, 6.85]
         obs = [np.sum(self.to_ary(enr, "SWU")[
                     self.to_ary(enr, "Time") == t]) for t in range(4)]
         assert_array_almost_equal(exp, obs, decimal=2)
@@ -124,7 +124,7 @@ class _PhysorEnrichment(TestRegression):
         # enrichment module from python
 
         # with old BatchReactor: exp = [13.03, 16.54, 7.83, 13.03]
-        exp = [13.03, 16.55, 7.82, 13.03]
+        exp = [13.14, 16.69, 7.88, 13.14]
         obs = [np.sum(self.to_ary(enr, "Natural_Uranium")[
                     self.to_ary(enr, "Time") == t]) for t in range(4)]
         assert_array_almost_equal(exp, obs, decimal=2)

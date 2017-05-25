@@ -24,7 +24,7 @@ class SWUConverter : public cyclus::Converter<cyclus::Material> {
       cyclus::Arc const * a = NULL,
       cyclus::ExchangeTranslationContext<cyclus::Material>
           const * ctx = NULL) const {
-    cyclus::toolkit::Assays assays(feed_, cyclus::toolkit::UraniumAssay(m),
+    cyclus::toolkit::Assays assays(feed_, cyclus::toolkit::UraniumAssayMass(m),
                                    tails_);
     return cyclus::toolkit::SwuRequired(m->quantity(), assays);
   }
@@ -60,7 +60,7 @@ class NatUConverter : public cyclus::Converter<cyclus::Material> {
       cyclus::Arc const * a = NULL,
       cyclus::ExchangeTranslationContext<cyclus::Material>
           const * ctx = NULL) const {
-    cyclus::toolkit::Assays assays(feed_, cyclus::toolkit::UraniumAssay(m),
+    cyclus::toolkit::Assays assays(feed_, cyclus::toolkit::UraniumAssayMass(m),
                                    tails_);
     cyclus::toolkit::MatQuery mq(m);
     std::set<cyclus::Nuc> nucs;
