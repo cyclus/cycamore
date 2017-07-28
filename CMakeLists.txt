@@ -148,7 +148,7 @@ IF(NOT CYCLUS_DOC_ONLY)
     # find lapack and link to it
     # note there is no include directory variable:
     # http://www.cmake.org/cmake/help/v3.0/module/FindLAPACK.html
-    FIND_PACKAGE(LAPACK REQUIRED)
+    FIND_PACKAGE(LAPACK REQUIRED ${DEPS_LIB_HINTS})
     set(LIBS ${LIBS} ${LAPACK_LIBRARIES})
     MESSAGE("\tFound LAPACK Libraries: ${LAPACK_LIBRARIES}")
 
