@@ -287,43 +287,6 @@ IF(NOT CYCLUS_DOC_ONLY)
         COMPONENT testing
         )
 
-    # read tests after building the driver, and add them to ctest
-    #set(tgt "cycamore_unit_tests")
-    #set(script "${CYCAMORE_SOURCE_DIR}/config/generate_test_macros.py")
-    #set(exec "--executable=${CMAKE_RUNTIME_OUTPUT_DIRECTORY}/${tgt}")
-    #set(reg_dir "--reg_dir=${CYCAMORE_SOURCE_DIR}/../${test_dir}")
-    #set(out "--output=${CMAKE_BINARY_DIR}/CTestTestfile.cmake")
-    #add_custom_command(TARGET ${tgt}
-    #    POST_BUILD
-    #    COMMAND python ${script} ${exec} ${reg_dir} ${out}
-    #    COMMENT "adding tests from ${tgt}"
-    #    DEPENDS
-    #    VERBATIM
-    #    )
-
-    # for post test commands
-    #configure_file(
-    #    "${CMAKE_CURRENT_SOURCE_DIR}/config/CTestCustom.cmake"
-    #    "${CMAKE_CURRENT_BINARY_DIR}/CTestCustom.cmake"
-    #    IMMEDIATE @ONLY)
-
-    # for printing regression tests
-    #configure_file(
-    #    "${CMAKE_CURRENT_SOURCE_DIR}/config/print_regs.py"
-    #    "${CMAKE_CURRENT_BINARY_DIR}/print_regs.py"
-    #    IMMEDIATE @ONLY)
-
-    # AMS: I don't believe that this is needed anymore.
-    # This just copies the shared dir from cyclus to cycamore.
-    # However, the 'share/' dir should now be the same.  So this
-    # was failing because you can't copy a file to itself.
-    #FILE(GLOB cyclus_shared "${CYCLUS_CORE_SHARE_DIR}/*")
-    #INSTALL(FILES ${cyclus_shared}
-    #  DESTINATION share
-    #  COMPONENT data
-    # )
-
-
     ##############################################################################################
     ################################## begin uninstall target ####################################
     ##############################################################################################
