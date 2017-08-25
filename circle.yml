@@ -12,7 +12,7 @@ test:
     - docker run cyclus/cycamore:latest nosetests -w /cycamore/tests
 
 deployment:
-  ci-test:
+  my-test:
     branch: mytest
     commands:
       - echo "toto"
