@@ -107,30 +107,6 @@ jobs:
                 command: nosetests -w ~/cycamore/tests; exit $?
 
 
-    # External Triggers
-    cymetric_dev: ## Cymetric/dev against Cyclus/dev + Cyacamore/dev
-        machine: true
-        steps:
-            - run:
-                name: Cycamore/Cymetric tests
-                no_output_timeout: "20m"
-                command: |
-                  # Install dependencies
-                  mkdir ./bin
-                  curl -o ./bin/circleci https://raw.githubusercontent.com/rockymadden/circleci-cli/master/src/circleci 
-                  chmod 755 ./bin/circleci
-
-                  # Trigger the project
-                  ./bin/circleci init --token ${CYMETRIC_CIRCLE_TOKEN}
-                  ./bin/circleci trigger cyclus/cymetric develop
-                  job_name=`./bin/circleci await cyclus/cymetric |grep outcome |cut -d"\"" -f4`
-                  if [[ "$job_name" == "success" ]] ; then
-                    exit 0;
-                  else 
-                    exit 1;
-                  fi
-
-
     # Test JObs
     unit_test:
         docker:
@@ -177,10 +153,6 @@ workflows:
             - nosetest:
                 requires:
                     - build
-            - cymetric_dev:
-                requires:
-                    - unit_test
-                    - nosetest
             
             # Merge on Develop
             - deploy_latest:
