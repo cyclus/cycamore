@@ -79,12 +79,26 @@ jobs:
     
                 
     empty_test:
-        machine: true
+        docker:
+            - image: cyclus/cyclus:stable
+        working_directory: ~/cycamore
         steps:
+            - checkout
             - run:
-                name: Cycamore/Cymetric tests
-                no_output_timeout: "20m"
-                command: echo "toto"
+                name: Build Docker Image
+                command: |
+                    python install.py -j 2 --build-type=Release \
+                    -DBLAS_LIBRARIES="/opt/conda/lib/libblas.so" \
+                    -DLAPACK_LIBRARIES="/opt/conda/lib/liblapack.so"
+            - run:
+                name: Unit Test
+                command: /root/.local/bin/cycamore_unit_tests; exit $?
+            - run:
+                name: Install nosetest
+                command: pip install nose
+            - run:
+                name: Nosetests
+                command: nosetests -w ~/cycamore/tests; exit $?
 
     test_cymetric:
         machine: true
