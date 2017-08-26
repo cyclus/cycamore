@@ -9,7 +9,7 @@ jobs:
         steps:
             - checkout
             - run:
-                name: Build Docker Image
+                name: Build Cycamore
                 command: |
                     python install.py -j 2 --build-type=Release \
                     -DBLAS_LIBRARIES="/opt/conda/lib/libblas.so" \
