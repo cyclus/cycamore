@@ -85,6 +85,10 @@ jobs:
         steps:
             - checkout
             - run:
+                name: install missing passage
+                command: |
+                    apt-get install libxml2-dev 
+            - run:
                 name: Build Docker Image
                 command: |
                     python install.py -j 2 --build-type=Release \
