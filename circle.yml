@@ -57,7 +57,7 @@ jobs:
                 command: |
                   docker login -e $DOCKER_EMAIL -u $DOCKER_USER -p $DOCKER_PASS
             - run:
-                name: Build Docker container
+               name: Build Docker container
                 command: docker build -t cyclus/cycamore:stable .
             - run:
                 name: Push on DockerHub
@@ -76,6 +76,15 @@ jobs:
                 command: |
                   docker/deb-ci/build_upload_deb.sh 14
                   docker/deb-ci/build_upload_deb.sh 16
+    
+                
+    empty_test:
+        machine: true
+        steps:
+            - run:
+                name: Cycamore/Cymetric tests
+                no_output_timeout: "20m"
+                command: echo "toto"
 
     test_cymetric:
         machine: true
