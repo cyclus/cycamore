@@ -80,7 +80,7 @@ jobs:
                 
     empty_test:
         docker:
-            - image: cyclus/cyclus:stable
+            - image: cyclus/cyclus:latest
         working_directory: ~/cycamore
         steps:
             - checkout
