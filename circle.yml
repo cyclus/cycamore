@@ -1,6 +1,7 @@
 version: 2
 
 jobs:
+    # Build Cyclus
     build:
         docker:
             - image: cyclus/cyclus:latest
@@ -21,7 +22,9 @@ jobs:
                 paths:
                   - /root
 
-    deploy:
+
+    # Update docker container
+    deploy: # Cyclus/dev -> Cyclus:latest
         docker:
             - image: circleci/ruby:2.4-node
         working_directory: ~/cycamore
@@ -42,7 +45,7 @@ jobs:
                 name: Push on DockerHub
                 command: docker push cyclus/cycamore:latest # push to docker depot
 
-    deploy_stable:
+    deploy_stable: # Cyclus/master -> Cyclus:stable
         docker:
             - image: circleci/ruby:2.4-node
         working_directory: ~/cycamore
@@ -63,6 +66,8 @@ jobs:
                 name: Push on DockerHub
                 command: docker push cyclus/cycamore:stable # push to docker depot
 
+
+    # Debian package generation (on master update)
     deb_generation:
         docker:
             - image: circleci/ruby:2.4-node
@@ -77,10 +82,11 @@ jobs:
                   docker/deb-ci/build_upload_deb.sh 14
                   docker/deb-ci/build_upload_deb.sh 16
     
-                
-    empty_test:
+
+    # Triggered by Cyclus               
+    dev_against_cyclus_master:  ## Cycamore/dev against Cyclus/master
         docker:
-            - image: cyclus/cyclus:latest
+            - image: cyclus/cyclus:master
         working_directory: ~/cycamore
         steps:
             - checkout
@@ -100,7 +106,9 @@ jobs:
                 name: Nosetests
                 command: nosetests -w ~/cycamore/tests; exit $?
 
-    test_cymetric:
+
+    # External Triggers
+    cymetric_dev: ## Cymetric/dev against Cyclus/dev + Cyacamore/dev
         machine: true
         steps:
             - run:
@@ -122,6 +130,8 @@ jobs:
                     exit 1;
                   fi
 
+
+    # Test JObs
     unit_test:
         docker:
             - image: cyclus/cyclus:latest
@@ -158,6 +168,9 @@ workflows:
     version: 2
     build_and_test:
         jobs:
+            
+            
+            # on a pr // all branch
             - build
             - unit_test:
                 requires:
@@ -166,6 +179,12 @@ workflows:
                 requires:
                     - build
             
+            - test_cymetric:
+                requires:
+                    - unit_test
+                    - nosetest
+            
+            # Merge on Develop
             - deploy_latest:
                 filters:
                     branches:
@@ -173,16 +192,13 @@ workflows:
                 requires:
                     - unit_test
                     - nosetest
-
+            
+            
+            # Merge on Master
             - deploy_stable:
                 filters:
                     branches:
                         only: master
-                requires:
-                    - unit_test
-                    - nosetest
-
-            - test_cymetric:
                 requires:
                     - unit_test
                     - nosetest
