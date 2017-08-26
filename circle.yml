@@ -40,3 +40,177 @@ deployment:
       - docker/deb-ci/build_upload_deb.sh 16 :
           timeout: 1200 # set 20 minute timeout (to avoid CI to fail)
         ## END DEB GENERATION
+
+version: 2
+
+jobs:
+    build:
+        docker:
+            - image: cyclus/cyclus:latest
+        working_directory: ~/cycamore
+        steps:
+            - checkout
+            - run:
+                name: Build Docker Image
+                command: |
+                    python install.py -j 2 --build-type=Release \
+                    -DBLAS_LIBRARIES="/opt/conda/lib/libblas.so" \
+                   -DLAPACK_LIBRARIES="/opt/conda/lib/liblapack.so"
+            - run:
+                name: save SHA to a file
+                command: echo $CIRCLE_SHA1 > .circle-sha
+            - save_cache:
+                key: v1-repo-{{ checksum ".circle-sha" }}
+                paths:
+                  - /root
+
+    deploy:
+        docker:
+            - image: circleci/ruby:2.4-node
+        working_directory: ~/cycamore
+        steps:
+            - checkout
+            - run:
+                name: Place the proper Dockerfile
+                command: cp docker/develop-ci/Dockerfile .
+            - setup_remote_docker
+            - run:
+                name: log into Docker
+                command: |
+                    docker login -e $DOCKER_EMAIL -u $DOCKER_USER -p $DOCKER_PASS
+            - run:
+                name: Build Docker container
+                command: docker build --rm=false -t cyclus/cycamore:latest .
+            - run:
+                name: Push on DockerHub
+                command: docker push cyclus/cycamore:latest # push to docker depot
+
+    deploy_stable:
+        docker:
+            - image: circleci/ruby:2.4-node
+        working_directory: ~/cycamore
+        steps:
+            - checkout
+            - run:
+                name: Place the proper Dockerfile
+                command: cp docker/master-ci/Dockerfile .
+            - setup_remote_docker
+            - run:
+                name: Log on DockerHub
+                command: |
+                  docker login -e $DOCKER_EMAIL -u $DOCKER_USER -p $DOCKER_PASS
+            - run:
+                name: Build Docker container
+                command: docker build -t cyclus/cycamore:stable .
+            - run:
+                name: Push on DockerHub
+                command: docker push cyclus/cycamore:stable # push to docker depot
+
+    deb_generation:
+        docker:
+            - image: circleci/ruby:2.4-node
+        working_directory: ~/cycamore
+        steps:
+            - checkout
+            - setup_remote_docker
+            - run:
+                name: Tag and Push on DockerHub
+                no_output_timeout: "20m"
+                command: |
+                  docker/deb-ci/build_upload_deb.sh 14
+                  docker/deb-ci/build_upload_deb.sh 16
+
+    test_cymetric:
+        machine: true
+        steps:
+            - run:
+                name: Cycamore/Cymetric tests
+                no_output_timeout: "20m"
+                command: |
+                  # Install dependencies
+                  mkdir ./bin
+                  curl -o ./bin/circleci https://raw.githubusercontent.com/rockymadden/circleci-cli/master/src/circleci 
+                  chmod 755 ./bin/circleci
+
+                  # Trigger the project
+                  ./bin/circleci init --token $CYMETRIC_CIRCLE_TOKEN
+                  ./bin/circleci trigger cyclus/cymetric develop
+                  job_name=`./bin/circleci await cyclus/cymetric |grep outcome |cut -d"\"" -f4`
+                  if [[ "$job_name" == "success" ]] ; then
+                    exit 0;
+                  else 
+                    exit 1;
+                  fi
+
+    unit_test:
+        docker:
+            - image: cyclus/cyclus:latest
+        working_directory: ~/root
+        steps:
+            - run:
+                name: save SHA to a file
+                command: echo $CIRCLE_SHA1 > .circle-sha
+            - restore_cache:
+                keys:
+                  - v1-repo-{{ checksum ".circle-sha" }}
+            - run:
+                name: Unit Test
+                command: /root/.local/bin/cycamore_unit_tests; exit $?
+    nosetest:
+        docker:
+            - image: cyclus/cyclus:latest
+        working_directory: ~/root
+        steps:
+            - run:
+                name: save SHA to a file
+                command: echo $CIRCLE_SHA1 > .circle-sha
+            - restore_cache:
+                keys:
+                  - v1-repo-{{ checksum ".circle-sha" }}
+            - run:
+                name: Install nosetest
+                command: pip install nose
+            - run:
+                name: Nosetests
+                command: nosetests -w ~/cycamore/tests; exit $?
+
+workflows:
+    version: 2
+    build_and_test:
+        jobs:
+            - build
+            - unit_test:
+                requires:
+                    - build
+            - nosetest:
+                requires:
+                    - build
+            
+            - deploy_latest:
+                filters:
+                    branches:
+                        only: develop
+                requires:
+                    - unit_test
+                    - nosetest
+
+            - deploy_stable:
+                filters:
+                    branches:
+                        only: master
+                requires:
+                    - unit_test
+                    - nosetest
+
+            - run_cymetric:
+                requires:
+                    - unit_test
+                    - nosetest
+
+            - deb_generation:
+                filters:
+                    branches:
+                        only: master
+                requires:
+                    - unit_test
+                    - nosetest
