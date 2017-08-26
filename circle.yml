@@ -168,7 +168,7 @@ workflows:
                     - unit_test
                     - nosetest
 
-            - run_cymetric:
+            - test_cymetric:
                 requires:
                     - unit_test
                     - nosetest
