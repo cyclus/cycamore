@@ -169,7 +169,6 @@ workflows:
     build_and_test:
         jobs:
             
-            
             # on a pr // all branch
             - build
             - unit_test:
@@ -178,8 +177,7 @@ workflows:
             - nosetest:
                 requires:
                     - build
-            
-            - test_cymetric:
+            - cymetric_dev:
                 requires:
                     - unit_test
                     - nosetest
