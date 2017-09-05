@@ -1,5 +1,3 @@
-version: 2
-
 jobs:
     # Build Cyclus
     build:
@@ -7,6 +5,8 @@ jobs:
             - image: cyclus/cyclus:latest
         working_directory: ~/cycamore
         steps:
+            # Ensure your image has git (required by git to clone via SSH) so that CircleCI can clone your repo
+            - run: apt-get -qq update; apt-get -y install git openssh-client
             - checkout
             - run:
                 name: Build Cycamore
@@ -23,91 +23,8 @@ jobs:
                   - /root
 
 
-    # Update docker container
-    deploy: # Cyclus/dev -> Cyclus:latest
-        docker:
-            - image: circleci/ruby:2.4-node
-        working_directory: ~/cycamore
-        steps:
-            - checkout
-            - run:
-                name: Place the proper Dockerfile
-                command: cp docker/develop-ci/Dockerfile .
-            - setup_remote_docker
-            - run:
-                name: log into Docker
-                command: |
-                    docker login -e $DOCKER_EMAIL -u $DOCKER_USER -p $DOCKER_PASS
-            - run:
-                name: Build Docker container
-                command: docker build --rm=false -t cyclus/cycamore:latest .
-            - run:
-                name: Push on DockerHub
-                command: docker push cyclus/cycamore:latest # push to docker depot
 
-    deploy_stable: # Cyclus/master -> Cyclus:stable
-        docker:
-            - image: circleci/ruby:2.4-node
-        working_directory: ~/cycamore
-        steps:
-            - checkout
-            - run:
-                name: Place the proper Dockerfile
-                command: cp docker/master-ci/Dockerfile .
-            - setup_remote_docker
-            - run:
-                name: Log on DockerHub
-                command: |
-                  docker login -e $DOCKER_EMAIL -u $DOCKER_USER -p $DOCKER_PASS
-            - run:
-                name: Build Docker container
-                command: docker build -t cyclus/cycamore:stable .
-            - run:
-                name: Push on DockerHub
-                command: docker push cyclus/cycamore:stable # push to docker depot
-
-
-    # Debian package generation (on master update)
-    deb_generation:
-        docker:
-            - image: circleci/ruby:2.4-node
-        working_directory: ~/cycamore
-        steps:
-            - checkout
-            - setup_remote_docker
-            - run:
-                name: Tag and Push on DockerHub
-                no_output_timeout: "20m"
-                command: |
-                  docker/deb-ci/build_upload_deb.sh 14
-                  docker/deb-ci/build_upload_deb.sh 16
-
-
-    # Triggered by Cyclus
-    dev_against_cyclus_master:  ## Cycamore/dev against Cyclus/master
-        docker:
-            - image: cyclus/cyclus:master
-        working_directory: ~/cycamore
-        steps:
-            - checkout
-            - run:
-                name: Build Docker Image
-                command: |
-                    python install.py -j 2 --build-type=Release \
-                    -DBLAS_LIBRARIES="/opt/conda/lib/libblas.so" \
-                    -DLAPACK_LIBRARIES="/opt/conda/lib/liblapack.so"
-            - run:
-                name: Unit Test
-                command: /root/.local/bin/cycamore_unit_tests; exit $?
-            - run:
-                name: Install nosetest
-                command: pip install nose
-            - run:
-                name: Nosetests
-                command: nosetests -w ~/cycamore/tests; exit $?
-
-
-    # Test JObs
+    # Test
     unit_test:
         docker:
             - image: cyclus/cyclus:latest
@@ -139,6 +56,67 @@ jobs:
             - run:
                 name: Nosetests
                 command: nosetests -w ~/cycamore/tests; exit $?
+
+                
+    # Update docker container
+    deploy: # Cyclus/dev -> Cyclus:latest
+        docker:
+            - image: circleci/ruby:2.4-node
+        working_directory: ~/cycamore
+        steps:
+            - checkout
+            - run:
+                name: Place the proper Dockerfile
+                command: cp docker/develop-ci/Dockerfile .
+            - setup_remote_docker
+            - run:
+                name: log into Docker
+                command: |
+                    docker -u $DOCKER_USER -p $DOCKER_PASS
+            - run:
+                name: Build Docker container
+                command: docker build --rm=false -t cyclus/cycamore:latest .
+            - run:
+                name: Push on DockerHub
+                command: docker push cyclus/cycamore:latest # push to docker depot
+
+    deploy_stable: # Cyclus/master -> Cyclus:stable
+        docker:
+            - image: circleci/ruby:2.4-node
+        working_directory: ~/cycamore
+        steps:
+            - checkout
+            - run:
+                name: Place the proper Dockerfile
+                command: cp docker/master-ci/Dockerfile .
+            - setup_remote_docker
+            - run:
+                name: Log on DockerHub
+                command: |
+                  docker -u $DOCKER_USER -p $DOCKER_PASS
+            - run:
+                name: Build Docker container
+                command: docker build -t cyclus/cycamore:stable .
+            - run:
+                name: Push on DockerHub
+                command: docker push cyclus/cycamore:stable # push to docker depot
+
+
+    # Debian package generation (on master update)
+    deb_generation:
+        docker:
+            - image: circleci/ruby:2.4-node
+        working_directory: ~/cycamore
+        steps:
+            - checkout
+            - setup_remote_docker
+            - run:
+                name: Tag and Push on DockerHub
+                no_output_timeout: "20m"
+                command: |
+                  docker/deb-ci/build_upload_deb.sh 14
+                  docker/deb-ci/build_upload_deb.sh 16
+
 
 workflows:
     version: 2
