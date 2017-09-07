@@ -133,7 +133,7 @@ workflows:
                     - build
 
             # Merge on Master
-            - deploy_latest:
+            - deploy:
                 filters:
                     branches:
                         only: master
