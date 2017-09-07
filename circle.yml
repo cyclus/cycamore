@@ -132,7 +132,7 @@ workflows:
                 requires:
                     - build
 
-            # Merge on Develop
+            # Merge on Master
             - deploy_latest:
                 filters:
                     branches:
@@ -142,7 +142,7 @@ workflows:
                     - nosetest
 
 
-            # Merge on Master
+             # The following should now be done on version tag.
             - deploy_stable:
                 filters:
                     branches:
