@@ -1,17 +1,32 @@
 #! /usr/bin/env python
-
 import os
+import uuid
+import sqlite3
 import platform
 
 import tables
-import uuid
-import sqlite3
 import numpy as np
-from numpy.testing import assert_array_almost_equal 
-from numpy.testing import assert_almost_equal 
+from numpy.testing import assert_array_almost_equal
+from numpy.testing import assert_almost_equal
+from cyclus.lib import Env
+
+from nose.plugins.skip import SkipTest
 from nose.tools import assert_equal, assert_true
+
+
 import helper
 from helper import check_cmd, run_cyclus, table_exist
+
+
+ALLOW_MILPS = Env().allow_milps
+
+
+def skip_if_dont_allow_milps():
+    """A don't run certain tests if MILPs are disabled."""
+    if not ALLOW_MILPS:
+        raise SkipTest("Cyclus was compiled without MILPS support or the "
+                       "ALLOW_MILPS env var was not set to true.")
+
 
 class TestRegression(object):
     """A base class for all regression tests. A derived class is required for
@@ -29,7 +44,7 @@ class TestRegression(object):
         if not self.inf:
             raise TypeError(("self.inf must be set in derived classes "
                              "to run regression tests."))
-        run_cyclus("cyclus", os.getcwd(), self.inf, self.outf)        
+        run_cyclus("cyclus", os.getcwd(), self.inf, self.outf)
 
         # Get specific tables and columns
         if self.ext == '.h5':
@@ -82,7 +97,7 @@ class TestRegression(object):
             return np.array([x[k] for x in a])
         else:
             return a[k]
-                        
+
     def tearDown(self):
         if self.ext == '.sqlite':
             self.conn.close()
@@ -113,7 +128,7 @@ class _PhysorEnrichment(TestRegression):
         # this can be updated if/when we can call into the cyclus::toolkit's
         # enrichment module from python
         # with old BatchReactor: exp = [6.9, 10, 4.14, 6.9]
-        exp = [6.9, 10., 4.14, 6.9]
+        exp = [6.85, 9.94, 4.11, 6.85]
         obs = [np.sum(self.to_ary(enr, "SWU")[
                     self.to_ary(enr, "Time") == t]) for t in range(4)]
         assert_array_almost_equal(exp, obs, decimal=2)
@@ -124,7 +139,7 @@ class _PhysorEnrichment(TestRegression):
         # enrichment module from python
 
         # with old BatchReactor: exp = [13.03, 16.54, 7.83, 13.03]
-        exp = [13.03, 16.55, 7.82, 13.03]
+        exp = [13.14, 16.69, 7.88, 13.14]
         obs = [np.sum(self.to_ary(enr, "Natural_Uranium")[
                     self.to_ary(enr, "Time") == t]) for t in range(4)]
         assert_array_almost_equal(exp, obs, decimal=2)
@@ -137,7 +152,7 @@ class _PhysorEnrichment(TestRegression):
             if tx['ReceiverId'] == self.rx_id[0]:
                 txs[tx['Time']] += self.rsrc_qtys[tx['ResourceId']]
 
-        msg = "Testing that first reactor gets less than it wants."      
+        msg = "Testing that first reactor gets less than it wants."
         assert_array_almost_equal(exp, txs, decimal=2, err_msg=msg)
 
     def test_xactions2(self):
@@ -148,19 +163,20 @@ class _PhysorEnrichment(TestRegression):
             if tx['ReceiverId'] == self.rx_id[1]:
                 txs[tx['Time']] += self.rsrc_qtys[tx['ResourceId']]
 
-        msg = "Testing that second reactor gets what it wants."      
+        msg = "Testing that second reactor gets what it wants."
         assert_array_almost_equal(exp, txs, decimal=2, err_msg=msg)
 
 class TestCBCPhysorEnrichment(_PhysorEnrichment):
     def __init__(self, *args, **kwargs):
         super(TestCBCPhysorEnrichment, self).__init__(*args, **kwargs)
         self.inf = "../input/physor/1_Enrichment_2_Reactor.xml"
+        skip_if_dont_allow_milps()
 
 class TestGreedyPhysorEnrichment(_PhysorEnrichment):
     def __init__(self, *args, **kwargs):
         super(TestGreedyPhysorEnrichment, self).__init__(*args, **kwargs)
         self.inf = "../input/physor/greedy_1_Enrichment_2_Reactor.xml"
-        
+
 class _PhysorSources(TestRegression):
     """This class tests the 2_Sources_3_Reactor.xml file related to the Cyclus
     Physor 2014 publication. Reactor deployment and transactions between
@@ -171,7 +187,7 @@ class _PhysorSources(TestRegression):
 
     def setUp(self):
         super(_PhysorSources, self).setUp()
-        
+
         # identify each reactor and supplier by id
         tbl = self.agent_entry
         rx_id = self.find_ids(":cycamore:Reactor", tbl)
@@ -183,7 +199,7 @@ class _PhysorSources(TestRegression):
 
     def test_rxtr_deployment(self):
         depl_time = {x["AgentId"]: x["EnterTime"] for x in self.agent_entry}
-        
+
         assert_equal(depl_time[self.r1], 1)
         assert_equal(depl_time[self.r2], 2)
         assert_equal(depl_time[self.r3], 3)
@@ -195,14 +211,14 @@ class _PhysorSources(TestRegression):
             if tx['ReceiverId'] == self.r1 and tx['SenderId'] == self.smox:
                 txs[tx['Time']] += self.rsrc_qtys[tx['ResourceId']]
         assert_array_almost_equal(mox_exp, txs)
-        
+
         uox_exp = [0, 0, 0, 0, 1]
         txs = [0, 0, 0, 0, 0]
         for tx in self.transactions:
             if tx['ReceiverId'] == self.r1 and tx['SenderId'] == self.suox:
                 txs[tx['Time']] += self.rsrc_qtys[tx['ResourceId']]
         assert_array_almost_equal(uox_exp, txs)
-         
+
     def test_rxtr2_xactions(self):
         mox_exp = [0, 0, 1, 1, 1]
         txs = [0, 0, 0, 0, 0]
@@ -210,14 +226,14 @@ class _PhysorSources(TestRegression):
             if tx['ReceiverId'] == self.r2 and tx['SenderId'] == self.smox:
                 txs[tx['Time']] += self.rsrc_qtys[tx['ResourceId']]
         assert_array_almost_equal(mox_exp, txs)
-        
+
         uox_exp = [0, 0, 0, 0, 0]
         txs = [0, 0, 0, 0, 0]
         for tx in self.transactions:
             if tx['ReceiverId'] == self.r2 and tx['SenderId'] == self.suox:
                 txs[tx['Time']] += self.rsrc_qtys[tx['ResourceId']]
         assert_array_almost_equal(uox_exp, txs)
-         
+
     def test_rxtr3_xactions(self):
         mox_exp = [0, 0, 0, 0.5, 1]
         txs = [0, 0, 0, 0, 0]
@@ -225,7 +241,7 @@ class _PhysorSources(TestRegression):
             if tx['ReceiverId'] == self.r3 and tx['SenderId'] == self.smox:
                 txs[tx['Time']] += self.rsrc_qtys[tx['ResourceId']]
         assert_array_almost_equal(mox_exp, txs)
-        
+
         uox_exp = [0, 0, 0, 0.5, 0]
         txs = [0, 0, 0, 0, 0]
         for tx in self.transactions:
@@ -237,6 +253,7 @@ class TestCBCPhysorSources(_PhysorSources):
     def __init__(self, *args, **kwargs):
         super(TestCBCPhysorSources, self).__init__(*args, **kwargs)
         self.inf = "../input/physor/2_Sources_3_Reactors.xml"
+        skip_if_dont_allow_milps()
 
 class TestGreedyPhysorSources(_PhysorSources):
     def __init__(self, *args, **kwargs):
@@ -288,7 +305,7 @@ class TestDynamicCapacitated(TestRegression):
         self.resource_ids = self.to_ary(self.resources, "ResourceId")
         self.quantities = self.to_ary(self.resources, "Quantity")
 
-    def tearDown(self): 
+    def tearDown(self):
         super(TestDynamicCapacitated, self).tearDown()
 
     def test_source_deployment(self):
@@ -305,22 +322,22 @@ class TestDynamicCapacitated(TestRegression):
         # and decommissioned at time step 2
         for i in [0, 1]:
             assert_equal(
-                self.depl_time[np.where(self.agent_ids == self.sink_id[i])][0], 
+                self.depl_time[np.where(self.agent_ids == self.sink_id[i])][0],
                 1)
             assert_equal(
-                self.exit_time[np.where(self.exit_ids == self.sink_id[i])][0], 
+                self.exit_time[np.where(self.exit_ids == self.sink_id[i])][0],
                 2)
         # Test that second 2 sink facilities are deployed at time step 2
         # and decommissioned at time step 3
         for i in [2, 3]:
             assert_equal(
-                self.depl_time[np.where(self.agent_ids == self.sink_id[i])][0], 
+                self.depl_time[np.where(self.agent_ids == self.sink_id[i])][0],
                 2)
             assert_equal(
-                self.exit_time[np.where(self.exit_ids == self.sink_id[i])][0], 
+                self.exit_time[np.where(self.exit_ids == self.sink_id[i])][0],
                 3)
 
-    def test_xaction_general(self):        
+    def test_xaction_general(self):
         # Check that transactions are between sources and sinks only
         for s in self.sender_ids:
             assert_equal(len(np.where(self.source_id == s)[0]), 1)
@@ -335,7 +352,7 @@ class TestDynamicCapacitated(TestRegression):
         # Check that at time step 3, there are 2 transactions
         assert_equal(len(np.where(self.trans_time == 3)[0]), 2)
 
-    def test_xaction_specific(self):                
+    def test_xaction_specific(self):
         # Check that at time step 1, there are 2 transactions with total
         # amount of 2
         quantity = 0
@@ -376,10 +393,10 @@ class TestGrowth(TestRegression):
         super(TestGrowth, self).__init__(*args, **kwargs)
         self.inf = "./input/growth.xml"
 
-    def setUp(self): 
+    def setUp(self):
         super(TestGrowth, self).setUp()
 
-    def tearDown(self): 
+    def tearDown(self):
         super(TestGrowth, self).tearDown()
 
     def test_deployment(self):
@@ -387,14 +404,14 @@ class TestGrowth(TestRegression):
         agent_ids = self.to_ary(self.agent_entry, "AgentId")
         proto = self.to_ary(self.agent_entry, "Prototype")
         enter_time = self.to_ary(self.agent_entry, "EnterTime")
-        
-        source1_id = self.find_ids("Source1", self.agent_entry, 
+
+        source1_id = self.find_ids("Source1", self.agent_entry,
                                    spec_col="Prototype")
-        source2_id = self.find_ids("Source2", self.agent_entry, 
+        source2_id = self.find_ids("Source2", self.agent_entry,
                                    spec_col="Prototype")
-        source3_id = self.find_ids("Source3", self.agent_entry, 
+        source3_id = self.find_ids("Source3", self.agent_entry,
                                    spec_col="Prototype")
-    
+
         assert_equal(len(source2_id), 1)
         assert_equal(len(source1_id), 2)
         assert_equal(len(source3_id), 3)
@@ -450,7 +467,7 @@ class _Recycle(TestRegression):
             assert_almost_equal(
                 exp, obs, err_msg='mismatch at t={}, {} != {}'.format(i, exp, obs))
             i += 1
-            
+
         os.remove(expfname)
         os.remove(obsfname)
 
@@ -509,3 +526,4 @@ class TestCbcRecycle(_Recycle):
     def __init__(self, *args, **kwargs):
         super(TestCbcRecycle, self).__init__(*args, **kwargs)
         self.inf = "../input/recycle.xml"
+        skip_if_dont_allow_milps()

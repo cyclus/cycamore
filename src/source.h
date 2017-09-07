@@ -87,7 +87,7 @@ class Source : public cyclus::Facility,
            "whatever compositions are requested.", \
     "uilabel": "Output Recipe", \
     "default": "", \
-    "uitype": "recipe", \
+    "uitype": "outrecipe", \
   }
   std::string outrecipe;
 

@@ -209,7 +209,7 @@ std::set<cyclus::BidPortfolio<cyclus::Material>::Ptr> Enrichment::GetMatlBids(
     for (it = commod_requests.begin(); it != commod_requests.end(); ++it) {
       Request<Material>* req = *it;
       Material::Ptr mat = req->target();
-      double request_enrich = cyclus::toolkit::UraniumAssay(mat);
+      double request_enrich = cyclus::toolkit::UraniumAssayMass(mat);
       if (ValidReq(req->target()) &&
           ((request_enrich < max_enrich) ||
            (cyclus::AlmostEq(request_enrich, max_enrich)))) {
@@ -352,13 +352,13 @@ cyclus::Material::Ptr Enrichment::Enrich_(cyclus::Material::Ptr mat,
   using cyclus::Material;
   using cyclus::ResCast;
   using cyclus::toolkit::Assays;
-  using cyclus::toolkit::UraniumAssay;
+  using cyclus::toolkit::UraniumAssayMass;
   using cyclus::toolkit::SwuRequired;
   using cyclus::toolkit::FeedQty;
   using cyclus::toolkit::TailsQty;
 
   // get enrichment parameters
-  Assays assays(FeedAssay(), UraniumAssay(mat), tails_assay);
+  Assays assays(FeedAssay(), UraniumAssayMass(mat), tails_assay);
   double swu_req = SwuRequired(qty, assays);
   double natu_req = FeedQty(qty, assays);
 
@@ -454,7 +454,7 @@ double Enrichment::FeedAssay() {
   cyclus::Material::Ptr fission_matl =
       inventory.Pop(pop_qty, cyclus::eps_rsrc());
   inventory.Push(fission_matl);
-  return cyclus::toolkit::UraniumAssay(fission_matl);
+  return cyclus::toolkit::UraniumAssayMass(fission_matl);
 }
 
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -

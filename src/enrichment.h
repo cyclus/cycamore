@@ -24,7 +24,7 @@ class SWUConverter : public cyclus::Converter<cyclus::Material> {
       cyclus::Arc const * a = NULL,
       cyclus::ExchangeTranslationContext<cyclus::Material>
           const * ctx = NULL) const {
-    cyclus::toolkit::Assays assays(feed_, cyclus::toolkit::UraniumAssay(m),
+    cyclus::toolkit::Assays assays(feed_, cyclus::toolkit::UraniumAssayMass(m),
                                    tails_);
     return cyclus::toolkit::SwuRequired(m->quantity(), assays);
   }
@@ -60,7 +60,7 @@ class NatUConverter : public cyclus::Converter<cyclus::Material> {
       cyclus::Arc const * a = NULL,
       cyclus::ExchangeTranslationContext<cyclus::Material>
           const * ctx = NULL) const {
-    cyclus::toolkit::Assays assays(feed_, cyclus::toolkit::UraniumAssay(m),
+    cyclus::toolkit::Assays assays(feed_, cyclus::toolkit::UraniumAssayMass(m),
                                    tails_);
     cyclus::toolkit::MatQuery mq(m);
     std::set<cyclus::Nuc> nucs;
@@ -193,7 +193,7 @@ class Enrichment : public cyclus::Facility {
   /// natural uranium it has received to maximize U-235 content
   /// Any offers that have zero U-235 content are not accepted
   virtual void AdjustMatlPrefs(cyclus::PrefMap<cyclus::Material>::type& prefs);
- 
+
   /// @brief The Enrichment place accepted trade Materials in their
   /// Inventory
   virtual void AcceptMatlTrades(
@@ -228,7 +228,7 @@ class Enrichment : public cyclus::Facility {
     max_feed_inventory = size;
     inventory.capacity(size);
   }
- 
+
   inline void SwuCapacity(double capacity) {
     swu_capacity = capacity;
     current_swu_capacity = swu_capacity;
@@ -238,8 +238,8 @@ class Enrichment : public cyclus::Facility {
 
   inline const cyclus::toolkit::ResBuf<cyclus::Material>& Tails() const {
     return tails;
-  } 
-  
+  }
+
  private:
   ///   @brief adds a material into the natural uranium inventory
   ///   @throws if the material is not the same composition as the feed_recipe
@@ -264,7 +264,7 @@ class Enrichment : public cyclus::Facility {
 
   ///  @brief records and enrichment with the cyclus::Recorder
   void RecordEnrichment_(double natural_u, double swu);
-  
+
   #pragma cyclus var { \
     "tooltip": "feed commodity",					\
     "doc": "feed commodity that the enrichment facility accepts",	\
@@ -272,15 +272,15 @@ class Enrichment : public cyclus::Facility {
     "uitype": "incommodity" \
   }
   std::string feed_commod;
-  
+
   #pragma cyclus var { \
     "tooltip": "feed recipe",						\
     "doc": "recipe for enrichment facility feed commodity",		\
     "uilabel": "Feed Recipe",                                   \
-    "uitype": "recipe" \
+    "uitype": "inrecipe" \
   }
   std::string feed_recipe;
-  
+
   #pragma cyclus var { \
     "tooltip": "product commodity",					\
     "doc": "product commodity that the enrichment facility generates",	 \
@@ -288,7 +288,7 @@ class Enrichment : public cyclus::Facility {
     "uitype": "outcommodity" \
   }
   std::string product_commod;
-  
+
   #pragma cyclus var {							\
     "tooltip": "tails commodity",					\
     "doc": "tails commodity supplied by enrichment facility",		\
@@ -299,11 +299,13 @@ class Enrichment : public cyclus::Facility {
 
   #pragma cyclus var {							\
     "default": 0.003, "tooltip": "tails assay",				\
-    "uilabel": "Tails Assay",                               \
+    "uilabel": "Tails Assay",                             \
+    "uitype": "range",                               \
+    "range": [0.0, 0.003],                              \
     "doc": "tails assay from the enrichment process",       \
   }
   double tails_assay;
-  
+
   #pragma cyclus var {							\
     "default": 0, "tooltip": "initial uranium reserves (kg)",		\
     "uilabel": "Initial Feed Inventory",				\
@@ -321,12 +323,14 @@ class Enrichment : public cyclus::Facility {
            "the enrichment facility (kg)"     \
   }
   double max_feed_inventory;
- 
+
   #pragma cyclus var { \
     "default": 1.0,						\
     "tooltip": "maximum allowed enrichment fraction",		\
     "doc": "maximum allowed weight fraction of U235 in product", \
     "uilabel": "Maximum Allowed Enrichment", \
+    "uitype": "range", \
+    "range": [0.0,1.0], \
     "schema": '<optional>'				     	   \
         '          <element name="max_enrich">'			   \
         '              <data type="double">'			   \
@@ -370,11 +374,11 @@ class Enrichment : public cyclus::Facility {
   // these help enable time series generation.
   double intra_timestep_swu_;
   double intra_timestep_feed_;
-  
+
   friend class EnrichmentTest;
   // ---
 };
- 
+
 }  // namespace cycamore
 
 #endif // CYCAMORE_SRC_ENRICHMENT_FACILITY_H_
