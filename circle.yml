@@ -59,7 +59,7 @@ jobs:
 
                 
     # Update docker container
-    deploy: # Cyclus/dev -> Cyclus:latest
+    deploy: # Cycamore -> Cycamore:latest
         docker:
             - image: circleci/ruby:2.4-node
         working_directory: ~/cycamore
@@ -67,7 +67,7 @@ jobs:
             - checkout
             - run:
                 name: Place the proper Dockerfile
-                command: cp docker/develop-ci/Dockerfile .
+                command: cp docker/master-ci/Dockerfile .
             - setup_remote_docker
             - run:
                 name: log into Docker
@@ -80,7 +80,7 @@ jobs:
                 name: Push on DockerHub
                 command: docker push cyclus/cycamore:latest # push to docker depot
 
-    deploy_stable: # Cyclus/master -> Cyclus:stable
+    deploy_stable: # Cycamore:stable
         docker:
             - image: circleci/ruby:2.4-node
         working_directory: ~/cycamore
@@ -88,7 +88,7 @@ jobs:
             - checkout
             - run:
                 name: Place the proper Dockerfile
-                command: cp docker/master-ci/Dockerfile .
+                command: cp docker/release-ci/Dockerfile .
             - setup_remote_docker
             - run:
                 name: Log on DockerHub
@@ -136,7 +136,7 @@ workflows:
             - deploy_latest:
                 filters:
                     branches:
-                        only: develop
+                        only: master
                 requires:
                     - unit_test
                     - nosetest
@@ -146,7 +146,9 @@ workflows:
             - deploy_stable:
                 filters:
                     branches:
-                        only: master
+                        ignore: /.*/
+                    tags:
+                        only: /.*/
                 requires:
                     - unit_test
                     - nosetest
@@ -154,7 +156,9 @@ workflows:
             - deb_generation:
                 filters:
                     branches:
-                        only: master
+                        ignore: /.*/
+                    tags:
+                        only: /.*/
                 requires:
                     - unit_test
                     - nosetest
