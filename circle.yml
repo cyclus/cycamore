@@ -74,7 +74,7 @@ jobs:
             - run:
                 name: log into Docker
                 command: |
-                    docker -u $DOCKER_USER -p $DOCKER_PASS
+                    docker login -u $DOCKER_USER -p $DOCKER_PASS
             - run:
                 name: Build Docker container
                 command: docker build --rm=false -t cyclus/cycamore:latest .
@@ -95,7 +95,7 @@ jobs:
             - run:
                 name: Log on DockerHub
                 command: |
-                  docker -u $DOCKER_USER -p $DOCKER_PASS
+                  docker login -u $DOCKER_USER -p $DOCKER_PASS
             - run:
                 name: Build Docker container
                 command: docker build -t cyclus/cycamore:stable .
