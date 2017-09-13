@@ -53,7 +53,8 @@ namespace cycamore {
 /// compositions.
 
 class Reactor : public cyclus::Facility,
-  public cyclus::toolkit::CommodityProducer {
+  public cyclus::toolkit::CommodityProducer,
+  public cyclus::toolkit::Position {
 #pragma cyclus note { \
 "niche": "reactor", \
 "doc": \
