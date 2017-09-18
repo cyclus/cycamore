@@ -503,6 +503,8 @@ void Reactor::Record(std::string name, std::string val) {
       ->AddVal("Time", context()->time())
       ->AddVal("Event", name)
       ->AddVal("Value", val)
+      ->AddVal("Latitude", latitude)
+      ->AddVal("Longitude", longitude)
       ->Record();
 }
 
