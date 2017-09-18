@@ -543,7 +543,7 @@ TEST(ReactorTests, Latitude) {
   int id = sim.Run();
 
   QueryResult qr = sim.db().Query("ReactorEvents", NULL);
-  EXPECT_EQ(qr.GetVal<double>("latitude"), 30.0)
+  EXPECT_EQ(qr.GetVal<double>("latitude"), 30.0);
 }
 
 TEST(ReactorTests, Longitude) {
@@ -570,7 +570,7 @@ TEST(ReactorTests, Longitude) {
   int id = sim.Run();
 
   QueryResult qr = sim.db().Query("ReactorEvents", NULL);
-  EXPECT_EQ(qr.GetVal<double>("longitude"), 30.0)
+  EXPECT_EQ(qr.GetVal<double>("longitude"), 30.0);
 }
 
 } // namespace reactortests
