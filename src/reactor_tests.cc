@@ -519,7 +519,7 @@ TEST(ReactorTests, Retire) {
       << "failed to generate power for the correct number of time steps";
 }
 
-TEST(ReactorTests, Position) {
+TEST(ReactorTests, Latitude) {
   std::string config = 
      "  <fuel_inrecipes>  <val>lwr_fresh</val>  </fuel_inrecipes>  "
      "  <fuel_outrecipes> <val>lwr_spent</val>  </fuel_outrecipes>  "
@@ -542,8 +542,35 @@ TEST(ReactorTests, Position) {
   sim.AddRecipe("lwr_spent", c_spentuox());
   int id = sim.Run();
 
-  QueryResult qr = sim.db().Query("agentstate_cyacmore_reactorinfo", NULL);
-  std::cout << qr;
+  QueryResult qr = sim.db().Query("AgentStateCycamoreReactorInfo", NULL);
+  EXPECT_EQ(qr.GetVal<double>("latitude"), 30.0)
+}
+
+TEST(ReactorTests, Longitude) {
+  std::string config = 
+     "  <fuel_inrecipes>  <val>lwr_fresh</val>  </fuel_inrecipes>  "
+     "  <fuel_outrecipes> <val>lwr_spent</val>  </fuel_outrecipes>  "
+     "  <fuel_incommods>  <val>enriched_u</val> </fuel_incommods>  "
+     "  <fuel_outcommods> <val>waste</val>      </fuel_outcommods>  "
+     "  <fuel_prefs>      <val>1.0</val>        </fuel_prefs>  "
+     ""
+     "  <cycle_time>1</cycle_time>  "
+     "  <refuel_time>0</refuel_time>  "
+     "  <assem_size>300</assem_size>  "
+     "  <n_assem_core>1</n_assem_core>  "
+     "  <n_assem_batch>1</n_assem_batch>  "
+     "  <longitude>30.0</longitude>  "
+     "  <latitude>30.0</latitude>  ";
+
+  int simdur = 50;
+  cyclus::MockSim sim(cyclus::AgentSpec(":cycamore:Reactor"), config, simdur);
+  sim.AddSource("enriched_u").Finalize();
+  sim.AddRecipe("lwr_fresh", c_uox());
+  sim.AddRecipe("lwr_spent", c_spentuox());
+  int id = sim.Run();
+
+  QueryResult qr = sim.db().Query("AgentStateCycamoreReactorInfo", NULL);
+  EXPECT_EQ(qr.GetVal<double>("longitude"), 30.0)
 }
 
 } // namespace reactortests
