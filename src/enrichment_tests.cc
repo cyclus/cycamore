@@ -723,6 +723,65 @@ TEST_F(EnrichmentTest, Response) {
   EXPECT_NO_THROW(src_facility->GetMatlTrades(trades, responses));
   EXPECT_EQ(responses.size(), 2);
 }
+
+// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+TEST_F(EnrichmentTest, Latitude) {
+  // this tests verifies the initialization of the latitude variable
+  
+  std::string config = 
+    "   <feed_commod>natu</feed_commod> "
+    "   <feed_recipe>natu1</feed_recipe> "
+    "   <product_commod>enr_u</product_commod> "
+    "   <tails_commod>tails</tails_commod> "
+    "   <max_feed_inventory>1.0</max_feed_inventory> "
+    "   <tails_assay>0.003</tails_assay> "
+    "   <latitude>50.0</latitude> "
+    "   <longitude>35.0</longitude> ";
+
+  int simdur = 1;
+  cyclus::MockSim sim(cyclus::AgentSpec
+          (":cycamore:Enrichment"), config, simdur);
+  sim.AddRecipe("natu1", c_natu1());
+  
+  sim.AddSource("natu")
+    .recipe("natu1")
+    .Finalize();
+  
+  int id = sim.Run();
+
+  QueryResult qr = sim.db().Query("AgentPosition", NULL);
+  EXPECT_EQ(qr.GetVal<double>("Latitude"), 50.0);
+}
+
+TEST_F(EnrichmentTest, Longitude) {
+  // this tests verifies the initialization of the longitude 
+  // variable
+  
+  std::string config = 
+    "   <feed_commod>natu</feed_commod> "
+    "   <feed_recipe>natu1</feed_recipe> "
+    "   <product_commod>enr_u</product_commod> "
+    "   <tails_commod>tails</tails_commod> "
+    "   <max_feed_inventory>1.0</max_feed_inventory> "
+    "   <tails_assay>0.003</tails_assay> "
+    "   <latitude>50.0</latitude> "
+    "   <longitude>35.0</longitude> ";
+
+  int simdur = 1;
+  cyclus::MockSim sim(cyclus::AgentSpec
+          (":cycamore:Enrichment"), config, simdur);
+  sim.AddRecipe("natu1", c_natu1());
+  
+  sim.AddSource("natu")
+    .recipe("natu1")
+    .Finalize();
+  
+  int id = sim.Run();
+
+  QueryResult qr = sim.db().Query("AgentPosition", NULL);
+  EXPECT_EQ(qr.GetVal<double>("Longitude"), 35.0);
+}
+
   
 }  // namespace cycamore
 

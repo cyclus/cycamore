@@ -22,7 +22,10 @@ Enrichment::Enrichment(cyclus::Context* ctx)
       feed_recipe(""),
       product_commod(""),
       tails_commod(""),
-      order_prefs(true) {}
+      order_prefs(true),
+      latitude(0.0),
+      longitude(0.0),
+      coordinates(latitude, longitude) {}
 
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 Enrichment::~Enrichment() {}
@@ -455,6 +458,16 @@ double Enrichment::FeedAssay() {
       inventory.Pop(pop_qty, cyclus::eps_rsrc());
   inventory.Push(fission_matl);
   return cyclus::toolkit::UraniumAssayMass(fission_matl);
+}
+
+// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+void Enrichment::RecordPosition() {
+  context()
+      ->NewDatum("AgentPosition")
+      ->AddVal("AgentId", id())
+      ->AddVal("Latitude", latitude)
+      ->AddVal("Longitude", longitude)
+      ->Record();
 }
 
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -

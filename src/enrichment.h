@@ -265,6 +265,9 @@ class Enrichment : public cyclus::Facility {
   ///  @brief records and enrichment with the cyclus::Recorder
   void RecordEnrichment_(double natural_u, double swu);
 
+  /// Records a reactors latitude and longitude to the output db
+  void RecordPosition();
+
   #pragma cyclus var { \
     "tooltip": "feed commodity",					\
     "doc": "feed commodity that the enrichment facility accepts",	\
@@ -377,6 +380,25 @@ class Enrichment : public cyclus::Facility {
 
   friend class EnrichmentTest;
   // ---
+
+  /////////// position toolkit ///////////
+  #pragma cyclus var { \
+    "default": 0.0, \
+    "uilabel": "Geographical latitude in degrees as a double", \
+    "doc": "Latitude of the agent's geographical position. The value should " \
+           "be expressed in degrees as a double." \
+  }
+  double latitude;
+
+  #pragma cyclus var { \
+    "default": 0.0, \
+    "uilabel": "Geographical longitude in degrees as a double", \
+    "doc": "Longitude of the agent's geographical position. The value should " \
+           "be expressed in degrees as a double." \
+  }
+  double longitude;
+
+  cyclus::toolkit::Position coordinates;
 };
 
 }  // namespace cycamore
