@@ -96,6 +96,7 @@ void Reactor::EnterNotify() {
   if (ss.str().size() > 0) {
     throw cyclus::ValueError(ss.str());
   }
+  RecordPosition();
 }
 
 bool Reactor::CheckDecommissionCondition() {
@@ -503,6 +504,15 @@ void Reactor::Record(std::string name, std::string val) {
       ->AddVal("Time", context()->time())
       ->AddVal("Event", name)
       ->AddVal("Value", val)
+      ->AddVal("Latitude", latitude)
+      ->AddVal("Longitude", longitude)
+      ->Record();
+}
+
+void Reactor::RecordPosition() {
+  context()
+      ->NewDatum("ReactorPosition")
+      ->AddVal("AgentId", id())
       ->AddVal("Latitude", latitude)
       ->AddVal("Longitude", longitude)
       ->Record();
