@@ -251,27 +251,6 @@ class FuelFab : public cyclus::Facility {
   // map<request, inventory name>
   std::map<cyclus::Request<cyclus::Material>*, std::string> req_inventories_;
 
-  /////////// position toolkit ///////////
-  #pragma cyclus var { \
-    "default": 0.0, \
-    "uilabel": "Geographical latitude in degrees as a double", \
-    "doc": "Latitude of the agent's geographical position. The value should " \
-           "be expressed in degrees as a double." \
-  }
-  double latitude;
-
-  #pragma cyclus var { \
-    "default": 0.0, \
-    "uilabel": "Geographical longitude in degrees as a double", \
-    "doc": "Longitude of the agent's geographical position. The value should " \
-           "be expressed in degrees as a double." \
-  }
-  double longitude;
-
-  /// Records a reactors latitude and longitude to the output db
-  void RecordPosition();
-
-  cyclus::toolkit::Position coordinates;
 };
 
 double CosiWeight(cyclus::Composition::Ptr c, const std::string& spectrum);

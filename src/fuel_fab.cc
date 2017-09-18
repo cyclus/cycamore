@@ -131,13 +131,7 @@ class TopupConverter : public cyclus::Converter<cyclus::Material> {
 };
 
 FuelFab::FuelFab(cyclus::Context* ctx)
-    : cyclus::Facility(ctx), 
-      fill_size(0), 
-      fiss_size(0), 
-      throughput(0),
-      latitude(0.0),
-      longitude(0.0),
-      coordinates(latitude, longitude) {}
+    : cyclus::Facility(ctx), fill_size(0), fiss_size(0), throughput(0) {}
 
 void FuelFab::EnterNotify() {
   cyclus::Facility::EnterNotify();
@@ -729,15 +723,6 @@ bool ValidWeights(double w_low, double w_target, double w_high) {
   // w_tgt must be in between w_fill and w_fiss for the equivalence
   // interpolation to work.
   return w_low <= w_target && w_target <= w_high;
-}
-
-void Reactor::RecordPosition() {
-  context()
-      ->NewDatum("AgentPosition")
-      ->AddVal("AgentId", id())
-      ->AddVal("Latitude", latitude)
-      ->AddVal("Longitude", longitude)
-      ->Record();
 }
 
 }  // namespace cycamore
