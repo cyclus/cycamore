@@ -511,7 +511,7 @@ void Reactor::Record(std::string name, std::string val) {
 
 void Reactor::RecordPosition() {
   context()
-      ->NewDatum("ReactorPosition")
+      ->NewDatum("AgentPosition")
       ->AddVal("AgentId", id())
       ->AddVal("Latitude", latitude)
       ->AddVal("Longitude", longitude)
