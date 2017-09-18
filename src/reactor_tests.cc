@@ -542,7 +542,7 @@ TEST(ReactorTests, Latitude) {
   sim.AddRecipe("lwr_spent", c_spentuox());
   int id = sim.Run();
 
-  QueryResult qr = sim.db().Query("AgentStateCycamoreReactorInfo", NULL);
+  QueryResult qr = sim.db().Query("ReactorEvents", NULL);
   EXPECT_EQ(qr.GetVal<double>("latitude"), 30.0)
 }
 
@@ -569,7 +569,7 @@ TEST(ReactorTests, Longitude) {
   sim.AddRecipe("lwr_spent", c_spentuox());
   int id = sim.Run();
 
-  QueryResult qr = sim.db().Query("AgentStateCycamoreReactorInfo", NULL);
+  QueryResult qr = sim.db().Query("ReactorEvents", NULL);
   EXPECT_EQ(qr.GetVal<double>("longitude"), 30.0)
 }
 
