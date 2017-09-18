@@ -889,6 +889,64 @@ TEST(FuelFabTests, HomogenousBuffers) {
   sim.AddRecipe("special", c);
   ASSERT_NO_THROW(sim.Run());
 }
+// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+TEST(FuelFabTests, Latitude) {
+  // this tests verifies the initialization of the latitude variable
+  std::string config = 
+     "<fill_commods> <val>dummy</val> </fill_commods>"
+     "<fill_recipe>natu</fill_recipe>"
+     "<fill_size>1</fill_size>"
+     ""
+     "<fiss_commods> <val>stream1</val> <val>stream2</val> <val>stream3</val> </fiss_commods>"
+     "<fiss_size>2.5</fiss_size>"
+     "<fiss_recipe>spentuox</fiss_recipe>"
+     ""
+     "<outcommod>dummyout</outcommod>"
+     "<spectrum>thermal</spectrum>"
+     "<throughput>0</throughput>"
+     "<latitude>-10.0</latitude>"
+     "<longitude>-20.0</longitude>"
+     ;
+
+  int simdur = 1;
+  cyclus::MockSim sim(cyclus::AgentSpec(":cycamore:FuelFab"), config, simdur);
+  sim.AddSource("stream1").Finalize();
+  sim.AddRecipe("spentuox", c_pustream());
+  sim.AddRecipe("natu", c_natu());
+  int id = sim.Run();
+
+  QueryResult qr = sim.db().Query("AgentPosition", NULL);
+  EXPECT_EQ(qr.GetVal<double>("Latitude"), -10.0);
+}
+
+TEST(FuelFabTests, Longitude) {
+  // this tests verifies the initialization of the latitude variable
+  std::string config = 
+     "<fill_commods> <val>dummy</val> </fill_commods>"
+     "<fill_recipe>natu</fill_recipe>"
+     "<fill_size>1</fill_size>"
+     ""
+     "<fiss_commods> <val>stream1</val> <val>stream2</val> <val>stream3</val> </fiss_commods>"
+     "<fiss_size>2.5</fiss_size>"
+     "<fiss_recipe>spentuox</fiss_recipe>"
+     ""
+     "<outcommod>dummyout</outcommod>"
+     "<spectrum>thermal</spectrum>"
+     "<throughput>0</throughput>"
+     "<latitude>-10.0</latitude>"
+     "<longitude>-20.0</longitude>"
+     ;
+
+  int simdur = 1;
+  cyclus::MockSim sim(cyclus::AgentSpec(":cycamore:FuelFab"), config, simdur);
+  sim.AddSource("stream1").Finalize();
+  sim.AddRecipe("spentuox", c_pustream());
+  sim.AddRecipe("natu", c_natu());
+  int id = sim.Run();
+
+  QueryResult qr = sim.db().Query("AgentPosition", NULL);
+  EXPECT_EQ(qr.GetVal<double>("Latitude"), -20.0);
+}
 
 } // namespace fuelfabtests
 } // namespace cycamore
