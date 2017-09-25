@@ -504,14 +504,14 @@ void Reactor::Record(std::string name, std::string val) {
       ->AddVal("Time", context()->time())
       ->AddVal("Event", name)
       ->AddVal("Value", val)
-      ->AddVal("Latitude", latitude)
-      ->AddVal("Longitude", longitude)
       ->Record();
 }
 
 void Reactor::RecordPosition() {
+  std::string specification = this->spec();
   context()
-      ->NewDatum("AgentPosition")
+      ->NewDatum("AgentPositions")
+      ->AddVal("Spec", specification)
       ->AddVal("AgentId", id())
       ->AddVal("Latitude", latitude)
       ->AddVal("Longitude", longitude)

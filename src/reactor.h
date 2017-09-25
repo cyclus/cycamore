@@ -3,6 +3,7 @@
 
 #include "cyclus.h"
 #include "cycamore_version.h"
+#include <typeinfo>
 
 namespace cycamore {
 
