@@ -10,7 +10,12 @@ namespace cycamore {
 Source::Source(cyclus::Context* ctx)
     : cyclus::Facility(ctx),
       throughput(std::numeric_limits<double>::max()),
-      inventory_size(std::numeric_limits<double>::max()) {}
+      inventory_size(std::numeric_limits<double>::max()),
+      latitude(0.0),
+      longitude(0.0),
+      coordinates(latitude, longitude) {
+        RecordPosition();
+      }
 
 Source::~Source() {}
 
@@ -108,6 +113,17 @@ void Source::GetMatlTrades(
     LOG(cyclus::LEV_INFO5, "Source") << prototype() << " sent an order"
                                      << " for " << qty << " of " << outcommod;
   }
+}
+
+void Source::RecordPosition() {
+  std::string specification = this->spec();
+  context()
+      ->NewDatum("AgentPosition")
+      ->AddVal("Spec", specification)
+      ->AddVal("AgentId", id())
+      ->AddVal("Latitude", latitude)
+      ->AddVal("Longitude", longitude)
+      ->Record();
 }
 
 extern "C" cyclus::Agent* ConstructSource(cyclus::Context* ctx) {

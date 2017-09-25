@@ -11,7 +11,13 @@ using cyclus::CompMap;
 
 namespace cycamore {
 
-Separations::Separations(cyclus::Context* ctx) : cyclus::Facility(ctx) {}
+Separations::Separations(cyclus::Context* ctx) 
+    : cyclus::Facility(ctx),
+      latitude(0.0),
+      longitude(0.0),
+      coordinates(latitude, longitude) {
+        RecordPosition();
+      }
 
 cyclus::Inventories Separations::SnapshotInv() {
   cyclus::Inventories invs;
@@ -341,6 +347,17 @@ bool Separations::CheckDecommissionCondition() {
   }
 
   return true;
+}
+
+void Separations::RecordPosition() {
+  std::string specification = this->spec();
+  context()
+      ->NewDatum("AgentPosition")
+      ->AddVal("Spec", specification)
+      ->AddVal("AgentId", id())
+      ->AddVal("Latitude", latitude)
+      ->AddVal("Longitude", longitude)
+      ->Record();
 }
 
 extern "C" cyclus::Agent* ConstructSeparations(cyclus::Context* ctx) {

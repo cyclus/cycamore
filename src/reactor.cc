@@ -25,7 +25,7 @@ Reactor::Reactor(cyclus::Context* ctx)
       discharged(false),
       latitude(0.0),
       longitude(0.0),
-      coordinates(latitude, longitude) {}
+      coordinates(latitude, longitude) {RecordPosition();}
 
 
 #pragma cyclus def clone cycamore::Reactor
@@ -96,7 +96,6 @@ void Reactor::EnterNotify() {
   if (ss.str().size() > 0) {
     throw cyclus::ValueError(ss.str());
   }
-  RecordPosition();
 }
 
 bool Reactor::CheckDecommissionCondition() {

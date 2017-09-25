@@ -34,7 +34,9 @@ cyclus::Material::Ptr SepMaterial(std::map<int, double> effs,
 /// reduce its stocks by trading and hits this limit for any of its output
 /// streams, further processing/separations of feed material will halt until
 /// room is again available in the output streams.
-class Separations : public cyclus::Facility {
+class Separations 
+  : public cyclus::Facility,
+    public cyclus::toolkit::Position {
 #pragma cyclus note { \
   "niche": "separations", \
   "doc": \
@@ -203,6 +205,28 @@ class Separations : public cyclus::Facility {
   // custom SnapshotInv and InitInv and EnterNotify are used to persist this
   // state var.
   std::map<std::string, cyclus::toolkit::ResBuf<cyclus::Material> > streambufs;
+
+  /////////// position toolkit ///////////
+  #pragma cyclus var { \
+    "default": 0.0, \
+    "uilabel": "Geographical latitude in degrees as a double", \
+    "doc": "Latitude of the agent's geographical position. The value should " \
+           "be expressed in degrees as a double." \
+  }
+  double latitude;
+
+  #pragma cyclus var { \
+    "default": 0.0, \
+    "uilabel": "Geographical longitude in degrees as a double", \
+    "doc": "Longitude of the agent's geographical position. The value should " \
+           "be expressed in degrees as a double." \
+  }
+  double longitude;
+
+  cyclus::toolkit::Position coordinates;
+
+  /// Records a reactors latitude and longitude to the output db
+  void RecordPosition();
 };
 
 }  // namespace cycamore
