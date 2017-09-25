@@ -465,6 +465,7 @@ double Enrichment::FeedAssay() {
 void Enrichment::RecordPosition() {
   context()
       ->NewDatum("AgentPosition")
+      ->AddVal("Spec", specification)
       ->AddVal("AgentId", id())
       ->AddVal("Latitude", latitude)
       ->AddVal("Longitude", longitude)

@@ -510,7 +510,7 @@ void Reactor::Record(std::string name, std::string val) {
 void Reactor::RecordPosition() {
   std::string specification = this->spec();
   context()
-      ->NewDatum("AgentPositions")
+      ->NewDatum("AgentPosition")
       ->AddVal("Spec", specification)
       ->AddVal("AgentId", id())
       ->AddVal("Latitude", latitude)
