@@ -187,8 +187,8 @@ void Mixer::AcceptMatlTrades(
   req_inventories_.clear();
 }
 
-void Reactor::RecordPosition() {
-  std::string specification = this->spec();
+void Mixer::RecordPosition() {
+  std::string specification = spec();
   context()
       ->NewDatum("AgentPosition")
       ->AddVal("Spec", specification)

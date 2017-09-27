@@ -15,9 +15,7 @@ Separations::Separations(cyclus::Context* ctx)
     : cyclus::Facility(ctx),
       latitude(0.0),
       longitude(0.0),
-      coordinates(latitude, longitude) {
-        RecordPosition();
-      }
+      coordinates(latitude, longitude) {}
 
 cyclus::Inventories Separations::SnapshotInv() {
   cyclus::Inventories invs;
@@ -70,6 +68,7 @@ void Separations::EnterNotify() {
     for (it2 = stream.second.begin(); it2 != stream.second.end(); it2++) {
       efficiency_[it2->first] += it2->second;
     }
+    RecordPosition();
   }
 
   std::vector<int> eff_pb_;

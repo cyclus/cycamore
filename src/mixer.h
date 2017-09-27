@@ -112,6 +112,7 @@ class Mixer
   //// A policy for sending material
   cyclus::toolkit::MatlSellPolicy sell_policy;
 
+  private:
   /////////// position toolkit ///////////
   #pragma cyclus var { \
     "default": 0.0, \

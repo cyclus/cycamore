@@ -13,15 +13,14 @@ Source::Source(cyclus::Context* ctx)
       inventory_size(std::numeric_limits<double>::max()),
       latitude(0.0),
       longitude(0.0),
-      coordinates(latitude, longitude) {
-        RecordPosition();
-      }
+      coordinates(latitude, longitude) {}
 
 Source::~Source() {}
 
 void Source::InitFrom(Source* m) {
   #pragma cyclus impl initfromcopy cycamore::Source
   cyclus::toolkit::CommodityProducer::Copy(m);
+  RecordPosition();
 }
 
 void Source::InitFrom(cyclus::QueryableBackend* b) {
@@ -29,6 +28,7 @@ void Source::InitFrom(cyclus::QueryableBackend* b) {
   namespace tk = cyclus::toolkit;
   tk::CommodityProducer::Add(tk::Commodity(outcommod),
                              tk::CommodInfo(throughput, throughput));
+  RecordPosition();
 }
 
 std::string Source::str() {

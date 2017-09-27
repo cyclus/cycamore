@@ -11,9 +11,7 @@ Storage::Storage(cyclus::Context* ctx)
       longitude(0.0),
       coordinates(latitude, longitude) {
   cyclus::Warn<cyclus::EXPERIMENTAL_WARNING>(
-      "The Storage Facility is experimental.");
-  RecordPosition();
-};
+      "The Storage Facility is experimental.");};
 
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 // pragmas
@@ -85,6 +83,7 @@ void Storage::EnterNotify() {
     ss << "out_commods has " << out_commods.size() << " values, expected 1.";
     throw cyclus::ValueError(ss.str());
   }
+  RecordPosition();
 }
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -

@@ -15,9 +15,7 @@ Sink::Sink(cyclus::Context* ctx)
       latitude(0.0),
       longitude(0.0),
       coordinates(latitude, longitude) {
-  SetMaxInventorySize(std::numeric_limits<double>::max());
-  RecordPosition();
-}
+  SetMaxInventorySize(std::numeric_limits<double>::max());}
 
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 Sink::~Sink() {}
@@ -54,6 +52,7 @@ void Sink::EnterNotify() {
        << " values, expected " << in_commods.size();
     throw cyclus::ValueError(ss.str());
   }
+  RecordPosition();
 }
 
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -

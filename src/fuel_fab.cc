@@ -137,9 +137,7 @@ FuelFab::FuelFab(cyclus::Context* ctx)
       throughput(0),
       latitude(0.0),
       longitude(0.0),
-      coordinates(latitude, longitude) {
-        RecordPosition();
-      }
+      coordinates(latitude, longitude) {}
 
 void FuelFab::EnterNotify() {
   cyclus::Facility::EnterNotify();
@@ -165,6 +163,7 @@ void FuelFab::EnterNotify() {
        << " fill_commod_prefs vals, expected " << fill_commods.size();
     throw cyclus::ValidationError(ss.str());
   }
+  RecordPosition();
 }
 
 std::set<cyclus::RequestPortfolio<Material>::Ptr> FuelFab::GetMatlRequests() {
