@@ -231,6 +231,7 @@ void Storage::RecordPosition() {
   context()
       ->NewDatum("AgentPosition")
       ->AddVal("Spec", specification)
+      ->AddVal("Prototype", this->prototype())
       ->AddVal("AgentId", id())
       ->AddVal("Latitude", latitude)
       ->AddVal("Longitude", longitude)
