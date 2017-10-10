@@ -3,7 +3,11 @@
 
 namespace cycamore {
 
-GrowthRegion::GrowthRegion(cyclus::Context* ctx) : cyclus::Region(ctx) { }
+GrowthRegion::GrowthRegion(cyclus::Context* ctx)
+    : cyclus::Region(ctx),
+      latitude(0.0),
+      longitude(0.0),
+      coordinates(latitude, longitude) { }
 
 GrowthRegion::~GrowthRegion() {}
 
@@ -46,6 +50,7 @@ void GrowthRegion::EnterNotify() {
                                    << it->first;
     AddCommodityDemand_(it->first, it->second);
   }
+  RecordPosition();
 }
 
 void GrowthRegion::DecomNotify(Agent* a) {
@@ -149,6 +154,18 @@ void GrowthRegion::OrderBuilds(cyclus::toolkit::Commodity& commodity,
       context()->SchedBuild(instcast, agentcast->prototype());
     }
   }
+}
+
+void GrowthRegion::RecordPosition() {
+  std::string specification = this->spec();
+  context()
+      ->NewDatum("AgentPosition")
+      ->AddVal("Spec", specification)
+      ->AddVal("Prototype", this->prototype())
+      ->AddVal("AgentId", id())
+      ->AddVal("Latitude", latitude)
+      ->AddVal("Longitude", longitude)
+      ->Record();
 }
 
 extern "C" cyclus::Agent* ConstructGrowthRegion(cyclus::Context* ctx) {

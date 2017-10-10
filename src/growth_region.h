@@ -35,7 +35,8 @@ typedef std::vector<
 /// multiple commodities being demanded.
 ///
 /// @warning The growth region is experimental
-class GrowthRegion : public cyclus::Region {
+class GrowthRegion : public cyclus::Region,
+  public cyclus::toolkit::Position {
   friend class GrowthRegionTests;
  public:
   /// The default constructor for the GrowthRegion
@@ -124,6 +125,29 @@ class GrowthRegion : public cyclus::Region {
   /// @param commodity the commodity being demanded
   /// @param unmetdemand the unmet demand
   void OrderBuilds(cyclus::toolkit::Commodity& commodity, double unmetdemand);
+
+  private:
+  /////////// position toolkit ///////////
+  #pragma cyclus var { \
+    "default": 0.0, \
+    "uilabel": "Geographical latitude in degrees as a double", \
+    "doc": "Latitude of the agent's geographical position. The value should " \
+           "be expressed in degrees as a double." \
+  }
+  double latitude;
+
+  #pragma cyclus var { \
+    "default": 0.0, \
+    "uilabel": "Geographical longitude in degrees as a double", \
+    "doc": "Longitude of the agent's geographical position. The value should " \
+           "be expressed in degrees as a double." \
+  }
+  double longitude;
+
+  cyclus::toolkit::Position coordinates;
+
+  /// Records a reactors latitude and longitude to the output db
+  void RecordPosition();
 };
 
 }  // namespace cycamore
