@@ -12,9 +12,9 @@ General Notes
 * Use a branching workflow similar to the one described at
   http://progit.org/book/ch3-4.html.
 
-* Keep your own "master" and "develop" branches in sync with the blessed
-  repository's "master" and "develop" branches. Specifically, do not push your
-  own commits directly to your "master" and "develop" branches.
+* Keep your own "master"  branch in sync with the mainline
+  repository's "master" branch. Specifically, do not push your
+  own commits directly to your "master" branch.
 
 * Any commit should *pass all tests* (see `Running Tests`_).
 
@@ -30,11 +30,11 @@ Issuing a Pull Request
 ======================
 
 * When you are ready to move changes from one of your topic branches into the
-  "develop" branch, it must be reviewed and accepted by another developer.
+  "master" branch, it must be reviewed and accepted by another developer.
 
 * You may want to review this `tutorial
   <https://help.github.com/articles/using-pull-requests/>`_ before you make a
-  pull request to the develop branch.
+  pull request to the master branch.
 
 Reviewing a Pull Request
 ========================
@@ -51,7 +51,7 @@ Reviewing a Pull Request
 * Click the green "Merge Pull Request" button
 
   * Note: if the button is not available, the requester needs to merge or rebase
-    from the current HEAD of the blessed's "develop" (or "master") branch
+    from the current HEAD of the blessed's "master" branch.
 
 Running Tests
 =============
@@ -64,16 +64,13 @@ You can run the tests yourself using:
       $ cyclus_unit_tests
 
   - for Cycamore:
-    
+
     .. code-block:: bash
 
       $ cycamore_unit_tests
 
 Cautions
 ========
-
-* **NEVER** merge the "master" branch into the "develop" branch. Changes should
-  only flow *to* the "master" branch *from* the "develop" branch.
 
 * **DO NOT** rebase any commits that have been pulled/pushed anywhere else other
   than your own fork (especially if those commits have been integrated into the
@@ -131,22 +128,22 @@ work, finished, and successfully pushed your changes to your *Origin*
 repository. You are now at home and want to continue working a bit. To begin,
 let's update our *home's local branches*.  ::
 
-    .../cyclus_dir/$ git checkout develop
-    .../cyclus_dir/$ git pull upstream develop
-    .../cyclus_dir/$ git push origin develop
+    .../cyclus_dir/$ git checkout master
+    .../cyclus_dir/$ git pull upstream master
+    .../cyclus_dir/$ git push origin master
 
     .../cyclus_dir/$ git checkout work
     .../cyclus_dir/$ git pull origin work
-    .../cyclus_dir/$ git rebase develop
+    .../cyclus_dir/$ git rebase master
     .../cyclus_dir/$ git push origin work
 
 Perhaps a little explanation is required. We first want to make sure that this new local copy of
-the develop branch is up-to-date with respect to the remote origin's branch and remote upstream's
+the master branch is up-to-date with respect to the remote origin's branch and remote upstream's
 branch. If there was a change from the remote upstream's branch, we want to push that to origin.
 We then follow the same process to update the work branch, except:
 
 #. we don't need to worry about the *upstream* repo because it doesn't have a work branch, and
-#. we want to incorporate any changes which may have been introduced in the develop branch update.
+#. we want to incorporate any changes which may have been introduced in the master branch update.
 
 Workflow: The End
 ^^^^^^^^^^^^^^^^^
@@ -179,5 +176,5 @@ Releases
 
 If you are going through a release of Cyclus and Cycamore, check out the release
 procedure notes `here
-<https://github.com/cyclus/cyclus/blob/develop/doc/release_procedure.rst>`_ and
+<https://github.com/cyclus/cyclus/blob/master/doc/release_procedure.rst>`_ and
 on the `website <http://fuelcycle.org/cep/cep3.html>`_.
