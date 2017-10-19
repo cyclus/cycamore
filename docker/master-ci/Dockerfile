@@ -1,10 +1,8 @@
-
-FROM cyclus/cyclus:stable
+FROM cyclus/cyclus:latest
 
 COPY . /cycamore
 WORKDIR /cycamore
-RUN mkdir Release
-WORKDIR /cycamore/Release
-RUN cmake .. -DCMAKE_BUILD_TYPE=Release
-RUN make -j2 && make install
-
+ENV PATH="/root/.local/bin:${PATH}"
+RUN python install.py -j 2 --build-type=Release \
+    -DBLAS_LIBRARIES="/opt/conda/lib/libblas.so" \
+    -DLAPACK_LIBRARIES="/opt/conda/lib/liblapack.so"
