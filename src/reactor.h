@@ -165,9 +165,6 @@ class Reactor : public cyclus::Facility,
   /// Records a reactor event to the output db with the given name and note val.
   void Record(std::string name, std::string val);
 
-  /// Records a reactors latitude and longitude to the output db
-  void RecordPosition();
-
   /// Complement of PopSpent - must be called with all materials passed that
   /// were not traded away to other agents.
   void PushSpent(std::map<std::string, cyclus::toolkit::MatVec> leftover);
@@ -420,6 +417,9 @@ class Reactor : public cyclus::Facility,
   double longitude;
 
   cyclus::toolkit::Position coordinates;
+
+  /// Records a reactors latitude and longitude to the output db
+  void RecordPosition();
 };
 
 } // namespace cycamore
