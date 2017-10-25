@@ -8,6 +8,8 @@
 
 #include <gtest/gtest.h>
 
+using cyclus::QueryResult;
+
 namespace cycamore {
 
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -457,6 +459,120 @@ TEST(MixerTests, CompleteMixingProcess) {
 
   cyclus::Material::Ptr m = sim.GetMaterial(qr.GetVal<int>("ResourceId"));
   EXPECT_DOUBLE_EQ(1., m->quantity());
+}
+
+TEST(MixerTests, Latitude) {
+  std::string config =
+      "<in_streams>"
+        "<stream>"
+          "<info>"
+            "<mixing_ratio>0.8</mixing_ratio>"
+            "<buf_size>2.5</buf_size>"
+          "</info>"
+          "<commodities>"
+            "<item>"
+              "<commodity>stream1</commodity>"
+              "<pref>1</pref>"
+            "</item>"
+          "</commodities>"
+        "</stream>"
+        "<stream>"
+          "<info>"
+            "<mixing_ratio>0.15</mixing_ratio>"
+            "<buf_size>3</buf_size>"
+          "</info>"
+          "<commodities>"
+            "<item>"
+              "<commodity>stream2</commodity>"
+              "<pref>1</pref>"
+            "</item>"
+          "</commodities>"
+        "</stream>"
+        "<stream>"
+          "<info>"
+            "<mixing_ratio>0.05</mixing_ratio>"
+            "<buf_size>5</buf_size>"
+          "</info>"
+          "<commodities>"
+            "<item>"
+              "<commodity>stream3</commodity>"
+              "<pref>1</pref>"
+            "</item>"
+          "</commodities>"
+        "</stream>"
+      "</in_streams>"
+      "<out_commod>mixedstream</out_commod>"
+      "<outputbuf_size>0</outputbuf_size>"
+      "<throughput>0</throughput>";
+  int simdur = 1;
+  cyclus::MockSim sim(cyclus::AgentSpec(":cycamore:Mixer"), config, simdur);
+  sim.AddSource("stream1").recipe("unatstream").capacity(1).Finalize();
+  sim.AddSource("stream2").recipe("uoxstream").capacity(1).Finalize();
+  sim.AddSource("stream3").recipe("pustream").capacity(1).Finalize();
+  sim.AddRecipe("unatstream", c_natu());
+  sim.AddRecipe("uoxstream", c_pustream());
+  sim.AddRecipe("pustream", c_uox());
+  int id = sim.Run();
+
+  QueryResult qr = sim.db().Query("AgentPosition", NULL);
+  EXPECT_EQ(qr.GetVal<double>("Latitude"), 0.0);
+}
+
+TEST(MixerTests, Longitude) {
+  std::string config =
+      "<in_streams>"
+        "<stream>"
+          "<info>"
+            "<mixing_ratio>0.8</mixing_ratio>"
+            "<buf_size>2.5</buf_size>"
+          "</info>"
+          "<commodities>"
+            "<item>"
+              "<commodity>stream1</commodity>"
+              "<pref>1</pref>"
+            "</item>"
+          "</commodities>"
+        "</stream>"
+        "<stream>"
+          "<info>"
+            "<mixing_ratio>0.15</mixing_ratio>"
+            "<buf_size>3</buf_size>"
+          "</info>"
+          "<commodities>"
+            "<item>"
+              "<commodity>stream2</commodity>"
+              "<pref>1</pref>"
+            "</item>"
+          "</commodities>"
+        "</stream>"
+        "<stream>"
+          "<info>"
+            "<mixing_ratio>0.05</mixing_ratio>"
+            "<buf_size>5</buf_size>"
+          "</info>"
+          "<commodities>"
+            "<item>"
+              "<commodity>stream3</commodity>"
+              "<pref>1</pref>"
+            "</item>"
+          "</commodities>"
+        "</stream>"
+      "</in_streams>"
+      "<out_commod>mixedstream</out_commod>"
+      "<outputbuf_size>0</outputbuf_size>"
+      "<throughput>0</throughput>";
+  int simdur = 1;
+  cyclus::MockSim sim(cyclus::AgentSpec(":cycamore:Mixer"), config, simdur);
+  sim.AddSource("stream1").recipe("unatstream").capacity(1).Finalize();
+  sim.AddSource("stream2").recipe("uoxstream").capacity(1).Finalize();
+  sim.AddSource("stream3").recipe("pustream").capacity(1).Finalize();
+  sim.AddRecipe("unatstream", c_natu());
+  sim.AddRecipe("uoxstream", c_pustream());
+  sim.AddRecipe("pustream", c_uox());
+  int id = sim.Run();
+
+  QueryResult qr = sim.db().Query("AgentPosition", NULL);
+  EXPECT_EQ(qr.GetVal<double>("Longitude"), 0.0);
 }
 
 }  // namespace cycamore

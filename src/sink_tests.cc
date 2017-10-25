@@ -269,6 +269,76 @@ TEST_F(SinkTest, Print) {
   EXPECT_NO_THROW(std::string s = src_facility->str());
 }
 
+TEST_F(SinkTest, Latitude) {
+  using cyclus::QueryResult;
+  using cyclus::Cond;
+
+  std::string config = 
+    "   <in_commods>"
+    "     <val>commods_1</val>"
+    "     <val>commods_2</val>"
+    "   </in_commods>"
+    "   <in_commod_prefs>"
+    "     <val>10</val> "
+    "     <val>1</val> "
+    "   </in_commod_prefs>"
+    "   <capacity>1</capacity>"
+    "   <input_capacity>1.0</input_capacity> ";
+
+  int simdur = 1;
+  cyclus::MockSim sim(cyclus::AgentSpec
+          (":cycamore:Sink"), config, simdur);
+
+  sim.AddSource("commods_1")
+    .capacity(1)
+    .Finalize();
+
+  sim.AddSource("commods_2")
+    .capacity(1)
+    .Finalize();
+  
+  int id = sim.Run();
+
+  QueryResult qr = sim.db().Query("AgentPosition", NULL);
+  EXPECT_EQ(qr.GetVal<double>("Latitude"), 0.0);
+  
+}
+
+TEST_F(SinkTest, Longitude) {
+  using cyclus::QueryResult;
+  using cyclus::Cond;
+
+  std::string config = 
+    "   <in_commods>"
+    "     <val>commods_1</val>"
+    "     <val>commods_2</val>"
+    "   </in_commods>"
+    "   <in_commod_prefs>"
+    "     <val>10</val> "
+    "     <val>1</val> "
+    "   </in_commod_prefs>"
+    "   <capacity>1</capacity>"
+    "   <input_capacity>1.0</input_capacity> ";
+
+  int simdur = 1;
+  cyclus::MockSim sim(cyclus::AgentSpec
+          (":cycamore:Sink"), config, simdur);
+
+  sim.AddSource("commods_1")
+    .capacity(1)
+    .Finalize();
+
+  sim.AddSource("commods_2")
+    .capacity(1)
+    .Finalize();
+  
+  int id = sim.Run();
+
+  QueryResult qr = sim.db().Query("AgentPosition", NULL);
+  EXPECT_EQ(qr.GetVal<double>("Longitude"), 0.0);
+  
+}
+
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 cyclus::Agent* SinkConstructor(cyclus::Context* ctx) {
   return new cycamore::Sink(ctx);

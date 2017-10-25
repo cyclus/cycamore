@@ -123,6 +123,32 @@ TEST_F(SourceTest, Response) {
   delete bid;
 }
 
+TEST_F(SourceTest, Latitude) {
+  std::string config = 
+    "<outcommod>spent_fuel</outcommod>"
+  ;
+  int simdur = 3;
+  cyclus::MockSim sim(cyclus::AgentSpec (":cycamore:Source"), config, simdur);
+  int id = sim.Run();
+
+  cyclus::QueryResult qr = sim.db().Query("AgentPosition", NULL);
+  EXPECT_EQ(qr.GetVal<double>("Latitude"), 0.0);
+
+}
+
+TEST_F(SourceTest, Longitude) {
+  std::string config = 
+    "<outcommod>spent_fuel</outcommod>"
+  ;
+  int simdur = 3;
+  cyclus::MockSim sim(cyclus::AgentSpec (":cycamore:Source"), config, simdur);
+  int id = sim.Run();
+
+  cyclus::QueryResult qr = sim.db().Query("AgentPosition", NULL);
+  EXPECT_EQ(qr.GetVal<double>("Longitude"), 0.0);
+
+}
+
 boost::shared_ptr< cyclus::ExchangeContext<cyclus::Material> >
 SourceTest::GetContext(int nreqs, std::string commod) {
   using cyclus::Material;
