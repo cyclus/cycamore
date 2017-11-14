@@ -8,6 +8,10 @@ import numpy as np
 import tables
 from nose.tools import assert_equal
 
+
+CYCLUS_HAS_COIN = None
+
+
 if sys.version_info[0] >= 3:
     str_types = (bytes, str)
 else:
@@ -57,6 +61,7 @@ def exit_times(agent_id, exit_table):
 
     return exit_times
 
+
 def run_cyclus(cyclus, cwd, in_path, out_path):
     """Runs cyclus with various inputs and creates output databases
     """
@@ -64,6 +69,7 @@ def run_cyclus(cyclus, cwd, in_path, out_path):
     # make sure the output target directory exists
     cmd = [cyclus, "-o", out_path, "--input-file", in_path]
     check_cmd(cmd, cwd, holdsrtn)
+
 
 def check_cmd(args, cwd, holdsrtn):
     """Runs a command in a subprocess and verifies that it executed properly.
@@ -80,3 +86,16 @@ def check_cmd(args, cwd, holdsrtn):
             print("STDOUT + STDERR:\n\n" + f.read().decode())
     holdsrtn[0] = rtn
     assert_equal(rtn, 0)
+
+
+def cyclus_has_coin():
+    global CYCLUS_HAS_COIN
+    if CYCLUS_HAS_COIN is not None:
+        return CYCLUS_HAS_COIN
+    s = subprocess.check_output(['cyclus', '--version'], universal_newlines=True)
+    s = s.strip().replace('Dependencies:', '')
+    m = {k.strip(): v.strip() for k,v in [line.split()[:2] for line in s.splitlines()
+                                          if line != '']}
+    CYCLUS_HAS_COIN = m['Coin-Cbc'] != '-1'
+    return CYCLUS_HAS_COIN
+
