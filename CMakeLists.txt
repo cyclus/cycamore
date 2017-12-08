@@ -297,6 +297,7 @@ IF(NOT CYCLUS_DOC_ONLY)
     TARGET_LINK_LIBRARIES(cycamore_unit_tests
         dl
         ${LIBS}
+        cycamore
         ${CYCLUS_TEST_LIBRARIES}
         )
 
