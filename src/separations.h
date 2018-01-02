@@ -206,7 +206,6 @@ class Separations
   // state var.
   std::map<std::string, cyclus::toolkit::ResBuf<cyclus::Material> > streambufs;
 
-  /////////// position toolkit ///////////
   #pragma cyclus var { \
     "default": 0.0, \
     "uilabel": "Geographical latitude in degrees as a double", \
@@ -225,7 +224,7 @@ class Separations
 
   cyclus::toolkit::Position coordinates;
 
-  /// Records a reactors latitude and longitude to the output db
+  /// Records an agent's latitude and longitude to the output db
   void RecordPosition();
 };
 

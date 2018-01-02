@@ -214,7 +214,6 @@ class Storage
   //// A policy for sending material
   cyclus::toolkit::MatlSellPolicy sell_policy;
 
-  /////////// position toolkit ///////////
   #pragma cyclus var { \
     "default": 0.0, \
     "uilabel": "Geographical latitude in degrees as a double", \

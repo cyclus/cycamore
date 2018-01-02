@@ -113,7 +113,6 @@ class Mixer
   cyclus::toolkit::MatlSellPolicy sell_policy;
 
   private:
-  /////////// position toolkit ///////////
   #pragma cyclus var { \
     "default": 0.0, \
     "uilabel": "Geographical latitude in degrees as a double", \
@@ -132,7 +131,7 @@ class Mixer
 
   cyclus::toolkit::Position coordinates;
 
-  /// Records a reactors latitude and longitude to the output db
+  /// Records an agent's latitude and longitude to the output db
   void RecordPosition();
 };
 

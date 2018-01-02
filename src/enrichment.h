@@ -267,7 +267,7 @@ class Enrichment
   ///  @brief records and enrichment with the cyclus::Recorder
   void RecordEnrichment_(double natural_u, double swu);
 
-  /// Records a reactors latitude and longitude to the output db
+  /// Records an agent's latitude and longitude to the output db
   void RecordPosition();
 
   #pragma cyclus var { \
@@ -383,7 +383,6 @@ class Enrichment
   friend class EnrichmentTest;
   // ---
 
-  /////////// position toolkit ///////////
   #pragma cyclus var { \
     "default": 0.0, \
     "uilabel": "Geographical latitude in degrees as a double", \

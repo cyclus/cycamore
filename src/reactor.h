@@ -399,7 +399,6 @@ class Reactor : public cyclus::Facility,
   // populated lazily and no need to persist.
   std::set<std::string> uniq_outcommods_;
 
-  /////////// position toolkit ///////////
   #pragma cyclus var { \
     "default": 0.0, \
     "uilabel": "Geographical latitude in degrees as a double", \
@@ -418,7 +417,7 @@ class Reactor : public cyclus::Facility,
 
   cyclus::toolkit::Position coordinates;
 
-  /// Records a reactors latitude and longitude to the output db
+  /// Records an agent's latitude and longitude to the output db
   void RecordPosition();
 };
 

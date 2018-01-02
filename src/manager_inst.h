@@ -61,7 +61,6 @@ class ManagerInst
     }
   std::vector<std::string> prototypes;
 
-  /////////// position toolkit ///////////
   #pragma cyclus var { \
     "default": 0.0, \
     "uilabel": "Geographical latitude in degrees as a double", \
@@ -80,7 +79,7 @@ class ManagerInst
 
   cyclus::toolkit::Position coordinates;
 
-  /// Records a reactors latitude and longitude to the output db
+  /// Records an agent's latitude and longitude to the output db
   void RecordPosition();
 };
 

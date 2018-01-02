@@ -116,7 +116,6 @@ class Source : public cyclus::Facility,
   }
   double throughput;
   
-  /////////// position toolkit ///////////
   #pragma cyclus var { \
     "default": 0.0, \
     "uilabel": "Geographical latitude in degrees as a double", \
