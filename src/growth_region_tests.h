@@ -1,5 +1,7 @@
 #ifndef CYCAMORE_SRC_GROWTH_REGION_TESTS_H_
 #define CYCAMORE_SRC_GROWTH_REGION_TESTS_H_
+#include "platform.h"
+#if CYCLUS_HAS_COIN
 
 #include <gtest/gtest.h>
 
@@ -30,5 +32,5 @@ class GrowthRegionTests : public ::testing::Test {
 };
 
 }  // namespace cycamore
-
+#endif  // CYCLUS_HAS_COIN
 #endif  // CYCAMORE_SRC_GROWTH_REGION_TESTS_H_

@@ -7,14 +7,18 @@ GrowthRegion::GrowthRegion(cyclus::Context* ctx)
     : cyclus::Region(ctx),
       latitude(0.0),
       longitude(0.0),
-      coordinates(latitude, longitude) { }
+      coordinates(latitude, longitude) { 
+	#if !CYCLUS_HAS_COIN
+  		throw cyclus::Error("Growth Region requires that Cyclus & Cycamore be compiled "
+                      		"with COIN support.");
+	#endif }
 
 GrowthRegion::~GrowthRegion() {}
 
 void GrowthRegion::AddCommodityDemand_(std::string commod,
                                        Demand& demand) {
-  
-  
+
+
   cyclus::toolkit::PiecewiseFunctionFactory pff;
   cyclus::toolkit::BasicFunctionFactory bff;
   bool continuous = false;
@@ -60,7 +64,7 @@ void GrowthRegion::DecomNotify(Agent* a) {
 void GrowthRegion::Register_(cyclus::Agent* agent) {
   using cyclus::toolkit::CommodityProducerManager;
   using cyclus::toolkit::Builder;
-
+#if CYCLUS_HAS_COIN
   CommodityProducerManager* cpm_cast =
       dynamic_cast<CommodityProducerManager*>(agent);
   if (cpm_cast != NULL) {
@@ -77,12 +81,16 @@ void GrowthRegion::Register_(cyclus::Agent* agent) {
                                    << " as a builder.";
     buildmanager_.Register(b_cast);
   }
+#else
+  throw cyclus::Error("Growth Region requires that Cyclus & Cycamore be compiled "
+                      "with COIN support.");
+#endif
 }
 
 void GrowthRegion::Unregister_(cyclus::Agent* agent) {
   using cyclus::toolkit::CommodityProducerManager;
   using cyclus::toolkit::Builder;
-
+#if CYCLUS_HAS_COIN
   CommodityProducerManager* cpm_cast =
     dynamic_cast<CommodityProducerManager*>(agent);
   if (cpm_cast != NULL)
@@ -91,6 +99,10 @@ void GrowthRegion::Unregister_(cyclus::Agent* agent) {
   Builder* b_cast = dynamic_cast<Builder*>(agent);
   if (b_cast != NULL)
     buildmanager_.Unregister(b_cast);
+#else
+  throw cyclus::Error("Growth Region requires that Cyclus & Cycamore be compiled "
+                      "with COIN support.");
+#endif
 }
 
 void GrowthRegion::Tick() {
@@ -111,7 +123,7 @@ void GrowthRegion::Tick() {
     LOG(cyclus::LEV_INFO3, "greg") << "  * demand = " << demand;
     LOG(cyclus::LEV_INFO3, "greg") << "  * supply = " << supply;
     LOG(cyclus::LEV_INFO3, "greg") << "  * unmet demand = " << unmetdemand;
-    
+
     if (unmetdemand > 0) {
       OrderBuilds(commod, unmetdemand);
     }
@@ -121,6 +133,7 @@ void GrowthRegion::Tick() {
 
 void GrowthRegion::OrderBuilds(cyclus::toolkit::Commodity& commodity,
                                double unmetdemand) {
+#if CYCLUS_HAS_COIN
   using std::vector;
   vector<cyclus::toolkit::BuildOrder> orders =
     buildmanager_.MakeBuildDecision(commodity, unmetdemand);
@@ -154,6 +167,10 @@ void GrowthRegion::OrderBuilds(cyclus::toolkit::Commodity& commodity,
       context()->SchedBuild(instcast, agentcast->prototype());
     }
   }
+#else
+  throw cyclus::Error("Growth Region requires that Cyclus & Cycamore be compiled "
+                      "with COIN support.");
+#endif
 }
 
 void GrowthRegion::RecordPosition() {

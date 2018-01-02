@@ -68,8 +68,8 @@ class GrowthRegion : public cyclus::Region,
   inline cyclus::toolkit::SupplyDemandManager* sdmanager() {
     return &sdmanager_;
   }
-  
- protected:  
+
+ protected:
   #pragma cyclus var { \
     "alias": ["growth", "commod", \
               ["piecewise_function",                                    \
@@ -103,13 +103,15 @@ class GrowthRegion : public cyclus::Region,
     "respective documentation pages.",                                  \
   }
   std::map<std::string, std::vector<std::pair<int, std::pair<std::string, std::string> > > > commodity_demand; // must match Demand typedef
-  
+
+#if CYCLUS_HAS_COIN
   /// manager for building things
   cyclus::toolkit::BuildingManager buildmanager_;
+#endif
 
   /// manager for Supply and demand
   cyclus::toolkit::SupplyDemandManager sdmanager_;
-  
+
   /// register a child
   void Register_(cyclus::Agent* agent);
 
@@ -149,7 +151,6 @@ class GrowthRegion : public cyclus::Region,
   /// Records a reactors latitude and longitude to the output db
   void RecordPosition();
 };
-
 }  // namespace cycamore
 
 #endif  // CYCAMORE_SRC_GROWTH_REGION_H_
