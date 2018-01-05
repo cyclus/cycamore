@@ -123,7 +123,7 @@ TEST_F(SourceTest, Response) {
   delete bid;
 }
 
-TEST_F(SourceTest, Latitude) {
+TEST_F(SourceTest, PositionInitialize) {
   std::string config = 
     "<outcommod>spent_fuel</outcommod>"
   ;
@@ -133,19 +133,23 @@ TEST_F(SourceTest, Latitude) {
 
   cyclus::QueryResult qr = sim.db().Query("AgentPosition", NULL);
   EXPECT_EQ(qr.GetVal<double>("Latitude"), 0.0);
+  EXPECT_EQ(qr.GetVal<double>("Longitude"), 0.0);
 
 }
 
 TEST_F(SourceTest, Longitude) {
   std::string config = 
     "<outcommod>spent_fuel</outcommod>"
+    "<latitude>-0.01</latitude>"
+    "<longitude>0.01</longitude>"
   ;
   int simdur = 3;
   cyclus::MockSim sim(cyclus::AgentSpec (":cycamore:Source"), config, simdur);
   int id = sim.Run();
 
   cyclus::QueryResult qr = sim.db().Query("AgentPosition", NULL);
-  EXPECT_EQ(qr.GetVal<double>("Longitude"), 0.0);
+  EXPECT_EQ(qr.GetVal<double>("Latitude"), -0.01);
+  EXPECT_EQ(qr.GetVal<double>("Longitude"), 0.01);
 
 }
 

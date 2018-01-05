@@ -455,16 +455,14 @@ TEST_F(StorageTest, MultipleCommods){
   EXPECT_EQ(1, n_trans2) << "expected 1 transactions, got " << n_trans;
 }
 
-TEST_F(StorageTest, Latitude){
+TEST_F(StorageTest, PositionInitialize){
   // Verify Storage behavior
 
   std::string config =
     "   <in_commods> <val>spent_fuel</val> </in_commods> "
     "   <out_commods> <val>dry_spent</val> </out_commods> "
     "   <residence_time>1</residence_time>"
-    "   <max_inv_size>10</max_inv_size>"
-    "   <latitude>50.0</latitude> "
-    "   <longitude>35.0</longitude> ";
+    "   <max_inv_size>10</max_inv_size>";
 
   int simdur = 3;
 
@@ -476,7 +474,8 @@ TEST_F(StorageTest, Latitude){
   int id = sim.Run();
 
   cyclus::QueryResult qr = sim.db().Query("AgentPosition", NULL);
-  EXPECT_EQ(qr.GetVal<double>("Latitude"), 50.0);
+  EXPECT_EQ(qr.GetVal<double>("Latitude"), 0.0);
+  EXPECT_EQ(qr.GetVal<double>("Longitude"), 0.0);
 }
 
 TEST_F(StorageTest, Longitude){
@@ -500,6 +499,7 @@ TEST_F(StorageTest, Longitude){
   int id = sim.Run();
 
   cyclus::QueryResult qr = sim.db().Query("AgentPosition", NULL);
+  EXPECT_EQ(qr.GetVal<double>("Latitude"), 50.0);
   EXPECT_EQ(qr.GetVal<double>("Longitude"), 35.0);
 }
 

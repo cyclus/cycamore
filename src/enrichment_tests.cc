@@ -725,7 +725,7 @@ TEST_F(EnrichmentTest, Response) {
 }
 
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-TEST_F(EnrichmentTest, Latitude) {
+TEST_F(EnrichmentTest, PositionInitialize) {
   // this tests verifies the initialization of the latitude variable
   
   std::string config = 
@@ -734,9 +734,7 @@ TEST_F(EnrichmentTest, Latitude) {
     "   <product_commod>enr_u</product_commod> "
     "   <tails_commod>tails</tails_commod> "
     "   <max_feed_inventory>1.0</max_feed_inventory> "
-    "   <tails_assay>0.003</tails_assay> "
-    "   <latitude>50.0</latitude> "
-    "   <longitude>35.0</longitude> ";
+    "   <tails_assay>0.003</tails_assay> ";
 
   int simdur = 1;
   cyclus::MockSim sim(cyclus::AgentSpec
@@ -750,10 +748,11 @@ TEST_F(EnrichmentTest, Latitude) {
   int id = sim.Run();
 
   QueryResult qr = sim.db().Query("AgentPosition", NULL);
-  EXPECT_EQ(qr.GetVal<double>("Latitude"), 50.0);
+  EXPECT_EQ(qr.GetVal<double>("Latitude"), 0.0);
+  EXPECT_EQ(qr.GetVal<double>("Longitude"), 0.0);
 }
 
-TEST_F(EnrichmentTest, Longitude) {
+TEST_F(EnrichmentTest, PositionInitialize2) {
   // this tests verifies the initialization of the longitude 
   // variable
   
@@ -779,6 +778,7 @@ TEST_F(EnrichmentTest, Longitude) {
   int id = sim.Run();
 
   QueryResult qr = sim.db().Query("AgentPosition", NULL);
+  EXPECT_EQ(qr.GetVal<double>("Latitude"), 50.0);
   EXPECT_EQ(qr.GetVal<double>("Longitude"), 35.0);
 }
 

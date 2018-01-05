@@ -891,7 +891,7 @@ TEST(FuelFabTests, HomogenousBuffers) {
 }
 
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-TEST(FuelFabTests, Latitude) {
+TEST(FuelFabTests, PositionInitialize) {
   cyclus::Env::SetNucDataPath();
   std::string config = 
      "<fill_commods> <val>natu</val> </fill_commods>"
@@ -908,10 +908,7 @@ TEST(FuelFabTests, Latitude) {
      ""
      "<outcommod>recyclefuel</outcommod>"
      "<spectrum>thermal</spectrum>"
-     "<throughput>10000</throughput>"
-     "<latitude>50.0</latitude> "
-     "<longitude>35.0</longitude> "
-     ;
+     "<throughput>10000</throughput>";
   double fillinv = 1;
   int simdur = 2;
 
@@ -936,10 +933,11 @@ TEST(FuelFabTests, Latitude) {
   int id = sim.Run();
 
   QueryResult qr = sim.db().Query("AgentPosition", NULL);
-  EXPECT_EQ(qr.GetVal<double>("Latitude"), 50.0);
+  EXPECT_EQ(qr.GetVal<double>("Latitude"), 0.0);
+  EXPECT_EQ(qr.GetVal<double>("Longitude"), 0.0);
 }
 
-TEST(FuelFabTests, Longitude) {
+TEST(FuelFabTests, PositionInitialize2) {
   cyclus::Env::SetNucDataPath();
   std::string config = 
      "<fill_commods> <val>natu</val> </fill_commods>"
@@ -957,8 +955,8 @@ TEST(FuelFabTests, Longitude) {
      "<outcommod>recyclefuel</outcommod>"
      "<spectrum>thermal</spectrum>"
      "<throughput>10000</throughput>"
-     "<latitude>50.0</latitude> "
-     "<longitude>35.0</longitude> "
+     "<latitude>-90.0</latitude> "
+     "<longitude>-120.0</longitude> "
      ;
   double fillinv = 1;
   int simdur = 2;
@@ -984,7 +982,8 @@ TEST(FuelFabTests, Longitude) {
   int id = sim.Run();
 
   QueryResult qr = sim.db().Query("AgentPosition", NULL);
-  EXPECT_EQ(qr.GetVal<double>("Longitude"), 35.0);
+  EXPECT_EQ(qr.GetVal<double>("Latitude"), -90.0);
+  EXPECT_EQ(qr.GetVal<double>("Longitude"), -120.0);
 }
 
 } // namespace fuelfabtests

@@ -269,7 +269,7 @@ TEST_F(SinkTest, Print) {
   EXPECT_NO_THROW(std::string s = src_facility->str());
 }
 
-TEST_F(SinkTest, Latitude) {
+TEST_F(SinkTest, PositionInitialize) {
   using cyclus::QueryResult;
   using cyclus::Cond;
 
@@ -301,10 +301,10 @@ TEST_F(SinkTest, Latitude) {
 
   QueryResult qr = sim.db().Query("AgentPosition", NULL);
   EXPECT_EQ(qr.GetVal<double>("Latitude"), 0.0);
-  
+  EXPECT_EQ(qr.GetVal<double>("Longitude"), 0.0);
 }
 
-TEST_F(SinkTest, Longitude) {
+TEST_F(SinkTest, PositionInitialize2) {
   using cyclus::QueryResult;
   using cyclus::Cond;
 
@@ -318,7 +318,9 @@ TEST_F(SinkTest, Longitude) {
     "     <val>1</val> "
     "   </in_commod_prefs>"
     "   <capacity>1</capacity>"
-    "   <input_capacity>1.0</input_capacity> ";
+    "   <input_capacity>1.0</input_capacity> "
+    "   <latitude>50.0</latitude> "
+    "   <longitude>35.0</longitude> ";
 
   int simdur = 1;
   cyclus::MockSim sim(cyclus::AgentSpec
@@ -335,7 +337,8 @@ TEST_F(SinkTest, Longitude) {
   int id = sim.Run();
 
   QueryResult qr = sim.db().Query("AgentPosition", NULL);
-  EXPECT_EQ(qr.GetVal<double>("Longitude"), 0.0);
+  EXPECT_EQ(qr.GetVal<double>("Longitude"), 35.0);
+  EXPECT_EQ(qr.GetVal<double>("Latitude"), 50.0);
   
 }
 

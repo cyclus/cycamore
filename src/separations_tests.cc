@@ -341,7 +341,45 @@ TEST(SeparationsTests, Retire) {
       << "failed to discharge all material before decomissioning";
  }
 
- TEST(SeparationsTests, Latitude) {
+ TEST(SeparationsTests, PositionInitialize) {
+  std::string config =
+      "<streams>"
+      "    <item>"
+      "        <commod>stream1</commod>"
+      "        <info>"
+      "            <buf_size>-1</buf_size>"
+      "            <efficiencies>"
+      "                <item><comp>U</comp> <eff>0.6</eff></item>"
+      "                <item><comp>Pu239</comp> <eff>.7</eff></item>"
+      "            </efficiencies>"
+      "        </info>"
+      "    </item>"
+      "</streams>"
+      ""
+      "<leftover_commod>waste</leftover_commod>"
+      "<throughput>100</throughput>"
+      "<feedbuf_size>100</feedbuf_size>"
+      "<feed_commods> <val>feed</val> </feed_commods>";
+  CompMap m;
+  m[id("u235")] = 0.08;
+  m[id("u238")] = 0.9;
+  m[id("Pu239")] = .01;
+  m[id("Pu240")] = .01;
+  Composition::Ptr c = Composition::CreateFromMass(m);
+
+  int simdur = 2;
+  cyclus::MockSim sim(cyclus::AgentSpec(":cycamore:Separations"), config, simdur);
+  sim.AddSource("feed").recipe("recipe1").Finalize();
+  sim.AddSink("stream1").capacity(100).Finalize();
+  sim.AddRecipe("recipe1", c);
+  int id = sim.Run();
+
+  QueryResult qr = sim.db().Query("AgentPosition", NULL);
+  EXPECT_EQ(qr.GetVal<double>("Latitude"), 0.0);
+  EXPECT_EQ(qr.GetVal<double>("Longitude"), 0.0);
+ }
+
+  TEST(SeparationsTests, PositionInitialize2) {
   std::string config =
       "<streams>"
       "    <item>"
@@ -378,44 +416,6 @@ TEST(SeparationsTests, Retire) {
 
   QueryResult qr = sim.db().Query("AgentPosition", NULL);
   EXPECT_EQ(qr.GetVal<double>("Latitude"), 10.0);
- }
-
-  TEST(SeparationsTests, Longitude) {
-  std::string config =
-      "<streams>"
-      "    <item>"
-      "        <commod>stream1</commod>"
-      "        <info>"
-      "            <buf_size>-1</buf_size>"
-      "            <efficiencies>"
-      "                <item><comp>U</comp> <eff>0.6</eff></item>"
-      "                <item><comp>Pu239</comp> <eff>.7</eff></item>"
-      "            </efficiencies>"
-      "        </info>"
-      "    </item>"
-      "</streams>"
-      ""
-      "<leftover_commod>waste</leftover_commod>"
-      "<throughput>100</throughput>"
-      "<feedbuf_size>100</feedbuf_size>"
-      "<feed_commods> <val>feed</val> </feed_commods>"
-      "<latitude>10.0</latitude> "
-      "<longitude>15.0</longitude> ";
-  CompMap m;
-  m[id("u235")] = 0.08;
-  m[id("u238")] = 0.9;
-  m[id("Pu239")] = .01;
-  m[id("Pu240")] = .01;
-  Composition::Ptr c = Composition::CreateFromMass(m);
-
-  int simdur = 2;
-  cyclus::MockSim sim(cyclus::AgentSpec(":cycamore:Separations"), config, simdur);
-  sim.AddSource("feed").recipe("recipe1").Finalize();
-  sim.AddSink("stream1").capacity(100).Finalize();
-  sim.AddRecipe("recipe1", c);
-  int id = sim.Run();
-
-  QueryResult qr = sim.db().Query("AgentPosition", NULL);
   EXPECT_EQ(qr.GetVal<double>("Longitude"), 15.0);
  }
 } // namespace cycamore
