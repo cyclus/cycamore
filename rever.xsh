@@ -1,7 +1,7 @@
 from rever.activity import dockeractivity
 
-$PROJECT = $GITHUB_ORG = $GITHUB_REPO = 'cyclus'
-$GITHUB_REPO = 'cycamore'
+$GITHUB_ORG = 'cyclus'
+$PROJECT = $GITHUB_REPO = 'cycamore'
 
 $CHANGELOG_FILENAME = 'CHANGELOG.rst'
 $CHANGELOG_TEMPLATE = 'TEMPLATE.rst'
