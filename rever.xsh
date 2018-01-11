@@ -7,7 +7,8 @@ $CHANGELOG_FILENAME = 'CHANGELOG.rst'
 $CHANGELOG_TEMPLATE = 'TEMPLATE.rst'
 
 $DOCKER_APT_DEPS = ['libc6', 'libc6-i386', 'libc6-dev', 'libc-dev', 'gcc']
-$DOCKER_CONDA_DEPS = ['cyclus-build-deps', 'cyclus', 'make', 'cmake']
+$DOCKER_CONDA_DEPS = ['cyclus', 'make', 'cmake', 'pkg-config', 'jinja2',
+                      'gcc', 'nose']
 $DOCKER_INSTALL_COMMAND = (
     'git clean -fdx && '
     './install.py --build_type=Release '
