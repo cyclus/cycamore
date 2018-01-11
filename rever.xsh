@@ -8,7 +8,7 @@ $CHANGELOG_TEMPLATE = 'TEMPLATE.rst'
 
 $DOCKER_APT_DEPS = ['libc6', 'libc6-i386', 'libc6-dev', 'libc-dev', 'gcc']
 $DOCKER_CONDA_DEPS = ['cyclus', 'make', 'cmake', 'pkg-config', 'jinja2',
-                      'gcc', 'nose']
+                      'gcc', 'nose', 'pytables']
 $DOCKER_INSTALL_COMMAND = (
     'git clean -fdx && '
     './install.py --build_type=Release '
@@ -18,7 +18,13 @@ $DOCKER_INSTALL_COMMAND = (
 
 
 with! dockeractivity(name='cycamore-tests', lang='sh'):
-    cd tests && export PATH=${HOME}/.local/bin:${PATH} && cycamore_unit_tests && nosetests
+    set -e
+    set -x
+    export CYCLUS_PATH=${HOME}/.local/lib/cyclus:/opt/conda/lib/cyclus
+    export PATH=${HOME}/.local/bin:${PATH}
+    cd tests
+    cycamore_unit_tests
+    nosetests
 
 $ACTIVITIES = ['cycamore-tests', 'changelog', 'tag',
                'push_tag', 'conda_forge', 'ghrelease',
