@@ -68,7 +68,7 @@ class DeployInst : public cyclus::Institution,
   std::vector<int> n_build;
 
 
-#pragma cyclus var {							\
+  #pragma cyclus var {							\
     "doc": "Lifetimes for each prototype in prototype list (same order)." \
            " These lifetimes override the lifetimes in the original prototype" \
            " definition." \
@@ -84,26 +84,26 @@ class DeployInst : public cyclus::Institution,
   std::vector<int> lifetimes;
 
  private:
-#pragma cyclus var { \
+  #pragma cyclus var { \
     "default": 0.0, \
     "uilabel": "Geographical latitude in degrees as a double", \
     "doc": "Latitude of the agent's geographical position. The value should " \
            "be expressed in degrees as a double." \
-}
-double latitude;
+  }
+  double latitude;
 
-#pragma cyclus var { \
+  #pragma cyclus var { \
     "default": 0.0, \
     "uilabel": "Geographical longitude in degrees as a double", \
     "doc": "Longitude of the agent's geographical position. The value should " \
            "be expressed in degrees as a double." \
-}
-double longitude;
+  }
+  double longitude;
 
-cyclus::toolkit::Position coordinates;
+  cyclus::toolkit::Position coordinates;
 
   /// Records an agent's latitude and longitude to the output db
-void RecordPosition();
+  void RecordPosition();
 };
 
 }  // namespace cycamore
