@@ -18,7 +18,9 @@ class Context;
 /// total inventory size.  The inventory size and throughput capacity both
 /// default to infinite. If a recipe is provided, it will request material with
 /// that recipe. Requests are made for any number of specified commodities.
-class Sink : public cyclus::Facility  {
+class Sink 
+  : public cyclus::Facility,
+    public cyclus::toolkit::Position  {
  public:
   Sink(cyclus::Context* ctx);
 
@@ -151,6 +153,26 @@ class Sink : public cyclus::Facility  {
   /// this facility holds material in storage.
   #pragma cyclus var {'capacity': 'max_inv_size'}
   cyclus::toolkit::ResBuf<cyclus::Resource> inventory;
+
+  #pragma cyclus var { \
+    "default": 0.0, \
+    "uilabel": "Geographical latitude in degrees as a double", \
+    "doc": "Latitude of the agent's geographical position. The value should " \
+           "be expressed in degrees as a double." \
+  }
+  double latitude;
+
+  #pragma cyclus var { \
+    "default": 0.0, \
+    "uilabel": "Geographical longitude in degrees as a double", \
+    "doc": "Longitude of the agent's geographical position. The value should " \
+           "be expressed in degrees as a double." \
+  }
+  double longitude;
+
+  cyclus::toolkit::Position coordinates;
+
+  void RecordPosition();
 };
 
 }  // namespace cycamore

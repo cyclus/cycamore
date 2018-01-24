@@ -9,6 +9,9 @@
 // originally specified prototype name - this is important to test because
 // DeployInst does some mucking around with registering name-modded prototypes
 // in order to deal with lifetime setting.
+
+using cyclus::QueryResult;
+
 TEST(DeployInstTests, ProtoNames) {
   std::string config = 
      "<prototypes>  <val>foobar</val> </prototypes>"
@@ -136,6 +139,42 @@ TEST(DeployInstTests, NoDupProtos) {
       );
   stmt->Step();
   EXPECT_EQ(1, stmt->GetInt(0));
+}
+
+TEST(DeployInstTests, PositionInitialize) {
+  std::string config = 
+     "<prototypes>  <val>foobar</val> </prototypes>"
+     "<build_times> <val>1</val>      </build_times>"
+     "<n_build>     <val>3</val>      </n_build>"
+     "<lifetimes>   <val>2</val>      </lifetimes>";
+
+  int simdur = 5;
+  cyclus::MockSim sim(cyclus::AgentSpec(":cycamore:DeployInst"), config, simdur);
+  sim.DummyProto("foobar");
+  int id = sim.Run();
+
+  QueryResult qr = sim.db().Query("AgentPosition", NULL);
+  EXPECT_EQ(qr.GetVal<double>("Latitude"), 0.0);
+  EXPECT_EQ(qr.GetVal<double>("Longitude"), 0.0);
+}
+
+TEST(DeployInstTests, PositionInitialize2) {
+  std::string config = 
+     "<prototypes>  <val>foobar</val> </prototypes>"
+     "<longitude>   -20.0             </longitude>"
+     "<latitude>    2.0               </latitude>"
+     "<build_times> <val>1</val>      </build_times>"
+     "<n_build>     <val>3</val>      </n_build>"
+     "<lifetimes>   <val>2</val>      </lifetimes>";
+
+  int simdur = 5;
+  cyclus::MockSim sim(cyclus::AgentSpec(":cycamore:DeployInst"), config, simdur);
+  sim.DummyProto("foobar");
+  int id = sim.Run();
+
+  QueryResult qr = sim.db().Query("AgentPosition", NULL);
+  EXPECT_EQ(qr.GetVal<double>("Latitude"), 2.0);
+  EXPECT_EQ(qr.GetVal<double>("Longitude"), -20.0);
 }
 
 // required to get functionality in cyclus agent unit tests library
