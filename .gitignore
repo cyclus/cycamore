@@ -14,3 +14,5 @@ cyclus.sqlite
 cycamore_version.h
 *.sqlite
 src/version.cc.in
+# Rever
+rever/

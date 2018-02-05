@@ -1,6 +1,7 @@
 #include <sstream>
 
 #include "growth_region_tests.h"
+#if CYCLUS_HAS_COIN
 
 namespace cycamore {
 
@@ -52,3 +53,4 @@ INSTANTIATE_TEST_CASE_P(GrowthRegion, RegionTests,
                         Values(&GrowthRegionConstructor));
 INSTANTIATE_TEST_CASE_P(GrowthRegion, AgentTests,
                         Values(&GrowthRegionConstructor));
+#endif  // CYCLUS_HAS_COIN

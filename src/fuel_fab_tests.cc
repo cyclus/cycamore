@@ -890,6 +890,102 @@ TEST(FuelFabTests, HomogenousBuffers) {
   ASSERT_NO_THROW(sim.Run());
 }
 
+// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+TEST(FuelFabTests, PositionInitialize) {
+  cyclus::Env::SetNucDataPath();
+  std::string config = 
+     "<fill_commods> <val>natu</val> </fill_commods>"
+     "<fill_recipe>natu</fill_recipe>"
+     "<fill_size>0</fill_size>"
+     ""
+     "<fiss_commods> <val>pustreambad</val> </fiss_commods>"
+     "<fiss_recipe>pustreambad</fiss_recipe>"
+     "<fiss_size>1</fiss_size>"
+     ""
+     "<topup_commod>pustream</topup_commod>"
+     "<topup_recipe>pustream</topup_recipe>"
+     "<topup_size>10000</topup_size>"
+     ""
+     "<outcommod>recyclefuel</outcommod>"
+     "<spectrum>thermal</spectrum>"
+     "<throughput>10000</throughput>";
+  double fillinv = 1;
+  int simdur = 2;
+
+  double w_fill = CosiWeight(c_natu(), "thermal");
+  double w_fiss = CosiWeight(c_pustream(), "thermal");
+  double w_target = CosiWeight(c_uox(), "thermal");
+  double fiss_frac = HighFrac(w_fill, w_target, w_fiss);
+  double fill_frac = LowFrac(w_fill, w_target, w_fiss);
+  fiss_frac = AtomToMassFrac(fiss_frac, c_pustream(), c_natu());
+  fill_frac = AtomToMassFrac(fill_frac, c_natu(), c_pustream());
+  double max_provide = fillinv / fill_frac;
+
+  cyclus::MockSim sim(cyclus::AgentSpec(":cycamore:FuelFab"), config, simdur);
+  sim.AddSource("pustream").Finalize();
+  sim.AddSource("pustreambad").Finalize();
+  sim.AddSource("natu").Finalize();
+  sim.AddSink("recyclefuel").recipe("uox").capacity(2 * max_provide).Finalize();
+  sim.AddRecipe("uox", c_uox());
+  sim.AddRecipe("pustream", c_pustream());
+  sim.AddRecipe("pustreambad", c_pustreambad());
+  sim.AddRecipe("natu", c_natu());
+  int id = sim.Run();
+
+  QueryResult qr = sim.db().Query("AgentPosition", NULL);
+  EXPECT_EQ(qr.GetVal<double>("Latitude"), 0.0);
+  EXPECT_EQ(qr.GetVal<double>("Longitude"), 0.0);
+}
+
+TEST(FuelFabTests, PositionInitialize2) {
+  cyclus::Env::SetNucDataPath();
+  std::string config = 
+     "<fill_commods> <val>natu</val> </fill_commods>"
+     "<fill_recipe>natu</fill_recipe>"
+     "<fill_size>0</fill_size>"
+     ""
+     "<fiss_commods> <val>pustreambad</val> </fiss_commods>"
+     "<fiss_recipe>pustreambad</fiss_recipe>"
+     "<fiss_size>1</fiss_size>"
+     ""
+     "<topup_commod>pustream</topup_commod>"
+     "<topup_recipe>pustream</topup_recipe>"
+     "<topup_size>10000</topup_size>"
+     ""
+     "<outcommod>recyclefuel</outcommod>"
+     "<spectrum>thermal</spectrum>"
+     "<throughput>10000</throughput>"
+     "<latitude>-90.0</latitude> "
+     "<longitude>-120.0</longitude> "
+     ;
+  double fillinv = 1;
+  int simdur = 2;
+
+  double w_fill = CosiWeight(c_natu(), "thermal");
+  double w_fiss = CosiWeight(c_pustream(), "thermal");
+  double w_target = CosiWeight(c_uox(), "thermal");
+  double fiss_frac = HighFrac(w_fill, w_target, w_fiss);
+  double fill_frac = LowFrac(w_fill, w_target, w_fiss);
+  fiss_frac = AtomToMassFrac(fiss_frac, c_pustream(), c_natu());
+  fill_frac = AtomToMassFrac(fill_frac, c_natu(), c_pustream());
+  double max_provide = fillinv / fill_frac;
+  
+  cyclus::MockSim sim(cyclus::AgentSpec(":cycamore:FuelFab"), config, simdur);
+  sim.AddSource("pustream").Finalize();
+  sim.AddSource("pustreambad").Finalize();
+  sim.AddSource("natu").Finalize();
+  sim.AddSink("recyclefuel").recipe("uox").capacity(2 * max_provide).Finalize();
+  sim.AddRecipe("uox", c_uox());
+  sim.AddRecipe("pustream", c_pustream());
+  sim.AddRecipe("pustreambad", c_pustreambad());
+  sim.AddRecipe("natu", c_natu());
+  int id = sim.Run();
+
+  QueryResult qr = sim.db().Query("AgentPosition", NULL);
+  EXPECT_EQ(qr.GetVal<double>("Latitude"), -90.0);
+  EXPECT_EQ(qr.GetVal<double>("Longitude"), -120.0);
+}
+
 } // namespace fuelfabtests
 } // namespace cycamore
 

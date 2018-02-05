@@ -12,7 +12,9 @@ namespace cycamore {
 /// one for each streams to be mixed, and one output stream. The supplying of
 /// mixed material is constrained by available inventory of mixed material
 /// quantities.
-class Mixer : public cyclus::Facility {
+class Mixer 
+  : public cyclus::Facility,
+    public cyclus::toolkit::Position {
 #pragma cyclus note {   	  \
     "niche": "mixing facility",				  \
     "doc": "Mixer mixes N streams with fixed, static, user-specified" \
@@ -109,6 +111,28 @@ class Mixer : public cyclus::Facility {
 
   //// A policy for sending material
   cyclus::toolkit::MatlSellPolicy sell_policy;
+
+  private:
+  #pragma cyclus var { \
+    "default": 0.0, \
+    "uilabel": "Geographical latitude in degrees as a double", \
+    "doc": "Latitude of the agent's geographical position. The value should " \
+           "be expressed in degrees as a double." \
+  }
+  double latitude;
+
+  #pragma cyclus var { \
+    "default": 0.0, \
+    "uilabel": "Geographical longitude in degrees as a double", \
+    "doc": "Longitude of the agent's geographical position. The value should " \
+           "be expressed in degrees as a double." \
+  }
+  double longitude;
+
+  cyclus::toolkit::Position coordinates;
+
+  /// Records an agent's latitude and longitude to the output db
+  void RecordPosition();
 };
 
 }  // namespace cycamore

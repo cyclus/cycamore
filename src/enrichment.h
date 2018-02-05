@@ -115,7 +115,9 @@ class NatUConverter : public cyclus::Converter<cyclus::Material> {
 ///  no associated recipe.  Bids for tails are constrained only by total
 ///  tails inventory.
 
-class Enrichment : public cyclus::Facility {
+class Enrichment 
+  : public cyclus::Facility,
+    public cyclus::toolkit::Position {
 #pragma cyclus note {   	  \
   "niche": "enrichment facility",				  \
   "doc":								\
@@ -265,6 +267,9 @@ class Enrichment : public cyclus::Facility {
   ///  @brief records and enrichment with the cyclus::Recorder
   void RecordEnrichment_(double natural_u, double swu);
 
+  /// Records an agent's latitude and longitude to the output db
+  void RecordPosition();
+
   #pragma cyclus var { \
     "tooltip": "feed commodity",					\
     "doc": "feed commodity that the enrichment facility accepts",	\
@@ -377,6 +382,24 @@ class Enrichment : public cyclus::Facility {
 
   friend class EnrichmentTest;
   // ---
+
+  #pragma cyclus var { \
+    "default": 0.0, \
+    "uilabel": "Geographical latitude in degrees as a double", \
+    "doc": "Latitude of the agent's geographical position. The value should " \
+           "be expressed in degrees as a double." \
+  }
+  double latitude;
+
+  #pragma cyclus var { \
+    "default": 0.0, \
+    "uilabel": "Geographical longitude in degrees as a double", \
+    "doc": "Longitude of the agent's geographical position. The value should " \
+           "be expressed in degrees as a double." \
+  }
+  double longitude;
+
+  cyclus::toolkit::Position coordinates;
 };
 
 }  // namespace cycamore

@@ -35,7 +35,8 @@ typedef std::vector<
 /// multiple commodities being demanded.
 ///
 /// @warning The growth region is experimental
-class GrowthRegion : public cyclus::Region {
+class GrowthRegion : public cyclus::Region,
+  public cyclus::toolkit::Position {
   friend class GrowthRegionTests;
  public:
   /// The default constructor for the GrowthRegion
@@ -67,8 +68,8 @@ class GrowthRegion : public cyclus::Region {
   inline cyclus::toolkit::SupplyDemandManager* sdmanager() {
     return &sdmanager_;
   }
-  
- protected:  
+
+ protected:
   #pragma cyclus var { \
     "alias": ["growth", "commod", \
               ["piecewise_function",                                    \
@@ -102,13 +103,15 @@ class GrowthRegion : public cyclus::Region {
     "respective documentation pages.",                                  \
   }
   std::map<std::string, std::vector<std::pair<int, std::pair<std::string, std::string> > > > commodity_demand; // must match Demand typedef
-  
+
+#if CYCLUS_HAS_COIN
   /// manager for building things
   cyclus::toolkit::BuildingManager buildmanager_;
+#endif
 
   /// manager for Supply and demand
   cyclus::toolkit::SupplyDemandManager sdmanager_;
-  
+
   /// register a child
   void Register_(cyclus::Agent* agent);
 
@@ -124,8 +127,29 @@ class GrowthRegion : public cyclus::Region {
   /// @param commodity the commodity being demanded
   /// @param unmetdemand the unmet demand
   void OrderBuilds(cyclus::toolkit::Commodity& commodity, double unmetdemand);
-};
 
+  private:
+  #pragma cyclus var { \
+    "default": 0.0, \
+    "uilabel": "Geographical latitude in degrees as a double", \
+    "doc": "Latitude of the agent's geographical position. The value should " \
+           "be expressed in degrees as a double." \
+  }
+  double latitude;
+
+  #pragma cyclus var { \
+    "default": 0.0, \
+    "uilabel": "Geographical longitude in degrees as a double", \
+    "doc": "Longitude of the agent's geographical position. The value should " \
+           "be expressed in degrees as a double." \
+  }
+  double longitude;
+
+  cyclus::toolkit::Position coordinates;
+
+  /// Records an agent's latitude and longitude to the output db
+  void RecordPosition();
+};
 }  // namespace cycamore
 
 #endif  // CYCAMORE_SRC_GROWTH_REGION_H_

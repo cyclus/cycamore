@@ -22,7 +22,10 @@ Enrichment::Enrichment(cyclus::Context* ctx)
       feed_recipe(""),
       product_commod(""),
       tails_commod(""),
-      order_prefs(true) {}
+      order_prefs(true),
+      latitude(0.0),
+      longitude(0.0),
+      coordinates(latitude, longitude) {}
 
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 Enrichment::~Enrichment() {}
@@ -52,6 +55,7 @@ void Enrichment::Build(cyclus::Agent* parent) {
   LOG(cyclus::LEV_DEBUG2, "EnrFac") << "Enrichment "
                                     << " entering the simuluation: ";
   LOG(cyclus::LEV_DEBUG2, "EnrFac") << str();
+  RecordPosition();
 }
 
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -455,6 +459,19 @@ double Enrichment::FeedAssay() {
       inventory.Pop(pop_qty, cyclus::eps_rsrc());
   inventory.Push(fission_matl);
   return cyclus::toolkit::UraniumAssayMass(fission_matl);
+}
+
+// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+void Enrichment::RecordPosition() {
+  std::string specification = this->spec();
+  context()
+      ->NewDatum("AgentPosition")
+      ->AddVal("Spec", specification)
+      ->AddVal("Prototype", this->prototype())
+      ->AddVal("AgentId", id())
+      ->AddVal("Latitude", latitude)
+      ->AddVal("Longitude", longitude)
+      ->Record();
 }
 
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -

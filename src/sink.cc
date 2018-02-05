@@ -11,9 +11,11 @@ namespace cycamore {
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 Sink::Sink(cyclus::Context* ctx)
     : cyclus::Facility(ctx),
-      capacity(std::numeric_limits<double>::max()) {
-  SetMaxInventorySize(std::numeric_limits<double>::max());
-}
+      capacity(std::numeric_limits<double>::max()),
+      latitude(0.0),
+      longitude(0.0),
+      coordinates(latitude, longitude) {
+  SetMaxInventorySize(std::numeric_limits<double>::max());}
 
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 Sink::~Sink() {}
@@ -50,7 +52,7 @@ void Sink::EnterNotify() {
        << " values, expected " << in_commods.size();
     throw cyclus::ValueError(ss.str());
   }
-
+  RecordPosition();
 }
 
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -188,6 +190,18 @@ void Sink::Tock() {
                                    << " units of material at the close of month "
                                    << context()->time() << ".";
   LOG(cyclus::LEV_INFO3, "SnkFac") << "}";
+}
+
+void Sink::RecordPosition() {
+  std::string specification = this->spec();
+  context()
+      ->NewDatum("AgentPosition")
+      ->AddVal("Spec", specification)
+      ->AddVal("Prototype", this->prototype())
+      ->AddVal("AgentId", id())
+      ->AddVal("Latitude", latitude)
+      ->AddVal("Longitude", longitude)
+      ->Record();
 }
 
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
