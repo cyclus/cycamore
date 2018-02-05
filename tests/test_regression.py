@@ -15,7 +15,7 @@ from nose.tools import assert_equal, assert_true
 
 
 import helper
-from helper import check_cmd, run_cyclus, table_exist
+from helper import check_cmd, run_cyclus, table_exist, cyclus_has_coin
 
 
 ALLOW_MILPS = Env().allow_milps
@@ -282,6 +282,8 @@ class TestDynamicCapacitated(TestRegression):
     def __init__(self, *args, **kwargs):
         super(TestDynamicCapacitated, self).__init__(*args, **kwargs)
         self.inf = "./input/dynamic_capacitated.xml"
+        if not cyclus_has_coin():
+            raise SkipTest('Cyclus not compiled with COIN')
 
     def setUp(self):
         super(TestDynamicCapacitated, self).setUp()
@@ -392,6 +394,8 @@ class TestGrowth(TestRegression):
     def __init__(self, *args, **kwargs):
         super(TestGrowth, self).__init__(*args, **kwargs)
         self.inf = "./input/growth.xml"
+        if not cyclus_has_coin():
+            raise SkipTest('Cyclus not compiled with COIN')
 
     def setUp(self):
         super(TestGrowth, self).setUp()

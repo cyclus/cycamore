@@ -19,7 +19,8 @@ typedef std::map<int, std::vector<std::string> > BuildSched;
 // lifetimes.  The same prototype can be specified multiple times with any
 // combination of the same or different build times, build number, and
 // lifetimes.
-class DeployInst : public cyclus::Institution {
+class DeployInst : public cyclus::Institution,
+  public cyclus::toolkit::Position {
   #pragma cyclus note { \
     "doc": \
       "Builds and manages agents (facilities) according to a manually" \
@@ -67,7 +68,7 @@ class DeployInst : public cyclus::Institution {
   std::vector<int> n_build;
 
 
-#pragma cyclus var {							\
+  #pragma cyclus var {							\
     "doc": "Lifetimes for each prototype in prototype list (same order)." \
            " These lifetimes override the lifetimes in the original prototype" \
            " definition." \
@@ -81,6 +82,28 @@ class DeployInst : public cyclus::Institution {
     "uilabel": "Lifetimes" \
   }
   std::vector<int> lifetimes;
+
+ private:
+  #pragma cyclus var { \
+    "default": 0.0, \
+    "uilabel": "Geographical latitude in degrees as a double", \
+    "doc": "Latitude of the agent's geographical position. The value should " \
+           "be expressed in degrees as a double." \
+  }
+  double latitude;
+
+  #pragma cyclus var { \
+    "default": 0.0, \
+    "uilabel": "Geographical longitude in degrees as a double", \
+    "doc": "Longitude of the agent's geographical position. The value should " \
+           "be expressed in degrees as a double." \
+  }
+  double longitude;
+
+  cyclus::toolkit::Position coordinates;
+
+  /// Records an agent's latitude and longitude to the output db
+  void RecordPosition();
 };
 
 }  // namespace cycamore
