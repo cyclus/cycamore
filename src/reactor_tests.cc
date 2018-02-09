@@ -136,6 +136,78 @@ TEST(ReactorTests, RefuelTimes) {
   EXPECT_EQ(n_assem_want, qr.rows.size());
 }
 
+
+// tests that a reactor decommissions on time without producing
+// power at the end of its lifetime.
+TEST(ReactorTests, DecomTimes) {
+  std::string config = 
+     "  <fuel_inrecipes>  <val>uox</val>      </fuel_inrecipes>  "
+     "  <fuel_outrecipes> <val>spentuox</val> </fuel_outrecipes>  "
+     "  <fuel_incommods>  <val>uox</val>      </fuel_incommods>  "
+     "  <fuel_outcommods> <val>waste</val>    </fuel_outcommods>  "
+     ""
+     "  <cycle_time>2</cycle_time>  "
+     "  <refuel_time>2</refuel_time>  "
+     "  <assem_size>1</assem_size>  "
+     "  <n_assem_core>3</n_assem_core>  "
+     "  <power_cap>1000</power_cap>  "
+     "  <n_assem_batch>1</n_assem_batch>  ";
+
+  int simdur = 12;
+  int lifetime = 7;
+  cyclus::MockSim sim(cyclus::AgentSpec(":cycamore:Reactor"), config, simdur, lifetime);
+  sim.AddSource("uox").Finalize();
+  sim.AddRecipe("uox", c_uox());
+  sim.AddRecipe("spentuox", c_spentuox());
+  int id = sim.Run();
+
+  // operating for 2+2 months and shutdown for 2+1
+  int on_time = 4;
+  std::vector<Cond> conds;
+  conds.push_back(Cond("Value", "==", 1000));
+  QueryResult qr = sim.db().Query("TimeSeriesPower", &conds);
+  EXPECT_EQ(on_time, qr.rows.size());
+
+  int off_time = 3;
+  conds.clear();
+  conds.push_back(Cond("Value", "==", 0));
+  qr = sim.db().Query("TimeSeriesPower", &conds);
+  EXPECT_EQ(off_time, qr.rows.size());
+}
+
+
+// Tests if a reactor produces power at the time of its decommission
+// given a refuel_time of zero.
+TEST(ReactorTests, DecomZeroRefuel) {
+  std::string config = 
+     "  <fuel_inrecipes>  <val>uox</val>      </fuel_inrecipes>  "
+     "  <fuel_outrecipes> <val>spentuox</val> </fuel_outrecipes>  "
+     "  <fuel_incommods>  <val>uox</val>      </fuel_incommods>  "
+     "  <fuel_outcommods> <val>waste</val>    </fuel_outcommods>  "
+     ""
+     "  <cycle_time>2</cycle_time>  "
+     "  <refuel_time>0</refuel_time>  "
+     "  <assem_size>1</assem_size>  "
+     "  <n_assem_core>3</n_assem_core>  "
+     "  <power_cap>1000</power_cap>  "
+     "  <n_assem_batch>1</n_assem_batch>  ";
+
+  int simdur = 8;
+  int lifetime = 6;
+  cyclus::MockSim sim(cyclus::AgentSpec(":cycamore:Reactor"), config, simdur, lifetime);
+  sim.AddSource("uox").Finalize();
+  sim.AddRecipe("uox", c_uox());
+  sim.AddRecipe("spentuox", c_spentuox());
+  int id = sim.Run();
+
+  // operating for 2+2 months and shutdown for 2+1
+  int on_time = 6;
+  std::vector<Cond> conds;
+  conds.push_back(Cond("Value", "==", 1000));
+  QueryResult qr = sim.db().Query("TimeSeriesPower", &conds);
+  EXPECT_EQ(on_time, qr.rows.size());
+}
+
 // tests that new fuel is ordered immediately following cycle end - at the
 // start of the refueling period - not before and not after. - thie is subtly
 // different than RefuelTimes test and is not a duplicate of it.

@@ -141,7 +141,7 @@ class Reactor : public cyclus::Facility,
   double fuel_pref(cyclus::Material::Ptr m);
 
   bool retired() {
-    return exit_time() != -1 && context()->time() >= exit_time();
+    return exit_time() != -1 && context()->time() > exit_time();
   }
 
   /// Store fuel info index for the given resource received on incommod.
