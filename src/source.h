@@ -132,6 +132,13 @@ class Source : public cyclus::Facility,
   }
   double longitude;
 
+  #pragma cyclus var { \
+    "default": "source_record_out", \
+    "uilabel": "Output material record time series", \
+    "doc": "The time series record string for output material mass" \
+  }
+  double record_out_commod;
+
   cyclus::toolkit::Position coordinates;
 
   void RecordPosition();

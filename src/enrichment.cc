@@ -59,7 +59,9 @@ void Enrichment::Build(cyclus::Agent* parent) {
 }
 
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-void Enrichment::Tick() { current_swu_capacity = SwuCapacity(); }
+void Enrichment::Tick() { 
+  current_swu_capacity = SwuCapacity();
+}
 
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 void Enrichment::Tock() {
@@ -276,6 +278,7 @@ void Enrichment::GetMatlTrades(
           << prototype() << " just received an order"
           << " for " << it->amt << " of " << product_commod;
       response = Enrich_(it->bid->offer(), qty);
+      RecordTimeSeries<cyclus::toolkit::ENRICH_FEED>(this, intra_timestep_feed_);
     }
     responses.push_back(std::make_pair(*it, response));
   }
