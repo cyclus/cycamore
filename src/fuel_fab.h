@@ -254,6 +254,20 @@ class FuelFab
   std::map<cyclus::Request<cyclus::Material>*, std::string> req_inventories_;
 
   #pragma cyclus var { \
+    "default": "fuelfab_record_input", \
+    "uilabel": "Output capacity record time series name", \
+    "doc": "The time series record name or output capacity" \
+  }
+  double fuelfab_record_input;
+
+  #pragma cyclus var { \
+    "default": "fuelfab_record_output", \
+    "uilabel": "Output capacity record time series name", \
+    "doc": "The time series record name or output capacity" \
+  }
+  double fuelfab_record_output;
+
+  #pragma cyclus var { \
     "default": 0.0, \
     "uilabel": "Geographical latitude in degrees as a double", \
     "doc": "Latitude of the agent's geographical position. The value should " \

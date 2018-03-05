@@ -507,6 +507,13 @@ void FuelFab::RecordPosition() {
       ->Record();
 }
 
+void FuelFab::Tick() {
+  cyclus::toolkit::RecordTimeSeries<double>(fuelfab_record_input, this, 
+                                            throughput);
+  cyclus::toolkit::RecordTimeSeries<double>(fuelfab_record_output, this, 
+                                            throughput);
+}
+
 extern "C" cyclus::Agent* ConstructFuelFab(cyclus::Context* ctx) {
   return new FuelFab(ctx);
 }
