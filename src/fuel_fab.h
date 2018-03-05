@@ -255,17 +255,17 @@ class FuelFab
 
   #pragma cyclus var { \
     "default": "fuelfab_record_input", \
-    "uilabel": "Output capacity record time series name", \
-    "doc": "The time series record name or output capacity" \
+    "uilabel": "Input capacity record time series name", \
+    "doc": "The time series record name or input capacity" \
   }
-  double fuelfab_record_input;
+  std::string fuelfab_record_input;
 
   #pragma cyclus var { \
     "default": "fuelfab_record_output", \
     "uilabel": "Output capacity record time series name", \
     "doc": "The time series record name or output capacity" \
   }
-  double fuelfab_record_output;
+  std::string fuelfab_record_output;
 
   #pragma cyclus var { \
     "default": 0.0, \

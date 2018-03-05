@@ -107,17 +107,17 @@ class Mixer
 
   #pragma cyclus var { \
     "default": "mixer_record_input", \
-    "uilabel": "Output capacity record time series name", \
-    "doc": "The time series record name or output capacity" \
+    "uilabel": "Input capacity record time series name", \
+    "doc": "The time series record name or input capacity" \
   }
-  double mixer_record_input;
+  std::string mixer_record_input;
 
   #pragma cyclus var { \
     "default": "mixer_record_output", \
     "uilabel": "Output capacity record time series name", \
     "doc": "The time series record name or output capacity" \
   }
-  double mixer_record_output;
+  std::string mixer_record_output;
 
   // intra-time-step state - no need to be a state var
   // map<request, inventory name>

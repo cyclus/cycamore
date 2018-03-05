@@ -159,7 +159,7 @@ class Sink
     "uilabel": "Input capacity record time series name", \
     "doc": "The time series record input capacity name." \
   }
-  double sink_record_incommod;
+  std::string sink_record_incommod;
 
   #pragma cyclus var { \
     "default": 0.0, \

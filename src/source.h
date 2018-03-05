@@ -121,7 +121,7 @@ class Source : public cyclus::Facility,
     "uilabel": "Output capacity record time series name", \
     "doc": "The time series record name or output capacity" \
   }
-  double source_record_outcommod;
+  std::string source_record_outcommod;
   
   #pragma cyclus var { \
     "default": 0.0, \
