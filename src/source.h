@@ -115,6 +115,13 @@ class Source : public cyclus::Facility,
     "doc": "amount of commodity that can be supplied at each time step", \
   }
   double throughput;
+
+  #pragma cyclus var { \
+    "default": "source_record_outcommod", \
+    "uilabel": "Output capacity record time series name", \
+    "doc": "The time series record name or output capacity" \
+  }
+  double source_record_outcommod;
   
   #pragma cyclus var { \
     "default": 0.0, \
@@ -131,13 +138,6 @@ class Source : public cyclus::Facility,
            "be expressed in degrees as a double." \
   }
   double longitude;
-
-  #pragma cyclus var { \
-    "default": "source_record_out", \
-    "uilabel": "Output material record time series", \
-    "doc": "The time series record string for output material mass" \
-  }
-  double record_out_commod;
 
   cyclus::toolkit::Position coordinates;
 
