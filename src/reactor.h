@@ -417,12 +417,12 @@ class Reactor : public cyclus::Facility,
 
   // For new Record Time Series functionality
   #pragma cyclus var { \
-    "default": "RxFuelDemand", \
+    "default": "reactor_fuel_demand", \
     "uilabel": "Demand Tracking String", \
     "doc": "String used to record the amount of fuel demanded "\
             "by the reactor at a given timestep" \
   }
-  std::string demand_commod_name;
+  std::string reactor_fuel_demand;
 
   cyclus::toolkit::Position coordinates;
 
