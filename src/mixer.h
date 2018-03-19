@@ -106,18 +106,18 @@ class Mixer
   double throughput;
 
   #pragma cyclus var { \
-    "default": "mixer_record_input", \
+    "default": "mixer_record_demand", \
     "uilabel": "Input capacity record time series name", \
     "doc": "The time series record name or input capacity" \
   }
-  std::string mixer_record_input;
+  std::string mixer_record_demand;
 
   #pragma cyclus var { \
-    "default": "mixer_record_output", \
+    "default": "mixer_record_supply", \
     "uilabel": "Output capacity record time series name", \
     "doc": "The time series record name or output capacity" \
   }
-  std::string mixer_record_output;
+  std::string mixer_record_supply;
 
   // intra-time-step state - no need to be a state var
   // map<request, inventory name>

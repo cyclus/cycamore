@@ -211,14 +211,14 @@ class Separations
     "uilabel": "Input capacity record time series name", \
     "doc": "The time series record name or input capacity" \
   }
-  std::string separations_record_input;
+  std::string separations_record_demand;
 
   #pragma cyclus var { \
     "default": "separations_record_output", \
     "uilabel": "Output capacity record time series name", \
     "doc": "The time series record name or output capacity" \
   }
-  std::string separations_record_output;
+  std::string separations_record_supply;
 
   #pragma cyclus var { \
     "default": 0.0, \

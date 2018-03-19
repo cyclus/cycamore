@@ -166,7 +166,7 @@ void Sink::Tick() {
   LOG(cyclus::LEV_INFO3, "SnkFac") << prototype() << " is ticking {";
 
   double requestAmt = RequestAmt();
-  cyclus::toolkit::RecordTimeSeries<double>(sink_record_incommod, this, 
+  cyclus::toolkit::RecordTimeSeries<double>(sink_record_demand, this, 
                                             requestAmt);
   // inform the simulation about what the sink facility will be requesting
   if (requestAmt > cyclus::eps()) {

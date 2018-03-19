@@ -215,18 +215,18 @@ class Storage
   cyclus::toolkit::MatlSellPolicy sell_policy;
 
   #pragma cyclus var { \
-    "default": "storage_record_input", \
+    "default": "storage_record_demand", \
     "uilabel": "Input capacity record time series name", \
     "doc": "The time series record name or input capacity" \
   }
-  std::string storage_record_input;
+  std::string storage_record_demand;
 
   #pragma cyclus var { \
-    "default": "storage_record_output", \
+    "default": "storage_record_supply", \
     "uilabel": "Output capacity record time series name", \
     "doc": "The time series record name or output capacity" \
   }
-  std::string storage_record_output;
+  std::string storage_record_supply;
 
   #pragma cyclus var { \
     "default": 0.0, \

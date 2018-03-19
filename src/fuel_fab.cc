@@ -508,9 +508,9 @@ void FuelFab::RecordPosition() {
 }
 
 void FuelFab::Tick() {
-  cyclus::toolkit::RecordTimeSeries<double>(fuelfab_record_input, this, 
+  cyclus::toolkit::RecordTimeSeries<double>(fuelfab_record_demand, this, 
                                             throughput);
-  cyclus::toolkit::RecordTimeSeries<double>(fuelfab_record_output, this, 
+  cyclus::toolkit::RecordTimeSeries<double>(fuelfab_record_supply, this, 
                                             throughput);
 }
 
