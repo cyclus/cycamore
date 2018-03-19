@@ -117,9 +117,9 @@ void Storage::Tick() {
   // Set available capacity for Buy Policy
   inventory.capacity(current_capacity());
 
-  cyclus::toolkit::RecordTimeSeries<double>(storage_record_input, this, 
+  cyclus::toolkit::RecordTimeSeries<double>(storage_record_demand, this, 
                                             throughput);
-  cyclus::toolkit::RecordTimeSeries<double>(storage_record_output, this, 
+  cyclus::toolkit::RecordTimeSeries<double>(storage_record_supply, this, 
                                             throughput);
 
   LOG(cyclus::LEV_INFO3, "ComCnv") << prototype() << " is ticking {";
