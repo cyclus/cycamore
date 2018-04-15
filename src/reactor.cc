@@ -23,9 +23,10 @@ Reactor::Reactor(cyclus::Context* ctx)
       power_cap(0),
       power_name("power"),
       discharged(false),
-      latitude(0,0),
-      longitude(0,0),
-      coordinates(latitude, longitude) { }
+      latitude(0.0),
+      longitude(0.0),
+      coordinates(latitude, longitude) {}
+
 
 #pragma cyclus def clone cycamore::Reactor
 
@@ -126,7 +127,7 @@ void Reactor::Tick() {
     // record the last time series entry if the reactor was operating at the
     // time of retirement.
 
-    if (context()->time() == exit_time()) { // only need to transmute once
+    if (context()->time() == exit_time() + 1) { // only need to transmute once
       Transmute(ceil(static_cast<double>(n_assem_core) / 2.0));
     }
     while (core.count() > 0) {
@@ -537,13 +538,13 @@ void Reactor::RecordPosition() {
   std::string specification = this->spec();
   context()
       ->NewDatum("AgentPosition")
+      ->AddVal("Spec", specification)
       ->AddVal("Prototype", this->prototype())
       ->AddVal("AgentId", id())
       ->AddVal("Latitude", latitude)
       ->AddVal("Longitude", longitude)
       ->Record();
 }
-
 
 extern "C" cyclus::Agent* ConstructReactor(cyclus::Context* ctx) {
   return new Reactor(ctx);
