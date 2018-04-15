@@ -53,7 +53,8 @@ namespace cycamore {
 /// compositions.
 
 class Reactor : public cyclus::Facility,
-  public cyclus::toolkit::CommodityProducer {
+  public cyclus::toolkit::CommodityProducer,
+  public cyclus::toolkit::Position {
 #pragma cyclus note { \
 "niche": "reactor", \
 "doc": \
@@ -140,7 +141,7 @@ class Reactor : public cyclus::Facility,
   double fuel_pref(cyclus::Material::Ptr m);
 
   bool retired() {
-    return exit_time() != -1 && context()->time() >= exit_time();
+    return exit_time() != -1 && context()->time() > exit_time();
   }
 
   /// Store fuel info index for the given resource received on incommod.
@@ -352,12 +353,14 @@ class Reactor : public cyclus::Facility,
 
   #pragma cyclus var { \
     "uilabel": "Side Product from Reactor Plant", \
+    "default": [], \
     "doc": "Ordered list of side product the reactor produces with power", \
   }
   std::vector<std::string> side_products;
 
   #pragma cyclus var { \
     "uilabel": "Quantity of Side Product from Reactor Plant", \
+    "default": [], \
     "doc": "Ordered list of the quantity of side product the reactor produces with power", \
   }
   std::vector<double> side_product_quantity;
@@ -420,6 +423,27 @@ class Reactor : public cyclus::Facility,
 
   // populated lazily and no need to persist.
   std::set<std::string> uniq_outcommods_;
+
+  #pragma cyclus var { \
+    "default": 0.0, \
+    "uilabel": "Geographical latitude in degrees as a double", \
+    "doc": "Latitude of the agent's geographical position. The value should " \
+           "be expressed in degrees as a double." \
+  }
+  double latitude;
+
+  #pragma cyclus var { \
+    "default": 0.0, \
+    "uilabel": "Geographical longitude in degrees as a double", \
+    "doc": "Longitude of the agent's geographical position. The value should " \
+           "be expressed in degrees as a double." \
+  }
+  double longitude;
+
+  cyclus::toolkit::Position coordinates;
+
+  /// Records an agent's latitude and longitude to the output db
+  void RecordPosition();
 };
 
 } // namespace cycamore

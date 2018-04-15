@@ -22,7 +22,10 @@ Reactor::Reactor(cyclus::Context* ctx)
       cycle_step(0),
       power_cap(0),
       power_name("power"),
-      discharged(false) { }
+      discharged(false),
+      latitude(0,0),
+      longitude(0,0),
+      coordinates(latitude, longitude) { }
 
 #pragma cyclus def clone cycamore::Reactor
 
@@ -102,6 +105,7 @@ void Reactor::EnterNotify() {
   if (ss.str().size() > 0) {
     throw cyclus::ValueError(ss.str());
   }
+  RecordPosition();
 }
 
 bool Reactor::CheckDecommissionCondition() {
@@ -121,29 +125,6 @@ void Reactor::Tick() {
 
     // record the last time series entry if the reactor was operating at the
     // time of retirement.
-    if (exit_time() == context()->time()) {
-      if (refuel_time == 0){
-        if (cycle_step > 0 && cycle_step <= cycle_time &&
-          core.count() == n_assem_core) {
-        cyclus::toolkit::RecordTimeSeries<cyclus::toolkit::POWER>(this, power_cap);
-        RecordSideProduct(true);
-      } else {
-        cyclus::toolkit::RecordTimeSeries<cyclus::toolkit::POWER>(this, 0);
-        RecordSideProduct(false);
-      }
-      } else{
-        if (cycle_step > 0 && cycle_step < cycle_time &&
-          core.count() == n_assem_core) {
-        cyclus::toolkit::RecordTimeSeries<cyclus::toolkit::POWER>(this, power_cap);
-        RecordSideProduct(true);
-      } 
-        else {
-        cyclus::toolkit::RecordTimeSeries<cyclus::toolkit::POWER>(this, 0);
-        RecordSideProduct(false);
-      }  
-      }
-      
-    }
 
     if (context()->time() == exit_time()) { // only need to transmute once
       Transmute(ceil(static_cast<double>(n_assem_core) / 2.0));
@@ -267,6 +248,7 @@ void Reactor::GetMatlTrades(
     std::string commod = trades[i].request->commodity();
     Material::Ptr m = mats[commod].back();
     mats[commod].pop_back();
+    cyclus::toolkit::RecordTimeSeries<double>("UsedFuel", this, m->quantity());
     responses.push_back(std::make_pair(trades[i], m));
     res_indexes.erase(m->obj_id());
   }
@@ -550,6 +532,18 @@ void Reactor::Record(std::string name, std::string val) {
       ->AddVal("Value", val)
       ->Record();
 }
+
+void Reactor::RecordPosition() {
+  std::string specification = this->spec();
+  context()
+      ->NewDatum("AgentPosition")
+      ->AddVal("Prototype", this->prototype())
+      ->AddVal("AgentId", id())
+      ->AddVal("Latitude", latitude)
+      ->AddVal("Longitude", longitude)
+      ->Record();
+}
+
 
 extern "C" cyclus::Agent* ConstructReactor(cyclus::Context* ctx) {
   return new Reactor(ctx);
