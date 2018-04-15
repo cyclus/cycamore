@@ -124,9 +124,6 @@ void Reactor::Tick() {
   if (retired()) {
     Record("RETIRED", "");
 
-    // record the last time series entry if the reactor was operating at the
-    // time of retirement.
-
     if (context()->time() == exit_time() + 1) { // only need to transmute once
       Transmute(ceil(static_cast<double>(n_assem_core) / 2.0));
     }
