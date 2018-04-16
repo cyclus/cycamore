@@ -57,7 +57,7 @@ void Reactor::InitFrom(cyclus::QueryableBackend* b) {
   for (int i = 0; i < side_products.size(); i++) {
     tk::CommodityProducer::Add(tk::Commodity(side_products[i]),
                                tk::CommodInfo(side_product_quantity[i],
-                                                 side_product_quantity[i]));
+                                              side_product_quantity[i]));
   }
 }
 void Reactor::EnterNotify() {
@@ -73,7 +73,7 @@ void Reactor::EnterNotify() {
 
   // Test if any side products have been defined.
   if (side_products.size() == 0){
-    bool hybrid = false;
+    hybrid_ = false;
   }
 
   // input consistency checking:
@@ -500,7 +500,7 @@ void Reactor::PushSpent(std::map<std::string, MatVec> leftover) {
 }
 
 void Reactor::RecordSideProduct(bool produce){
-  if (hybrid){
+  if (hybrid_){
     double value;
     for (int i = 0; i < side_products.size(); i++) {
       if (produce){

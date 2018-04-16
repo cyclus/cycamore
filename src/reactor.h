@@ -354,21 +354,22 @@ class Reactor : public cyclus::Facility,
   #pragma cyclus var { \
     "uilabel": "Side Product from Reactor Plant", \
     "default": [], \
-    "doc": "Ordered list of side product the reactor produces with power", \
+    "doc": "Ordered vector of side product the reactor produces with power", \
   }
   std::vector<std::string> side_products;
 
   #pragma cyclus var { \
     "uilabel": "Quantity of Side Product from Reactor Plant", \
     "default": [], \
-    "doc": "Ordered list of the quantity of side product the reactor produces with power", \
+    "doc": "Ordered vector of the quantity of side product the reactor produces with power", \
   }
   std::vector<double> side_product_quantity;
 
   #pragma cyclus var {"default": 1, "doc": "This should NEVER be set manually",\
-                      "internal": True \
+                      "internal": True,\
+                      "doc": "True if reactor is a hybrid system (produces side products)", \
   }
-  bool hybrid;
+  bool hybrid_;
 
 
   /////////// preference changes ///////////
