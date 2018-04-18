@@ -365,7 +365,7 @@ class Reactor : public cyclus::Facility,
   }
   std::vector<double> side_product_quantity;
 
-  #pragma cyclus var {"default": 1, "doc": "This should NEVER be set manually",\
+  #pragma cyclus var {"default": 1,\
                       "internal": True,\
                       "doc": "True if reactor is a hybrid system (produces side products)", \
   }
