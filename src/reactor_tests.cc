@@ -645,6 +645,90 @@ TEST(ReactorTests, PositionInitialize2) {
   EXPECT_EQ(qr.GetVal<double>("Longitude"), 30.0);
 }
 
+TEST(ReactorTests, ByProduct) {
+  std::string config = 
+     "  <fuel_inrecipes>  <val>uox</val>      </fuel_inrecipes>  "
+     "  <fuel_outrecipes> <val>spentuox</val> </fuel_outrecipes>  "
+     "  <fuel_incommods>  <val>uox</val>      </fuel_incommods>  "
+     "  <fuel_outcommods> <val>waste</val>    </fuel_outcommods>  "
+     ""
+     "  <cycle_time>1</cycle_time>  "
+     "  <refuel_time>1</refuel_time>  "
+     "  <assem_size>1</assem_size>  "
+     "  <n_assem_core>7</n_assem_core>  "
+     "  <n_assem_batch>3</n_assem_batch>  "
+     ""
+     "  <side_products> <val>process_heat</val> </side_products>"
+     "  <side_product_quantity> <val>10</val> </side_product_quantity>";
+
+  int simdur = 10;
+  cyclus::MockSim sim(cyclus::AgentSpec(":cycamore:Reactor"), config, simdur);
+  sim.AddSource("uox").Finalize();
+  sim.AddRecipe("uox", c_uox());
+  sim.AddRecipe("spentuox", c_spentuox());
+  int id = sim.Run();
+
+  std::vector<Cond> conds;
+  // test if it produces side products only when reactor is running
+  int quantity = 10;
+  conds.push_back(Cond("Value", "==", quantity));
+  QueryResult qr = sim.db().Query("ReactorSideProducts", &conds);
+  EXPECT_EQ(5, qr.rows.size());
+
+  // test if it doesn't produce side products when reactor is refueling
+  conds.clear();
+  conds.push_back(Cond("Value", "==", 0));
+  qr = sim.db().Query("ReactorSideProducts", &conds);
+  EXPECT_EQ(5, qr.rows.size());
+
+}
+
+TEST(ReactorTests, MultipleByProduct) {
+  std::string config = 
+     "  <fuel_inrecipes>  <val>uox</val>      </fuel_inrecipes>  "
+     "  <fuel_outrecipes> <val>spentuox</val> </fuel_outrecipes>  "
+     "  <fuel_incommods>  <val>uox</val>      </fuel_incommods>  "
+     "  <fuel_outcommods> <val>waste</val>    </fuel_outcommods>  "
+     ""
+     "  <cycle_time>1</cycle_time>  "
+     "  <refuel_time>1</refuel_time>  "
+     "  <assem_size>1</assem_size>  "
+     "  <n_assem_core>7</n_assem_core>  "
+     "  <n_assem_batch>3</n_assem_batch>  "
+     ""
+     "  <side_products> <val>process_heat</val> <val>water</val> </side_products>"
+     "  <side_product_quantity> <val>10</val> <val>100</val> </side_product_quantity>";
+
+  int simdur = 10;
+  cyclus::MockSim sim(cyclus::AgentSpec(":cycamore:Reactor"), config, simdur);
+  sim.AddSource("uox").Finalize();
+  sim.AddRecipe("uox", c_uox());
+  sim.AddRecipe("spentuox", c_spentuox());
+  int id = sim.Run();
+
+  std::vector<Cond> conds;
+  // test if it produces heat when reactor is running
+  int quantity = 10;
+  conds.push_back(Cond("Product", "==", "process_heat"));
+  conds.push_back(Cond("Value", "==", quantity));
+  QueryResult qr = sim.db().Query("ReactorSideProducts", &conds);
+  EXPECT_EQ(5, qr.rows.size());
+
+  // test if it produces water when reactor is running
+  conds.clear();
+  quantity = 100;
+  conds.push_back(Cond("Product", "==", "water"));
+  conds.push_back(Cond("Value", "==", quantity));
+  qr = sim.db().Query("ReactorSideProducts", &conds);
+  EXPECT_EQ(5, qr.rows.size());
+
+  conds.clear();
+  conds.push_back(Cond("Value", "==", 0));
+  qr = sim.db().Query("ReactorSideProducts", &conds);
+  EXPECT_EQ(10, qr.rows.size());
+
+}
+
 } // namespace reactortests
 } // namespace cycamore
 

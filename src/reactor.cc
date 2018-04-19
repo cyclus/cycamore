@@ -53,8 +53,13 @@ void Reactor::InitFrom(cyclus::QueryableBackend* b) {
   namespace tk = cyclus::toolkit;
   tk::CommodityProducer::Add(tk::Commodity(power_name),
                              tk::CommodInfo(power_cap, power_cap));
-}
 
+  for (int i = 0; i < side_products.size(); i++) {
+    tk::CommodityProducer::Add(tk::Commodity(side_products[i]),
+                               tk::CommodInfo(side_product_quantity[i],
+                                              side_product_quantity[i]));
+  }
+}
 void Reactor::EnterNotify() {
   cyclus::Facility::EnterNotify();
 
@@ -64,6 +69,11 @@ void Reactor::EnterNotify() {
     for (int i = 0; i < fuel_outcommods.size(); i++) {
       fuel_prefs.push_back(cyclus::kDefaultPref);
     }
+  }
+
+  // Test if any side products have been defined.
+  if (side_products.size() == 0){
+    hybrid_ = false;
   }
 
   // input consistency checking:
@@ -342,8 +352,10 @@ void Reactor::Tock() {
   if (cycle_step >= 0 && cycle_step < cycle_time &&
       core.count() == n_assem_core) {
     cyclus::toolkit::RecordTimeSeries<cyclus::toolkit::POWER>(this, power_cap);
+    RecordSideProduct(true);
   } else {
     cyclus::toolkit::RecordTimeSeries<cyclus::toolkit::POWER>(this, 0);
+    RecordSideProduct(false);
   }
 
   // "if" prevents starting cycle after initial deployment until core is full
@@ -484,6 +496,28 @@ void Reactor::PushSpent(std::map<std::string, MatVec> leftover) {
     // undo reverse in PopSpent to make sure oldest assemblies come out first
     std::reverse(it->second.begin(), it->second.end());
     spent.Push(it->second);
+  }
+}
+
+void Reactor::RecordSideProduct(bool produce){
+  if (hybrid_){
+    double value;
+    for (int i = 0; i < side_products.size(); i++) {
+      if (produce){
+          value = side_product_quantity[i];
+      }
+      else {
+          value = 0;
+      }
+
+      context()
+          ->NewDatum("ReactorSideProducts")
+          ->AddVal("AgentId", id())
+          ->AddVal("Time", context()->time())
+          ->AddVal("Product", side_products[i])
+          ->AddVal("Value", value)
+          ->Record();
+    }
   }
 }
 
