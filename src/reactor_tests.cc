@@ -645,6 +645,62 @@ TEST(ReactorTests, PositionInitialize2) {
   EXPECT_EQ(qr.GetVal<double>("Longitude"), 30.0);
 }
 
+TEST(ReactorTests, ByProduct) {
+  std::string config = 
+     "  <fuel_inrecipes>  <val>uox</val>      </fuel_inrecipes>  "
+     "  <fuel_outrecipes> <val>spentuox</val> </fuel_outrecipes>  "
+     "  <fuel_incommods>  <val>uox</val>      </fuel_incommods>  "
+     "  <fuel_outcommods> <val>waste</val>    </fuel_outcommods>  "
+     ""
+     "  <cycle_time>1</cycle_time>  "
+     "  <refuel_time>1</refuel_time>  "
+     "  <assem_size>1</assem_size>  "
+     "  <n_assem_core>7</n_assem_core>  "
+     "  <n_assem_batch>3</n_assem_batch>  "
+     ""
+     "  <side_products> <val>process_heat</val> </side_products>"
+     "  <side_product_quantity> <val>10</val> </side_product_quantity>";
+
+  int simdur = 10;
+  cyclus::MockSim sim(cyclus::AgentSpec(":cycamore:Reactor"), config, simdur);
+  sim.AddSource("uox").Finalize();
+  sim.AddRecipe("uox", c_uox());
+  sim.AddRecipe("spentuox", c_spentuox());
+  int id = sim.Run();
+
+  QueryResult qr = sim.db().Query("reactorsideproducts", NULL);
+  // 7 for initial core, 3 per time step for each new batch for remainder
+  EXPECT_EQ(5, qr.rows.size());
+}
+
+TEST(ReactorTests, MultipleByProduct) {
+  std::string config = 
+     "  <fuel_inrecipes>  <val>uox</val>      </fuel_inrecipes>  "
+     "  <fuel_outrecipes> <val>spentuox</val> </fuel_outrecipes>  "
+     "  <fuel_incommods>  <val>uox</val>      </fuel_incommods>  "
+     "  <fuel_outcommods> <val>waste</val>    </fuel_outcommods>  "
+     ""
+     "  <cycle_time>1</cycle_time>  "
+     "  <refuel_time>1</refuel_time>  "
+     "  <assem_size>1</assem_size>  "
+     "  <n_assem_core>7</n_assem_core>  "
+     "  <n_assem_batch>3</n_assem_batch>  "
+     ""
+     "  <side_products> <val>process_heat</val> <val>water</val> </side_products>"
+     "  <side_product_quantity> <val>10</val> <val>100</val> </side_product_quantity>";
+
+  int simdur = 10;
+  cyclus::MockSim sim(cyclus::AgentSpec(":cycamore:Reactor"), config, simdur);
+  sim.AddSource("uox").Finalize();
+  sim.AddRecipe("uox", c_uox());
+  sim.AddRecipe("spentuox", c_spentuox());
+  int id = sim.Run();
+
+  QueryResult qr = sim.db().Query("reactorsideproducts", NULL);
+  // 7 for initial core, 3 per time step for each new batch for remainder
+  EXPECT_EQ(10, qr.rows.size());
+}
+
 } // namespace reactortests
 } // namespace cycamore
 
