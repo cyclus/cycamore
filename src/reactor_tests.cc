@@ -668,7 +668,7 @@ TEST(ReactorTests, ByProduct) {
   sim.AddRecipe("spentuox", c_spentuox());
   int id = sim.Run();
 
-  QueryResult qr = sim.db().Query("reactorsideproducts", NULL);
+  QueryResult qr = sim.db().Query("ReactorSideProducts", NULL);
   // 7 for initial core, 3 per time step for each new batch for remainder
   EXPECT_EQ(5, qr.rows.size());
 }
@@ -696,7 +696,7 @@ TEST(ReactorTests, MultipleByProduct) {
   sim.AddRecipe("spentuox", c_spentuox());
   int id = sim.Run();
 
-  QueryResult qr = sim.db().Query("reactorsideproducts", NULL);
+  QueryResult qr = sim.db().Query("ReactorSideProducts", NULL);
   // 7 for initial core, 3 per time step for each new batch for remainder
   EXPECT_EQ(10, qr.rows.size());
 }
