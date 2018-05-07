@@ -148,9 +148,6 @@ class Source : public cyclus::Facility,
   }
   double buffer_qty;
 
-
-
-
   cyclus::toolkit::Position coordinates;
 
   void RecordPosition();
