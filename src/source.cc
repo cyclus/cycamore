@@ -67,8 +67,6 @@ std::set<cyclus::BidPortfolio<cyclus::Material>::Ptr> Source::GetMatlBids(
     max_qty = std::min(inventory_size + buffer_qty, throughput + buffer_qty);
   }
 
-  std::cout << "buff quantity at time " << context()->time() << "is : " << buffer_qty << "\n";
-
 
   LOG(cyclus::LEV_INFO3, "Source") << prototype() << " is bidding up to "
                                    << max_qty << " kg of " << outcommod;
@@ -79,8 +77,10 @@ std::set<cyclus::BidPortfolio<cyclus::Material>::Ptr> Source::GetMatlBids(
     return ports;
   } else if (commod_requests.count(outcommod) == 0) {
     // if there is no demand for commodity, source dumps all throughput to buffer.
-    inventory_size -= throughput;
-    buffer_qty += throughput;
+    if (buffer == true){
+        inventory_size -= throughput;
+        buffer_qty += throughput;
+    }
     return ports;
   }
 
@@ -118,7 +118,6 @@ void Source::GetMatlTrades(
   double throughput_diff = throughput;
   for (it = trades.begin(); it != trades.end(); ++it) {
     double qty = it->amt;
-    std::cout << context()->time() << "DEMAND QUANTITY :" << qty << "\n";
     if (buffer == true){
         throughput_diff -= qty;
     }

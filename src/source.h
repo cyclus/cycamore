@@ -133,7 +133,7 @@ class Source : public cyclus::Facility,
   double longitude;
 
   #pragma cyclus var { \
-    "default": -1, \
+    "default": 0, \
     "uilabel": "Boolean to have source inventory buffer.", \
     "doc": "The user can set this variable to true to have the source " \
            "save its maximum throughput for later demand." \
