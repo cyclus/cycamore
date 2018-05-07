@@ -58,8 +58,14 @@ std::set<cyclus::BidPortfolio<cyclus::Material>::Ptr> Source::GetMatlBids(
   using cyclus::CapacityConstraint;
   using cyclus::Material;
   using cyclus::Request;
+  using cyclus::toolkit::ResBuf;
 
   double max_qty = std::min(throughput, inventory_size);
+
+  if (buffer == true){
+    max_qty = std::min(inventory_size + stock.quantity(), throughput + stock.quantity());
+  }
+
   LOG(cyclus::LEV_INFO3, "Source") << prototype() << " is bidding up to "
                                    << max_qty << " kg of " << outcommod;
   LOG(cyclus::LEV_INFO5, "Source") << "stats: " << str();
@@ -97,11 +103,27 @@ void Source::GetMatlTrades(
                           cyclus::Material::Ptr> >& responses) {
   using cyclus::Material;
   using cyclus::Trade;
+  using cyclus::toolkit::ResBuf;
 
   std::vector<cyclus::Trade<cyclus::Material> >::const_iterator it;
   for (it = trades.begin(); it != trades.end(); ++it) {
     double qty = it->amt;
+
+    if (buffer == true){
+        if (qty > throughput){
+            inventory_size -= throughput; // inventory size is decreased by throughput, the maximum
+            double leftover = qty - throughput;
+            stock.PopQty(leftover); // the excess demand is pulled from stock buffer
+        }
+        else{
+            double surplus = throughput - qty; // amount that is leftover that will be stocked
+            inventory_size -= throughput; // since we store the remaining throughput, inventory size will always decrease by throughput qty
+            stock.quantity() += surplus; // the remaining throughput goes to stock buffer
+        }
+    }
+    else{
     inventory_size -= qty;
+    }
 
     Material::Ptr response;
     if (!outrecipe.empty()) {

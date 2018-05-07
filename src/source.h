@@ -132,6 +132,19 @@ class Source : public cyclus::Facility,
   }
   double longitude;
 
+  #pragma cyclus var { \
+    "default": -1, \
+    "uilabel": "Option to have source inventory buffer.", \
+    "doc": "The user can set this variable to true to have the source " \
+           "save its maximum throughput for later demand." \
+  }
+  bool buffer;
+
+
+  #pragma cyclus var {"tooltip":"Buffer for material held for future demand"}
+  cyclus::toolkit::ResBuf<cyclus::Material> stock;
+
+
   cyclus::toolkit::Position coordinates;
 
   void RecordPosition();
