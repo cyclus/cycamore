@@ -134,15 +134,21 @@ class Source : public cyclus::Facility,
 
   #pragma cyclus var { \
     "default": -1, \
-    "uilabel": "Option to have source inventory buffer.", \
+    "uilabel": "Boolean to have source inventory buffer.", \
     "doc": "The user can set this variable to true to have the source " \
            "save its maximum throughput for later demand." \
   }
   bool buffer;
 
+  #pragma cyclus var { \
+    "doc": "Variable for keeping count of the stock the source keeps " \
+           " when throughput is larger than demand. ", \
+    "default": 0, \
+    "units": "kg", \
+  }
+  double buffer_qty;
 
-  #pragma cyclus var {"tooltip":"Buffer for material held for future demand"}
-  cyclus::toolkit::ResBuf<cyclus::Material> stock;
+
 
 
   cyclus::toolkit::Position coordinates;
