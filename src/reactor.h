@@ -141,7 +141,7 @@ class Reactor : public cyclus::Facility,
   double fuel_pref(cyclus::Material::Ptr m);
 
   bool retired() {
-    return exit_time() != -1 && context()->time() >= exit_time();
+    return exit_time() != -1 && context()->time() > exit_time();
   }
 
   /// Store fuel info index for the given resource received on incommod.
@@ -157,6 +157,9 @@ class Reactor : public cyclus::Facility,
   /// Transmute the batch that is about to be discharged from the core to its
   /// fully burnt state as defined by its outrecipe.
   void Transmute();
+
+  /// Records production of side products from the reactor
+  void RecordSideProduct(bool produce);
 
   /// Transmute the specified number of assemblies in the core to their
   /// fully burnt state as defined by their outrecipe.
@@ -208,7 +211,7 @@ class Reactor : public cyclus::Facility,
            "received as each particular input commodity (same order)." \
   }
   std::vector<std::string> fuel_outcommods;
-  #pragma cyclus var {		       \
+  #pragma cyclus var {           \
     "uitype": ["oneormore", "outrecipe"], \
     "uilabel": "Spent Fuel Recipe List", \
     "doc": "Spent fuel recipes corresponding to the given fuel input " \
@@ -256,7 +259,7 @@ class Reactor : public cyclus::Facility,
 
  //////////// inventory and core params ////////////
   #pragma cyclus var { \
-    "doc": "Mass (kg) of a single assembly.",	\
+    "doc": "Mass (kg) of a single assembly.", \
     "uilabel": "Assembly Mass", \
     "uitype": "range", \
     "range": [1.0, 1e5], \
@@ -268,7 +271,7 @@ class Reactor : public cyclus::Facility,
     "uilabel": "Number of Assemblies per Batch", \
     "doc": "Number of assemblies that constitute a single batch.  " \
            "This is the number of assemblies discharged from the core fully " \
-           "burned each cycle."						\
+           "burned each cycle."           \
            "Batch size is equivalent to ``n_assem_batch / n_assem_core``.", \
   }
   int n_assem_batch;
@@ -345,6 +348,29 @@ class Reactor : public cyclus::Facility,
            "deployment curve.", \
   }
   std::string power_name;
+
+  /////////// hybrid params ///////////
+
+  #pragma cyclus var { \
+    "uilabel": "Side Product from Reactor Plant", \
+    "default": [], \
+    "doc": "Ordered vector of side product the reactor produces with power", \
+  }
+  std::vector<std::string> side_products;
+
+  #pragma cyclus var { \
+    "uilabel": "Quantity of Side Product from Reactor Plant", \
+    "default": [], \
+    "doc": "Ordered vector of the quantity of side product the reactor produces with power", \
+  }
+  std::vector<double> side_product_quantity;
+
+  #pragma cyclus var {"default": 1,\
+                      "internal": True,\
+                      "doc": "True if reactor is a hybrid system (produces side products)", \
+  }
+  bool hybrid_;
+
 
   /////////// preference changes ///////////
   #pragma cyclus var { \
