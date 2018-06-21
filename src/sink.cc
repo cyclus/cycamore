@@ -176,8 +176,6 @@ void Sink::Tick() {
                                        << " kg of " << *commod << ".";
       cyclus::toolkit::RecordTimeSeries<double>("demand"+*commod, this, 
                                             requestAmt);
-      cyclus::toolkit::RecordTimeSeries<double>(supply_space, this, 
-                                            requestAmt);
     }
   }
   LOG(cyclus::LEV_INFO3, "SnkFac") << "}";

@@ -155,14 +155,6 @@ class Sink
   cyclus::toolkit::ResBuf<cyclus::Resource> inventory;
 
   #pragma cyclus var { \
-    "default": "supplyspace, \
-    "uilabel": "Supply String", \
-    "doc": "This string provides a method for reversing the demand for spent " \
-           "fuel and instead framing the problem as supply of storage space." \
-  }
-  std::string supply_space;
-
-  #pragma cyclus var { \
     "default": 0.0, \
     "uilabel": "Geographical latitude in degrees as a double", \
     "doc": "Latitude of the agent's geographical position. The value should " \

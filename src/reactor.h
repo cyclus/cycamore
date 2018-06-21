@@ -400,14 +400,6 @@ class Reactor : public cyclus::Facility,
   std::set<std::string> uniq_outcommods_;
 
   #pragma cyclus var { \
-    "default": "demandspace", \
-    "uilabel": "Demand String", \
-    "doc": "This string provides a method for reversing the supply of spent " \
-           "fuel and instead framing the problem as demand for storage space." \
-  }
-  std::string demand_space;
-
-  #pragma cyclus var { \
     "default": 0.0, \
     "uilabel": "Geographical latitude in degrees as a double", \
     "doc": "Latitude of the agent's geographical position. The value should " \

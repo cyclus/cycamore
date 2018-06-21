@@ -239,7 +239,6 @@ void Reactor::GetMatlTrades(
     Material::Ptr m = mats[commod].back();
     mats[commod].pop_back();
     cyclus::toolkit::RecordTimeSeries<double>("supply"+commod, this, m->quantity());
-    cyclus::toolkit::RecordTimeSeries<double>(demand_space, this, m->quantity());
     responses.push_back(std::make_pair(trades[i], m));
     res_indexes.erase(m->obj_id());
   }
