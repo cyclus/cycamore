@@ -400,6 +400,14 @@ class Reactor : public cyclus::Facility,
   std::set<std::string> uniq_outcommods_;
 
   #pragma cyclus var { \
+    "default": "demandspace", \
+    "uilabel": "Demand String", \
+    "doc": "This string provides a method for reversing the supply of spent " \
+           "fuel and instead framing the problem as demand for storage space." \
+  }
+  std::string demand_space;
+
+  #pragma cyclus var { \
     "default": 0.0, \
     "uilabel": "Geographical latitude in degrees as a double", \
     "doc": "Latitude of the agent's geographical position. The value should " \
@@ -414,15 +422,6 @@ class Reactor : public cyclus::Facility,
            "be expressed in degrees as a double." \
   }
   double longitude;
-
-  // For new Record Time Series functionality
-  #pragma cyclus var { \
-    "default": "reactor_fuel_demand", \
-    "uilabel": "Demand Tracking String", \
-    "doc": "String used to record the amount of fuel demanded "\
-            "by the reactor at a given timestep" \
-  }
-  std::string reactor_fuel_demand;
 
   cyclus::toolkit::Position coordinates;
 

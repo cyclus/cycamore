@@ -207,20 +207,6 @@ class Separations
   std::map<std::string, cyclus::toolkit::ResBuf<cyclus::Material> > streambufs;
 
   #pragma cyclus var { \
-    "default": "separations_record_input", \
-    "uilabel": "Input capacity record time series name", \
-    "doc": "The time series record name or input capacity" \
-  }
-  std::string separations_record_demand;
-
-  #pragma cyclus var { \
-    "default": "separations_record_output", \
-    "uilabel": "Output capacity record time series name", \
-    "doc": "The time series record name or output capacity" \
-  }
-  std::string separations_record_supply;
-
-  #pragma cyclus var { \
     "default": 0.0, \
     "uilabel": "Geographical latitude in degrees as a double", \
     "doc": "Latitude of the agent's geographical position. The value should " \

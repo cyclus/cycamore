@@ -99,6 +99,7 @@ Sink::GetMatlRequests() {
     std::vector<Request<Material>*> mutuals;
     for (int i = 0; i < in_commods.size(); i++) {
       mutuals.push_back(port->AddRequest(mat, this, in_commods[i], in_commod_prefs[i]));
+      
     }
     port->AddMutualReqs(mutuals);
     ports.insert(port);
@@ -166,8 +167,6 @@ void Sink::Tick() {
   LOG(cyclus::LEV_INFO3, "SnkFac") << prototype() << " is ticking {";
 
   double requestAmt = RequestAmt();
-  cyclus::toolkit::RecordTimeSeries<double>(sink_record_demand, this, 
-                                            requestAmt);
   // inform the simulation about what the sink facility will be requesting
   if (requestAmt > cyclus::eps()) {
     for (vector<string>::iterator commod = in_commods.begin();
@@ -175,6 +174,10 @@ void Sink::Tick() {
          commod++) {
       LOG(cyclus::LEV_INFO4, "SnkFac") << " will request " << requestAmt
                                        << " kg of " << *commod << ".";
+      cyclus::toolkit::RecordTimeSeries<double>("demand"+*commod, this, 
+                                            requestAmt);
+      cyclus::toolkit::RecordTimeSeries<double>(supply_space, this, 
+                                            requestAmt);
     }
   }
   LOG(cyclus::LEV_INFO3, "SnkFac") << "}";

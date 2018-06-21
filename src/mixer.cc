@@ -96,10 +96,6 @@ void Mixer::EnterNotify() {
 }
 
 void Mixer::Tick() {
-  cyclus::toolkit::RecordTimeSeries<double>(mixer_record_demand, this, 
-                                            throughput);
-  cyclus::toolkit::RecordTimeSeries<double>(mixer_record_supply, this, 
-                                            throughput);
   if (output.quantity() < output.capacity()) {
     double tgt_qty = output.space();
 

@@ -115,13 +115,6 @@ class Source : public cyclus::Facility,
     "doc": "amount of commodity that can be supplied at each time step", \
   }
   double throughput;
-
-  #pragma cyclus var { \
-    "default": "source_record_supply", \
-    "uilabel": "Output capacity record time series name", \
-    "doc": "The time series record name or output capacity" \
-  }
-  std::string source_record_supply;
   
   #pragma cyclus var { \
     "default": 0.0, \

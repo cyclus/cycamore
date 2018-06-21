@@ -103,10 +103,6 @@ void Separations::EnterNotify() {
 }
 
 void Separations::Tick() {
-  cyclus::toolkit::RecordTimeSeries<double>(separations_record_demand, this, 
-                                            throughput);
-  cyclus::toolkit::RecordTimeSeries<double>(separations_record_supply, this, 
-                                            throughput);
   if (feed.count() == 0) {
     return;
   }

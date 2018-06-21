@@ -155,11 +155,12 @@ class Sink
   cyclus::toolkit::ResBuf<cyclus::Resource> inventory;
 
   #pragma cyclus var { \
-    "default": "sink_record_demand", \
-    "uilabel": "Input capacity record time series name", \
-    "doc": "The time series record input capacity name." \
+    "default": "supplyspace, \
+    "uilabel": "Supply String", \
+    "doc": "This string provides a method for reversing the demand for spent " \
+           "fuel and instead framing the problem as supply of storage space." \
   }
-  std::string sink_record_demand;
+  std::string supply_space;
 
   #pragma cyclus var { \
     "default": 0.0, \
