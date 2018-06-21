@@ -53,6 +53,12 @@ void Reactor::InitFrom(cyclus::QueryableBackend* b) {
   namespace tk = cyclus::toolkit;
   tk::CommodityProducer::Add(tk::Commodity(power_name),
                              tk::CommodInfo(power_cap, power_cap));
+
+  for (int i = 0; i < side_products.size(); i++) {
+    tk::CommodityProducer::Add(tk::Commodity(side_products[i]),
+                               tk::CommodInfo(side_product_quantity[i],
+                                              side_product_quantity[i]));
+  }
 }
 
 void Reactor::EnterNotify() {
@@ -64,6 +70,11 @@ void Reactor::EnterNotify() {
     for (int i = 0; i < fuel_outcommods.size(); i++) {
       fuel_prefs.push_back(cyclus::kDefaultPref);
     }
+  }
+
+  // Test if any side products have been defined.
+  if (side_products.size() == 0){
+    hybrid_ = false;
   }
 
   // input consistency checking:
@@ -345,8 +356,10 @@ void Reactor::Tock() {
       core.count() == n_assem_core) {
     cyclus::toolkit::RecordTimeSeries<cyclus::toolkit::POWER>(this, power_cap);
     cyclus::toolkit::RecordTimeSeries<double>("supplyPOWER", this, power_cap);
+    RecordSideProduct(true);
   } else {
     cyclus::toolkit::RecordTimeSeries<cyclus::toolkit::POWER>(this, 0);
+    RecordSideProduct(false);
   }
 
   // "if" prevents starting cycle after initial deployment until core is full
