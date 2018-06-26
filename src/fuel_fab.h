@@ -113,7 +113,7 @@ class FuelFab
 
 #pragma cyclus
 
-  virtual void Tick();
+  virtual void Tick(){};
   virtual void Tock(){};
   virtual void EnterNotify();
 

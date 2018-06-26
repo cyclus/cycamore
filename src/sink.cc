@@ -104,7 +104,6 @@ Sink::GetMatlRequests() {
     port->AddMutualReqs(mutuals);
     ports.insert(port);
   }  // if amt > eps
-
   return ports;
 }
 
@@ -134,7 +133,6 @@ Sink::GetGenRsrcRequests() {
 
     ports.insert(port);
   }  // if amt > eps
-
   return ports;
 }
 

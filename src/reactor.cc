@@ -503,6 +503,28 @@ void Reactor::PushSpent(std::map<std::string, MatVec> leftover) {
   }
 }
 
+void Reactor::RecordSideProduct(bool produce){
+  if (hybrid_){
+    double value;
+    for (int i = 0; i < side_products.size(); i++) {
+      if (produce){
+          value = side_product_quantity[i];
+      }
+      else {
+          value = 0;
+      }
+
+      context()
+          ->NewDatum("ReactorSideProducts")
+          ->AddVal("AgentId", id())
+          ->AddVal("Time", context()->time())
+          ->AddVal("Product", side_products[i])
+          ->AddVal("Value", value)
+          ->Record();
+    }
+  }
+}
+
 void Reactor::Record(std::string name, std::string val) {
   context()
       ->NewDatum("ReactorEvents")
