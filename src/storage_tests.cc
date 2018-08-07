@@ -2,7 +2,7 @@
 
 #include "storage_tests.h"
 
-namespace storage {
+namespace cycamore {
 
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 void StorageTest::SetUp() {
@@ -503,11 +503,11 @@ TEST_F(StorageTest, Longitude){
   EXPECT_EQ(qr.GetVal<double>("Longitude"), 35.0);
 }
 
-} // namespace storage
+} // namespace cycamore
 
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 cyclus::Agent* StorageConstructor(cyclus::Context* ctx) {
-  return new storage::Storage(ctx);
+  return new cycamore::Storage(ctx);
 }
 
 // required to get functionality in cyclus agent unit tests library
