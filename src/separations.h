@@ -226,6 +226,7 @@ class Separations
 
   /// Records an agent's latitude and longitude to the output db
   void RecordPosition();
+  void Record(std::string name, double val, std::string type);
 };
 
 }  // namespace cycamore
