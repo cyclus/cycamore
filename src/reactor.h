@@ -372,6 +372,15 @@ class Reactor : public cyclus::Facility,
   bool hybrid_;
 
 
+  /////////// Decommission transmutation behavior ///////////
+  #pragma cyclus var {"default": 0, \
+                      "uilabel": "Boolean for transmutation behavior upon decommissioning.", \
+                      "doc": "If true, the archetype transmutes all assemblies upon decommissioning " \
+                             "If false, the archetype only transmutes half.", \
+  }
+  bool decom_transmute_all;
+
+
   /////////// preference changes ///////////
   #pragma cyclus var { \
     "default": [], \
