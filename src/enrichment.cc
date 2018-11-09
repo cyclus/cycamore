@@ -59,7 +59,9 @@ void Enrichment::Build(cyclus::Agent* parent) {
 }
 
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-void Enrichment::Tick() { current_swu_capacity = SwuCapacity(); }
+void Enrichment::Tick() { 
+  current_swu_capacity = SwuCapacity();
+}
 
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 void Enrichment::Tock() {
@@ -441,7 +443,7 @@ void Enrichment::RecordEnrichment_(double natural_u, double swu) {
 
   Context* ctx = Agent::context();
   ctx->NewDatum("Enrichments")
-      ->AddVal("ID", id())
+      ->AddVal("AgentId", id())
       ->AddVal("Time", ctx->time())
       ->AddVal("Natural_Uranium", natural_u)
       ->AddVal("SWU", swu)

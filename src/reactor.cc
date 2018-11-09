@@ -60,6 +60,7 @@ void Reactor::InitFrom(cyclus::QueryableBackend* b) {
                                               side_product_quantity[i]));
   }
 }
+
 void Reactor::EnterNotify() {
   cyclus::Facility::EnterNotify();
 
@@ -230,6 +231,8 @@ std::set<cyclus::RequestPortfolio<Material>::Ptr> Reactor::GetMatlRequests() {
       double pref = fuel_prefs[j];
       Composition::Ptr recipe = context()->GetRecipe(fuel_inrecipes[j]);
       m = Material::CreateUntracked(assem_size, recipe);
+      cyclus::toolkit::RecordTimeSeries<double>("demand"+commod, this, 
+                                         assem_size);
       Request<Material>* r = port->AddRequest(m, this, commod, pref, true);
       mreqs.push_back(r);
     }
@@ -251,7 +254,7 @@ void Reactor::GetMatlTrades(
     std::string commod = trades[i].request->commodity();
     Material::Ptr m = mats[commod].back();
     mats[commod].pop_back();
-    cyclus::toolkit::RecordTimeSeries<double>("UsedFuel", this, m->quantity());
+    cyclus::toolkit::RecordTimeSeries<double>("supply"+commod, this, m->quantity());
     responses.push_back(std::make_pair(trades[i], m));
     res_indexes.erase(m->obj_id());
   }
@@ -357,6 +360,7 @@ void Reactor::Tock() {
   if (cycle_step >= 0 && cycle_step < cycle_time &&
       core.count() == n_assem_core) {
     cyclus::toolkit::RecordTimeSeries<cyclus::toolkit::POWER>(this, power_cap);
+    cyclus::toolkit::RecordTimeSeries<double>("supplyPOWER", this, power_cap);
     RecordSideProduct(true);
   } else {
     cyclus::toolkit::RecordTimeSeries<cyclus::toolkit::POWER>(this, 0);
