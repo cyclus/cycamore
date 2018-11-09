@@ -72,6 +72,7 @@ void Enrichment::Tock() {
   LOG(cyclus::LEV_INFO4, "EnrFac") << prototype() << " used "
                                    << intra_timestep_feed_ << " feed";
   RecordTimeSeries<cyclus::toolkit::ENRICH_FEED>(this, intra_timestep_feed_);
+  RecordTimeSeries<double>("demand"+feed_commod, this, intra_timestep_feed_);
 }
 
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -255,16 +256,19 @@ void Enrichment::GetMatlTrades(
                           cyclus::Material::Ptr> >& responses) {
   using cyclus::Material;
   using cyclus::Trade;
+  using cyclus::toolkit::RecordTimeSeries;
 
   intra_timestep_swu_ = 0;
   intra_timestep_feed_ = 0;
 
-  std::vector<Trade<Material> >::const_iterator it;
+  double tails_supply_qty = 0;
+  double prod_supply_qty = 0;
+
+      std::vector<Trade<Material>>::const_iterator it;
   for (it = trades.begin(); it != trades.end(); ++it) {
     double qty = it->amt;
     std::string commod_type = it->bid->request()->commodity();
     Material::Ptr response;
-
     // Figure out whether material is tails or enriched,
     // if tails then make transfer of material
     if (commod_type == tails_commod) {
@@ -273,11 +277,13 @@ void Enrichment::GetMatlTrades(
           << " for " << it->amt << " of " << tails_commod;
       double pop_qty = std::min(qty, tails.quantity());
       response = tails.Pop(pop_qty, cyclus::eps_rsrc());
+      tails_supply_qty += pop_qty;
     } else {
       LOG(cyclus::LEV_INFO5, "EnrFac")
           << prototype() << " just received an order"
           << " for " << it->amt << " of " << product_commod;
       response = Enrich_(it->bid->offer(), qty);
+      prod_supply_qty += qty;
     }
     responses.push_back(std::make_pair(*it, response));
   }
@@ -292,6 +298,9 @@ void Enrichment::GetMatlTrades(
                              " is being asked to provide more than" +
                              " its SWU capacity.");
   }
+
+  RecordTimeSeries<double>("supply"+tails_commod, this, tails_supply_qty);
+  RecordTimeSeries<double>("supply"+product_commod, this, prod_supply_qty);
 }
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 void Enrichment::AddMat_(cyclus::Material::Ptr mat) {
