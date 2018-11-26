@@ -264,7 +264,7 @@ void Enrichment::GetMatlTrades(
   double tails_supply_qty = 0;
   double prod_supply_qty = 0;
 
-      std::vector<Trade<Material>>::const_iterator it;
+  std::vector<Trade<Material>>::const_iterator it;
   for (it = trades.begin(); it != trades.end(); ++it) {
     double qty = it->amt;
     std::string commod_type = it->bid->request()->commodity();
