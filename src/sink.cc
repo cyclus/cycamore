@@ -99,11 +99,11 @@ Sink::GetMatlRequests() {
     std::vector<Request<Material>*> mutuals;
     for (int i = 0; i < in_commods.size(); i++) {
       mutuals.push_back(port->AddRequest(mat, this, in_commods[i], in_commod_prefs[i]));
+      
     }
     port->AddMutualReqs(mutuals);
     ports.insert(port);
   }  // if amt > eps
-
   return ports;
 }
 
@@ -133,7 +133,6 @@ Sink::GetGenRsrcRequests() {
 
     ports.insert(port);
   }  // if amt > eps
-
   return ports;
 }
 
@@ -173,6 +172,8 @@ void Sink::Tick() {
          commod++) {
       LOG(cyclus::LEV_INFO4, "SnkFac") << " will request " << requestAmt
                                        << " kg of " << *commod << ".";
+      cyclus::toolkit::RecordTimeSeries<double>("demand"+*commod, this, 
+                                            requestAmt);
     }
   }
   LOG(cyclus::LEV_INFO3, "SnkFac") << "}";
