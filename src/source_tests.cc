@@ -80,6 +80,36 @@ TEST_F(SourceTest, AddBids) {
   EXPECT_EQ(*constrs.begin(), CapacityConstraint<Material>(capacity));
 }
 
+TEST_F(SourceTest, Buffer) {
+  std::string config = 
+    "<outcommod>spent_fuel</outcommod>"
+    "<buffer>1</buffer>"
+    "<throughput>100</throughput>"
+    "<inventory_size>1e6</inventory_size>"
+  ;
+  int simdur = 10;
+  cyclus::MockSim sim(cyclus::AgentSpec(":cycamore:Source"), config, simdur);
+  sim.AddSink("spent_fuel")
+     .start(5)
+     .Finalize();
+  int id = sim.Run();
+
+  cyclus::SqlStatement::Ptr stmt = sim.db().db().Prepare(
+      "SELECT COUNT(*) FROM transactions INNER JOIN resources"
+      " ON resources.resourceid = transactions.resourceid"
+      " WHERE quantity == 100");
+  stmt->Step();
+  EXPECT_EQ(4, stmt->GetInt(0));
+
+  stmt = sim.db().db().Prepare(
+      "SELECT COUNT(*) FROM transactions INNER JOIN resources"
+      " ON resources.resourceid = transactions.resourceid"
+      " WHERE quantity == 600");
+  stmt->Step();
+  EXPECT_EQ(1, stmt->GetInt(0));
+
+}
+
 TEST_F(SourceTest, Response) {
   using cyclus::Bid;
   using cyclus::Material;
