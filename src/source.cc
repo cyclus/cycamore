@@ -13,7 +13,6 @@ Source::Source(cyclus::Context* ctx)
       inventory_size(std::numeric_limits<double>::max()),
       latitude(0.0),
       longitude(0.0),
-      buffer_qty(0.0),
       coordinates(latitude, longitude) {}
 
 Source::~Source() {}
@@ -30,6 +29,22 @@ void Source::InitFrom(cyclus::QueryableBackend* b) {
   tk::CommodityProducer::Add(tk::Commodity(outcommod),
                              tk::CommodInfo(throughput, throughput));
   RecordPosition();
+
+}
+
+void Source::Tick() {
+  using cyclus::Material;
+  using cyclus::toolkit::ResBuf;
+  // push amount of throughput to ready buffer
+  cyclus::CompMap v;
+  cyclus::Composition::Ptr comp = cyclus::Composition::CreateFromAtom(v);
+  if (!outrecipe.empty()){
+    comp = context()->GetRecipe(outrecipe);
+  }
+  double qty = std::min(throughput, inventory_size);
+  Material::Ptr m = Material::Create(this, qty, comp);
+  inventory_size -= qty;
+  ready.Push(m);
 }
 
 std::string Source::str() {
@@ -61,11 +76,7 @@ std::set<cyclus::BidPortfolio<cyclus::Material>::Ptr> Source::GetMatlBids(
   using cyclus::Request;
   using cyclus::toolkit::ResBuf;
 
-  double max_qty = std::min(throughput, inventory_size);
-
-  if (buffer == true) {
-    max_qty = std::min(inventory_size + buffer_qty, throughput + buffer_qty);
-  }
+  double max_qty = ready.quantity();
 
   LOG(cyclus::LEV_INFO3, "Source") << prototype() << " is bidding up to "
                                    << max_qty << " kg of " << outcommod;
@@ -75,11 +86,6 @@ std::set<cyclus::BidPortfolio<cyclus::Material>::Ptr> Source::GetMatlBids(
   if (max_qty < cyclus::eps()) {
     return ports;
   } else if (commod_requests.count(outcommod) == 0) {
-    // if there is no demand for commodity, source dumps all throughput to buffer.
-    if (buffer == true) {
-      inventory_size -= throughput;
-      buffer_qty += throughput;
-    }
     return ports;
   }
 
@@ -113,31 +119,14 @@ void Source::GetMatlTrades(
 
   std::vector<cyclus::Trade<cyclus::Material> >::const_iterator it;
 
-  if (buffer == true) {
-    double throughput_diff = throughput;
-  } else {
-    double throughput_diff = 0;
-  }
-
   for (it = trades.begin(); it != trades.end(); ++it) {
     double qty = it->amt;
-    if (buffer == true){
-      throughput_diff -= qty;
-    } else {
-      inventory_size -= qty;
-    }
-
     Material::Ptr response;
-    if (!outrecipe.empty()) {
-      response = Material::Create(this, qty, context()->GetRecipe(outrecipe));
-    } else {
-      response = Material::Create(this, qty, it->request->target()->comp());
-    }
+    response = ready.Pop(qty);
     responses.push_back(std::make_pair(*it, response));
     LOG(cyclus::LEV_INFO5, "Source") << prototype() << " sent an order"
                                      << " for " << qty << " of " << outcommod;
   }
-  buffer_qty += throughput_diff;
 }
 
 void Source::RecordPosition() {

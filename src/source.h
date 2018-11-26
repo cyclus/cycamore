@@ -57,7 +57,7 @@ class Source : public cyclus::Facility,
 
   virtual void InitFrom(cyclus::QueryableBackend* b);
 
-  virtual void Tick() {};
+  virtual void Tick();
 
   virtual void Tock() {};
 
@@ -140,15 +140,12 @@ class Source : public cyclus::Facility,
   }
   bool buffer;
 
-  #pragma cyclus var { \
-    "doc": "Variable for keeping count of the stock the source keeps " \
-           " when throughput is larger than demand. ", \
-    "default": 0, \
-    "units": "kg", \
-  }
-  double buffer_qty;
+  #pragma cyclus var {"tooltip" : "Material ready to be sent out"}
+  cyclus::toolkit::ResBuf<cyclus::Material> ready;
 
   cyclus::toolkit::Position coordinates;
+
+  
 
   void RecordPosition();
 };
