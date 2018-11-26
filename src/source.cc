@@ -44,6 +44,9 @@ void Source::Tick() {
   double qty = std::min(throughput, inventory_size);
   Material::Ptr m = Material::Create(this, qty, comp);
   inventory_size -= qty;
+  if (buffer == false && !ready.empty()){
+    ready.Pop();
+  }
   ready.Push(m);
 }
 

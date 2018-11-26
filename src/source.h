@@ -134,9 +134,9 @@ class Source : public cyclus::Facility,
 
   #pragma cyclus var { \
     "default": 0, \
-    "uilabel": "Boolean to have source inventory buffer.", \
-    "doc": "The user can set this variable to true to have the source " \
-           "save its maximum throughput for later demand." \
+    "uilabel": "Boolean to stockpile throughput.", \
+    "doc": "If true, the facility will stockpile its maximum throughput at " \
+           "each timestep. If false, the facility will not store inventory." \
   }
   bool buffer;
 
