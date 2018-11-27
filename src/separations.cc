@@ -134,8 +134,7 @@ void Separations::Tick()
   double maxfrac = 1;
   std::map<std::string, Material::Ptr> stagedsep;
   Record("Separating", orig_qty, "UNF");
-  for (it = streams_.begin(); it != streams_.end(); ++it)
-  {
+  for (it = streams_.begin(); it != streams_.end(); ++it) {
     Stream info = it->second;
     std::string name = it->first;
     stagedsep[name] = SepMaterial(info.second, mat);
@@ -151,11 +150,9 @@ void Separations::Tick()
   {
     std::string name = itf->first;
     Material::Ptr m = itf->second;
-    if (m->quantity() > 0)
-    {
+    if (m->quantity() > 0) {
       double qty = m->quantity();
-      if (m->quantity() > mat->quantity())
-      {
+      if (m->quantity() > mat->quantity()) {
         qty = mat->quantity();
       }
       streambufs[name].Push(
@@ -438,8 +435,7 @@ void Separations::RecordPosition()
       ->Record();
 }
 
-void Separations::Record(std::string name, double val, std::string type)
-{
+void Separations::Record(std::string name, double val, std::string type) {
   context()
       ->NewDatum("SeparationEvents")
       ->AddVal("AgentId", id())
@@ -450,8 +446,7 @@ void Separations::Record(std::string name, double val, std::string type)
       ->Record();
 }
 
-extern "C" cyclus::Agent *ConstructSeparations(cyclus::Context *ctx)
-{
+extern "C" cyclus::Agent *ConstructSeparations(cyclus::Context *ctx) {
   return new Separations(ctx);
 }
 
