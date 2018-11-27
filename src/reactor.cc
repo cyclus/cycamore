@@ -141,14 +141,11 @@ void Reactor::Tick()
   {
     Record("RETIRED", "");
 
-    if (context()->time() == exit_time() + 1)
-    { // only need to transmute once
-      if (decom_transmute_all == true)
-      {
+    if (context()->time() == exit_time() + 1) { // only need to transmute once
+      if (decom_transmute_all == true) {
         Transmute(ceil(static_cast<double>(n_assem_core)));
       }
-      else
-      {
+      else {
         Transmute(ceil(static_cast<double>(n_assem_core) / 2.0));
       }
     }
