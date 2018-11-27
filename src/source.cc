@@ -44,9 +44,6 @@ void Source::Tick() {
   double qty = std::min(throughput, inventory_size);
   Material::Ptr m = Material::Create(this, qty, comp);
   inventory_size -= qty;
-  if (buffer == false && !ready.empty()){
-    ready.Pop();
-  }
   ready.Push(m);
 }
 
@@ -79,7 +76,11 @@ std::set<cyclus::BidPortfolio<cyclus::Material>::Ptr> Source::GetMatlBids(
   using cyclus::Request;
   using cyclus::toolkit::ResBuf;
 
-  double max_qty = ready.quantity();
+  double max_qty = std::min(ready.quantity(), throughput);
+  if (buffer == true) {
+    max_qty = ready.quantity();
+  }
+
   cyclus::toolkit::RecordTimeSeries<double>("supply"+outcommod, this, 
                                             max_qty);
   LOG(cyclus::LEV_INFO3, "Source") << prototype() << " is bidding up to "
