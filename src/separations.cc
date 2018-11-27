@@ -129,8 +129,6 @@ void Separations::Tick() {
     std::string name = itf->first;
     Material::Ptr m = itf->second;
     if (m->quantity() > 0) {
-      std::cout << "m quantity: " << m->quantity() << "\n";
-      std::cout << "mat quantity: " << mat->quantity() << "\n";
       double qty = m->quantity();
       if (m->quantity() > mat->quantity()) {
         qty = mat->quantity();
@@ -149,8 +147,6 @@ void Separations::Tick() {
   } else {  // maxfrac is < 1
     // push back any leftover feed due to separated stream inv size constraints
 
-    std::cout << "(1- maxfrac) * orig_ qty: " << ((1 - maxfrac) * orig_qty) << "\n";
-    std::cout << "mat quantity: " << mat->quantity() << "\n";
     feed.Push(mat->ExtractQty((1 - maxfrac) * orig_qty));
     if (mat->quantity() > 0) {
       // unspecified separations fractions go to leftovers
