@@ -446,7 +446,7 @@ void Separations::Record(std::string name, double val, std::string type) {
       ->Record();
 }
 
-extern "C" cyclus::Agent *ConstructSeparations(cyclus::Context* ctx)
+extern "C" cyclus::Agent* ConstructSeparations(cyclus::Context* ctx)
 {
   return new Separations(ctx);
 }
