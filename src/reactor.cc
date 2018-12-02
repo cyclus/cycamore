@@ -134,7 +134,7 @@ void Reactor::Tick() {
       }
     }
     while (core.count() > 0) {
-      if (!Discharge(fuel_outcommods)) {
+      if (!Discharge()) {
         break;
       }
     }
@@ -153,7 +153,7 @@ void Reactor::Tick() {
   }
 
   if (cycle_step >= cycle_time && !discharged) {
-    discharged = Discharge(fuel_outcommods);
+    discharged = Discharge();
   }
   if (cycle_step >= cycle_time) {
     Load();
@@ -404,8 +404,8 @@ std::map<std::string, MatVec> Reactor::PeekSpent() {
   return mapped;
 }
 
-bool Reactor::Discharge(fuel_outcommods) {
-  std::cout << fuel_outcommods << std:endl; 
+bool Reactor::Discharge() {
+  
   int npop = std::min(n_assem_batch, core.count());
   int cap_pop = 0; 
   double assem_quantity = 0; 
@@ -418,7 +418,7 @@ bool Reactor::Discharge(fuel_outcommods) {
   ss << npop << " assemblies";
   Record("DISCHARGE", ss.str());  
   spent.Push(core.PopN(npop));
-  cyclus::toolkit::RecordTimeSeries<double>("supplyspentfuel", this, spent.quantity());
+  cyclus::toolkit::RecordTimeSeries<double>("supply"+fuel_outcommods[0], this, spent.quantity());
   return true;
 }
 
