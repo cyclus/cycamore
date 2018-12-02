@@ -134,7 +134,7 @@ void Reactor::Tick() {
       }
     }
     while (core.count() > 0) {
-      if (!Discharge()) {
+      if (!Discharge(fuel_outcommods)) {
         break;
       }
     }
@@ -153,7 +153,7 @@ void Reactor::Tick() {
   }
 
   if (cycle_step >= cycle_time && !discharged) {
-    discharged = Discharge();
+    discharged = Discharge(fuel_outcommods);
   }
   if (cycle_step >= cycle_time) {
     Load();
@@ -254,7 +254,7 @@ void Reactor::GetMatlTrades(
     std::string commod = trades[i].request->commodity();
     Material::Ptr m = mats[commod].back();
     mats[commod].pop_back();
-    cyclus::toolkit::RecordTimeSeries<double>("supply"+commod, this, m->quantity());
+    //cyclus::toolkit::RecordTimeSeries<double>("supply"+commod, this, m->quantity());
     responses.push_back(std::make_pair(trades[i], m));
     res_indexes.erase(m->obj_id());
   }
@@ -404,7 +404,8 @@ std::map<std::string, MatVec> Reactor::PeekSpent() {
   return mapped;
 }
 
-bool Reactor::Discharge() {
+bool Reactor::Discharge(fuel_outcommods) {
+  std::cout << fuel_outcommods << std:endl; 
   int npop = std::min(n_assem_batch, core.count());
   int cap_pop = 0; 
   double assem_quantity = 0; 
