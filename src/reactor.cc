@@ -406,8 +406,6 @@ std::map<std::string, MatVec> Reactor::PeekSpent() {
 bool Reactor::Discharge() {
   
   int npop = std::min(n_assem_batch, core.count());
-  int cap_pop = 0; 
-  double assem_quantity = 0; 
   if (n_assem_spent - spent.count() < npop) {
     Record("DISCHARGE", "failed");
     return false;  // not enough room in spent buffer
