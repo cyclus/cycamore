@@ -334,6 +334,8 @@ std::set<cyclus::BidPortfolio<Material>::Ptr> Reactor::GetMatlBids(
     for (int j = 0; j < mats.size(); j++) {
       tot_qty += mats[j]->quantity();
     }
+
+    cyclus::toolkit::RecordTimeSeries<double>("supply"+*it, this, tot_qty);
     cyclus::CapacityConstraint<Material> cc(tot_qty);
     port->AddConstraint(cc);
     ports.insert(port);
@@ -414,7 +416,6 @@ bool Reactor::Discharge() {
   ss << npop << " assemblies";
   Record("DISCHARGE", ss.str());  
   spent.Push(core.PopN(npop));
-  cyclus::toolkit::RecordTimeSeries<double>("supply"+fuel_outcommods[0], this, spent.quantity());
   return true;
 }
 
