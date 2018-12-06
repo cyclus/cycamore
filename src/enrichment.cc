@@ -181,6 +181,8 @@ std::set<cyclus::BidPortfolio<cyclus::Material>::Ptr> Enrichment::GetMatlBids(
 
   std::set<BidPortfolio<Material>::Ptr> ports;
 
+  RecordTimeSeries<double>("demand" + tails_commod, this, tails.quantity());
+  RecordTimeSeries<double>("demand" + product_commod, this, inventory.quantity());
   if ((out_requests.count(tails_commod) > 0) && (tails.quantity() > 0)) {
     BidPortfolio<Material>::Ptr tails_port(new BidPortfolio<Material>());
 
@@ -228,8 +230,6 @@ std::set<cyclus::BidPortfolio<cyclus::Material>::Ptr> Enrichment::GetMatlBids(
 
     Converter<Material>::Ptr sc(new SWUConverter(FeedAssay(), tails_assay));
     Converter<Material>::Ptr nc(new NatUConverter(FeedAssay(), tails_assay));
-    RecordTimeSeries<double>("demand"+tails_commod, this, tails.quantity());
-    RecordTimeSeries<double>("demand"+product_commod, this, inventory.quantity());
     CapacityConstraint<Material> swu(swu_capacity, sc);
     CapacityConstraint<Material> natu(inventory.quantity(), nc);
     commod_port->AddConstraint(swu);
