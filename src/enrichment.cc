@@ -61,6 +61,7 @@ void Enrichment::Build(cyclus::Agent* parent) {
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 void Enrichment::Tick() { 
   current_swu_capacity = SwuCapacity();
+  
 }
 
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -227,6 +228,8 @@ std::set<cyclus::BidPortfolio<cyclus::Material>::Ptr> Enrichment::GetMatlBids(
 
     Converter<Material>::Ptr sc(new SWUConverter(FeedAssay(), tails_assay));
     Converter<Material>::Ptr nc(new NatUConverter(FeedAssay(), tails_assay));
+    RecordTimeSeries<double>("demand"+tails_commod, this, tails.quantity());
+    RecordTimeSeries<double>("demand"+product_commod, this, inventory.quantity());
     CapacityConstraint<Material> swu(swu_capacity, sc);
     CapacityConstraint<Material> natu(inventory.quantity(), nc);
     commod_port->AddConstraint(swu);
@@ -261,9 +264,6 @@ void Enrichment::GetMatlTrades(
   intra_timestep_swu_ = 0;
   intra_timestep_feed_ = 0;
 
-  double tails_supply_qty = 0;
-  double prod_supply_qty = 0;
-
   std::vector<Trade<Material>>::const_iterator it;
   for (it = trades.begin(); it != trades.end(); ++it) {
     double qty = it->amt;
@@ -277,13 +277,11 @@ void Enrichment::GetMatlTrades(
           << " for " << it->amt << " of " << tails_commod;
       double pop_qty = std::min(qty, tails.quantity());
       response = tails.Pop(pop_qty, cyclus::eps_rsrc());
-      tails_supply_qty += pop_qty;
     } else {
       LOG(cyclus::LEV_INFO5, "EnrFac")
           << prototype() << " just received an order"
           << " for " << it->amt << " of " << product_commod;
       response = Enrich_(it->bid->offer(), qty);
-      prod_supply_qty += qty;
     }
     responses.push_back(std::make_pair(*it, response));
   }
@@ -299,8 +297,6 @@ void Enrichment::GetMatlTrades(
                              " its SWU capacity.");
   }
 
-  RecordTimeSeries<double>("supply"+tails_commod, this, tails_supply_qty);
-  RecordTimeSeries<double>("supply"+product_commod, this, prod_supply_qty);
 }
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 void Enrichment::AddMat_(cyclus::Material::Ptr mat) {
