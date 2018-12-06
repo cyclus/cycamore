@@ -114,7 +114,7 @@ std::string Storage::str() {
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 void Storage::Tick() {
-  
+
   // Set available capacity for Buy Policy
   inventory.capacity(current_capacity());
 
@@ -125,7 +125,7 @@ void Storage::Tick() {
         << " has capacity for " << current_capacity() << " kg of material.";
   }
   LOG(cyclus::LEV_INFO3, "ComCnv") << "}";
-  
+
 }
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
