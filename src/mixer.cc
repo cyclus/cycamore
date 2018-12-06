@@ -124,14 +124,25 @@ void Mixer::Tick() {
       output.Push(m);
     }
   }
-  std::map<std::string, double>::iterator it;
-  std::map<std::string, double>::iterator max_it;
-  for (int i = 0; i < mixing_ratios.size(); i++) {
+  cyclus::toolkit::RecordTimeSeries<double>("supply"+out_commod, this, output.quantity());
+}
+
+std::set<cyclus::RequestPortfolio<cyclus::Material>::Ptr>
+Mixer::GetMatlRequests() {
+  using cyclus::RequestPortfolio;
+  using cyclus::toolkit::RecordTimeSeries;
+
+  for (int i = 0; i < mixing_ratios.size(); i++)
+  {
     std::string name = "in_stream_" + std::to_string(i);
+    std::map<std::string, double>::iterator it;
+    std::map<std::string, double>::iterator max_it = in_commods[i].begin();
     double prev_pref = 0;
-    for (it = in_commods[i].begin(); it != in_commods[i].end(); it++){
+    for (it = in_commods[i].begin(); it != in_commods[i].end(); it++)
+    {
       double pref = it->second;
-      if (pref > prev_pref) {
+      if (pref > prev_pref)
+      {
         prev_pref = pref;
         max_it = it;
       }
@@ -139,12 +150,6 @@ void Mixer::Tick() {
     cyclus::toolkit::RecordTimeSeries<double>("demand" + max_it->first, this,
                                               streambufs[name].space());
   }
-  cyclus::toolkit::RecordTimeSeries<double>("supply"+out_commod, this, output.quantity());
-}
-
-std::set<cyclus::RequestPortfolio<cyclus::Material>::Ptr>
-Mixer::GetMatlRequests() {
-  using cyclus::RequestPortfolio;
 
   std::set<RequestPortfolio<cyclus::Material>::Ptr> ports;
   
