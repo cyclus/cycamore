@@ -288,7 +288,6 @@ void Reactor::AcceptMatlTrades(const std::vector<
 std::set<cyclus::BidPortfolio<Material>::Ptr> Reactor::GetMatlBids(
     cyclus::CommodMap<Material>::type& commod_requests) {
   using cyclus::BidPortfolio;
-
   std::set<BidPortfolio<Material>::Ptr> ports;
 
   bool gotmats = false;
@@ -335,7 +334,6 @@ std::set<cyclus::BidPortfolio<Material>::Ptr> Reactor::GetMatlBids(
       tot_qty += mats[j]->quantity();
     }
 
-    cyclus::toolkit::RecordTimeSeries<double>("supply"+*it, this, tot_qty);
     cyclus::CapacityConstraint<Material> cc(tot_qty);
     port->AddConstraint(cc);
     ports.insert(port);
@@ -416,6 +414,18 @@ bool Reactor::Discharge() {
   ss << npop << " assemblies";
   Record("DISCHARGE", ss.str());  
   spent.Push(core.PopN(npop));
+
+  double fuel_pref_prev = 0; 
+  int pref_element = 0; 
+
+  for (int i = 0; i < fuel_prefs.size(); i++) {
+    if (fuel_prefs[i] > fuel_pref_prev) {
+      pref_element = i;
+    }
+    fuel_pref_prev = fuel_prefs[i];
+  }
+
+  cyclus::toolkit::RecordTimeSeries<double>("supply"+fuel_outcommods[pref_element], this, spent.quantity());
   return true;
 }
 
