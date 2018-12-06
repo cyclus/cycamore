@@ -96,6 +96,7 @@ void Mixer::EnterNotify() {
 }
 
 void Mixer::Tick() {
+  using cyclus::toolkit::RecordTimeSeries;
   if (output.quantity() < output.capacity()) {
     double tgt_qty = output.space();
 
@@ -123,6 +124,17 @@ void Mixer::Tick() {
       output.Push(m);
     }
   }
+  std::map<std::string, double>::iterator it;
+  for (int i = 0; i < mixing_ratios.size(); i++) {
+    std::string name = "in_stream_" + std::to_string(i);
+    for (it = in_commods[i].begin(); it != in_commods[i].end(); it++){
+      std::cout << it->first << "\n";
+      cyclus::toolkit::RecordTimeSeries<double>("demand" + it->first, this,
+                                                streambufs[name].space());
+    }
+    
+  }
+  cyclus::toolkit::RecordTimeSeries<double>("supply"+out_commod, this, output.quantity());
 }
 
 std::set<cyclus::RequestPortfolio<cyclus::Material>::Ptr>
