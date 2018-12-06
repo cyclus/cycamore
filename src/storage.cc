@@ -114,6 +114,7 @@ std::string Storage::str() {
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 void Storage::Tick() {
+  
   // Set available capacity for Buy Policy
   inventory.capacity(current_capacity());
 
@@ -124,10 +125,12 @@ void Storage::Tick() {
         << " has capacity for " << current_capacity() << " kg of material.";
   }
   LOG(cyclus::LEV_INFO3, "ComCnv") << "}";
+  
 }
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 void Storage::Tock() {
+  using cyclus::toolkit::RecordTimeSeries;
   LOG(cyclus::LEV_INFO3, "ComCnv") << prototype() << " is tocking {";
 
   BeginProcessing_();  // place unprocessed inventory into processing
@@ -138,6 +141,16 @@ void Storage::Tock() {
 
   ProcessMat_(throughput);  // place ready into stocks
 
+
+  std::vector<double>::iterator result;
+  result = std::max_element(in_commod_prefs.begin(), in_commod_prefs.end());
+  int maxindx = std::distance(in_commod_prefs.begin(), result);
+  cyclus::toolkit::RecordTimeSeries<double>("demand"+in_commods[maxindx], this,
+                                            current_capacity());
+  // Multiple commodity tracking is not supported, user can only
+  // provide one value for out_commods, despite it being a vector of strings.
+  cyclus::toolkit::RecordTimeSeries<double>("supply"+out_commods[0], this,
+                                            stocks.quantity());
   LOG(cyclus::LEV_INFO3, "ComCnv") << "}";
 }
 
