@@ -178,6 +178,7 @@ std::set<cyclus::BidPortfolio<cyclus::Material>::Ptr> Enrichment::GetMatlBids(
   using cyclus::Material;
   using cyclus::Request;
   using cyclus::toolkit::MatVec;
+  using cyclus::toolkit::RecordTimeSeries;
 
   std::set<BidPortfolio<Material>::Ptr> ports;
 
@@ -259,7 +260,6 @@ void Enrichment::GetMatlTrades(
                           cyclus::Material::Ptr> >& responses) {
   using cyclus::Material;
   using cyclus::Trade;
-  using cyclus::toolkit::RecordTimeSeries;
 
   intra_timestep_swu_ = 0;
   intra_timestep_feed_ = 0;
