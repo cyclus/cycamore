@@ -125,14 +125,19 @@ void Mixer::Tick() {
     }
   }
   std::map<std::string, double>::iterator it;
+  std::map<std::string, double>::iterator max_it;
   for (int i = 0; i < mixing_ratios.size(); i++) {
     std::string name = "in_stream_" + std::to_string(i);
+    double prev_pref = 0;
     for (it = in_commods[i].begin(); it != in_commods[i].end(); it++){
-      std::cout << it->first << "\n";
-      cyclus::toolkit::RecordTimeSeries<double>("demand" + it->first, this,
-                                                streambufs[name].space());
+      double pref = it->second;
+      if (pref > prev_pref) {
+        prev_pref = pref;
+        max_it = it;
+      }
     }
-    
+    cyclus::toolkit::RecordTimeSeries<double>("demand" + max_it->first, this,
+                                              streambufs[name].space());
   }
   cyclus::toolkit::RecordTimeSeries<double>("supply"+out_commod, this, output.quantity());
 }
