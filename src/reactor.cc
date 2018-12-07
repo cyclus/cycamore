@@ -236,16 +236,11 @@ std::set<cyclus::RequestPortfolio<Material>::Ptr> Reactor::GetMatlRequests() {
       mreqs.push_back(r);
     }
 
-    double fuel_pref_prev = 0; 
-    int pref_element = 0; 
-    for (int k = 0; k < fuel_prefs.size(); k++) {
-        if (fuel_prefs[k] > fuel_pref_prev) {
-          pref_element = k;
-        }
-        fuel_pref_prev = fuel_prefs[k];
-      }
+    std::vector<double>::iterator result;
+    result = std::max_element(fuel_prefs.begin(), fuel_prefs.end());
+    int max_index = std::distance(fuel_prefs.begin(), result);
 
-    cyclus::toolkit::RecordTimeSeries<double>("demand"+fuel_incommods[pref_element], this, 
+    cyclus::toolkit::RecordTimeSeries<double>("demand"+fuel_incommods[max_index], this, 
                                           assem_size);
 
     port->AddMutualReqs(mreqs);
