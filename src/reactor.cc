@@ -231,11 +231,23 @@ std::set<cyclus::RequestPortfolio<Material>::Ptr> Reactor::GetMatlRequests() {
       double pref = fuel_prefs[j];
       Composition::Ptr recipe = context()->GetRecipe(fuel_inrecipes[j]);
       m = Material::CreateUntracked(assem_size, recipe);
-      cyclus::toolkit::RecordTimeSeries<double>("demand"+commod, this, 
-                                         assem_size);
+
       Request<Material>* r = port->AddRequest(m, this, commod, pref, true);
       mreqs.push_back(r);
     }
+
+    double fuel_pref_prev = 0; 
+    int pref_element = 0; 
+    for (int k = 0; k < fuel_prefs.size(); k++) {
+        if (fuel_prefs[k] > fuel_pref_prev) {
+          pref_element = k;
+        }
+        fuel_pref_prev = fuel_prefs[k];
+      }
+
+    cyclus::toolkit::RecordTimeSeries<double>("demand"+fuel_incommods[pref_element], this, 
+                                          assem_size);
+
     port->AddMutualReqs(mreqs);
     ports.insert(port);
   }
@@ -415,17 +427,18 @@ bool Reactor::Discharge() {
   Record("DISCHARGE", ss.str());  
   spent.Push(core.PopN(npop));
 
-  double fuel_pref_prev = 0; 
-  int pref_element = 0; 
-
-  for (int i = 0; i < fuel_prefs.size(); i++) {
-    if (fuel_prefs[i] > fuel_pref_prev) {
-      pref_element = i;
+  std::map<std::string, MatVec> spent_mats;
+  for (int i = 0; i < fuel_outcommods.size(); i++) {
+    spent_mats = PeekSpent();
+    MatVec mats = spent_mats[fuel_outcommods[i]];
+    double tot_spent = 0;
+    for (int j = 0; j<mats.size(); j++){
+      Material::Ptr m = mats[j];
+      tot_spent += m->quantity(); 
     }
-    fuel_pref_prev = fuel_prefs[i];
+    cyclus::toolkit::RecordTimeSeries<double>("supply"+fuel_outcommods[i], this, tot_spent);
   }
 
-  cyclus::toolkit::RecordTimeSeries<double>("supply"+fuel_outcommods[pref_element], this, spent.quantity());
   return true;
 }
 
