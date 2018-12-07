@@ -201,7 +201,7 @@ Separations::GetMatlRequests() {
   int t = context()->time();
   int t_exit = exit_time();
 
-  // record demand of highest-prefferred commodity
+  // record demand of highest-preferred commodity
   std::vector<double>::iterator result;
   result = std::max_element(feed_commod_prefs.begin(), feed_commod_prefs.end());
   int maxindx = std::distance(feed_commod_prefs.begin(), result);
