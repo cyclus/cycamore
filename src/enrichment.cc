@@ -182,8 +182,8 @@ std::set<cyclus::BidPortfolio<cyclus::Material>::Ptr> Enrichment::GetMatlBids(
 
   std::set<BidPortfolio<Material>::Ptr> ports;
 
-  RecordTimeSeries<double>("demand" + tails_commod, this, tails.quantity());
-  RecordTimeSeries<double>("demand" + product_commod, this, inventory.quantity());
+  RecordTimeSeries<double>("supply" + tails_commod, this, tails.quantity());
+  RecordTimeSeries<double>("supply" + product_commod, this, inventory.quantity());
   if ((out_requests.count(tails_commod) > 0) && (tails.quantity() > 0)) {
     BidPortfolio<Material>::Ptr tails_port(new BidPortfolio<Material>());
 
