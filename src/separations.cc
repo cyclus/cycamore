@@ -103,6 +103,7 @@ void Separations::EnterNotify() {
 }
 
 void Separations::Tick() {
+  using cyclus::toolkit::RecordTimeSeries;
   if (feed.count() == 0) {
     return;
   }
@@ -137,6 +138,8 @@ void Separations::Tick() {
           mat->ExtractComp(qty * maxfrac, m->comp()));
       Record("Separated", qty * maxfrac, name);
     }
+    cyclus::toolkit::RecordTimeSeries<double>("supply"+name, this, 
+                                              streambufs[name].quantity());
   }
 
   if (maxfrac == 1) {
@@ -153,6 +156,9 @@ void Separations::Tick() {
       leftover.Push(mat);
     }
   }
+  cyclus::toolkit::RecordTimeSeries<double>("supply"+leftover_commod, this,
+                                            leftover.quantity());
+
 }
 
 // Note that this returns an untracked material that should just be used for
@@ -189,10 +195,18 @@ Material::Ptr SepMaterial(std::map<int, double> effs, Material::Ptr mat) {
 std::set<cyclus::RequestPortfolio<Material>::Ptr>
 Separations::GetMatlRequests() {
   using cyclus::RequestPortfolio;
+  using cyclus::toolkit::RecordTimeSeries;
   std::set<RequestPortfolio<Material>::Ptr> ports;
 
   int t = context()->time();
   int t_exit = exit_time();
+
+  // record demand of highest-preferred commodity
+  std::vector<double>::iterator result;
+  result = std::max_element(feed_commod_prefs.begin(), feed_commod_prefs.end());
+  int maxindx = std::distance(feed_commod_prefs.begin(), result);
+  cyclus::toolkit::RecordTimeSeries<double>("demand"+feed_commods[maxindx],
+                                            this, feed.space());
   if (t_exit >= 0 && (feed.quantity() >= (t_exit - t) * throughput)) {
     return ports;  // already have enough feed for remainder of life
   } else if (feed.space() < cyclus::eps_rsrc()) {
@@ -258,7 +272,6 @@ void Separations::AcceptMatlTrades(
 std::set<cyclus::BidPortfolio<Material>::Ptr> Separations::GetMatlBids(
     cyclus::CommodMap<Material>::type& commod_requests) {
   using cyclus::BidPortfolio;
-
   bool exclusive = false;
   std::set<BidPortfolio<Material>::Ptr> ports;
 
