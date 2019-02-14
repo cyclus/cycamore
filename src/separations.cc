@@ -113,7 +113,7 @@ void Separations::Tick() {
   StreamSet::iterator it;
   double maxfrac = 1;
   std::map<std::string, Material::Ptr> stagedsep;
-  Record("Separating", orig_qty, "UNF");
+  Record("Separating", orig_qty, "feed");
   for (it = streams_.begin(); it != streams_.end(); ++it) {
     Stream info = it->second;
     std::string name = it->first;
