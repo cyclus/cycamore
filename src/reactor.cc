@@ -241,7 +241,7 @@ std::set<cyclus::RequestPortfolio<Material>::Ptr> Reactor::GetMatlRequests() {
     int max_index = std::distance(fuel_prefs.begin(), result);
 
     cyclus::toolkit::RecordTimeSeries<double>("demand"+fuel_incommods[max_index], this, 
-                                          assem_size);
+                                          assem_size * n_assem_order) ;
 
     port->AddMutualReqs(mreqs);
     ports.insert(port);
