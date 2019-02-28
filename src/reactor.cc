@@ -231,11 +231,18 @@ std::set<cyclus::RequestPortfolio<Material>::Ptr> Reactor::GetMatlRequests() {
       double pref = fuel_prefs[j];
       Composition::Ptr recipe = context()->GetRecipe(fuel_inrecipes[j]);
       m = Material::CreateUntracked(assem_size, recipe);
-      cyclus::toolkit::RecordTimeSeries<double>("demand"+commod, this, 
-                                         assem_size);
+
       Request<Material>* r = port->AddRequest(m, this, commod, pref, true);
       mreqs.push_back(r);
     }
+
+    std::vector<double>::iterator result;
+    result = std::max_element(fuel_prefs.begin(), fuel_prefs.end());
+    int max_index = std::distance(fuel_prefs.begin(), result);
+
+    cyclus::toolkit::RecordTimeSeries<double>("demand"+fuel_incommods[max_index], this, 
+                                          assem_size * n_assem_order) ;
+
     port->AddMutualReqs(mreqs);
     ports.insert(port);
   }
@@ -254,7 +261,6 @@ void Reactor::GetMatlTrades(
     std::string commod = trades[i].request->commodity();
     Material::Ptr m = mats[commod].back();
     mats[commod].pop_back();
-    cyclus::toolkit::RecordTimeSeries<double>("supply"+commod, this, m->quantity());
     responses.push_back(std::make_pair(trades[i], m));
     res_indexes.erase(m->obj_id());
   }
@@ -289,7 +295,6 @@ void Reactor::AcceptMatlTrades(const std::vector<
 std::set<cyclus::BidPortfolio<Material>::Ptr> Reactor::GetMatlBids(
     cyclus::CommodMap<Material>::type& commod_requests) {
   using cyclus::BidPortfolio;
-
   std::set<BidPortfolio<Material>::Ptr> ports;
 
   bool gotmats = false;
@@ -335,6 +340,7 @@ std::set<cyclus::BidPortfolio<Material>::Ptr> Reactor::GetMatlBids(
     for (int j = 0; j < mats.size(); j++) {
       tot_qty += mats[j]->quantity();
     }
+
     cyclus::CapacityConstraint<Material> cc(tot_qty);
     port->AddConstraint(cc);
     ports.insert(port);
@@ -413,9 +419,21 @@ bool Reactor::Discharge() {
 
   std::stringstream ss;
   ss << npop << " assemblies";
-  Record("DISCHARGE", ss.str());
-
+  Record("DISCHARGE", ss.str());  
   spent.Push(core.PopN(npop));
+
+  std::map<std::string, MatVec> spent_mats;
+  for (int i = 0; i < fuel_outcommods.size(); i++) {
+    spent_mats = PeekSpent();
+    MatVec mats = spent_mats[fuel_outcommods[i]];
+    double tot_spent = 0;
+    for (int j = 0; j<mats.size(); j++){
+      Material::Ptr m = mats[j];
+      tot_spent += m->quantity(); 
+    }
+    cyclus::toolkit::RecordTimeSeries<double>("supply"+fuel_outcommods[i], this, tot_spent);
+  }
+
   return true;
 }
 
