@@ -13,9 +13,11 @@ Sink::Sink(cyclus::Context* ctx)
     : cyclus::Facility(ctx),
       capacity(std::numeric_limits<double>::max()),
       latitude(0.0),
-      longitude(0.0),
-      coordinates(latitude, longitude) {
-  SetMaxInventorySize(std::numeric_limits<double>::max());}
+      longitude(0.0) {
+  usagesdata = cyclus::toolkit::UsageMetadatas(usage_datas);
+  coordinates = cyclus::toolkit::Position(latitude, longitude);
+  SetMaxInventorySize(std::numeric_limits<double>::max());
+}
 
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 Sink::~Sink() {}
@@ -52,7 +54,6 @@ void Sink::EnterNotify() {
        << " values, expected " << in_commods.size();
     throw cyclus::ValueError(ss.str());
   }
-  RecordPosition();
 }
 
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -92,14 +93,14 @@ Sink::GetMatlRequests() {
     mat = cyclus::NewBlankMaterial(amt);
   } else {
     Composition::Ptr rec = this->context()->GetRecipe(recipe_name);
-    mat = cyclus::Material::CreateUntracked(amt, rec); 
-  } 
+    mat = cyclus::Material::CreateUntracked(amt, rec);
+  }
 
   if (amt > cyclus::eps()) {
     std::vector<Request<Material>*> mutuals;
     for (int i = 0; i < in_commods.size(); i++) {
       mutuals.push_back(port->AddRequest(mat, this, in_commods[i], in_commod_prefs[i]));
-      
+
     }
     port->AddMutualReqs(mutuals);
     ports.insert(port);
@@ -172,7 +173,7 @@ void Sink::Tick() {
          commod++) {
       LOG(cyclus::LEV_INFO4, "SnkFac") << " will request " << requestAmt
                                        << " kg of " << *commod << ".";
-      cyclus::toolkit::RecordTimeSeries<double>("demand"+*commod, this, 
+      cyclus::toolkit::RecordTimeSeries<double>("demand"+*commod, this,
                                             requestAmt);
     }
   }
@@ -193,17 +194,6 @@ void Sink::Tock() {
   LOG(cyclus::LEV_INFO3, "SnkFac") << "}";
 }
 
-void Sink::RecordPosition() {
-  std::string specification = this->spec();
-  context()
-      ->NewDatum("AgentPosition")
-      ->AddVal("Spec", specification)
-      ->AddVal("Prototype", this->prototype())
-      ->AddVal("AgentId", id())
-      ->AddVal("Latitude", latitude)
-      ->AddVal("Longitude", longitude)
-      ->Record();
-}
 
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 extern "C" cyclus::Agent* ConstructSink(cyclus::Context* ctx) {

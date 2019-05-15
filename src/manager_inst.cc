@@ -5,10 +5,12 @@ namespace cycamore {
 
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 ManagerInst::ManagerInst(cyclus::Context* ctx)
-      : cyclus::Institution(ctx),
-        latitude(0.0),
-        longitude(0.0),
-        coordinates(latitude, longitude) {}
+    : cyclus::Institution(ctx),
+      latitude(0.0),
+      longitude(0.0) {
+  usagesdata = cyclus::toolkit::UsageMetadatas(usage_datas);
+  coordinates = cyclus::toolkit::Position(latitude, longitude);
+}
 
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 ManagerInst::~ManagerInst() {}
@@ -43,7 +45,6 @@ void ManagerInst::EnterNotify() {
       Builder::Register(cp_cast);
     }
   }
-  RecordPosition();
 }
 
 void ManagerInst::Register_(Agent* a) {
@@ -87,18 +88,6 @@ void ManagerInst::WriteProducerInformation(
     LOG(cyclus::LEV_DEBUG3, "maninst") << "               cost: " <<
                                        producer->Cost(*it);
   }
-}
-
-void ManagerInst::RecordPosition() {
-  std::string specification = this->spec();
-  context()
-      ->NewDatum("AgentPosition")
-      ->AddVal("Spec", specification)
-      ->AddVal("Prototype", this->prototype())
-      ->AddVal("AgentId", id())
-      ->AddVal("Latitude", latitude)
-      ->AddVal("Longitude", longitude)
-      ->Record();
 }
 
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -

@@ -11,11 +11,13 @@ using cyclus::CompMap;
 
 namespace cycamore {
 
-Separations::Separations(cyclus::Context* ctx) 
+Separations::Separations(cyclus::Context* ctx)
     : cyclus::Facility(ctx),
       latitude(0.0),
-      longitude(0.0),
-      coordinates(latitude, longitude) {}
+      longitude(0.0) {
+  usagesdata = cyclus::toolkit::UsageMetadatas(usage_datas);
+  coordinates = cyclus::toolkit::Position(latitude, longitude);
+}
 
 cyclus::Inventories Separations::SnapshotInv() {
   cyclus::Inventories invs;
@@ -68,7 +70,6 @@ void Separations::EnterNotify() {
     for (it2 = stream.second.begin(); it2 != stream.second.end(); it2++) {
       efficiency_[it2->first] += it2->second;
     }
-    RecordPosition();
   }
 
   std::vector<int> eff_pb_;
@@ -353,18 +354,6 @@ bool Separations::CheckDecommissionCondition() {
   }
 
   return true;
-}
-
-void Separations::RecordPosition() {
-  std::string specification = this->spec();
-  context()
-      ->NewDatum("AgentPosition")
-      ->AddVal("Spec", specification)
-      ->AddVal("Prototype", this->prototype())
-      ->AddVal("AgentId", id())
-      ->AddVal("Latitude", latitude)
-      ->AddVal("Longitude", longitude)
-      ->Record();
 }
 
 void Separations::Record(std::string name, double val, std::string type) {

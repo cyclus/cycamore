@@ -59,15 +59,6 @@ class Mixer
  protected:
 
 #pragma cyclus var { \
-    "alias": ["usagemetadata", "keyword", ["usage", "key", "value"]], \
-    "uitype": ["onemore", "string", ["onemore", "string", "double"]], \
-    "uilabel": "", \
-    "doc": "", \
-  }
-  std::map<std::string, std::map<std::string, double> > usage_datas;
-  cyclus::toolkit::UsageMetadatas usage_medatas;
-
-#pragma cyclus var { \
     "alias": ["in_streams", [ "stream", [ "info", "mixing_ratio", "buf_size"], [ "commodities", "commodity", "pref"]]], \
     "uitype": ["oneormore", [ "pair", ["pair", "double", "double"], ["oneormore", "incommodity", "double"]]], \
     "uilabel": "", \
@@ -138,8 +129,14 @@ class Mixer
   }
   double longitude;
 
-  cyclus::toolkit::Position coordinates;
 
+#pragma cyclus var { \
+    "alias": ["usagemetadata", "keyword", ["usage", "key", "value"]], \
+    "uitype": ["onemore", "string", ["onemore", "string", "double"]], \
+    "uilabel": "", \
+    "doc": "", \
+  }
+  std::map<std::string, std::map<std::string, double> > usage_datas;
 };
 
 }  // namespace cycamore

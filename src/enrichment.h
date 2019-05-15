@@ -398,7 +398,13 @@ class Enrichment
   }
   double longitude;
 
-  cyclus::toolkit::Position coordinates;
+#pragma cyclus var { \
+    "alias": ["usagemetadata", "keyword", ["usage", "key", "value"]], \
+    "uitype": ["onemore", "string", ["onemore", "string", "double"]], \
+    "uilabel": "", \
+    "doc": "", \
+  }
+  std::map<std::string, std::map<std::string, double> > usage_datas;
 };
 
 }  // namespace cycamore

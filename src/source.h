@@ -131,9 +131,13 @@ class Source : public cyclus::Facility,
   }
   double longitude;
 
-  cyclus::toolkit::Position coordinates;
-
-  void RecordPosition();
+#pragma cyclus var { \
+    "alias": ["usagemetadata", "keyword", ["usage", "key", "value"]], \
+    "uitype": ["onemore", "string", ["onemore", "string", "double"]], \
+    "uilabel": "", \
+    "doc": "", \
+  }
+  std::map<std::string, std::map<std::string, double> > usage_datas;
 };
 
 }  // namespace cycamore
