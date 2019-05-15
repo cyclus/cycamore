@@ -1,7 +1,7 @@
 #include "source.h"
 
-#include <sstream>
 #include <limits>
+#include <sstream>
 
 #include <boost/lexical_cast.hpp>
 
@@ -12,15 +12,16 @@ Source::Source(cyclus::Context* ctx)
       throughput(std::numeric_limits<double>::max()),
       inventory_size(std::numeric_limits<double>::max()),
       latitude(0.0),
-      longitude(0.0),
-      coordinates(latitude, longitude) {}
+      longitude(0.0) {
+  usagesdata = cyclus::toolkit::UsageMetadatas(usage_datas);
+  coordinates = cyclus::toolkit::Position(latitude, longitude);
+}
 
 Source::~Source() {}
 
 void Source::InitFrom(Source* m) {
   #pragma cyclus impl initfromcopy cycamore::Source
   cyclus::toolkit::CommodityProducer::Copy(m);
-  RecordPosition();
 }
 
 void Source::InitFrom(cyclus::QueryableBackend* b) {
@@ -28,7 +29,6 @@ void Source::InitFrom(cyclus::QueryableBackend* b) {
   namespace tk = cyclus::toolkit;
   tk::CommodityProducer::Add(tk::Commodity(outcommod),
                              tk::CommodInfo(throughput, throughput));
-  RecordPosition();
 }
 
 std::string Source::str() {
@@ -60,7 +60,7 @@ std::set<cyclus::BidPortfolio<cyclus::Material>::Ptr> Source::GetMatlBids(
   using cyclus::Request;
 
   double max_qty = std::min(throughput, inventory_size);
-  cyclus::toolkit::RecordTimeSeries<double>("supply"+outcommod, this, 
+  cyclus::toolkit::RecordTimeSeries<double>("supply"+outcommod, this,
                                             max_qty);
   LOG(cyclus::LEV_INFO3, "Source") << prototype() << " is bidding up to "
                                    << max_qty << " kg of " << outcommod;
@@ -115,18 +115,6 @@ void Source::GetMatlTrades(
     LOG(cyclus::LEV_INFO5, "Source") << prototype() << " sent an order"
                                      << " for " << qty << " of " << outcommod;
   }
-}
-
-void Source::RecordPosition() {
-  std::string specification = this->spec();
-  context()
-      ->NewDatum("AgentPosition")
-      ->AddVal("Spec", specification)
-      ->AddVal("Prototype", this->prototype())
-      ->AddVal("AgentId", id())
-      ->AddVal("Latitude", latitude)
-      ->AddVal("Longitude", longitude)
-      ->Record();
 }
 
 extern "C" cyclus::Agent* ConstructSource(cyclus::Context* ctx) {

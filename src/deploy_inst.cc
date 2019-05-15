@@ -6,8 +6,10 @@ namespace cycamore {
 DeployInst::DeployInst(cyclus::Context* ctx)
     : cyclus::Institution(ctx),
       latitude(0.0),
-      longitude(0.0),
-      coordinates(latitude, longitude) {}
+      longitude(0.0) {
+  usagesdata = cyclus::toolkit::UsageMetadatas(usage_datas);
+  coordinates = cyclus::toolkit::Position(latitude, longitude);
+}
 
 DeployInst::~DeployInst() {}
 
@@ -65,19 +67,6 @@ void DeployInst::EnterNotify() {
        << " lifetimes vals, expected " << n;
     throw cyclus::ValueError(ss.str());
   }
-  RecordPosition();
-}
-
-void DeployInst::RecordPosition() {
-  std::string specification = this->spec();
-  context()
-      ->NewDatum("AgentPosition")
-      ->AddVal("Spec", specification)
-      ->AddVal("Prototype", this->prototype())
-      ->AddVal("AgentId", id())
-      ->AddVal("Latitude", latitude)
-      ->AddVal("Longitude", longitude)
-      ->Record();
 }
 
 extern "C" cyclus::Agent* ConstructDeployInst(cyclus::Context* ctx) {
