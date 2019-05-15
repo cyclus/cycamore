@@ -57,6 +57,16 @@ class Mixer
   virtual void InitInv(cyclus::Inventories& inv);
 
  protected:
+
+#pragma cyclus var { \
+    "alias": ["usagemetadata", "keyword", ["usage", "key", "value"]], \
+    "uitype": ["onemore", "string", ["onemore", "string", "double"]], \
+    "uilabel": "", \
+    "doc": "", \
+  }
+  std::map<std::string, std::map<std::string, double> > usage_datas;
+  cyclus::toolkit::UsageMetadatas usage_medatas;
+
 #pragma cyclus var { \
     "alias": ["in_streams", [ "stream", [ "info", "mixing_ratio", "buf_size"], [ "commodities", "commodity", "pref"]]], \
     "uitype": ["oneormore", [ "pair", ["pair", "double", "double"], ["oneormore", "incommodity", "double"]]], \
@@ -130,8 +140,6 @@ class Mixer
 
   cyclus::toolkit::Position coordinates;
 
-  /// Records an agent's latitude and longitude to the output db
-  void RecordPosition();
 };
 
 }  // namespace cycamore

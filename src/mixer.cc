@@ -12,7 +12,10 @@ Mixer::Mixer(cyclus::Context* ctx)
       coordinates(latitude, longitude) {
   cyclus::Warn<cyclus::EXPERIMENTAL_WARNING>(
       "the Mixer archetype is experimental");
-  RecordPosition();
+  usage_medatas.LoadUsageMetadatas(usage_datas);
+  
+  usage_medatas.RecordMetadatas(this);
+  coordinates.RecordPosition(this);
 }
 
 cyclus::Inventories Mixer::SnapshotInv() {
@@ -185,18 +188,6 @@ void Mixer::AcceptMatlTrades(
   }
 
   req_inventories_.clear();
-}
-
-void Mixer::RecordPosition() {
-  std::string specification = spec();
-  context()
-      ->NewDatum("AgentPosition")
-      ->AddVal("Spec", specification)
-      ->AddVal("Prototype", this->prototype())
-      ->AddVal("AgentId", id())
-      ->AddVal("Latitude", latitude)
-      ->AddVal("Longitude", longitude)
-      ->Record();
 }
 
 extern "C" cyclus::Agent* ConstructMixer(cyclus::Context* ctx) {
