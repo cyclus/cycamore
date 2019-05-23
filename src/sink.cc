@@ -14,7 +14,6 @@ Sink::Sink(cyclus::Context* ctx)
       capacity(std::numeric_limits<double>::max()),
       latitude(0.0),
       longitude(0.0) {
-  usagesdata = cyclus::toolkit::UsageMetadatas(usage_datas);
   coordinates = cyclus::toolkit::Position(latitude, longitude);
   SetMaxInventorySize(std::numeric_limits<double>::max());
 }
