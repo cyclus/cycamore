@@ -706,25 +706,25 @@ TEST(ReactorTests, MultipleByProduct) {
   int id = sim.Run();
 
 
-  std::vector<Cond> conds_2;
+  std::vector<Cond> conds;
   // test if it produces heat when reactor is running
   int quantity = 10;
-  conds_2.push_back(Cond("Product", "==", std::string("process_heat")));
-  conds_2.push_back(Cond("Value", "==", quantity));
-  QueryResult qr = sim.db().Query("ReactorSideProducts", &conds_2);
+  conds.push_back(Cond("Product", "==", std::string("process_heat")));
+  conds.push_back(Cond("Value", "==", quantity));
+  QueryResult qr = sim.db().Query("ReactorSideProducts", &conds);
   EXPECT_EQ(5, qr.rows.size());
 
   // test if it produces water when reactor is running
-  conds_2.clear();
+  conds.clear();
   quantity = 100;
-  conds_2.push_back(Cond("Product", "==", std::string("water")));
-  conds_2.push_back(Cond("Value", "==", quantity));
-  qr = sim.db().Query("ReactorSideProducts", &conds_2);
+  conds.push_back(Cond("Product", "==", std::string("water")));
+  conds.push_back(Cond("Value", "==", quantity));
+  qr = sim.db().Query("ReactorSideProducts", &conds);
   EXPECT_EQ(5, qr.rows.size());
 
-  conds_2.clear();
-  conds_2.push_back(Cond("Value", "==", 0));
-  qr = sim.db().Query("ReactorSideProducts", &conds_2);
+  conds.clear();
+  conds.push_back(Cond("Value", "==", 0));
+  qr = sim.db().Query("ReactorSideProducts", &conds);
   EXPECT_EQ(10, qr.rows.size());
 
 }
