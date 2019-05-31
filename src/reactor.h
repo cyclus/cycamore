@@ -53,7 +53,8 @@ namespace cycamore {
 /// compositions.
 
 class Reactor : public cyclus::Facility,
-  public cyclus::toolkit::CommodityProducer {
+  public cyclus::toolkit::CommodityProducer,
+  public cyclus::toolkit::Position {
 #pragma cyclus note { \
 "niche": "reactor", \
 "doc": \
@@ -140,7 +141,7 @@ class Reactor : public cyclus::Facility,
   double fuel_pref(cyclus::Material::Ptr m);
 
   bool retired() {
-    return exit_time() != -1 && context()->time() >= exit_time();
+    return exit_time() != -1 && context()->time() > exit_time();
   }
 
   /// Store fuel info index for the given resource received on incommod.
@@ -156,6 +157,9 @@ class Reactor : public cyclus::Facility,
   /// Transmute the batch that is about to be discharged from the core to its
   /// fully burnt state as defined by its outrecipe.
   void Transmute();
+
+  /// Records production of side products from the reactor
+  void RecordSideProduct(bool produce);
 
   /// Transmute the specified number of assemblies in the core to their
   /// fully burnt state as defined by their outrecipe.
@@ -175,7 +179,7 @@ class Reactor : public cyclus::Facility,
   /// Returns all spent assemblies indexed by outcommod without removing them
   /// from the spent fuel buffer.
   std::map<std::string, cyclus::toolkit::MatVec> PeekSpent();
-  
+
   /////// fuel specifications /////////
   #pragma cyclus var { \
     "uitype": ["oneormore", "incommodity"], \
@@ -184,7 +188,7 @@ class Reactor : public cyclus::Facility,
   }
   std::vector<std::string> fuel_incommods;
   #pragma cyclus var { \
-    "uitype": ["oneormore", "recipe"], \
+    "uitype": ["oneormore", "inrecipe"], \
     "uilabel": "Fresh Fuel Recipe List", \
     "doc": "Fresh fuel recipes to request for each of the given fuel input " \
            "commodities (same order).", \
@@ -207,8 +211,8 @@ class Reactor : public cyclus::Facility,
            "received as each particular input commodity (same order)." \
   }
   std::vector<std::string> fuel_outcommods;
-  #pragma cyclus var {		       \
-    "uitype": ["oneormore", "recipe"], \
+  #pragma cyclus var {           \
+    "uitype": ["oneormore", "outrecipe"], \
     "uilabel": "Spent Fuel Recipe List", \
     "doc": "Spent fuel recipes corresponding to the given fuel input " \
            "commodities (same order)." \
@@ -240,7 +244,7 @@ class Reactor : public cyclus::Facility,
     "doc": "The new input recipe to use for this recipe change." \
            " Same order as and direct correspondence to the specified recipe " \
            "change times.", \
-    "uitype": ["oneormore", "recipe"], \
+    "uitype": ["oneormore", "inrecipe"], \
   }
   std::vector<std::string> recipe_change_in;
   #pragma cyclus var { \
@@ -249,14 +253,16 @@ class Reactor : public cyclus::Facility,
     "doc": "The new output recipe to use for this recipe change." \
            " Same order as and direct correspondence to the specified recipe " \
            "change times.", \
-    "uitype": ["oneormore", "recipe"], \
+    "uitype": ["oneormore", "outrecipe"], \
   }
   std::vector<std::string> recipe_change_out;
-  
+
  //////////// inventory and core params ////////////
   #pragma cyclus var { \
-    "doc": "Mass (kg) of a single assembly.",	\
+    "doc": "Mass (kg) of a single assembly.", \
     "uilabel": "Assembly Mass", \
+    "uitype": "range", \
+    "range": [1.0, 1e5], \
     "units": "kg", \
   }
   double assem_size;
@@ -265,18 +271,23 @@ class Reactor : public cyclus::Facility,
     "uilabel": "Number of Assemblies per Batch", \
     "doc": "Number of assemblies that constitute a single batch.  " \
            "This is the number of assemblies discharged from the core fully " \
-           "burned each cycle."						\
+           "burned each cycle."           \
            "Batch size is equivalent to ``n_assem_batch / n_assem_core``.", \
   }
   int n_assem_batch;
   #pragma cyclus var { \
+    "default": 3, \
     "uilabel": "Number of Assemblies in Core", \
+    "uitype": "range", \
+    "range": [1,3], \
     "doc": "Number of assemblies that constitute a full core.", \
   }
   int n_assem_core;
   #pragma cyclus var { \
     "default": 0, \
     "uilabel": "Minimum Fresh Fuel Inventory", \
+    "uitype": "range", \
+    "range": [0,3], \
     "units": "assemblies", \
     "doc": "Number of fresh fuel assemblies to keep on-hand if possible.", \
   }
@@ -284,6 +295,8 @@ class Reactor : public cyclus::Facility,
   #pragma cyclus var { \
     "default": 1000000000, \
     "uilabel": "Maximum Spent Fuel Inventory", \
+    "uitype": "range", \
+    "range": [0, 1000000000], \
     "units": "assemblies", \
     "doc": "Number of spent fuel assemblies that can be stored on-site before" \
            " reactor operation stalls.", \
@@ -292,6 +305,7 @@ class Reactor : public cyclus::Facility,
 
    ///////// cycle params ///////////
   #pragma cyclus var { \
+    "default": 18, \
     "doc": "The duration of a full operational cycle (excluding refueling " \
            "time) in time steps.", \
     "uilabel": "Cycle Length", \
@@ -299,6 +313,7 @@ class Reactor : public cyclus::Facility,
   }
   int cycle_time;
   #pragma cyclus var { \
+    "default": 1, \
     "doc": "The duration of a full refueling period - the minimum time between"\
            " the end of a cycle and the start of the next cycle.", \
     "uilabel": "Refueling Outage Duration", \
@@ -320,6 +335,8 @@ class Reactor : public cyclus::Facility,
     "doc": "Amount of electrical power the facility produces when operating " \
            "normally.", \
     "uilabel": "Nominal Reactor Power", \
+    "uitype": "range", \
+    "range": [0.0, 2000.00],  \
     "units": "MWe", \
   }
   double power_cap;
@@ -331,6 +348,38 @@ class Reactor : public cyclus::Facility,
            "deployment curve.", \
   }
   std::string power_name;
+
+  /////////// hybrid params ///////////
+
+  #pragma cyclus var { \
+    "uilabel": "Side Product from Reactor Plant", \
+    "default": [], \
+    "doc": "Ordered vector of side product the reactor produces with power", \
+  }
+  std::vector<std::string> side_products;
+
+  #pragma cyclus var { \
+    "uilabel": "Quantity of Side Product from Reactor Plant", \
+    "default": [], \
+    "doc": "Ordered vector of the quantity of side product the reactor produces with power", \
+  }
+  std::vector<double> side_product_quantity;
+
+  #pragma cyclus var {"default": 1,\
+                      "internal": True,\
+                      "doc": "True if reactor is a hybrid system (produces side products)", \
+  }
+  bool hybrid_;
+
+
+  /////////// Decommission transmutation behavior ///////////
+  #pragma cyclus var {"default": 0, \
+                      "uilabel": "Boolean for transmutation behavior upon decommissioning.", \
+                      "doc": "If true, the archetype transmutes all assemblies upon decommissioning " \
+                             "If false, the archetype only transmutes half.", \
+  }
+  bool decom_transmute_all;
+
 
   /////////// preference changes ///////////
   #pragma cyclus var { \
@@ -384,6 +433,27 @@ class Reactor : public cyclus::Facility,
 
   // populated lazily and no need to persist.
   std::set<std::string> uniq_outcommods_;
+
+  #pragma cyclus var { \
+    "default": 0.0, \
+    "uilabel": "Geographical latitude in degrees as a double", \
+    "doc": "Latitude of the agent's geographical position. The value should " \
+           "be expressed in degrees as a double." \
+  }
+  double latitude;
+
+  #pragma cyclus var { \
+    "default": 0.0, \
+    "uilabel": "Geographical longitude in degrees as a double", \
+    "doc": "Longitude of the agent's geographical position. The value should " \
+           "be expressed in degrees as a double." \
+  }
+  double longitude;
+
+  cyclus::toolkit::Position coordinates;
+
+  /// Records an agent's latitude and longitude to the output db
+  void RecordPosition();
 };
 
 } // namespace cycamore

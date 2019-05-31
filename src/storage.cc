@@ -5,10 +5,13 @@
 namespace storage {
 
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-Storage::Storage(cyclus::Context* ctx) : cyclus::Facility(ctx) {
+Storage::Storage(cyclus::Context* ctx) 
+    : cyclus::Facility(ctx),
+      latitude(0.0),
+      longitude(0.0),
+      coordinates(latitude, longitude) {
   cyclus::Warn<cyclus::EXPERIMENTAL_WARNING>(
-      "The Storage Facility is experimental.");
-};
+      "The Storage Facility is experimental.");};
 
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 // pragmas
@@ -80,6 +83,7 @@ void Storage::EnterNotify() {
     ss << "out_commods has " << out_commods.size() << " values, expected 1.";
     throw cyclus::ValueError(ss.str());
   }
+  RecordPosition();
 }
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -124,6 +128,7 @@ void Storage::Tick() {
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 void Storage::Tock() {
+  using cyclus::toolkit::RecordTimeSeries;
   LOG(cyclus::LEV_INFO3, "ComCnv") << prototype() << " is tocking {";
 
   BeginProcessing_();  // place unprocessed inventory into processing
@@ -134,6 +139,16 @@ void Storage::Tock() {
 
   ProcessMat_(throughput);  // place ready into stocks
 
+
+  std::vector<double>::iterator result;
+  result = std::max_element(in_commod_prefs.begin(), in_commod_prefs.end());
+  int maxindx = std::distance(in_commod_prefs.begin(), result);
+  cyclus::toolkit::RecordTimeSeries<double>("demand"+in_commods[maxindx], this,
+                                            current_capacity());
+  // Multiple commodity tracking is not supported, user can only
+  // provide one value for out_commods, despite it being a vector of strings.
+  cyclus::toolkit::RecordTimeSeries<double>("supply"+out_commods[0], this,
+                                            stocks.quantity());
   LOG(cyclus::LEV_INFO3, "ComCnv") << "}";
 }
 
@@ -221,6 +236,19 @@ void Storage::ReadyMatl_(int time) {
 
   ready.Push(processing.PopN(to_ready));
 }
+
+void Storage::RecordPosition() {
+  std::string specification = this->spec();
+  context()
+      ->NewDatum("AgentPosition")
+      ->AddVal("Spec", specification)
+      ->AddVal("Prototype", this->prototype())
+      ->AddVal("AgentId", id())
+      ->AddVal("Latitude", latitude)
+      ->AddVal("Longitude", longitude)
+      ->Record();
+}
+
 
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 extern "C" cyclus::Agent* ConstructStorage(cyclus::Context* ctx) {

@@ -21,7 +21,8 @@ class Context;
 /// inventory, and when the inventory size reaches zero, the source can provide
 /// no more material.
 class Source : public cyclus::Facility,
-  public cyclus::toolkit::CommodityProducer {
+  public cyclus::toolkit::CommodityProducer,
+  public cyclus::toolkit::Position {
   friend class SourceTest;
  public:
 
@@ -87,7 +88,7 @@ class Source : public cyclus::Facility,
            "whatever compositions are requested.", \
     "uilabel": "Output Recipe", \
     "default": "", \
-    "uitype": "recipe", \
+    "uitype": "outrecipe", \
   }
   std::string outrecipe;
 
@@ -114,7 +115,26 @@ class Source : public cyclus::Facility,
     "doc": "amount of commodity that can be supplied at each time step", \
   }
   double throughput;
+  
+  #pragma cyclus var { \
+    "default": 0.0, \
+    "uilabel": "Geographical latitude in degrees as a double", \
+    "doc": "Latitude of the agent's geographical position. The value should " \
+           "be expressed in degrees as a double." \
+  }
+  double latitude;
 
+  #pragma cyclus var { \
+    "default": 0.0, \
+    "uilabel": "Geographical longitude in degrees as a double", \
+    "doc": "Longitude of the agent's geographical position. The value should " \
+           "be expressed in degrees as a double." \
+  }
+  double longitude;
+
+  cyclus::toolkit::Position coordinates;
+
+  void RecordPosition();
 };
 
 }  // namespace cycamore

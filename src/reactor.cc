@@ -22,7 +22,11 @@ Reactor::Reactor(cyclus::Context* ctx)
       cycle_step(0),
       power_cap(0),
       power_name("power"),
-      discharged(false) { }
+      discharged(false),
+      latitude(0.0),
+      longitude(0.0),
+      coordinates(latitude, longitude) {}
+
 
 #pragma cyclus def clone cycamore::Reactor
 
@@ -49,6 +53,12 @@ void Reactor::InitFrom(cyclus::QueryableBackend* b) {
   namespace tk = cyclus::toolkit;
   tk::CommodityProducer::Add(tk::Commodity(power_name),
                              tk::CommodInfo(power_cap, power_cap));
+
+  for (int i = 0; i < side_products.size(); i++) {
+    tk::CommodityProducer::Add(tk::Commodity(side_products[i]),
+                               tk::CommodInfo(side_product_quantity[i],
+                                              side_product_quantity[i]));
+  }
 }
 
 void Reactor::EnterNotify() {
@@ -60,6 +70,11 @@ void Reactor::EnterNotify() {
     for (int i = 0; i < fuel_outcommods.size(); i++) {
       fuel_prefs.push_back(cyclus::kDefaultPref);
     }
+  }
+
+  // Test if any side products have been defined.
+  if (side_products.size() == 0){
+    hybrid_ = false;
   }
 
   // input consistency checking:
@@ -92,6 +107,7 @@ void Reactor::EnterNotify() {
   if (ss.str().size() > 0) {
     throw cyclus::ValueError(ss.str());
   }
+  RecordPosition();
 }
 
 bool Reactor::CheckDecommissionCondition() {
@@ -109,19 +125,13 @@ void Reactor::Tick() {
   if (retired()) {
     Record("RETIRED", "");
 
-    // record the last time series entry if the reactor was operating at the
-    // time of retirement.
-    if (exit_time() == context()->time()) {
-      if (cycle_step > 0 && cycle_step <= cycle_time &&
-          core.count() == n_assem_core) {
-        cyclus::toolkit::RecordTimeSeries<cyclus::toolkit::POWER>(this, power_cap);
-      } else {
-        cyclus::toolkit::RecordTimeSeries<cyclus::toolkit::POWER>(this, 0);
+    if (context()->time() == exit_time() + 1) { // only need to transmute once
+      if (decom_transmute_all == true) {
+        Transmute(ceil(static_cast<double>(n_assem_core)));
       }
-    }
-
-    if (context()->time() == exit_time()) { // only need to transmute once
-      Transmute(ceil(static_cast<double>(n_assem_core) / 2.0));
+      else {
+        Transmute(ceil(static_cast<double>(n_assem_core) / 2.0));
+      }
     }
     while (core.count() > 0) {
       if (!Discharge()) {
@@ -221,9 +231,18 @@ std::set<cyclus::RequestPortfolio<Material>::Ptr> Reactor::GetMatlRequests() {
       double pref = fuel_prefs[j];
       Composition::Ptr recipe = context()->GetRecipe(fuel_inrecipes[j]);
       m = Material::CreateUntracked(assem_size, recipe);
+
       Request<Material>* r = port->AddRequest(m, this, commod, pref, true);
       mreqs.push_back(r);
     }
+
+    std::vector<double>::iterator result;
+    result = std::max_element(fuel_prefs.begin(), fuel_prefs.end());
+    int max_index = std::distance(fuel_prefs.begin(), result);
+
+    cyclus::toolkit::RecordTimeSeries<double>("demand"+fuel_incommods[max_index], this, 
+                                          assem_size * n_assem_order) ;
+
     port->AddMutualReqs(mreqs);
     ports.insert(port);
   }
@@ -276,7 +295,6 @@ void Reactor::AcceptMatlTrades(const std::vector<
 std::set<cyclus::BidPortfolio<Material>::Ptr> Reactor::GetMatlBids(
     cyclus::CommodMap<Material>::type& commod_requests) {
   using cyclus::BidPortfolio;
-
   std::set<BidPortfolio<Material>::Ptr> ports;
 
   bool gotmats = false;
@@ -322,6 +340,7 @@ std::set<cyclus::BidPortfolio<Material>::Ptr> Reactor::GetMatlBids(
     for (int j = 0; j < mats.size(); j++) {
       tot_qty += mats[j]->quantity();
     }
+
     cyclus::CapacityConstraint<Material> cc(tot_qty);
     port->AddConstraint(cc);
     ports.insert(port);
@@ -347,8 +366,11 @@ void Reactor::Tock() {
   if (cycle_step >= 0 && cycle_step < cycle_time &&
       core.count() == n_assem_core) {
     cyclus::toolkit::RecordTimeSeries<cyclus::toolkit::POWER>(this, power_cap);
+    cyclus::toolkit::RecordTimeSeries<double>("supplyPOWER", this, power_cap);
+    RecordSideProduct(true);
   } else {
     cyclus::toolkit::RecordTimeSeries<cyclus::toolkit::POWER>(this, 0);
+    RecordSideProduct(false);
   }
 
   // "if" prevents starting cycle after initial deployment until core is full
@@ -397,9 +419,21 @@ bool Reactor::Discharge() {
 
   std::stringstream ss;
   ss << npop << " assemblies";
-  Record("DISCHARGE", ss.str());
-
+  Record("DISCHARGE", ss.str());  
   spent.Push(core.PopN(npop));
+
+  std::map<std::string, MatVec> spent_mats;
+  for (int i = 0; i < fuel_outcommods.size(); i++) {
+    spent_mats = PeekSpent();
+    MatVec mats = spent_mats[fuel_outcommods[i]];
+    double tot_spent = 0;
+    for (int j = 0; j<mats.size(); j++){
+      Material::Ptr m = mats[j];
+      tot_spent += m->quantity(); 
+    }
+    cyclus::toolkit::RecordTimeSeries<double>("supply"+fuel_outcommods[i], this, tot_spent);
+  }
+
   return true;
 }
 
@@ -492,6 +526,28 @@ void Reactor::PushSpent(std::map<std::string, MatVec> leftover) {
   }
 }
 
+void Reactor::RecordSideProduct(bool produce){
+  if (hybrid_){
+    double value;
+    for (int i = 0; i < side_products.size(); i++) {
+      if (produce){
+          value = side_product_quantity[i];
+      }
+      else {
+          value = 0;
+      }
+
+      context()
+          ->NewDatum("ReactorSideProducts")
+          ->AddVal("AgentId", id())
+          ->AddVal("Time", context()->time())
+          ->AddVal("Product", side_products[i])
+          ->AddVal("Value", value)
+          ->Record();
+    }
+  }
+}
+
 void Reactor::Record(std::string name, std::string val) {
   context()
       ->NewDatum("ReactorEvents")
@@ -499,6 +555,18 @@ void Reactor::Record(std::string name, std::string val) {
       ->AddVal("Time", context()->time())
       ->AddVal("Event", name)
       ->AddVal("Value", val)
+      ->Record();
+}
+
+void Reactor::RecordPosition() {
+  std::string specification = this->spec();
+  context()
+      ->NewDatum("AgentPosition")
+      ->AddVal("Spec", specification)
+      ->AddVal("Prototype", this->prototype())
+      ->AddVal("AgentId", id())
+      ->AddVal("Latitude", latitude)
+      ->AddVal("Longitude", longitude)
       ->Record();
 }
 

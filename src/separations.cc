@@ -11,7 +11,11 @@ using cyclus::CompMap;
 
 namespace cycamore {
 
-Separations::Separations(cyclus::Context* ctx) : cyclus::Facility(ctx) {}
+Separations::Separations(cyclus::Context* ctx) 
+    : cyclus::Facility(ctx),
+      latitude(0.0),
+      longitude(0.0),
+      coordinates(latitude, longitude) {}
 
 cyclus::Inventories Separations::SnapshotInv() {
   cyclus::Inventories invs;
@@ -64,6 +68,7 @@ void Separations::EnterNotify() {
     for (it2 = stream.second.begin(); it2 != stream.second.end(); it2++) {
       efficiency_[it2->first] += it2->second;
     }
+    RecordPosition();
   }
 
   std::vector<int> eff_pb_;
@@ -98,6 +103,7 @@ void Separations::EnterNotify() {
 }
 
 void Separations::Tick() {
+  using cyclus::toolkit::RecordTimeSeries;
   if (feed.count() == 0) {
     return;
   }
@@ -108,6 +114,7 @@ void Separations::Tick() {
   StreamSet::iterator it;
   double maxfrac = 1;
   std::map<std::string, Material::Ptr> stagedsep;
+  Record("Separating", orig_qty, "feed");
   for (it = streams_.begin(); it != streams_.end(); ++it) {
     Stream info = it->second;
     std::string name = it->first;
@@ -123,9 +130,16 @@ void Separations::Tick() {
     std::string name = itf->first;
     Material::Ptr m = itf->second;
     if (m->quantity() > 0) {
+      double qty = m->quantity();
+      if (m->quantity() > mat->quantity()) {
+        qty = mat->quantity();
+      }
       streambufs[name].Push(
-          mat->ExtractComp(m->quantity() * maxfrac, m->comp()));
+          mat->ExtractComp(qty * maxfrac, m->comp()));
+      Record("Separated", qty * maxfrac, name);
     }
+    cyclus::toolkit::RecordTimeSeries<double>("supply"+name, this, 
+                                              streambufs[name].quantity());
   }
 
   if (maxfrac == 1) {
@@ -135,12 +149,16 @@ void Separations::Tick() {
     }
   } else {  // maxfrac is < 1
     // push back any leftover feed due to separated stream inv size constraints
+
     feed.Push(mat->ExtractQty((1 - maxfrac) * orig_qty));
     if (mat->quantity() > 0) {
       // unspecified separations fractions go to leftovers
       leftover.Push(mat);
     }
   }
+  cyclus::toolkit::RecordTimeSeries<double>("supply"+leftover_commod, this,
+                                            leftover.quantity());
+
 }
 
 // Note that this returns an untracked material that should just be used for
@@ -177,10 +195,18 @@ Material::Ptr SepMaterial(std::map<int, double> effs, Material::Ptr mat) {
 std::set<cyclus::RequestPortfolio<Material>::Ptr>
 Separations::GetMatlRequests() {
   using cyclus::RequestPortfolio;
+  using cyclus::toolkit::RecordTimeSeries;
   std::set<RequestPortfolio<Material>::Ptr> ports;
 
   int t = context()->time();
   int t_exit = exit_time();
+
+  // record demand of highest-preferred commodity
+  std::vector<double>::iterator result;
+  result = std::max_element(feed_commod_prefs.begin(), feed_commod_prefs.end());
+  int maxindx = std::distance(feed_commod_prefs.begin(), result);
+  cyclus::toolkit::RecordTimeSeries<double>("demand"+feed_commods[maxindx],
+                                            this, feed.space());
   if (t_exit >= 0 && (feed.quantity() >= (t_exit - t) * throughput)) {
     return ports;  // already have enough feed for remainder of life
   } else if (feed.space() < cyclus::eps_rsrc()) {
@@ -246,7 +272,6 @@ void Separations::AcceptMatlTrades(
 std::set<cyclus::BidPortfolio<Material>::Ptr> Separations::GetMatlBids(
     cyclus::CommodMap<Material>::type& commod_requests) {
   using cyclus::BidPortfolio;
-
   bool exclusive = false;
   std::set<BidPortfolio<Material>::Ptr> ports;
 
@@ -341,6 +366,29 @@ bool Separations::CheckDecommissionCondition() {
   }
 
   return true;
+}
+
+void Separations::RecordPosition() {
+  std::string specification = this->spec();
+  context()
+      ->NewDatum("AgentPosition")
+      ->AddVal("Spec", specification)
+      ->AddVal("Prototype", this->prototype())
+      ->AddVal("AgentId", id())
+      ->AddVal("Latitude", latitude)
+      ->AddVal("Longitude", longitude)
+      ->Record();
+}
+
+void Separations::Record(std::string name, double val, std::string type) {
+  context()
+      ->NewDatum("SeparationEvents")
+      ->AddVal("AgentId", id())
+      ->AddVal("Time", context()->time())
+      ->AddVal("Event", name)
+      ->AddVal("Value", val)
+      ->AddVal("Type", type)
+      ->Record();
 }
 
 extern "C" cyclus::Agent* ConstructSeparations(cyclus::Context* ctx) {

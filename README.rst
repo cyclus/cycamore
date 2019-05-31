@@ -27,10 +27,10 @@ a list of `contributed modules <http://fuelcycle.org/user/index.html#third-party
   `INSTALLATION Guide <INSTALL.rst>`_,
 
 - **To see user and developer documentation for this code, please visit
-  the** `Users Guide <http://fuelcycle.org/user/index.html>`_, 
+  the** `Users Guide <http://fuelcycle.org/user/index.html>`_,
 
-- **If you would like to contribute to Cycamore, please check our** 
-  `Contribution Guidelines <https://github.com/cyclus/cyclus/blob/develop/CONTRIBUTING.rst>`_.
+- **If you would like to contribute to Cycamore, please check our**
+  `Contribution Guidelines <https://github.com/cyclus/cyclus/blob/master/CONTRIBUTING.rst>`_.
 
 
 .. contents:: Table of Contents
@@ -95,11 +95,11 @@ to contribute into Cyclus, please follow this procedure:
 
 #. Fork Cycamore repository,
 
-#. Create a working branch on you fork from the `develop` branch,
+#. Create a working branch on you fork from the ``master`` branch,
 
 #. Implement your modification of the Cycamore source code,
 
-#. Submit a Pull request into `Cycamore/develop` branch,
+#. Submit a Pull request into ``cycamore/master`` branch,
 
 #. Wait for reviews/merge (the Puller cannot be the Merger).
 

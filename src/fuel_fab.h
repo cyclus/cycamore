@@ -53,7 +53,9 @@ namespace cycamore {
 ///     uranium isotopes in fast reactors." Proceedings of the Conference on
 ///     Breeding. Economics, and Safety in Large Fast Power Reactors. 1963.
 /// @endcode
-class FuelFab : public cyclus::Facility {
+class FuelFab 
+  : public cyclus::Facility,
+    public cyclus::toolkit::Position {
 #pragma cyclus note { \
 "niche": "fabrication", \
 "doc": \
@@ -146,7 +148,7 @@ class FuelFab : public cyclus::Facility {
   #pragma cyclus var { \
     "doc": "Name of recipe to be used in filler material stream requests.", \
     "uilabel": "Filler Stream Recipe", \
-    "uitype": "recipe", \
+    "uitype": "inrecipe", \
   }
   std::string fill_recipe;
   #pragma cyclus var { \
@@ -174,7 +176,7 @@ class FuelFab : public cyclus::Facility {
   #pragma cyclus var { \
     "doc": "Name for recipe to be used in fissile stream requests." \
            " Empty string results in use of an empty dummy recipe.", \
-    "uitype": "recipe", \
+    "uitype": "inrecipe", \
     "uilabel": "Fissile Stream Recipe", \
     "default": "", \
   }
@@ -202,12 +204,12 @@ class FuelFab : public cyclus::Facility {
     "default": 1.0, \
   }
   double topup_pref; // default must be in range (0, cyclus::kDefaultPref)
-  
+
   #pragma cyclus var { \
     "doc": "Name of recipe to be used in top-up material stream requests." \
            " This MUST be set if 'topup_size > 0'.", \
     "uilabel": "Top-up Stream Recipe", \
-    "uitype": "recipe", \
+    "uitype": "inrecipe", \
     "default": "", \
   }
   std::string topup_recipe;
@@ -240,7 +242,8 @@ class FuelFab : public cyclus::Facility {
 
   #pragma cyclus var {		\
     "uilabel": "Spectrum type", \
-    "categorical": ['fission_spectrum_ave','thermal'], \
+    "uitype": "combobox", \
+    "categorical": ["fission_spectrum_ave", "thermal"], \
     "doc": "The type of cross-sections to use for composition property calculation." \
            " Use 'fission_spectrum_ave' for fast reactor compositions or 'thermal' for thermal reactors.", \
   }
@@ -249,6 +252,27 @@ class FuelFab : public cyclus::Facility {
   // intra-time-step state - no need to be a state var
   // map<request, inventory name>
   std::map<cyclus::Request<cyclus::Material>*, std::string> req_inventories_;
+
+  #pragma cyclus var { \
+    "default": 0.0, \
+    "uilabel": "Geographical latitude in degrees as a double", \
+    "doc": "Latitude of the agent's geographical position. The value should " \
+           "be expressed in degrees as a double." \
+  }
+  double latitude;
+
+  #pragma cyclus var { \
+    "default": 0.0, \
+    "uilabel": "Geographical longitude in degrees as a double", \
+    "doc": "Longitude of the agent's geographical position. The value should " \
+           "be expressed in degrees as a double." \
+  }
+  double longitude;
+
+  cyclus::toolkit::Position coordinates;
+
+  /// Records an agent's latitude and longitude to the output db
+  void RecordPosition();
 };
 
 double CosiWeight(cyclus::Composition::Ptr c, const std::string& spectrum);
