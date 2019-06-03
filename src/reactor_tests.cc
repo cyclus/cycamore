@@ -680,7 +680,6 @@ TEST(ReactorTests, ByProduct) {
   conds.push_back(Cond("Value", "==", 0));
   qr = sim.db().Query("ReactorSideProducts", &conds);
   EXPECT_EQ(5, qr.rows.size());
-
 }
 
 TEST(ReactorTests, MultipleByProduct) {
@@ -706,10 +705,11 @@ TEST(ReactorTests, MultipleByProduct) {
   sim.AddRecipe("spentuox", c_spentuox());
   int id = sim.Run();
 
+
   std::vector<Cond> conds;
   // test if it produces heat when reactor is running
   int quantity = 10;
-  conds.push_back(Cond("Product", "==", "process_heat"));
+  conds.push_back(Cond("Product", "==", std::string("process_heat")));
   conds.push_back(Cond("Value", "==", quantity));
   QueryResult qr = sim.db().Query("ReactorSideProducts", &conds);
   EXPECT_EQ(5, qr.rows.size());
@@ -717,7 +717,7 @@ TEST(ReactorTests, MultipleByProduct) {
   // test if it produces water when reactor is running
   conds.clear();
   quantity = 100;
-  conds.push_back(Cond("Product", "==", "water"));
+  conds.push_back(Cond("Product", "==", std::string("water")));
   conds.push_back(Cond("Value", "==", quantity));
   qr = sim.db().Query("ReactorSideProducts", &conds);
   EXPECT_EQ(5, qr.rows.size());
