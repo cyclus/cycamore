@@ -24,6 +24,7 @@ void ManagerInst::DecomNotify(Agent* a) {
 
 void ManagerInst::EnterNotify() {
   cyclus::Institution::EnterNotify();
+  cyclus::toolkit::Position::RecordPosition(this);
   std::set<cyclus::Agent*>::iterator sit;
   for (sit = cyclus::Agent::children().begin();
        sit != cyclus::Agent::children().end();

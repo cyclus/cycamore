@@ -61,6 +61,8 @@ class Source
   virtual void Tick() {};
 
   virtual void Tock() {};
+  
+  virtual void EnterNotify();
 
   virtual std::string str();
 

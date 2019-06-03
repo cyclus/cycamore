@@ -49,6 +49,8 @@ void DeployInst::Build(cyclus::Agent* parent) {
 
 void DeployInst::EnterNotify() {
   cyclus::Institution::EnterNotify();
+  cyclus::toolkit::Position::RecordPosition(this);
+  
   int n = prototypes.size();
   if (build_times.size() != n) {
     std::stringstream ss;

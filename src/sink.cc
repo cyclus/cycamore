@@ -42,6 +42,7 @@ Sink::~Sink() {}
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 void Sink::EnterNotify() {
   cyclus::Facility::EnterNotify();
+  cyclus::toolkit::Position::RecordPosition(this);
 
   if (in_commod_prefs.size() == 0) {
     for (int i = 0; i < in_commods.size(); ++i) {

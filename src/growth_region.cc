@@ -41,6 +41,7 @@ void GrowthRegion::AddCommodityDemand_(std::string commod,
 
 void GrowthRegion::EnterNotify() {
   cyclus::Region::EnterNotify();
+  cyclus::toolkit::Position::RecordPosition(this);
   std::set<cyclus::Agent*>::iterator ait;
   for (ait = cyclus::Agent::children().begin();
        ait != cyclus::Agent::children().end();

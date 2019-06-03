@@ -50,6 +50,7 @@ void Storage::InitFrom(cyclus::QueryableBackend* b) {
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 void Storage::EnterNotify() {
   cyclus::Facility::EnterNotify();
+  cyclus::toolkit::Position::RecordPosition(this);
   buy_policy.Init(this, &inventory, std::string("inventory"));
 
   // dummy comp, use in_recipe if provided

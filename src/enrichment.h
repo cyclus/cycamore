@@ -172,6 +172,7 @@ class Enrichment
   /// perform module-specific tasks when entering the simulation
   virtual void Build(cyclus::Agent* parent);
   // ---
+  virtual void EnterNotify();
 
   // --- Agent Members ---
   ///  Each facility is prompted to do its beginning-of-time-step

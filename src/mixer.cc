@@ -44,6 +44,7 @@ void Mixer::InitInv(cyclus::Inventories& inv) {
 
 void Mixer::EnterNotify() {
   cyclus::Facility::EnterNotify();
+  cyclus::toolkit::Position::RecordPosition(this);
 
   mixing_ratios.clear();
   in_buf_sizes.clear();

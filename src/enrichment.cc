@@ -58,6 +58,12 @@ void Enrichment::Build(cyclus::Agent* parent) {
   LOG(cyclus::LEV_DEBUG2, "EnrFac") << str();
 }
 
+void Enrichment::EnterNotify() {
+  cyclus::Facility::EnterNotify();
+  cyclus::toolkit::Position::RecordPosition(this);
+
+}
+
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 void Enrichment::Tick() {
   current_swu_capacity = SwuCapacity();

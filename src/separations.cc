@@ -53,6 +53,7 @@ typedef std::map<std::string, Stream> StreamSet;
 
 void Separations::EnterNotify() {
   cyclus::Facility::EnterNotify();
+  cyclus::toolkit::Position::RecordPosition(this);
   std::map<int, double> efficiency_;
 
   StreamSet::iterator it;

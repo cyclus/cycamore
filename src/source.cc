@@ -50,6 +50,12 @@ std::string Source::str() {
   return ss.str();
 }
 
+void Source::EnterNotify() {
+  cyclus::Facility::EnterNotify();
+  cyclus::toolkit::Position::RecordPosition(this);
+}
+
+
 std::set<cyclus::BidPortfolio<cyclus::Material>::Ptr> Source::GetMatlBids(
     cyclus::CommodMap<cyclus::Material>::type& commod_requests) {
   using cyclus::Bid;

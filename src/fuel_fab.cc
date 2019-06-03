@@ -142,6 +142,7 @@ FuelFab::FuelFab(cyclus::Context* ctx)
 
 void FuelFab::EnterNotify() {
   cyclus::Facility::EnterNotify();
+  cyclus::toolkit::Position::RecordPosition(this);
 
   if (fiss_commod_prefs.empty()) {
     for (int i = 0; i < fiss_commods.size(); i++) {
