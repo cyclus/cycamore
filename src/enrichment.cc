@@ -61,6 +61,7 @@ void Enrichment::Build(cyclus::Agent* parent) {
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 void Enrichment::Tick() { 
   current_swu_capacity = SwuCapacity();
+  
 }
 
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -72,6 +73,7 @@ void Enrichment::Tock() {
   LOG(cyclus::LEV_INFO4, "EnrFac") << prototype() << " used "
                                    << intra_timestep_feed_ << " feed";
   RecordTimeSeries<cyclus::toolkit::ENRICH_FEED>(this, intra_timestep_feed_);
+  RecordTimeSeries<double>("demand"+feed_commod, this, intra_timestep_feed_);
 }
 
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -176,9 +178,12 @@ std::set<cyclus::BidPortfolio<cyclus::Material>::Ptr> Enrichment::GetMatlBids(
   using cyclus::Material;
   using cyclus::Request;
   using cyclus::toolkit::MatVec;
+  using cyclus::toolkit::RecordTimeSeries;
 
   std::set<BidPortfolio<Material>::Ptr> ports;
 
+  RecordTimeSeries<double>("supply" + tails_commod, this, tails.quantity());
+  RecordTimeSeries<double>("supply" + product_commod, this, inventory.quantity());
   if ((out_requests.count(tails_commod) > 0) && (tails.quantity() > 0)) {
     BidPortfolio<Material>::Ptr tails_port(new BidPortfolio<Material>());
 
@@ -259,12 +264,11 @@ void Enrichment::GetMatlTrades(
   intra_timestep_swu_ = 0;
   intra_timestep_feed_ = 0;
 
-  std::vector<Trade<Material> >::const_iterator it;
+  std::vector<Trade<Material>>::const_iterator it;
   for (it = trades.begin(); it != trades.end(); ++it) {
     double qty = it->amt;
     std::string commod_type = it->bid->request()->commodity();
     Material::Ptr response;
-
     // Figure out whether material is tails or enriched,
     // if tails then make transfer of material
     if (commod_type == tails_commod) {
@@ -292,6 +296,7 @@ void Enrichment::GetMatlTrades(
                              " is being asked to provide more than" +
                              " its SWU capacity.");
   }
+
 }
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 void Enrichment::AddMat_(cyclus::Material::Ptr mat) {
