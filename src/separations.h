@@ -35,7 +35,8 @@ cyclus::Material::Ptr SepMaterial(std::map<int, double> effs,
 /// streams, further processing/separations of feed material will halt until
 /// room is again available in the output streams.
 class Separations 
-  : public cyclus::Facility {
+  : public cyclus::Facility,
+    public cyclus::toolkit::Position {
 #pragma cyclus note { \
   "niche": "separations", \
   "doc": \

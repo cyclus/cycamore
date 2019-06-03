@@ -19,7 +19,9 @@ typedef std::map<int, std::vector<std::string> > BuildSched;
 // lifetimes.  The same prototype can be specified multiple times with any
 // combination of the same or different build times, build number, and
 // lifetimes.
-class DeployInst : public cyclus::Institution {
+class DeployInst 
+  : public cyclus::toolkit::Position,
+    public cyclus::Institution {
   #pragma cyclus note { \
     "doc": \
       "Builds and manages agents (facilities) according to a manually" \

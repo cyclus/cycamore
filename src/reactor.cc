@@ -25,7 +25,7 @@ Reactor::Reactor(cyclus::Context* ctx)
       discharged(false),
       latitude(0.0),
       longitude(0.0) {
-  coordinates = cyclus::toolkit::Position(latitude, longitude);
+  cyclus::toolkit::Position(latitude, longitude);
 }
 
 #pragma cyclus def clone cycamore::Reactor

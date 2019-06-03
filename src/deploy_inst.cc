@@ -7,7 +7,7 @@ DeployInst::DeployInst(cyclus::Context* ctx)
     : cyclus::Institution(ctx),
       latitude(0.0),
       longitude(0.0) {
-  coordinates = cyclus::toolkit::Position(latitude, longitude);
+  cyclus::toolkit::Position(latitude, longitude);
 }
 
 DeployInst::~DeployInst() {}

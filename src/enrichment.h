@@ -116,7 +116,8 @@ class NatUConverter : public cyclus::Converter<cyclus::Material> {
 ///  tails inventory.
 
 class Enrichment 
-  : public cyclus::Facility {
+  : public cyclus::Facility,
+    public cyclus::toolkit::Position {
 #pragma cyclus note {   	  \
   "niche": "enrichment facility",				  \
   "doc":								\

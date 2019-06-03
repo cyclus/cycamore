@@ -13,6 +13,7 @@ namespace cycamore {
 class ManagerInst
     : public cyclus::Institution,
       public cyclus::toolkit::CommodityProducerManager,
+      public cyclus::toolkit::Position,
       public cyclus::toolkit::Builder {
  public:
   /// Default constructor
