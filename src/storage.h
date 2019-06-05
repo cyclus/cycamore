@@ -65,7 +65,6 @@ namespace storage {
 /// Matched resources are sent immediately.
 class Storage 
   : public cyclus::Facility,
-    public cyclus::toolkit::Position,
     public cyclus::toolkit::CommodityProducer {
  public:  
   /// @param ctx the cyclus context for access to simulation-wide parameters

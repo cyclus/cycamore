@@ -6,9 +6,8 @@ namespace cycamore {
 DeployInst::DeployInst(cyclus::Context* ctx)
     : cyclus::Institution(ctx),
       latitude(0.0),
-      longitude(0.0) {
-  cyclus::toolkit::Position(latitude, longitude);
-}
+      longitude(0.0),
+      coordinates(0,0) {}
 
 DeployInst::~DeployInst() {}
 
@@ -49,7 +48,9 @@ void DeployInst::Build(cyclus::Agent* parent) {
 
 void DeployInst::EnterNotify() {
   cyclus::Institution::EnterNotify();
-  cyclus::toolkit::Position::RecordPosition(this);
+  
+  coordinates = cyclus::toolkit::Position(latitude, longitude);
+  coordinates.RecordPosition(this);
   
   int n = prototypes.size();
   if (build_times.size() != n) {

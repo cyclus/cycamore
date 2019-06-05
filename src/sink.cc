@@ -13,8 +13,8 @@ Sink::Sink(cyclus::Context* ctx)
     : cyclus::Facility(ctx),
       capacity(std::numeric_limits<double>::max()),
       latitude(0.0),
-      longitude(0.0) {
-  cyclus::toolkit::Position(latitude, longitude);
+      longitude(0.0),
+      coordinates(0,0) {
   SetMaxInventorySize(std::numeric_limits<double>::max());
 }
 
@@ -42,7 +42,9 @@ Sink::~Sink() {}
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 void Sink::EnterNotify() {
   cyclus::Facility::EnterNotify();
-  cyclus::toolkit::Position::RecordPosition(this);
+  
+  coordinates = cyclus::toolkit::Position(latitude, longitude);
+  coordinates.RecordPosition(this);
 
   if (in_commod_prefs.size() == 0) {
     for (int i = 0; i < in_commods.size(); ++i) {

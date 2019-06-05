@@ -14,9 +14,8 @@ namespace cycamore {
 Separations::Separations(cyclus::Context* ctx)
     : cyclus::Facility(ctx),
       latitude(0.0),
-      longitude(0.0) {
-  cyclus::toolkit::Position(latitude, longitude);
-}
+      longitude(0.0),
+      coordinates(0,0) {}
 
 cyclus::Inventories Separations::SnapshotInv() {
   cyclus::Inventories invs;
@@ -53,7 +52,10 @@ typedef std::map<std::string, Stream> StreamSet;
 
 void Separations::EnterNotify() {
   cyclus::Facility::EnterNotify();
-  cyclus::toolkit::Position::RecordPosition(this);
+  
+  coordinates = cyclus::toolkit::Position(latitude, longitude);
+  coordinates.RecordPosition(this);
+  
   std::map<int, double> efficiency_;
 
   StreamSet::iterator it;

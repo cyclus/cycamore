@@ -7,9 +7,8 @@ namespace cycamore {
 ManagerInst::ManagerInst(cyclus::Context* ctx)
     : cyclus::Institution(ctx),
       latitude(0.0),
-      longitude(0.0) {
-  cyclus::toolkit::Position(latitude, longitude);
-}
+      longitude(0.0),
+      coordinates(0,0) {}
 
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 ManagerInst::~ManagerInst() {}
@@ -24,7 +23,10 @@ void ManagerInst::DecomNotify(Agent* a) {
 
 void ManagerInst::EnterNotify() {
   cyclus::Institution::EnterNotify();
-  cyclus::toolkit::Position::RecordPosition(this);
+  
+  coordinates = cyclus::toolkit::Position(latitude, longitude);
+  coordinates.RecordPosition(this);
+  
   std::set<cyclus::Agent*>::iterator sit;
   for (sit = cyclus::Agent::children().begin();
        sit != cyclus::Agent::children().end();

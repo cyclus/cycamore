@@ -6,8 +6,8 @@ namespace cycamore {
 GrowthRegion::GrowthRegion(cyclus::Context* ctx)
     : cyclus::Region(ctx),
       latitude(0.0),
-      longitude(0.0) {
-  cyclus::toolkit::Position(latitude, longitude);
+      longitude(0.0),
+      coordinates(0,0) {
   #if !CYCLUS_HAS_COIN
     throw cyclus::Error("Growth Region requires that Cyclus & Cycamore be compiled "
                         "with COIN support.");
@@ -41,7 +41,10 @@ void GrowthRegion::AddCommodityDemand_(std::string commod,
 
 void GrowthRegion::EnterNotify() {
   cyclus::Region::EnterNotify();
-  cyclus::toolkit::Position::RecordPosition(this);
+  
+  coordinates = cyclus::toolkit::Position(latitude, longitude);
+  coordinates.RecordPosition(this);
+  
   std::set<cyclus::Agent*>::iterator ait;
   for (ait = cyclus::Agent::children().begin();
        ait != cyclus::Agent::children().end();

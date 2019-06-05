@@ -8,8 +8,8 @@ namespace storage {
 Storage::Storage(cyclus::Context* ctx)
     : cyclus::Facility(ctx),
       latitude(0.0),
-      longitude(0.0) {
-  cyclus::toolkit::Position(latitude, longitude);
+      longitude(0.0),
+      coordinates(0,0) {
   cyclus::Warn<cyclus::EXPERIMENTAL_WARNING>(
       "The Storage Facility is experimental.");
 }
@@ -50,7 +50,10 @@ void Storage::InitFrom(cyclus::QueryableBackend* b) {
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 void Storage::EnterNotify() {
   cyclus::Facility::EnterNotify();
-  cyclus::toolkit::Position::RecordPosition(this);
+  
+  coordinates = cyclus::toolkit::Position(latitude, longitude);
+  coordinates.RecordPosition(this);
+  
   buy_policy.Init(this, &inventory, std::string("inventory"));
 
   // dummy comp, use in_recipe if provided

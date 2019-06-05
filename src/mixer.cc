@@ -8,8 +8,8 @@ Mixer::Mixer(cyclus::Context* ctx)
     : cyclus::Facility(ctx),
       throughput(0),
       latitude(0.0),
-      longitude(0.0) {
-  cyclus::toolkit::Position(latitude, longitude);
+      longitude(0.0),
+      coordinates(0,0) {
   cyclus::Warn<cyclus::EXPERIMENTAL_WARNING>(
       "the Mixer archetype is experimental");
 }
@@ -44,7 +44,9 @@ void Mixer::InitInv(cyclus::Inventories& inv) {
 
 void Mixer::EnterNotify() {
   cyclus::Facility::EnterNotify();
-  cyclus::toolkit::Position::RecordPosition(this);
+  
+  coordinates = cyclus::toolkit::Position(latitude, longitude);
+  coordinates.RecordPosition(this);
 
   mixing_ratios.clear();
   in_buf_sizes.clear();

@@ -22,8 +22,7 @@ class Context;
 /// no more material.
 class Source 
   : public cyclus::Facility,
-    public cyclus::toolkit::CommodityProducer,
-    public cyclus::toolkit::Position {
+    public cyclus::toolkit::CommodityProducer {
   friend class SourceTest;
  public:
 

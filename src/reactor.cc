@@ -24,9 +24,8 @@ Reactor::Reactor(cyclus::Context* ctx)
       power_name("power"),
       discharged(false),
       latitude(0.0),
-      longitude(0.0) {
-  cyclus::toolkit::Position(latitude, longitude);
-}
+      longitude(0.0),
+      coordinates(0,0) {}
 
 #pragma cyclus def clone cycamore::Reactor
 
@@ -63,7 +62,9 @@ void Reactor::InitFrom(cyclus::QueryableBackend* b) {
 
 void Reactor::EnterNotify() {
   cyclus::Facility::EnterNotify();
-  cyclus::toolkit::Position::RecordPosition(this);
+  
+  coordinates = cyclus::toolkit::Position(latitude, longitude);
+  coordinates.RecordPosition(this);
 
   // If the user ommitted fuel_prefs, we set it to zeros for each fuel
   // type.  Without this segfaults could occur - yuck.

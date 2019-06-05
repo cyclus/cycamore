@@ -12,9 +12,8 @@ Source::Source(cyclus::Context* ctx)
       throughput(std::numeric_limits<double>::max()),
       inventory_size(std::numeric_limits<double>::max()),
       latitude(0.0),
-      longitude(0.0) {
-  cyclus::toolkit::Position(latitude, longitude);
-}
+      longitude(0.0),
+      coordinates(0,0) {}
 
 Source::~Source() {}
 
@@ -52,7 +51,9 @@ std::string Source::str() {
 
 void Source::EnterNotify() {
   cyclus::Facility::EnterNotify();
-  cyclus::toolkit::Position::RecordPosition(this);
+  
+  coordinates = cyclus::toolkit::Position(latitude, longitude);
+  coordinates.RecordPosition(this);
 }
 
 

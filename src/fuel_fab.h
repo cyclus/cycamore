@@ -53,9 +53,7 @@ namespace cycamore {
 ///     uranium isotopes in fast reactors." Proceedings of the Conference on
 ///     Breeding. Economics, and Safety in Large Fast Power Reactors. 1963.
 /// @endcode
-class FuelFab 
-  : public cyclus::Facility,
-    public cyclus::toolkit::Position {
+class FuelFab : public cyclus::Facility {
 #pragma cyclus note { \
 "niche": "fabrication", \
 "doc": \

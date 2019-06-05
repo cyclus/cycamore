@@ -12,9 +12,7 @@ namespace cycamore {
 /// one for each streams to be mixed, and one output stream. The supplying of
 /// mixed material is constrained by available inventory of mixed material
 /// quantities.
-class Mixer 
-  : public cyclus::Facility,
-    public cyclus::toolkit::Position {
+class Mixer : public cyclus::Facility {
 #pragma cyclus note {   	  \
     "niche": "mixing facility",				  \
     "doc": "Mixer mixes N streams with fixed, static, user-specified" \

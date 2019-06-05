@@ -24,9 +24,8 @@ Enrichment::Enrichment(cyclus::Context* ctx)
       tails_commod(""),
       order_prefs(true),
       latitude(0.0),
-      longitude(0.0) {
-  cyclus::toolkit::Position(latitude, longitude);
-}
+      longitude(0.0),
+      coordinates(0,0) {}
 
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 Enrichment::~Enrichment() {}
@@ -60,7 +59,9 @@ void Enrichment::Build(cyclus::Agent* parent) {
 
 void Enrichment::EnterNotify() {
   cyclus::Facility::EnterNotify();
-  cyclus::toolkit::Position::RecordPosition(this);
+  
+  coordinates = cyclus::toolkit::Position(latitude, longitude);
+  coordinates.RecordPosition(this);
 
 }
 
