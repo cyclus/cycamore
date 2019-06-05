@@ -434,7 +434,8 @@ class Reactor
   // populated lazily and no need to persist.
   std::set<std::string> uniq_outcommods_;
 
-#include "toolkit/position.cycpp"
+  // Adds required header to add geographic coordinates to the archetype
+  #include "toolkit/position.cycpp"
 
 };
 

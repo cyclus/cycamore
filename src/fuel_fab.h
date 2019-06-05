@@ -251,6 +251,7 @@ class FuelFab : public cyclus::Facility {
   // map<request, inventory name>
   std::map<cyclus::Request<cyclus::Material>*, std::string> req_inventories_;
 
+  // Adds required header to add geographic coordinates to the archetype
   #include "toolkit/position.cycpp"
 
 };

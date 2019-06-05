@@ -129,7 +129,10 @@ class GrowthRegion : public cyclus::Region {
   void OrderBuilds(cyclus::toolkit::Commodity& commodity, double unmetdemand);
 
   private:
+  
+  // Adds required header to add geographic coordinates to the archetype
   #include "toolkit/position.cycpp"
+
 };
 }  // namespace cycamore
 

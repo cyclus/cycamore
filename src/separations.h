@@ -204,6 +204,7 @@ class Separations : public cyclus::Facility {
   // state var.
   std::map<std::string, cyclus::toolkit::ResBuf<cyclus::Material> > streambufs;
 
+  // Adds required header to add geographic coordinates to the archetype
   #include "toolkit/position.cycpp"
 
   

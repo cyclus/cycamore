@@ -83,7 +83,8 @@ class DeployInst : public cyclus::Institution {
   std::vector<int> lifetimes;
 
  private:
-  
+ 
+  // Adds required header to add geographic coordinates to the archetype
   #include "toolkit/position.cycpp"
 
 };

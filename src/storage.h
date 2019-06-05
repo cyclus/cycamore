@@ -213,6 +213,7 @@ class Storage
   //// A policy for sending material
   cyclus::toolkit::MatlSellPolicy sell_policy;
 
+  // Adds required header to add geographic coordinates to the archetype
   #include "toolkit/position.cycpp"
 
   friend class StorageTest;

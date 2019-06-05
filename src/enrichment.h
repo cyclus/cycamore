@@ -379,6 +379,7 @@ class Enrichment : public cyclus::Facility {
   double intra_timestep_swu_;
   double intra_timestep_feed_;
 
+  // Adds required header to add geographic coordinates to the archetype
   #include "toolkit/position.cycpp"
 
   friend class EnrichmentTest;

@@ -60,6 +60,7 @@ class ManagerInst
     }
   std::vector<std::string> prototypes;
 
+  // Adds required header to add geographic coordinates to the archetype
   #include "toolkit/position.cycpp"
 
 };

@@ -112,6 +112,8 @@ class Mixer : public cyclus::Facility {
   cyclus::toolkit::MatlSellPolicy sell_policy;
 
   private:
+  
+  // Adds required header to add geographic coordinates to the archetype
   #include "toolkit/position.cycpp"
 
 };
