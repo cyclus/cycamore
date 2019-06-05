@@ -205,7 +205,7 @@ class Separations : public cyclus::Facility {
   std::map<std::string, cyclus::toolkit::ResBuf<cyclus::Material> > streambufs;
 
   // Adds required header to add geographic coordinates to the archetype
-  #include "toolkit/position.cycpp"
+  #include "toolkit/position.cycpp.h"
 
   
   void Record(std::string name, double val, std::string type);

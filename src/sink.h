@@ -153,7 +153,7 @@ class Sink : public cyclus::Facility {
   cyclus::toolkit::ResBuf<cyclus::Resource> inventory;
 
   // Adds required header to add geographic coordinates to the archetype
-  #include "toolkit/position.cycpp"
+  #include "toolkit/position.cycpp.h"
 
 };
 

@@ -119,7 +119,7 @@ class Source
   double throughput;
   
   // Adds required header to add geographic coordinates to the archetype
-  #include "toolkit/position.cycpp"
+  #include "toolkit/position.cycpp.h"
 
 };
 

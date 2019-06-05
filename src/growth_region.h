@@ -131,7 +131,7 @@ class GrowthRegion : public cyclus::Region {
   private:
   
   // Adds required header to add geographic coordinates to the archetype
-  #include "toolkit/position.cycpp"
+  #include "toolkit/position.cycpp.h"
 
 };
 }  // namespace cycamore
