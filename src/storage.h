@@ -23,10 +23,10 @@ namespace storage {
 /// dynamically loaded by the Agent class when requested.
 ///
 /// @section intro Introduction
-/// This Agent was initially developed to support the fco code-to-code 
+/// This Agent was initially developed to support the fco code-to-code
 /// comparison.
-/// It's very similar to the "NullFacility" of years 
-/// past. Its purpose is to hold materials and release them only  
+/// It's very similar to the "NullFacility" of years
+/// past. Its purpose is to hold materials and release them only
 /// after some period of delay time.
 ///
 /// @section agentparams Agent Parameters
@@ -34,42 +34,42 @@ namespace storage {
 /// out_commods is a string naming the commodity that in_commod is stocks into
 /// residence_time is the minimum number of timesteps between receiving and offering
 /// in_recipe (optional) describes the incoming resource by recipe
-/// 
+///
 /// @section optionalparams Optional Parameters
 /// max_inv_size is the maximum capacity of the inventory storage
 /// throughput is the maximum processing capacity per timestep
 ///
 /// @section detailed Detailed Behavior
-/// 
+///
 /// Tick:
-/// Nothing really happens on the tick. 
+/// Nothing really happens on the tick
 ///
 /// Tock:
-/// On the tock, any material that has been waiting for long enough (delay 
+/// On the tock, any material that has been waiting for long enough (delay
 /// time) is placed in the stocks buffer.
 ///
-/// Any brand new inventory that was received in this timestep is placed into 
-/// the processing queue to begin waiting. 
-/// 
+/// Any brand new inventory that was received in this timestep is placed into
+/// the processing queue to begin waiting
+///
 /// Making Requests:
 /// This facility requests all of the in_commod that it can.
 ///
 /// Receiving Resources:
-/// Anything of the in_commod that is received by this facility goes into the 
+/// Anything of the in_commod that is received by this facility goes into the
 /// inventory.
 ///
 /// Making Offers:
 /// Any stocks material in the stocks buffer is offered to the market.
 ///
 /// Sending Resources:
-/// Matched resources are sent immediately.
-class Storage 
+/// Matched resources are sent immediately
+class Storage
   : public cyclus::Facility,
     public cyclus::toolkit::CommodityProducer {
- public:  
+ public:
   /// @param ctx the cyclus context for access to simulation-wide parameters
   Storage(cyclus::Context* ctx);
-  
+
   #pragma cyclus decl
 
   #pragma cyclus note {"doc": "Storage is a simple facility which accepts any number of commodities " \
@@ -87,7 +87,7 @@ class Storage
   virtual std::string str();
 
   // --- Facility Members ---
-  
+
   // --- Agent Members ---
   /// Sets up the Storage Facility's trade requests
   virtual void EnterNotify();
@@ -108,7 +108,7 @@ class Storage
   void BeginProcessing_();
 
   /// @brief Move as many ready resources as allowable into stocks
-  /// @param cap current throughput capacity 
+  /// @param cap current throughput capacity
   void ProcessMat_(double cap);
 
   /// @brief move ready resources from processing to ready at a certain time
@@ -118,7 +118,7 @@ class Storage
     /* --- Storage Members --- */
 
   /// @brief current maximum amount that can be added to processing
-  inline double current_capacity() const { 
+  inline double current_capacity() const {
     return (max_inv_size - processing.quantity() - stocks.quantity()); }
 
   /// @brief returns the time key for ready materials
@@ -179,7 +179,7 @@ class Storage
                       "uitype": "range", \
                       "range": [0.0, 1e299], \
                       "units":"kg"}
-  double max_inv_size; 
+  double max_inv_size;
 
   #pragma cyclus var {"default": False,\
                       "tooltip":"Bool to determine how Storage handles batches",\
@@ -188,7 +188,7 @@ class Storage
                             "If true, batches are handled as discrete quanta, neither split nor combined. "\
                             "Otherwise, batches may be divided during processing. Default to false (continuous))",\
                       "uilabel":"Batch Handling"}
-  bool discrete_handling;                    
+  bool discrete_handling;
 
   #pragma cyclus var {"tooltip":"Incoming material buffer"}
   cyclus::toolkit::ResBuf<cyclus::Material> inventory;
@@ -229,14 +229,7 @@ class Storage
   }
   double longitude;
 
-
-#pragma cyclus var { \
-    "alias": ["usagemetadata", "keyword", ["usage", "key", "value"]], \
-    "uitype": ["onemore", "string", ["onemore", "string", "double"]], \
-    "uilabel": "", \
-    "doc": "", \
-  }
-  std::map<std::string, std::map<std::string, double> > usage_datas;
+#include "toolkit/metadata.cycpp.h"
 
   friend class StorageTest;
 };

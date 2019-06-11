@@ -24,9 +24,8 @@ Enrichment::Enrichment(cyclus::Context* ctx)
       tails_commod(""),
       order_prefs(true),
       latitude(0.0),
-      longitude(0.0) {
-  usagesdata = cyclus::toolkit::UsageMetadatas(usage_datas);
-  coordinates = cyclus::toolkit::Position(latitude, longitude);
+      longitude(0.0),
+      metadata() {
 }
 
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -42,6 +41,14 @@ std::string Enrichment::str() {
      << " * Output cyclus::Commodity: " << product_commod
      << " * Tails cyclus::Commodity: " << tails_commod;
   return ss.str();
+}
+
+// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+void Enrichment::EnterNotify() {
+  metadata.LoadData(metadata_);
+  metadata.LoadData(usage_metadata_);
+
+  cyclus::Facility::EnterNotify();
 }
 
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -

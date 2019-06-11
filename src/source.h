@@ -52,6 +52,8 @@ class Source : public cyclus::Facility,
   #pragma cyclus def snapshotinv
   #pragma cyclus def initinv
 
+  virtual void EnterNotify();
+  
   virtual void InitFrom(Source* m);
 
   virtual void InitFrom(cyclus::QueryableBackend* b);
@@ -114,7 +116,7 @@ class Source : public cyclus::Facility,
     "doc": "amount of commodity that can be supplied at each time step", \
   }
   double throughput;
-  
+
   #pragma cyclus var { \
     "default": 0.0, \
     "uilabel": "Geographical latitude in degrees as a double", \
@@ -131,13 +133,7 @@ class Source : public cyclus::Facility,
   }
   double longitude;
 
-#pragma cyclus var { \
-    "alias": ["usagemetadata", "keyword", ["usage", "key", "value"]], \
-    "uitype": ["onemore", "string", ["onemore", "string", "double"]], \
-    "uilabel": "", \
-    "doc": "", \
-  }
-  std::map<std::string, std::map<std::string, double> > usage_datas;
+#include "toolkit/metadata.cycpp.h"
 };
 
 }  // namespace cycamore

@@ -136,12 +136,14 @@ FuelFab::FuelFab(cyclus::Context* ctx)
       fiss_size(0),
       throughput(0),
       latitude(0.0),
-      longitude(0.0) {
-  usagesdata = cyclus::toolkit::UsageMetadatas(usage_datas);
-  coordinates = cyclus::toolkit::Position(latitude, longitude);
+      longitude(0.0),
+      metadata() {
 }
 
 void FuelFab::EnterNotify() {
+  metadata.LoadData(metadata_);
+  metadata.LoadData(usage_metadata_);
+
   cyclus::Facility::EnterNotify();
 
   if (fiss_commod_prefs.empty()) {

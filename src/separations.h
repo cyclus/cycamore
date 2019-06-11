@@ -34,7 +34,7 @@ cyclus::Material::Ptr SepMaterial(std::map<int, double> effs,
 /// reduce its stocks by trading and hits this limit for any of its output
 /// streams, further processing/separations of feed material will halt until
 /// room is again available in the output streams.
-class Separations 
+class Separations
   : public cyclus::Facility {
 #pragma cyclus note { \
   "niche": "separations", \
@@ -221,16 +221,8 @@ class Separations
   }
   double longitude;
 
+#include "toolkit/metadata.cycpp.h"
 
-#pragma cyclus var { \
-    "alias": ["usagemetadata", "keyword", ["usage", "key", "value"]], \
-    "uitype": ["onemore", "string", ["onemore", "string", "double"]], \
-    "uilabel": "", \
-    "doc": "", \
-  }
-  std::map<std::string, std::map<std::string, double> > usage_datas;
-  
-  
   void Record(std::string name, double val, std::string type);
 };
 

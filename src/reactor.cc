@@ -24,9 +24,8 @@ Reactor::Reactor(cyclus::Context* ctx)
       power_name("power"),
       discharged(false),
       latitude(0.0),
-      longitude(0.0) {
-  usagesdata = cyclus::toolkit::UsageMetadatas(usage_datas);
-  coordinates = cyclus::toolkit::Position(latitude, longitude);
+      longitude(0.0),
+      metadata() {
 }
 
 #pragma cyclus def clone cycamore::Reactor
@@ -63,6 +62,9 @@ void Reactor::InitFrom(cyclus::QueryableBackend* b) {
 }
 
 void Reactor::EnterNotify() {
+  metadata.LoadData(metadata_);
+  metadata.LoadData(usage_metadata_);
+
   cyclus::Facility::EnterNotify();
 
   // If the user ommitted fuel_prefs, we set it to zeros for each fuel

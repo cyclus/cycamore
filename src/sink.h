@@ -18,7 +18,7 @@ class Context;
 /// total inventory size.  The inventory size and throughput capacity both
 /// default to infinite. If a recipe is provided, it will request material with
 /// that recipe. Requests are made for any number of specified commodities.
-class Sink 
+class Sink
   : public cyclus::Facility  {
  public:
   Sink(cyclus::Context* ctx);
@@ -42,7 +42,7 @@ class Sink
   virtual std::string str();
 
   virtual void EnterNotify();
-  
+
   virtual void Tick();
 
   virtual void Tock();
@@ -169,13 +169,7 @@ class Sink
   }
   double longitude;
 
-#pragma cyclus var { \
-    "alias": ["usagemetadata", "keyword", ["usage", "key", "value"]], \
-    "uitype": ["onemore", "string", ["onemore", "string", "double"]], \
-    "uilabel": "", \
-    "doc": "", \
-  }
-  std::map<std::string, std::map<std::string, double> > usage_datas;
+#include "toolkit/metadata.cycpp.h"
 };
 
 }  // namespace cycamore

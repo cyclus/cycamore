@@ -14,9 +14,8 @@ namespace cycamore {
 Separations::Separations(cyclus::Context* ctx)
     : cyclus::Facility(ctx),
       latitude(0.0),
-      longitude(0.0) {
-  usagesdata = cyclus::toolkit::UsageMetadatas(usage_datas);
-  coordinates = cyclus::toolkit::Position(latitude, longitude);
+      longitude(0.0),
+      metadata() {
 }
 
 cyclus::Inventories Separations::SnapshotInv() {
@@ -53,7 +52,11 @@ typedef std::pair<double, std::map<int, double> > Stream;
 typedef std::map<std::string, Stream> StreamSet;
 
 void Separations::EnterNotify() {
+  metadata.LoadData(metadata_);
+  metadata.LoadData(usage_metadata_);
+
   cyclus::Facility::EnterNotify();
+
   std::map<int, double> efficiency_;
 
   StreamSet::iterator it;

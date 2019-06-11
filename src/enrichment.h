@@ -115,7 +115,7 @@ class NatUConverter : public cyclus::Converter<cyclus::Material> {
 ///  no associated recipe.  Bids for tails are constrained only by total
 ///  tails inventory.
 
-class Enrichment 
+class Enrichment
   : public cyclus::Facility {
 #pragma cyclus note {   	  \
   "niche": "enrichment facility",				  \
@@ -172,6 +172,8 @@ class Enrichment
   virtual void Build(cyclus::Agent* parent);
   // ---
 
+  virtual void EnterNotify();
+  
   // --- Agent Members ---
   ///  Each facility is prompted to do its beginning-of-time-step
   ///  stuff at the tick of the timer.
@@ -398,13 +400,7 @@ class Enrichment
   }
   double longitude;
 
-#pragma cyclus var { \
-    "alias": ["usagemetadata", "keyword", ["usage", "key", "value"]], \
-    "uitype": ["onemore", "string", ["onemore", "string", "double"]], \
-    "uilabel": "", \
-    "doc": "", \
-  }
-  std::map<std::string, std::map<std::string, double> > usage_datas;
+#include "toolkit/metadata.cycpp.h"
 };
 
 }  // namespace cycamore

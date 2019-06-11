@@ -6,9 +6,8 @@ namespace cycamore {
 DeployInst::DeployInst(cyclus::Context* ctx)
     : cyclus::Institution(ctx),
       latitude(0.0),
-      longitude(0.0) {
-  usagesdata = cyclus::toolkit::UsageMetadatas(usage_datas);
-  coordinates = cyclus::toolkit::Position(latitude, longitude);
+      longitude(0.0),
+      metadata() {
 }
 
 DeployInst::~DeployInst() {}
@@ -49,7 +48,11 @@ void DeployInst::Build(cyclus::Agent* parent) {
 }
 
 void DeployInst::EnterNotify() {
+  metadata.LoadData(metadata_);
+  metadata.LoadData(usage_metadata_);
+
   cyclus::Institution::EnterNotify();
+
   int n = prototypes.size();
   if (build_times.size() != n) {
     std::stringstream ss;

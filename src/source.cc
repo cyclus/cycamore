@@ -12,9 +12,8 @@ Source::Source(cyclus::Context* ctx)
       throughput(std::numeric_limits<double>::max()),
       inventory_size(std::numeric_limits<double>::max()),
       latitude(0.0),
-      longitude(0.0) {
-  usagesdata = cyclus::toolkit::UsageMetadatas(usage_datas);
-  coordinates = cyclus::toolkit::Position(latitude, longitude);
+      longitude(0.0),
+      metadata() {
 }
 
 Source::~Source() {}
@@ -30,7 +29,16 @@ void Source::InitFrom(cyclus::QueryableBackend* b) {
   tk::CommodityProducer::Add(tk::Commodity(outcommod),
                              tk::CommodInfo(throughput, throughput));
 }
+// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
+void Source::EnterNotify() {
+  metadata.LoadData(metadata_);
+  metadata.LoadData(usage_metadata_);
+
+  cyclus::Facility::EnterNotify();
+}
+
+// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 std::string Source::str() {
   namespace tk = cyclus::toolkit;
   std::stringstream ss;

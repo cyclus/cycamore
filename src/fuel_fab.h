@@ -53,7 +53,7 @@ namespace cycamore {
 ///     uranium isotopes in fast reactors." Proceedings of the Conference on
 ///     Breeding. Economics, and Safety in Large Fast Power Reactors. 1963.
 /// @endcode
-class FuelFab 
+class FuelFab
   : public cyclus::Facility {
 #pragma cyclus note { \
 "niche": "fabrication", \
@@ -268,13 +268,7 @@ class FuelFab
   }
   double longitude;
 
-#pragma cyclus var { \
-    "alias": ["usagemetadata", "keyword", ["usage", "key", "value"]], \
-    "uitype": ["onemore", "string", ["onemore", "string", "double"]], \
-    "uilabel": "", \
-    "doc": "", \
-  }
-  std::map<std::string, std::map<std::string, double> > usage_datas;
+#include "toolkit/metadata.cycpp.h"
 };
 
 double CosiWeight(cyclus::Composition::Ptr c, const std::string& spectrum);

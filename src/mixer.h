@@ -12,7 +12,7 @@ namespace cycamore {
 /// one for each streams to be mixed, and one output stream. The supplying of
 /// mixed material is constrained by available inventory of mixed material
 /// quantities.
-class Mixer 
+class Mixer
   : public cyclus::Facility  {
 #pragma cyclus note {   	  \
     "niche": "mixing facility",				  \
@@ -129,14 +129,7 @@ class Mixer
   }
   double longitude;
 
-
-#pragma cyclus var { \
-    "alias": ["usagemetadata", "keyword", ["usage", "key", "value"]], \
-    "uitype": ["onemore", "string", ["onemore", "string", "double"]], \
-    "uilabel": "", \
-    "doc": "", \
-  }
-  std::map<std::string, std::map<std::string, double> > usage_datas;
+#include "toolkit/metadata.cycpp.h"
 };
 
 }  // namespace cycamore

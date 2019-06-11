@@ -26,7 +26,7 @@ class EnrichmentTest : public ::testing::Test {
   double feed_assay, tails_assay, inv_size, swu_capacity, max_enrich;
 
   bool order_prefs;
-  
+
   double reserves;
 
   virtual void SetUp();
