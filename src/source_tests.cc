@@ -123,10 +123,9 @@ TEST_F(SourceTest, Response) {
   delete bid;
 }
 
-TEST_F(SourceTest, PositionInitialize) {
+TEST_F(SourceTest, PositionDefault) {
   std::string config = 
-    "<outcommod>spent_fuel</outcommod>"
-  ;
+    "<outcommod>spent_fuel</outcommod>";
   int simdur = 3;
   cyclus::MockSim sim(cyclus::AgentSpec (":cycamore:Source"), config, simdur);
   int id = sim.Run();
@@ -137,7 +136,7 @@ TEST_F(SourceTest, PositionInitialize) {
 
 }
 
-TEST_F(SourceTest, Longitude) {
+TEST_F(SourceTest, PositionInitialize) {
   std::string config = 
     "<outcommod>spent_fuel</outcommod>"
     "<latitude>-0.01</latitude>"

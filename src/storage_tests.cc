@@ -455,7 +455,7 @@ TEST_F(StorageTest, MultipleCommods){
   EXPECT_EQ(1, n_trans2) << "expected 1 transactions, got " << n_trans;
 }
 
-TEST_F(StorageTest, PositionInitialize){
+TEST_F(StorageTest, PositionDefault){
   // Verify Storage behavior
 
   std::string config =
@@ -478,7 +478,7 @@ TEST_F(StorageTest, PositionInitialize){
   EXPECT_EQ(qr.GetVal<double>("Longitude"), 0.0);
 }
 
-TEST_F(StorageTest, Longitude){
+TEST_F(StorageTest, PositionInitialize){
   // Verify Storage behavior
 
   std::string config =

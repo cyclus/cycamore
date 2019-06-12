@@ -269,7 +269,7 @@ TEST_F(SinkTest, Print) {
   EXPECT_NO_THROW(std::string s = src_facility->str());
 }
 
-TEST_F(SinkTest, PositionInitialize) {
+TEST_F(SinkTest, PositionDefault) {
   using cyclus::QueryResult;
   using cyclus::Cond;
 
@@ -304,7 +304,7 @@ TEST_F(SinkTest, PositionInitialize) {
   EXPECT_EQ(qr.GetVal<double>("Longitude"), 0.0);
 }
 
-TEST_F(SinkTest, PositionInitialize2) {
+TEST_F(SinkTest, PositionInitialize) {
   using cyclus::QueryResult;
   using cyclus::Cond;
 

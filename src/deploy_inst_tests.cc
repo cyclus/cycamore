@@ -141,7 +141,7 @@ TEST(DeployInstTests, NoDupProtos) {
   EXPECT_EQ(1, stmt->GetInt(0));
 }
 
-TEST(DeployInstTests, PositionInitialize) {
+TEST(DeployInstTests, PositionDefault) {
   std::string config = 
      "<prototypes>  <val>foobar</val> </prototypes>"
      "<build_times> <val>1</val>      </build_times>"
@@ -158,7 +158,7 @@ TEST(DeployInstTests, PositionInitialize) {
   EXPECT_EQ(qr.GetVal<double>("Longitude"), 0.0);
 }
 
-TEST(DeployInstTests, PositionInitialize2) {
+TEST(DeployInstTests, PositionInitialize) {
   std::string config = 
      "<prototypes>  <val>foobar</val> </prototypes>"
      "<longitude>   -20.0             </longitude>"

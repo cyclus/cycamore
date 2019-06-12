@@ -591,7 +591,7 @@ TEST(ReactorTests, Retire) {
       << "failed to generate power for the correct number of time steps";
 }
 
-TEST(ReactorTests, PositionInitialize) {
+TEST(ReactorTests, PositionDefault) {
   std::string config = 
      "  <fuel_inrecipes>  <val>lwr_fresh</val>  </fuel_inrecipes>  "
      "  <fuel_outrecipes> <val>lwr_spent</val>  </fuel_outrecipes>  "
@@ -617,7 +617,7 @@ TEST(ReactorTests, PositionInitialize) {
   EXPECT_EQ(qr.GetVal<double>("Longitude"), 0.0);
 }
 
-TEST(ReactorTests, PositionInitialize2) {
+TEST(ReactorTests, PositionInitialize) {
   std::string config = 
      "  <fuel_inrecipes>  <val>lwr_fresh</val>  </fuel_inrecipes>  "
      "  <fuel_outrecipes> <val>lwr_spent</val>  </fuel_outrecipes>  "

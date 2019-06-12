@@ -725,7 +725,7 @@ TEST_F(EnrichmentTest, Response) {
 }
 
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-TEST_F(EnrichmentTest, PositionInitialize) {
+TEST_F(EnrichmentTest, PositionDefault) {
   // this tests verifies the initialization of the latitude variable
   
   std::string config = 
@@ -752,7 +752,7 @@ TEST_F(EnrichmentTest, PositionInitialize) {
   EXPECT_EQ(qr.GetVal<double>("Longitude"), 0.0);
 }
 
-TEST_F(EnrichmentTest, PositionInitialize2) {
+TEST_F(EnrichmentTest, PositionInitialize) {
   // this tests verifies the initialization of the longitude 
   // variable
   
