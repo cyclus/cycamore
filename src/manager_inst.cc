@@ -8,9 +8,7 @@ ManagerInst::ManagerInst(cyclus::Context* ctx)
     : cyclus::Institution(ctx),
       latitude(0.0),
       longitude(0.0),
-      coordinates(latitude, longitude),
-      metadata() {
-}
+      coordinates(latitude, longitude){}
 
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 ManagerInst::~ManagerInst() {}

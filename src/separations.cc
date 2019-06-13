@@ -15,9 +15,7 @@ Separations::Separations(cyclus::Context* ctx)
     : cyclus::Facility(ctx),
       latitude(0.0),
       longitude(0.0),
-      coordinates(latitude, longitude),
-      metadata() {
-}
+      coordinates(latitude, longitude){}
 
 cyclus::Inventories Separations::SnapshotInv() {
   cyclus::Inventories invs;

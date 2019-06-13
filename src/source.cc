@@ -13,9 +13,7 @@ Source::Source(cyclus::Context* ctx)
       inventory_size(std::numeric_limits<double>::max()),
       latitude(0.0),
       longitude(0.0),
-      coordinates(latitude, longitude),
-      metadata() {
-}
+      coordinates(latitude, longitude){}
 
 Source::~Source() {}
 

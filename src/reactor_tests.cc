@@ -68,7 +68,6 @@ TEST(ReactorTests, JustInTimeOrdering) {
      "  <assem_size>300</assem_size>  "
      "  <n_assem_core>1</n_assem_core>  "
      "  <n_assem_batch>1</n_assem_batch>  ";
-
   int simdur = 50;
   cyclus::MockSim sim(cyclus::AgentSpec(":cycamore:Reactor"), config, simdur);
   sim.AddSource("enriched_u").Finalize();

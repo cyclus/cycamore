@@ -25,8 +25,7 @@ Enrichment::Enrichment(cyclus::Context* ctx)
       order_prefs(true),
       latitude(0.0),
       longitude(0.0),
-      coordinates(latitude, longitude),
-      metadata() {}
+      coordinates(latitude, longitude){}
 
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 Enrichment::~Enrichment() {}
