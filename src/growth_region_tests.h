@@ -29,7 +29,6 @@ class GrowthRegionTests : public ::testing::Test {
   virtual void SetUp();
   virtual void TearDown();
   bool ManagesCommodity(cyclus::toolkit::Commodity& commodity);
-  //virtual void EnterNotify();
 };
 
 }  // namespace cycamore
