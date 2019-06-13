@@ -65,7 +65,8 @@ namespace storage {
 /// Matched resources are sent immediately
 class Storage
   : public cyclus::Facility,
-    public cyclus::toolkit::CommodityProducer {
+    public cyclus::toolkit::CommodityProducer,
+    public cyclus::toolkit::Position {
  public:
   /// @param ctx the cyclus context for access to simulation-wide parameters
   Storage(cyclus::Context* ctx);
@@ -228,6 +229,10 @@ class Storage
            "be expressed in degrees as a double." \
   }
   double longitude;
+
+  cyclus::toolkit::Position coordinates;
+
+  void RecordPosition();
 
 #include "toolkit/metadata.cycpp.h"
 

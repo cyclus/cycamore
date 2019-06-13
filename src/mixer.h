@@ -13,7 +13,8 @@ namespace cycamore {
 /// mixed material is constrained by available inventory of mixed material
 /// quantities.
 class Mixer
-  : public cyclus::Facility  {
+  : public cyclus::Facility,
+    public cyclus::toolkit::Position {
 #pragma cyclus note {   	  \
     "niche": "mixing facility",				  \
     "doc": "Mixer mixes N streams with fixed, static, user-specified" \
@@ -128,6 +129,11 @@ class Mixer
            "be expressed in degrees as a double." \
   }
   double longitude;
+
+  cyclus::toolkit::Position coordinates;
+
+  /// Records an agent's latitude and longitude to the output db
+  void RecordPosition();
 
 #include "toolkit/metadata.cycpp.h"
 };

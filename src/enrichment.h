@@ -116,7 +116,8 @@ class NatUConverter : public cyclus::Converter<cyclus::Material> {
 ///  tails inventory.
 
 class Enrichment
-  : public cyclus::Facility {
+  : public cyclus::Facility,
+    public cyclus::toolkit::Position {
 #pragma cyclus note {   	  \
   "niche": "enrichment facility",				  \
   "doc":								\
@@ -399,6 +400,7 @@ class Enrichment
            "be expressed in degrees as a double." \
   }
   double longitude;
+  cyclus::toolkit::Position coordinates;
 
 #include "toolkit/metadata.cycpp.h"
 };

@@ -19,7 +19,8 @@ typedef std::map<int, std::vector<std::string> > BuildSched;
 // lifetimes.  The same prototype can be specified multiple times with any
 // combination of the same or different build times, build number, and
 // lifetimes.
-class DeployInst : public cyclus::Institution {
+class DeployInst : public cyclus::Institution,
+  public cyclus::toolkit::Position {
   #pragma cyclus note { \
     "doc": \
       "Builds and manages agents (facilities) according to a manually" \
@@ -99,6 +100,10 @@ class DeployInst : public cyclus::Institution {
   }
   double longitude;
 
+  cyclus::toolkit::Position coordinates;
+
+  /// Records an agent's latitude and longitude to the output db
+  void RecordPosition();
 #include "toolkit/metadata.cycpp.h"
 };
 

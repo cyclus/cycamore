@@ -19,7 +19,8 @@ class Context;
 /// default to infinite. If a recipe is provided, it will request material with
 /// that recipe. Requests are made for any number of specified commodities.
 class Sink
-  : public cyclus::Facility  {
+  : public cyclus::Facility,
+    public cyclus::toolkit::Position {
  public:
   Sink(cyclus::Context* ctx);
 
@@ -168,6 +169,10 @@ class Sink
            "be expressed in degrees as a double." \
   }
   double longitude;
+
+  cyclus::toolkit::Position coordinates;
+
+  void RecordPosition();
 
 #include "toolkit/metadata.cycpp.h"
 };

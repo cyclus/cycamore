@@ -13,7 +13,8 @@ namespace cycamore {
 class ManagerInst
     : public cyclus::Institution,
       public cyclus::toolkit::CommodityProducerManager,
-      public cyclus::toolkit::Builder {
+      public cyclus::toolkit::Builder,
+      public cyclus::toolkit::Position {
  public:
   /// Default constructor
   ManagerInst(cyclus::Context* ctx);
@@ -75,6 +76,11 @@ class ManagerInst
            "be expressed in degrees as a double." \
   }
   double longitude;
+
+  cyclus::toolkit::Position coordinates;
+
+  /// Records an agent's latitude and longitude to the output db
+  void RecordPosition();
 
 #include "toolkit/metadata.cycpp.h"
 };

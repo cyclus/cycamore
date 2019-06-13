@@ -21,7 +21,8 @@ class Context;
 /// inventory, and when the inventory size reaches zero, the source can provide
 /// no more material.
 class Source : public cyclus::Facility,
-  public cyclus::toolkit::CommodityProducer {
+  public cyclus::toolkit::CommodityProducer,
+  public cyclus::toolkit::Position {
   friend class SourceTest;
  public:
 
@@ -132,6 +133,10 @@ class Source : public cyclus::Facility,
            "be expressed in degrees as a double." \
   }
   double longitude;
+
+  cyclus::toolkit::Position coordinates;
+
+  void RecordPosition();
 
 #include "toolkit/metadata.cycpp.h"
 };
