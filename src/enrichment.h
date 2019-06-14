@@ -402,7 +402,7 @@ class Enrichment
   double longitude;
   cyclus::toolkit::Position coordinates;
 
-#include "toolkit/metadata.cycpp.h"
+  #include "toolkit/metadata.cycpp.h"
 };
 
 }  // namespace cycamore

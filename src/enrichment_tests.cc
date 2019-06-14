@@ -793,8 +793,26 @@ TEST_F(EnrichmentTest, StringMetadata) {
     "   <max_feed_inventory>1.0</max_feed_inventory> "
     "   <tails_assay>0.003</tails_assay> "
     "   <metadata>"
-    "     <key>test_key</key>"
-    "     <value>test_value_1</value>"
+    "     <item> "
+    "       <key>string_key</key>"
+    "       <value>string_value%s</value>"
+    "     </item> "
+    "     <item> "
+    "       <key>double_key</key>"
+    "       <value>0.01254%d</value>"
+    "     </item> "
+    "     <item> "
+    "       <key>int_key</key>"
+    "       <value>-1254%i</value>"
+    "     </item> "
+    "     <item> "
+    "       <key>uint_key</key>"
+    "       <value>1254%u</value>"
+    "     </item> "
+    "     <item> "
+    "       <key>bool_key</key>"
+    "       <value>true%b</value>"
+    "     </item> "
     "   </metadata>";
 
   int simdur = 1;
@@ -808,12 +826,32 @@ TEST_F(EnrichmentTest, StringMetadata) {
   
   int id = sim.Run();
 
-  for ( auto table_name : sim.db().Tables() ) {
-    std::cout << table_name << std::endl;
-  }
-  QueryResult qr = sim.db().Query("Metadata", NULL);
-  EXPECT_EQ(qr.GetVal<double>("Latitude"), 0.0);
-  EXPECT_EQ(qr.GetVal<double>("Longitude"), 0.0);
+  std::vector<Cond> conds;
+  QueryResult qr; 
+  conds.push_back(Cond("keyword", "==", std::string("string_key")));
+  qr = sim.db().Query("Metadata", &conds);
+  EXPECT_EQ(qr.GetVal<std::string>("Value"), "string_value");
+  EXPECT_EQ(qr.GetVal<std::string>("Type"), "string");
+  
+  conds[0] = Cond("keyword", "==", std::string("double_key"));
+  qr = sim.db().Query("Metadata", &conds);
+  EXPECT_EQ(qr.GetVal<std::string>("Value"), "0.012540");
+  EXPECT_EQ(qr.GetVal<std::string>("Type"), "double");
+  
+  conds[0] = Cond("keyword", "==", std::string("int_key"));
+  qr = sim.db().Query("Metadata", &conds);
+  EXPECT_EQ(qr.GetVal<std::string>("Value"), "-1254");
+  EXPECT_EQ(qr.GetVal<std::string>("Type"), "int");
+  
+  conds[0] = Cond("keyword", "==", std::string("uint_key"));
+  qr = sim.db().Query("Metadata", &conds);
+  EXPECT_EQ(qr.GetVal<std::string>("Value"), "1254");
+  EXPECT_EQ(qr.GetVal<std::string>("Type"), "uint");
+  
+  conds[0] = Cond("keyword", "==", std::string("bool_key"));
+  qr = sim.db().Query("Metadata", &conds);
+  EXPECT_EQ(qr.GetVal<std::string>("Value"), "true");
+  EXPECT_EQ(qr.GetVal<std::string>("Type"), "bool");
 }
 
   
