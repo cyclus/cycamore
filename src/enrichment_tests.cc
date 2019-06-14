@@ -782,36 +782,39 @@ TEST_F(EnrichmentTest, PositionInitialize2) {
   EXPECT_EQ(qr.GetVal<double>("Longitude"), 35.0);
 }
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-//TEST_F(EnrichmentTest, StringMetadata) {
-//  // this tests verifies the initialization of the latitude variable
-//  
-//  std::string config = 
-//    "   <feed_commod>natu</feed_commod> "
-//    "   <feed_recipe>natu1</feed_recipe> "
-//    "   <product_commod>enr_u</product_commod> "
-//    "   <tails_commod>tails</tails_commod> "
-//    "   <max_feed_inventory>1.0</max_feed_inventory> "
-//    "   <tails_assay>0.003</tails_assay> "
-//    "   <metadata>"
-//    "     <key>test_key</key>"
-//    "     <value>test_value_1</value"
-//    "   </metadata>";
-//
-//  int simdur = 1;
-//  cyclus::MockSim sim(cyclus::AgentSpec
-//          (":cycamore:Enrichment"), config, simdur);
-//  sim.AddRecipe("natu1", c_natu1());
-//  
-//  sim.AddSource("natu")
-//    .recipe("natu1")
-//    .Finalize();
-//  
-//  int id = sim.Run();
-//
-//  QueryResult qr = sim.db().Query("AgentPosition", NULL);
-//  EXPECT_EQ(qr.GetVal<double>("Latitude"), 0.0);
-//  EXPECT_EQ(qr.GetVal<double>("Longitude"), 0.0);
-//}
+TEST_F(EnrichmentTest, StringMetadata) {
+  // this tests verifies the initialization of the latitude variable
+  
+  std::string config = 
+    "   <feed_commod>natu</feed_commod> "
+    "   <feed_recipe>natu1</feed_recipe> "
+    "   <product_commod>enr_u</product_commod> "
+    "   <tails_commod>tails</tails_commod> "
+    "   <max_feed_inventory>1.0</max_feed_inventory> "
+    "   <tails_assay>0.003</tails_assay> "
+    "   <metadata>"
+    "     <key>test_key</key>"
+    "     <value>test_value_1</value>"
+    "   </metadata>";
+
+  int simdur = 1;
+  cyclus::MockSim sim(cyclus::AgentSpec
+          (":cycamore:Enrichment"), config, simdur);
+  sim.AddRecipe("natu1", c_natu1());
+  
+  sim.AddSource("natu")
+    .recipe("natu1")
+    .Finalize();
+  
+  int id = sim.Run();
+
+  for ( auto table_name : sim.db().Tables() ) {
+    std::cout << table_name << std::endl;
+  }
+  QueryResult qr = sim.db().Query("Metadata", NULL);
+  EXPECT_EQ(qr.GetVal<double>("Latitude"), 0.0);
+  EXPECT_EQ(qr.GetVal<double>("Longitude"), 0.0);
+}
 
   
 }  // namespace cycamore
