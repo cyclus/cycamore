@@ -792,6 +792,8 @@ TEST_F(EnrichmentTest, BasicMetadata) {
     "   <tails_commod>tails</tails_commod> "
     "   <max_feed_inventory>1.0</max_feed_inventory> "
     "   <tails_assay>0.003</tails_assay> "
+    " "
+    " "
     "   <metadata>"
     "     <item> "
     "       <key>string_key</key>"

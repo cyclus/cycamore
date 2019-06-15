@@ -418,5 +418,94 @@ TEST(SeparationsTests, Retire) {
   EXPECT_EQ(qr.GetVal<double>("Latitude"), 10.0);
   EXPECT_EQ(qr.GetVal<double>("Longitude"), 15.0);
  }
+
+// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+TEST(SeparationsTests, StringMetadata) {
+  // this tests verifies the initialization of the latitude variable
+  
+  std::string config = 
+    "  <streams>"
+    "      <item>"
+    "          <commod>stream1</commod>"
+    "          <info>"
+    "              <buf_size>-1</buf_size>"
+    "              <efficiencies>"
+    "                  <item><comp>U</comp> <eff>0.6</eff></item>"
+    "                  <item><comp>Pu239</comp> <eff>.7</eff></item>"
+    "              </efficiencies>"
+    "          </info>"
+    "      </item>"
+    "  </streams>"
+    " "
+    " "
+    "  <leftover_commod>waste</leftover_commod>"
+    "  <throughput>100</throughput>"
+    "  <feedbuf_size>100</feedbuf_size>"
+    "  <feed_commods> <val>feed</val> </feed_commods>"
+    "   <metadata>"
+    "     <item> "
+    "       <key>string_key</key>"
+    "       <value>string_value%s</value>"
+    "     </item> "
+    "     <item> "
+    "       <key>double_key</key>"
+    "       <value>0.01254%d</value>"
+    "     </item> "
+    "     <item> "
+    "       <key>int_key</key>"
+    "       <value>-1254%i</value>"
+    "     </item> "
+    "     <item> "
+    "       <key>uint_key</key>"
+    "       <value>1254%u</value>"
+    "     </item> "
+    "     <item> "
+    "       <key>bool_key</key>"
+    "       <value>true%b</value>"
+    "     </item> "
+    "   </metadata>";
+
+  CompMap m;
+  m[id("u235")] = 0.08;
+  m[id("u238")] = 0.9;
+  m[id("Pu239")] = .01;
+  m[id("Pu240")] = .01;
+  Composition::Ptr c = Composition::CreateFromMass(m);
+
+  int simdur = 2;
+  cyclus::MockSim sim(cyclus::AgentSpec(":cycamore:Separations"), config, simdur);
+  sim.AddSource("feed").recipe("recipe1").Finalize();
+  sim.AddSink("stream1").capacity(100).Finalize();
+  sim.AddRecipe("recipe1", c);
+  int id = sim.Run();
+
+  std::vector<cyclus::Cond> conds;
+  QueryResult qr; 
+  conds.push_back(cyclus::Cond("keyword", "==", std::string("string_key")));
+  qr = sim.db().Query("Metadata", &conds);
+  EXPECT_EQ(qr.GetVal<std::string>("Value"), "string_value");
+  EXPECT_EQ(qr.GetVal<std::string>("Type"), "string");
+  
+  conds[0] = cyclus::Cond("keyword", "==", std::string("double_key"));
+  qr = sim.db().Query("Metadata", &conds);
+  EXPECT_EQ(qr.GetVal<std::string>("Value"), "0.012540");
+  EXPECT_EQ(qr.GetVal<std::string>("Type"), "double");
+  
+  conds[0] = cyclus::Cond("keyword", "==", std::string("int_key"));
+  qr = sim.db().Query("Metadata", &conds);
+  EXPECT_EQ(qr.GetVal<std::string>("Value"), "-1254");
+  EXPECT_EQ(qr.GetVal<std::string>("Type"), "int");
+  
+  conds[0] = cyclus::Cond("keyword", "==", std::string("uint_key"));
+  qr = sim.db().Query("Metadata", &conds);
+  EXPECT_EQ(qr.GetVal<std::string>("Value"), "1254");
+  EXPECT_EQ(qr.GetVal<std::string>("Type"), "uint");
+  
+  conds[0] = cyclus::Cond("keyword", "==", std::string("bool_key"));
+  qr = sim.db().Query("Metadata", &conds);
+  EXPECT_EQ(qr.GetVal<std::string>("Value"), "true");
+  EXPECT_EQ(qr.GetVal<std::string>("Type"), "bool");
+}
+
 } // namespace cycamore
 

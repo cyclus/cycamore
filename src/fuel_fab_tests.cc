@@ -986,6 +986,100 @@ TEST(FuelFabTests, PositionInitialize2) {
   EXPECT_EQ(qr.GetVal<double>("Longitude"), -120.0);
 }
 
+// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+TEST(FuelFabTests, StringMetadata) {
+  
+  std::string config = 
+    " <fill_commods> <val>natu</val> </fill_commods>"
+    " <fill_recipe>natu</fill_recipe>"
+    " <fill_size>0</fill_size>"
+    " "
+    " <fiss_commods> <val>pustreambad</val> </fiss_commods>"
+    " <fiss_recipe>pustreambad</fiss_recipe>"
+    " <fiss_size>1</fiss_size>"
+    " "
+    " <topup_commod>pustream</topup_commod>"
+    " <topup_recipe>pustream</topup_recipe>"
+    " <topup_size>10000</topup_size>"
+    " "
+    " <outcommod>recyclefuel</outcommod>"
+    " <spectrum>thermal</spectrum>"
+    " <throughput>10000</throughput>"
+    " "
+    " "
+    "   <metadata>"
+    "     <item> "
+    "       <key>string_key</key>"
+    "       <value>string_value%s</value>"
+    "     </item> "
+    "     <item> "
+    "       <key>double_key</key>"
+    "       <value>0.01254%d</value>"
+    "     </item> "
+    "     <item> "
+    "       <key>int_key</key>"
+    "       <value>-1254%i</value>"
+    "     </item> "
+    "     <item> "
+    "       <key>uint_key</key>"
+    "       <value>1254%u</value>"
+    "     </item> "
+    "     <item> "
+    "       <key>bool_key</key>"
+    "       <value>true%b</value>"
+    "     </item> "
+    "   </metadata>";
+
+  double fillinv = 1;
+  int simdur = 2;
+
+  double w_fill = CosiWeight(c_natu(), "thermal");
+  double w_fiss = CosiWeight(c_pustream(), "thermal");
+  double w_target = CosiWeight(c_uox(), "thermal");
+  double fiss_frac = HighFrac(w_fill, w_target, w_fiss);
+  double fill_frac = LowFrac(w_fill, w_target, w_fiss);
+  fiss_frac = AtomToMassFrac(fiss_frac, c_pustream(), c_natu());
+  fill_frac = AtomToMassFrac(fill_frac, c_natu(), c_pustream());
+  double max_provide = fillinv / fill_frac;
+  
+  cyclus::MockSim sim(cyclus::AgentSpec(":cycamore:FuelFab"), config, simdur);
+  sim.AddSource("pustream").Finalize();
+  sim.AddSource("pustreambad").Finalize();
+  sim.AddSource("natu").Finalize();
+  sim.AddSink("recyclefuel").recipe("uox").capacity(2 * max_provide).Finalize();
+  sim.AddRecipe("uox", c_uox());
+  sim.AddRecipe("pustream", c_pustream());
+  sim.AddRecipe("pustreambad", c_pustreambad());
+  sim.AddRecipe("natu", c_natu());
+  int id = sim.Run();
+
+  std::vector<cyclus::Cond> conds;
+  QueryResult qr; 
+  conds.push_back(Cond("keyword", "==", std::string("string_key")));
+  qr = sim.db().Query("Metadata", &conds);
+  EXPECT_EQ(qr.GetVal<std::string>("Value"), "string_value");
+  EXPECT_EQ(qr.GetVal<std::string>("Type"), "string");
+  
+  conds[0] = Cond("keyword", "==", std::string("double_key"));
+  qr = sim.db().Query("Metadata", &conds);
+  EXPECT_EQ(qr.GetVal<std::string>("Value"), "0.012540");
+  EXPECT_EQ(qr.GetVal<std::string>("Type"), "double");
+  
+  conds[0] = Cond("keyword", "==", std::string("int_key"));
+  qr = sim.db().Query("Metadata", &conds);
+  EXPECT_EQ(qr.GetVal<std::string>("Value"), "-1254");
+  EXPECT_EQ(qr.GetVal<std::string>("Type"), "int");
+  
+  conds[0] = Cond("keyword", "==", std::string("uint_key"));
+  qr = sim.db().Query("Metadata", &conds);
+  EXPECT_EQ(qr.GetVal<std::string>("Value"), "1254");
+  EXPECT_EQ(qr.GetVal<std::string>("Type"), "uint");
+  
+  conds[0] = Cond("keyword", "==", std::string("bool_key"));
+  qr = sim.db().Query("Metadata", &conds);
+  EXPECT_EQ(qr.GetVal<std::string>("Value"), "true");
+  EXPECT_EQ(qr.GetVal<std::string>("Type"), "bool");
+}
 } // namespace fuelfabtests
 } // namespace cycamore
 

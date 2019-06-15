@@ -519,4 +519,112 @@ TEST(MixerTests, PositionInitialize) {
   EXPECT_EQ(qr.GetVal<double>("Longitude"), 0.0);
 }
 
+// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+TEST(MixerTests, StringMetadata) {
+  // this tests verifies the initialization of the latitude variable
+  
+  std::string config = 
+    " <in_streams>"
+    "  <stream>"
+    "    <info>"
+    "      <mixing_ratio>0.8</mixing_ratio>"
+    "      <buf_size>2.5</buf_size>"
+    "    </info>"
+    "    <commodities>"
+    "      <item>"
+    "        <commodity>stream1</commodity>"
+    "        <pref>1</pref>"
+    "      </item>"
+    "    </commodities>"
+    "  </stream>"
+    "  <stream>"
+    "    <info>"
+    "      <mixing_ratio>0.15</mixing_ratio>"
+    "      <buf_size>3</buf_size>"
+    "    </info>"
+    "    <commodities>"
+    "      <item>"
+    "        <commodity>stream2</commodity>"
+    "        <pref>1</pref>"
+    "      </item>"
+    "    </commodities>"
+    "  </stream>"
+    "  <stream>"
+    "    <info>"
+    "      <mixing_ratio>0.05</mixing_ratio>"
+    "      <buf_size>5</buf_size>"
+    "    </info>"
+    "    <commodities>"
+    "      <item>"
+    "        <commodity>stream3</commodity>"
+    "        <pref>1</pref>"
+    "      </item>"
+    "    </commodities>"
+    "  </stream>"
+    " </in_streams>"
+    " <out_commod>mixedstream</out_commod>"
+    " <outputbuf_size>0</outputbuf_size>"
+    " <throughput>0</throughput>"
+    " "
+    " "
+    "   <metadata>"
+    "     <item> "
+    "       <key>string_key</key>"
+    "       <value>string_value%s</value>"
+    "     </item> "
+    "     <item> "
+    "       <key>double_key</key>"
+    "       <value>0.01254%d</value>"
+    "     </item> "
+    "     <item> "
+    "       <key>int_key</key>"
+    "       <value>-1254%i</value>"
+    "     </item> "
+    "     <item> "
+    "       <key>uint_key</key>"
+    "       <value>1254%u</value>"
+    "     </item> "
+    "     <item> "
+    "       <key>bool_key</key>"
+    "       <value>true%b</value>"
+    "     </item> "
+    "   </metadata>";
+
+  int simdur = 1;
+  cyclus::MockSim sim(cyclus::AgentSpec(":cycamore:Mixer"), config, simdur);
+  sim.AddSource("stream1").recipe("unatstream").capacity(1).Finalize();
+  sim.AddSource("stream2").recipe("uoxstream").capacity(1).Finalize();
+  sim.AddSource("stream3").recipe("pustream").capacity(1).Finalize();
+  sim.AddRecipe("unatstream", c_natu());
+  sim.AddRecipe("uoxstream", c_pustream());
+  sim.AddRecipe("pustream", c_uox());
+  int id = sim.Run();
+
+  std::vector<cyclus::Cond> conds;
+  QueryResult qr; 
+  conds.push_back(cyclus::Cond("keyword", "==", std::string("string_key")));
+  qr = sim.db().Query("Metadata", &conds);
+  EXPECT_EQ(qr.GetVal<std::string>("Value"), "string_value");
+  EXPECT_EQ(qr.GetVal<std::string>("Type"), "string");
+  
+  conds[0] = cyclus::Cond("keyword", "==", std::string("double_key"));
+  qr = sim.db().Query("Metadata", &conds);
+  EXPECT_EQ(qr.GetVal<std::string>("Value"), "0.012540");
+  EXPECT_EQ(qr.GetVal<std::string>("Type"), "double");
+  
+  conds[0] = cyclus::Cond("keyword", "==", std::string("int_key"));
+  qr = sim.db().Query("Metadata", &conds);
+  EXPECT_EQ(qr.GetVal<std::string>("Value"), "-1254");
+  EXPECT_EQ(qr.GetVal<std::string>("Type"), "int");
+  
+  conds[0] = cyclus::Cond("keyword", "==", std::string("uint_key"));
+  qr = sim.db().Query("Metadata", &conds);
+  EXPECT_EQ(qr.GetVal<std::string>("Value"), "1254");
+  EXPECT_EQ(qr.GetVal<std::string>("Type"), "uint");
+  
+  conds[0] = cyclus::Cond("keyword", "==", std::string("bool_key"));
+  qr = sim.db().Query("Metadata", &conds);
+  EXPECT_EQ(qr.GetVal<std::string>("Value"), "true");
+  EXPECT_EQ(qr.GetVal<std::string>("Type"), "bool");
+}
 }  // namespace cycamore

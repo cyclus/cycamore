@@ -590,60 +590,6 @@ TEST(ReactorTests, Retire) {
       << "failed to generate power for the correct number of time steps";
 }
 
-TEST(ReactorTests, PositionInitialize) {
-  std::string config = 
-     "  <fuel_inrecipes>  <val>lwr_fresh</val>  </fuel_inrecipes>  "
-     "  <fuel_outrecipes> <val>lwr_spent</val>  </fuel_outrecipes>  "
-     "  <fuel_incommods>  <val>enriched_u</val> </fuel_incommods>  "
-     "  <fuel_outcommods> <val>waste</val>      </fuel_outcommods>  "
-     "  <fuel_prefs>      <val>1.0</val>        </fuel_prefs>  "
-     ""
-     "  <cycle_time>1</cycle_time>  "
-     "  <refuel_time>0</refuel_time>  "
-     "  <assem_size>300</assem_size>  "
-     "  <n_assem_core>1</n_assem_core>  "
-     "  <n_assem_batch>1</n_assem_batch>  ";
-
-  int simdur = 50;
-  cyclus::MockSim sim(cyclus::AgentSpec(":cycamore:Reactor"), config, simdur);
-  sim.AddSource("enriched_u").Finalize();
-  sim.AddRecipe("lwr_fresh", c_uox());
-  sim.AddRecipe("lwr_spent", c_spentuox());
-  int id = sim.Run();
-
-  QueryResult qr = sim.db().Query("AgentPosition", NULL);
-  EXPECT_EQ(qr.GetVal<double>("Latitude"), 0.0);
-  EXPECT_EQ(qr.GetVal<double>("Longitude"), 0.0);
-}
-
-TEST(ReactorTests, PositionInitialize2) {
-  std::string config = 
-     "  <fuel_inrecipes>  <val>lwr_fresh</val>  </fuel_inrecipes>  "
-     "  <fuel_outrecipes> <val>lwr_spent</val>  </fuel_outrecipes>  "
-     "  <fuel_incommods>  <val>enriched_u</val> </fuel_incommods>  "
-     "  <fuel_outcommods> <val>waste</val>      </fuel_outcommods>  "
-     "  <fuel_prefs>      <val>1.0</val>        </fuel_prefs>  "
-     ""
-     "  <cycle_time>1</cycle_time>  "
-     "  <refuel_time>0</refuel_time>  "
-     "  <assem_size>300</assem_size>  "
-     "  <n_assem_core>1</n_assem_core>  "
-     "  <n_assem_batch>1</n_assem_batch>  "
-     "  <longitude>30.0</longitude>  "
-     "  <latitude>30.0</latitude>  ";
-
-  int simdur = 50;
-  cyclus::MockSim sim(cyclus::AgentSpec(":cycamore:Reactor"), config, simdur);
-  sim.AddSource("enriched_u").Finalize();
-  sim.AddRecipe("lwr_fresh", c_uox());
-  sim.AddRecipe("lwr_spent", c_spentuox());
-  int id = sim.Run();
-
-  QueryResult qr = sim.db().Query("AgentPosition", NULL);
-  EXPECT_EQ(qr.GetVal<double>("Latitude"), 30.0);
-  EXPECT_EQ(qr.GetVal<double>("Longitude"), 30.0);
-}
-
 TEST(ReactorTests, ByProduct) {
   std::string config = 
      "  <fuel_inrecipes>  <val>uox</val>      </fuel_inrecipes>  "
@@ -727,6 +673,138 @@ TEST(ReactorTests, MultipleByProduct) {
   EXPECT_EQ(10, qr.rows.size());
 
 }
+
+TEST(ReactorTests, PositionInitialize) {
+  std::string config = 
+     "  <fuel_inrecipes>  <val>lwr_fresh</val>  </fuel_inrecipes>  "
+     "  <fuel_outrecipes> <val>lwr_spent</val>  </fuel_outrecipes>  "
+     "  <fuel_incommods>  <val>enriched_u</val> </fuel_incommods>  "
+     "  <fuel_outcommods> <val>waste</val>      </fuel_outcommods>  "
+     "  <fuel_prefs>      <val>1.0</val>        </fuel_prefs>  "
+     ""
+     "  <cycle_time>1</cycle_time>  "
+     "  <refuel_time>0</refuel_time>  "
+     "  <assem_size>300</assem_size>  "
+     "  <n_assem_core>1</n_assem_core>  "
+     "  <n_assem_batch>1</n_assem_batch>  ";
+
+  int simdur = 50;
+  cyclus::MockSim sim(cyclus::AgentSpec(":cycamore:Reactor"), config, simdur);
+  sim.AddSource("enriched_u").Finalize();
+  sim.AddRecipe("lwr_fresh", c_uox());
+  sim.AddRecipe("lwr_spent", c_spentuox());
+  int id = sim.Run();
+
+  QueryResult qr = sim.db().Query("AgentPosition", NULL);
+  EXPECT_EQ(qr.GetVal<double>("Latitude"), 0.0);
+  EXPECT_EQ(qr.GetVal<double>("Longitude"), 0.0);
+}
+
+TEST(ReactorTests, PositionInitialize2) {
+  std::string config = 
+     "  <fuel_inrecipes>  <val>lwr_fresh</val>  </fuel_inrecipes>  "
+     "  <fuel_outrecipes> <val>lwr_spent</val>  </fuel_outrecipes>  "
+     "  <fuel_incommods>  <val>enriched_u</val> </fuel_incommods>  "
+     "  <fuel_outcommods> <val>waste</val>      </fuel_outcommods>  "
+     "  <fuel_prefs>      <val>1.0</val>        </fuel_prefs>  "
+     ""
+     "  <cycle_time>1</cycle_time>  "
+     "  <refuel_time>0</refuel_time>  "
+     "  <assem_size>300</assem_size>  "
+     "  <n_assem_core>1</n_assem_core>  "
+     "  <n_assem_batch>1</n_assem_batch>  "
+     "  <longitude>30.0</longitude>  "
+     "  <latitude>30.0</latitude>  ";
+
+  int simdur = 50;
+  cyclus::MockSim sim(cyclus::AgentSpec(":cycamore:Reactor"), config, simdur);
+  sim.AddSource("enriched_u").Finalize();
+  sim.AddRecipe("lwr_fresh", c_uox());
+  sim.AddRecipe("lwr_spent", c_spentuox());
+  int id = sim.Run();
+
+  QueryResult qr = sim.db().Query("AgentPosition", NULL);
+  EXPECT_EQ(qr.GetVal<double>("Latitude"), 30.0);
+  EXPECT_EQ(qr.GetVal<double>("Longitude"), 30.0);
+}
+
+// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+TEST(ReactorTests, StringMetadata) {
+  // this tests verifies the initialization of the latitude variable
+  
+  std::string config = 
+    "   <fuel_inrecipes>  <val>lwr_fresh</val>  </fuel_inrecipes>  "
+    "   <fuel_outrecipes> <val>lwr_spent</val>  </fuel_outrecipes>  "
+    "   <fuel_incommods>  <val>enriched_u</val> </fuel_incommods>  "
+    "   <fuel_outcommods> <val>waste</val>      </fuel_outcommods>  "
+    "   <fuel_prefs>      <val>1.0</val>        </fuel_prefs>  "
+    " "
+    " "
+    "   <cycle_time>1</cycle_time>  "
+    "   <refuel_time>0</refuel_time>  "
+    "   <assem_size>300</assem_size>  "
+    "   <n_assem_core>1</n_assem_core>  "
+    "   <n_assem_batch>1</n_assem_batch>  "
+    "   <metadata>"
+    "     <item> "
+    "       <key>string_key</key>"
+    "       <value>string_value%s</value>"
+    "     </item> "
+    "     <item> "
+    "       <key>double_key</key>"
+    "       <value>0.01254%d</value>"
+    "     </item> "
+    "     <item> "
+    "       <key>int_key</key>"
+    "       <value>-1254%i</value>"
+    "     </item> "
+    "     <item> "
+    "       <key>uint_key</key>"
+    "       <value>1254%u</value>"
+    "     </item> "
+    "     <item> "
+    "       <key>bool_key</key>"
+    "       <value>true%b</value>"
+    "     </item> "
+    "   </metadata>";
+
+  int simdur = 1;
+  cyclus::MockSim sim(cyclus::AgentSpec
+          (":cycamore:Reactor"), config, simdur);
+  sim.AddSource("enriched_u").Finalize();
+  sim.AddRecipe("lwr_fresh", c_uox());
+  sim.AddRecipe("lwr_spent", c_spentuox());
+  int id = sim.Run();
+
+  std::vector<Cond> conds;
+  QueryResult qr; 
+  conds.push_back(Cond("keyword", "==", std::string("string_key")));
+  qr = sim.db().Query("Metadata", &conds);
+  EXPECT_EQ(qr.GetVal<std::string>("Value"), "string_value");
+  EXPECT_EQ(qr.GetVal<std::string>("Type"), "string");
+  
+  conds[0] = Cond("keyword", "==", std::string("double_key"));
+  qr = sim.db().Query("Metadata", &conds);
+  EXPECT_EQ(qr.GetVal<std::string>("Value"), "0.012540");
+  EXPECT_EQ(qr.GetVal<std::string>("Type"), "double");
+  
+  conds[0] = Cond("keyword", "==", std::string("int_key"));
+  qr = sim.db().Query("Metadata", &conds);
+  EXPECT_EQ(qr.GetVal<std::string>("Value"), "-1254");
+  EXPECT_EQ(qr.GetVal<std::string>("Type"), "int");
+  
+  conds[0] = Cond("keyword", "==", std::string("uint_key"));
+  qr = sim.db().Query("Metadata", &conds);
+  EXPECT_EQ(qr.GetVal<std::string>("Value"), "1254");
+  EXPECT_EQ(qr.GetVal<std::string>("Type"), "uint");
+  
+  conds[0] = Cond("keyword", "==", std::string("bool_key"));
+  qr = sim.db().Query("Metadata", &conds);
+  EXPECT_EQ(qr.GetVal<std::string>("Value"), "true");
+  EXPECT_EQ(qr.GetVal<std::string>("Type"), "bool");
+}
+
+
 
 } // namespace reactortests
 } // namespace cycamore
