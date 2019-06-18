@@ -436,12 +436,12 @@ TEST(SeparationsTests, StringMetadata) {
     "          </info>"
     "      </item>"
     "  </streams>"
-    " "
-    " "
     "  <leftover_commod>waste</leftover_commod>"
     "  <throughput>100</throughput>"
     "  <feedbuf_size>100</feedbuf_size>"
     "  <feed_commods> <val>feed</val> </feed_commods>"
+    " "
+    " "
     "   <metadata>"
     "     <item> "
     "       <key>string_key</key>"
@@ -507,5 +507,145 @@ TEST(SeparationsTests, StringMetadata) {
   EXPECT_EQ(qr.GetVal<std::string>("Type"), "bool");
 }
 
+
+
+TEST(SeparationsTests, UsageMetadata) {
+  // this tests verifies the initialization of the latitude variable
+
+  std::string config = 
+    "  <streams>"
+    "      <item>"
+    "          <commod>stream1</commod>"
+    "          <info>"
+    "              <buf_size>-1</buf_size>"
+    "              <efficiencies>"
+    "                  <item><comp>U</comp> <eff>0.6</eff></item>"
+    "                  <item><comp>Pu239</comp> <eff>.7</eff></item>"
+    "              </efficiencies>"
+    "          </info>"
+    "      </item>"
+    "  </streams>"
+    "  <leftover_commod>waste</leftover_commod>"
+    "  <throughput>100</throughput>"
+    "  <feedbuf_size>100</feedbuf_size>"
+    "  <feed_commods> <val>feed</val> </feed_commods>"
+    "   "
+    "   "
+    "   <usagemetadata>"
+    "     <item> "
+    "       <keyword>co2</keyword>"
+    "       <usage> "
+    "         <item> "
+    "           <key>decommission</key> "
+    "           <value>25</value> "
+    "         </item> "
+    "         <item> "
+    "           <key>deployment</key> "
+    "           <value>45</value> "
+    "         </item> "
+    "         <item> "
+    "           <key>timestep</key> "
+    "           <value>35</value> "
+    "         </item> "
+    "         <item> "
+    "           <key>throughput</key> "
+    "           <value>15</value> "
+    "         </item> "
+    "       </usage> "
+    "     </item> "
+    "   "
+    "     <item> "
+    "       <keyword>water</keyword>"
+    "       <usage> "
+    "         <item> "
+    "           <key>deployment</key> "
+    "           <value>43</value> "
+    "         </item> "
+    "       </usage> "
+    "     </item> "
+    "   "
+    "     <item> "
+    "       <keyword>land</keyword>"
+    "       <usage> "
+    "         <item> "
+    "           <key>decommission</key> "
+    "           <value>24</value> "
+    "         </item> "
+    "       </usage> "
+    "     </item> "
+    "   "
+    "     <item> "
+    "       <keyword>manpower</keyword>"
+    "       <usage> "
+    "         <item> "
+    "           <key>timestep</key> "
+    "           <value>32</value> "
+    "         </item> "
+    "       </usage> "
+    "     </item> "
+    "   "
+    "     <item> "
+    "       <keyword>lolipop</keyword>"
+    "       <usage> "
+    "         <item> "
+    "           <key>throughput</key> "
+    "           <value>11</value> "
+    "         </item> "
+    "       </usage> "
+    "     </item> "
+    "   </usagemetadata>";
+
+  CompMap m;
+  m[id("u235")] = 0.08;
+  m[id("u238")] = 0.9;
+  m[id("Pu239")] = .01;
+  m[id("Pu240")] = .01;
+  Composition::Ptr c = Composition::CreateFromMass(m);
+
+  int simdur = 2;
+  cyclus::MockSim sim(cyclus::AgentSpec(":cycamore:Separations"), config, simdur);
+  sim.AddSource("feed").recipe("recipe1").Finalize();
+  sim.AddSink("stream1").capacity(100).Finalize();
+  sim.AddRecipe("recipe1", c);
+  int id = sim.Run();
+
+  std::vector<Cond> conds;
+  QueryResult qr; 
+  conds.push_back(Cond("keyword", "==", std::string("co2")));
+  conds.push_back(Cond("Type", "==", std::string("decommission")));
+  qr = sim.db().Query("Metadata", &conds);
+  EXPECT_EQ(qr.GetVal<std::string>("Value"), "25.000000");
+  conds.clear();
+  conds.push_back(Cond("keyword", "==", std::string("co2")));
+  conds.push_back(Cond("Type", "==", std::string("deployment")));
+  qr = sim.db().Query("Metadata", &conds);
+  EXPECT_EQ(qr.GetVal<std::string>("Value"), "45.000000");
+  conds[1] = Cond("Type", "==", std::string("timestep"));
+  qr = sim.db().Query("Metadata", &conds);
+  EXPECT_EQ(qr.GetVal<std::string>("Value"), "35.000000");
+  conds[1] = Cond("Type", "==", std::string("throughput"));
+  qr = sim.db().Query("Metadata", &conds);
+  EXPECT_EQ(qr.GetVal<std::string>("Value"), "15.000000");
+
+  conds[0] = Cond("keyword", "==", std::string("water"));
+  conds[1] = Cond("Type", "==", std::string("deployment"));
+  qr = sim.db().Query("Metadata", &conds);
+  EXPECT_EQ(qr.GetVal<std::string>("Value"), "43.000000");
+
+  conds[0] = Cond("keyword", "==", std::string("land"));
+  conds[1] = Cond("Type", "==", std::string("decommission"));
+  qr = sim.db().Query("Metadata", &conds);
+  EXPECT_EQ(qr.GetVal<std::string>("Value"), "24.000000");
+
+  conds[0] = Cond("keyword", "==", std::string("manpower"));
+  conds[1] = Cond("Type", "==", std::string("timestep"));
+  qr = sim.db().Query("Metadata", &conds);
+  EXPECT_EQ(qr.GetVal<std::string>("Value"), "32.000000");
+
+  conds[0] = Cond("keyword", "==", std::string("lolipop"));
+  conds[1] = Cond("Type", "==", std::string("throughput"));
+  qr = sim.db().Query("Metadata", &conds);
+  EXPECT_EQ(qr.GetVal<std::string>("Value"), "11.000000");
+}
 } // namespace cycamore
 
