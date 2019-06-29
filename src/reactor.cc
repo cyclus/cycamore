@@ -370,6 +370,7 @@ void Reactor::Tock() {
     RecordSideProduct(true);
   } else {
     cyclus::toolkit::RecordTimeSeries<cyclus::toolkit::POWER>(this, 0);
+    cyclus::toolkit::RecordTimeSeries<double>("supplyPOWER", this, 0);
     RecordSideProduct(false);
   }
 
