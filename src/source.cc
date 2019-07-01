@@ -29,6 +29,22 @@ void Source::InitFrom(cyclus::QueryableBackend* b) {
   tk::CommodityProducer::Add(tk::Commodity(outcommod),
                              tk::CommodInfo(throughput, throughput));
   RecordPosition();
+
+}
+
+void Source::Tick() {
+  using cyclus::Material;
+  using cyclus::toolkit::ResBuf;
+  // push amount of throughput to ready buffer
+  cyclus::CompMap v;
+  cyclus::Composition::Ptr comp = cyclus::Composition::CreateFromAtom(v);
+  if (!outrecipe.empty()){
+    comp = context()->GetRecipe(outrecipe);
+  }
+  double qty = std::min(throughput, inventory_size);
+  Material::Ptr m = Material::Create(this, qty, comp);
+  inventory_size -= qty;
+  ready.Push(m);
 }
 
 std::string Source::str() {
@@ -58,8 +74,13 @@ std::set<cyclus::BidPortfolio<cyclus::Material>::Ptr> Source::GetMatlBids(
   using cyclus::CapacityConstraint;
   using cyclus::Material;
   using cyclus::Request;
+  using cyclus::toolkit::ResBuf;
 
-  double max_qty = std::min(throughput, inventory_size);
+  double max_qty = std::min(ready.quantity(), throughput);
+  if (buffer == true) {
+    max_qty = ready.quantity();
+  }
+
   cyclus::toolkit::RecordTimeSeries<double>("supply"+outcommod, this, 
                                             max_qty);
   LOG(cyclus::LEV_INFO3, "Source") << prototype() << " is bidding up to "
@@ -99,18 +120,14 @@ void Source::GetMatlTrades(
                           cyclus::Material::Ptr> >& responses) {
   using cyclus::Material;
   using cyclus::Trade;
+  using cyclus::toolkit::ResBuf;
 
   std::vector<cyclus::Trade<cyclus::Material> >::const_iterator it;
+
   for (it = trades.begin(); it != trades.end(); ++it) {
     double qty = it->amt;
-    inventory_size -= qty;
-
     Material::Ptr response;
-    if (!outrecipe.empty()) {
-      response = Material::Create(this, qty, context()->GetRecipe(outrecipe));
-    } else {
-      response = Material::Create(this, qty, it->request->target()->comp());
-    }
+    response = ready.Pop(qty);
     responses.push_back(std::make_pair(*it, response));
     LOG(cyclus::LEV_INFO5, "Source") << prototype() << " sent an order"
                                      << " for " << qty << " of " << outcommod;

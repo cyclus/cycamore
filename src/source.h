@@ -57,7 +57,7 @@ class Source : public cyclus::Facility,
 
   virtual void InitFrom(cyclus::QueryableBackend* b);
 
-  virtual void Tick() {};
+  virtual void Tick();
 
   virtual void Tock() {};
 
@@ -132,7 +132,20 @@ class Source : public cyclus::Facility,
   }
   double longitude;
 
+  #pragma cyclus var { \
+    "default": 0, \
+    "uilabel": "Boolean to stockpile throughput.", \
+    "doc": "If true, the facility will stockpile its maximum throughput at " \
+           "each timestep. If false, the facility will not store inventory." \
+  }
+  bool buffer;
+
+  #pragma cyclus var {"tooltip" : "Material ready to be sent out"}
+  cyclus::toolkit::ResBuf<cyclus::Material> ready;
+
   cyclus::toolkit::Position coordinates;
+
+  
 
   void RecordPosition();
 };

@@ -8,6 +8,8 @@
 #include "resource_helpers.h"
 #include "test_context.h"
 
+using cyclus::QueryResult;
+
 namespace cycamore {
 
 void SourceTest::SetUp() {
@@ -52,76 +54,50 @@ TEST_F(SourceTest, Print) {
   EXPECT_NO_THROW(std::string s = src_facility->str());
 }
 
-TEST_F(SourceTest, AddBids) {
-  using cyclus::Bid;
-  using cyclus::BidPortfolio;
-  using cyclus::CapacityConstraint;
-  using cyclus::ExchangeContext;
-  using cyclus::Material;
+TEST_F(SourceTest, Trade) {
+  std::string config =
+    "<outcommod>spent_fuel</outcommod>"
+    "<throughput>100</throughput>"
+  ;
+  int simdur = 10;
+  cyclus::MockSim sim(cyclus::AgentSpec(":cycamore:Source"), config, simdur);
+  sim.AddSink("spent_fuel").Finalize();
+  int id = sim.Run();
 
-  int nreqs = 5;
-
-  boost::shared_ptr< cyclus::ExchangeContext<Material> >
-      ec = GetContext(nreqs, commod);
-
-  std::set<BidPortfolio<Material>::Ptr> ports =
-      src_facility->GetMatlBids(ec.get()->commod_requests);
-
-  ASSERT_TRUE(ports.size() > 0);
-  EXPECT_EQ(ports.size(), 1);
-
-  BidPortfolio<Material>::Ptr port = *ports.begin();
-  EXPECT_EQ(port->bidder(), src_facility);
-  EXPECT_EQ(port->bids().size(), nreqs);
-
-  const std::set< CapacityConstraint<Material> >& constrs = port->constraints();
-  ASSERT_TRUE(constrs.size() > 0);
-  EXPECT_EQ(constrs.size(), 1);
-  EXPECT_EQ(*constrs.begin(), CapacityConstraint<Material>(capacity));
+  QueryResult qr = sim.db().Query("Transactions", NULL);
+  EXPECT_EQ(simdur, qr.rows.size());
 }
 
-TEST_F(SourceTest, Response) {
-  using cyclus::Bid;
-  using cyclus::Material;
-  using cyclus::Request;
-  using cyclus::Trade;
-  using test_helpers::get_mat;
+TEST_F(SourceTest, Buffer) {
+  std::string config = 
+    "<outcommod>spent_fuel</outcommod>"
+    "<buffer>1</buffer>"
+    "<throughput>100</throughput>"
+    "<inventory_size>1e6</inventory_size>"
+  ;
+  int simdur = 10;
+  cyclus::MockSim sim(cyclus::AgentSpec(":cycamore:Source"), config, simdur);
+  sim.AddSink("spent_fuel")
+     .start(5)
+     .Finalize();
+  int id = sim.Run();
 
-  std::vector< cyclus::Trade<cyclus::Material> > trades;
-  std::vector<std::pair<cyclus::Trade<cyclus::Material>,
-                        cyclus::Material::Ptr> > responses;
+  cyclus::SqlStatement::Ptr stmt = sim.db().db().Prepare(
+      "SELECT COUNT(*) FROM transactions INNER JOIN resources"
+      " ON resources.resourceid = transactions.resourceid"
+      " WHERE quantity == 100");
+  stmt->Step();
+  EXPECT_EQ(4, stmt->GetInt(0));
 
-  // Null response
-  EXPECT_NO_THROW(src_facility->GetMatlTrades(trades, responses));
-  EXPECT_EQ(responses.size(), 0);
+  stmt = sim.db().db().Prepare(
+      "SELECT COUNT(*) FROM transactions INNER JOIN resources"
+      " ON resources.resourceid = transactions.resourceid"
+      " WHERE quantity == 600");
+  stmt->Step();
+  EXPECT_EQ(1, stmt->GetInt(0));
 
-  double qty = capacity / 3;
-  Request<Material>* request =
-      Request<Material>::Create(get_mat(), trader, commod);
-  Bid<Material>* bid =
-      Bid<Material>::Create(request, get_mat(), src_facility);
-
-  Trade<Material> trade(request, bid, qty);
-  trades.push_back(trade);
-
-  // 1 trade
-  src_facility->GetMatlTrades(trades, responses);
-  EXPECT_EQ(responses.size(), 1);
-  EXPECT_EQ(responses[0].second->quantity(), qty);
-  EXPECT_EQ(responses[0].second->comp(), recipe);
-
-  // 2 trades, total qty = capacity
-  trades.push_back(trade);
-  responses.clear();
-  EXPECT_NO_THROW(src_facility->GetMatlTrades(trades, responses));
-  EXPECT_EQ(responses.size(), 2);
-
-  // reset!
-  src_facility->Tick();
-
-  delete request;
-  delete bid;
 }
+
 
 TEST_F(SourceTest, PositionInitialize) {
   std::string config = 
