@@ -7,7 +7,7 @@ cyclus Change Log
 v1.5.4
 ====================
 
-**Added:** None
+**Added:**
 
 * RecordTimeSeries has been added to the several archetypes; Reactor, Source, Sink,
   FuelFab, Separations, and Storage. This change was made to allow these agents to
