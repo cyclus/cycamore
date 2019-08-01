@@ -5,6 +5,7 @@ namespace cycamore {
 
 GrowthRegion::GrowthRegion(cyclus::Context* ctx)
     : cyclus::Region(ctx),
+      work_label("DEPLOYED_INST"),
       latitude(0.0),
       longitude(0.0),
       coordinates(latitude, longitude){

@@ -12,6 +12,7 @@ namespace cycamore {
 Sink::Sink(cyclus::Context* ctx)
     : cyclus::Facility(ctx),
       capacity(std::numeric_limits<double>::max()),
+      work_label("THROUGHPUT"),
       latitude(0.0),
       longitude(0.0),
       coordinates(latitude, longitude){
@@ -146,9 +147,13 @@ void Sink::AcceptMatlTrades(
                                  cyclus::Material::Ptr> >& responses) {
   std::vector< std::pair<cyclus::Trade<cyclus::Material>,
                          cyclus::Material::Ptr> >::const_iterator it;
+  double new_mass = 0;
   for (it = responses.begin(); it != responses.end(); ++it) {
     inventory.Push(it->second);
+    new_mass += it->second->quantity();
   }
+    // Report the timestep throughput
+    cyclus::toolkit::RecordTimeSeries<double>(work_label, this, new_mass);
 }
 
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -

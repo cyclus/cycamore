@@ -56,8 +56,8 @@ TEST_F(ManagerInstTests, productioncapacity) {
 //// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 TEST_F(ManagerInstTests, BasicMetadata) {
   // this tests verifies the initialization of the latitude variable
-  
-  std::string config = 
+
+  std::string config =
     "<prototypes>  <val>foobar</val> </prototypes>"
     "<build_times> <val>1</val>      </build_times>"
     "<n_build>     <val>3</val>      </n_build>"
@@ -88,32 +88,32 @@ TEST_F(ManagerInstTests, BasicMetadata) {
     "   </metadata>";
 
   int simdur = 5;
-	cyclus::MockSim sim(cyclus::AgentSpec(":cycamore:ManagerInst"), config, simdur);
-	sim.DummyProto("foobar");
-	int id = sim.Run();
+  cyclus::MockSim sim(cyclus::AgentSpec(":cycamore:ManagerInst"), config, simdur);
+  sim.DummyProto("foobar");
+  int id = sim.Run();
 
   std::vector<cyclus::Cond> conds;
-  cyclus::QueryResult qr; 
+  cyclus::QueryResult qr;
   conds.push_back(cyclus::Cond("keyword", "==", std::string("string_key")));
   qr = sim.db().Query("Metadata", &conds);
   EXPECT_EQ(qr.GetVal<std::string>("Value"), "string_value");
   EXPECT_EQ(qr.GetVal<std::string>("Type"), "string");
-  
+
   conds[0] = cyclus::Cond("keyword", "==", std::string("double_key"));
   qr = sim.db().Query("Metadata", &conds);
   EXPECT_EQ(qr.GetVal<std::string>("Value"), "0.012540");
   EXPECT_EQ(qr.GetVal<std::string>("Type"), "double");
-  
+
   conds[0] = cyclus::Cond("keyword", "==", std::string("int_key"));
   qr = sim.db().Query("Metadata", &conds);
   EXPECT_EQ(qr.GetVal<std::string>("Value"), "-1254");
   EXPECT_EQ(qr.GetVal<std::string>("Type"), "int");
-  
+
   conds[0] = cyclus::Cond("keyword", "==", std::string("uint_key"));
   qr = sim.db().Query("Metadata", &conds);
   EXPECT_EQ(qr.GetVal<std::string>("Value"), "1254");
   EXPECT_EQ(qr.GetVal<std::string>("Type"), "uint");
-  
+
   conds[0] = cyclus::Cond("keyword", "==", std::string("bool_key"));
   qr = sim.db().Query("Metadata", &conds);
   EXPECT_EQ(qr.GetVal<std::string>("Value"), "true");
@@ -124,7 +124,7 @@ TEST_F(ManagerInstTests, BasicMetadata) {
 TEST_F(ManagerInstTests, UsageMetadata) {
   // this tests verifies the initialization of the latitude variable
 
-  std::string config = 
+  std::string config =
     "<prototypes>  <val>foobar</val> </prototypes>"
     "<build_times> <val>1</val>      </build_times>"
     "<n_build>     <val>3</val>      </n_build>"
@@ -196,12 +196,12 @@ TEST_F(ManagerInstTests, UsageMetadata) {
     "   </usagemetadata>";
 
   int simdur = 5;
-	cyclus::MockSim sim(cyclus::AgentSpec(":cycamore:ManagerInst"), config, simdur);
-	sim.DummyProto("foobar");
-	int id = sim.Run();
+  cyclus::MockSim sim(cyclus::AgentSpec(":cycamore:ManagerInst"), config, simdur);
+  sim.DummyProto("foobar");
+  int id = sim.Run();
 
   std::vector<cyclus::Cond> conds;
-  cyclus::QueryResult qr; 
+  cyclus::QueryResult qr;
   conds.push_back(cyclus::Cond("keyword", "==", std::string("co2")));
   conds.push_back(cyclus::Cond("Type", "==", std::string("decommission")));
   qr = sim.db().Query("Metadata", &conds);

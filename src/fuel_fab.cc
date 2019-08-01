@@ -135,6 +135,7 @@ FuelFab::FuelFab(cyclus::Context* ctx)
       fill_size(0),
       fiss_size(0),
       throughput(0),
+      work_label("THROUGHPUT"),
       latitude(0.0),
       longitude(0.0),
       coordinates(latitude, longitude){}
@@ -496,6 +497,8 @@ void FuelFab::GetMatlTrades(
       responses.push_back(std::make_pair(trades[i], m));
     }
   }
+  // Report the timestep throughput
+  cyclus::toolkit::RecordTimeSeries<double>(work_label, this, tot);
 }
 
 void FuelFab::RecordPosition() {

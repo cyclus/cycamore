@@ -124,7 +124,7 @@ TEST_F(SourceTest, Response) {
 }
 
 TEST_F(SourceTest, PositionInitialize) {
-  std::string config = 
+  std::string config =
     "<outcommod>spent_fuel</outcommod>"
   ;
   int simdur = 3;
@@ -138,7 +138,7 @@ TEST_F(SourceTest, PositionInitialize) {
 }
 
 TEST_F(SourceTest, Longitude) {
-  std::string config = 
+  std::string config =
     "<outcommod>spent_fuel</outcommod>"
     "<latitude>-0.01</latitude>"
     "<longitude>0.01</longitude>"
@@ -172,8 +172,8 @@ SourceTest::GetContext(int nreqs, std::string commod) {
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 TEST_F(SourceTest, StringMetadata) {
   // this tests verifies the initialization of the latitude variable
-  
-  std::string config = 
+
+  std::string config =
     "<outcommod>spent_fuel</outcommod>"
     " "
     " "
@@ -206,27 +206,27 @@ TEST_F(SourceTest, StringMetadata) {
   int id = sim.Run();
 
   std::vector<cyclus::Cond> conds;
-  cyclus::QueryResult qr; 
+  cyclus::QueryResult qr;
   conds.push_back(cyclus::Cond("keyword", "==", std::string("string_key")));
   qr = sim.db().Query("Metadata", &conds);
   EXPECT_EQ(qr.GetVal<std::string>("Value"), "string_value");
   EXPECT_EQ(qr.GetVal<std::string>("Type"), "string");
-  
+
   conds[0] = cyclus::Cond("keyword", "==", std::string("double_key"));
   qr = sim.db().Query("Metadata", &conds);
   EXPECT_EQ(qr.GetVal<std::string>("Value"), "0.012540");
   EXPECT_EQ(qr.GetVal<std::string>("Type"), "double");
-  
+
   conds[0] = cyclus::Cond("keyword", "==", std::string("int_key"));
   qr = sim.db().Query("Metadata", &conds);
   EXPECT_EQ(qr.GetVal<std::string>("Value"), "-1254");
   EXPECT_EQ(qr.GetVal<std::string>("Type"), "int");
-  
+
   conds[0] = cyclus::Cond("keyword", "==", std::string("uint_key"));
   qr = sim.db().Query("Metadata", &conds);
   EXPECT_EQ(qr.GetVal<std::string>("Value"), "1254");
   EXPECT_EQ(qr.GetVal<std::string>("Type"), "uint");
-  
+
   conds[0] = cyclus::Cond("keyword", "==", std::string("bool_key"));
   qr = sim.db().Query("Metadata", &conds);
   EXPECT_EQ(qr.GetVal<std::string>("Value"), "true");
@@ -236,7 +236,7 @@ TEST_F(SourceTest, StringMetadata) {
 TEST_F(SourceTest, UsageMetadata) {
   // this tests verifies the initialization of the latitude variable
 
-  std::string config = 
+  std::string config =
     "   <outcommod>spent_fuel</outcommod>"
     "   "
     "   "
@@ -310,7 +310,7 @@ TEST_F(SourceTest, UsageMetadata) {
   int id = sim.Run();
 
   std::vector<cyclus::Cond> conds;
-  cyclus::QueryResult qr; 
+  cyclus::QueryResult qr;
   conds.push_back(cyclus::Cond("keyword", "==", std::string("co2")));
   conds.push_back(cyclus::Cond("Type", "==", std::string("decommission")));
   qr = sim.db().Query("Metadata", &conds);

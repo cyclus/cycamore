@@ -13,6 +13,7 @@ namespace cycamore {
 
 Separations::Separations(cyclus::Context* ctx)
     : cyclus::Facility(ctx),
+      work_label("THROUGHPUT"),
       latitude(0.0),
       longitude(0.0),
       coordinates(latitude, longitude){}
@@ -142,7 +143,7 @@ void Separations::Tick() {
           mat->ExtractComp(qty * maxfrac, m->comp()));
       Record("Separated", qty * maxfrac, name);
     }
-    cyclus::toolkit::RecordTimeSeries<double>("supply"+name, this, 
+    cyclus::toolkit::RecordTimeSeries<double>("supply"+name, this,
                                               streambufs[name].quantity());
   }
 
@@ -160,6 +161,9 @@ void Separations::Tick() {
       leftover.Push(mat);
     }
   }
+  // Report the timestep throughput
+  cyclus::toolkit::RecordTimeSeries<double>(work_label, this, maxfrac);
+
   cyclus::toolkit::RecordTimeSeries<double>("supply"+leftover_commod, this,
                                             leftover.quantity());
 

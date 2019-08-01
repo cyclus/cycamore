@@ -174,7 +174,7 @@ class Enrichment
   // ---
 
   virtual void EnterNotify();
-  
+
   // --- Agent Members ---
   ///  Each facility is prompted to do its beginning-of-time-step
   ///  stuff at the tick of the timer.

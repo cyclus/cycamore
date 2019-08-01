@@ -54,7 +54,7 @@ class Source : public cyclus::Facility,
   #pragma cyclus def initinv
 
   virtual void EnterNotify();
-  
+
   virtual void InitFrom(Source* m);
 
   virtual void InitFrom(cyclus::QueryableBackend* b);

@@ -23,6 +23,7 @@ Enrichment::Enrichment(cyclus::Context* ctx)
       product_commod(""),
       tails_commod(""),
       order_prefs(true),
+      work_label("ENRICH_SWU"),
       latitude(0.0),
       longitude(0.0),
       coordinates(latitude, longitude){}
@@ -69,7 +70,7 @@ void Enrichment::Build(cyclus::Agent* parent) {
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 void Enrichment::Tick() {
   current_swu_capacity = SwuCapacity();
-  
+
 }
 
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -

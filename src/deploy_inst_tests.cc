@@ -13,7 +13,7 @@
 using cyclus::QueryResult;
 
 TEST(DeployInstTests, ProtoNames) {
-  std::string config = 
+  std::string config =
      "<prototypes>  <val>foobar</val> </prototypes>"
      "<build_times> <val>1</val>      </build_times>"
      "<n_build>     <val>3</val>      </n_build>"
@@ -33,7 +33,7 @@ TEST(DeployInstTests, ProtoNames) {
 }
 
 TEST(DeployInstTests, BuildTimes) {
-  std::string config = 
+  std::string config =
      "<prototypes>  <val>foobar</val> <val>foobar</val> </prototypes>"
      "<build_times> <val>1</val>      <val>3</val>      </build_times>"
      "<n_build>     <val>1</val>      <val>7</val>      </n_build>"
@@ -60,7 +60,7 @@ TEST(DeployInstTests, BuildTimes) {
 // make sure that specified lifetimes are honored both in agent's table record
 // and in decommissioning.
 TEST(DeployInstTests, FiniteLifetimes) {
-  std::string config = 
+  std::string config =
      "<prototypes>  <val>foobar</val> <val>foobar</val> <val>foobar</val> </prototypes>"
      "<build_times> <val>1</val>      <val>1</val>      <val>2</val>      </build_times>"
      "<n_build>     <val>1</val>      <val>7</val>      <val>3</val>      </n_build>"
@@ -113,7 +113,7 @@ TEST(DeployInstTests, FiniteLifetimes) {
 }
 
 TEST(DeployInstTests, NoDupProtos) {
-  std::string config = 
+  std::string config =
      "<prototypes>  <val>foobar</val> <val>foobar</val> <val>foobar</val> </prototypes>"
      "<build_times> <val>1</val>      <val>1</val>      <val>2</val>      </build_times>"
      "<n_build>     <val>1</val>      <val>7</val>      <val>3</val>      </n_build>"
@@ -142,7 +142,7 @@ TEST(DeployInstTests, NoDupProtos) {
 }
 
 TEST(DeployInstTests, PositionInitialize) {
-  std::string config = 
+  std::string config =
      "<prototypes>  <val>foobar</val> </prototypes>"
      "<build_times> <val>1</val>      </build_times>"
      "<n_build>     <val>3</val>      </n_build>"
@@ -159,7 +159,7 @@ TEST(DeployInstTests, PositionInitialize) {
 }
 
 TEST(DeployInstTests, PositionInitialize2) {
-  std::string config = 
+  std::string config =
      "<prototypes>  <val>foobar</val> </prototypes>"
      "<longitude>   -20.0             </longitude>"
      "<latitude>    2.0               </latitude>"
@@ -180,8 +180,8 @@ TEST(DeployInstTests, PositionInitialize2) {
 //// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 TEST(DeployInstTests, BasicMetadata) {
   // this tests verifies the initialization of the latitude variable
-  
-  std::string config = 
+
+  std::string config =
     "<prototypes>  <val>foobar</val> </prototypes>"
     "<build_times> <val>1</val>      </build_times>"
     "<n_build>     <val>3</val>      </n_build>"
@@ -218,27 +218,27 @@ TEST(DeployInstTests, BasicMetadata) {
   int id = sim.Run();
 
   std::vector<cyclus::Cond> conds;
-  QueryResult qr; 
+  QueryResult qr;
   conds.push_back(cyclus::Cond("keyword", "==", std::string("string_key")));
   qr = sim.db().Query("Metadata", &conds);
   EXPECT_EQ(qr.GetVal<std::string>("Value"), "string_value");
   EXPECT_EQ(qr.GetVal<std::string>("Type"), "string");
-  
+
   conds[0] = cyclus::Cond("keyword", "==", std::string("double_key"));
   qr = sim.db().Query("Metadata", &conds);
   EXPECT_EQ(qr.GetVal<std::string>("Value"), "0.012540");
   EXPECT_EQ(qr.GetVal<std::string>("Type"), "double");
-  
+
   conds[0] = cyclus::Cond("keyword", "==", std::string("int_key"));
   qr = sim.db().Query("Metadata", &conds);
   EXPECT_EQ(qr.GetVal<std::string>("Value"), "-1254");
   EXPECT_EQ(qr.GetVal<std::string>("Type"), "int");
-  
+
   conds[0] = cyclus::Cond("keyword", "==", std::string("uint_key"));
   qr = sim.db().Query("Metadata", &conds);
   EXPECT_EQ(qr.GetVal<std::string>("Value"), "1254");
   EXPECT_EQ(qr.GetVal<std::string>("Type"), "uint");
-  
+
   conds[0] = cyclus::Cond("keyword", "==", std::string("bool_key"));
   qr = sim.db().Query("Metadata", &conds);
   EXPECT_EQ(qr.GetVal<std::string>("Value"), "true");
@@ -249,7 +249,7 @@ TEST(DeployInstTests, BasicMetadata) {
 TEST(DeployInstTests, UsageMetadata) {
   // this tests verifies the initialization of the latitude variable
 
-  std::string config = 
+  std::string config =
     "<prototypes>  <val>foobar</val> </prototypes>"
     "<build_times> <val>1</val>      </build_times>"
     "<n_build>     <val>3</val>      </n_build>"
@@ -327,7 +327,7 @@ TEST(DeployInstTests, UsageMetadata) {
   int id = sim.Run();
 
   std::vector<cyclus::Cond> conds;
-  cyclus::QueryResult qr; 
+  cyclus::QueryResult qr;
   conds.push_back(cyclus::Cond("keyword", "==", std::string("co2")));
   conds.push_back(cyclus::Cond("Type", "==", std::string("decommission")));
   qr = sim.db().Query("Metadata", &conds);

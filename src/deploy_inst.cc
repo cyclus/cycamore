@@ -5,6 +5,7 @@ namespace cycamore {
 
 DeployInst::DeployInst(cyclus::Context* ctx)
     : cyclus::Institution(ctx),
+      work_label("DEPLOYED_INST"),
       latitude(0.0),
       longitude(0.0),
       coordinates(latitude, longitude){}

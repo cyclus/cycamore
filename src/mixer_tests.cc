@@ -73,11 +73,11 @@ class MixerTest : public ::testing::Test {
       in_com.insert(std::pair<std::string, double>("in_c3", 1));
       in_commods.push_back(in_com);
     }
-    
+
     std::vector<double> in_ratios = {1, 1, 1};
     std::vector<double> in_caps = {30, 20, 10};
     SetIn_stream(in_commods, in_ratios,  in_caps);
-  
+
     SetOutStream_comds("out_com");
   }
   virtual void TearDown() { delete mf_facility_; }
@@ -98,7 +98,7 @@ class MixerTest : public ::testing::Test {
 
   void SetIn_stream(t_instream streams) {
     mf_facility_->streams_ = streams;
-    
+
     in_frac.clear();
     in_cap.clear();
     for (int i = 0; i < streams.size(); i++) {
@@ -522,8 +522,8 @@ TEST(MixerTests, PositionInitialize) {
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 TEST(MixerTests, StringMetadata) {
   // this tests verifies the initialization of the latitude variable
-  
-  std::string config = 
+
+  std::string config =
     " <in_streams>"
     "  <stream>"
     "    <info>"
@@ -601,27 +601,27 @@ TEST(MixerTests, StringMetadata) {
   int id = sim.Run();
 
   std::vector<cyclus::Cond> conds;
-  QueryResult qr; 
+  QueryResult qr;
   conds.push_back(cyclus::Cond("keyword", "==", std::string("string_key")));
   qr = sim.db().Query("Metadata", &conds);
   EXPECT_EQ(qr.GetVal<std::string>("Value"), "string_value");
   EXPECT_EQ(qr.GetVal<std::string>("Type"), "string");
-  
+
   conds[0] = cyclus::Cond("keyword", "==", std::string("double_key"));
   qr = sim.db().Query("Metadata", &conds);
   EXPECT_EQ(qr.GetVal<std::string>("Value"), "0.012540");
   EXPECT_EQ(qr.GetVal<std::string>("Type"), "double");
-  
+
   conds[0] = cyclus::Cond("keyword", "==", std::string("int_key"));
   qr = sim.db().Query("Metadata", &conds);
   EXPECT_EQ(qr.GetVal<std::string>("Value"), "-1254");
   EXPECT_EQ(qr.GetVal<std::string>("Type"), "int");
-  
+
   conds[0] = cyclus::Cond("keyword", "==", std::string("uint_key"));
   qr = sim.db().Query("Metadata", &conds);
   EXPECT_EQ(qr.GetVal<std::string>("Value"), "1254");
   EXPECT_EQ(qr.GetVal<std::string>("Type"), "uint");
-  
+
   conds[0] = cyclus::Cond("keyword", "==", std::string("bool_key"));
   qr = sim.db().Query("Metadata", &conds);
   EXPECT_EQ(qr.GetVal<std::string>("Value"), "true");
@@ -632,7 +632,7 @@ TEST(MixerTests, StringMetadata) {
 TEST(MixerTests, UsageMetadata) {
   // this tests verifies the initialization of the latitude variable
 
-  std::string config = 
+  std::string config =
     " <in_streams>"
     "  <stream>"
     "    <info>"
@@ -752,7 +752,7 @@ TEST(MixerTests, UsageMetadata) {
 
 
   std::vector<cyclus::Cond> conds;
-  QueryResult qr; 
+  QueryResult qr;
   conds.push_back(cyclus::Cond("keyword", "==", std::string("co2")));
   conds.push_back(cyclus::Cond("Type", "==", std::string("decommission")));
   qr = sim.db().Query("Metadata", &conds);

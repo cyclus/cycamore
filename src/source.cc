@@ -11,6 +11,7 @@ Source::Source(cyclus::Context* ctx)
     : cyclus::Facility(ctx),
       throughput(std::numeric_limits<double>::max()),
       inventory_size(std::numeric_limits<double>::max()),
+      work_label("THROUGHPUT"),
       latitude(0.0),
       longitude(0.0),
       coordinates(latitude, longitude){}
@@ -109,10 +110,12 @@ void Source::GetMatlTrades(
   using cyclus::Material;
   using cyclus::Trade;
 
+  double send_qty = 0;
   std::vector<cyclus::Trade<cyclus::Material> >::const_iterator it;
   for (it = trades.begin(); it != trades.end(); ++it) {
     double qty = it->amt;
     inventory_size -= qty;
+    send_qty += qty;
 
     Material::Ptr response;
     if (!outrecipe.empty()) {
@@ -124,6 +127,8 @@ void Source::GetMatlTrades(
     LOG(cyclus::LEV_INFO5, "Source") << prototype() << " sent an order"
                                      << " for " << qty << " of " << outcommod;
   }
+  // Report the timestep throughput
+  cyclus::toolkit::RecordTimeSeries<double>(work_label, this, send_qty);
 }
 
 void Source::RecordPosition() {

@@ -6,6 +6,7 @@ namespace cycamore {
 
 Mixer::Mixer(cyclus::Context* ctx)
     : cyclus::Facility(ctx),
+      work_label("THROUGHPUT"),
       throughput(0),
       latitude(0.0),
       longitude(0.0),
@@ -125,6 +126,8 @@ void Mixer::Tick() {
         }
       }
       output.Push(m);
+      // Report the timestep throughput
+      cyclus::toolkit::RecordTimeSeries<double>(work_label, this, tgt_qty);
     }
   }
   cyclus::toolkit::RecordTimeSeries<double>("supply"+out_commod, this, output.quantity());

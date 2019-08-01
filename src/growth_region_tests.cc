@@ -37,21 +37,21 @@ TEST_F(GrowthRegionTests, init) {
 //// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 TEST_F(GrowthRegionTests, BasicMetadata) {
   // this tests verifies the initialization of the latitude variable
-  
-  std::string config = 
-    " <prototypes>  <val>foobar</val> </prototypes> " 
-	  " <growth> " 
-	  "   <commod>test_commod</commod> " 
-	  "   <piecewise_function> " 
-	  "     <piece> " 
-	  "       <start>0</start> " 
-	  "       <function> " 
-	  "         <type>linear</type> " 
-	  "         <params>1 2</params> " 
-	  "       </function> " 
-	  "     </piece> " 
-	  "   </piecewise_function> " 
-	  " </growth> " 
+
+  std::string config =
+    " <prototypes>  <val>foobar</val> </prototypes> "
+    " <growth> "
+    "   <commod>test_commod</commod> "
+    "   <piecewise_function> "
+    "     <piece> "
+    "       <start>0</start> "
+    "       <function> "
+    "         <type>linear</type> "
+    "         <params>1 2</params> "
+    "       </function> "
+    "     </piece> "
+    "   </piecewise_function> "
+    " </growth> "
     " "
     " "
     "   <metadata>"
@@ -78,32 +78,32 @@ TEST_F(GrowthRegionTests, BasicMetadata) {
     "   </metadata>";
 
   int simdur = 5;
-	cyclus::MockSim sim(cyclus::AgentSpec(":cycamore:GrowthRegion"), config, simdur);
-	sim.DummyProto("foobar");
-	int id = sim.Run();
+  cyclus::MockSim sim(cyclus::AgentSpec(":cycamore:GrowthRegion"), config, simdur);
+  sim.DummyProto("foobar");
+  int id = sim.Run();
 
   std::vector<cyclus::Cond> conds;
-  QueryResult qr; 
+  cyclus::QueryResult qr;
   conds.push_back(cyclus::Cond("keyword", "==", std::string("string_key")));
   qr = sim.db().Query("Metadata", &conds);
   EXPECT_EQ(qr.GetVal<std::string>("Value"), "string_value");
   EXPECT_EQ(qr.GetVal<std::string>("Type"), "string");
-  
+
   conds[0] = cyclus::Cond("keyword", "==", std::string("double_key"));
   qr = sim.db().Query("Metadata", &conds);
   EXPECT_EQ(qr.GetVal<std::string>("Value"), "0.012540");
   EXPECT_EQ(qr.GetVal<std::string>("Type"), "double");
-  
+
   conds[0] = cyclus::Cond("keyword", "==", std::string("int_key"));
   qr = sim.db().Query("Metadata", &conds);
   EXPECT_EQ(qr.GetVal<std::string>("Value"), "-1254");
   EXPECT_EQ(qr.GetVal<std::string>("Type"), "int");
-  
+
   conds[0] = cyclus::Cond("keyword", "==", std::string("uint_key"));
   qr = sim.db().Query("Metadata", &conds);
   EXPECT_EQ(qr.GetVal<std::string>("Value"), "1254");
   EXPECT_EQ(qr.GetVal<std::string>("Type"), "uint");
-  
+
   conds[0] = cyclus::Cond("keyword", "==", std::string("bool_key"));
   qr = sim.db().Query("Metadata", &conds);
   EXPECT_EQ(qr.GetVal<std::string>("Value"), "true");
@@ -114,20 +114,20 @@ TEST_F(GrowthRegionTests, BasicMetadata) {
 TEST_F(GrowthRegionTests, UsageMetadata) {
   // this tests verifies the initialization of the latitude variable
 
-  std::string config = 
-    " <prototypes>  <val>foobar</val> </prototypes> " 
-	  " <growth> " 
-	  "   <commod>test_commod</commod> " 
-	  "   <piecewise_function> " 
-	  "     <piece> " 
-	  "       <start>0</start> " 
-	  "       <function> " 
-	  "         <type>linear</type> " 
-	  "         <params>1 2</params> " 
-	  "       </function> " 
-	  "     </piece> " 
-	  "   </piecewise_function> " 
-	  " </growth> " 
+  std::string config =
+    " <prototypes>  <val>foobar</val> </prototypes> "
+    " <growth> "
+    "   <commod>test_commod</commod> "
+    "   <piecewise_function> "
+    "     <piece> "
+    "       <start>0</start> "
+    "       <function> "
+    "         <type>linear</type> "
+    "         <params>1 2</params> "
+    "       </function> "
+    "     </piece> "
+    "   </piecewise_function> "
+    " </growth> "
     "   "
     "   "
     "   <usagemetadata> "
@@ -195,12 +195,12 @@ TEST_F(GrowthRegionTests, UsageMetadata) {
     "   </usagemetadata>";
 
   int simdur = 5;
-	cyclus::MockSim sim(cyclus::AgentSpec(":cycamore:GrowthRegion"), config, simdur);
-	sim.DummyProto("foobar");
-	int id = sim.Run();
+  cyclus::MockSim sim(cyclus::AgentSpec(":cycamore:GrowthRegion"), config, simdur);
+  sim.DummyProto("foobar");
+  int id = sim.Run();
 
   std::vector<cyclus::Cond> conds;
-  cyclus::QueryResult qr; 
+  cyclus::QueryResult qr;
   conds.push_back(cyclus::Cond("keyword", "==", std::string("co2")));
   conds.push_back(cyclus::Cond("Type", "==", std::string("decommission")));
   qr = sim.db().Query("Metadata", &conds);

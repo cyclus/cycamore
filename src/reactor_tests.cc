@@ -56,7 +56,7 @@ Composition::Ptr c_water() {
 // (the default), fuel can be ordered and the cycle started with no time step
 // delay.
 TEST(ReactorTests, JustInTimeOrdering) {
-  std::string config = 
+  std::string config =
      "  <fuel_inrecipes>  <val>lwr_fresh</val>  </fuel_inrecipes>  "
      "  <fuel_outrecipes> <val>lwr_spent</val>  </fuel_outrecipes>  "
      "  <fuel_incommods>  <val>enriched_u</val> </fuel_incommods>  "
@@ -82,7 +82,7 @@ TEST(ReactorTests, JustInTimeOrdering) {
 // tests that the correct number of assemblies are popped from the core each
 // cycle.
 TEST(ReactorTests, BatchSizes) {
-  std::string config = 
+  std::string config =
      "  <fuel_inrecipes>  <val>uox</val>      </fuel_inrecipes>  "
      "  <fuel_outrecipes> <val>spentuox</val> </fuel_outrecipes>  "
      "  <fuel_incommods>  <val>uox</val>      </fuel_incommods>  "
@@ -109,7 +109,7 @@ TEST(ReactorTests, BatchSizes) {
 // tests that the refueling period between cycle end and start of the next
 // cycle is honored.
 TEST(ReactorTests, RefuelTimes) {
-  std::string config = 
+  std::string config =
      "  <fuel_inrecipes>  <val>uox</val>      </fuel_inrecipes>  "
      "  <fuel_outrecipes> <val>spentuox</val> </fuel_outrecipes>  "
      "  <fuel_incommods>  <val>uox</val>      </fuel_incommods>  "
@@ -139,7 +139,7 @@ TEST(ReactorTests, RefuelTimes) {
 // tests that a reactor decommissions on time without producing
 // power at the end of its lifetime.
 TEST(ReactorTests, DecomTimes) {
-  std::string config = 
+  std::string config =
      "  <fuel_inrecipes>  <val>uox</val>      </fuel_inrecipes>  "
      "  <fuel_outrecipes> <val>spentuox</val> </fuel_outrecipes>  "
      "  <fuel_incommods>  <val>uox</val>      </fuel_incommods>  "
@@ -178,7 +178,7 @@ TEST(ReactorTests, DecomTimes) {
 // Tests if a reactor produces power at the time of its decommission
 // given a refuel_time of zero.
 TEST(ReactorTests, DecomZeroRefuel) {
-  std::string config = 
+  std::string config =
      "  <fuel_inrecipes>  <val>uox</val>      </fuel_inrecipes>  "
      "  <fuel_outrecipes> <val>spentuox</val> </fuel_outrecipes>  "
      "  <fuel_incommods>  <val>uox</val>      </fuel_incommods>  "
@@ -211,7 +211,7 @@ TEST(ReactorTests, DecomZeroRefuel) {
 // start of the refueling period - not before and not after. - thie is subtly
 // different than RefuelTimes test and is not a duplicate of it.
 TEST(ReactorTests, OrderAtRefuelStart) {
-  std::string config = 
+  std::string config =
      "  <fuel_inrecipes>  <val>uox</val>      </fuel_inrecipes>  "
      "  <fuel_outrecipes> <val>spentuox</val> </fuel_outrecipes>  "
      "  <fuel_incommods>  <val>uox</val>      </fuel_incommods>  "
@@ -240,7 +240,7 @@ TEST(ReactorTests, OrderAtRefuelStart) {
 // tests that the reactor handles requesting multiple types of fuel correctly
 // - with proper inventory constraint honoring, etc.
 TEST(ReactorTests, MultiFuelMix) {
-  std::string config = 
+  std::string config =
      "  <fuel_inrecipes>  <val>uox</val>      <val>mox</val>      </fuel_inrecipes>  "
      "  <fuel_outrecipes> <val>spentuox</val> <val>spentmox</val> </fuel_outrecipes>  "
      "  <fuel_incommods>  <val>uox</val>      <val>mox</val>      </fuel_incommods>  "
@@ -276,7 +276,7 @@ TEST(ReactorTests, MultiFuelMix) {
 // tests that the reactor halts operation when it has no more room in its
 // spent fuel inventory buffer.
 TEST(ReactorTests, FullSpentInventory) {
-  std::string config = 
+  std::string config =
      "  <fuel_inrecipes>  <val>uox</val>      </fuel_inrecipes>  "
      "  <fuel_outrecipes> <val>spentuox</val> </fuel_outrecipes>  "
      "  <fuel_incommods>  <val>uox</val>      </fuel_incommods>  "
@@ -309,7 +309,7 @@ TEST(ReactorTests, FullSpentInventory) {
 // received, a new cycle pattern is established starting from the delayed
 // start time.
 TEST(ReactorTests, FuelShortage) {
-  std::string config = 
+  std::string config =
      "  <fuel_inrecipes>  <val>uox</val>      </fuel_inrecipes>  "
      "  <fuel_outrecipes> <val>spentuox</val> </fuel_outrecipes>  "
      "  <fuel_incommods>  <val>uox</val>      </fuel_incommods>  "
@@ -358,7 +358,7 @@ TEST(ReactorTests, FuelShortage) {
 
 // tests that discharged fuel is transmuted properly immediately at cycle end.
 TEST(ReactorTests, DischargedFuelTransmute) {
-  std::string config = 
+  std::string config =
      "  <fuel_inrecipes>  <val>uox</val>      </fuel_inrecipes>  "
      "  <fuel_outrecipes> <val>spentuox</val> </fuel_outrecipes>  "
      "  <fuel_incommods>  <val>uox</val>      </fuel_incommods>  "
@@ -392,7 +392,7 @@ TEST(ReactorTests, DischargedFuelTransmute) {
 // incommod it was received on - esp when dealing with multiple fuel commods
 // simultaneously.
 TEST(ReactorTests, SpentFuelProperCommodTracking) {
-  std::string config = 
+  std::string config =
      "  <fuel_inrecipes>  <val>uox</val>      <val>mox</val>      </fuel_inrecipes>  "
      "  <fuel_outrecipes> <val>spentuox</val> <val>spentmox</val> </fuel_outrecipes>  "
      "  <fuel_incommods>  <val>uox</val>      <val>mox</val>      </fuel_incommods>  "
@@ -433,7 +433,7 @@ TEST(ReactorTests, SpentFuelProperCommodTracking) {
 // correctly and the reactor could segfault.  Check that this doesn't happen.
 TEST(ReactorTests, PrefChange) {
   // it is important that the fuel_prefs not be present in the config below.
-  std::string config = 
+  std::string config =
      "  <fuel_inrecipes>  <val>lwr_fresh</val>  </fuel_inrecipes>  "
      "  <fuel_outrecipes> <val>lwr_spent</val>  </fuel_outrecipes>  "
      "  <fuel_incommods>  <val>enriched_u</val> </fuel_incommods>  "
@@ -462,7 +462,7 @@ TEST(ReactorTests, PrefChange) {
 
 TEST(ReactorTests, RecipeChange) {
   // it is important that the fuel_prefs not be present in the config below.
-  std::string config = 
+  std::string config =
      "  <fuel_inrecipes>  <val>lwr_fresh</val>  </fuel_inrecipes>  "
      "  <fuel_outrecipes> <val>lwr_spent</val>  </fuel_outrecipes>  "
      "  <fuel_incommods>  <val>enriched_u</val> </fuel_incommods>  "
@@ -533,7 +533,7 @@ TEST(ReactorTests, RecipeChange) {
 }
 
 TEST(ReactorTests, Retire) {
-  std::string config = 
+  std::string config =
      "  <fuel_inrecipes>  <val>lwr_fresh</val>  </fuel_inrecipes>  "
      "  <fuel_outrecipes> <val>lwr_spent</val>  </fuel_outrecipes>  "
      "  <fuel_incommods>  <val>enriched_u</val> </fuel_incommods>  "
@@ -581,7 +581,7 @@ TEST(ReactorTests, Retire) {
       << "failed to discharge all material by retirement time";
 
   // reactor should record power entry on the time step it retires if operating
-  int time_online = life / (cycle_time + refuel_time) * cycle_time + std::min(life % (cycle_time + refuel_time), cycle_time); 
+  int time_online = life / (cycle_time + refuel_time) * cycle_time + std::min(life % (cycle_time + refuel_time), cycle_time);
   conds.clear();
   conds.push_back(Cond("AgentId", "==", id));
   conds.push_back(Cond("Value", ">", 0));
@@ -591,7 +591,7 @@ TEST(ReactorTests, Retire) {
 }
 
 TEST(ReactorTests, ByProduct) {
-  std::string config = 
+  std::string config =
      "  <fuel_inrecipes>  <val>uox</val>      </fuel_inrecipes>  "
      "  <fuel_outrecipes> <val>spentuox</val> </fuel_outrecipes>  "
      "  <fuel_incommods>  <val>uox</val>      </fuel_incommods>  "
@@ -628,7 +628,7 @@ TEST(ReactorTests, ByProduct) {
 }
 
 TEST(ReactorTests, MultipleByProduct) {
-  std::string config = 
+  std::string config =
      "  <fuel_inrecipes>  <val>uox</val>      </fuel_inrecipes>  "
      "  <fuel_outrecipes> <val>spentuox</val> </fuel_outrecipes>  "
      "  <fuel_incommods>  <val>uox</val>      </fuel_incommods>  "
@@ -675,7 +675,7 @@ TEST(ReactorTests, MultipleByProduct) {
 }
 
 TEST(ReactorTests, PositionInitialize) {
-  std::string config = 
+  std::string config =
      "  <fuel_inrecipes>  <val>lwr_fresh</val>  </fuel_inrecipes>  "
      "  <fuel_outrecipes> <val>lwr_spent</val>  </fuel_outrecipes>  "
      "  <fuel_incommods>  <val>enriched_u</val> </fuel_incommods>  "
@@ -701,7 +701,7 @@ TEST(ReactorTests, PositionInitialize) {
 }
 
 TEST(ReactorTests, PositionInitialize2) {
-  std::string config = 
+  std::string config =
      "  <fuel_inrecipes>  <val>lwr_fresh</val>  </fuel_inrecipes>  "
      "  <fuel_outrecipes> <val>lwr_spent</val>  </fuel_outrecipes>  "
      "  <fuel_incommods>  <val>enriched_u</val> </fuel_incommods>  "
@@ -731,8 +731,8 @@ TEST(ReactorTests, PositionInitialize2) {
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 TEST(ReactorTests, StringMetadata) {
   // this tests verifies the initialization of the latitude variable
-  
-  std::string config = 
+
+  std::string config =
     "   <fuel_inrecipes>  <val>lwr_fresh</val>  </fuel_inrecipes>  "
     "   <fuel_outrecipes> <val>lwr_spent</val>  </fuel_outrecipes>  "
     "   <fuel_incommods>  <val>enriched_u</val> </fuel_incommods>  "
@@ -777,27 +777,27 @@ TEST(ReactorTests, StringMetadata) {
   int id = sim.Run();
 
   std::vector<Cond> conds;
-  QueryResult qr; 
+  QueryResult qr;
   conds.push_back(Cond("keyword", "==", std::string("string_key")));
   qr = sim.db().Query("Metadata", &conds);
   EXPECT_EQ(qr.GetVal<std::string>("Value"), "string_value");
   EXPECT_EQ(qr.GetVal<std::string>("Type"), "string");
-  
+
   conds[0] = Cond("keyword", "==", std::string("double_key"));
   qr = sim.db().Query("Metadata", &conds);
   EXPECT_EQ(qr.GetVal<std::string>("Value"), "0.012540");
   EXPECT_EQ(qr.GetVal<std::string>("Type"), "double");
-  
+
   conds[0] = Cond("keyword", "==", std::string("int_key"));
   qr = sim.db().Query("Metadata", &conds);
   EXPECT_EQ(qr.GetVal<std::string>("Value"), "-1254");
   EXPECT_EQ(qr.GetVal<std::string>("Type"), "int");
-  
+
   conds[0] = Cond("keyword", "==", std::string("uint_key"));
   qr = sim.db().Query("Metadata", &conds);
   EXPECT_EQ(qr.GetVal<std::string>("Value"), "1254");
   EXPECT_EQ(qr.GetVal<std::string>("Type"), "uint");
-  
+
   conds[0] = Cond("keyword", "==", std::string("bool_key"));
   qr = sim.db().Query("Metadata", &conds);
   EXPECT_EQ(qr.GetVal<std::string>("Value"), "true");
@@ -807,7 +807,7 @@ TEST(ReactorTests, StringMetadata) {
 TEST(ReactorTests, UsageMetadata) {
   // this tests verifies the initialization of the latitude variable
 
-  std::string config = 
+  std::string config =
     "   <fuel_inrecipes>  <val>lwr_fresh</val>  </fuel_inrecipes>  "
     "   <fuel_outrecipes> <val>lwr_spent</val>  </fuel_outrecipes>  "
     "   <fuel_incommods>  <val>enriched_u</val> </fuel_incommods>  "
@@ -893,7 +893,7 @@ TEST(ReactorTests, UsageMetadata) {
   int id = sim.Run();
 
   std::vector<Cond> conds;
-  QueryResult qr; 
+  QueryResult qr;
   conds.push_back(Cond("keyword", "==", std::string("co2")));
   conds.push_back(Cond("Type", "==", std::string("decommission")));
   qr = sim.db().Query("Metadata", &conds);
