@@ -18,7 +18,7 @@ class Context;
 /// total inventory size.  The inventory size and throughput capacity both
 /// default to infinite. If a recipe is provided, it will request material with
 /// that recipe. Requests are made for any number of specified commodities.
-class Sink 
+class Sink
   : public cyclus::Facility,
     public cyclus::toolkit::Position  {
  public:
@@ -43,7 +43,7 @@ class Sink
   virtual std::string str();
 
   virtual void EnterNotify();
-  
+
   virtual void Tick();
 
   virtual void Tock();
