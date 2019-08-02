@@ -125,6 +125,9 @@ TEST_F(EnrichmentTest, CheckSWUConstraint) {
   EXPECT_EQ(1.0, qr.rows.size());
   EXPECT_NEAR(5.0, m->quantity(), 0.1) <<
     "traded quantity exceeds SWU constraint";
+  // checking the write amount of SWU has been repported
+  qr = sim.db().Query("TimeSeriesEnrichmentSWU", NULL);
+  EXPECT_EQ(qr.GetVal<double>("Value"), 195);
 }
 
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -164,6 +167,11 @@ TEST_F(EnrichmentTest, CheckCapConstraint) {
   EXPECT_EQ(1.0, qr.rows.size());
   EXPECT_LE(m->quantity(), 5.0) <<
     "traded quantity exceeds capacity constraint";
+  
+  // checking the write amount of SWU has been repported
+  qr = sim.db().Query("TimeSeriesEnrichmentSWU", NULL);
+  EXPECT_NEAR(qr.GetVal<double>("Value"), 190.89, 0.01);
+
 }
 
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
