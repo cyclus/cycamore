@@ -489,6 +489,12 @@ TEST(FuelFabTests, ThroughputLimit) {
 
   stmt->Step();
   EXPECT_DOUBLE_EQ(simdur-1, stmt->GetDouble(0));
+  
+  // checking the write amount of SWU has been repported
+  std::vector<Cond> conds;
+  conds.push_back(Cond("Time", "==", 2));
+  qr = sim.db().Query("TimeSeriesThroughput", &conds);
+  EXPECT_NEAR(qr.GetVal<double>("Value"), throughput, 0.01);
 }
 
 // supplied fuel has proper equivalence weights as requested.

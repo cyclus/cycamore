@@ -12,7 +12,7 @@ namespace cycamore {
 Sink::Sink(cyclus::Context* ctx)
     : cyclus::Facility(ctx),
       capacity(std::numeric_limits<double>::max()),
-      work_label("THROUGHPUT"),
+      work_label("Throughput"),
       latitude(0.0),
       longitude(0.0),
       coordinates(latitude, longitude){

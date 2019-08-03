@@ -6,7 +6,7 @@ namespace cycamore {
 
 Mixer::Mixer(cyclus::Context* ctx)
     : cyclus::Facility(ctx),
-      work_label("THROUGHPUT"),
+      work_label("Throughput"),
       throughput(0),
       latitude(0.0),
       longitude(0.0),

@@ -262,6 +262,46 @@ TEST_F(SinkTest, BidPrefs) {
 
   // should trade only with #1 since it has highier priority
   EXPECT_EQ(0, qr2.rows.size());
+  
+  // checking the write amount of SWU has been repported
+  qr = sim.db().Query("TimeSeriesThroughput", NULL);
+  EXPECT_NEAR(qr.GetVal<double>("Value"), 1, 0.01);
+
+}
+// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+TEST_F(SinkTest, ThrouputRecording) {
+  using cyclus::QueryResult;
+  using cyclus::Cond;
+
+  std::string config =
+    "   <in_commods>"
+    "     <val>commods_1</val>"
+    "     <val>commods_2</val>"
+    "   </in_commods>"
+    "   <in_commod_prefs>"
+    "     <val>10</val> "
+    "     <val>1</val> "
+    "   </in_commod_prefs>"
+    "   <capacity>1</capacity>"
+    "   <input_capacity>1.0</input_capacity> ";
+
+  int simdur = 1;
+  cyclus::MockSim sim(cyclus::AgentSpec
+          (":cycamore:Sink"), config, simdur);
+
+  sim.AddSource("commods_1")
+    .capacity(1)
+    .Finalize();
+
+  sim.AddSource("commods_2")
+    .capacity(1)
+    .Finalize();
+
+  int id = sim.Run();
+  
+  // checking the write amount of SWU has been repported
+  QueryResult qr = sim.db().Query("TimeSeriesThroughput", NULL);
+  EXPECT_NEAR(qr.GetVal<double>("Value"), 1, 0.01);
 
 }
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -

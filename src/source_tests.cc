@@ -123,6 +123,20 @@ TEST_F(SourceTest, Response) {
   delete bid;
 }
 
+TEST_F(SourceTest, CheckThrouputRecording) {
+  std::string config =
+    "<outcommod>spent_fuel</outcommod>"
+  ;
+  int simdur = 3;
+  cyclus::MockSim sim(cyclus::AgentSpec (":cycamore:Source"), config, simdur);
+  sim.AddSink("spent_fuel").capacity(2).Finalize();
+  int id = sim.Run();
+
+  // checking the write amount of SWU has been repported
+  cyclus::QueryResult qr = sim.db().Query("TimeSeriesThroughput", NULL);
+  EXPECT_NEAR(qr.GetVal<double>("Value"), 2, 0.01);
+}
+
 TEST_F(SourceTest, PositionInitialize) {
   std::string config =
     "<outcommod>spent_fuel</outcommod>"

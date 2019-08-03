@@ -135,7 +135,7 @@ FuelFab::FuelFab(cyclus::Context* ctx)
       fill_size(0),
       fiss_size(0),
       throughput(0),
-      work_label("THROUGHPUT"),
+      work_label("Throughput"),
       latitude(0.0),
       longitude(0.0),
       coordinates(latitude, longitude){}

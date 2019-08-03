@@ -417,6 +417,12 @@ TEST_F(StorageTest, BehaviorTest){
   cyclus::QueryResult qr = sim.db().Query("Transactions", &conds);
   int n_trans = qr.rows.size();
   EXPECT_EQ(1, n_trans) << "expected 1 transactions, got " << n_trans;
+  
+  // checking the write amount of SWU has been repported
+  conds.clear();
+  conds.push_back(cyclus::Cond("Time", "==", 1));
+  qr = sim.db().Query("TimeSeriesThroughput", &conds);
+  EXPECT_NEAR(qr.GetVal<double>("Value"), 10, 0.01);
 
 }
 

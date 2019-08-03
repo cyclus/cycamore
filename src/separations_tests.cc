@@ -279,6 +279,12 @@ TEST(SeparationsTests, SepMixElemAndNuclide) {
   EXPECT_DOUBLE_EQ(m[922380000]*0.6*100, mq.mass("U238"));
   EXPECT_DOUBLE_EQ(m[942390000]*0.7*100, mq.mass("Pu239"));
   EXPECT_DOUBLE_EQ(0, mq.mass("Pu240"));
+  
+  // checking the write amount of SWU has been repported
+  conds.clear();
+  conds.push_back(Cond("Time", "==", 1));
+  QueryResult qr = sim.db().Query("TimeSeriesThroughput", &conds);
+  EXPECT_NEAR(qr.GetVal<double>("Value"), 1, 0.01);
 }
 
 TEST(SeparationsTests, Retire) {

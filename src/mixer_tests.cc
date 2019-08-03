@@ -459,6 +459,10 @@ TEST(MixerTests, CompleteMixingProcess) {
 
   cyclus::Material::Ptr m = sim.GetMaterial(qr.GetVal<int>("ResourceId"));
   EXPECT_DOUBLE_EQ(1., m->quantity());
+  
+  // checking the write amount of SWU has been repported
+  qr = sim.db().Query("TimeSeriesThroughput", NULL);
+  EXPECT_NEAR(qr.GetVal<double>("Value"), 1, 0.01);
 }
 
 TEST(MixerTests, PositionInitialize) {

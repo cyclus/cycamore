@@ -7,7 +7,7 @@ namespace storage {
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 Storage::Storage(cyclus::Context* ctx)
     : cyclus::Facility(ctx),
-      work_label("THROUGHPUT"),
+      work_label("Throughput"),
       latitude(0.0),
       longitude(0.0),
       coordinates(latitude, longitude){
