@@ -144,6 +144,9 @@ void Reactor::Tick() {
     while (fresh.count() > 0 && spent.space() >= assem_size) {
       spent.Push(fresh.Pop());
     }
+    if(CheckDecommissionCondition()) {
+      Decommission();    
+    }
     return;
   }
 
