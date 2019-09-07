@@ -53,6 +53,8 @@ class Source : public cyclus::Facility,
   #pragma cyclus def snapshotinv
   #pragma cyclus def initinv
 
+  virtual void EnterNotify();
+
   virtual void InitFrom(Source* m);
 
   virtual void InitFrom(cyclus::QueryableBackend* b);
@@ -115,7 +117,7 @@ class Source : public cyclus::Facility,
     "doc": "amount of commodity that can be supplied at each time step", \
   }
   double throughput;
-  
+
   #pragma cyclus var { \
     "default": 0.0, \
     "uilabel": "Geographical latitude in degrees as a double", \
@@ -135,6 +137,8 @@ class Source : public cyclus::Facility,
   cyclus::toolkit::Position coordinates;
 
   void RecordPosition();
+
+#include "toolkit/metadata.cycpp.h"
 };
 
 }  // namespace cycamore

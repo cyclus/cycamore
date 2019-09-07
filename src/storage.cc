@@ -5,13 +5,15 @@
 namespace storage {
 
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-Storage::Storage(cyclus::Context* ctx) 
+Storage::Storage(cyclus::Context* ctx)
     : cyclus::Facility(ctx),
+      work_label("Throughput"),
       latitude(0.0),
       longitude(0.0),
-      coordinates(latitude, longitude) {
+      coordinates(latitude, longitude){
   cyclus::Warn<cyclus::EXPERIMENTAL_WARNING>(
-      "The Storage Facility is experimental.");};
+      "The Storage Facility is experimental.");
+}
 
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 // pragmas
@@ -48,7 +50,12 @@ void Storage::InitFrom(cyclus::QueryableBackend* b) {
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 void Storage::EnterNotify() {
+  metadata.SetWorkLabel(work_label);
+  metadata.LoadData(metadata_);
+  metadata.LoadData(usage_metadata_);
+
   cyclus::Facility::EnterNotify();
+
   buy_policy.Init(this, &inventory, std::string("inventory"));
 
   // dummy comp, use in_recipe if provided
@@ -201,15 +208,21 @@ void Storage::ProcessMat_(double cap) {
       if (discrete_handling) {
         if (max_pop == ready.quantity()) {
           stocks.Push(ready.PopN(ready.count()));
+          // Report the timestep throughput
+          cyclus::toolkit::RecordTimeSeries<double>(work_label, this, max_pop);
         } else {
           double cap_pop = ready.Peek()->quantity();
           while (cap_pop <= max_pop && !ready.empty()) {
             stocks.Push(ready.Pop());
             cap_pop += ready.empty() ? 0 : ready.Peek()->quantity();
           }
+          // Report the timestep throughput
+          cyclus::toolkit::RecordTimeSeries<double>(work_label, this, cap_pop);
         }
       } else {
         stocks.Push(ready.Pop(max_pop, cyclus::eps_rsrc()));
+        // Report the timestep throughput
+        cyclus::toolkit::RecordTimeSeries<double>(work_label, this, max_pop);
       }
 
       LOG(cyclus::LEV_INFO1, "ComCnv") << "Storage " << prototype()
@@ -248,7 +261,6 @@ void Storage::RecordPosition() {
       ->AddVal("Longitude", longitude)
       ->Record();
 }
-
 
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 extern "C" cyclus::Agent* ConstructStorage(cyclus::Context* ctx) {

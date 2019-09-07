@@ -204,7 +204,7 @@ TEST_F(SinkTest, InRecipe){
   cycamore::Sink* snk = new cycamore::Sink(&ctx);
   snk->AddCommodity("some_u");
   snk->EnterNotify();
-  
+
   std::set<RequestPortfolio<Material>::Ptr> ports =
     snk->GetMatlRequests();
   ASSERT_EQ(ports.size(), 1);
@@ -223,57 +223,7 @@ TEST_F(SinkTest, BidPrefs) {
   using cyclus::QueryResult;
   using cyclus::Cond;
 
-  std::string config = 
-    "   <in_commods>"
-    "     <val>commods_1</val>"
-    "     <val>commods_2</val>"
-    "   </in_commods>"
-    "   <in_commod_prefs>"
-    "     <val>10</val> "
-    "     <val>1</val> "
-    "   </in_commod_prefs>"
-    "   <capacity>1</capacity>"
-    "   <input_capacity>1.0</input_capacity> ";
-
-  int simdur = 1;
-  cyclus::MockSim sim(cyclus::AgentSpec
-		      (":cycamore:Sink"), config, simdur);
-
-  sim.AddSource("commods_1")
-    .capacity(1)
-    .Finalize();
-
-  sim.AddSource("commods_2")
-    .capacity(1)
-    .Finalize();
-  
-  int id = sim.Run();
-
-  std::vector<Cond> conds;
-  conds.push_back(Cond("Commodity", "==", std::string("commods_1")));
-  QueryResult qr = sim.db().Query("Transactions", &conds);
-
-  // should trade only with #1 since it has highier priority
-  EXPECT_EQ(1, qr.rows.size());
-  
-  std::vector<Cond> conds2;
-  conds2.push_back(Cond("Commodity", "==", std::string("commods_2")));
-  QueryResult qr2 = sim.db().Query("Transactions", &conds2);
-
-  // should trade only with #1 since it has highier priority
-  EXPECT_EQ(0, qr2.rows.size());
-  
-}
-// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-TEST_F(SinkTest, Print) {
-  EXPECT_NO_THROW(std::string s = src_facility->str());
-}
-
-TEST_F(SinkTest, PositionInitialize) {
-  using cyclus::QueryResult;
-  using cyclus::Cond;
-
-  std::string config = 
+  std::string config =
     "   <in_commods>"
     "     <val>commods_1</val>"
     "     <val>commods_2</val>"
@@ -296,7 +246,97 @@ TEST_F(SinkTest, PositionInitialize) {
   sim.AddSource("commods_2")
     .capacity(1)
     .Finalize();
+
+  int id = sim.Run();
+
+  std::vector<Cond> conds;
+  conds.push_back(Cond("Commodity", "==", std::string("commods_1")));
+  QueryResult qr = sim.db().Query("Transactions", &conds);
+
+  // should trade only with #1 since it has highier priority
+  EXPECT_EQ(1, qr.rows.size());
+
+  std::vector<Cond> conds2;
+  conds2.push_back(Cond("Commodity", "==", std::string("commods_2")));
+  QueryResult qr2 = sim.db().Query("Transactions", &conds2);
+
+  // should trade only with #1 since it has highier priority
+  EXPECT_EQ(0, qr2.rows.size());
   
+  // checking the write amount of SWU has been repported
+  qr = sim.db().Query("TimeSeriesThroughput", NULL);
+  EXPECT_NEAR(qr.GetVal<double>("Value"), 1, 0.01);
+
+}
+// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+TEST_F(SinkTest, ThrouputRecording) {
+  using cyclus::QueryResult;
+  using cyclus::Cond;
+
+  std::string config =
+    "   <in_commods>"
+    "     <val>commods_1</val>"
+    "     <val>commods_2</val>"
+    "   </in_commods>"
+    "   <in_commod_prefs>"
+    "     <val>10</val> "
+    "     <val>1</val> "
+    "   </in_commod_prefs>"
+    "   <capacity>1</capacity>"
+    "   <input_capacity>1.0</input_capacity> ";
+
+  int simdur = 1;
+  cyclus::MockSim sim(cyclus::AgentSpec
+          (":cycamore:Sink"), config, simdur);
+
+  sim.AddSource("commods_1")
+    .capacity(1)
+    .Finalize();
+
+  sim.AddSource("commods_2")
+    .capacity(1)
+    .Finalize();
+
+  int id = sim.Run();
+  
+  // checking the write amount of SWU has been repported
+  QueryResult qr = sim.db().Query("TimeSeriesThroughput", NULL);
+  EXPECT_NEAR(qr.GetVal<double>("Value"), 1, 0.01);
+
+}
+// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+TEST_F(SinkTest, Print) {
+  EXPECT_NO_THROW(std::string s = src_facility->str());
+}
+
+TEST_F(SinkTest, PositionInitialize) {
+  using cyclus::QueryResult;
+  using cyclus::Cond;
+
+  std::string config =
+    "   <in_commods>"
+    "     <val>commods_1</val>"
+    "     <val>commods_2</val>"
+    "   </in_commods>"
+    "   <in_commod_prefs>"
+    "     <val>10</val> "
+    "     <val>1</val> "
+    "   </in_commod_prefs>"
+    "   <capacity>1</capacity>"
+    "   <input_capacity>1.0</input_capacity> ";
+
+  int simdur = 1;
+  cyclus::MockSim sim(cyclus::AgentSpec
+          (":cycamore:Sink"), config, simdur);
+
+  sim.AddSource("commods_1")
+    .capacity(1)
+    .Finalize();
+
+  sim.AddSource("commods_2")
+    .capacity(1)
+    .Finalize();
+
   int id = sim.Run();
 
   QueryResult qr = sim.db().Query("AgentPosition", NULL);
@@ -308,7 +348,7 @@ TEST_F(SinkTest, PositionInitialize2) {
   using cyclus::QueryResult;
   using cyclus::Cond;
 
-  std::string config = 
+  std::string config =
     "   <in_commods>"
     "     <val>commods_1</val>"
     "     <val>commods_2</val>"
@@ -333,15 +373,230 @@ TEST_F(SinkTest, PositionInitialize2) {
   sim.AddSource("commods_2")
     .capacity(1)
     .Finalize();
-  
+
   int id = sim.Run();
 
   QueryResult qr = sim.db().Query("AgentPosition", NULL);
   EXPECT_EQ(qr.GetVal<double>("Longitude"), 35.0);
   EXPECT_EQ(qr.GetVal<double>("Latitude"), 50.0);
-  
+
 }
 
+// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+TEST_F(SinkTest, StringMetadata) {
+  // this tests verifies the initialization of the latitude variable
+
+  std::string config =
+    "   <in_commods>"
+    "     <val>commods_1</val>"
+    "     <val>commods_2</val>"
+    "   </in_commods>"
+    "   <in_commod_prefs>"
+    "     <val>10</val> "
+    "     <val>1</val> "
+    "   </in_commod_prefs>"
+    "   <capacity>1</capacity>"
+    "   <input_capacity>1.0</input_capacity> "
+    " "
+    " "
+    "   <metadata>"
+    "     <item> "
+    "       <key>string_key</key>"
+    "       <value>string_value%s</value>"
+    "     </item> "
+    "     <item> "
+    "       <key>double_key</key>"
+    "       <value>0.01254%d</value>"
+    "     </item> "
+    "     <item> "
+    "       <key>int_key</key>"
+    "       <value>-1254%i</value>"
+    "     </item> "
+    "     <item> "
+    "       <key>uint_key</key>"
+    "       <value>1254%u</value>"
+    "     </item> "
+    "     <item> "
+    "       <key>bool_key</key>"
+    "       <value>true%b</value>"
+    "     </item> "
+    "   </metadata>";
+
+  int simdur = 1;
+  cyclus::MockSim sim(cyclus::AgentSpec
+          (":cycamore:Sink"), config, simdur);
+
+  sim.AddSource("commods_1")
+    .capacity(1)
+    .Finalize();
+
+  sim.AddSource("commods_2")
+    .capacity(1)
+    .Finalize();
+
+  int id = sim.Run();
+
+  std::vector<cyclus::Cond> conds;
+  cyclus::QueryResult qr;
+  conds.push_back(cyclus::Cond("keyword", "==", std::string("string_key")));
+  qr = sim.db().Query("Metadata", &conds);
+  EXPECT_EQ(qr.GetVal<std::string>("Value"), "string_value");
+  EXPECT_EQ(qr.GetVal<std::string>("Type"), "string");
+
+  conds[0] = cyclus::Cond("keyword", "==", std::string("double_key"));
+  qr = sim.db().Query("Metadata", &conds);
+  EXPECT_EQ(qr.GetVal<std::string>("Value"), "0.012540");
+  EXPECT_EQ(qr.GetVal<std::string>("Type"), "double");
+
+  conds[0] = cyclus::Cond("keyword", "==", std::string("int_key"));
+  qr = sim.db().Query("Metadata", &conds);
+  EXPECT_EQ(qr.GetVal<std::string>("Value"), "-1254");
+  EXPECT_EQ(qr.GetVal<std::string>("Type"), "int");
+
+  conds[0] = cyclus::Cond("keyword", "==", std::string("uint_key"));
+  qr = sim.db().Query("Metadata", &conds);
+  EXPECT_EQ(qr.GetVal<std::string>("Value"), "1254");
+  EXPECT_EQ(qr.GetVal<std::string>("Type"), "uint");
+
+  conds[0] = cyclus::Cond("keyword", "==", std::string("bool_key"));
+  qr = sim.db().Query("Metadata", &conds);
+  EXPECT_EQ(qr.GetVal<std::string>("Value"), "true");
+  EXPECT_EQ(qr.GetVal<std::string>("Type"), "bool");
+}
+
+
+TEST_F(SinkTest, UsageMetadata) {
+  // this tests verifies the initialization of the latitude variable
+
+  std::string config =
+    "   <in_commods>"
+    "     <val>commods_1</val>"
+    "     <val>commods_2</val>"
+    "   </in_commods>"
+    "   <in_commod_prefs>"
+    "     <val>10</val> "
+    "     <val>1</val> "
+    "   </in_commod_prefs>"
+    "   <capacity>1</capacity>"
+    "   <input_capacity>1.0</input_capacity> "
+    "   "
+    "   "
+    "   <usagemetadata>"
+    "     <item> "
+    "       <keyword>co2</keyword>"
+    "       <usage> "
+    "         <item> "
+    "           <key>decommission</key> "
+    "           <value>25</value> "
+    "         </item> "
+    "         <item> "
+    "           <key>deployment</key> "
+    "           <value>45</value> "
+    "         </item> "
+    "         <item> "
+    "           <key>timestep</key> "
+    "           <value>35</value> "
+    "         </item> "
+    "         <item> "
+    "           <key>throughput</key> "
+    "           <value>15</value> "
+    "         </item> "
+    "       </usage> "
+    "     </item> "
+    "   "
+    "     <item> "
+    "       <keyword>water</keyword>"
+    "       <usage> "
+    "         <item> "
+    "           <key>deployment</key> "
+    "           <value>43</value> "
+    "         </item> "
+    "       </usage> "
+    "     </item> "
+    "   "
+    "     <item> "
+    "       <keyword>land</keyword>"
+    "       <usage> "
+    "         <item> "
+    "           <key>decommission</key> "
+    "           <value>24</value> "
+    "         </item> "
+    "       </usage> "
+    "     </item> "
+    "   "
+    "     <item> "
+    "       <keyword>manpower</keyword>"
+    "       <usage> "
+    "         <item> "
+    "           <key>timestep</key> "
+    "           <value>32</value> "
+    "         </item> "
+    "       </usage> "
+    "     </item> "
+    "   "
+    "     <item> "
+    "       <keyword>lolipop</keyword>"
+    "       <usage> "
+    "         <item> "
+    "           <key>throughput</key> "
+    "           <value>11</value> "
+    "         </item> "
+    "       </usage> "
+    "     </item> "
+    "   </usagemetadata>";
+
+  int simdur = 1;
+  cyclus::MockSim sim(cyclus::AgentSpec
+          (":cycamore:Sink"), config, simdur);
+
+  sim.AddSource("commods_1")
+    .capacity(1)
+    .Finalize();
+
+  sim.AddSource("commods_2")
+    .capacity(1)
+    .Finalize();
+
+  int id = sim.Run();
+
+  std::vector<cyclus::Cond> conds;
+  cyclus::QueryResult qr;
+  conds.push_back(cyclus::Cond("keyword", "==", std::string("co2")));
+  conds.push_back(cyclus::Cond("Type", "==", std::string("decommission")));
+  qr = sim.db().Query("Metadata", &conds);
+  EXPECT_EQ(qr.GetVal<std::string>("Value"), "25.000000");
+  conds.clear();
+  conds.push_back(cyclus::Cond("keyword", "==", std::string("co2")));
+  conds.push_back(cyclus::Cond("Type", "==", std::string("deployment")));
+  qr = sim.db().Query("Metadata", &conds);
+  EXPECT_EQ(qr.GetVal<std::string>("Value"), "45.000000");
+  conds[1] = cyclus::Cond("Type", "==", std::string("timestep"));
+  qr = sim.db().Query("Metadata", &conds);
+  EXPECT_EQ(qr.GetVal<std::string>("Value"), "35.000000");
+  conds[1] = cyclus::Cond("Type", "==", std::string("throughput"));
+  qr = sim.db().Query("Metadata", &conds);
+  EXPECT_EQ(qr.GetVal<std::string>("Value"), "15.000000");
+
+  conds[0] = cyclus::Cond("keyword", "==", std::string("water"));
+  conds[1] = cyclus::Cond("Type", "==", std::string("deployment"));
+  qr = sim.db().Query("Metadata", &conds);
+  EXPECT_EQ(qr.GetVal<std::string>("Value"), "43.000000");
+
+  conds[0] = cyclus::Cond("keyword", "==", std::string("land"));
+  conds[1] = cyclus::Cond("Type", "==", std::string("decommission"));
+  qr = sim.db().Query("Metadata", &conds);
+  EXPECT_EQ(qr.GetVal<std::string>("Value"), "24.000000");
+
+  conds[0] = cyclus::Cond("keyword", "==", std::string("manpower"));
+  conds[1] = cyclus::Cond("Type", "==", std::string("timestep"));
+  qr = sim.db().Query("Metadata", &conds);
+  EXPECT_EQ(qr.GetVal<std::string>("Value"), "32.000000");
+
+  conds[0] = cyclus::Cond("keyword", "==", std::string("lolipop"));
+  conds[1] = cyclus::Cond("Type", "==", std::string("throughput"));
+  qr = sim.db().Query("Metadata", &conds);
+  EXPECT_EQ(qr.GetVal<std::string>("Value"), "11.000000");
+}
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 cyclus::Agent* SinkConstructor(cyclus::Context* ctx) {
   return new cycamore::Sink(ctx);

@@ -131,15 +131,20 @@ class TopupConverter : public cyclus::Converter<cyclus::Material> {
 };
 
 FuelFab::FuelFab(cyclus::Context* ctx)
-    : cyclus::Facility(ctx), 
-      fill_size(0), 
-      fiss_size(0), 
+    : cyclus::Facility(ctx),
+      fill_size(0),
+      fiss_size(0),
       throughput(0),
+      work_label("Throughput"),
       latitude(0.0),
       longitude(0.0),
-      coordinates(latitude, longitude) {}
+      coordinates(latitude, longitude){}
 
 void FuelFab::EnterNotify() {
+  metadata.SetWorkLabel(work_label);
+  metadata.LoadData(metadata_);
+  metadata.LoadData(usage_metadata_);
+
   cyclus::Facility::EnterNotify();
 
   if (fiss_commod_prefs.empty()) {
@@ -397,7 +402,7 @@ void FuelFab::GetMatlTrades(
         responses) {
   using cyclus::Trade;
 
-  // guard against cases where a buffer is empty - this is okay because some 
+  // guard against cases where a buffer is empty - this is okay because some
   // trades may not need that particular buffer.
   double w_fill = 0;
   if (fill.count() > 0) {
@@ -493,6 +498,8 @@ void FuelFab::GetMatlTrades(
       responses.push_back(std::make_pair(trades[i], m));
     }
   }
+  // Report the timestep throughput
+  cyclus::toolkit::RecordTimeSeries<double>(work_label, this, tot);
 }
 
 void FuelFab::RecordPosition() {

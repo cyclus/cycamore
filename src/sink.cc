@@ -12,10 +12,12 @@ namespace cycamore {
 Sink::Sink(cyclus::Context* ctx)
     : cyclus::Facility(ctx),
       capacity(std::numeric_limits<double>::max()),
+      work_label("Throughput"),
       latitude(0.0),
       longitude(0.0),
-      coordinates(latitude, longitude) {
-  SetMaxInventorySize(std::numeric_limits<double>::max());}
+      coordinates(latitude, longitude){
+  SetMaxInventorySize(std::numeric_limits<double>::max());
+}
 
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 Sink::~Sink() {}
@@ -40,6 +42,10 @@ Sink::~Sink() {}
 
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 void Sink::EnterNotify() {
+  metadata.SetWorkLabel(work_label);
+  metadata.LoadData(metadata_);
+  metadata.LoadData(usage_metadata_);
+
   cyclus::Facility::EnterNotify();
 
   if (in_commod_prefs.size() == 0) {
@@ -92,14 +98,14 @@ Sink::GetMatlRequests() {
     mat = cyclus::NewBlankMaterial(amt);
   } else {
     Composition::Ptr rec = this->context()->GetRecipe(recipe_name);
-    mat = cyclus::Material::CreateUntracked(amt, rec); 
-  } 
+    mat = cyclus::Material::CreateUntracked(amt, rec);
+  }
 
   if (amt > cyclus::eps()) {
     std::vector<Request<Material>*> mutuals;
     for (int i = 0; i < in_commods.size(); i++) {
       mutuals.push_back(port->AddRequest(mat, this, in_commods[i], in_commod_prefs[i]));
-      
+
     }
     port->AddMutualReqs(mutuals);
     ports.insert(port);
@@ -142,9 +148,13 @@ void Sink::AcceptMatlTrades(
                                  cyclus::Material::Ptr> >& responses) {
   std::vector< std::pair<cyclus::Trade<cyclus::Material>,
                          cyclus::Material::Ptr> >::const_iterator it;
+  double new_mass = 0;
   for (it = responses.begin(); it != responses.end(); ++it) {
     inventory.Push(it->second);
+    new_mass += it->second->quantity();
   }
+    // Report the timestep throughput
+    cyclus::toolkit::RecordTimeSeries<double>(work_label, this, new_mass);
 }
 
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -172,7 +182,7 @@ void Sink::Tick() {
          commod++) {
       LOG(cyclus::LEV_INFO4, "SnkFac") << " will request " << requestAmt
                                        << " kg of " << *commod << ".";
-      cyclus::toolkit::RecordTimeSeries<double>("demand"+*commod, this, 
+      cyclus::toolkit::RecordTimeSeries<double>("demand"+*commod, this,
                                             requestAmt);
     }
   }

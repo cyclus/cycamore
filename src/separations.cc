@@ -11,11 +11,12 @@ using cyclus::CompMap;
 
 namespace cycamore {
 
-Separations::Separations(cyclus::Context* ctx) 
+Separations::Separations(cyclus::Context* ctx)
     : cyclus::Facility(ctx),
+      work_label("Throughput"),
       latitude(0.0),
       longitude(0.0),
-      coordinates(latitude, longitude) {}
+      coordinates(latitude, longitude){}
 
 cyclus::Inventories Separations::SnapshotInv() {
   cyclus::Inventories invs;
@@ -51,7 +52,12 @@ typedef std::pair<double, std::map<int, double> > Stream;
 typedef std::map<std::string, Stream> StreamSet;
 
 void Separations::EnterNotify() {
+  metadata.SetWorkLabel(work_label);
+  metadata.LoadData(metadata_);
+  metadata.LoadData(usage_metadata_);
+
   cyclus::Facility::EnterNotify();
+
   std::map<int, double> efficiency_;
 
   StreamSet::iterator it;
@@ -138,7 +144,7 @@ void Separations::Tick() {
           mat->ExtractComp(qty * maxfrac, m->comp()));
       Record("Separated", qty * maxfrac, name);
     }
-    cyclus::toolkit::RecordTimeSeries<double>("supply"+name, this, 
+    cyclus::toolkit::RecordTimeSeries<double>("supply"+name, this,
                                               streambufs[name].quantity());
   }
 
@@ -156,6 +162,9 @@ void Separations::Tick() {
       leftover.Push(mat);
     }
   }
+  // Report the timestep throughput
+  cyclus::toolkit::RecordTimeSeries<double>(work_label, this, maxfrac);
+
   cyclus::toolkit::RecordTimeSeries<double>("supply"+leftover_commod, this,
                                             leftover.quantity());
 

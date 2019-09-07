@@ -23,9 +23,10 @@ Enrichment::Enrichment(cyclus::Context* ctx)
       product_commod(""),
       tails_commod(""),
       order_prefs(true),
+      work_label("EnrichmentSWU"),
       latitude(0.0),
       longitude(0.0),
-      coordinates(latitude, longitude) {}
+      coordinates(latitude, longitude){}
 
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 Enrichment::~Enrichment() {}
@@ -40,6 +41,15 @@ std::string Enrichment::str() {
      << " * Output cyclus::Commodity: " << product_commod
      << " * Tails cyclus::Commodity: " << tails_commod;
   return ss.str();
+}
+
+// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+void Enrichment::EnterNotify() {
+  metadata.SetWorkLabel(work_label);
+  metadata.LoadData(metadata_);
+  metadata.LoadData(usage_metadata_);
+
+  cyclus::Facility::EnterNotify();
 }
 
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -59,9 +69,9 @@ void Enrichment::Build(cyclus::Agent* parent) {
 }
 
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-void Enrichment::Tick() { 
+void Enrichment::Tick() {
   current_swu_capacity = SwuCapacity();
-  
+
 }
 
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -

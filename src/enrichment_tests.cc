@@ -19,7 +19,7 @@ using pyne::nucname::id;
 using cyclus::Material;
 
 namespace cycamore {
-  
+
 Composition::Ptr c_nou235() {
   cyclus::CompMap m;
   m[922380000] = 1.0;
@@ -54,8 +54,8 @@ Composition::Ptr c_heu() {
 TEST_F(EnrichmentTest, RequestQty) {
   // this tests verifies that requests for input material are fulfilled
   // without providing any extra
-  
-  std::string config = 
+
+  std::string config =
     "   <feed_commod>natu</feed_commod> "
     "   <feed_recipe>natu1</feed_recipe> "
     "   <product_commod>enr_u</product_commod> "
@@ -65,20 +65,20 @@ TEST_F(EnrichmentTest, RequestQty) {
 
   int simdur = 1;
   cyclus::MockSim sim(cyclus::AgentSpec
-		      (":cycamore:Enrichment"), config, simdur);
+          (":cycamore:Enrichment"), config, simdur);
   sim.AddRecipe("natu1", c_natu1());
-  
+
   sim.AddSource("natu")
     .recipe("natu1")
     .Finalize();
-  
+
   int id = sim.Run();
 
   std::vector<Cond> conds;
   conds.push_back(Cond("Commodity", "==", std::string("natu")));
   QueryResult qr = sim.db().Query("Transactions", &conds);
   Material::Ptr m = sim.GetMaterial(qr.GetVal<int>("ResourceId"));
-  
+
   // Should be only one transaction into the EF,
   // and it should be exactly 1kg of natu
   EXPECT_EQ(1.0, qr.rows.size());
@@ -93,7 +93,7 @@ TEST_F(EnrichmentTest, CheckSWUConstraint) {
   // Also confirms that initial_feed flag works.
   // 388 SWU = 10kg 80% enriched HEU from 486kg feed matl
 
-  std::string config = 
+  std::string config =
     "   <feed_commod>natu</feed_commod> "
     "   <feed_recipe>natu1</feed_recipe> "
     "   <product_commod>enr_u</product_commod> "
@@ -103,18 +103,18 @@ TEST_F(EnrichmentTest, CheckSWUConstraint) {
     "   <swu_capacity>195</swu_capacity> ";
 
   int simdur = 1;
-  
+
   cyclus::MockSim sim(cyclus::AgentSpec
-		      (":cycamore:Enrichment"), config, simdur);
-   
+          (":cycamore:Enrichment"), config, simdur);
+
   sim.AddRecipe("natu1", c_natu1());
   sim.AddRecipe("heu", c_heu());
-  
+
   sim.AddSink("enr_u")
     .recipe("heu")
     .capacity(10)
     .Finalize();
-  
+
   int id = sim.Run();
 
   std::vector<Cond> conds;
@@ -125,6 +125,10 @@ TEST_F(EnrichmentTest, CheckSWUConstraint) {
   EXPECT_EQ(1.0, qr.rows.size());
   EXPECT_NEAR(5.0, m->quantity(), 0.1) <<
     "traded quantity exceeds SWU constraint";
+  
+  // checking the write amount of SWU has been repported
+  qr = sim.db().Query("TimeSeriesEnrichmentSWU", NULL);
+  EXPECT_EQ(qr.GetVal<double>("Value"), 195);
 }
 
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -132,7 +136,7 @@ TEST_F(EnrichmentTest, CheckCapConstraint) {
   // Tests that a request for more material than is available in
   // inventory is partially filled with only the inventory quantity.
 
-  std::string config = 
+  std::string config =
     "   <feed_commod>natu</feed_commod> "
     "   <feed_recipe>natu1</feed_recipe> "
     "   <product_commod>enr_u</product_commod> "
@@ -143,35 +147,40 @@ TEST_F(EnrichmentTest, CheckCapConstraint) {
   int simdur = 1;
 
   cyclus::MockSim sim(cyclus::AgentSpec
-		      (":cycamore:Enrichment"), config, simdur);
+          (":cycamore:Enrichment"), config, simdur);
 
 
   sim.AddRecipe("natu1", c_natu1());
   sim.AddRecipe("heu", c_heu());
-   
+
   sim.AddSink("enr_u")
     .recipe("heu")
     .capacity(10)
     .Finalize();
-  
+
   int id = sim.Run();
-  
+
   std::vector<Cond> conds;
   conds.push_back(Cond("Commodity", "==", std::string("enr_u")));
   QueryResult qr = sim.db().Query("Transactions", &conds);
   Material::Ptr m = sim.GetMaterial(qr.GetVal<int>("ResourceId"));
 
   EXPECT_EQ(1.0, qr.rows.size());
-  EXPECT_LE(m->quantity(), 5.0) << 
+  EXPECT_LE(m->quantity(), 5.0) <<
     "traded quantity exceeds capacity constraint";
+  
+  // checking the write amount of SWU has been repported
+  qr = sim.db().Query("TimeSeriesEnrichmentSWU", NULL);
+  EXPECT_NEAR(qr.GetVal<double>("Value"), 190.89, 0.01);
+
 }
 
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 TEST_F(EnrichmentTest, RequestEnrich) {
   // this tests verifies that requests for output material exceeding
   // the maximum allowed enrichment are not fulfilled.
-  
-  std::string config = 
+
+  std::string config =
     "   <feed_commod>natu</feed_commod> "
     "   <feed_recipe>natu1</feed_recipe> "
     "   <product_commod>enr_u</product_commod> "
@@ -181,11 +190,11 @@ TEST_F(EnrichmentTest, RequestEnrich) {
 
   int simdur = 2;
   cyclus::MockSim sim(cyclus::AgentSpec
-		      (":cycamore:Enrichment"), config, simdur);
+          (":cycamore:Enrichment"), config, simdur);
   sim.AddRecipe("natu1", c_natu1());
   sim.AddRecipe("leu", c_leu());
   sim.AddRecipe("heu", c_heu());
-  
+
   sim.AddSource("natu")
     .recipe("natu1")
     .Finalize();
@@ -196,14 +205,14 @@ TEST_F(EnrichmentTest, RequestEnrich) {
   sim.AddSink("enr_u")
     .recipe("heu")
     .Finalize();
-  
+
   int id = sim.Run();
 
   std::vector<Cond> conds;
   conds.push_back(Cond("Commodity", "==", std::string("enr_u")));
   QueryResult qr = sim.db().Query("Transactions", &conds);
   Material::Ptr m = sim.GetMaterial(qr.GetVal<int>("ResourceId"));
-   
+
   // Should be only one transaction out of the EF,
   // and it should be 1kg of LEU
   EXPECT_EQ(1.0, qr.rows.size());
@@ -226,7 +235,7 @@ TEST_F(EnrichmentTest, RequestEnrich) {
 TEST_F(EnrichmentTest, TradeTails) {
   // this tests whether tails are being traded.
 
-  std::string config = 
+  std::string config =
     "   <feed_commod>natu</feed_commod> "
     "   <feed_recipe>natu1</feed_recipe> "
     "   <product_commod>enr_u</product_commod> "
@@ -236,10 +245,10 @@ TEST_F(EnrichmentTest, TradeTails) {
   // time 1-source to EF, 2-Enrich, add to tails, 3-tails avail. for trade
   int simdur = 3;
   cyclus::MockSim sim(cyclus::AgentSpec
-		      (":cycamore:Enrichment"), config, simdur);
+          (":cycamore:Enrichment"), config, simdur);
   sim.AddRecipe("natu1", c_natu1());
   sim.AddRecipe("leu", c_leu());
-  
+
   sim.AddSource("natu")
     .recipe("natu1")
     .Finalize();
@@ -248,7 +257,7 @@ TEST_F(EnrichmentTest, TradeTails) {
     .Finalize();
    sim.AddSink("tails")
     .Finalize();
-  
+
   int id = sim.Run();
 
   std::vector<Cond> conds;
@@ -257,14 +266,14 @@ TEST_F(EnrichmentTest, TradeTails) {
 
   // Should be exactly one tails transaction
   EXPECT_EQ(1, qr.rows.size());
-  
+
 }
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
   TEST_F(EnrichmentTest, TailsQty) {
   // this tests whether tails are being traded at correct quantity when
   // requested amount is larger than qty in a single tails-buffer element
 
-  std::string config = 
+  std::string config =
     "   <feed_commod>natu</feed_commod> "
     "   <feed_recipe>natu1</feed_recipe> "
     "   <product_commod>enr_u</product_commod> "
@@ -274,10 +283,10 @@ TEST_F(EnrichmentTest, TradeTails) {
   // time 1-source to EF, 2-Enrich, add to tails, 3-tails avail. for trade
   int simdur = 3;
   cyclus::MockSim sim(cyclus::AgentSpec
-		      (":cycamore:Enrichment"), config, simdur);
+          (":cycamore:Enrichment"), config, simdur);
   sim.AddRecipe("natu1", c_natu1());
   sim.AddRecipe("leu", c_leu());
-  
+
   sim.AddSource("natu")
     .recipe("natu1")
     .Finalize();
@@ -298,9 +307,9 @@ TEST_F(EnrichmentTest, TradeTails) {
   conds.push_back(Cond("Commodity", "==", std::string("tails")));
   QueryResult qr = sim.db().Query("Transactions", &conds);
   Material::Ptr m = sim.GetMaterial(qr.GetVal<int>("ResourceId"));
-  
+
   // Should be 2 tails transactions, one from each LEU sink, each 4.125kg.
-  // Q * (e_p - e_f)/(e_f - e_t) = 0.5 * (0.04 - 0.007)/(0.007 - 0.003) = 4.125 
+  // Q * (e_p - e_f)/(e_f - e_t) = 0.5 * (0.04 - 0.007)/(0.007 - 0.003) = 4.125
   EXPECT_EQ(2, qr.rows.size());
 
   cyclus::SqlStatement::Ptr stmt = sim.db().db().Prepare(
@@ -320,7 +329,7 @@ TEST_F(EnrichmentTest, BidPrefs) {
   // This tests that natu sources are preference-ordered by
   // U235 content
 
-  std::string config = 
+  std::string config =
     "   <feed_commod>natu</feed_commod> "
     "   <feed_recipe>natu1</feed_recipe> "
     "   <product_commod>enr_u</product_commod> "
@@ -330,7 +339,7 @@ TEST_F(EnrichmentTest, BidPrefs) {
 
   int simdur = 1;
   cyclus::MockSim sim(cyclus::AgentSpec
-		      (":cycamore:Enrichment"), config, simdur);
+          (":cycamore:Enrichment"), config, simdur);
   sim.AddRecipe("natu1", c_natu1());
   sim.AddRecipe("natu2", c_natu2());
 
@@ -343,7 +352,7 @@ TEST_F(EnrichmentTest, BidPrefs) {
     .recipe("natu2")
     .capacity(1)
     .Finalize();
-  
+
   int id = sim.Run();
 
   std::vector<Cond> conds;
@@ -352,7 +361,7 @@ TEST_F(EnrichmentTest, BidPrefs) {
 
   // should trade only with #2 since it has higher U235
   EXPECT_EQ(1, qr.rows.size());
-  
+
   Material::Ptr m = sim.GetMaterial(qr.GetVal<int>("ResourceId"));
   CompMap got = m->comp()->mass();
   CompMap want = c_natu2()->mass();
@@ -364,25 +373,25 @@ TEST_F(EnrichmentTest, BidPrefs) {
     EXPECT_DOUBLE_EQ(it->second, got[it->first]) <<
       "nuclide qty off: " << pyne::nucname::name(it->first);
   }
-  
+
 }
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
   TEST_F(EnrichmentTest, NoBidPrefs) {
   // This tests that preference-ordering for sources
   // turns off correctly if flag is used
 
-  std::string config = 
+  std::string config =
     "   <feed_commod>natu</feed_commod> "
     "   <feed_recipe>natu1</feed_recipe> "
     "   <product_commod>enr_u</product_commod> "
     "   <tails_commod>tails</tails_commod> "
     "   <tails_assay>0.003</tails_assay> "
-    "   <max_feed_inventory>2.0</max_feed_inventory> " 
+    "   <max_feed_inventory>2.0</max_feed_inventory> "
     "   <order_prefs>0</order_prefs> ";
 
   int simdur = 1;
   cyclus::MockSim sim(cyclus::AgentSpec
-		      (":cycamore:Enrichment"), config, simdur);
+          (":cycamore:Enrichment"), config, simdur);
   sim.AddRecipe("natu1", c_natu1());
   sim.AddRecipe("natu2", c_natu2());
 
@@ -395,7 +404,7 @@ TEST_F(EnrichmentTest, BidPrefs) {
     .recipe("natu2")
     .capacity(1)
     .Finalize();
-  
+
   int id = sim.Run();
 
   std::vector<Cond> conds;
@@ -410,7 +419,7 @@ TEST_F(EnrichmentTest, BidPrefs) {
 TEST_F(EnrichmentTest, ZeroU235) {
   // Test that offers of natu with no u235 content are rejected
 
-  std::string config = 
+  std::string config =
     "   <feed_commod>natu</feed_commod> "
     "   <feed_recipe>natu1</feed_recipe> "
     "   <product_commod>enr_u</product_commod> "
@@ -420,7 +429,7 @@ TEST_F(EnrichmentTest, ZeroU235) {
 
   int simdur = 1;
   cyclus::MockSim sim(cyclus::AgentSpec
-		      (":cycamore:Enrichment"), config, simdur);
+          (":cycamore:Enrichment"), config, simdur);
   sim.AddRecipe("no_u235", c_nou235());
   sim.AddRecipe("natu1", c_natu1());
 
@@ -435,7 +444,7 @@ TEST_F(EnrichmentTest, ZeroU235) {
   conds.push_back(Cond("Commodity", "==", std::string("natu")));
   // DB table should be empty since there are no transactions
   EXPECT_THROW(sim.db().Query("Transactions", &conds),
-	       std::exception);
+         std::exception);
 }
 
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -562,7 +571,7 @@ TEST_F(EnrichmentTest, ValidReq) {
   v2[922380000] = 1 - tails_assay;
   mat = Material::CreateUntracked(qty, Composition::CreateFromAtom(v2));
   // u235 / (u235 + u238) <= tails_assay
-  EXPECT_FALSE(src_facility->ValidReq(mat)); 
+  EXPECT_FALSE(src_facility->ValidReq(mat));
 
   cyclus::CompMap v3;
   v3[922350000] = 1;
@@ -601,14 +610,14 @@ TEST_F(EnrichmentTest, ValidReq) {
 
   MatQuery mq(target);
   double mass_frac = mq.mass_frac(nucs);
-  
+
   SWUConverter swuc(feed_assay, tails_assay);
   NatUConverter natuc(feed_assay, tails_assay);
 
   Material::Ptr offer = DoOffer(target);
 
   EXPECT_NEAR(swuc.convert(target), swuc.convert(offer), 0.001);
-  EXPECT_NEAR(natuc.convert(target) * mass_frac, natuc.convert(offer), 0.001); 
+  EXPECT_NEAR(natuc.convert(target) * mass_frac, natuc.convert(offer), 0.001);
 }
 
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -648,8 +657,8 @@ TEST_F(EnrichmentTest, Enrich) {
 
   Material::Ptr response;
   EXPECT_NO_THROW(response = DoEnrich(target, qty));
-  EXPECT_DOUBLE_EQ(src_facility->Tails().quantity(), tails_qty); 
-  
+  EXPECT_DOUBLE_EQ(src_facility->Tails().quantity(), tails_qty);
+
   MatQuery q(response);
   EXPECT_EQ(response->quantity(), qty);
   EXPECT_EQ(q.mass_frac(922350000), product_assay);
@@ -674,8 +683,8 @@ TEST_F(EnrichmentTest, Response) {
   using cyclus::Material;
   using cyclus::Request;
   using cyclus::Trade;
-  using cyclus::toolkit::Assays; 
-  using cyclus::toolkit::FeedQty; 
+  using cyclus::toolkit::Assays;
+  using cyclus::toolkit::FeedQty;
   using cyclus::toolkit::SwuRequired;
   using cyclus::toolkit::UraniumAssayMass;
 
@@ -698,12 +707,12 @@ TEST_F(EnrichmentTest, Response) {
   Assays assays(feed_assay, UraniumAssayMass(target), tails_assay);
   double swu_req = SwuRequired(qty, assays);
   double natu_req = FeedQty(qty, assays);
-  
+
   src_facility->SetMaxInventorySize(natu_req * 4);  // not capacitated by nat
   src_facility->SwuCapacity(swu_req);  // swu capacitated
-  
+
   src_facility->GetMatlTrades(trades, responses);
-  
+
   // set up state
   DoAddMat(GetMat(natu_req * 2));
 
@@ -727,8 +736,8 @@ TEST_F(EnrichmentTest, Response) {
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 TEST_F(EnrichmentTest, PositionInitialize) {
   // this tests verifies the initialization of the latitude variable
-  
-  std::string config = 
+
+  std::string config =
     "   <feed_commod>natu</feed_commod> "
     "   <feed_recipe>natu1</feed_recipe> "
     "   <product_commod>enr_u</product_commod> "
@@ -740,11 +749,11 @@ TEST_F(EnrichmentTest, PositionInitialize) {
   cyclus::MockSim sim(cyclus::AgentSpec
           (":cycamore:Enrichment"), config, simdur);
   sim.AddRecipe("natu1", c_natu1());
-  
+
   sim.AddSource("natu")
     .recipe("natu1")
     .Finalize();
-  
+
   int id = sim.Run();
 
   QueryResult qr = sim.db().Query("AgentPosition", NULL);
@@ -753,10 +762,10 @@ TEST_F(EnrichmentTest, PositionInitialize) {
 }
 
 TEST_F(EnrichmentTest, PositionInitialize2) {
-  // this tests verifies the initialization of the longitude 
+  // this tests verifies the initialization of the longitude
   // variable
-  
-  std::string config = 
+
+  std::string config =
     "   <feed_commod>natu</feed_commod> "
     "   <feed_recipe>natu1</feed_recipe> "
     "   <product_commod>enr_u</product_commod> "
@@ -770,19 +779,220 @@ TEST_F(EnrichmentTest, PositionInitialize2) {
   cyclus::MockSim sim(cyclus::AgentSpec
           (":cycamore:Enrichment"), config, simdur);
   sim.AddRecipe("natu1", c_natu1());
-  
+
   sim.AddSource("natu")
     .recipe("natu1")
     .Finalize();
-  
+
   int id = sim.Run();
 
   QueryResult qr = sim.db().Query("AgentPosition", NULL);
   EXPECT_EQ(qr.GetVal<double>("Latitude"), 50.0);
   EXPECT_EQ(qr.GetVal<double>("Longitude"), 35.0);
 }
+// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+TEST_F(EnrichmentTest, BasicMetadata) {
+  // this tests verifies the initialization of the latitude variable
 
-  
+  std::string config =
+    "   <feed_commod>natu</feed_commod> "
+    "   <feed_recipe>natu1</feed_recipe> "
+    "   <product_commod>enr_u</product_commod> "
+    "   <tails_commod>tails</tails_commod> "
+    "   <max_feed_inventory>1.0</max_feed_inventory> "
+    "   <tails_assay>0.003</tails_assay> "
+    " "
+    " "
+    "   <metadata>"
+    "     <item> "
+    "       <key>string_key</key>"
+    "       <value>string_value%s</value>"
+    "     </item> "
+    "     <item> "
+    "       <key>double_key</key>"
+    "       <value>0.01254%d</value>"
+    "     </item> "
+    "     <item> "
+    "       <key>int_key</key>"
+    "       <value>-1254%i</value>"
+    "     </item> "
+    "     <item> "
+    "       <key>uint_key</key>"
+    "       <value>1254%u</value>"
+    "     </item> "
+    "     <item> "
+    "       <key>bool_key</key>"
+    "       <value>true%b</value>"
+    "     </item> "
+    "   </metadata>";
+
+  int simdur = 1;
+  cyclus::MockSim sim(cyclus::AgentSpec
+          (":cycamore:Enrichment"), config, simdur);
+  sim.AddRecipe("natu1", c_natu1());
+
+  sim.AddSource("natu")
+    .recipe("natu1")
+    .Finalize();
+
+  int id = sim.Run();
+
+  std::vector<Cond> conds;
+  QueryResult qr;
+  conds.push_back(Cond("keyword", "==", std::string("string_key")));
+  qr = sim.db().Query("Metadata", &conds);
+  EXPECT_EQ(qr.GetVal<std::string>("Value"), "string_value");
+  EXPECT_EQ(qr.GetVal<std::string>("Type"), "string");
+
+  conds[0] = Cond("keyword", "==", std::string("double_key"));
+  qr = sim.db().Query("Metadata", &conds);
+  EXPECT_EQ(qr.GetVal<std::string>("Value"), "0.012540");
+  EXPECT_EQ(qr.GetVal<std::string>("Type"), "double");
+
+  conds[0] = Cond("keyword", "==", std::string("int_key"));
+  qr = sim.db().Query("Metadata", &conds);
+  EXPECT_EQ(qr.GetVal<std::string>("Value"), "-1254");
+  EXPECT_EQ(qr.GetVal<std::string>("Type"), "int");
+
+  conds[0] = Cond("keyword", "==", std::string("uint_key"));
+  qr = sim.db().Query("Metadata", &conds);
+  EXPECT_EQ(qr.GetVal<std::string>("Value"), "1254");
+  EXPECT_EQ(qr.GetVal<std::string>("Type"), "uint");
+
+  conds[0] = Cond("keyword", "==", std::string("bool_key"));
+  qr = sim.db().Query("Metadata", &conds);
+  EXPECT_EQ(qr.GetVal<std::string>("Value"), "true");
+  EXPECT_EQ(qr.GetVal<std::string>("Type"), "bool");
+}
+
+
+TEST_F(EnrichmentTest, UsageMetadata) {
+  // this tests verifies the initialization of the latitude variable
+
+  std::string config =
+    "   <feed_commod>natu</feed_commod> "
+    "   <feed_recipe>natu1</feed_recipe> "
+    "   <product_commod>enr_u</product_commod> "
+    "   <tails_commod>tails</tails_commod> "
+    "   <max_feed_inventory>1.0</max_feed_inventory> "
+    "   <tails_assay>0.003</tails_assay> "
+    "   "
+    "   "
+    "   <usagemetadata>"
+    "     <item> "
+    "       <keyword>co2</keyword>"
+    "       <usage> "
+    "         <item> "
+    "           <key>decommission</key> "
+    "           <value>25</value> "
+    "         </item> "
+    "         <item> "
+    "           <key>deployment</key> "
+    "           <value>45</value> "
+    "         </item> "
+    "         <item> "
+    "           <key>timestep</key> "
+    "           <value>35</value> "
+    "         </item> "
+    "         <item> "
+    "           <key>throughput</key> "
+    "           <value>15</value> "
+    "         </item> "
+    "       </usage> "
+    "     </item> "
+    "   "
+    "     <item> "
+    "       <keyword>water</keyword>"
+    "       <usage> "
+    "         <item> "
+    "           <key>deployment</key> "
+    "           <value>43</value> "
+    "         </item> "
+    "       </usage> "
+    "     </item> "
+    "   "
+    "     <item> "
+    "       <keyword>land</keyword>"
+    "       <usage> "
+    "         <item> "
+    "           <key>decommission</key> "
+    "           <value>24</value> "
+    "         </item> "
+    "       </usage> "
+    "     </item> "
+    "   "
+    "     <item> "
+    "       <keyword>manpower</keyword>"
+    "       <usage> "
+    "         <item> "
+    "           <key>timestep</key> "
+    "           <value>32</value> "
+    "         </item> "
+    "       </usage> "
+    "     </item> "
+    "   "
+    "     <item> "
+    "       <keyword>lolipop</keyword>"
+    "       <usage> "
+    "         <item> "
+    "           <key>throughput</key> "
+    "           <value>11</value> "
+    "         </item> "
+    "       </usage> "
+    "     </item> "
+    "   </usagemetadata>";
+
+  int simdur = 1;
+  cyclus::MockSim sim(cyclus::AgentSpec
+          (":cycamore:Enrichment"), config, simdur);
+  sim.AddRecipe("natu1", c_natu1());
+
+  sim.AddSource("natu")
+    .recipe("natu1")
+    .Finalize();
+
+  int id = sim.Run();
+
+  std::vector<Cond> conds;
+  QueryResult qr;
+  conds.push_back(Cond("keyword", "==", std::string("co2")));
+  conds.push_back(Cond("Type", "==", std::string("decommission")));
+  qr = sim.db().Query("Metadata", &conds);
+  EXPECT_EQ(qr.GetVal<std::string>("Value"), "25.000000");
+  conds.clear();
+  conds.push_back(Cond("keyword", "==", std::string("co2")));
+  conds.push_back(Cond("Type", "==", std::string("deployment")));
+  qr = sim.db().Query("Metadata", &conds);
+  EXPECT_EQ(qr.GetVal<std::string>("Value"), "45.000000");
+  conds[1] = Cond("Type", "==", std::string("timestep"));
+  qr = sim.db().Query("Metadata", &conds);
+  EXPECT_EQ(qr.GetVal<std::string>("Value"), "35.000000");
+  conds[1] = Cond("Type", "==", std::string("throughput"));
+  qr = sim.db().Query("Metadata", &conds);
+  EXPECT_EQ(qr.GetVal<std::string>("Value"), "15.000000");
+
+  conds[0] = Cond("keyword", "==", std::string("water"));
+  conds[1] = Cond("Type", "==", std::string("deployment"));
+  qr = sim.db().Query("Metadata", &conds);
+  EXPECT_EQ(qr.GetVal<std::string>("Value"), "43.000000");
+
+  conds[0] = Cond("keyword", "==", std::string("land"));
+  conds[1] = Cond("Type", "==", std::string("decommission"));
+  qr = sim.db().Query("Metadata", &conds);
+  EXPECT_EQ(qr.GetVal<std::string>("Value"), "24.000000");
+
+  conds[0] = Cond("keyword", "==", std::string("manpower"));
+  conds[1] = Cond("Type", "==", std::string("timestep"));
+  qr = sim.db().Query("Metadata", &conds);
+  EXPECT_EQ(qr.GetVal<std::string>("Value"), "32.000000");
+
+  conds[0] = Cond("keyword", "==", std::string("lolipop"));
+  conds[1] = Cond("Type", "==", std::string("throughput"));
+  qr = sim.db().Query("Metadata", &conds);
+  EXPECT_EQ(qr.GetVal<std::string>("Value"), "11.000000");
+}
+
+
 }  // namespace cycamore
 
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -

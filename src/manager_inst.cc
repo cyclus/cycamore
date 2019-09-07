@@ -5,10 +5,11 @@ namespace cycamore {
 
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 ManagerInst::ManagerInst(cyclus::Context* ctx)
-      : cyclus::Institution(ctx),
-        latitude(0.0),
-        longitude(0.0),
-        coordinates(latitude, longitude) {}
+    : cyclus::Institution(ctx),
+      work_label("DeployedInst"),
+      latitude(0.0),
+      longitude(0.0),
+      coordinates(latitude, longitude){}
 
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 ManagerInst::~ManagerInst() {}
@@ -22,7 +23,12 @@ void ManagerInst::DecomNotify(Agent* a) {
 }
 
 void ManagerInst::EnterNotify() {
+  metadata.SetWorkLabel(work_label);
+  metadata.LoadData(metadata_);
+  metadata.LoadData(usage_metadata_);
+
   cyclus::Institution::EnterNotify();
+
   std::set<cyclus::Agent*>::iterator sit;
   for (sit = cyclus::Agent::children().begin();
        sit != cyclus::Agent::children().end();

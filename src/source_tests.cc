@@ -123,8 +123,22 @@ TEST_F(SourceTest, Response) {
   delete bid;
 }
 
+TEST_F(SourceTest, CheckThrouputRecording) {
+  std::string config =
+    "<outcommod>spent_fuel</outcommod>"
+  ;
+  int simdur = 3;
+  cyclus::MockSim sim(cyclus::AgentSpec (":cycamore:Source"), config, simdur);
+  sim.AddSink("spent_fuel").capacity(2).Finalize();
+  int id = sim.Run();
+
+  // checking the write amount of SWU has been repported
+  cyclus::QueryResult qr = sim.db().Query("TimeSeriesThroughput", NULL);
+  EXPECT_NEAR(qr.GetVal<double>("Value"), 2, 0.01);
+}
+
 TEST_F(SourceTest, PositionInitialize) {
-  std::string config = 
+  std::string config =
     "<outcommod>spent_fuel</outcommod>"
   ;
   int simdur = 3;
@@ -138,7 +152,7 @@ TEST_F(SourceTest, PositionInitialize) {
 }
 
 TEST_F(SourceTest, Longitude) {
-  std::string config = 
+  std::string config =
     "<outcommod>spent_fuel</outcommod>"
     "<latitude>-0.01</latitude>"
     "<longitude>0.01</longitude>"
@@ -169,6 +183,184 @@ SourceTest::GetContext(int nreqs, std::string commod) {
   return ec;
 }
 
+// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+TEST_F(SourceTest, StringMetadata) {
+  // this tests verifies the initialization of the latitude variable
+
+  std::string config =
+    "<outcommod>spent_fuel</outcommod>"
+    " "
+    " "
+    "   <metadata>"
+    "     <item> "
+    "       <key>string_key</key>"
+    "       <value>string_value%s</value>"
+    "     </item> "
+    "     <item> "
+    "       <key>double_key</key>"
+    "       <value>0.01254%d</value>"
+    "     </item> "
+    "     <item> "
+    "       <key>int_key</key>"
+    "       <value>-1254%i</value>"
+    "     </item> "
+    "     <item> "
+    "       <key>uint_key</key>"
+    "       <value>1254%u</value>"
+    "     </item> "
+    "     <item> "
+    "       <key>bool_key</key>"
+    "       <value>true%b</value>"
+    "     </item> "
+    "   </metadata>";
+
+  int simdur = 1;
+  cyclus::MockSim sim(cyclus::AgentSpec
+          (":cycamore:Source"), config, simdur);
+  int id = sim.Run();
+
+  std::vector<cyclus::Cond> conds;
+  cyclus::QueryResult qr;
+  conds.push_back(cyclus::Cond("keyword", "==", std::string("string_key")));
+  qr = sim.db().Query("Metadata", &conds);
+  EXPECT_EQ(qr.GetVal<std::string>("Value"), "string_value");
+  EXPECT_EQ(qr.GetVal<std::string>("Type"), "string");
+
+  conds[0] = cyclus::Cond("keyword", "==", std::string("double_key"));
+  qr = sim.db().Query("Metadata", &conds);
+  EXPECT_EQ(qr.GetVal<std::string>("Value"), "0.012540");
+  EXPECT_EQ(qr.GetVal<std::string>("Type"), "double");
+
+  conds[0] = cyclus::Cond("keyword", "==", std::string("int_key"));
+  qr = sim.db().Query("Metadata", &conds);
+  EXPECT_EQ(qr.GetVal<std::string>("Value"), "-1254");
+  EXPECT_EQ(qr.GetVal<std::string>("Type"), "int");
+
+  conds[0] = cyclus::Cond("keyword", "==", std::string("uint_key"));
+  qr = sim.db().Query("Metadata", &conds);
+  EXPECT_EQ(qr.GetVal<std::string>("Value"), "1254");
+  EXPECT_EQ(qr.GetVal<std::string>("Type"), "uint");
+
+  conds[0] = cyclus::Cond("keyword", "==", std::string("bool_key"));
+  qr = sim.db().Query("Metadata", &conds);
+  EXPECT_EQ(qr.GetVal<std::string>("Value"), "true");
+  EXPECT_EQ(qr.GetVal<std::string>("Type"), "bool");
+}
+
+TEST_F(SourceTest, UsageMetadata) {
+  // this tests verifies the initialization of the latitude variable
+
+  std::string config =
+    "   <outcommod>spent_fuel</outcommod>"
+    "   "
+    "   "
+    "   <usagemetadata>"
+    "     <item> "
+    "       <keyword>co2</keyword>"
+    "       <usage> "
+    "         <item> "
+    "           <key>decommission</key> "
+    "           <value>25</value> "
+    "         </item> "
+    "         <item> "
+    "           <key>deployment</key> "
+    "           <value>45</value> "
+    "         </item> "
+    "         <item> "
+    "           <key>timestep</key> "
+    "           <value>35</value> "
+    "         </item> "
+    "         <item> "
+    "           <key>throughput</key> "
+    "           <value>15</value> "
+    "         </item> "
+    "       </usage> "
+    "     </item> "
+    "   "
+    "     <item> "
+    "       <keyword>water</keyword>"
+    "       <usage> "
+    "         <item> "
+    "           <key>deployment</key> "
+    "           <value>43</value> "
+    "         </item> "
+    "       </usage> "
+    "     </item> "
+    "   "
+    "     <item> "
+    "       <keyword>land</keyword>"
+    "       <usage> "
+    "         <item> "
+    "           <key>decommission</key> "
+    "           <value>24</value> "
+    "         </item> "
+    "       </usage> "
+    "     </item> "
+    "   "
+    "     <item> "
+    "       <keyword>manpower</keyword>"
+    "       <usage> "
+    "         <item> "
+    "           <key>timestep</key> "
+    "           <value>32</value> "
+    "         </item> "
+    "       </usage> "
+    "     </item> "
+    "   "
+    "     <item> "
+    "       <keyword>lolipop</keyword>"
+    "       <usage> "
+    "         <item> "
+    "           <key>throughput</key> "
+    "           <value>11</value> "
+    "         </item> "
+    "       </usage> "
+    "     </item> "
+    "   </usagemetadata>";
+
+  int simdur = 1;
+  cyclus::MockSim sim(cyclus::AgentSpec
+          (":cycamore:Source"), config, simdur);
+  int id = sim.Run();
+
+  std::vector<cyclus::Cond> conds;
+  cyclus::QueryResult qr;
+  conds.push_back(cyclus::Cond("keyword", "==", std::string("co2")));
+  conds.push_back(cyclus::Cond("Type", "==", std::string("decommission")));
+  qr = sim.db().Query("Metadata", &conds);
+  EXPECT_EQ(qr.GetVal<std::string>("Value"), "25.000000");
+  conds.clear();
+  conds.push_back(cyclus::Cond("keyword", "==", std::string("co2")));
+  conds.push_back(cyclus::Cond("Type", "==", std::string("deployment")));
+  qr = sim.db().Query("Metadata", &conds);
+  EXPECT_EQ(qr.GetVal<std::string>("Value"), "45.000000");
+  conds[1] = cyclus::Cond("Type", "==", std::string("timestep"));
+  qr = sim.db().Query("Metadata", &conds);
+  EXPECT_EQ(qr.GetVal<std::string>("Value"), "35.000000");
+  conds[1] = cyclus::Cond("Type", "==", std::string("throughput"));
+  qr = sim.db().Query("Metadata", &conds);
+  EXPECT_EQ(qr.GetVal<std::string>("Value"), "15.000000");
+
+  conds[0] = cyclus::Cond("keyword", "==", std::string("water"));
+  conds[1] = cyclus::Cond("Type", "==", std::string("deployment"));
+  qr = sim.db().Query("Metadata", &conds);
+  EXPECT_EQ(qr.GetVal<std::string>("Value"), "43.000000");
+
+  conds[0] = cyclus::Cond("keyword", "==", std::string("land"));
+  conds[1] = cyclus::Cond("Type", "==", std::string("decommission"));
+  qr = sim.db().Query("Metadata", &conds);
+  EXPECT_EQ(qr.GetVal<std::string>("Value"), "24.000000");
+
+  conds[0] = cyclus::Cond("keyword", "==", std::string("manpower"));
+  conds[1] = cyclus::Cond("Type", "==", std::string("timestep"));
+  qr = sim.db().Query("Metadata", &conds);
+  EXPECT_EQ(qr.GetVal<std::string>("Value"), "32.000000");
+
+  conds[0] = cyclus::Cond("keyword", "==", std::string("lolipop"));
+  conds[1] = cyclus::Cond("Type", "==", std::string("throughput"));
+  qr = sim.db().Query("Metadata", &conds);
+  EXPECT_EQ(qr.GetVal<std::string>("Value"), "11.000000");
+}
 } // namespace cycamore
 
 cyclus::Agent* SourceConstructor(cyclus::Context* ctx) {

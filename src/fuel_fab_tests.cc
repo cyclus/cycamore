@@ -185,7 +185,7 @@ TEST(FuelFabTests, ValidWeights) {
 
 // request (and receive) a specific recipe for fissile stream correctly.
 TEST(FuelFabTests, FissRecipe) {
-  std::string config = 
+  std::string config =
      "<fill_commods> <val>dummy</val> </fill_commods>"
      "<fill_recipe>natu</fill_recipe>"
      "<fill_size>1</fill_size>"
@@ -220,7 +220,7 @@ TEST(FuelFabTests, FissRecipe) {
 // multiple fissile streams can be correctly requested and used as
 // fissile material inventory.
 TEST(FuelFabTests, MultipleFissStreams) {
-  std::string config = 
+  std::string config =
      "<fill_commods> <val>dummy</val> </fill_commods>"
      "<fill_recipe>natu</fill_recipe>"
      "<fill_size>1</fill_size>"
@@ -261,7 +261,7 @@ TEST(FuelFabTests, MultipleFissStreams) {
 
 // fissile stream preferences can be specified.
 TEST(FuelFabTests, FissStreamPrefs) {
-  std::string config = 
+  std::string config =
      "<fill_commods> <val>dummy</val> </fill_commods>"
      "<fill_recipe>natu</fill_recipe>"
      "<fill_size>1</fill_size>"
@@ -302,7 +302,7 @@ TEST(FuelFabTests, FissStreamPrefs) {
 
 // zero throughput must not result in a zero capacity constraint excception.
 TEST(FuelFabTests, ZeroThroughput) {
-  std::string config = 
+  std::string config =
      "<fill_commods> <val>natu</val> </fill_commods>"
      "<fill_recipe>natu</fill_recipe>"
      "<fill_size>3.9</fill_size>"
@@ -335,7 +335,7 @@ TEST(FuelFabTests, ZeroThroughput) {
 // filled as expected. Inventory size constraints are properly
 // enforced after they are full.
 TEST(FuelFabTests, FillAllInventories) {
-  std::string config = 
+  std::string config =
      "<fill_commods> <val>natu</val> </fill_commods>"
      "<fill_recipe>natu</fill_recipe>"
      "<fill_size>3.9</fill_size>"
@@ -385,7 +385,7 @@ TEST(FuelFabTests, FillAllInventories) {
 // Meet a request requiring zero fill inventory when we have zero fill
 // inventory quantity.
 TEST(FuelFabTests, ProvideStraightFiss_WithZeroFill) {
-  std::string config = 
+  std::string config =
      "<fill_commods> <val>nothing</val> </fill_commods>"
      "<fill_recipe>natu</fill_recipe>"
      "<fill_size>100</fill_size>"
@@ -415,7 +415,7 @@ TEST(FuelFabTests, ProvideStraightFiss_WithZeroFill) {
 }
 
 TEST(FuelFabTests, ProvideStraightFill_ZeroFiss) {
-  std::string config = 
+  std::string config =
      "<fill_commods> <val>anything</val> </fill_commods>"
      "<fill_recipe>natu</fill_recipe>"
      "<fill_size>100</fill_size>"
@@ -447,7 +447,7 @@ TEST(FuelFabTests, ProvideStraightFill_ZeroFiss) {
 // throughput is properly restricted when faced with many fuel
 // requests and with ample material inventory.
 TEST(FuelFabTests, ThroughputLimit) {
-  std::string config = 
+  std::string config =
      "<fill_commods> <val>anything</val> </fill_commods>"
      "<fill_recipe>natu</fill_recipe>"
      "<fill_size>100</fill_size>"
@@ -489,11 +489,17 @@ TEST(FuelFabTests, ThroughputLimit) {
 
   stmt->Step();
   EXPECT_DOUBLE_EQ(simdur-1, stmt->GetDouble(0));
+  
+  // checking the write amount of SWU has been repported
+  std::vector<Cond> conds;
+  conds.push_back(Cond("Time", "==", 2));
+  qr = sim.db().Query("TimeSeriesThroughput", &conds);
+  EXPECT_NEAR(qr.GetVal<double>("Value"), throughput, 0.01);
 }
 
 // supplied fuel has proper equivalence weights as requested.
 TEST(FuelFabTests, CorrectMixing) {
-  std::string config = 
+  std::string config =
      "<fill_commods> <val>natu</val> </fill_commods>"
      "<fill_recipe>natu</fill_recipe>"
      "<fill_size>100</fill_size>"
@@ -544,7 +550,7 @@ TEST(FuelFabTests, CorrectMixing) {
 // fissile.
 TEST(FuelFabTests, FillConstrained) {
   cyclus::Env::SetNucDataPath();
-  std::string config = 
+  std::string config =
      "<fill_commods> <val>natu</val> </fill_commods>"
      "<fill_recipe>natu</fill_recipe>"
      "<fill_size>1</fill_size>"
@@ -590,7 +596,7 @@ TEST(FuelFabTests, FillConstrained) {
 // plenty of filler.
 TEST(FuelFabTests, FissConstrained) {
   cyclus::Env::SetNucDataPath();
-  std::string config = 
+  std::string config =
      "<fill_commods> <val>natu</val> </fill_commods>"
      "<fill_recipe>natu</fill_recipe>"
      "<fill_size>10000</fill_size>"
@@ -634,7 +640,7 @@ TEST(FuelFabTests, FissConstrained) {
 
 // swap to topup inventory because fissile has too low reactivity.
 TEST(FuelFabTests, SwapTopup) {
-  std::string config = 
+  std::string config =
      "<fill_commods> <val>natu</val> </fill_commods>"
      "<fill_recipe>natu</fill_recipe>"
      "<fill_size>10000</fill_size>"
@@ -684,7 +690,7 @@ TEST(FuelFabTests, SwapTopup) {
 }
 
 TEST(FuelFabTests, SwapTopup_ZeroFill) {
-  std::string config = 
+  std::string config =
      "<fill_commods> <val>natu</val> </fill_commods>"
      "<fill_recipe>natu</fill_recipe>"
      "<fill_size>0</fill_size>"
@@ -740,7 +746,7 @@ TEST(FuelFabTests, SwapTopup_ZeroFill) {
 // fiss).
 TEST(FuelFabTests, SwapTopup_TopupConstrained) {
   cyclus::Env::SetNucDataPath();
-  std::string config = 
+  std::string config =
      "<fill_commods> <val>natu</val> </fill_commods>"
      "<fill_recipe>natu</fill_recipe>"
      "<fill_size>10000</fill_size>"
@@ -795,7 +801,7 @@ TEST(FuelFabTests, SwapTopup_TopupConstrained) {
 // small fiss inventory.
 TEST(FuelFabTests, SwapTopup_FissConstrained) {
   cyclus::Env::SetNucDataPath();
-  std::string config = 
+  std::string config =
      "<fill_commods> <val>natu</val> </fill_commods>"
      "<fill_recipe>natu</fill_recipe>"
      "<fill_size>0</fill_size>"
@@ -854,7 +860,7 @@ TEST(FuelFabTests, SwapTopup_FissConstrained) {
 // thinking it had an inventory of higher quality material than was actually
 // the case.  This test makes sure that doesn't happen again.
 TEST(FuelFabTests, HomogenousBuffers) {
-  std::string config = 
+  std::string config =
      "<fill_commods> <val>natu</val> </fill_commods>"
      "<fill_recipe>natu</fill_recipe>"
      "<fill_size>40</fill_size>"
@@ -893,7 +899,7 @@ TEST(FuelFabTests, HomogenousBuffers) {
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 TEST(FuelFabTests, PositionInitialize) {
   cyclus::Env::SetNucDataPath();
-  std::string config = 
+  std::string config =
      "<fill_commods> <val>natu</val> </fill_commods>"
      "<fill_recipe>natu</fill_recipe>"
      "<fill_size>0</fill_size>"
@@ -939,7 +945,7 @@ TEST(FuelFabTests, PositionInitialize) {
 
 TEST(FuelFabTests, PositionInitialize2) {
   cyclus::Env::SetNucDataPath();
-  std::string config = 
+  std::string config =
      "<fill_commods> <val>natu</val> </fill_commods>"
      "<fill_recipe>natu</fill_recipe>"
      "<fill_size>0</fill_size>"
@@ -969,7 +975,7 @@ TEST(FuelFabTests, PositionInitialize2) {
   fiss_frac = AtomToMassFrac(fiss_frac, c_pustream(), c_natu());
   fill_frac = AtomToMassFrac(fill_frac, c_natu(), c_pustream());
   double max_provide = fillinv / fill_frac;
-  
+
   cyclus::MockSim sim(cyclus::AgentSpec(":cycamore:FuelFab"), config, simdur);
   sim.AddSource("pustream").Finalize();
   sim.AddSource("pustreambad").Finalize();
@@ -986,6 +992,248 @@ TEST(FuelFabTests, PositionInitialize2) {
   EXPECT_EQ(qr.GetVal<double>("Longitude"), -120.0);
 }
 
+// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+TEST(FuelFabTests, StringMetadata) {
+
+  std::string config =
+    " <fill_commods> <val>natu</val> </fill_commods>"
+    " <fill_recipe>natu</fill_recipe>"
+    " <fill_size>0</fill_size>"
+    " "
+    " <fiss_commods> <val>pustreambad</val> </fiss_commods>"
+    " <fiss_recipe>pustreambad</fiss_recipe>"
+    " <fiss_size>1</fiss_size>"
+    " "
+    " <topup_commod>pustream</topup_commod>"
+    " <topup_recipe>pustream</topup_recipe>"
+    " <topup_size>10000</topup_size>"
+    " "
+    " <outcommod>recyclefuel</outcommod>"
+    " <spectrum>thermal</spectrum>"
+    " <throughput>10000</throughput>"
+    " "
+    " "
+    "   <metadata>"
+    "     <item> "
+    "       <key>string_key</key>"
+    "       <value>string_value%s</value>"
+    "     </item> "
+    "     <item> "
+    "       <key>double_key</key>"
+    "       <value>0.01254%d</value>"
+    "     </item> "
+    "     <item> "
+    "       <key>int_key</key>"
+    "       <value>-1254%i</value>"
+    "     </item> "
+    "     <item> "
+    "       <key>uint_key</key>"
+    "       <value>1254%u</value>"
+    "     </item> "
+    "     <item> "
+    "       <key>bool_key</key>"
+    "       <value>true%b</value>"
+    "     </item> "
+    "   </metadata>";
+
+  double fillinv = 1;
+  int simdur = 2;
+
+  double w_fill = CosiWeight(c_natu(), "thermal");
+  double w_fiss = CosiWeight(c_pustream(), "thermal");
+  double w_target = CosiWeight(c_uox(), "thermal");
+  double fiss_frac = HighFrac(w_fill, w_target, w_fiss);
+  double fill_frac = LowFrac(w_fill, w_target, w_fiss);
+  fiss_frac = AtomToMassFrac(fiss_frac, c_pustream(), c_natu());
+  fill_frac = AtomToMassFrac(fill_frac, c_natu(), c_pustream());
+  double max_provide = fillinv / fill_frac;
+
+  cyclus::MockSim sim(cyclus::AgentSpec(":cycamore:FuelFab"), config, simdur);
+  sim.AddSource("pustream").Finalize();
+  sim.AddSource("pustreambad").Finalize();
+  sim.AddSource("natu").Finalize();
+  sim.AddSink("recyclefuel").recipe("uox").capacity(2 * max_provide).Finalize();
+  sim.AddRecipe("uox", c_uox());
+  sim.AddRecipe("pustream", c_pustream());
+  sim.AddRecipe("pustreambad", c_pustreambad());
+  sim.AddRecipe("natu", c_natu());
+  int id = sim.Run();
+
+  std::vector<cyclus::Cond> conds;
+  QueryResult qr;
+  conds.push_back(Cond("keyword", "==", std::string("string_key")));
+  qr = sim.db().Query("Metadata", &conds);
+  EXPECT_EQ(qr.GetVal<std::string>("Value"), "string_value");
+  EXPECT_EQ(qr.GetVal<std::string>("Type"), "string");
+
+  conds[0] = Cond("keyword", "==", std::string("double_key"));
+  qr = sim.db().Query("Metadata", &conds);
+  EXPECT_EQ(qr.GetVal<std::string>("Value"), "0.012540");
+  EXPECT_EQ(qr.GetVal<std::string>("Type"), "double");
+
+  conds[0] = Cond("keyword", "==", std::string("int_key"));
+  qr = sim.db().Query("Metadata", &conds);
+  EXPECT_EQ(qr.GetVal<std::string>("Value"), "-1254");
+  EXPECT_EQ(qr.GetVal<std::string>("Type"), "int");
+
+  conds[0] = Cond("keyword", "==", std::string("uint_key"));
+  qr = sim.db().Query("Metadata", &conds);
+  EXPECT_EQ(qr.GetVal<std::string>("Value"), "1254");
+  EXPECT_EQ(qr.GetVal<std::string>("Type"), "uint");
+
+  conds[0] = Cond("keyword", "==", std::string("bool_key"));
+  qr = sim.db().Query("Metadata", &conds);
+  EXPECT_EQ(qr.GetVal<std::string>("Value"), "true");
+  EXPECT_EQ(qr.GetVal<std::string>("Type"), "bool");
+}
+
+
+TEST(FuelFabTests, UsageMetadata) {
+  // this tests verifies the initialization of the latitude variable
+
+  std::string config =
+    " <fill_commods> <val>natu</val> </fill_commods>"
+    " <fill_recipe>natu</fill_recipe>"
+    " <fill_size>0</fill_size>"
+    " "
+    " <fiss_commods> <val>pustreambad</val> </fiss_commods>"
+    " <fiss_recipe>pustreambad</fiss_recipe>"
+    " <fiss_size>1</fiss_size>"
+    " "
+    " <topup_commod>pustream</topup_commod>"
+    " <topup_recipe>pustream</topup_recipe>"
+    " <topup_size>10000</topup_size>"
+    " "
+    " <outcommod>recyclefuel</outcommod>"
+    " <spectrum>thermal</spectrum>"
+    " <throughput>10000</throughput>"
+    "   "
+    "   "
+    "   <usagemetadata>"
+    "     <item> "
+    "       <keyword>co2</keyword>"
+    "       <usage> "
+    "         <item> "
+    "           <key>decommission</key> "
+    "           <value>25</value> "
+    "         </item> "
+    "         <item> "
+    "           <key>deployment</key> "
+    "           <value>45</value> "
+    "         </item> "
+    "         <item> "
+    "           <key>timestep</key> "
+    "           <value>35</value> "
+    "         </item> "
+    "         <item> "
+    "           <key>throughput</key> "
+    "           <value>15</value> "
+    "         </item> "
+    "       </usage> "
+    "     </item> "
+    "   "
+    "     <item> "
+    "       <keyword>water</keyword>"
+    "       <usage> "
+    "         <item> "
+    "           <key>deployment</key> "
+    "           <value>43</value> "
+    "         </item> "
+    "       </usage> "
+    "     </item> "
+    "   "
+    "     <item> "
+    "       <keyword>land</keyword>"
+    "       <usage> "
+    "         <item> "
+    "           <key>decommission</key> "
+    "           <value>24</value> "
+    "         </item> "
+    "       </usage> "
+    "     </item> "
+    "   "
+    "     <item> "
+    "       <keyword>manpower</keyword>"
+    "       <usage> "
+    "         <item> "
+    "           <key>timestep</key> "
+    "           <value>32</value> "
+    "         </item> "
+    "       </usage> "
+    "     </item> "
+    "   "
+    "     <item> "
+    "       <keyword>lolipop</keyword>"
+    "       <usage> "
+    "         <item> "
+    "           <key>throughput</key> "
+    "           <value>11</value> "
+    "         </item> "
+    "       </usage> "
+    "     </item> "
+    "   </usagemetadata>";
+
+  double fillinv = 1;
+  int simdur = 2;
+
+  double w_fill = CosiWeight(c_natu(), "thermal");
+  double w_fiss = CosiWeight(c_pustream(), "thermal");
+  double w_target = CosiWeight(c_uox(), "thermal");
+  double fiss_frac = HighFrac(w_fill, w_target, w_fiss);
+  double fill_frac = LowFrac(w_fill, w_target, w_fiss);
+  fiss_frac = AtomToMassFrac(fiss_frac, c_pustream(), c_natu());
+  fill_frac = AtomToMassFrac(fill_frac, c_natu(), c_pustream());
+  double max_provide = fillinv / fill_frac;
+
+  cyclus::MockSim sim(cyclus::AgentSpec(":cycamore:FuelFab"), config, simdur);
+  sim.AddSource("pustream").Finalize();
+  sim.AddSource("pustreambad").Finalize();
+  sim.AddSource("natu").Finalize();
+  sim.AddSink("recyclefuel").recipe("uox").capacity(2 * max_provide).Finalize();
+  sim.AddRecipe("uox", c_uox());
+  sim.AddRecipe("pustream", c_pustream());
+  sim.AddRecipe("pustreambad", c_pustreambad());
+  sim.AddRecipe("natu", c_natu());
+  int id = sim.Run();
+
+  std::vector<Cond> conds;
+  QueryResult qr;
+  conds.push_back(Cond("keyword", "==", std::string("co2")));
+  conds.push_back(Cond("Type", "==", std::string("decommission")));
+  qr = sim.db().Query("Metadata", &conds);
+  EXPECT_EQ(qr.GetVal<std::string>("Value"), "25.000000");
+  conds.clear();
+  conds.push_back(Cond("keyword", "==", std::string("co2")));
+  conds.push_back(Cond("Type", "==", std::string("deployment")));
+  qr = sim.db().Query("Metadata", &conds);
+  EXPECT_EQ(qr.GetVal<std::string>("Value"), "45.000000");
+  conds[1] = Cond("Type", "==", std::string("timestep"));
+  qr = sim.db().Query("Metadata", &conds);
+  EXPECT_EQ(qr.GetVal<std::string>("Value"), "35.000000");
+  conds[1] = Cond("Type", "==", std::string("throughput"));
+  qr = sim.db().Query("Metadata", &conds);
+  EXPECT_EQ(qr.GetVal<std::string>("Value"), "15.000000");
+
+  conds[0] = Cond("keyword", "==", std::string("water"));
+  conds[1] = Cond("Type", "==", std::string("deployment"));
+  qr = sim.db().Query("Metadata", &conds);
+  EXPECT_EQ(qr.GetVal<std::string>("Value"), "43.000000");
+
+  conds[0] = Cond("keyword", "==", std::string("land"));
+  conds[1] = Cond("Type", "==", std::string("decommission"));
+  qr = sim.db().Query("Metadata", &conds);
+  EXPECT_EQ(qr.GetVal<std::string>("Value"), "24.000000");
+
+  conds[0] = Cond("keyword", "==", std::string("manpower"));
+  conds[1] = Cond("Type", "==", std::string("timestep"));
+  qr = sim.db().Query("Metadata", &conds);
+  EXPECT_EQ(qr.GetVal<std::string>("Value"), "32.000000");
+
+  conds[0] = Cond("keyword", "==", std::string("lolipop"));
+  conds[1] = Cond("Type", "==", std::string("throughput"));
+  qr = sim.db().Query("Metadata", &conds);
+  EXPECT_EQ(qr.GetVal<std::string>("Value"), "11.000000");
+}
 } // namespace fuelfabtests
 } // namespace cycamore
 

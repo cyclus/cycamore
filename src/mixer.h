@@ -12,7 +12,7 @@ namespace cycamore {
 /// one for each streams to be mixed, and one output stream. The supplying of
 /// mixed material is constrained by available inventory of mixed material
 /// quantities.
-class Mixer 
+class Mixer
   : public cyclus::Facility,
     public cyclus::toolkit::Position {
 #pragma cyclus note {   	  \
@@ -58,6 +58,7 @@ class Mixer
   virtual void InitInv(cyclus::Inventories& inv);
 
  protected:
+
 #pragma cyclus var { \
     "alias": ["in_streams", [ "stream", [ "info", "mixing_ratio", "buf_size"], [ "commodities", "commodity", "pref"]]], \
     "uitype": ["oneormore", [ "pair", ["pair", "double", "double"], ["oneormore", "incommodity", "double"]]], \
@@ -133,6 +134,8 @@ class Mixer
 
   /// Records an agent's latitude and longitude to the output db
   void RecordPosition();
+
+#include "toolkit/metadata.cycpp.h"
 };
 
 }  // namespace cycamore

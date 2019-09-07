@@ -1,7 +1,7 @@
 #include "source.h"
 
-#include <sstream>
 #include <limits>
+#include <sstream>
 
 #include <boost/lexical_cast.hpp>
 
@@ -11,9 +11,10 @@ Source::Source(cyclus::Context* ctx)
     : cyclus::Facility(ctx),
       throughput(std::numeric_limits<double>::max()),
       inventory_size(std::numeric_limits<double>::max()),
+      work_label("Throughput"),
       latitude(0.0),
       longitude(0.0),
-      coordinates(latitude, longitude) {}
+      coordinates(latitude, longitude){}
 
 Source::~Source() {}
 
@@ -30,7 +31,17 @@ void Source::InitFrom(cyclus::QueryableBackend* b) {
                              tk::CommodInfo(throughput, throughput));
   RecordPosition();
 }
+// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
+void Source::EnterNotify() {
+  metadata.SetWorkLabel(work_label);
+  metadata.LoadData(metadata_);
+  metadata.LoadData(usage_metadata_);
+
+  cyclus::Facility::EnterNotify();
+}
+
+// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 std::string Source::str() {
   namespace tk = cyclus::toolkit;
   std::stringstream ss;
@@ -60,7 +71,7 @@ std::set<cyclus::BidPortfolio<cyclus::Material>::Ptr> Source::GetMatlBids(
   using cyclus::Request;
 
   double max_qty = std::min(throughput, inventory_size);
-  cyclus::toolkit::RecordTimeSeries<double>("supply"+outcommod, this, 
+  cyclus::toolkit::RecordTimeSeries<double>("supply"+outcommod, this,
                                             max_qty);
   LOG(cyclus::LEV_INFO3, "Source") << prototype() << " is bidding up to "
                                    << max_qty << " kg of " << outcommod;
@@ -100,10 +111,12 @@ void Source::GetMatlTrades(
   using cyclus::Material;
   using cyclus::Trade;
 
+  double send_qty = 0;
   std::vector<cyclus::Trade<cyclus::Material> >::const_iterator it;
   for (it = trades.begin(); it != trades.end(); ++it) {
     double qty = it->amt;
     inventory_size -= qty;
+    send_qty += qty;
 
     Material::Ptr response;
     if (!outrecipe.empty()) {
@@ -115,6 +128,8 @@ void Source::GetMatlTrades(
     LOG(cyclus::LEV_INFO5, "Source") << prototype() << " sent an order"
                                      << " for " << qty << " of " << outcommod;
   }
+  // Report the timestep throughput
+  cyclus::toolkit::RecordTimeSeries<double>(work_label, this, send_qty);
 }
 
 void Source::RecordPosition() {

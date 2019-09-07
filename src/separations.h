@@ -34,7 +34,7 @@ cyclus::Material::Ptr SepMaterial(std::map<int, double> effs,
 /// reduce its stocks by trading and hits this limit for any of its output
 /// streams, further processing/separations of feed material will halt until
 /// room is again available in the output streams.
-class Separations 
+class Separations
   : public cyclus::Facility,
     public cyclus::toolkit::Position {
 #pragma cyclus note { \
@@ -221,12 +221,14 @@ class Separations
            "be expressed in degrees as a double." \
   }
   double longitude;
-
   cyclus::toolkit::Position coordinates;
+
+#include "toolkit/metadata.cycpp.h"
+
+  void Record(std::string name, double val, std::string type);
 
   /// Records an agent's latitude and longitude to the output db
   void RecordPosition();
-  void Record(std::string name, double val, std::string type);
 };
 
 }  // namespace cycamore

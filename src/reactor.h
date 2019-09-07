@@ -454,6 +454,8 @@ class Reactor : public cyclus::Facility,
 
   /// Records an agent's latitude and longitude to the output db
   void RecordPosition();
+
+#include "toolkit/metadata.cycpp.h"
 };
 
 } // namespace cycamore

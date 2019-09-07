@@ -115,7 +115,7 @@ class NatUConverter : public cyclus::Converter<cyclus::Material> {
 ///  no associated recipe.  Bids for tails are constrained only by total
 ///  tails inventory.
 
-class Enrichment 
+class Enrichment
   : public cyclus::Facility,
     public cyclus::toolkit::Position {
 #pragma cyclus note {   	  \
@@ -172,6 +172,8 @@ class Enrichment
   /// perform module-specific tasks when entering the simulation
   virtual void Build(cyclus::Agent* parent);
   // ---
+
+  virtual void EnterNotify();
 
   // --- Agent Members ---
   ///  Each facility is prompted to do its beginning-of-time-step
@@ -398,8 +400,9 @@ class Enrichment
            "be expressed in degrees as a double." \
   }
   double longitude;
-
   cyclus::toolkit::Position coordinates;
+
+  #include "toolkit/metadata.cycpp.h"
 };
 
 }  // namespace cycamore

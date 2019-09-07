@@ -43,7 +43,7 @@ TEST(SeparationsTests, SepMaterial) {
   EXPECT_DOUBLE_EQ(0, mqsep.mass("Am242"));
 }
 
-  
+
 // Check that cumulative separations efficiency for a single nuclide of less than or equal to one does not trigger an error.
 TEST(SeparationsTests, SeparationEfficiency) {
 
@@ -84,13 +84,13 @@ TEST(SeparationsTests, SeparationEfficiency) {
       "<feedbuf_size>100</feedbuf_size>"
       "<feed_commods> <val>feed</val> </feed_commods>"
   ;
-  
-  
+
+
   cyclus::MockSim sim1(cyclus::AgentSpec(":cycamore:Separations"), config, simdur);
-  
+
   EXPECT_NO_THROW(sim1.Run()) << "Cumulative separation efficiency smaler than 1 is throwing an error but should not.";
-  
-  
+
+
   config =
       "<streams>"
       "    <item>"
@@ -130,10 +130,10 @@ TEST(SeparationsTests, SeparationEfficiency) {
       "<feedbuf_size>100</feedbuf_size>"
       "<feed_commods> <val>feed</val> </feed_commods>"
       ;
-  
-  
+
+
   cyclus::MockSim sim2(cyclus::AgentSpec(":cycamore:Separations"), config, simdur);
-  
+
   EXPECT_NO_THROW(sim2.Run()) << "Cumulative separation efficiency of 1 is throwing an error but should not.";
 }
 
@@ -163,9 +163,9 @@ TEST(SeparationsTests, SeparationEfficiencyThrowing) {
       ;
 
   cyclus::MockSim sim1(cyclus::AgentSpec(":cycamore:Separations"), config, simdur);
-  
+
   EXPECT_THROW(sim1.Run(), cyclus::ValueError) << "Direct separation efficiency greater than 1 is not throwing an error but should.";
-  
+
 // Check if a cumulative separation efficiency greater than 1 for a unique nuclide throw an error as expected.
   config =
     "<streams>"
@@ -196,9 +196,9 @@ TEST(SeparationsTests, SeparationEfficiencyThrowing) {
     "<feedbuf_size>100</feedbuf_size>"
     "<feed_commods> <val>feed</val> </feed_commods>"
     ;
-  
+
   cyclus::MockSim sim2(cyclus::AgentSpec(":cycamore:Separations"), config, simdur);
-  
+
   EXPECT_THROW(sim2.Run(), cyclus::ValueError) << "Single cumulative separation efficiency greater than 1 is not throwing an error but should.";
 // Check if a cumulative separation efficiency greater than 1 for multiple nuclides throw an error as expected.
   config =
@@ -230,12 +230,12 @@ TEST(SeparationsTests, SeparationEfficiencyThrowing) {
       "<feedbuf_size>100</feedbuf_size>"
       "<feed_commods> <val>feed</val> </feed_commods>"
       ;
-  
+
   cyclus::MockSim sim3(cyclus::AgentSpec(":cycamore:Separations"), config, simdur);
-  
+
   EXPECT_THROW(sim3.Run(), cyclus::ValueError) << "Multiple cumulative separation efficiencies greater than 1 are not throwing an error but should.";
 }
-  
+
 TEST(SeparationsTests, SepMixElemAndNuclide) {
   std::string config =
       "<streams>"
@@ -279,6 +279,12 @@ TEST(SeparationsTests, SepMixElemAndNuclide) {
   EXPECT_DOUBLE_EQ(m[922380000]*0.6*100, mq.mass("U238"));
   EXPECT_DOUBLE_EQ(m[942390000]*0.7*100, mq.mass("Pu239"));
   EXPECT_DOUBLE_EQ(0, mq.mass("Pu240"));
+  
+  // checking the write amount of SWU has been repported
+  conds.clear();
+  conds.push_back(Cond("Time", "==", 1));
+  QueryResult qr = sim.db().Query("TimeSeriesThroughput", &conds);
+  EXPECT_NEAR(qr.GetVal<double>("Value"), 1, 0.01);
 }
 
 TEST(SeparationsTests, Retire) {
@@ -310,7 +316,7 @@ TEST(SeparationsTests, Retire) {
   int life = 2;
 
   cyclus::MockSim sim(cyclus::AgentSpec(":cycamore:Separations"),
-		      config, simdur, life);
+          config, simdur, life);
   sim.AddSource("feed").recipe("recipe1").Finalize();
   sim.AddSink("stream1").capacity(100).Finalize();
   sim.AddSink("waste").capacity(70).Finalize();
@@ -418,5 +424,234 @@ TEST(SeparationsTests, Retire) {
   EXPECT_EQ(qr.GetVal<double>("Latitude"), 10.0);
   EXPECT_EQ(qr.GetVal<double>("Longitude"), 15.0);
  }
+
+// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+TEST(SeparationsTests, StringMetadata) {
+  // this tests verifies the initialization of the latitude variable
+
+  std::string config =
+    "  <streams>"
+    "      <item>"
+    "          <commod>stream1</commod>"
+    "          <info>"
+    "              <buf_size>-1</buf_size>"
+    "              <efficiencies>"
+    "                  <item><comp>U</comp> <eff>0.6</eff></item>"
+    "                  <item><comp>Pu239</comp> <eff>.7</eff></item>"
+    "              </efficiencies>"
+    "          </info>"
+    "      </item>"
+    "  </streams>"
+    "  <leftover_commod>waste</leftover_commod>"
+    "  <throughput>100</throughput>"
+    "  <feedbuf_size>100</feedbuf_size>"
+    "  <feed_commods> <val>feed</val> </feed_commods>"
+    " "
+    " "
+    "   <metadata>"
+    "     <item> "
+    "       <key>string_key</key>"
+    "       <value>string_value%s</value>"
+    "     </item> "
+    "     <item> "
+    "       <key>double_key</key>"
+    "       <value>0.01254%d</value>"
+    "     </item> "
+    "     <item> "
+    "       <key>int_key</key>"
+    "       <value>-1254%i</value>"
+    "     </item> "
+    "     <item> "
+    "       <key>uint_key</key>"
+    "       <value>1254%u</value>"
+    "     </item> "
+    "     <item> "
+    "       <key>bool_key</key>"
+    "       <value>true%b</value>"
+    "     </item> "
+    "   </metadata>";
+
+  CompMap m;
+  m[id("u235")] = 0.08;
+  m[id("u238")] = 0.9;
+  m[id("Pu239")] = .01;
+  m[id("Pu240")] = .01;
+  Composition::Ptr c = Composition::CreateFromMass(m);
+
+  int simdur = 2;
+  cyclus::MockSim sim(cyclus::AgentSpec(":cycamore:Separations"), config, simdur);
+  sim.AddSource("feed").recipe("recipe1").Finalize();
+  sim.AddSink("stream1").capacity(100).Finalize();
+  sim.AddRecipe("recipe1", c);
+  int id = sim.Run();
+
+  std::vector<cyclus::Cond> conds;
+  QueryResult qr;
+  conds.push_back(cyclus::Cond("keyword", "==", std::string("string_key")));
+  qr = sim.db().Query("Metadata", &conds);
+  EXPECT_EQ(qr.GetVal<std::string>("Value"), "string_value");
+  EXPECT_EQ(qr.GetVal<std::string>("Type"), "string");
+
+  conds[0] = cyclus::Cond("keyword", "==", std::string("double_key"));
+  qr = sim.db().Query("Metadata", &conds);
+  EXPECT_EQ(qr.GetVal<std::string>("Value"), "0.012540");
+  EXPECT_EQ(qr.GetVal<std::string>("Type"), "double");
+
+  conds[0] = cyclus::Cond("keyword", "==", std::string("int_key"));
+  qr = sim.db().Query("Metadata", &conds);
+  EXPECT_EQ(qr.GetVal<std::string>("Value"), "-1254");
+  EXPECT_EQ(qr.GetVal<std::string>("Type"), "int");
+
+  conds[0] = cyclus::Cond("keyword", "==", std::string("uint_key"));
+  qr = sim.db().Query("Metadata", &conds);
+  EXPECT_EQ(qr.GetVal<std::string>("Value"), "1254");
+  EXPECT_EQ(qr.GetVal<std::string>("Type"), "uint");
+
+  conds[0] = cyclus::Cond("keyword", "==", std::string("bool_key"));
+  qr = sim.db().Query("Metadata", &conds);
+  EXPECT_EQ(qr.GetVal<std::string>("Value"), "true");
+  EXPECT_EQ(qr.GetVal<std::string>("Type"), "bool");
+}
+
+
+
+TEST(SeparationsTests, UsageMetadata) {
+  // this tests verifies the initialization of the latitude variable
+
+  std::string config =
+    "  <streams>"
+    "      <item>"
+    "          <commod>stream1</commod>"
+    "          <info>"
+    "              <buf_size>-1</buf_size>"
+    "              <efficiencies>"
+    "                  <item><comp>U</comp> <eff>0.6</eff></item>"
+    "                  <item><comp>Pu239</comp> <eff>.7</eff></item>"
+    "              </efficiencies>"
+    "          </info>"
+    "      </item>"
+    "  </streams>"
+    "  <leftover_commod>waste</leftover_commod>"
+    "  <throughput>100</throughput>"
+    "  <feedbuf_size>100</feedbuf_size>"
+    "  <feed_commods> <val>feed</val> </feed_commods>"
+    "   "
+    "   "
+    "   <usagemetadata>"
+    "     <item> "
+    "       <keyword>co2</keyword>"
+    "       <usage> "
+    "         <item> "
+    "           <key>decommission</key> "
+    "           <value>25</value> "
+    "         </item> "
+    "         <item> "
+    "           <key>deployment</key> "
+    "           <value>45</value> "
+    "         </item> "
+    "         <item> "
+    "           <key>timestep</key> "
+    "           <value>35</value> "
+    "         </item> "
+    "         <item> "
+    "           <key>throughput</key> "
+    "           <value>15</value> "
+    "         </item> "
+    "       </usage> "
+    "     </item> "
+    "   "
+    "     <item> "
+    "       <keyword>water</keyword>"
+    "       <usage> "
+    "         <item> "
+    "           <key>deployment</key> "
+    "           <value>43</value> "
+    "         </item> "
+    "       </usage> "
+    "     </item> "
+    "   "
+    "     <item> "
+    "       <keyword>land</keyword>"
+    "       <usage> "
+    "         <item> "
+    "           <key>decommission</key> "
+    "           <value>24</value> "
+    "         </item> "
+    "       </usage> "
+    "     </item> "
+    "   "
+    "     <item> "
+    "       <keyword>manpower</keyword>"
+    "       <usage> "
+    "         <item> "
+    "           <key>timestep</key> "
+    "           <value>32</value> "
+    "         </item> "
+    "       </usage> "
+    "     </item> "
+    "   "
+    "     <item> "
+    "       <keyword>lolipop</keyword>"
+    "       <usage> "
+    "         <item> "
+    "           <key>throughput</key> "
+    "           <value>11</value> "
+    "         </item> "
+    "       </usage> "
+    "     </item> "
+    "   </usagemetadata>";
+
+  CompMap m;
+  m[id("u235")] = 0.08;
+  m[id("u238")] = 0.9;
+  m[id("Pu239")] = .01;
+  m[id("Pu240")] = .01;
+  Composition::Ptr c = Composition::CreateFromMass(m);
+
+  int simdur = 2;
+  cyclus::MockSim sim(cyclus::AgentSpec(":cycamore:Separations"), config, simdur);
+  sim.AddSource("feed").recipe("recipe1").Finalize();
+  sim.AddSink("stream1").capacity(100).Finalize();
+  sim.AddRecipe("recipe1", c);
+  int id = sim.Run();
+
+  std::vector<Cond> conds;
+  QueryResult qr;
+  conds.push_back(Cond("keyword", "==", std::string("co2")));
+  conds.push_back(Cond("Type", "==", std::string("decommission")));
+  qr = sim.db().Query("Metadata", &conds);
+  EXPECT_EQ(qr.GetVal<std::string>("Value"), "25.000000");
+  conds.clear();
+  conds.push_back(Cond("keyword", "==", std::string("co2")));
+  conds.push_back(Cond("Type", "==", std::string("deployment")));
+  qr = sim.db().Query("Metadata", &conds);
+  EXPECT_EQ(qr.GetVal<std::string>("Value"), "45.000000");
+  conds[1] = Cond("Type", "==", std::string("timestep"));
+  qr = sim.db().Query("Metadata", &conds);
+  EXPECT_EQ(qr.GetVal<std::string>("Value"), "35.000000");
+  conds[1] = Cond("Type", "==", std::string("throughput"));
+  qr = sim.db().Query("Metadata", &conds);
+  EXPECT_EQ(qr.GetVal<std::string>("Value"), "15.000000");
+
+  conds[0] = Cond("keyword", "==", std::string("water"));
+  conds[1] = Cond("Type", "==", std::string("deployment"));
+  qr = sim.db().Query("Metadata", &conds);
+  EXPECT_EQ(qr.GetVal<std::string>("Value"), "43.000000");
+
+  conds[0] = Cond("keyword", "==", std::string("land"));
+  conds[1] = Cond("Type", "==", std::string("decommission"));
+  qr = sim.db().Query("Metadata", &conds);
+  EXPECT_EQ(qr.GetVal<std::string>("Value"), "24.000000");
+
+  conds[0] = Cond("keyword", "==", std::string("manpower"));
+  conds[1] = Cond("Type", "==", std::string("timestep"));
+  qr = sim.db().Query("Metadata", &conds);
+  EXPECT_EQ(qr.GetVal<std::string>("Value"), "32.000000");
+
+  conds[0] = Cond("keyword", "==", std::string("lolipop"));
+  conds[1] = Cond("Type", "==", std::string("throughput"));
+  qr = sim.db().Query("Metadata", &conds);
+  EXPECT_EQ(qr.GetVal<std::string>("Value"), "11.000000");
+}
 } // namespace cycamore
 
