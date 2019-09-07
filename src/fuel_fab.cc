@@ -141,6 +141,7 @@ FuelFab::FuelFab(cyclus::Context* ctx)
       coordinates(latitude, longitude){}
 
 void FuelFab::EnterNotify() {
+  metadata.SetWorkLabel(work_label);
   metadata.LoadData(metadata_);
   metadata.LoadData(usage_metadata_);
 

@@ -34,6 +34,7 @@ void Source::InitFrom(cyclus::QueryableBackend* b) {
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
 void Source::EnterNotify() {
+  metadata.SetWorkLabel(work_label);
   metadata.LoadData(metadata_);
   metadata.LoadData(usage_metadata_);
 

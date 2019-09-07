@@ -5,7 +5,7 @@ namespace cycamore {
 
 GrowthRegion::GrowthRegion(cyclus::Context* ctx)
     : cyclus::Region(ctx),
-      work_label("DEPLOYED_INST"),
+      work_label("DeployedInst"),
       latitude(0.0),
       longitude(0.0),
       coordinates(latitude, longitude){
@@ -41,6 +41,7 @@ void GrowthRegion::AddCommodityDemand_(std::string commod,
 }
 
 void GrowthRegion::EnterNotify() {
+  metadata.SetWorkLabel(work_label);
   metadata.LoadData(metadata_);
   metadata.LoadData(usage_metadata_);
 

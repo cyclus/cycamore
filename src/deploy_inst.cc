@@ -5,7 +5,7 @@ namespace cycamore {
 
 DeployInst::DeployInst(cyclus::Context* ctx)
     : cyclus::Institution(ctx),
-      work_label("DEPLOYED_INST"),
+      work_label("DeployedInst"),
       latitude(0.0),
       longitude(0.0),
       coordinates(latitude, longitude){}
@@ -48,6 +48,7 @@ void DeployInst::Build(cyclus::Agent* parent) {
 }
 
 void DeployInst::EnterNotify() {
+  metadata.SetWorkLabel(work_label);
   metadata.LoadData(metadata_);
   metadata.LoadData(usage_metadata_);
 

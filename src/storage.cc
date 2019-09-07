@@ -50,6 +50,7 @@ void Storage::InitFrom(cyclus::QueryableBackend* b) {
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 void Storage::EnterNotify() {
+  metadata.SetWorkLabel(work_label);
   metadata.LoadData(metadata_);
   metadata.LoadData(usage_metadata_);
 

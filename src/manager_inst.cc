@@ -6,7 +6,7 @@ namespace cycamore {
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 ManagerInst::ManagerInst(cyclus::Context* ctx)
     : cyclus::Institution(ctx),
-      work_label("DEPLOYED_INST"),
+      work_label("DeployedInst"),
       latitude(0.0),
       longitude(0.0),
       coordinates(latitude, longitude){}
@@ -23,6 +23,7 @@ void ManagerInst::DecomNotify(Agent* a) {
 }
 
 void ManagerInst::EnterNotify() {
+  metadata.SetWorkLabel(work_label);
   metadata.LoadData(metadata_);
   metadata.LoadData(usage_metadata_);
 

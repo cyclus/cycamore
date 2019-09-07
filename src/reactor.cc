@@ -25,7 +25,7 @@ Reactor::Reactor(cyclus::Context* ctx)
       discharged(false),
       latitude(0.0),
       longitude(0.0),
-      work_label("POWER"),
+      work_label("Power"),
       coordinates(latitude, longitude) {}
 
 
@@ -63,6 +63,7 @@ void Reactor::InitFrom(cyclus::QueryableBackend* b) {
 }
 
 void Reactor::EnterNotify() {
+  metadata.SetWorkLabel(work_label);
   metadata.LoadData(metadata_);
   metadata.LoadData(usage_metadata_);
   metadata.SetWorkLabel(work_label);
@@ -370,6 +371,7 @@ void Reactor::Tock() {
   if (cycle_step >= 0 && cycle_step < cycle_time &&
       core.count() == n_assem_core) {
     cyclus::toolkit::RecordTimeSeries<cyclus::toolkit::POWER>(this, power_cap);
+
     cyclus::toolkit::RecordTimeSeries<double>("supplyPOWER", this, power_cap);
     RecordSideProduct(true);
   } else {
