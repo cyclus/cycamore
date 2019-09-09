@@ -240,7 +240,7 @@ std::set<cyclus::RequestPortfolio<Material>::Ptr> Reactor::GetMatlRequests() {
     result = std::max_element(fuel_prefs.begin(), fuel_prefs.end());
     int max_index = std::distance(fuel_prefs.begin(), result);
 
-    cyclus::toolkit::RecordTimeSeries<double>("demand"+fuel_incommods[max_index], this, 
+    cyclus::toolkit::RecordTimeSeries<double>("demand"+fuel_incommods[max_index], this,
                                           assem_size * n_assem_order) ;
 
     port->AddMutualReqs(mreqs);
@@ -420,7 +420,7 @@ bool Reactor::Discharge() {
 
   std::stringstream ss;
   ss << npop << " assemblies";
-  Record("DISCHARGE", ss.str());  
+  Record("DISCHARGE", ss.str());
   spent.Push(core.PopN(npop));
 
   std::map<std::string, MatVec> spent_mats;
@@ -430,7 +430,7 @@ bool Reactor::Discharge() {
     double tot_spent = 0;
     for (int j = 0; j<mats.size(); j++){
       Material::Ptr m = mats[j];
-      tot_spent += m->quantity(); 
+      tot_spent += m->quantity();
     }
     cyclus::toolkit::RecordTimeSeries<double>("supply"+fuel_outcommods[i], this, tot_spent);
   }

@@ -92,14 +92,14 @@ Sink::GetMatlRequests() {
     mat = cyclus::NewBlankMaterial(amt);
   } else {
     Composition::Ptr rec = this->context()->GetRecipe(recipe_name);
-    mat = cyclus::Material::CreateUntracked(amt, rec); 
-  } 
+    mat = cyclus::Material::CreateUntracked(amt, rec);
+  }
 
   if (amt > cyclus::eps()) {
     std::vector<Request<Material>*> mutuals;
     for (int i = 0; i < in_commods.size(); i++) {
       mutuals.push_back(port->AddRequest(mat, this, in_commods[i], in_commod_prefs[i]));
-      
+
     }
     port->AddMutualReqs(mutuals);
     ports.insert(port);
@@ -172,7 +172,7 @@ void Sink::Tick() {
          commod++) {
       LOG(cyclus::LEV_INFO4, "SnkFac") << " will request " << requestAmt
                                        << " kg of " << *commod << ".";
-      cyclus::toolkit::RecordTimeSeries<double>("demand"+*commod, this, 
+      cyclus::toolkit::RecordTimeSeries<double>("demand"+*commod, this,
                                             requestAmt);
     }
   }

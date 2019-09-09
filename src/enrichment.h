@@ -115,7 +115,7 @@ class NatUConverter : public cyclus::Converter<cyclus::Material> {
 ///  no associated recipe.  Bids for tails are constrained only by total
 ///  tails inventory.
 
-class Enrichment 
+class Enrichment
   : public cyclus::Facility,
     public cyclus::toolkit::Position {
 #pragma cyclus note {   	  \

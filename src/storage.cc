@@ -5,7 +5,7 @@
 namespace storage {
 
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-Storage::Storage(cyclus::Context* ctx) 
+Storage::Storage(cyclus::Context* ctx)
     : cyclus::Facility(ctx),
       latitude(0.0),
       longitude(0.0),

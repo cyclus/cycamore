@@ -11,7 +11,7 @@ using cyclus::CompMap;
 
 namespace cycamore {
 
-Separations::Separations(cyclus::Context* ctx) 
+Separations::Separations(cyclus::Context* ctx)
     : cyclus::Facility(ctx),
       latitude(0.0),
       longitude(0.0),
@@ -138,7 +138,7 @@ void Separations::Tick() {
           mat->ExtractComp(qty * maxfrac, m->comp()));
       Record("Separated", qty * maxfrac, name);
     }
-    cyclus::toolkit::RecordTimeSeries<double>("supply"+name, this, 
+    cyclus::toolkit::RecordTimeSeries<double>("supply"+name, this,
                                               streambufs[name].quantity());
   }
 
