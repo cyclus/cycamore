@@ -7,11 +7,11 @@ GrowthRegion::GrowthRegion(cyclus::Context* ctx)
     : cyclus::Region(ctx),
       latitude(0.0),
       longitude(0.0),
-      coordinates(latitude, longitude) { 
-	#if !CYCLUS_HAS_COIN
+      coordinates(latitude, longitude) {
+  #if !CYCLUS_HAS_COIN
     throw cyclus::Error("Growth Region requires that Cyclus & Cycamore be compiled "
                         "with COIN support.");
-	#endif 
+  #endif
 }
 
 GrowthRegion::~GrowthRegion() {}

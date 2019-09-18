@@ -59,9 +59,9 @@ void Enrichment::Build(cyclus::Agent* parent) {
 }
 
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-void Enrichment::Tick() { 
+void Enrichment::Tick() {
   current_swu_capacity = SwuCapacity();
-  
+
 }
 
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -

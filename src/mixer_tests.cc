@@ -73,11 +73,11 @@ class MixerTest : public ::testing::Test {
       in_com.insert(std::pair<std::string, double>("in_c3", 1));
       in_commods.push_back(in_com);
     }
-    
+
     std::vector<double> in_ratios = {1, 1, 1};
     std::vector<double> in_caps = {30, 20, 10};
     SetIn_stream(in_commods, in_ratios,  in_caps);
-  
+
     SetOutStream_comds("out_com");
   }
   virtual void TearDown() { delete mf_facility_; }
@@ -98,7 +98,7 @@ class MixerTest : public ::testing::Test {
 
   void SetIn_stream(t_instream streams) {
     mf_facility_->streams_ = streams;
-    
+
     in_frac.clear();
     in_cap.clear();
     for (int i = 0; i < streams.size(); i++) {

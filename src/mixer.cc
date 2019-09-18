@@ -4,8 +4,8 @@
 
 namespace cycamore {
 
-Mixer::Mixer(cyclus::Context* ctx) 
-    : cyclus::Facility(ctx), 
+Mixer::Mixer(cyclus::Context* ctx)
+    : cyclus::Facility(ctx),
       throughput(0),
       latitude(0.0),
       longitude(0.0),
@@ -146,10 +146,10 @@ Mixer::GetMatlRequests() {
   }
 
   std::set<RequestPortfolio<cyclus::Material>::Ptr> ports;
-  
+
   for (int i = 0; i < in_commods.size(); i++) {
     std::string name = "in_stream_" + std::to_string(i);
-    
+
     if (streambufs[name].space() > cyclus::eps_rsrc()) {
       RequestPortfolio<cyclus::Material>::Ptr port(
           new RequestPortfolio<cyclus::Material>());
@@ -158,7 +158,7 @@ Mixer::GetMatlRequests() {
       m = cyclus::NewBlankMaterial(streambufs[name].space());
 
       std::vector<cyclus::Request<cyclus::Material>*> reqs;
-      
+
       std::map<std::string, double>::iterator it;
       for (it = in_commods[i].begin() ; it != in_commods[i].end(); it++) {
         std::string commod = it->first;
@@ -166,7 +166,7 @@ Mixer::GetMatlRequests() {
         reqs.push_back(port->AddRequest(m, this, commod , pref, false));
         req_inventories_[reqs.back()] = name;
       }
-      port->AddMutualReqs(reqs);  
+      port->AddMutualReqs(reqs);
       ports.insert(port);
     }
   }
