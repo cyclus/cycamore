@@ -16,3 +16,5 @@ cycamore_version.h
 src/version.cc.in
 # Rever
 rever/
+commitMessage.md
+*.DS_Store
