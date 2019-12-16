@@ -357,7 +357,7 @@ void Reactor::Tock() {
     return;
   }
 
-  if (cycle_step >= cycle_time + refuel_time && core.count() == n_assem_core) {
+  if (cycle_step >= cycle_time + refuel_time && core.count() == n_assem_core && discharged == true) {
     discharged = false;
     cycle_step = 0;
   }
