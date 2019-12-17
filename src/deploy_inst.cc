@@ -17,9 +17,10 @@ void DeployInst::Build(cyclus::Agent* parent) {
   std::set<std::string> protos;
   for (int i = 0; i < prototypes.size(); i++) {
     std::string proto = prototypes[i];
+    std::string inst = this->prototype();
 
     std::stringstream ss;
-    ss << proto;
+    ss << proto << "_" << inst << "_";
 
     if (lifetimes.size() == prototypes.size()) {
       cyclus::Agent* a = context()->CreateAgent<Agent>(proto);
