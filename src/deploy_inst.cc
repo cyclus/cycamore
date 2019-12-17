@@ -32,7 +32,6 @@ void DeployInst::Build(cyclus::Agent* parent) {
           ss << "_life_" << lifetimes[i];
         }
         proto = ss.str();
-        std::cout << proto;
         if (protos.count(proto) == 0) {
           protos.insert(proto);
           context()->AddPrototype(proto, a);
