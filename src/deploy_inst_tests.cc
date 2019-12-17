@@ -127,7 +127,7 @@ TEST(DeployInstTests, NoDupProtos) {
 
   // don't duplicate same prototypes with same custom lifetime
   cyclus::SqlStatement::Ptr stmt = sim.db().db().Prepare(
-      "SELECT COUNT(*) FROM Prototypes WHERE Prototype = 'foobar_life_1';"
+      "SELECT COUNT(*) FROM Prototypes WHERE Prototype = 'foobar_foobar_life_1';"
       );
   stmt->Step();
   EXPECT_EQ(1, stmt->GetInt(0));
