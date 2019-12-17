@@ -124,7 +124,7 @@ TEST_F(SourceTest, Response) {
 }
 
 TEST_F(SourceTest, PositionInitialize) {
-  std::string config = 
+  std::string config =
     "<outcommod>spent_fuel</outcommod>"
   ;
   int simdur = 3;
@@ -138,7 +138,7 @@ TEST_F(SourceTest, PositionInitialize) {
 }
 
 TEST_F(SourceTest, Longitude) {
-  std::string config = 
+  std::string config =
     "<outcommod>spent_fuel</outcommod>"
     "<latitude>-0.01</latitude>"
     "<longitude>0.01</longitude>"

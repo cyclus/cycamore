@@ -60,7 +60,7 @@ std::set<cyclus::BidPortfolio<cyclus::Material>::Ptr> Source::GetMatlBids(
   using cyclus::Request;
 
   double max_qty = std::min(throughput, inventory_size);
-  cyclus::toolkit::RecordTimeSeries<double>("supply"+outcommod, this, 
+  cyclus::toolkit::RecordTimeSeries<double>("supply"+outcommod, this,
                                             max_qty);
   LOG(cyclus::LEV_INFO3, "Source") << prototype() << " is bidding up to "
                                    << max_qty << " kg of " << outcommod;

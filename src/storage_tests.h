@@ -21,9 +21,9 @@ class StorageTest : public ::testing::Test {
   void InitParameters();
   void SetUpStorage();
   void TestInitState(storage::Storage* fac);
-  void TestAddMat(storage::Storage* fac, 
+  void TestAddMat(storage::Storage* fac,
       cyclus::Material::Ptr mat);
-  void TestBuffers(storage::Storage* fac, double inv, double 
+  void TestBuffers(storage::Storage* fac, double inv, double
       proc, double ready, double stocks);
   void TestStocks(storage::Storage* fac, cyclus::CompMap v);
   void TestReadyTime(storage::Storage* fac, int t);

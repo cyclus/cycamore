@@ -43,7 +43,7 @@ TEST(SeparationsTests, SepMaterial) {
   EXPECT_DOUBLE_EQ(0, mqsep.mass("Am242"));
 }
 
-  
+
 // Check that cumulative separations efficiency for a single nuclide of less than or equal to one does not trigger an error.
 TEST(SeparationsTests, SeparationEfficiency) {
 
@@ -84,13 +84,13 @@ TEST(SeparationsTests, SeparationEfficiency) {
       "<feedbuf_size>100</feedbuf_size>"
       "<feed_commods> <val>feed</val> </feed_commods>"
   ;
-  
-  
+
+
   cyclus::MockSim sim1(cyclus::AgentSpec(":cycamore:Separations"), config, simdur);
-  
+
   EXPECT_NO_THROW(sim1.Run()) << "Cumulative separation efficiency smaler than 1 is throwing an error but should not.";
-  
-  
+
+
   config =
       "<streams>"
       "    <item>"
@@ -130,10 +130,10 @@ TEST(SeparationsTests, SeparationEfficiency) {
       "<feedbuf_size>100</feedbuf_size>"
       "<feed_commods> <val>feed</val> </feed_commods>"
       ;
-  
-  
+
+
   cyclus::MockSim sim2(cyclus::AgentSpec(":cycamore:Separations"), config, simdur);
-  
+
   EXPECT_NO_THROW(sim2.Run()) << "Cumulative separation efficiency of 1 is throwing an error but should not.";
 }
 
@@ -163,9 +163,9 @@ TEST(SeparationsTests, SeparationEfficiencyThrowing) {
       ;
 
   cyclus::MockSim sim1(cyclus::AgentSpec(":cycamore:Separations"), config, simdur);
-  
+
   EXPECT_THROW(sim1.Run(), cyclus::ValueError) << "Direct separation efficiency greater than 1 is not throwing an error but should.";
-  
+
 // Check if a cumulative separation efficiency greater than 1 for a unique nuclide throw an error as expected.
   config =
     "<streams>"
@@ -196,9 +196,9 @@ TEST(SeparationsTests, SeparationEfficiencyThrowing) {
     "<feedbuf_size>100</feedbuf_size>"
     "<feed_commods> <val>feed</val> </feed_commods>"
     ;
-  
+
   cyclus::MockSim sim2(cyclus::AgentSpec(":cycamore:Separations"), config, simdur);
-  
+
   EXPECT_THROW(sim2.Run(), cyclus::ValueError) << "Single cumulative separation efficiency greater than 1 is not throwing an error but should.";
 // Check if a cumulative separation efficiency greater than 1 for multiple nuclides throw an error as expected.
   config =
@@ -230,12 +230,12 @@ TEST(SeparationsTests, SeparationEfficiencyThrowing) {
       "<feedbuf_size>100</feedbuf_size>"
       "<feed_commods> <val>feed</val> </feed_commods>"
       ;
-  
+
   cyclus::MockSim sim3(cyclus::AgentSpec(":cycamore:Separations"), config, simdur);
-  
+
   EXPECT_THROW(sim3.Run(), cyclus::ValueError) << "Multiple cumulative separation efficiencies greater than 1 are not throwing an error but should.";
 }
-  
+
 TEST(SeparationsTests, SepMixElemAndNuclide) {
   std::string config =
       "<streams>"
@@ -310,7 +310,7 @@ TEST(SeparationsTests, Retire) {
   int life = 2;
 
   cyclus::MockSim sim(cyclus::AgentSpec(":cycamore:Separations"),
-		      config, simdur, life);
+          config, simdur, life);
   sim.AddSource("feed").recipe("recipe1").Finalize();
   sim.AddSink("stream1").capacity(100).Finalize();
   sim.AddSink("waste").capacity(70).Finalize();
