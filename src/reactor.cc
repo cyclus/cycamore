@@ -358,7 +358,7 @@ void Reactor::Tock() {
   }
   
   // Check that irradiation and refueling periods are over, that 
-  // the core is full and that it has previously been discharged.
+  // the core is full and that fuel was successfully discharged in this refueling time.
   // If this is the case, then a new cycle will be initiated.
   if (cycle_step >= cycle_time + refuel_time && core.count() == n_assem_core && discharged == true) {
     discharged = false;
