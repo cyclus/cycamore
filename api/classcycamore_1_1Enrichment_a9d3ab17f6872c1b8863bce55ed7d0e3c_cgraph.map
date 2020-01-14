@@ -1,5 +1,5 @@
 <map id="cycamore::Enrichment::GetMatlBids" name="cycamore::Enrichment::GetMatlBids">
-<area shape="rect" id="node2" href="$classcycamore_1_1Enrichment.html#a80491fbf53e153fdab35b1a6a6ecaff4" title="calculates the feed assay based on the unenriched inventory " alt="" coords="209,5,362,46"/>
-<area shape="rect" id="node3" href="$classcycamore_1_1Enrichment.html#a23cff6b31a311890256955ece0966b7e" title="Generates a material offer for a given request. " alt="" coords="209,70,362,111"/>
-<area shape="rect" id="node4" href="$classcycamore_1_1Enrichment.html#a5a84a6a0d5c51d2e1f6e04497f32c6d0" title="Determines if a particular material is a valid request to respond to. " alt="" coords="209,135,362,177"/>
+<area shape="rect" id="node2" href="$classcycamore_1_1Enrichment.html#a80491fbf53e153fdab35b1a6a6ecaff4" title="calculates the feed assay based on the unenriched inventory " alt="" coords="207,5,360,47"/>
+<area shape="rect" id="node3" href="$classcycamore_1_1Enrichment.html#a23cff6b31a311890256955ece0966b7e" title="Generates a material offer for a given request. " alt="" coords="207,71,360,112"/>
+<area shape="rect" id="node4" href="$classcycamore_1_1Enrichment.html#a5a84a6a0d5c51d2e1f6e04497f32c6d0" title="Determines if a particular material is a valid request to respond to. " alt="" coords="207,136,360,177"/>
 </map>

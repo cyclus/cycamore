@@ -1,0 +1,20 @@
+<map id="cycamore::Sink::version" name="cycamore::Sink::version">
+<area shape="rect" id="node2" href="$classcycamore_1_1Sink.html#aaa0718f50db1e15ad6b936837bb5e71d" title="SinkFacilities place accepted trade Materials in their Inventory. " alt="" coords="234,5,421,47"/>
+<area shape="rect" id="node3" href="$classcycamore_1_1Sink.html#a2dde487ff6c186788556d3bfda8b7a85" title="SinkFacilities place accepted trade Materials in their Inventory. " alt="" coords="234,71,421,112"/>
+<area shape="rect" id="node4" href="$classcycamore_1_1Sink.html#a0d3b83320abdabc749fa98becde1e009" title="cycamore::Sink::annotations" alt="" coords="233,137,421,163"/>
+<area shape="rect" id="node5" href="$classcycamore_1_1Sink.html#ae058e8e07055fdce05459fe1ec017193" title="cycamore::Sink::Clone" alt="" coords="250,187,405,214"/>
+<area shape="rect" id="node6" href="$classcycamore_1_1Sink.html#a16e34d29e3a7900cd86024ca70da8c9e" title="cycamore::Sink::InitFrom" alt="" coords="507,213,677,239"/>
+<area shape="rect" id="node7" href="$classcycamore_1_1Sink.html#a188c98735a544b60d5ab952d320b2414" title="cycamore::Sink::EnterNotify" alt="" coords="234,289,421,315"/>
+<area shape="rect" id="node9" href="$classcycamore_1_1Sink.html#a97c5b25ffc12ba5ffb46a1ce549e1082" title="SinkFacilities request Products of their given commodity. " alt="" coords="230,340,425,381"/>
+<area shape="rect" id="node11" href="$classcycamore_1_1Sink.html#a5dfe99c2135f31459bb679b6e62d5f72" title="SinkFacilities request Materials of their given commodity. " alt="" coords="216,406,439,433"/>
+<area shape="rect" id="node12" href="$classcycamore_1_1Sink.html#ac7036e9fdca1b3b3e6ee6d71917789de" title="cycamore::Sink::InfileToDb" alt="" coords="237,457,418,483"/>
+<area shape="rect" id="node13" href="$classcycamore_1_1Sink.html#a52b9bcb94a1d2e72015352f0dbd5e6d5" title="cycamore::Sink::InitInv" alt="" coords="249,507,406,534"/>
+<area shape="rect" id="node14" href="$classcycamore_1_1Sink.html#a76d31c5fc8f9db962e95aeb59962d8e8" title="cycamore::Sink::schema" alt="" coords="244,558,411,585"/>
+<area shape="rect" id="node15" href="$classcycamore_1_1Sink.html#a9d25a41c823a062f13ad451ab2f5964f" title="cycamore::Sink::Snapshot" alt="" coords="239,609,415,635"/>
+<area shape="rect" id="node16" href="$classcycamore_1_1Sink.html#a77e393fcae1bf9304ca2295835394551" title="cycamore::Sink::SnapshotInv" alt="" coords="230,659,425,686"/>
+<area shape="rect" id="node17" href="$classcycamore_1_1Sink.html#ab6ee388bcf42a6fb7af69d5d8e2e2aac" title="cycamore::Sink::str" alt="" coords="259,710,395,737"/>
+<area shape="rect" id="node18" href="$classcycamore_1_1Sink.html#a385c81342d3ad2cb8b0c226cad4885e4" title="cycamore::Sink::Tick" alt="" coords="254,761,401,787"/>
+<area shape="rect" id="node19" href="$classcycamore_1_1Sink.html#a39c4d9ce57c003a71a9c7b08353c9ff1" title="cycamore::Sink::Tock" alt="" coords="252,811,403,838"/>
+<area shape="rect" id="node8" href="$classcycamore_1_1Sink.html#aea673ec7067fa081bd179ee07a899df1" title="cycamore::Sink::RecordPosition" alt="" coords="487,289,697,315"/>
+<area shape="rect" id="node10" href="$classcycamore_1_1Sink.html#a45012acd812a9b158854f5729e261ec6" title="determines the amount to request " alt="" coords="495,406,689,433"/>
+</map>

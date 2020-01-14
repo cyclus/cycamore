@@ -1,0 +1,10 @@
+<map id="TEST_F" name="TEST_F">
+<area shape="rect" id="node2" href="$classcycamore_1_1Sink.html#ae2f7fe270d9f74ad616cd8112cea8ba5" title="sets the capacity of a material generated at any given time step " alt="" coords="151,5,324,32"/>
+<area shape="rect" id="node3" href="$classcycamore_1_1Sink.html#a188c98735a544b60d5ab952d320b2414" title="cycamore::Sink::EnterNotify" alt="" coords="144,56,331,83"/>
+<area shape="rect" id="node5" href="$classcycamore_1_1Sink.html#a249f3564b1946f0d7d8586b98f4ca029" title="cycamore::Sink::input\l_commodities" alt="" coords="163,107,312,149"/>
+<area shape="rect" id="node6" href="$classcycamore_1_1Sink.html#aa4755dd78d321c833972af45e43a6fb9" title="cycamore::Sink::input\l_commodity_preferences" alt="" coords="153,173,321,214"/>
+<area shape="rect" id="node7" href="$classcycamore_1_1Sink.html#a77ea61d970d4ffd9625cac8aaaf3e2d1" title="cycamore::Sink::InventorySize" alt="" coords="137,239,338,265"/>
+<area shape="rect" id="node8" href="$classcycamore_1_1Sink.html#ac0101922f4951f05233c252fbfec2567" title="cycamore::Sink::MaxInventorySize" alt="" coords="124,289,351,316"/>
+<area shape="rect" id="node9" href="$classcycamore_1_1Sink.html#a45012acd812a9b158854f5729e261ec6" title="determines the amount to request " alt="" coords="140,340,335,367"/>
+<area shape="rect" id="node4" href="$classcycamore_1_1Sink.html#aea673ec7067fa081bd179ee07a899df1" title="cycamore::Sink::RecordPosition" alt="" coords="399,56,609,83"/>
+</map>

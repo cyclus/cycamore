@@ -1,3 +1,5 @@
 <map id="cycamore::Reactor::Discharge" name="cycamore::Reactor::Discharge">
-<area shape="rect" id="node2" href="$classcycamore_1_1Reactor.html#a88583fdb3ddf5aff7d2c768a3af47073" title="Records a reactor event to the output db with the given name and note val. " alt="" coords="195,5,336,46"/>
+<area shape="rect" id="node2" href="$classcycamore_1_1Reactor.html#a96b9a037cfd1254c64dd6713f4c930c6" title="Returns all spent assemblies indexed by outcommod without removing them from the spent fuel buffer..." alt="" coords="195,5,336,47"/>
+<area shape="rect" id="node4" href="$classcycamore_1_1Reactor.html#a88583fdb3ddf5aff7d2c768a3af47073" title="Records a reactor event to the output db with the given name and note val. " alt="" coords="195,71,336,112"/>
+<area shape="rect" id="node3" href="$classcycamore_1_1Reactor.html#ac4e52b833f8a92f6cc94d6ac3f0ba721" title="cycamore::Reactor::\lfuel_outcommod" alt="" coords="384,5,525,47"/>
 </map>

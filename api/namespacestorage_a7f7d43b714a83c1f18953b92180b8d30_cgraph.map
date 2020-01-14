@@ -1,0 +1,12 @@
+<map id="storage::TEST_F" name="storage::TEST_F">
+<area shape="rect" id="node2" href="$classstorage_1_1StorageTest.html#ad7a4dcfd8e1e33661cee7a37f2f0df18" title="storage::StorageTest\l::SetUpStorage" alt="" coords="181,5,325,47"/>
+<area shape="rect" id="node3" href="$classstorage_1_1StorageTest.html#a96d2d84b3f0d7d76b2e05e2176a945c6" title="storage::StorageTest\l::TestAddMat" alt="" coords="181,71,325,112"/>
+<area shape="rect" id="node5" href="$classstorage_1_1StorageTest.html#a30e8e2c86c5b59197beeceae52532c08" title="storage::StorageTest\l::TestBuffers" alt="" coords="181,136,325,177"/>
+<area shape="rect" id="node6" href="$classstorage_1_1Storage.html#a4def869255d5ba72c6d8213e5b8ccd64" title="The handleTick function specific to the Storage. " alt="" coords="176,209,331,235"/>
+<area shape="rect" id="node4" href="$classstorage_1_1Storage.html#af8fb278b6f5cea8c9550696ac4c07f35" title="adds a material into the incoming commodity inventory " alt="" coords="405,70,583,97"/>
+<area shape="rect" id="node7" href="$classstorage_1_1Storage.html#a6ae283527ab82b2aaf38b835dbd27d95" title="Move all unprocessed inventory to processing. " alt="" coords="379,121,609,147"/>
+<area shape="rect" id="node8" href="$classstorage_1_1Storage.html#ab4c2f0d3fe9ff305058382930999498d" title="returns the time key for ready materials " alt="" coords="399,171,589,198"/>
+<area shape="rect" id="node9" href="$classstorage_1_1Storage.html#a615965387388be52d9ee38207717ca24" title="move ready resources from processing to ready at a certain time " alt="" coords="396,222,592,249"/>
+<area shape="rect" id="node10" href="$classstorage_1_1Storage.html#ab2acf5abb0c379447027536ba8284f09" title="Move as many ready resources as allowable into stocks. " alt="" coords="393,273,595,299"/>
+<area shape="rect" id="node11" href="$classstorage_1_1Storage.html#a216110bc64683d20795a91e6ac8e3300" title="current maximum amount that can be added to processing " alt="" coords="411,324,577,365"/>
+</map>

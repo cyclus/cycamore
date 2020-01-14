@@ -1,0 +1,7 @@
+<map id="storage::Storage::Tock" name="storage::Storage::Tock">
+<area shape="rect" id="node2" href="$classstorage_1_1Storage.html#a6ae283527ab82b2aaf38b835dbd27d95" title="Move all unprocessed inventory to processing. " alt="" coords="208,5,439,32"/>
+<area shape="rect" id="node3" href="$classstorage_1_1Storage.html#a216110bc64683d20795a91e6ac8e3300" title="current maximum amount that can be added to processing " alt="" coords="240,57,407,98"/>
+<area shape="rect" id="node4" href="$classstorage_1_1Storage.html#ab2acf5abb0c379447027536ba8284f09" title="Move as many ready resources as allowable into stocks. " alt="" coords="222,123,425,149"/>
+<area shape="rect" id="node5" href="$classstorage_1_1Storage.html#ab4c2f0d3fe9ff305058382930999498d" title="returns the time key for ready materials " alt="" coords="228,173,419,200"/>
+<area shape="rect" id="node6" href="$classstorage_1_1Storage.html#a615965387388be52d9ee38207717ca24" title="move ready resources from processing to ready at a certain time " alt="" coords="225,224,421,251"/>
+</map>

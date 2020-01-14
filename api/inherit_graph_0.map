@@ -1,4 +1,8 @@
 <map id="Graphical Class Hierarchy" name="Graphical Class Hierarchy">
-<area shape="rect" id="node2" href="$classcycamore_1_1ManagerInst.html" title="cycamore::ManagerInst" alt="" coords="246,56,405,83"/>
-<area shape="rect" id="node5" href="$classcycamore_1_1DeployInst.html" title="cycamore::DeployInst" alt="" coords="250,107,401,133"/>
+<area shape="rect" id="node2" href="$classcycamore_1_1EnrichmentTest.html" title="cycamore::EnrichmentTest" alt="" coords="101,5,280,32"/>
+<area shape="rect" id="node3" href="$classcycamore_1_1MixerTest.html" title="cycamore::MixerTest" alt="" coords="118,56,263,83"/>
+<area shape="rect" id="node4" href="$classcycamore_1_1SourceTest.html" title="cycamore::SourceTest" alt="" coords="113,107,268,133"/>
+<area shape="rect" id="node5" href="$classManagerInstTests.html" title="ManagerInstTests" alt="" coords="127,157,254,184"/>
+<area shape="rect" id="node6" href="$classSinkTest.html" title="SinkTest" alt="" coords="153,208,228,235"/>
+<area shape="rect" id="node7" href="$classstorage_1_1StorageTest.html" title="storage::StorageTest" alt="" coords="119,259,263,285"/>
 </map>

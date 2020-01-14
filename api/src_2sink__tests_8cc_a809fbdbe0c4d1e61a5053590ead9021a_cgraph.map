@@ -1,5 +1,7 @@
 <map id="TEST_F" name="TEST_F">
-<area shape="rect" id="node2" href="$classcycamore_1_1Sink.html#ade27ef8edf1a00c08bf6e6bc48416292" title="add a commodity to the set of input commodities " alt="" coords="132,5,343,32"/>
-<area shape="rect" id="node3" href="$classcycamore_1_1Sink.html#a5dfe99c2135f31459bb679b6e62d5f72" title="SinkFacilities request Materials of their given commodity. " alt="" coords="126,56,349,83"/>
-<area shape="rect" id="node4" href="$classcycamore_1_1Sink.html#a2b41ef61e5bfb65cd8a9c84efa3acedc" title="determines the amount to request " alt="" coords="397,56,592,83"/>
+<area shape="rect" id="node2" href="$classcycamore_1_1Sink.html#ade27ef8edf1a00c08bf6e6bc48416292" title="add a commodity to the set of input commodities " alt="" coords="130,5,341,32"/>
+<area shape="rect" id="node3" href="$classcycamore_1_1Sink.html#a188c98735a544b60d5ab952d320b2414" title="cycamore::Sink::EnterNotify" alt="" coords="142,56,329,83"/>
+<area shape="rect" id="node5" href="$classcycamore_1_1Sink.html#a5dfe99c2135f31459bb679b6e62d5f72" title="SinkFacilities request Materials of their given commodity. " alt="" coords="124,107,347,133"/>
+<area shape="rect" id="node4" href="$classcycamore_1_1Sink.html#aea673ec7067fa081bd179ee07a899df1" title="cycamore::Sink::RecordPosition" alt="" coords="395,56,605,83"/>
+<area shape="rect" id="node6" href="$classcycamore_1_1Sink.html#a45012acd812a9b158854f5729e261ec6" title="determines the amount to request " alt="" coords="403,107,597,133"/>
 </map>

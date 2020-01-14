@@ -1,5 +1,6 @@
 <map id="cycamore::Enrichment::Build" name="cycamore::Enrichment::Build">
-<area shape="rect" id="node2" href="$classcycamore_1_1Enrichment.html#a7c654356efaf32cffcff08afdd0ac712" title="Print information about this agent. " alt="" coords="208,45,384,72"/>
-<area shape="rect" id="node3" href="$classcycamore_1_1Enrichment.html#a066626e2d7f98fadf81ddf42e90d3a00" title="cycamore::Enrichment\l::SwuCapacity" alt="" coords="433,5,586,46"/>
-<area shape="rect" id="node4" href="$classcycamore_1_1Enrichment.html#a80491fbf53e153fdab35b1a6a6ecaff4" title="calculates the feed assay based on the unenriched inventory " alt="" coords="433,70,586,111"/>
+<area shape="rect" id="node2" href="$classcycamore_1_1Enrichment.html#a0c468302b571c92b4d74e06b2f9b4bd2" title="Records an agent&#39;s latitude and longitude to the output db. " alt="" coords="218,5,371,47"/>
+<area shape="rect" id="node3" href="$classcycamore_1_1Enrichment.html#a7c654356efaf32cffcff08afdd0ac712" title="Print information about this agent. " alt="" coords="207,71,383,98"/>
+<area shape="rect" id="node4" href="$classcycamore_1_1Enrichment.html#a789fd87b86e6e527d70055eacd40e8fd" title="cycamore::Enrichment\l::SwuCapacity" alt="" coords="431,31,584,72"/>
+<area shape="rect" id="node5" href="$classcycamore_1_1Enrichment.html#a80491fbf53e153fdab35b1a6a6ecaff4" title="calculates the feed assay based on the unenriched inventory " alt="" coords="431,96,584,137"/>
 </map>

@@ -1,0 +1,14 @@
+<map id="cycamore::TEST_F" name="cycamore::TEST_F">
+<area shape="rect" id="node2" href="$classcycamore_1_1EnrichmentTest.html#a47c35e42ec6f08a0ca13957b32dccf64" title="cycamore::EnrichmentTest\l::DoAddMat" alt="" coords="189,5,368,47"/>
+<area shape="rect" id="node4" href="$classcycamore_1_1EnrichmentTest.html#a297f1ff5a5adb3cda93d3c6fe4af305c" title="cycamore::EnrichmentTest\l::DoEnrich" alt="" coords="189,71,368,112"/>
+<area shape="rect" id="node9" href="$classcycamore_1_1EnrichmentTest.html#a48db1259526a2c891d99f044e54de131" title="cycamore::EnrichmentTest\l::GetMat" alt="" coords="189,136,368,177"/>
+<area shape="rect" id="node10" href="$classcycamore_1_1Enrichment.html#a2fea2ad3ca6fa82b62e963f454bc0e8a" title="cycamore::Enrichment\l::SetMaxInventorySize" alt="" coords="201,201,356,243"/>
+<area shape="rect" id="node11" href="$classcycamore_1_1Enrichment.html#a0de3c29489f9cdb366e54a65e874c346" title="cycamore::Enrichment\l::SwuCapacity" alt="" coords="202,267,355,308"/>
+<area shape="rect" id="node12" href="$classcycamore_1_1Enrichment.html#ac8785bb496dba4bfb8b3702aff65602f" title="cycamore::Enrichment\l::Tails" alt="" coords="202,332,355,373"/>
+<area shape="rect" id="node3" href="$classcycamore_1_1Enrichment.html#aed2137c8cf0a92aae95d4d5d117ae873" title="adds a material into the natural uranium inventory " alt="" coords="427,5,581,47"/>
+<area shape="rect" id="node5" href="$classcycamore_1_1Enrichment.html#a1fbea71ac2c3f5919a087a0f59ccb3f5" title="cycamore::Enrichment\l::Enrich_" alt="" coords="427,71,581,112"/>
+<area shape="rect" id="node6" href="$classcycamore_1_1Enrichment.html#a80491fbf53e153fdab35b1a6a6ecaff4" title="calculates the feed assay based on the unenriched inventory " alt="" coords="651,5,804,47"/>
+<area shape="rect" id="node7" href="$classcycamore_1_1NatUConverter.html#af18fee11d2302f2bc5af5519fc67fa03" title="provides a conversion for the amount of natural Uranium required " alt="" coords="640,71,815,112"/>
+<area shape="rect" id="node8" href="$classcycamore_1_1Enrichment.html#a9df63f8e1b302cfd087acbec77b2c592" title="records and enrichment with the cyclus::Recorder " alt="" coords="651,136,804,177"/>
+<area shape="rect" id="node13" href="$namespacecycamore.html#a3debc9fe3279368b064d5d98a365e203" title="Records an agent&#39;s latitude and longitude to the output db. " alt="" coords="416,339,592,366"/>
+</map>

@@ -1,7 +1,7 @@
 <map id="SinkTest::SetUp" name="SinkTest::SetUp">
-<area shape="rect" id="node2" href="$classSinkTest.html#a281da4a1ff1f102b489ac61b3d619b48" title="SinkTest::InitParameters" alt="" coords="174,5,341,32"/>
-<area shape="rect" id="node3" href="$classSinkTest.html#a56d6275ba4fcc7af3115b24e05b18d8f" title="SinkTest::SetUpSink" alt="" coords="185,56,330,83"/>
-<area shape="rect" id="node4" href="$classcycamore_1_1Sink.html#ade27ef8edf1a00c08bf6e6bc48416292" title="add a commodity to the set of input commodities " alt="" coords="408,5,619,32"/>
-<area shape="rect" id="node5" href="$classcycamore_1_1Sink.html#ae2f7fe270d9f74ad616cd8112cea8ba5" title="sets the capacity of a material generated at any given time step " alt="" coords="427,56,600,83"/>
-<area shape="rect" id="node6" href="$classcycamore_1_1Sink.html#a559393ac1f46bd4af8de9fd13a5e36e9" title="sets the size of the storage inventory for received material " alt="" coords="390,107,637,133"/>
+<area shape="rect" id="node2" href="$classSinkTest.html#a281da4a1ff1f102b489ac61b3d619b48" title="SinkTest::InitParameters" alt="" coords="172,5,339,32"/>
+<area shape="rect" id="node3" href="$classSinkTest.html#a56d6275ba4fcc7af3115b24e05b18d8f" title="SinkTest::SetUpSink" alt="" coords="183,56,328,83"/>
+<area shape="rect" id="node4" href="$classcycamore_1_1Sink.html#ade27ef8edf1a00c08bf6e6bc48416292" title="add a commodity to the set of input commodities " alt="" coords="405,5,615,32"/>
+<area shape="rect" id="node5" href="$classcycamore_1_1Sink.html#ae2f7fe270d9f74ad616cd8112cea8ba5" title="sets the capacity of a material generated at any given time step " alt="" coords="423,56,597,83"/>
+<area shape="rect" id="node6" href="$classcycamore_1_1Sink.html#a559393ac1f46bd4af8de9fd13a5e36e9" title="sets the size of the storage inventory for received material " alt="" coords="387,107,633,133"/>
 </map>

@@ -1,4 +1,5 @@
 <map id="cycamore::GrowthRegion::EnterNotify" name="cycamore::GrowthRegion::EnterNotify">
-<area shape="rect" id="node2" href="$classcycamore_1_1GrowthRegion.html#ada9aa5327747ad117b9ebd5bd6da9354" title="add a demand for a commodity on which this region request that facilities be built ..." alt="" coords="224,5,400,46"/>
-<area shape="rect" id="node3" href="$classcycamore_1_1GrowthRegion.html#ac5aeb4c01eacb53b1bd9ff744623113c" title="register a child " alt="" coords="227,70,397,111"/>
+<area shape="rect" id="node2" href="$classcycamore_1_1GrowthRegion.html#ada9aa5327747ad117b9ebd5bd6da9354" title="add a demand for a commodity on which this region request that facilities be built ..." alt="" coords="224,5,400,47"/>
+<area shape="rect" id="node3" href="$classcycamore_1_1GrowthRegion.html#a039f22d7b0ba659eb0c65c31702c1398" title="Records an agent&#39;s latitude and longitude to the output db. " alt="" coords="227,71,397,112"/>
+<area shape="rect" id="node4" href="$classcycamore_1_1GrowthRegion.html#ac5aeb4c01eacb53b1bd9ff744623113c" title="register a child " alt="" coords="227,136,397,177"/>
 </map>

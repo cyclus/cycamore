@@ -1,3 +1,8 @@
 <map id="cycamore::Reactor::Load" name="cycamore::Reactor::Load">
-<area shape="rect" id="node2" href="$classcycamore_1_1Reactor.html#a88583fdb3ddf5aff7d2c768a3af47073" title="Records a reactor event to the output db with the given name and note val. " alt="" coords="224,5,365,46"/>
+<area shape="rect" id="node2" href="$classcycamore_1_1Reactor.html#a00625528737fa5919c85433706a094c5" title="cycamore::Reactor::\lfuel_incommod" alt="" coords="223,5,364,47"/>
+<area shape="rect" id="node3" href="$classcycamore_1_1Reactor.html#a9f2c70771cd2687d0b5bad13efd82902" title="cycamore::Reactor::\lfuel_inrecipe" alt="" coords="223,71,364,112"/>
+<area shape="rect" id="node4" href="$classcycamore_1_1Reactor.html#ac4e52b833f8a92f6cc94d6ac3f0ba721" title="cycamore::Reactor::\lfuel_outcommod" alt="" coords="223,136,364,177"/>
+<area shape="rect" id="node5" href="$classcycamore_1_1Reactor.html#ad83e3bcb4e3a90d0bbe6704751deb779" title="cycamore::Reactor::\lfuel_outrecipe" alt="" coords="223,201,364,243"/>
+<area shape="rect" id="node6" href="$classcycamore_1_1Reactor.html#a8c5df3894c3b13387e3af1cff00bc423" title="cycamore::Reactor::\lfuel_pref" alt="" coords="223,267,364,308"/>
+<area shape="rect" id="node7" href="$classcycamore_1_1Reactor.html#a88583fdb3ddf5aff7d2c768a3af47073" title="Records a reactor event to the output db with the given name and note val. " alt="" coords="223,332,364,373"/>
 </map>

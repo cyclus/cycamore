@@ -1,0 +1,9 @@
+<map id="run_inputs.TestFile.no_errors" name="run_inputs.TestFile.no_errors">
+<area shape="rect" id="node2" href="$namespacerun__inputs.html#a32f37d900f5324585f75820830c37979" title="run_inputs.main" alt="" coords="204,56,319,83"/>
+<area shape="rect" id="node3" href="$namespacerun__inputs.html#a3631b1be77baaa232479ad2b169c4d9e" title="run_inputs.check_inputs" alt="" coords="367,19,529,45"/>
+<area shape="rect" id="node5" href="$namespacerun__inputs.html#a839c6d2b7b3d20458aa19aa3450e22da" title="run_inputs.main_body" alt="" coords="373,81,523,108"/>
+<area shape="rect" id="node4" href="$namespacerun__inputs.html#a3fc4abd61c0ec572591069fd05076a1b" title="run_inputs.print_usage" alt="" coords="587,5,741,32"/>
+<area shape="rect" id="node6" href="$namespacerun__inputs.html#a5bd919bfe8865b64d28d35232bd0c33d" title="run_inputs.clean_catalogs" alt="" coords="577,56,751,83"/>
+<area shape="rect" id="node7" href="$namespacerun__inputs.html#a9cbd1e27d9b932e4659ac6f5bc82f40c" title="run_inputs.copy_catalogs" alt="" coords="579,107,749,133"/>
+<area shape="rect" id="node8" href="$namespacerun__inputs.html#a7ea3e3f34d19a238dcbf156472ca5d49" title="run_inputs.get_files" alt="" coords="597,157,731,184"/>
+</map>

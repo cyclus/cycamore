@@ -1,7 +1,18 @@
 <map id="cycamore::Reactor::Tick" name="cycamore::Reactor::Tick">
-<area shape="rect" id="node2" href="$classcycamore_1_1Reactor.html#a6032a42566c065d1e82723d281887a4c" title="Discharge a batch from the core if there is room in the spent fuel inventory. " alt="" coords="236,5,377,46"/>
-<area shape="rect" id="node3" href="$classcycamore_1_1Reactor.html#a88583fdb3ddf5aff7d2c768a3af47073" title="Records a reactor event to the output db with the given name and note val. " alt="" coords="440,63,581,105"/>
-<area shape="rect" id="node4" href="$classcycamore_1_1Reactor.html#ad77513b1634218d96cd07d98ba1d78bd" title="Top up core inventory as much as possible. " alt="" coords="222,121,391,148"/>
-<area shape="rect" id="node5" href="$classcycamore_1_1Reactor.html#a91efa749e030853adef70b83887ad2f6" title="cycamore::Reactor::\lretired" alt="" coords="236,173,377,214"/>
-<area shape="rect" id="node6" href="$classcycamore_1_1Reactor.html#a62ac26b334219281c766ede6aaee7362" title="Transmute the batch that is about to be discharged from the core to its fully burnt state as defined ..." alt="" coords="236,238,377,279"/>
+<area shape="rect" id="node2" href="$classcycamore_1_1Reactor.html#acd78a39b2efd1a419c0c0d5283015018" title="cycamore::Reactor::\lCheckDecommissionCondition" alt="" coords="220,123,423,164"/>
+<area shape="rect" id="node3" href="$classcycamore_1_1Reactor.html#a6032a42566c065d1e82723d281887a4c" title="Discharge a batch from the core if there is room in the spent fuel inventory. " alt="" coords="485,291,626,332"/>
+<area shape="rect" id="node6" href="$classcycamore_1_1Reactor.html#a88583fdb3ddf5aff7d2c768a3af47073" title="Records a reactor event to the output db with the given name and note val. " alt="" coords="688,319,829,360"/>
+<area shape="rect" id="node7" href="$classcycamore_1_1Reactor.html#ad77513b1634218d96cd07d98ba1d78bd" title="Top up core inventory as much as possible. " alt="" coords="471,189,640,215"/>
+<area shape="rect" id="node12" href="$classcycamore_1_1Reactor.html#a91efa749e030853adef70b83887ad2f6" title="cycamore::Reactor::\lretired" alt="" coords="251,429,392,471"/>
+<area shape="rect" id="node17" href="$classcycamore_1_1Reactor.html#a62ac26b334219281c766ede6aaee7362" title="Transmute the batch that is about to be discharged from the core to its fully burnt state as defined ..." alt="" coords="485,707,626,748"/>
+<area shape="rect" id="node4" href="$classcycamore_1_1Reactor.html#a96b9a037cfd1254c64dd6713f4c930c6" title="Returns all spent assemblies indexed by outcommod without removing them from the spent fuel buffer..." alt="" coords="688,395,829,436"/>
+<area shape="rect" id="node5" href="$classcycamore_1_1Reactor.html#ac4e52b833f8a92f6cc94d6ac3f0ba721" title="cycamore::Reactor::\lfuel_outcommod" alt="" coords="877,395,1019,436"/>
+<area shape="rect" id="node8" href="$classcycamore_1_1Reactor.html#a00625528737fa5919c85433706a094c5" title="cycamore::Reactor::\lfuel_incommod" alt="" coords="688,188,829,229"/>
+<area shape="rect" id="node9" href="$classcycamore_1_1Reactor.html#a9f2c70771cd2687d0b5bad13efd82902" title="cycamore::Reactor::\lfuel_inrecipe" alt="" coords="688,253,829,295"/>
+<area shape="rect" id="node10" href="$classcycamore_1_1Reactor.html#ad83e3bcb4e3a90d0bbe6704751deb779" title="cycamore::Reactor::\lfuel_outrecipe" alt="" coords="688,5,829,47"/>
+<area shape="rect" id="node11" href="$classcycamore_1_1Reactor.html#a8c5df3894c3b13387e3af1cff00bc423" title="cycamore::Reactor::\lfuel_pref" alt="" coords="688,71,829,112"/>
+<area shape="rect" id="node13" href="$classcycamore_1_1Reactor.html#a32af57edec1e18409f182ec382cc5e9f" title="Store fuel info index for the given resource received on incommod. " alt="" coords="485,524,626,565"/>
+<area shape="rect" id="node14" href="$classcycamore_1_1Reactor.html#a3fb1043d92cae9d30473c5ca85b1eef1" title="Returns all spent assemblies indexed by outcommod &#45; removing them from the spent fuel buffer..." alt="" coords="485,589,626,631"/>
+<area shape="rect" id="node15" href="$classcycamore_1_1Reactor.html#ad9a8c2a872d746fda3807b873e50e690" title="Complement of PopSpent &#45; must be called with all materials passed that were not traded away to other ..." alt="" coords="688,619,829,660"/>
+<area shape="rect" id="node16" href="$classcycamore_1_1Reactor.html#a47332ceb29d57837102726ad683bace1" title="Records production of side products from the reactor. " alt="" coords="485,459,626,500"/>
 </map>

@@ -1,0 +1,5 @@
+<map id="TEST_F" name="TEST_F">
+<area shape="rect" id="node2" href="$classcycamore_1_1Sink.html#ae2f7fe270d9f74ad616cd8112cea8ba5" title="sets the capacity of a material generated at any given time step " alt="" coords="149,5,322,32"/>
+<area shape="rect" id="node3" href="$classcycamore_1_1Sink.html#a5dfe99c2135f31459bb679b6e62d5f72" title="SinkFacilities request Materials of their given commodity. " alt="" coords="124,56,347,83"/>
+<area shape="rect" id="node4" href="$classcycamore_1_1Sink.html#a45012acd812a9b158854f5729e261ec6" title="determines the amount to request " alt="" coords="395,56,589,83"/>
+</map>

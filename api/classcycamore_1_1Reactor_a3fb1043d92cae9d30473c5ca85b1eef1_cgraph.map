@@ -1,3 +1,4 @@
 <map id="cycamore::Reactor::PopSpent" name="cycamore::Reactor::PopSpent">
-<area shape="rect" id="node2" href="$classcycamore_1_1Reactor.html#ac4e52b833f8a92f6cc94d6ac3f0ba721" title="cycamore::Reactor::\lfuel_outcommod" alt="" coords="195,5,336,46"/>
+<area shape="rect" id="node2" href="$classcycamore_1_1Reactor.html#ac4e52b833f8a92f6cc94d6ac3f0ba721" title="cycamore::Reactor::\lfuel_outcommod" alt="" coords="195,5,336,47"/>
+<area shape="rect" id="node3" href="$classcycamore_1_1Reactor.html#ad9a8c2a872d746fda3807b873e50e690" title="Complement of PopSpent &#45; must be called with all materials passed that were not traded away to other ..." alt="" coords="195,71,336,112"/>
 </map>

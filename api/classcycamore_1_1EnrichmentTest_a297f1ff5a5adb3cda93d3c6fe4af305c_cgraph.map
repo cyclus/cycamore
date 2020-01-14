@@ -1,6 +1,6 @@
 <map id="cycamore::EnrichmentTest::DoEnrich" name="cycamore::EnrichmentTest::DoEnrich">
-<area shape="rect" id="node2" href="$classcycamore_1_1Enrichment.html#a1fbea71ac2c3f5919a087a0f59ccb3f5" title="cycamore::Enrichment\l::Enrich_" alt="" coords="233,70,386,111"/>
-<area shape="rect" id="node3" href="$classcycamore_1_1NatUConverter.html#aaf40b222890cc4352804dca29c4b9e49" title="provides a conversion for the amount of natural Uranium required " alt="" coords="435,5,610,46"/>
-<area shape="rect" id="node4" href="$classcycamore_1_1Enrichment.html#a80491fbf53e153fdab35b1a6a6ecaff4" title="calculates the feed assay based on the unenriched inventory " alt="" coords="446,70,599,111"/>
-<area shape="rect" id="node5" href="$classcycamore_1_1Enrichment.html#a9df63f8e1b302cfd087acbec77b2c592" title="records and enrichment with the cyclus::Recorder " alt="" coords="446,135,599,177"/>
+<area shape="rect" id="node2" href="$classcycamore_1_1Enrichment.html#a1fbea71ac2c3f5919a087a0f59ccb3f5" title="cycamore::Enrichment\l::Enrich_" alt="" coords="232,71,385,112"/>
+<area shape="rect" id="node3" href="$classcycamore_1_1NatUConverter.html#af18fee11d2302f2bc5af5519fc67fa03" title="provides a conversion for the amount of natural Uranium required " alt="" coords="433,5,608,47"/>
+<area shape="rect" id="node4" href="$classcycamore_1_1Enrichment.html#a80491fbf53e153fdab35b1a6a6ecaff4" title="calculates the feed assay based on the unenriched inventory " alt="" coords="444,71,597,112"/>
+<area shape="rect" id="node5" href="$classcycamore_1_1Enrichment.html#a9df63f8e1b302cfd087acbec77b2c592" title="records and enrichment with the cyclus::Recorder " alt="" coords="444,136,597,177"/>
 </map>

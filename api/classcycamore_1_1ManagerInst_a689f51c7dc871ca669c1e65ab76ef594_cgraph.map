@@ -1,0 +1,9 @@
+<map id="cycamore::ManagerInst::Snapshot" name="cycamore::ManagerInst::Snapshot">
+<area shape="rect" id="node2" href="$classcycamore_1_1ManagerInst.html#a8c6c8ead656bb473595536bbeac9f042" title="register a new child " alt="" coords="222,5,381,47"/>
+<area shape="rect" id="node3" href="$classcycamore_1_1ManagerInst.html#a171496bc8e3f1da9b10f9910160fe808" title="register a child " alt="" coords="439,57,597,99"/>
+<area shape="rect" id="node4" href="$classcycamore_1_1ManagerInst.html#a31dcf41ce052c1d692a7447f4d18086f" title="unregister a child " alt="" coords="222,188,381,229"/>
+<area shape="rect" id="node5" href="$classcycamore_1_1ManagerInst.html#a980f15ed8dd21733a86abcd69eaf321f" title="unregister a child " alt="" coords="439,188,597,229"/>
+<area shape="rect" id="node6" href="$classcycamore_1_1ManagerInst.html#a183ffc4c3176fe61ca825f2043dde854" title="enter the simulation and register any children present " alt="" coords="222,123,381,164"/>
+<area shape="rect" id="node8" href="$classcycamore_1_1ManagerInst.html#a479c11d8c4868b03f9d4376e094a5b56" title="write information about a commodity producer to a stream " alt="" coords="212,305,391,347"/>
+<area shape="rect" id="node7" href="$classcycamore_1_1ManagerInst.html#abab83c2bf8ba3d396fe66e4055ba1787" title="Records an agent&#39;s latitude and longitude to the output db. " alt="" coords="439,123,597,164"/>
+</map>

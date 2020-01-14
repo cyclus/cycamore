@@ -1,7 +1,14 @@
 <map id="Graphical Class Hierarchy" name="Graphical Class Hierarchy">
-<area shape="rect" id="node2" href="$classcycamore_1_1EnrichmentTest.html" title="cycamore::EnrichmentTest" alt="" coords="113,5,292,32"/>
-<area shape="rect" id="node3" href="$classcycamore_1_1GrowthRegionTests.html" title="cycamore::GrowthRegionTests" alt="" coords="101,56,304,83"/>
-<area shape="rect" id="node4" href="$classcycamore_1_1SourceTest.html" title="cycamore::SourceTest" alt="" coords="125,107,280,133"/>
-<area shape="rect" id="node5" href="$classManagerInstTests.html" title="ManagerInstTests" alt="" coords="139,157,266,184"/>
-<area shape="rect" id="node6" href="$classSinkTest.html" title="SinkTest" alt="" coords="165,208,240,235"/>
+<area shape="rect" id="node2" href="$classcycamore_1_1ManagerInst.html" title="cycamore::ManagerInst" alt="" coords="250,56,409,83"/>
+<area shape="rect" id="node4" href="$classcycamore_1_1Reactor.html" title="Reactor is a simple, general reactor based on static compositional transformations to model fuel burn..." alt="" coords="263,259,396,285"/>
+<area shape="rect" id="node5" href="$classcycamore_1_1Source.html" title="This facility acts as a source of material with a fixed throughput (per time step) capacity and a lif..." alt="" coords="265,309,393,336"/>
+<area shape="rect" id="node6" href="$classstorage_1_1Storage.html" title="This Facility is intended to hold materials for a user specified amount of time in order to model a s..." alt="" coords="270,157,389,184"/>
+<area shape="rect" id="node7" href="$classTestProducer.html" title="TestProducer" alt="" coords="279,208,379,235"/>
+<area shape="rect" id="node10" href="$classcycamore_1_1Enrichment.html" title="The Enrichment facility is a simple Agent that enriches natural uranium in a Cyclus simulation..." alt="" coords="253,461,406,488"/>
+<area shape="rect" id="node11" href="$classcycamore_1_1FuelFab.html" title="FuelFab takes in 2 streams of material and mixes them in ratios in order to supply material that matc..." alt="" coords="262,512,397,539"/>
+<area shape="rect" id="node12" href="$classcycamore_1_1Mixer.html" title="Mixer mixes N streams with fixed, static, user&#45;specified ratios into a single output stream..." alt="" coords="270,563,389,589"/>
+<area shape="rect" id="node13" href="$classcycamore_1_1Separations.html" title="Separations processes feed material into one or more streams containing specific elements and/or nucl..." alt="" coords="251,360,407,387"/>
+<area shape="rect" id="node14" href="$classcycamore_1_1Sink.html" title="This facility acts as a sink of materials and products with a fixed throughput (per time step) capaci..." alt="" coords="273,411,386,437"/>
+<area shape="rect" id="node16" href="$classcycamore_1_1DeployInst.html" title="cycamore::DeployInst" alt="" coords="254,107,405,133"/>
+<area shape="rect" id="node18" href="$classcycamore_1_1GrowthRegion.html" title="This region determines if there is a need to meet a certain capacity (as defined via input) at each t..." alt="" coords="244,613,415,640"/>
 </map>
