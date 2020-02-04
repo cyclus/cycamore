@@ -185,7 +185,7 @@ TEST(FuelFabTests, ValidWeights) {
 
 // request (and receive) a specific recipe for fissile stream correctly.
 TEST(FuelFabTests, FissRecipe) {
-  std::string config = 
+  std::string config =
      "<fill_commods> <val>dummy</val> </fill_commods>"
      "<fill_recipe>natu</fill_recipe>"
      "<fill_size>1</fill_size>"
@@ -220,7 +220,7 @@ TEST(FuelFabTests, FissRecipe) {
 // multiple fissile streams can be correctly requested and used as
 // fissile material inventory.
 TEST(FuelFabTests, MultipleFissStreams) {
-  std::string config = 
+  std::string config =
      "<fill_commods> <val>dummy</val> </fill_commods>"
      "<fill_recipe>natu</fill_recipe>"
      "<fill_size>1</fill_size>"
@@ -261,7 +261,7 @@ TEST(FuelFabTests, MultipleFissStreams) {
 
 // fissile stream preferences can be specified.
 TEST(FuelFabTests, FissStreamPrefs) {
-  std::string config = 
+  std::string config =
      "<fill_commods> <val>dummy</val> </fill_commods>"
      "<fill_recipe>natu</fill_recipe>"
      "<fill_size>1</fill_size>"
@@ -302,7 +302,7 @@ TEST(FuelFabTests, FissStreamPrefs) {
 
 // zero throughput must not result in a zero capacity constraint excception.
 TEST(FuelFabTests, ZeroThroughput) {
-  std::string config = 
+  std::string config =
      "<fill_commods> <val>natu</val> </fill_commods>"
      "<fill_recipe>natu</fill_recipe>"
      "<fill_size>3.9</fill_size>"
@@ -335,7 +335,7 @@ TEST(FuelFabTests, ZeroThroughput) {
 // filled as expected. Inventory size constraints are properly
 // enforced after they are full.
 TEST(FuelFabTests, FillAllInventories) {
-  std::string config = 
+  std::string config =
      "<fill_commods> <val>natu</val> </fill_commods>"
      "<fill_recipe>natu</fill_recipe>"
      "<fill_size>3.9</fill_size>"
@@ -385,7 +385,7 @@ TEST(FuelFabTests, FillAllInventories) {
 // Meet a request requiring zero fill inventory when we have zero fill
 // inventory quantity.
 TEST(FuelFabTests, ProvideStraightFiss_WithZeroFill) {
-  std::string config = 
+  std::string config =
      "<fill_commods> <val>nothing</val> </fill_commods>"
      "<fill_recipe>natu</fill_recipe>"
      "<fill_size>100</fill_size>"
@@ -415,7 +415,7 @@ TEST(FuelFabTests, ProvideStraightFiss_WithZeroFill) {
 }
 
 TEST(FuelFabTests, ProvideStraightFill_ZeroFiss) {
-  std::string config = 
+  std::string config =
      "<fill_commods> <val>anything</val> </fill_commods>"
      "<fill_recipe>natu</fill_recipe>"
      "<fill_size>100</fill_size>"
@@ -447,7 +447,7 @@ TEST(FuelFabTests, ProvideStraightFill_ZeroFiss) {
 // throughput is properly restricted when faced with many fuel
 // requests and with ample material inventory.
 TEST(FuelFabTests, ThroughputLimit) {
-  std::string config = 
+  std::string config =
      "<fill_commods> <val>anything</val> </fill_commods>"
      "<fill_recipe>natu</fill_recipe>"
      "<fill_size>100</fill_size>"
@@ -493,7 +493,7 @@ TEST(FuelFabTests, ThroughputLimit) {
 
 // supplied fuel has proper equivalence weights as requested.
 TEST(FuelFabTests, CorrectMixing) {
-  std::string config = 
+  std::string config =
      "<fill_commods> <val>natu</val> </fill_commods>"
      "<fill_recipe>natu</fill_recipe>"
      "<fill_size>100</fill_size>"
@@ -544,7 +544,7 @@ TEST(FuelFabTests, CorrectMixing) {
 // fissile.
 TEST(FuelFabTests, FillConstrained) {
   cyclus::Env::SetNucDataPath();
-  std::string config = 
+  std::string config =
      "<fill_commods> <val>natu</val> </fill_commods>"
      "<fill_recipe>natu</fill_recipe>"
      "<fill_size>1</fill_size>"
@@ -590,7 +590,7 @@ TEST(FuelFabTests, FillConstrained) {
 // plenty of filler.
 TEST(FuelFabTests, FissConstrained) {
   cyclus::Env::SetNucDataPath();
-  std::string config = 
+  std::string config =
      "<fill_commods> <val>natu</val> </fill_commods>"
      "<fill_recipe>natu</fill_recipe>"
      "<fill_size>10000</fill_size>"
@@ -634,7 +634,7 @@ TEST(FuelFabTests, FissConstrained) {
 
 // swap to topup inventory because fissile has too low reactivity.
 TEST(FuelFabTests, SwapTopup) {
-  std::string config = 
+  std::string config =
      "<fill_commods> <val>natu</val> </fill_commods>"
      "<fill_recipe>natu</fill_recipe>"
      "<fill_size>10000</fill_size>"
@@ -684,7 +684,7 @@ TEST(FuelFabTests, SwapTopup) {
 }
 
 TEST(FuelFabTests, SwapTopup_ZeroFill) {
-  std::string config = 
+  std::string config =
      "<fill_commods> <val>natu</val> </fill_commods>"
      "<fill_recipe>natu</fill_recipe>"
      "<fill_size>0</fill_size>"
@@ -740,7 +740,7 @@ TEST(FuelFabTests, SwapTopup_ZeroFill) {
 // fiss).
 TEST(FuelFabTests, SwapTopup_TopupConstrained) {
   cyclus::Env::SetNucDataPath();
-  std::string config = 
+  std::string config =
      "<fill_commods> <val>natu</val> </fill_commods>"
      "<fill_recipe>natu</fill_recipe>"
      "<fill_size>10000</fill_size>"
@@ -795,7 +795,7 @@ TEST(FuelFabTests, SwapTopup_TopupConstrained) {
 // small fiss inventory.
 TEST(FuelFabTests, SwapTopup_FissConstrained) {
   cyclus::Env::SetNucDataPath();
-  std::string config = 
+  std::string config =
      "<fill_commods> <val>natu</val> </fill_commods>"
      "<fill_recipe>natu</fill_recipe>"
      "<fill_size>0</fill_size>"
@@ -854,7 +854,7 @@ TEST(FuelFabTests, SwapTopup_FissConstrained) {
 // thinking it had an inventory of higher quality material than was actually
 // the case.  This test makes sure that doesn't happen again.
 TEST(FuelFabTests, HomogenousBuffers) {
-  std::string config = 
+  std::string config =
      "<fill_commods> <val>natu</val> </fill_commods>"
      "<fill_recipe>natu</fill_recipe>"
      "<fill_size>40</fill_size>"
@@ -893,7 +893,7 @@ TEST(FuelFabTests, HomogenousBuffers) {
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 TEST(FuelFabTests, PositionInitialize) {
   cyclus::Env::SetNucDataPath();
-  std::string config = 
+  std::string config =
      "<fill_commods> <val>natu</val> </fill_commods>"
      "<fill_recipe>natu</fill_recipe>"
      "<fill_size>0</fill_size>"
@@ -939,7 +939,7 @@ TEST(FuelFabTests, PositionInitialize) {
 
 TEST(FuelFabTests, PositionInitialize2) {
   cyclus::Env::SetNucDataPath();
-  std::string config = 
+  std::string config =
      "<fill_commods> <val>natu</val> </fill_commods>"
      "<fill_recipe>natu</fill_recipe>"
      "<fill_size>0</fill_size>"
@@ -969,7 +969,7 @@ TEST(FuelFabTests, PositionInitialize2) {
   fiss_frac = AtomToMassFrac(fiss_frac, c_pustream(), c_natu());
   fill_frac = AtomToMassFrac(fill_frac, c_natu(), c_pustream());
   double max_provide = fillinv / fill_frac;
-  
+
   cyclus::MockSim sim(cyclus::AgentSpec(":cycamore:FuelFab"), config, simdur);
   sim.AddSource("pustream").Finalize();
   sim.AddSource("pustreambad").Finalize();

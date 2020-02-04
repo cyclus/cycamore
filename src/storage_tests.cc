@@ -48,7 +48,7 @@ void StorageTest::TestInitState(Storage* fac){
   EXPECT_EQ(in_r1, fac->in_recipe);
 }
 
-void StorageTest::TestAddMat(Storage* fac, 
+void StorageTest::TestAddMat(Storage* fac,
     cyclus::Material::Ptr mat){
   double amt = mat->quantity();
   double before = fac->inventory.quantity();
@@ -57,7 +57,7 @@ void StorageTest::TestAddMat(Storage* fac,
   EXPECT_EQ(amt, after - before);
 }
 
-void StorageTest::TestBuffers(Storage* fac, double inv, 
+void StorageTest::TestBuffers(Storage* fac, double inv,
     double proc, double ready, double stocks){
   double t = tc_.get()->time();
 
@@ -114,7 +114,7 @@ TEST_F(StorageTest, Print) {
 }
 
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-TEST_F(StorageTest, AddMats) { 
+TEST_F(StorageTest, AddMats) {
   double cap = max_inv_size;
   cyclus::Material::Ptr mat = cyclus::NewBlankMaterial(0.5*cap);
   TestAddMat(src_facility_, mat);
@@ -155,7 +155,7 @@ TEST_F(StorageTest, Tock) {
     EXPECT_NO_THROW(src_facility_->Tock());
     TestBuffers(src_facility_,0,cap,0,0);
   }
-  
+
   tc_.get()->time(residence_time);
   EXPECT_EQ(residence_time, tc_.get()->time());
   TestReadyTime(src_facility_,0);
@@ -218,7 +218,7 @@ TEST_F(StorageTest, MultipleSmallBatches) {
 
   // After add, material is in inventory
   TestBuffers(src_facility_,0.2*cap,0,0,0);
-  
+
   // Move first batch into processing
   src_facility_->Tock();
   TestBuffers(src_facility_,0,0.2*cap,0,0);
@@ -258,7 +258,7 @@ TEST_F(StorageTest, ChangeCapacity) {
   TestAddMat(src_facility_, mat1);
   EXPECT_NO_THROW(src_facility_->Tock());
   TestBuffers(src_facility_,0,cap1,0,0);
-  
+
   // Increase throughput, add second and third batches
   tc_.get()->time(2);
   throughput = 500;
@@ -273,30 +273,30 @@ TEST_F(StorageTest, ChangeCapacity) {
   TestAddMat(src_facility_, mat3);
   EXPECT_NO_THROW(src_facility_->Tock());
   TestBuffers(src_facility_,0,cap2*2+cap1,0,0);
-  
+
   // Move first batch to stocks
   tc_.get()->time(residence_time);
   EXPECT_NO_THROW(src_facility_->Tock());
-  TestBuffers(src_facility_,0,2*cap2,0,cap1);  
-  
+  TestBuffers(src_facility_,0,2*cap2,0,cap1);
+
   // Decrease throughput and move portion of second batch to stocks
   throughput = 400;
   SetUpStorage();
   tc_.get()->time(residence_time+2);
   EXPECT_EQ(400, throughput);
-  EXPECT_NO_THROW(src_facility_->Tock());   
+  EXPECT_NO_THROW(src_facility_->Tock());
   TestBuffers(src_facility_,0,cap2,100,cap1+400);
 
   // Continue to move second batch // and portion of third
   tc_.get()->time(residence_time+3);
   EXPECT_NO_THROW(src_facility_->Tock());
   TestBuffers(src_facility_,0,0,200,cap1+cap2+300);
-  
+
   // Move remainder of third batch
   tc_.get()->time(residence_time+4);
   EXPECT_NO_THROW(src_facility_->Tock());
   TestBuffers(src_facility_,0,0,0,cap1+cap2+cap2);
-  
+
 }
 
 TEST_F(StorageTest, TwoBatchSameTime) {
@@ -327,13 +327,13 @@ TEST_F(StorageTest,ChangeProcessTime){
   double cap = throughput;
   cyclus::Composition::Ptr rec = tc_.get()->GetRecipe(in_r1);
   cyclus::Material::Ptr mat = cyclus::Material::CreateUntracked(cap, rec);
-  TestAddMat(src_facility_, mat);  
+  TestAddMat(src_facility_, mat);
   TestBuffers(src_facility_,cap,0,0,0);
-  
+
   // Move material to processing
   EXPECT_NO_THROW(src_facility_->Tock());
   TestBuffers(src_facility_,0,cap,0,0);
-  
+
   // Add second batch
   cyclus::Material::Ptr mat1 = cyclus::Material::CreateUntracked(cap,rec);
   tc_.get()->time(8);
@@ -341,7 +341,7 @@ TEST_F(StorageTest,ChangeProcessTime){
   TestBuffers(src_facility_,cap,cap,0,0);
   EXPECT_NO_THROW(src_facility_->Tock());
   TestBuffers(src_facility_,0,2*cap,0,0);
-  
+
   // Increase process time
   residence_time = proc_time1+5;
   SetUpStorage();
@@ -349,29 +349,29 @@ TEST_F(StorageTest,ChangeProcessTime){
   EXPECT_EQ(residence_time,proc_time1+5);
   EXPECT_EQ(residence_time,15);
   int proc_time2 = residence_time;
-  
+
   // Make sure material doesn't move before new process time
   for( int i=proc_time1; i < proc_time2 - 1; ++i){
   tc_.get()->time(i);
   EXPECT_NO_THROW(src_facility_->Tock());
   TestBuffers(src_facility_,0,2*cap,0,0);
   }
-  
+
   // Move first batch to stocks
   tc_.get()->time(proc_time2);
   EXPECT_NO_THROW(src_facility_->Tock());
   TestBuffers(src_facility_,0,cap,0,cap);
-  
+
   // Decrease process time
   residence_time = proc_time2-3;
   SetUpStorage();
   int proc_time3 = residence_time;
-  
+
   // Move second batch to stocks
   tc_.get()->time(proc_time3 +8);
   EXPECT_NO_THROW(src_facility_->Tock());
   TestBuffers(src_facility_,0,0,0,2*cap);
-  
+
 }
 
 TEST_F(StorageTest,DifferentRecipe){
@@ -382,10 +382,10 @@ TEST_F(StorageTest,DifferentRecipe){
   v[922380000] = 1;
   cyclus::Composition::Ptr rec = cyclus::Composition::CreateFromAtom(v);
   cyclus::Material::Ptr mat = cyclus::Material::CreateUntracked(cap, rec);
-  
+
   // Move material through the facility
-  TestAddMat(src_facility_, mat);  
-  TestBuffers(src_facility_,cap,0,0,0);  
+  TestAddMat(src_facility_, mat);
+  TestBuffers(src_facility_,cap,0,0,0);
   EXPECT_NO_THROW(src_facility_->Tock());
   TestBuffers(src_facility_,0,cap,0,0);
   tc_.get()->time(residence_time);

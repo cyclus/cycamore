@@ -13,7 +13,7 @@
 using cyclus::QueryResult;
 
 TEST(DeployInstTests, ProtoNames) {
-  std::string config = 
+  std::string config =
      "<prototypes>  <val>foobar</val> </prototypes>"
      "<build_times> <val>1</val>      </build_times>"
      "<n_build>     <val>3</val>      </n_build>"
@@ -33,7 +33,7 @@ TEST(DeployInstTests, ProtoNames) {
 }
 
 TEST(DeployInstTests, BuildTimes) {
-  std::string config = 
+  std::string config =
      "<prototypes>  <val>foobar</val> <val>foobar</val> </prototypes>"
      "<build_times> <val>1</val>      <val>3</val>      </build_times>"
      "<n_build>     <val>1</val>      <val>7</val>      </n_build>"
@@ -60,7 +60,7 @@ TEST(DeployInstTests, BuildTimes) {
 // make sure that specified lifetimes are honored both in agent's table record
 // and in decommissioning.
 TEST(DeployInstTests, FiniteLifetimes) {
-  std::string config = 
+  std::string config =
      "<prototypes>  <val>foobar</val> <val>foobar</val> <val>foobar</val> </prototypes>"
      "<build_times> <val>1</val>      <val>1</val>      <val>2</val>      </build_times>"
      "<n_build>     <val>1</val>      <val>7</val>      <val>3</val>      </n_build>"
@@ -113,7 +113,7 @@ TEST(DeployInstTests, FiniteLifetimes) {
 }
 
 TEST(DeployInstTests, NoDupProtos) {
-  std::string config = 
+  std::string config =
      "<prototypes>  <val>foobar</val> <val>foobar</val> <val>foobar</val> </prototypes>"
      "<build_times> <val>1</val>      <val>1</val>      <val>2</val>      </build_times>"
      "<n_build>     <val>1</val>      <val>7</val>      <val>3</val>      </n_build>"
@@ -142,7 +142,7 @@ TEST(DeployInstTests, NoDupProtos) {
 }
 
 TEST(DeployInstTests, PositionInitialize) {
-  std::string config = 
+  std::string config =
      "<prototypes>  <val>foobar</val> </prototypes>"
      "<build_times> <val>1</val>      </build_times>"
      "<n_build>     <val>3</val>      </n_build>"
@@ -159,7 +159,7 @@ TEST(DeployInstTests, PositionInitialize) {
 }
 
 TEST(DeployInstTests, PositionInitialize2) {
-  std::string config = 
+  std::string config =
      "<prototypes>  <val>foobar</val> </prototypes>"
      "<longitude>   -20.0             </longitude>"
      "<latitude>    2.0               </latitude>"

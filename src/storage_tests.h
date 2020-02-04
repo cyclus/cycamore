@@ -24,6 +24,7 @@ class StorageTest : public ::testing::Test {
   void TestAddMat(cycamore::Storage* fac, 
       cyclus::Material::Ptr mat);
   void TestBuffers(cycamore::Storage* fac, double inv, double 
+
       proc, double ready, double stocks);
   void TestStocks(cycamore::Storage* fac, cyclus::CompMap v);
   void TestReadyTime(cycamore::Storage* fac, int t);
