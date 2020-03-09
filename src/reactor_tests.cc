@@ -304,6 +304,35 @@ TEST(ReactorTests, FullSpentInventory) {
   EXPECT_EQ(n_assem_spent+1, qr.rows.size());
 }
 
+// tests that the reactor shuts down, ie., does not generate power, when the
+// spent fuel inventory is full and the core cannot be unloaded.
+TEST(ReactorTests, FullSpentInventoryShutdown) {
+  std::string config =
+    " <fuel_inrecipes> <val>uox</val> </fuel_inrecipes> "
+    " <fuel_outrecipes> <val>spentuox</val> </fuel_outrecipes> "
+    " <fuel_incommods> <val>uox</val> </fuel_incommods> "
+    " <fuel_outcommods> <val>waste</val> </fuel_outcommods> "
+    ""
+    " <cycle_time>1</cycle_time> "
+    " <refuel_time>0</refuel_time> "
+    " <assem_size>1</assem_size> "
+    " <n_assem_core>1</n_assem_core> "
+    " <n_assem_batch>1</n_assem_batch> "
+    " <n_assem_spent>1</n_assem_spent> "
+    " <power_cap>100</power_cap> ";
+
+  int simdur = 3;
+  cyclus::MockSim sim(cyclus::AgentSpec(":cycamore:Reactor"), config, simdur);
+  sim.AddSource("uox").Finalize();
+  sim.AddRecipe("uox", c_uox());
+  sim.AddRecipe("spentuox", c_spentuox());
+  int id = sim.Run();
+
+  QueryResult qr = sim.db().Query("TimeSeriesPower", NULL);
+  EXPECT_EQ(0, qr.GetVal<double>("Value", simdur - 1));
+
+}
+
 // tests that the reactor cycle is delayed as expected when it is unable to
 // acquire fuel in time for the next cycle start.  This checks that after a
 // cycle is delayed past an original scheduled start time, as soon as enough fuel is

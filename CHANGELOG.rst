@@ -4,6 +4,12 @@ cyclus Change Log
 
 .. current developments
 
+v1.5.5
+====================
+**Changed:**
+
+* A reactor will now decommission itself if it is retired and the decomission requirement is met.
+
 v1.5.4
 ====================
 
