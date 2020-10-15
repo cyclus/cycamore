@@ -5,6 +5,9 @@ jobs:
     build:
         docker:
             - image: cyclus/cyclus:latest
+            auth:
+                username: $DOCKERHUB_USER
+                password: $DOCKERHUB_PASS
         working_directory: ~/cycamore
         steps:
             # Ensure your image has git (required by git to clone via SSH) so that CircleCI can clone your repo
@@ -30,6 +33,9 @@ jobs:
     unit_test:
         docker:
             - image: cyclus/cyclus:latest
+            auth:
+                username: $DOCKERHUB_USER
+                password: $DOCKERHUB_PASS
         working_directory: ~/root
         steps:
             - run:
@@ -44,6 +50,9 @@ jobs:
     nosetest:
         docker:
             - image: cyclus/cyclus:latest
+            auth:
+                username: $DOCKERHUB_USER
+                password: $DOCKERHUB_PASS
         working_directory: ~/root
         steps:
             - run:
@@ -64,6 +73,9 @@ jobs:
     deploy: # Cycamore -> Cycamore:latest
         docker:
             - image: circleci/ruby:2.4-node
+            auth:
+                username: $DOCKERHUB_USER
+                password: $DOCKERHUB_PASS
         working_directory: ~/cycamore
         steps:
             - checkout
@@ -85,6 +97,9 @@ jobs:
     deploy_stable: # Cycamore:stable
         docker:
             - image: circleci/ruby:2.4-node
+            auth:
+                username: $DOCKERHUB_USER
+                password: $DOCKERHUB_PASS
         working_directory: ~/cycamore
         steps:
             - checkout
@@ -108,6 +123,9 @@ jobs:
     deb_generation:
         docker:
             - image: circleci/ruby:2.4-node
+            auth:
+                username: $DOCKERHUB_USER
+                password: $DOCKERHUB_PASS
         working_directory: ~/cycamore
         steps:
             - checkout
@@ -126,16 +144,20 @@ workflows:
         jobs:
 
             # on a pr // all branch
-            - build
+            - build:
+                context: Dockerhub
             - unit_test:
+                context: Dockerhub
                 requires:
                     - build
             - nosetest:
+                context: Dockerhub
                 requires:
                     - build
 
             # Merge on Master
             - deploy:
+                context: Dockerhub
                 filters:
                     branches:
                         only: master
@@ -146,6 +168,7 @@ workflows:
 
              # The following should now be done on version tag.
             - deploy_stable:
+                context: Dockerhub
                 filters:
                     branches:
                         ignore: /.*/
@@ -156,6 +179,7 @@ workflows:
                     - nosetest
 
             - deb_generation:
+                context: Dockerhub
                 filters:
                     branches:
                         ignore: /.*/
