@@ -5,7 +5,7 @@ jobs:
     build:
         docker:
             - image: cyclus/cyclus:latest
-            auth:
+              auth:
                 username: $DOCKERHUB_USER
                 password: $DOCKERHUB_PASS
         working_directory: ~/cycamore
@@ -33,7 +33,7 @@ jobs:
     unit_test:
         docker:
             - image: cyclus/cyclus:latest
-            auth:
+              auth:
                 username: $DOCKERHUB_USER
                 password: $DOCKERHUB_PASS
         working_directory: ~/root
@@ -50,7 +50,7 @@ jobs:
     nosetest:
         docker:
             - image: cyclus/cyclus:latest
-            auth:
+              auth:
                 username: $DOCKERHUB_USER
                 password: $DOCKERHUB_PASS
         working_directory: ~/root
@@ -73,7 +73,7 @@ jobs:
     deploy: # Cycamore -> Cycamore:latest
         docker:
             - image: circleci/ruby:2.4-node
-            auth:
+              auth:
                 username: $DOCKERHUB_USER
                 password: $DOCKERHUB_PASS
         working_directory: ~/cycamore
@@ -97,7 +97,7 @@ jobs:
     deploy_stable: # Cycamore:stable
         docker:
             - image: circleci/ruby:2.4-node
-            auth:
+              auth:
                 username: $DOCKERHUB_USER
                 password: $DOCKERHUB_PASS
         working_directory: ~/cycamore
@@ -123,7 +123,7 @@ jobs:
     deb_generation:
         docker:
             - image: circleci/ruby:2.4-node
-            auth:
+              auth:
                 username: $DOCKERHUB_USER
                 password: $DOCKERHUB_PASS
         working_directory: ~/cycamore
