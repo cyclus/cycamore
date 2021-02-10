@@ -32,6 +32,7 @@ namespace cycamore {
 /// in_recipe (optional) describes the incoming resource by recipe
 ///
 /// @section optionalparams Optional Parameters
+/// min_sell_inv is the minimum inventory required to start selling material
 /// max_inv_size is the maximum capacity of the inventory storage
 /// throughput is the maximum processing capacity per timestep
 ///
@@ -161,6 +162,15 @@ class Storage
                       "uitype": "range", \
                       "range": [0, 12000]}
   int residence_time;
+
+  #pragma cyclus var {"default": 0,\
+                      "tooltip":"minimum sell inventory (kg)",\
+                      "doc":"minimum inventory required before commodity is released",\
+                      "uilabel":"Minimum Sell Inventory",\
+                      "uitype": "range", \
+                      "range": [0.0, 1e299], \
+                      "units": "kg"}
+  double min_sell_inv;
 
   #pragma cyclus var {"default": 1e299,\
                      "tooltip":"throughput per timestep (kg)",\
