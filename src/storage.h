@@ -164,13 +164,15 @@ class Storage
   int residence_time;
 
   #pragma cyclus var {"default": 0,\
-                      "tooltip":"minimum sell inventory (kg)",\
-                      "doc":"minimum inventory required before commodity is released",\
-                      "uilabel":"Minimum Sell Inventory",\
+                      "tooltip":"sell quantity (kg)",\
+                      "doc":"material will be sold in integer multiples of this quantity. If"\
+                      " the buffer contains less than the sell quantity, no material will be"\
+                      " offered", \
+                      "uilabel":"Sell Quantity",\
                       "uitype": "range", \
                       "range": [0.0, 1e299], \
                       "units": "kg"}
-  double min_sell_inv;
+  double sell_quantity;
 
   #pragma cyclus var {"default": 1e299,\
                      "tooltip":"throughput per timestep (kg)",\
