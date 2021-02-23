@@ -32,7 +32,7 @@ namespace cycamore {
 /// in_recipe (optional) describes the incoming resource by recipe
 ///
 /// @section optionalparams Optional Parameters
-/// min_sell_inv is the minimum inventory required to start selling material
+/// sell_quantity restricts selling to only integer multiples of this value
 /// max_inv_size is the maximum capacity of the inventory storage
 /// throughput is the maximum processing capacity per timestep
 ///
