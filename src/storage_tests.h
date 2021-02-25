@@ -9,7 +9,7 @@
 #include "facility_tests.h"
 #include "agent_tests.h"
 
-namespace storage {
+namespace cycamore {
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 class StorageTest : public ::testing::Test {
  protected:
@@ -20,14 +20,15 @@ class StorageTest : public ::testing::Test {
   virtual void TearDown();
   void InitParameters();
   void SetUpStorage();
-  void TestInitState(storage::Storage* fac);
-  void TestAddMat(storage::Storage* fac,
+  void TestInitState(cycamore::Storage* fac);
+  void TestAddMat(cycamore::Storage* fac, 
       cyclus::Material::Ptr mat);
-  void TestBuffers(storage::Storage* fac, double inv, double
+  void TestBuffers(cycamore::Storage* fac, double inv, double 
+
       proc, double ready, double stocks);
-  void TestStocks(storage::Storage* fac, cyclus::CompMap v);
-  void TestReadyTime(storage::Storage* fac, int t);
-  void TestCurrentCap(storage::Storage* fac, double inv);
+  void TestStocks(cycamore::Storage* fac, cyclus::CompMap v);
+  void TestReadyTime(cycamore::Storage* fac, int t);
+  void TestCurrentCap(cycamore::Storage* fac, double inv);
 
   std::vector<std::string> in_c1, out_c1;
   std::string in_r1;
@@ -36,6 +37,6 @@ class StorageTest : public ::testing::Test {
   double throughput, max_inv_size;
   bool discrete_handling;
 };
-} // namespace storage
+} // namespace cycamore
 #endif // STORAGE_TESTS_H_
 
