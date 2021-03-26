@@ -6,14 +6,10 @@
 #include <vector>
 
 #include "cyclus.h"
-
-// forward declaration
-namespace storage {
-class Storage;
-} // namespace storage
+#include "cycamore_version.h"
 
 
-namespace storage {
+namespace cycamore {
 /// @class Storage
 ///
 /// This Facility is intended to hold materials for a user specified
@@ -98,6 +94,8 @@ class Storage
 
   /// The handleTick function specific to the Storage.
   virtual void Tock();
+
+  virtual std::string version() { return CYCAMORE_VERSION; }
 
  protected:
   ///   @brief adds a material into the incoming commodity inventory
@@ -237,6 +235,6 @@ class Storage
   friend class StorageTest;
 };
 
-}  // namespace storage
+}  // namespace cycamore
 
 #endif  // CYCLUS_STORAGES_STORAGE_H_
