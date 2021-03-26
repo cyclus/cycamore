@@ -18,6 +18,7 @@
 #include "inpro_reactor_tests.h"
 #include "manager_inst.h"
 #include "manager_inst_tests.h"
+#include "deploy_manager_inst.h"
 #include "sink.h"
 #include "sink_tests.h"
 #include "source.h"
