@@ -188,7 +188,7 @@ static int cyclus_agent_tests_connected = ConnectAgentTests();
 #define CYCLUS_AGENT_TESTS_CONNECTED cyclus_agent_tests_connected
 #endif  // CYCLUS_AGENT_TESTS_CONNECTED
 
-INSTANTIATE_TEST_CASE_P(DeployInst, InstitutionTests,
+INSTANTIATE_TEST_CASE_P(DeployManagerInst, InstitutionTests,
                         Values(&DeployManagerInstitutionConstructor));
-INSTANTIATE_TEST_CASE_P(DeployInst, AgentTests,
+INSTANTIATE_TEST_CASE_P(DeployManagerInst, AgentTests,
                         Values(&DeployManagerInstitutionConstructor));
