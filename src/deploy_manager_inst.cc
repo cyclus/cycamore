@@ -1,5 +1,5 @@
 // Implements the DeployInst class
-#include "deploy__manager_inst.h"
+#include "deploy_manager_inst.h"
 
 namespace cycamore {
 
@@ -80,7 +80,7 @@ void DeployManagerInst::RecordPosition() {
       ->Record();
 }
 
-extern "C" cyclus::Agent* ConstructDeployInst(cyclus::Context* ctx) {
+extern "C" cyclus::Agent* ConstructDeployManagerInst(cyclus::Context* ctx) {
   return new DeployManagerInst(ctx);
 }
 
