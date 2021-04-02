@@ -7,6 +7,7 @@
 
 #include "cyclus.h"
 #include "cycamore_version.h"
+#include "manager_inst.h"
 
 namespace cycamore {
 
@@ -19,7 +20,9 @@ typedef std::map<int, std::vector<std::string> > BuildSched;
 // lifetimes.  The same prototype can be specified multiple times with any
 // combination of the same or different build times, build number, and
 // lifetimes.
-class DeployManagerInst : public cyclus::Institution,
+class DeployManagerInst :
+  //public cyclus::Institution,
+  public cycamore::ManagerInst,
   public cyclus::toolkit::Position {
   #pragma cyclus note { \
     "doc": \
