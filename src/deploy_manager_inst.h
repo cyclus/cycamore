@@ -21,7 +21,6 @@ typedef std::map<int, std::vector<std::string> > BuildSched;
 // combination of the same or different build times, build number, and
 // lifetimes.
 class DeployManagerInst :
-  //public cyclus::Institution,
   public cycamore::ManagerInst,
   public cyclus::toolkit::Position {
   #pragma cyclus note { \

@@ -12,7 +12,7 @@ DeployManagerInst::DeployManagerInst(cyclus::Context* ctx)
 DeployManagerInst::~DeployManagerInst() {}
 
 void DeployManagerInst::Build(cyclus::Agent* parent) {
-  cyclus::Institution::Build(parent);
+  cycamore::ManagerInst::Build(parent);
   BuildSched::iterator it;
   std::set<std::string> protos;
   for (int i = 0; i < prototypes.size(); i++) {
@@ -47,7 +47,7 @@ void DeployManagerInst::Build(cyclus::Agent* parent) {
 }
 
 void DeployManagerInst::EnterNotify() {
-  cyclus::Institution::EnterNotify();
+  cycamore::ManagerInst::EnterNotify();
   int n = prototypes.size();
   if (build_times.size() != n) {
     std::stringstream ss;
