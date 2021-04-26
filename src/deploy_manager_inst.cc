@@ -12,7 +12,7 @@ DeployManagerInst::DeployManagerInst(cyclus::Context* ctx)
 DeployManagerInst::~DeployManagerInst() {}
 
 void DeployManagerInst::Build(cyclus::Agent* parent) {
-  cycamore::ManagerInst::Build(parent);
+  cyclus::Institution::Build(parent);
   BuildSched::iterator it;
   std::set<std::string> protos;
   for (int i = 0; i < prototypes.size(); i++) {
