@@ -7,7 +7,7 @@
 
 #include "cyclus.h"
 #include "cycamore_version.h"
-#include "manager_inst.h"
+//#include "manager_inst.h"
 
 namespace cycamore {
 
@@ -21,7 +21,10 @@ typedef std::map<int, std::vector<std::string> > BuildSched;
 // combination of the same or different build times, build number, and
 // lifetimes.
 class DeployManagerInst :
-  public cycamore::ManagerInst,
+  public cyclus::Institution, 
+  //public :cycamore::ManagerInst,
+  public cyclus::toolkit::CommodityProducerManager,
+  public cyclus::toolkit::Builder,
   public cyclus::toolkit::Position {
   #pragma cyclus note { \
     "doc": \
@@ -46,6 +49,19 @@ class DeployManagerInst :
   virtual void Build(cyclus::Agent* parent);
 
   virtual void EnterNotify();
+
+  virtual void BuildNotify(Agent* m);
+  virtual void DecomNotify(Agent* m);
+  /// write information about a commodity producer to a stream
+  /// @param producer the producer
+  void WriteProducerInformation(cyclus::toolkit::CommodityProducer*
+                                producer);
+
+  /// register a child
+  void Register_(cyclus::Agent* agent);
+
+  /// unregister a child
+  void Unregister_(cyclus::Agent* agent);
 
  protected:
   #pragma cyclus var { \
@@ -106,6 +122,10 @@ class DeployManagerInst :
 
   /// Records an agent's latitude and longitude to the output db
   void RecordPosition();
+
+  /// Defines the spec for the DeployManagerInst
+  // std::string spec_;
+
 };
 
 }  // namespace cycamore
