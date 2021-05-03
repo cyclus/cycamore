@@ -1,16 +1,37 @@
-#include <gtest/gtest.h>
-
-#include "context.h"
-#include "deploy_manager_inst.h"
-#include "institution_tests.h"
-#include "agent_tests.h"
-
+#include "deploy_manager_inst_tests.h"
 // make sure that the deployed agent's prototype name is identical to the
 // originally specified prototype name - this is important to test because
 // DeployInst does some mucking around with registering name-modded prototypes
 // in order to deal with lifetime setting.
 
+// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+//TestProducer::TestProducer(cyclus::Context* ctx) : cyclus::Facility(ctx) {}
+
+// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+//TestProducer::~TestProducer() {}
+
 using cyclus::QueryResult;
+
+void DeployManagerInstTests::SetUp() {
+  ctx_ = new cyclus::Context(&ti_, &rec_);
+  src_inst = new cycamore::DeployManagerInst(ctx_);
+  producer = new TestProducer(ctx_);
+  commodity = cyclus::toolkit::Commodity("commod");
+  capacity = 5;
+  producer->cyclus::toolkit::CommodityProducer::Add(commodity);
+  producer->SetCapacity(commodity, capacity);
+}
+
+// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+void DeployManagerInstTests::TearDown() {
+  delete producer;
+  delete src_inst;
+  delete ctx_;
+}
+
+
+
+// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
 TEST(DeployManagerInstTests, ProtoNames) {
   std::string config =
@@ -175,6 +196,28 @@ TEST(DeployManagerInstTests, PositionInitialize2) {
   QueryResult qr = sim.db().Query("AgentPosition", NULL);
   EXPECT_EQ(qr.GetVal<double>("Latitude"), 2.0);
   EXPECT_EQ(qr.GetVal<double>("Longitude"), -20.0);
+}
+
+TEST_F(DeployManagerInstTests, producerexists) {
+  using std::set;
+  ctx_->AddPrototype("foop", producer);
+  set<cyclus::toolkit::CommodityProducer*>::iterator it;
+  for (it = src_inst->cyclus::toolkit::CommodityProducerManager::
+          producers().begin();
+       it != src_inst->cyclus::toolkit::CommodityProducerManager::
+          producers().end();
+       it++) {
+    EXPECT_EQ(dynamic_cast<TestProducer*>(*it)->prototype(),
+              producer->prototype());
+  }
+}
+
+TEST_F(DeployManagerInstTests, productioncapacity) {
+  EXPECT_EQ(src_inst->TotalCapacity(commodity), 0);
+  src_inst->BuildNotify(producer);
+  EXPECT_EQ(src_inst->TotalCapacity(commodity), capacity);
+  src_inst->DecomNotify(producer);
+  EXPECT_EQ(src_inst->TotalCapacity(commodity), 0);
 }
 
 // required to get functionality in cyclus agent unit tests library
