@@ -33,7 +33,7 @@ void DeployManagerInstTests::TearDown() {
 
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
-TEST(DeployManagerInstTests, ProtoNames) {
+TEST_F(DeployManagerInstTests, ProtoNames) {
   std::string config =
      "<prototypes>  <val>foobar</val> </prototypes>"
      "<build_times> <val>1</val>      </build_times>"
@@ -53,7 +53,7 @@ TEST(DeployManagerInstTests, ProtoNames) {
   EXPECT_EQ(3, stmt->GetInt(0));
 }
 
-TEST(DeployManagerInstTests, BuildTimes) {
+TEST_F(DeployManagerInstTests, BuildTimes) {
   std::string config =
      "<prototypes>  <val>foobar</val> <val>foobar</val> </prototypes>"
      "<build_times> <val>1</val>      <val>3</val>      </build_times>"
@@ -80,7 +80,7 @@ TEST(DeployManagerInstTests, BuildTimes) {
 
 // make sure that specified lifetimes are honored both in agent's table record
 // and in decommissioning.
-TEST(DeployManagerInstTests, FiniteLifetimes) {
+TEST_F(DeployManagerInstTests, FiniteLifetimes) {
   std::string config =
      "<prototypes>  <val>foobar</val> <val>foobar</val> <val>foobar</val> </prototypes>"
      "<build_times> <val>1</val>      <val>1</val>      <val>2</val>      </build_times>"
@@ -133,7 +133,7 @@ TEST(DeployManagerInstTests, FiniteLifetimes) {
   EXPECT_EQ(8, stmt->GetInt(0));
 }
 
-TEST(DeployManagerInstTests, NoDupProtos) {
+TEST_F(DeployManagerInstTests, NoDupProtos) {
   std::string config =
      "<prototypes>  <val>foobar</val> <val>foobar</val> <val>foobar</val> </prototypes>"
      "<build_times> <val>1</val>      <val>1</val>      <val>2</val>      </build_times>"
@@ -162,7 +162,7 @@ TEST(DeployManagerInstTests, NoDupProtos) {
   EXPECT_EQ(1, stmt->GetInt(0));
 }
 
-TEST(DeployManagerInstTests, PositionInitialize) {
+TEST_F(DeployManagerInstTests, PositionInitialize) {
   std::string config =
      "<prototypes>  <val>foobar</val> </prototypes>"
      "<build_times> <val>1</val>      </build_times>"
@@ -179,7 +179,7 @@ TEST(DeployManagerInstTests, PositionInitialize) {
   EXPECT_EQ(qr.GetVal<double>("Longitude"), 0.0);
 }
 
-TEST(DeployManagerInstTests, PositionInitialize2) {
+TEST_F(DeployManagerInstTests, PositionInitialize2) {
   std::string config =
      "<prototypes>  <val>foobar</val> </prototypes>"
      "<longitude>   -20.0             </longitude>"
