@@ -15,14 +15,15 @@ typedef std::map<int, std::vector<std::string> > BuildSched;
 
 // Builds and manages agents (facilities) according to a manually specified
 // deployment schedule. Deployed agents are automatically decommissioned at
-// the end of their lifetime.  The user specifies a list of prototypes for
-// each and corresponding build times, number to build, and (optionally)
-// lifetimes.  The same prototype can be specified multiple times with any
-// combination of the same or different build times, build number, and
-// lifetimes.
+// the end of their lifetime. Deployed and decommissioned agents are 
+// registered and unregistered with a growth region. The user specifies 
+// a list of prototypes for each and corresponding build times, number to 
+// build, and (optionally) lifetimes. The same prototype can be specified 
+// multiple times with any combination of the same or different build times, 
+// build number, and lifetimes.
+
 class DeployManagerInst :
   public cyclus::Institution, 
-  //public :cycamore::ManagerInst,
   public cyclus::toolkit::CommodityProducerManager,
   public cyclus::toolkit::Builder,
   public cyclus::toolkit::Position {
@@ -30,8 +31,9 @@ class DeployManagerInst :
     "doc": \
       "Builds and manages agents (facilities) according to a manually" \
       " specified deployment schedule. Deployed agents are automatically" \
-      " decommissioned at the end of their lifetime.  The user specifies a" \
-      " list of prototypes for" \
+      " decommissioned at the end of their lifetime. Deployed and" \
+      " decommissioned agents are registered and unregistered with a growth" \
+      " region. The user specifies a list of prototypes for" \
       " each and corresponding build times, number to build, and (optionally)" \
       " lifetimes.  The same prototype can be specified multiple times with" \
       " any combination of the same or different build times, build number," \
@@ -122,9 +124,6 @@ class DeployManagerInst :
 
   /// Records an agent's latitude and longitude to the output db
   void RecordPosition();
-
-  /// Defines the spec for the DeployManagerInst
-  // std::string spec_;
 
 };
 
