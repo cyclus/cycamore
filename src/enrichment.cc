@@ -377,6 +377,23 @@ Material::Ptr Enrichment::Enrich_(Material::Ptr mat,
   nucs.insert(922380000);
   double natu_frac = mq.mass_frac(nucs);
   double feed_req = natu_req / natu_frac;
+  // Take into account the above mentioned special case.
+  if (feed_req > pop_qty) {
+    // All of the available feed is to be used.
+    feed_req = pop_qty;
+
+    // Amount of U235 and U238 in the available feed.
+    double u235_u238_available = pop_qty * natu_frac;
+    double factor = (assays.Product() - assays.Tails())
+                    / (assays.Feed() - assays.Tails());
+    // Reevaluate how much product can be produced.
+    qty = u235_u238_available / factor;
+
+    // The SWU needs to be recalculated as well because all non-U235 and
+    // non-U238 elements/isotopes are directly sent to the tails and do
+    // not contribute to the SWU.
+    swu_req = SwuRequired(qty, assays);
+  }
 
   // pop amount from inventory and blob it into one material
   Material::Ptr r;
