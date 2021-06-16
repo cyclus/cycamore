@@ -78,8 +78,7 @@ void Storage::EnterNotify() {
     sell_policy.Init(this, &stocks, std::string("stocks"), 1e+299, false, sell_quantity)
       .Set(out_commods.front())
       .Start();
-    }
-    
+
   } else {
     std::stringstream ss;
     ss << "out_commods has " << out_commods.size() << " values, expected 1.";
