@@ -212,7 +212,7 @@ TEST_F(DeployManagerInstTests, productioncapacity) {
 }
 
 TEST_F(DeployManagerInstTests, cornercase){
-  std::string dmi_config =
+  std::string config =
      "<prototypes>  <val>foobar1</val> <val>foobar2</val> <val>foobar1</val> </prototypes>"
      "<build_times> <val>1</val>      <val>1</val>      <val>2</val>      </build_times>"
      "<n_build>     <val>1</val>      <val>7</val>      <val>3</val>      </n_build>"
@@ -220,7 +220,7 @@ TEST_F(DeployManagerInstTests, cornercase){
      ;
 
   int simdur = 5;
-  cyclus::MockSim sim(cyclus::AgentSpec(":cycamore:DeployManagerInst"), dmi_config, simdur);
+  cyclus::MockSim sim(cyclus::AgentSpec(":cycamore:DeployManagerInst"), config, simdur);
   sim.DummyProto("foobar1");
   sim.DummyProto("foobar2");
   int id = sim.Run();
