@@ -211,11 +211,25 @@ TEST_F(DeployManagerInstTests, productioncapacity) {
   EXPECT_EQ(src_inst->TotalCapacity(commodity), 0);
 }
 
-// corner case test
 TEST_F(DeployManagerInstTests, cornercase){
-  EXPECT_EQ(3,3);
-}
+  std::string config =
+     "<prototypes>  <val>foobar</val> </prototypes>"
+     "<build_times> <val>1</val>      </build_times>"
+     "<n_build>     <val>3</val>      </n_build>"
+     "<lifetimes>   <val>2</val>      </lifetimes>";
 
+  int simdur = 5;
+  cyclus::MockSim sim(cyclus::AgentSpec(":cycamore:DeployManagerInst"), config, simdur);
+  sim.DummyProto("foobar");
+  sim.DummyProto("barfoo");
+  int id = sim.Run();
+
+  cyclus::SqlStatement::Ptr stmt = sim.db().db().Prepare(
+      "SELECT COUNT(*) FROM AgentEntry WHERE Prototype = 'foobar' AND EnterTime = 1 AND Lifetime = 1;"
+      );
+  stmt->Step();
+  EXPECT_EQ(0, stmt->GetInt(0));
+}
 // required to get functionality in cyclus agent unit tests library
 cyclus::Agent* DeployManagerInstitutionConstructor(cyclus::Context* ctx) {
   return new cycamore::DeployManagerInst(ctx);
