@@ -219,12 +219,6 @@ TEST_F(DeployManagerInstTests, cornercase){
      "<lifetimes>   <val>1</val>      <val>2</val>      <val>-1</val>     </lifetimes>"
      ;
 
-  std::string gr_config =
-    "<growth> <item> <commod>commod1</commod>"
-    "<piecewise_function> <piece> <start>2</start>" 
-    "<function> <type>linear</type> <params>0 5</params> </function> </piece> </piecewise_function>"
-    "</item> </growth>"
-    ;
   int simdur = 5;
   cyclus::MockSim sim(cyclus::AgentSpec(":cycamore:DeployManagerInst"), dmi_config, simdur);
   sim.DummyProto("foobar1");
