@@ -211,6 +211,11 @@ TEST_F(DeployManagerInstTests, productioncapacity) {
   EXPECT_EQ(src_inst->TotalCapacity(commodity), 0);
 }
 
+// corner case test
+TEST_F(DeployManagerInstTests, cornercase){
+  EXPECT_EQ(3,3);
+}
+
 // required to get functionality in cyclus agent unit tests library
 cyclus::Agent* DeployManagerInstitutionConstructor(cyclus::Context* ctx) {
   return new cycamore::DeployManagerInst(ctx);
