@@ -212,16 +212,23 @@ TEST_F(DeployManagerInstTests, productioncapacity) {
 }
 
 TEST_F(DeployManagerInstTests, cornercase){
-  std::string config =
+  std::string dmi_config =
      "<prototypes>  <val>foobar1</val> <val>foobar2</val> <val>foobar1</val> </prototypes>"
      "<build_times> <val>1</val>      <val>1</val>      <val>2</val>      </build_times>"
      "<n_build>     <val>1</val>      <val>7</val>      <val>3</val>      </n_build>"
      "<lifetimes>   <val>1</val>      <val>2</val>      <val>-1</val>     </lifetimes>"
      ;
 
+  std::string gr_config =
+    "<growth> <item> <commod>commod1</commod>"
+    "<piecewise_function> <piece> <start>2</start>" 
+    "<function> <type>linear</type> <params>0 5</params> </function> </piece> </piecewise_function>"
+    "</item> </growth>"
+    ;
   int simdur = 5;
-  cyclus::MockSim sim(cyclus::AgentSpec(":cycamore:DeployManagerInst"), config, simdur);
-  sim.DummyProto("foobar");
+  cyclus::MockSim sim(cyclus::AgentSpec(":cycamore:DeployManagerInst"), dmi_config, simdur);
+  sim.DummyProto("foobar1");
+  sim.DummyProto("foobar2");
   int id = sim.Run();
 
   cyclus::SqlStatement::Ptr stmt = sim.db().db().Prepare(
