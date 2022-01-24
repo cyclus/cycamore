@@ -212,24 +212,47 @@ TEST_F(DeployManagerInstTests, productioncapacity) {
 }
 
 TEST_F(DeployManagerInstTests, cornercase){
-  std::string config =
-     "<prototypes>  <val>foobar1</val> <val>foobar2</val> <val>foobar1</val> </prototypes>"
-     "<build_times> <val>1</val>      <val>1</val>      <val>2</val>      </build_times>"
-     "<n_build>     <val>1</val>      <val>7</val>      <val>3</val>      </n_build>"
-     "<lifetimes>   <val>1</val>      <val>2</val>      <val>-1</val>     </lifetimes>"
+  std::string dmi_config =
+     "<prototypes>  <val>foobar1</val> </prototypes>"
+     "<build_times> <val>1</val>      </build_times>"
+     "<n_build>     <val>3</val>      </n_build>"
+     "<lifetimes>   <val>3</val>      </lifetimes>"
      ;
 
-  int simdur = 5;
-  cyclus::MockSim sim(cyclus::AgentSpec(":cycamore:DeployManagerInst"), config, simdur);
-  sim.DummyProto("foobar1");
-  sim.DummyProto("foobar2");
-  int id = sim.Run();
+  std::string mi_config = 
+    "<prototypes> <val>foobar2</val> </prototypes>"
+    ;
 
-  cyclus::SqlStatement::Ptr stmt = sim.db().db().Prepare(
-      "SELECT COUNT(*) FROM AgentEntry WHERE Prototype = 'foobar1' AND EnterTime = 1 AND Lifetime = 1;"
+  std::string gr_config =
+    "<growth> <item> <commod>commod1</commod>"
+    "<piecewise_function> <piece> <start>2</start>" 
+    "<function> <type>linear</type> <params>0 5</params> </function> </piece> </piecewise_function>"
+    "</item> </growth>"
+    ;
+
+  int simdur = 5;
+  cyclus::MockSim sim1(cyclus::AgentSpec(":cycamore:DeployManagerInst"), dmi_config, simdur);
+  cyclus::MockSim sim2(cyclus::AgentSpec(":cycamore:ManagerInst"), mi_config, simdur);
+  cyclus::MockSim sim3(cyclus::AgentSpec(":cycamore:GrowthRegion"),gr_config, simdur);
+  sim1.DummyProto("foobar1");
+  sim2.DummyProto("foobar2");
+  sim3.DummyProto("foobar1");
+  sim3.DummyProto("foobar2");
+  int id1 = sim1.Run();
+  int id2 = sim2.Run();
+  int id3 = sim3.Run();
+
+  cyclus::SqlStatement::Ptr stmt = sim3.db().db().Prepare(
+      "SELECT COUNT(*) FROM AgentEntry WHERE Prototype = 'foobar1';"
       );
   stmt->Step();
-  EXPECT_EQ(1, stmt->GetInt(0));
+  EXPECT_EQ(0, stmt->GetInt(0));
+
+  stmt = sim3.db().db().Prepare(
+      "SELECT COUNT(*) FROM AgentEntry WHERE Prototype = 'foobar2';"
+      );
+  stmt->Step();
+  EXPECT_EQ(0, stmt->GetInt(0));
 }
 
 // required to get functionality in cyclus agent unit tests library
