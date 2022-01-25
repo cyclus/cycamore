@@ -233,13 +233,11 @@ TEST_F(DeployManagerInstTests, cornercase){
   int simdur = 5;
   cyclus::MockSim sim1(cyclus::AgentSpec(":cycamore:DeployManagerInst"), dmi_config, simdur);
   cyclus::MockSim sim2(cyclus::AgentSpec(":cycamore:ManagerInst"), mi_config, simdur);
-  cyclus::MockSim sim3(cyclus::AgentSpec(":cycamore:GrowthRegion"),gr_config, simdur);
-  sim1.DummyProto("foobar1");
-  sim2.DummyProto("foobar2");
-  sim3.DummyProto("foobar1");
-  sim3.DummyProto("foobar2");
-  int id1 = sim1.Run();
-  int id2 = sim2.Run();
+  cyclus::MockSim sim3(cyclus::AgentSpec(":cycamore:ManagerInst"), mi_config, simdur);
+  sim3.DummyProto("foobar1", "commod1", 1);
+  sim3.DummyProto("foobar2", "commod1", 1);
+  sim3.AddSource("enriched_u").Finalize();
+  sim3.AddSink("enriched_u");
   int id3 = sim3.Run();
 
   cyclus::SqlStatement::Ptr stmt = sim3.db().db().Prepare(
