@@ -177,6 +177,28 @@ TEST(DeployInstTests, PositionInitialize2) {
   EXPECT_EQ(qr.GetVal<double>("Longitude"), -20.0);
 }
 
+TEST_F(DeployManagerInstTests, producerexists) {
+  using std::set;
+  ctx_->AddPrototype("foop", producer);
+  set<cyclus::toolkit::CommodityProducer*>::iterator it;
+  for (it = src_inst->cyclus::toolkit::CommodityProducerManager::
+          producers().begin();
+       it != src_inst->cyclus::toolkit::CommodityProducerManager::
+          producers().end();
+       it++) {
+    EXPECT_EQ(dynamic_cast<TestProducer*>(*it)->prototype(),
+              producer->prototype());
+  }
+}
+
+TEST_F(DeployManagerInstTests, productioncapacity) {
+  EXPECT_EQ(src_inst->TotalCapacity(commodity), 0);
+  src_inst->BuildNotify(producer);
+  EXPECT_EQ(src_inst->TotalCapacity(commodity), capacity);
+  src_inst->DecomNotify(producer);
+  EXPECT_EQ(src_inst->TotalCapacity(commodity), 0);
+}
+
 // required to get functionality in cyclus agent unit tests library
 cyclus::Agent* DeployInstitutionConstructor(cyclus::Context* ctx) {
   return new cycamore::DeployInst(ctx);
