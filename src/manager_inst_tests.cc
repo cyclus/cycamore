@@ -1,10 +1,10 @@
 #include "manager_inst_tests.h"
 
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-TestProducer::TestProducer(cyclus::Context* ctx) : cyclus::Facility(ctx) {}
+//TestProducer::TestProducer(cyclus::Context* ctx) : cyclus::Facility(ctx) {}
 
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-TestProducer::~TestProducer() {}
+//TestProducer::~TestProducer() {}
 
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 void ManagerInstTests::SetUp() {
