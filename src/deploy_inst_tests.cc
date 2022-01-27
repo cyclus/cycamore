@@ -1,10 +1,5 @@
-#include <gtest/gtest.h>
 
-#include "context.h"
-#include "deploy_inst.h"
 #include "deploy_inst_tests.h"
-#include "institution_tests.h"
-#include "agent_tests.h"
 
 // make sure that the deployed agent's prototype name is identical to the
 // originally specified prototype name - this is important to test because
