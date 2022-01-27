@@ -87,7 +87,7 @@ class NatUConverter : public cyclus::Converter<cyclus::Material> {
 ///  The Enrichment facility is a simple Agent that enriches natural
 ///  uranium in a Cyclus simulation. It does not explicitly compute
 ///  the physical enrichment process, rather it calculates the SWU
-///  required to convert a source uranium recipe (ie. natural uranium)
+///  required to convert an source uranium recipe (ie. natural uranium)
 ///  into a requested enriched recipe (ie. 4% enriched uranium), given
 ///  the natural uranium inventory constraint and its SWU capacity
 ///  constraint.
@@ -109,9 +109,7 @@ class NatUConverter : public cyclus::Converter<cyclus::Material> {
 ///  If multiple output commodities with different enrichment levels are
 ///  requested and the facility does not have the SWU or quantity capacity
 ///  to meet all requests, the requests are fully, then partially filled
-///  in unspecified but repeatable order. A request for the product
-///  commodity without an associated requested enriched recipe will not be
-///  fulfilled.
+///  in unspecified but repeatable order.
 ///
 ///  The Enrichment facility also offers its tails as an output commodity with
 ///  no associated recipe.  Bids for tails are constrained only by total
@@ -126,7 +124,7 @@ class Enrichment
   "The Enrichment facility is a simple agent that enriches natural "	 \
   "uranium in a Cyclus simulation. It does not explicitly compute "	\
   "the physical enrichment process, rather it calculates the SWU "	\
-  "required to convert a source uranium recipe (i.e. natural uranium) " \
+  "required to convert an source uranium recipe (i.e. natural uranium) " \
   "into a requested enriched recipe (i.e. 4% enriched uranium), given " \
   "the natural uranium inventory constraint and its SWU capacity " \
   "constraint."							\
@@ -148,9 +146,7 @@ class Enrichment
   "If multiple output commodities with different enrichment levels are " \
   "requested and the facility does not have the SWU or quantity capacity " \
   "to meet all requests, the requests are fully, then partially filled " \
-  "in unspecified but repeatable order. A request for the product " \
-  "commodity without an associated requested enriched recipe will not be " \
-  "fulfilled."				\
+  "in unspecified but repeatable order."				\
   "\n\n"								\
   "Accumulated tails inventory is offered for trading as a specifiable " \
   "output commodity.", \
