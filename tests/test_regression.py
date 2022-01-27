@@ -436,8 +436,8 @@ class TestGrowth2(TestRegression):
 
     A linear growth demand (y = 5) is provided to the growth region. One
     Source is allowed in the ManagerInst, with capacity of 1.
-    At t=1, a 1-capacity Source is built by the DeployInst, and at
-    t=5, 1-capacity Sources are expected to be built by the ManagerInst.
+    At t=1, a 1-capacity Source1 is built by the DeployInst, and at
+    t=6, 4 1-capacity Source2s are expected to be built by the ManagerInst.
 
     """
     def __init__(self, *args, **kwargs):
