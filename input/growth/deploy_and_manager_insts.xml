@@ -24,6 +24,7 @@
     <config>
       <Source>
         <outcommod>commodity1</outcommod>
+        <outrecipe>commod_recipe</outrecipe>
         <throughput>1</throughput>
       </Source>
     </config>
@@ -34,6 +35,7 @@
     <config>
       <Source>
         <outcommod>commodity1</outcommod>
+        <outrecipe>commod_recipe</outrecipe>
         <throughput>1</throughput>
       </Source>
     </config>
@@ -105,5 +107,12 @@
       </config>
     </institution>
   </region>
+
+  <recipe>
+    <name>commod_recipe</name>
+    <basis>mass</basis>
+    <nuclide> <id>922350000</id> <comp>0.711</comp> </nuclide>
+    <nuclide> <id>922380000</id> <comp>99.289</comp> </nuclide>
+  </recipe>
 
 </simulation>
