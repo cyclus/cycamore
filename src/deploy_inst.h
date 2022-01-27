@@ -22,13 +22,14 @@ typedef std::map<int, std::vector<std::string> > BuildSched;
 class DeployInst : 
   public cyclus::Institution, 
   public cyclus::toolkit::CommodityProducerManager,
+  public cyclus::toolkit::Builder,
   public cyclus::toolkit::Position {
   #pragma cyclus note { \
     "doc": \
       "Builds and manages agents (facilities) according to a manually" \
       " specified deployment schedule. Deployed agents are automatically" \
       " decommissioned at the end of their lifetime.  Deployed and" \
-      " decommissioned agents are registered and unregistered with a" \
+      " decommissioned agents are registered and unregistered with a growth" \
       " region. The user specifies a list of prototypes for" \
       " each and corresponding build times, number to build, and (optionally)" \
       " lifetimes.  The same prototype can be specified multiple times with" \
