@@ -1,6 +1,11 @@
 #include "manager_inst_tests.h"
 
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+TestProducer::TestProducer(cyclus::Context* ctx) : cyclus::Facility(ctx) {}
+
+// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+TestProducer::~TestProducer() {}
+// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 void ManagerInstTests::SetUp() {
   ctx_ = new cyclus::Context(&ti_, &rec_);
   src_inst = new cycamore::ManagerInst(ctx_);

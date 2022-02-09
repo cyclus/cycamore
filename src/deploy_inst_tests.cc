@@ -1,16 +1,9 @@
-
 #include "deploy_inst_tests.h"
 
 // make sure that the deployed agent's prototype name is identical to the
 // originally specified prototype name - this is important to test because
 // DeployInst does some mucking around with registering name-modded prototypes
 // in order to deal with lifetime setting.
-
-// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-TestProducer::TestProducer(cyclus::Context* ctx) : cyclus::Facility(ctx) {}
-
-// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-TestProducer::~TestProducer() {}
 
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 void DeployInstTests::SetUp() {
