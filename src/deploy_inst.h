@@ -55,6 +55,7 @@ class DeployInst :
   void WriteProducerInformation(cyclus::toolkit::CommodityProducer*
                                 producer);
 
+  private:
   /// register a child
   void Register_(cyclus::Agent* agent);
 
