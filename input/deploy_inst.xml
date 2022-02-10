@@ -1,0 +1,75 @@
+<simulation>
+  <control>
+    <duration>10</duration>
+    <startmonth>1</startmonth>
+    <startyear>2018</startyear>
+    <decay>never</decay>
+  </control>
+
+  <archetypes>
+    <spec> <lib>agents</lib><name>NullRegion</name> </spec>
+    <spec> <lib>cycamore</lib><name>DeployInst</name> </spec>
+    <spec> <lib>cycamore</lib><name>Source</name> </spec>
+    <spec> <lib>cycamore</lib><name>Sink</name> </spec>
+  </archetypes>
+  
+  <facility>
+    <name>Source</name>
+    <config>
+      <Source>
+        <outcommod>commodity1</outcommod>
+        <outrecipe>commod_recipe</outrecipe>
+        <throughput>1</throughput>
+      </Source>
+    </config>
+  </facility>
+
+  <facility>
+    <name>Sink</name>
+    <config>
+      <Sink>
+        <in_commods>
+          <val>commodity1</val>
+        </in_commods>
+      </Sink>
+    </config>
+  </facility>
+
+  <region>
+    <name>Single Region</name>
+    <config>
+    <NullRegion/>
+    </config>
+      
+    <institution>
+      <initialfacilitylist>
+        <entry>
+          <prototype>Sink</prototype>
+          <number>1</number>
+        </entry>
+      </initialfacilitylist>
+      <name>Single Institution</name>
+      <config>
+        <DeployInst>
+          <prototypes>
+            <val>Source</val>
+          </prototypes>
+          <build_times>
+            <val>1</val>
+          </build_times>
+          <n_build>
+            <val>1</val>
+          </n_build>
+        </DeployInst>
+      </config>
+    </institution>
+  </region>
+
+  <recipe>
+    <name>commod_recipe</name>
+    <basis>mass</basis>
+    <nuclide> <id>922350000</id> <comp>0.711</comp> </nuclide>
+    <nuclide> <id>922380000</id> <comp>99.289</comp> </nuclide>
+  </recipe>
+
+</simulation>

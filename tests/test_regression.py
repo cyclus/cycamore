@@ -379,8 +379,10 @@ class TestDynamicCapacitated(TestRegression):
                 np.where(self.resource_ids == self.trans_resource[t])]
         assert_equal(quantity, 2)
 
-class TestGrowth(TestRegression):
-    """Tests GrowthRegion, ManagerInst, and Source over a 4-time step
+class TestGrowth1(TestRegression):
+    """This class tests the growth.xml
+    
+    Tests GrowthRegion, ManagerInst, and Source over a 4-time step
     simulation.
 
     A linear growth demand (y = x + 2) is provided to the growth region. Two
@@ -392,16 +394,16 @@ class TestGrowth(TestRegression):
     to test the demand for multiple commodities.
     """
     def __init__(self, *args, **kwargs):
-        super(TestGrowth, self).__init__(*args, **kwargs)
+        super(TestGrowth1, self).__init__(*args, **kwargs)
         self.inf = "./input/growth.xml"
         if not cyclus_has_coin():
             raise SkipTest('Cyclus not compiled with COIN')
 
     def setUp(self):
-        super(TestGrowth, self).setUp()
+        super(TestGrowth1, self).setUp()
 
     def tearDown(self):
-        super(TestGrowth, self).tearDown()
+        super(TestGrowth1, self).tearDown()
 
     def test_deployment(self):
         pass
@@ -425,6 +427,88 @@ class TestGrowth(TestRegression):
         assert_equal(enter_time[np.where(agent_ids == source1_id[1])], 3)
         for x in source3_id:
             assert_equal(enter_time[np.where(agent_ids == x)], 2)
+
+class TestGrowth2(TestRegression):
+    """This class tests the ./input/deploy_and_manager_insts.xml
+    
+    Tests GrowthRegion, ManagerInst, DeployInst, and Source over a 10-time step
+    simulation.
+
+    A linear growth demand (y = 5) is provided to the growth region. One
+    Source is allowed in the ManagerInst, with capacity of 1.
+    At t=1, a 1-capacity Source1 is built by the DeployInst, and at
+    t=6, 4 1-capacity Source2s are expected to be built by the ManagerInst.
+
+    """
+    def __init__(self, *args, **kwargs):
+        super(TestGrowth2, self).__init__(*args, **kwargs)
+        self.inf = "../input/growth/deploy_and_manager_insts.xml"
+        if not cyclus_has_coin():
+            raise SkipTest('Cyclus not compiled with COIN')
+
+    def setUp(self):
+        super(TestGrowth2, self).setUp()
+
+    def tearDown(self):
+        super(TestGrowth2, self).tearDown()
+
+    def test_deployment(self):
+        pass
+        agent_ids = self.to_ary(self.agent_entry, "AgentId")
+        proto = self.to_ary(self.agent_entry, "Prototype")
+        enter_time = self.to_ary(self.agent_entry, "EnterTime")
+
+        source1_id = self.find_ids("Source1", self.agent_entry,
+                                   spec_col="Prototype")
+        source2_id = self.find_ids("Source2", self.agent_entry,
+                                   spec_col="Prototype")
+
+        assert_equal(len(source1_id), 1)
+        assert_equal(len(source2_id), 4)
+
+        assert_equal(enter_time[np.where(agent_ids == source1_id[0])], 1)
+        assert_equal(enter_time[np.where(agent_ids == source2_id[0])], 6)
+
+class TestDeployInst(TestRegression):
+    """This class tests the ../input/deploy_inst.xml
+    
+    Tests DeployInst, and NullRegion over a 10-time step
+    simulation.
+
+    A DeployInst is used to define that a Source agent is to be deployed at 
+    time t=1 within a Null Region. A Sink agent is also deployed as
+    an initial facility. This input is used to test that the Source and 
+    Sink agents are deployed at their respecitve times and that the correct 
+    number of these agents are deployed.
+
+    """
+    def __init__(self, *args, **kwargs):
+        super(TestDeployInst, self).__init__(*args, **kwargs)
+        self.inf = "../input/deploy_inst.xml"
+        if not cyclus_has_coin():
+            raise SkipTest('Cyclus not compiled with COIN')
+
+    def setUp(self):
+        super(TestDeployInst, self).setUp()
+
+    def tearDown(self):
+        super(TestDeployInst, self).tearDown()
+
+    def test_deployment(self):
+        pass
+        agent_ids = self.to_ary(self.agent_entry, "AgentId")
+        proto = self.to_ary(self.agent_entry, "Prototype")
+        enter_time = self.to_ary(self.agent_entry, "EnterTime")
+
+        source_id = self.find_ids("Source", self.agent_entry,
+                                   spec_col="Prototype")
+        sink_id = self.find_ids("Sink", self.agent_entry, spec_col="Prototype")
+
+        assert_equal(len(source_id), 1)
+        assert_equal(len(sink_id), 1)
+
+        assert_equal(enter_time[np.where(agent_ids == source_id[0])], 1)
+        assert_equal(enter_time[np.where(agent_ids == sink_id[0])], 0)
 
 class _Recycle(TestRegression):
     """This class tests the input/recycle.xml file.

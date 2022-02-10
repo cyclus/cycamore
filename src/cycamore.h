@@ -8,6 +8,7 @@
 #include "batch_reactor.h"
 #include "batch_reactor_tests.h"
 #include "deploy_inst.h"
+#include "deploy_inst_tests.h"
 #include "enrichment.h"
 #include "enrichment_tests.h"
 #if CYCLUS_HAS_COIN

@@ -5,7 +5,6 @@ TestProducer::TestProducer(cyclus::Context* ctx) : cyclus::Facility(ctx) {}
 
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 TestProducer::~TestProducer() {}
-
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 void ManagerInstTests::SetUp() {
   ctx_ = new cyclus::Context(&ti_, &rec_);

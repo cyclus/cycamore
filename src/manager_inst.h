@@ -44,13 +44,13 @@ class ManagerInst
   void WriteProducerInformation(cyclus::toolkit::CommodityProducer*
                                 producer);
 
- private:
+  private:
   /// register a child
   void Register_(cyclus::Agent* agent);
 
   /// unregister a child
   void Unregister_(cyclus::Agent* agent);
-
+ 
   #pragma cyclus var { \
     "tooltip": "producer facility prototypes",                          \
     "uilabel": "Producer Prototype List",                               \
