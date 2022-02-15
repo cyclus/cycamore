@@ -1,0 +1,138 @@
+<simulation>
+
+  <control>
+    <duration>4</duration> 
+    <startmonth>1</startmonth>
+    <startyear>2022</startyear>
+  </control>
+
+  <archetypes>
+    <spec> <lib>agents</lib>   <name>NullRegion</name>  </spec>
+    <spec> <lib>cycamore</lib> <name>DeployInst</name>  </spec>
+    <spec> <lib>cycamore</lib> <name>Source</name>      </spec>
+    <spec> <lib>cycamore</lib> <name>Reactor</name>     </spec>
+    <spec> <lib>cycamore</lib> <name>Sink</name>        </spec>
+  </archetypes>
+ 
+  <region>
+    <name>Region</name>
+    <config> <NullRegion/> </config> 
+
+    <institution> 
+      <name>Inst</name>
+      <config>
+        <DeployInst>
+          <prototypes>
+            <val>Source1</val>
+            <val>Source2</val>
+            <val>Reactor</val>
+            <val>Waste</val>
+            <val>Reactor</val>
+          </prototypes>
+          <n_build>
+            <val>1</val>
+            <val>1</val>
+            <val>1</val>
+            <val>1</val>
+            <val>1</val>
+          </n_build>
+          <build_times>
+            <val>1</val>
+            <val>1</val>
+            <val>1</val>
+            <val>1</val>
+            <val>3</val>
+          </build_times>
+        </DeployInst>
+      </config>
+    </institution>
+  </region>
+
+  <facility>
+    <name>Source1</name>
+    <config>
+      <Source>
+        <outcommod>Fuel1</outcommod>
+        <outrecipe>Fuel1_recipe</outrecipe>
+      </Source>
+    </config>
+  </facility>
+
+  <facility>
+    <name>Source2</name>
+    <config>
+      <Source>
+        <outcommod>Fuel2</outcommod>
+        <outrecipe>Fuel2_recipe</outrecipe>
+      </Source>
+    </config>
+  </facility>
+
+  <facility>
+    <name>Reactor</name>
+    <config>
+      <Reactor>
+        <fuel_incommods> 
+          <val>Fuel1</val> 
+          <val>Fuel2</val> 
+        </fuel_incommods>
+        <fuel_outcommods> 
+          <val>SpentFuel</val> 
+          <val>SpentFuel</val> 
+        </fuel_outcommods>
+        <fuel_inrecipes> 
+          <val>Fuel1_recipe</val> 
+          <val>Fuel2_recipe</val> 
+        </fuel_inrecipes>
+        <fuel_outrecipes> 
+          <val>SpentFuel_recipe</val> 
+          <val>SpentFuel_recipe</val> 
+        </fuel_outrecipes>
+        <fuel_prefs>
+          <val>2</val>
+          <val>1</val>
+        </fuel_prefs>
+        <pref_change_times>   <val>2</val>     </pref_change_times>
+        <pref_change_commods> <val>Fuel2</val> </pref_change_commods>
+        <pref_change_values>  <val>3</val>     </pref_change_values>
+        <cycle_time>1</cycle_time>
+        <refuel_time>0</refuel_time>
+        <assem_size>1000</assem_size> 
+        <n_assem_batch>1</n_assem_batch>
+        <n_assem_core>1</n_assem_core>
+      </Reactor>
+    </config>
+  </facility>
+
+  <facility>
+    <name>Waste</name>
+    <config>
+      <Sink>
+        <in_commods> <val>SpentFuel</val> </in_commods>
+      </Sink>
+    </config>
+  </facility>
+
+  <recipe>
+    <name>Fuel1_recipe</name>
+    <basis>mass</basis>
+    <nuclide> <id>U235</id> <comp>0.03</comp> </nuclide>
+    <nuclide> <id>U238</id> <comp>0.97</comp> </nuclide>
+  </recipe>
+
+  <recipe>
+    <name>Fuel2_recipe</name>
+    <basis>mass</basis>
+    <nuclide> <id>U235</id> <comp>0.05</comp> </nuclide>
+    <nuclide> <id>U238</id> <comp>0.95</comp> </nuclide>
+  </recipe>
+
+  <recipe>
+    <name>SpentFuel_recipe</name>
+    <basis>mass</basis>
+    <nuclide> <id>U235</id>  <comp>0.01</comp> </nuclide>
+    <nuclide> <id>U238</id>  <comp>0.98</comp> </nuclide>
+    <nuclide> <id>Pu239</id> <comp>0.01</comp> </nuclide>
+  </recipe>
+
+</simulation>

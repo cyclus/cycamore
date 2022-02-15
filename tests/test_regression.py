@@ -510,6 +510,51 @@ class TestDeployInst(TestRegression):
         assert_equal(enter_time[np.where(agent_ids == source_id[0])], 1)
         assert_equal(enter_time[np.where(agent_ids == sink_id[0])], 0)
 
+class TestReactorPrefChange(TestRegression):
+    """This class tests the ../input/reactor_pref_change.xml
+    
+    Tests commodity preference changes in the reactor over a 4-time step
+    simulation.
+
+    A DeployInst is used to define that 2 Sources, 1 Sink, and 1 Reactor are to
+    be deployed at time t=1 within a Null Region. The reactor commodity 
+    preference change occurs at time t=2.  At time t=3, a second reactor with 
+    the same configuration is deployed.  This input is used to test that the 
+    second reactor retains the fuel preference change even though it deploys 
+    after the time step in which the preference change occured.
+
+    """
+    def __init__(self, *args, **kwargs):
+        super(TestReactorPrefChange, self).__init__(*args, **kwargs)
+        self.inf = "../input/reactor_pref_change.xml"
+
+    def setUp(self):
+        super(TestReactorPrefChange, self).setUp()
+        rxtr_ids = self.find_ids(":cycamore:Reactor", self.agent_entry)
+        self.r1, self.r2 = tuple(rxtr_ids)
+        self.agent_ids = self.to_ary(self.agent_entry, "AgentId")
+        self.enter_time = self.to_ary(self.agent_entry, "EnterTime")
+        self.rec_ids = self.to_ary(self.transactions, "ReceiverId")
+        self.trans_time = self.to_ary(self.transactions, "Time")
+        self.trans_commod = self.to_ary(self.transactions, "Commodity")
+
+    def tearDown(self):
+        super(TestReactorPrefChange, self).tearDown()
+
+    def test_rxtr1_prefs(self):
+        assert_equal(self.enter_time[np.where(self.agent_ids == self.r1)], 1)
+        rec_n_time = (self.rec_ids == self.r1) & (self.trans_time == 1)
+        assert_equal(self.trans_commod[np.where(rec_n_time)], "Fuel1")
+        rec_n_time = (self.rec_ids == self.r1) & (self.trans_time == 2)
+        assert_equal(self.trans_commod[np.where(rec_n_time)], "Fuel2")
+        rec_n_time = (self.rec_ids == self.r1) & (self.trans_time == 3)
+        assert_equal(self.trans_commod[np.where(rec_n_time)], "Fuel2")
+
+    def test_rxtr2_prefs(self):
+        assert_equal(self.enter_time[np.where(self.agent_ids == self.r2)], 3)
+        rec_n_time = (self.rec_ids == self.r2) & (self.trans_time == 3)
+        assert_equal(self.trans_commod[np.where(rec_n_time)], "Fuel2")
+
 class _Recycle(TestRegression):
     """This class tests the input/recycle.xml file.
     """
