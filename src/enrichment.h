@@ -363,7 +363,7 @@ class Enrichment
 
   #pragma cyclus var {						       \
     "default": 1e299,						       \
-    "tooltip": "SWU capacity (kgSWU/month)",			       \
+    "tooltip": "SWU capacity (kgSWU/timestep)",			       \
     "uilabel": "SWU Capacity",                                         \
     "uitype": "range",                                                  \
     "range": [0.0, 1e299],                                               \

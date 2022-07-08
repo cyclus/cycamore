@@ -188,7 +188,7 @@ void Sink::Tock() {
   // For now, lets just print out what we have at each timestep.
   LOG(cyclus::LEV_INFO4, "SnkFac") << "Sink " << this->id()
                                    << " is holding " << inventory.quantity()
-                                   << " units of material at the close of month "
+                                   << " units of material at the close of timestep "
                                    << context()->time() << ".";
   LOG(cyclus::LEV_INFO3, "SnkFac") << "}";
 }
