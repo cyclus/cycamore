@@ -115,14 +115,21 @@ std::string Storage::str() {
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 void Storage::Tick() {
-  // Set available capacity for Buy Policy
-  inventory.capacity(current_capacity());
+  
 
   LOG(cyclus::LEV_INFO3, "ComCnv") << prototype() << " is ticking {";
 
+  LOG(cyclus::LEV_INFO5, "ComCnv") << "Processing = " << processing.quantity() << ", ready = " << ready.quantity() << ", stocks = " << stocks.quantity() << " and max inventory = " << max_inv_size;
+
+  LOG(cyclus::LEV_INFO4, "ComCnv") << "current capacity " << max_inv_size << " - " << processing.quantity() << " - " << ready.quantity() << " - " << stocks.quantity() << " = " << current_capacity();
+
+  // Set available capacity for Buy Policy
+  inventory.capacity(current_capacity());
+
+
   if (current_capacity() > cyclus::eps_rsrc()) {
     LOG(cyclus::LEV_INFO4, "ComCnv")
-        << " has capacity for " << current_capacity() << " kg of material.";
+        << " has capacity for " << current_capacity() << ".";
   }
   LOG(cyclus::LEV_INFO3, "ComCnv") << "}";
 }
@@ -134,12 +141,19 @@ void Storage::Tock() {
 
   BeginProcessing_();  // place unprocessed inventory into processing
 
+  LOG(cyclus::LEV_INFO4, "ComCnv") << "processing currently holds " << processing.quantity() << ". ready currently holds " << ready.quantity() << ".";
+
   if (ready_time() >= 0 || residence_time == 0 && !inventory.empty()) {
     ReadyMatl_(ready_time());  // place processing into ready
   }
 
-  ProcessMat_(throughput);  // place ready into stocks
+  LOG(cyclus::LEV_INFO5, "ComCnv") << "Ready now holds " << ready.quantity() << " kg.";
 
+  if (ready.quantity() > throughput) {
+    LOG(cyclus::LEV_INFO5, "ComCnv") << "Up to " << throughput << " kg will be placed in stocks based on throughput limits. ";
+    }
+
+  ProcessMat_(throughput);  // place ready into stocks
 
   std::vector<double>::iterator result;
   result = std::max_element(in_commod_prefs.begin(), in_commod_prefs.end());
@@ -150,6 +164,9 @@ void Storage::Tock() {
   // provide one value for out_commods, despite it being a vector of strings.
   cyclus::toolkit::RecordTimeSeries<double>("supply"+out_commods[0], this,
                                             stocks.quantity());
+
+  LOG(cyclus::LEV_INFO4, "ComCnv") << "process has "
+                                   << processing.quantity() << ". Ready has " << ready.quantity() << ". Stocks has " << stocks.quantity() << ".";
   LOG(cyclus::LEV_INFO3, "ComCnv") << "}";
 }
 
@@ -227,6 +244,7 @@ void Storage::ProcessMat_(double cap) {
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 void Storage::ReadyMatl_(int time) {
   using cyclus::toolkit::ResBuf;
+  LOG(cyclus::LEV_INFO5, "ComCnv") << "Placing material into ready";
 
   int to_ready = 0;
 
