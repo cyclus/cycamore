@@ -400,6 +400,20 @@ class Storage
                       "range": [0.0, 1.0], \
                       "uilabel": "Buying Size Standard Deviation"}
   double buying_size_stddev;
+  #pragma cyclus var {"default": 1,\
+                      "tooltip":"Reorder point as a fraction of full inventory",\
+                      "doc":"The point at which the facility will request more material. "\
+                            "This is a fraction of the maximum inventory size.",\
+                      "uilabel":"Reorder Point"}
+  double reorder_point;
+
+  #pragma cyclus var {"default": 1,\
+                      "tooltip":"Reorder amount as a fraction of full inventory",\
+                      "doc":"The amount of material that will be requested when the reorder point is reached. "\
+                          "This is a fraction of the maximum inventory size."\
+                          " Unused if no maximum inventory is set.",\
+                      "uilabel":"Reorder Quantity"}
+  double reorder_quantity;
 
   #pragma cyclus var {"tooltip":"Incoming material buffer"}
   cyclus::toolkit::ResBuf<cyclus::Material> inventory;

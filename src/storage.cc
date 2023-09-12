@@ -135,6 +135,7 @@ void Storage::EnterNotify() {
   
   buy_policy.Init(this, &inventory, std::string("inventory"), throughput,
                   active_dist_, dormant_dist_, size_dist_);
+  buy_policy.Init(this, &inventory, std::string("inventory"), reorder_point, reorder_quantity);
 
   // dummy comp, use in_recipe if provided
   cyclus::CompMap v;
