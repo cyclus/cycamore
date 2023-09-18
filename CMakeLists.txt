@@ -170,12 +170,6 @@ IF(NOT CYCLUS_DOC_ONLY)
     MESSAGE("--    COIN Include directories: ${COIN_INCLUDE_DIRS}")
     MESSAGE("--    COIN Libraries: ${COIN_LIBRARIES}")
 
-    FIND_PACKAGE( SQLite3 REQUIRED )
-    SET(CYCAMORE_INCLUDE_DIRS ${CYCAMORE_INCLUDE_DIRS} ${SQLITE3_INCLUDE_DIR})
-    SET(LIBS ${LIBS} ${SQLITE3_LIBRARIES})
-    MESSAGE("--    SQLITE3 Include directories: ${SQLITE3_INCLUDE_DIR}")
-    MESSAGE("--    SQLITE3 Libraries: ${SQLITE3_LIBRARIES}")
-
     #
     # Some optional libraries to link in, as availble. Required for conda.
     #
