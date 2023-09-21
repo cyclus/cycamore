@@ -6,7 +6,7 @@ on:
   pull_request:
   push:
     branches:
-      - main
+      - docker-build
 
 jobs:
   build-dependency-and-test-img:
