@@ -114,17 +114,6 @@ IF(NOT CYCLUS_DOC_ONLY)
     # Include macros installed with cyclus core
     INCLUDE(UseCyclus)
 
-    # Find LibXML++ and dependencies
-    FIND_PACKAGE(LibXML++)
-    IF(NOT LibXML++_LIBRARIES)
-        FIND_LIBRARY(LibXML++ REQUIRED ${DEPS_HINTS})
-    ENDIF()
-    SET(CYCAMORE_INCLUDE_DIRS ${CYCAMORE_INCLUDE_DIRS} ${LibXML++_INCLUDE_DIR} ${Glibmm_INCLUDE_DIRS} ${LibXML++Config_INCLUDE_DIR})
-    SET(LIBS ${LIBS} ${LibXML++_LIBRARIES})
-    MESSAGE("-- LIBS: ${LIBS}")
-
-    MESSAGE("-- LD_LIBRARY_PATH: $ENV{LD_LIBRARY_PATH}")
-
     # Include the boost header files and the program_options library
     # Please be sure to use Boost rather than BOOST.
     # Capitalization matters on some platforms
@@ -180,12 +169,6 @@ IF(NOT CYCLUS_DOC_ONLY)
     MESSAGE("--    COIN Root: ${COIN_ROOT}")
     MESSAGE("--    COIN Include directories: ${COIN_INCLUDE_DIRS}")
     MESSAGE("--    COIN Libraries: ${COIN_LIBRARIES}")
-
-    FIND_PACKAGE( Sqlite3 REQUIRED )
-    SET(CYCAMORE_INCLUDE_DIRS ${CYCAMORE_INCLUDE_DIRS} ${SQLITE3_INCLUDE_DIR})
-    SET(LIBS ${LIBS} ${SQLITE3_LIBRARIES})
-    MESSAGE("--    SQLITE3 Include directories: ${SQLITE3_INCLUDE_DIR}")
-    MESSAGE("--    SQLITE3 Libraries: ${SQLITE3_LIBRARIES}")
 
     #
     # Some optional libraries to link in, as availble. Required for conda.
