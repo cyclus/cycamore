@@ -44,9 +44,6 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v3
 
-      - name: Set up QEMU
-        uses: docker/setup-qumu-action@v3
-
       - name: Set up Docker Buildx
         uses: docker/setup/buildx-action@v3
 
@@ -54,6 +51,7 @@ jobs:
         uses: docker/build-push-action@v5
         with:
             file: docker/Dockerfile
+            push: false
 
 
     #   - name: Installing Dependencies in Docker image
