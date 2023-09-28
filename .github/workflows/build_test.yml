@@ -23,7 +23,7 @@ jobs:
         ]
         cyclus_tag: [
           latest,
-          develop
+          # develop
         ]
         # TODO include main vs dev branches to pull
 
