@@ -13,6 +13,7 @@ jobs:
     runs-on: ubuntu-latest
 
     strategy:
+      fail-fast: false
       matrix:
         ubuntu_versions : [
           22.04,
@@ -23,7 +24,7 @@ jobs:
         ]
         cyclus_tag: [
           latest,
-          # develop
+          develop
         ]
         # TODO include main vs dev branches to pull
 
