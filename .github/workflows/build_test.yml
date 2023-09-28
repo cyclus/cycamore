@@ -21,6 +21,10 @@ jobs:
           apt,
           conda,
         ]
+        cyclus_tag: [
+          latest,
+          develop
+        ]
         # TODO include main vs dev branches to pull
 
     name: Installing Dependencies, Building cyclus and running tests
@@ -42,7 +46,7 @@ jobs:
     #       password: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Checkout repository
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
 
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v3
@@ -52,6 +56,10 @@ jobs:
         with:
             file: docker/Dockerfile
             push: false
+            build-args: |
+              pkg_mgr=${{ matrix.pkg_mgr }}
+              ubuntu_version=${{ matrix.ubuntu_versions }}
+              cyclus_tag=${{ matrix.cyclus_tag }}
 
 
     #   - name: Installing Dependencies in Docker image

@@ -1,9 +1,10 @@
 ARG pkg_mgr=apt
 ARG ubuntu_version=22.04
+ARG cyclus_tag=latest
 # eventually will include an ARG for main vs dev tag since that should be in the
 # workflow matrix
 
-FROM ghcr.io/cyclus/cyclus_${ubuntu_version}_${pkg_mgr}/cyclus:latest as cycamore
+FROM ghcr.io/cyclus/cyclus_${ubuntu_version}_${pkg_mgr}/cyclus:${cyclus_branch} as cycamore
 
 ARG make_cores=2
 
