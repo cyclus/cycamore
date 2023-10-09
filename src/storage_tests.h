@@ -33,7 +33,7 @@ class StorageTest : public ::testing::Test {
   std::vector<std::string> in_c1, out_c1;
   std::string in_r1;
 
-  int residence_time;
+  int residence_time, active_buying, dormant_buying;
   double throughput, max_inv_size;
   bool discrete_handling;
 };
