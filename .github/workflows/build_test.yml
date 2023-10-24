@@ -51,8 +51,11 @@ jobs:
       
       - name: add site dir to pythonpath
         run: |
-          echo "PYTHONPATH=`python -m site --user-site`:$PYTHONPATH" >> "$GITHUB_ENV"
+          python_user_site="$(python -m site --user-site)"
+          echo "PYTHONPATH=${python_user_site}:$PYTHONPATH" >> "$GITHUB_ENV"
           echo PYTHONPATH=$PYTHONPATH
+          python -c "import numpy; print(numpy.__file__)"
+          python -c "import sys; print(sys.path)"
   
       - name: Cycamore Unit Tests
         run: |
