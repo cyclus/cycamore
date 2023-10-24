@@ -39,7 +39,10 @@ jobs:
     steps:
       - name: Checkout Cycamore
         uses: actions/checkout@v3
-
+      
+      - name: Which Cyclus
+        run: |
+          which cyclus
       - name: Build Cycamore
         run: |
           python install.py -j 2 --build-type=Release --core-version 99999.99999 
