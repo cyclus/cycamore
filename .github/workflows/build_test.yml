@@ -48,6 +48,7 @@ jobs:
         run: |
           cycamore_unit_tests
 
-      # - name: Cycamore Python Tests
-      #   run: |
-      #     cd tests && nosetests3
+      - name: Cycamore Python Tests
+        run: |
+          apt install -y python3-nose
+          cd tests && nosetests3

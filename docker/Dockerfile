@@ -12,6 +12,6 @@ RUN python install.py -j ${make_cores} --build-type=Release --core-version 99999
 FROM cycamore as cycamore-test
 RUN cycamore_unit_tests
 
-# FROM cycamore as cycamore-pytest
-# RUN apt install -y python3-nose
-# RUN cd tests && nosetests3
+FROM cycamore as cycamore-pytest
+RUN apt install -y python3-nose
+RUN cd tests && nosetests3
