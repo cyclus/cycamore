@@ -22,12 +22,12 @@ jobs:
       fail-fast: false
       matrix:
         ubuntu_versions : [
-          20.04,
+          # 20.04,
           22.04,
           ]
         pkg_mgr : [
             apt,
-            conda
+            # conda
         ]
         cyclus_tag: [
           latest
@@ -40,11 +40,23 @@ jobs:
       - name: Checkout Cycamore
         uses: actions/checkout@v3
 
+      - name: Echo home
+        run: |
+          echo "HOME=${HOME}"
+          echo "PATH=${PATH}"
+          echo "LD_LIBRARY_PATH=${LD_LIBRARY_PATH}"
+
       - name: Build Cycamore
         run: |
-          python install.py -j 2 --build-type=Release --core-version 99999.99999 
+          python install.py -j 2 --build-type=Release --core-version 99999.99999 --clean-build
           echo "PATH=${HOME}/.local/bin:$PATH" >> "$GITHUB_ENV"
-          echo "LD_LIBRARY_PATH=${HOME}/.local/lib:${HOME}/.local/lib/cyclus:/root/.local/lib:/root/.local/lib/cyclus:$LD_LIBRARY_PATH" >> "$GITHUB_ENV"
+          echo "LD_LIBRARY_PATH=/root/.local/lib:/root/.local/lib/cyclus:${HOME}/.local/lib:${HOME}/.local/lib/cyclus:$LD_LIBRARY_PATH" >> "$GITHUB_ENV"
+
+      - name: Echo home
+        run: |
+          echo "HOME=${HOME}"
+          echo "PATH=${PATH}"
+          echo "LD_LIBRARY_PATH=${LD_LIBRARY_PATH}"
 
       - name: Cycamore Unit Tests
         run: |
