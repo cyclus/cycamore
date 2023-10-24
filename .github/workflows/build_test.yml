@@ -42,15 +42,14 @@ jobs:
 
       - name: Echo home
         run: |
-          echo "HOME=/root" >> "$GITHUB_ENV"
-          echo "PATH=${PATH}"
-          echo "LD_LIBRARY_PATH=${LD_LIBRARY_PATH}"
+          cp -r /root/.local ${HOME}/.local
+          echo "PATH=${HOME}/.local/bin:$PATH" >> "$GITHUB_ENV"
+          echo "LD_LIBRARY_PATH=${HOME}/.local/lib:${HOME}/.local/lib/cyclus:$LD_LIBRARY_PATH" >> "$GITHUB_ENV"
 
       - name: Build Cycamore
         run: |
-          python install.py -j 2 --build-type=Release --core-version 99999.99999 --clean-build
-          echo "PATH=${HOME}/.local/bin:$PATH" >> "$GITHUB_ENV"
-          echo "LD_LIBRARY_PATH=/root/.local/lib:/root/.local/lib/cyclus:${HOME}/.local/lib:${HOME}/.local/lib/cyclus:$LD_LIBRARY_PATH" >> "$GITHUB_ENV"
+          python install.py -j 2 --cyclus-root ${HOME}/.local --build-type=Release --core-version 99999.99999 --clean-build
+          
 
       - name: Echo home
         run: |
