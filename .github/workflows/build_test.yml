@@ -42,7 +42,7 @@ jobs:
 
       - name: Echo home
         run: |
-          echo "HOME=${HOME}"
+          echo "HOME=/root" >> "$GITHUB_ENV"
           echo "PATH=${PATH}"
           echo "LD_LIBRARY_PATH=${LD_LIBRARY_PATH}"
 
