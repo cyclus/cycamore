@@ -40,9 +40,19 @@ jobs:
       - name: Checkout Cycamore
         uses: actions/checkout@v3
 
+      - name: Echo stuff
+        run: |
+          echo PYTHONPATH=$PYTHONPATH
+          echo LD_LIBRARY_PATH=$LD_LIBRARY_PATH
+
       - name: Build Cycamore
         run: |
           python install.py  --prefix=/root/.local -j 2 --build-type=Release --core-version 99999.99999 --clean-build
+      
+      - name: add site dir to pythonpath
+        run: |
+          echo "PYTHONPATH=`python -m site --user-site`:$PYTHONPATH" >> "$GITHUB_ENV"
+          echo PYTHONPATH=$PYTHONPATH
   
       - name: Cycamore Unit Tests
         run: |
