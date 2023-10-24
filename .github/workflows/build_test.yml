@@ -48,9 +48,8 @@ jobs:
 
       - name: Build Cycamore
         run: |
-          python install.py -j 2 --cyclus-root ${HOME}/.local --build-type=Release --core-version 99999.99999 --clean-build
+          python install.py -j 2 --build-type=Release --core-version 99999.99999 --clean-build
           
-
       - name: Echo home
         run: |
           echo "HOME=${HOME}"
