@@ -5,7 +5,6 @@ import subprocess
 import sys
 from hashlib import sha1
 import numpy as np
-import tables
 from nose.tools import assert_equal
 
 

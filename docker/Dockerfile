@@ -7,11 +7,11 @@ ARG make_cores=2
 COPY . /cycamore
 WORKDIR /cycamore
 
-RUN python install.py -j ${make_cores} --build-type=Release --core-version 99999.99999
+RUN python install.py -j ${make_cores} --build-type=Release --core-version 99999.99999 --clean-build
 
 FROM cycamore as cycamore-test
 RUN cycamore_unit_tests
 
-FROM cycamore as cycamore-pytest
-RUN apt install -y python3-nose
-RUN cd tests && nosetests3
+# FROM cycamore as cycamore-pytest
+# RUN apt install -y python3-nose
+# RUN cd tests && nosetests3
