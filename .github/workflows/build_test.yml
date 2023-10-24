@@ -1,76 +1,55 @@
-name: Build, Test & Publish docker images for future CI and other users
+name: Build/Test for PR and collaborator push
 
 on:
   # allows us to run workflows manually
   workflow_dispatch:
   pull_request:
+    paths-ignore:
+      - '.github/workflows/build_test_publish.yml'
+      - 'docker/**'
+      - 'doc/**'
   push:
-    branches:
-      - docker-build
+    paths-ignore:
+      - '.github/workflows/build_test_publish.yml'
+      - 'docker/**'
+      - 'doc/**'
 
 jobs:
-  build-dependency-and-test-img:
+  build-and-test:
     runs-on: ubuntu-latest
 
     strategy:
       fail-fast: false
       matrix:
         ubuntu_versions : [
+          20.04,
           22.04,
           ]
         pkg_mgr : [
-          apt,
-          conda,
+            apt,
+            conda
         ]
         cyclus_tag: [
-          latest,
-          develop
+          latest
         ]
-        # TODO include main vs dev branches to pull
+    
+    container:
+      image: ghcr.io/cyclus/cyclus_${{ matrix.ubuntu_versions }}_${{ matrix.pkg_mgr }}/cyclus:${{matrix.cyclus_tag}}
 
-    name: Installing Dependencies, Building cyclus and running tests
     steps:
-      - name: default environment
+      - name: Checkout Cycamore
+        uses: actions/checkout@v3
+
+      - name: Build Cycamore
         run: |
-          echo "tag-latest-on-default=false" >> "$GITHUB_ENV"
+          python install.py -j 2 --build-type=Release --core-version 99999.99999 
+          echo "PATH=${HOME}/.local/bin:$PATH" >> "$GITHUB_ENV"
+          echo "LD_LIBRARY_PATH=${HOME}/.local/lib:${HOME}/.local/lib/cyclus:$LD_LIBRARY_PATH" >> "$GITHUB_ENV"
 
-      - name: condition on trigger parameters
-        if: ${{ github.repository_owner == 'cyclus' && github.ref == 'refs/heads/main' }}
+      - name: Cycamore Unit Tests
         run: |
-          echo "tag-latest-on-default=true" >> "$GITHUB_ENV"
+          cycamore_unit_tests
 
-    #   - name: Log in to the Container registry
-    #     uses: docker/login-action@v2
-    #     with:
-    #       registry: ghcr.io
-    #       username: ${{ github.repository_owner }}
-    #       password: ${{ secrets.GITHUB_TOKEN }}
-
-      - name: Checkout repository
-        uses: actions/checkout@v4
-
-      - name: Set up Docker Buildx
-        uses: docker/setup-buildx-action@v3
-
-      - name: Build docker image
-        uses: docker/build-push-action@v5
-        with:
-            file: docker/Dockerfile
-            push: false
-            build-args: |
-              pkg_mgr=${{ matrix.pkg_mgr }}
-              ubuntu_version=${{ matrix.ubuntu_versions }}
-              cyclus_tag=${{ matrix.cyclus_tag }}
-
-
-    #   - name: Installing Dependencies in Docker image
-    #     uses: firehed/multistage-docker-build-action@v1
-    #     with:
-    #       repository: ghcr.io/${{ github.repository_owner }}/cycamore_${{ matrix.ubuntu_versions }}_${{ matrix.pkg_mgr }}
-    #       stages: cycamore
-    #       server-stage: cycamore-test
-    #       quiet: false
-    #       parallel: true
-    #       tag-latest-on-default: ${{ env.tag-latest-on-default }}
-    #       dockerfile: docker/Dockerfile
-    #       build-args: pkg_mgr=${{ matrix.pkg_mgr }} ubuntu_version=${{ matrix.ubuntu_versions }}
+      - name: Cycamore Python Tests
+        run: |
+          cd tests && nosetests3
