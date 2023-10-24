@@ -44,7 +44,7 @@ jobs:
         run: |
           cp -r /root/.local ${HOME}/.local
           echo "PATH=${HOME}/.local/bin:$PATH" >> "$GITHUB_ENV"
-          echo "LD_LIBRARY_PATH=${HOME}/.local/lib:${HOME}/.local/lib/cyclus:$LD_LIBRARY_PATH" >> "$GITHUB_ENV"
+          echo "LD_LIBRARY_PATH=${HOME}/.local/lib:${HOME}/.local/lib/cyclus" >> "$GITHUB_ENV"
 
       - name: Build Cycamore
         run: |
