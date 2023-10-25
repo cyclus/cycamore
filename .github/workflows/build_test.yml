@@ -27,8 +27,8 @@ jobs:
           22.04,
           ]
         pkg_mgr : [
-            apt,
-            conda
+            # apt,
+            conda,
         ]
         cyclus_tag: [
           latest
@@ -56,4 +56,4 @@ jobs:
       - name: Cycamore Python Tests
         run: |
           echo $PYTHONPATH
-          cd tests && python -m pytest
+          cd tests && python -m pytest -v

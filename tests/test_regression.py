@@ -42,7 +42,7 @@ class TestRegression(object):
         cls.outf = str(uuid.uuid4()) + cls.ext
         cls.inf = inf
         if not cls.inf:
-            raise TypeError(("self.inf must be set in derived classes "
+            raise TypeError(("cls.inf must be set in derived classes "
                              "to run regression tests."))
         run_cyclus("cyclus", os.getcwd(), cls.inf, cls.outf)
 
