@@ -5,7 +5,6 @@ import subprocess
 import sys
 from hashlib import sha1
 import numpy as np
-# from nose.tools import assert_equal
 
 
 CYCLUS_HAS_COIN = None
