@@ -43,15 +43,19 @@ jobs:
 
       - name: Echo stuff
         run: |
-          echo PYTHONPATH=$PYTHONPATH
-          echo LD_LIBRARY_PATH=$LD_LIBRARY_PATH
-          python -c "import sys; print(sys.path)"
-          ls `python -m site --user-site`
+          export major=`python -c "import sys; print(sys.version_info.major)"`
+          export minor=`python -c "import sys; print(sys.version_info.minor)"`
+          echo "PYTHONPATH=/root/.local/lib/python${major}.${minor}/site-packages:$PYTHONPATH" >> "$GITHUB_ENV"
 
       - name: Build Cycamore
         run: |
           python install.py  --prefix=/root/.local -j 2 --build-type=Release --core-version 99999.99999 --clean-build
   
+      - name: Echo stuff again
+        run: |
+          echo PYTHONPATH=$PYTHONPATH
+          echo LD_LIBRARY_PATH=$LD_LIBRARY_PATH 
+
       - name: Cycamore Unit Tests
         run: |
           cycamore_unit_tests
