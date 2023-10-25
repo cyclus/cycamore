@@ -27,11 +27,11 @@ jobs:
           22.04,
           ]
         pkg_mgr : [
-            # apt,
+            apt,
             conda,
         ]
         cyclus_tag: [
-          latest
+          latest,
         ]
     
     container:
