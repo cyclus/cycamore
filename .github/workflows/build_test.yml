@@ -53,7 +53,8 @@ jobs:
       - name: add site dir to pythonpath
         run: |
           python_user_site=`python -m site --user-site`
-          echo "PYTHONPATH=${python_user_site}:/root/.local:$PYTHONPATH" >> "$GITHUB_ENV"
+          python -c "import cyclus.lib as cyclib; print(cyclib.__file__)"
+          echo "PYTHONPATH=${python_user_site}:$PYTHONPATH" >> "$GITHUB_ENV"
   
       - name: Cycamore Unit Tests
         run: |
