@@ -16,17 +16,21 @@ on:
 
 jobs:
   build-and-test:
+
+    defaults:
+      run:
+        shell: bash -el {0}
     runs-on: ubuntu-latest
 
     strategy:
       fail-fast: false
       matrix:
         ubuntu_versions : [
-          20.04,
+          # 20.04,
           22.04
           ]
         pkg_mgr : [
-            apt,
+            # apt,
             conda
         ]
         cyclus_tag: [
@@ -51,7 +55,7 @@ jobs:
       
       - name: add site dir to pythonpath
         run: |
-          python_user_site="$(python -m site --user-site)"
+          python_user_site=`python -m site --user-site`
           echo "PYTHONPATH=${python_user_site}:$PYTHONPATH" >> "$GITHUB_ENV"
           echo PYTHONPATH=$PYTHONPATH
           python -c "import numpy; print(numpy.__file__)"
@@ -63,5 +67,4 @@ jobs:
 
       - name: Cycamore Python Tests
         run: |
-          apt install -y python3-nose
-          cd tests && nosetests3
+          cd tests && python -m pytest

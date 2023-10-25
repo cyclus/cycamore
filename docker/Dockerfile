@@ -13,5 +13,4 @@ FROM cycamore as cycamore-test
 RUN cycamore_unit_tests
 
 FROM cycamore as cycamore-pytest
-RUN apt install -y python3-nose
-RUN cd tests && nosetests3
+RUN cd tests && python -m pytest
