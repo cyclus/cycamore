@@ -170,13 +170,13 @@ class _PhysorEnrichment(TestRegression):
 class TestCBCPhysorEnrichment(_PhysorEnrichment):
     @classmethod
     def setup_class(cls):
-        super().setup_class("../input/physor/1_Enrichment_2_Reactor.xml")
+        super(TestCBCPhysorEnrichment, cls).setup_class("../input/physor/1_Enrichment_2_Reactor.xml")
         skip_if_dont_allow_milps()
 
 class TestGreedyPhysorEnrichment(_PhysorEnrichment):
     @classmethod
     def setup_class(cls):
-        super().setup_class("../input/physor/greedy_1_Enrichment_2_Reactor.xml")
+        super(TestGreedyPhysorEnrichment, cls).setup_class("../input/physor/greedy_1_Enrichment_2_Reactor.xml")
 
 class _PhysorSources(TestRegression):
     """This class tests the 2_Sources_3_Reactor.xml file related to the Cyclus
@@ -185,17 +185,16 @@ class _PhysorSources(TestRegression):
     """
 
     @classmethod
-    def setup_class(self, inf):
-        super(_PhysorSources, self).setup_class(inf)
-
+    def setup_class(cls, inf):
+        super(_PhysorSources, cls).setup_class(inf)
         # identify each reactor and supplier by id
-        tbl = self.agent_entry
-        rx_id = self.find_ids(":cycamore:Reactor", tbl)
-        self.r1, self.r2, self.r3 = tuple(rx_id)
-        s_id = self.find_ids(":cycamore:Source", tbl)
-        self.smox = self.transactions[0]["SenderId"]
-        s_id.remove(self.smox)
-        self.suox = s_id[0]
+        tbl = cls.agent_entry
+        rx_id = cls.find_ids(":cycamore:Reactor", tbl)
+        cls.r1, cls.r2, cls.r3 = tuple(rx_id)
+        s_id = cls.find_ids(":cycamore:Source", tbl)
+        cls.smox = cls.transactions[0]["SenderId"]
+        s_id.remove(cls.smox)
+        cls.suox = s_id[0]
 
     def test_rxtr_deployment(self):
         depl_time = {x["AgentId"]: x["EnterTime"] for x in self.agent_entry}
@@ -257,8 +256,8 @@ class TestCBCPhysorSources(_PhysorSources):
 
 class TestGreedyPhysorSources(_PhysorSources):
     @classmethod
-    def setup_class(self):
-        return super().setup_class("../input/physor/greedy_2_Sources_3_Reactors.xml")
+    def setup_class(cls):
+        return super(TestGreedyPhysorSources, cls).setup_class("../input/physor/greedy_2_Sources_3_Reactors.xml")
 
 class TestDynamicCapacitated(TestRegression):
     """Tests dynamic capacity restraints involving changes in the number of
