@@ -41,20 +41,13 @@ jobs:
       - name: Checkout Cycamore
         uses: actions/checkout@v3
 
-      - name: Echo stuff
+      - name: Change Home
         run: |
-          export major=`python -c "import sys; print(sys.version_info.major)"`
-          export minor=`python -c "import sys; print(sys.version_info.minor)"`
-          echo "PYTHONPATH=/root/.local/lib/python${major}.${minor}/site-packages:$PYTHONPATH" >> "$GITHUB_ENV"
+          echo "HOME=/root" >> "$GITHUB_ENV"
 
       - name: Build Cycamore
         run: |
           python install.py  --prefix=/root/.local -j 2 --build-type=Release --core-version 99999.99999 --clean-build
-  
-      - name: Echo stuff again
-        run: |
-          echo PYTHONPATH=$PYTHONPATH
-          echo LD_LIBRARY_PATH=$LD_LIBRARY_PATH 
 
       - name: Cycamore Unit Tests
         run: |
