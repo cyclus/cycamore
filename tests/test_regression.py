@@ -170,8 +170,8 @@ class _PhysorEnrichment(TestRegression):
 class TestCBCPhysorEnrichment(_PhysorEnrichment):
     @classmethod
     def setup_class(cls):
-        super(TestCBCPhysorEnrichment, cls).setup_class("../input/physor/1_Enrichment_2_Reactor.xml")
         skip_if_dont_allow_milps()
+        super(TestCBCPhysorEnrichment, cls).setup_class("../input/physor/1_Enrichment_2_Reactor.xml")
 
 class TestGreedyPhysorEnrichment(_PhysorEnrichment):
     @classmethod
@@ -183,7 +183,6 @@ class _PhysorSources(TestRegression):
     Physor 2014 publication. Reactor deployment and transactions between
     suppliers and reactors are tested.
     """
-
     @classmethod
     def setup_class(cls, inf):
         super(_PhysorSources, cls).setup_class(inf)
@@ -251,8 +250,8 @@ class _PhysorSources(TestRegression):
 class TestCBCPhysorSources(_PhysorSources):
     @classmethod
     def setup_class(cls):
-        super(TestCBCPhysorSources, cls).setup_class("../input/physor/2_Sources_3_Reactors.xml")
         skip_if_dont_allow_milps()
+        super(TestCBCPhysorSources, cls).setup_class("../input/physor/2_Sources_3_Reactors.xml")
 
 class TestGreedyPhysorSources(_PhysorSources):
     @classmethod
@@ -277,8 +276,7 @@ class TestDynamicCapacitated(TestRegression):
     facilities being the constraint. At time step 3, after decommissioning 2
     older sink facilities, the remaining number of sink facilities becomes
     the constraint, resulting in the same transaction amount as in time step 1.
-    """
-        
+    """   
     @classmethod
     def setup_class(cls):
         super(TestDynamicCapacitated, cls).setup_class("./input/dynamic_capacitated.xml")
@@ -428,7 +426,6 @@ class TestGrowth2(TestRegression):
     t=6, 4 1-capacity Source2s are expected to be built by the ManagerInst.
 
     """
-
     @classmethod
     def setup_class(cls):
         super(TestGrowth2, cls).setup_class("../input/growth/deploy_and_manager_insts.xml")
@@ -469,7 +466,6 @@ class TestDeployInst(TestRegression):
     number of these agents are deployed.
 
     """        
-
     @classmethod
     def setup_class(cls):
         super(TestDeployInst, cls).setup_class("../input/deploy_inst.xml")
@@ -499,7 +495,6 @@ class TestDeployInst(TestRegression):
 class _Recycle(TestRegression):
     """This class tests the input/recycle.xml file.
     """       
-        
     @classmethod
     def setup_class(cls, inf):
         super(_Recycle, cls).setup_class(inf)
@@ -593,11 +588,10 @@ class TestGreedyRecycle(_Recycle):
     def setup_class(cls):
         super(TestGreedyRecycle, cls).setup_class("../input/greedy_recycle.xml")
 
-class TestCbcRecycle(_Recycle):
+class TestCBCRecycle(_Recycle):
     """This class tests the input/recycle.xml file.
-    """
-    
+    """ 
     @classmethod
     def setup_class(cls):
-        super(TestCbcRecycle, cls).setup_class("../input/recycle.xml")
         skip_if_dont_allow_milps()
+        super(TestCBCRecycle, cls).setup_class("../input/recycle.xml")
