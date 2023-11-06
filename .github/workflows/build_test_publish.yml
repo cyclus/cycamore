@@ -26,7 +26,6 @@ jobs:
           ]
         pkg_mgr : [
           apt,
-          conda,
         ]
 
     name: Installing Dependencies, Building cyclus and running tests
