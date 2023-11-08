@@ -46,7 +46,7 @@ jobs:
 
       - name: Build Cycamore
         run: |
-          python install.py  --prefix=/root/.local -j 2 --build-type=Release --core-version 99999.99999 --clean-build
+          python install.py  --prefix=/root/.local -j 2 --build-type=Release --core-version 99999.99999
 
       - name: Cycamore Unit Tests
         run: |
