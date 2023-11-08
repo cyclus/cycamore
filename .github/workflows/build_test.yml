@@ -28,6 +28,7 @@ jobs:
         ]
         pkg_mgr : [
           apt,
+          conda,
         ]
         cyclus_tag: [
           latest,
