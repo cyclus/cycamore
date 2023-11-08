@@ -54,5 +54,4 @@ jobs:
 
       - name: Cycamore Python Tests
         run: |
-          echo $PYTHONPATH
           cd tests && python -m pytest
