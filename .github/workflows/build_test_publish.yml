@@ -1,4 +1,4 @@
-name: Build and Test Dependency Images
+name: Build and Publish Cycamore Images
 
 on:
   # allows us to run workflows manually
@@ -23,13 +23,13 @@ jobs:
         ubuntu_versions : [
           20.04,
           22.04,
-          ]
+        ]
         pkg_mgr : [
           apt,
           conda,
         ]
 
-    name: Installing Dependencies, Building cyclus and running tests
+    name: Installing Dependencies, Building Cycamore and Running Tests
     steps:
       - name: default environment
         run: |
@@ -50,7 +50,7 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v3
 
-      - name: Installing Dependencies in Docker image
+      - name: Multi-Stage Build Action
         uses: firehed/multistage-docker-build-action@v1
         with:
           repository: ghcr.io/${{ github.repository_owner }}/cycamore_${{ matrix.ubuntu_versions }}_${{ matrix.pkg_mgr }}
