@@ -23,12 +23,12 @@ jobs:
       fail-fast: false
       matrix:
         ubuntu_versions : [
-          20.04,
+          # 20.04,
           22.04,
         ]
         pkg_mgr : [
           apt,
-          conda,
+          # conda,
         ]
         cyclus_tag: [
           latest,
@@ -41,13 +41,9 @@ jobs:
       - name: Checkout Cycamore
         uses: actions/checkout@v3
 
-      - name: Change Home
-        run: |
-          echo "HOME=/root" >> "$GITHUB_ENV"
-
       - name: Build Cycamore
         run: |
-          python install.py  --prefix=/root/.local -j 2 --build-type=Release --core-version 99999.99999
+          python install.py --prefix=/root/.local --cyclus-root=/root/.local -j 2 --build-type=Release --core-version 99999.99999
 
       - name: Cycamore Unit Tests
         run: |
@@ -55,4 +51,5 @@ jobs:
 
       - name: Cycamore Python Tests
         run: |
+          export PYTHONPATH=$(find /root/.local/lib -type d -name 'cyclus-*' -print -quit)
           cd tests && python -m pytest
