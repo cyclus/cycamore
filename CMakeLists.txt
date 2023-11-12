@@ -102,6 +102,9 @@ IF(NOT CYCLUS_DOC_ONLY)
     MESSAGE("-- Dependency Library Hints (DEPS_LIB_HINTS): ${DEPS_LIB_HINTS}")
     MESSAGE("-- Dependency Include Hints (DEPS_INCLUDE_HINTS): ${DEPS_INCLUDE_HINTS}")
 
+    # Search pkg-config utility first
+    FIND_PACKAGE(PkgConfig REQUIRED)
+
     # Find cyclus
     FIND_PACKAGE(Cyclus REQUIRED)
     SET(
@@ -115,15 +118,13 @@ IF(NOT CYCLUS_DOC_ONLY)
     INCLUDE(UseCyclus)
 
     # Find LibXML++ and dependencies
-    FIND_PACKAGE(LibXML++)
-    IF(NOT LibXML++_LIBRARIES)
-        FIND_LIBRARY(LibXML++ REQUIRED ${DEPS_HINTS})
-    ENDIF()
-    SET(CYCAMORE_INCLUDE_DIRS ${CYCAMORE_INCLUDE_DIRS} ${LibXML++_INCLUDE_DIR} ${Glibmm_INCLUDE_DIRS} ${LibXML++Config_INCLUDE_DIR})
-    SET(LIBS ${LIBS} ${LibXML++_LIBRARIES})
-    MESSAGE("-- LIBS: ${LIBS}")
-
-    MESSAGE("-- LD_LIBRARY_PATH: $ENV{LD_LIBRARY_PATH}")
+    pkg_check_modules(LIBXMLXX IMPORTED_TARGET libxml++-4.0)
+    IF ( NOT LIBXMLXX_LIBRARIES )
+       pkg_check_modules(LIBXMLXX REQUIRED IMPORTED_TARGET libxml++-2.6)
+    ENDIF ( NOT LIBXMLXX_LIBRARIES )
+    SET(LIBS ${LIBS} ${LIBXMLXX_LIBRARIES})
+    message("-- LibXML++ Include Dir: ${LIBXMLXX_INCLUDE_DIRS}")
+    message("-- LibXML++ Librarires: ${LIBXMLXX_LIBRARIES}")
 
     # Include the boost header files and the program_options library
     # Please be sure to use Boost rather than BOOST.
