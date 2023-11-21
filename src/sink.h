@@ -154,6 +154,44 @@ class Sink
   #pragma cyclus var {'capacity': 'max_inv_size'}
   cyclus::toolkit::ResBuf<cyclus::Resource> inventory;
 
+  /// random status (size of request)
+  #pragma cyclus var {"default": "None", \
+                      "tooltip": "type of random behavior when setting the " \
+                      "size of the request", \
+                      "uitype": "combobox", \
+                      "uilabel": "Random Size", \
+                      "categorical": ["None", "UniformReal", "UniformInt", "NormalReal", "NormalInt"], \
+                      "doc": "type of random behavior to use. Default None, " \
+                      "other options are 'UniformReal', 'UniformInt', " \
+                      "'NormalReal', and 'NormalInt'"}
+  std::string random_size;
+
+  // random size mean (as a fraction of available space)
+  #pragma cyclus var {"default": 1.0, \
+                      "tooltip": "fraction of available space to determine the mean", \
+                      "uilabel": "Random Size Mean", \
+                      "uitype": "range", \
+                      "range": [0.0, 1.0], \
+                      "doc": "When a normal distribution is used to determine the " \
+                             "size of the request, this is the fraction of available " \
+                             "space to use as the mean. Default 1.0, must be between " \
+                             "0.0 and 1.0"}
+  double random_size_mean;
+
+  // random size std dev (as a fraction of available space)
+  #pragma cyclus var {"default": 0.1, \
+                      "tooltip": "fraction of available space to determine the std dev", \
+                      "uilabel": "Random Size Std Dev", \
+                      "uitype": "range", \
+                      "range": [0.0, 1e299], \
+                      "doc": "When a normal distribution is used to determine the " \
+                             "size of the request, this is the fraction of available " \
+                             "space to use as the standard deviation. Default 0.1"}
+  double random_size_stddev;
+
+
+  // random status (frequencing/timing of request)
+
   #pragma cyclus var { \
     "default": 0.0, \
     "uilabel": "Geographical latitude in degrees as a double", \

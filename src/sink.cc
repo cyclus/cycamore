@@ -41,6 +41,7 @@ Sink::~Sink() {}
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 void Sink::EnterNotify() {
   cyclus::Facility::EnterNotify();
+  LOG(cyclus::LEV_INFO4, "SnkFac") << " using random behavior " << random_size;
 
   if (in_commod_prefs.size() == 0) {
     for (int i = 0; i < in_commods.size(); ++i) {
@@ -164,9 +165,36 @@ void Sink::Tick() {
   using std::vector;
   LOG(cyclus::LEV_INFO3, "SnkFac") << prototype() << " is ticking {";
 
-  double requestAmt = RequestAmt();
+  double amt = RequestAmt();
+  double requestAmt = 0;
+
+  LOG(cyclus::LEV_INFO3, "SnkFac") << prototype() << " has default request amount " << amt;
+
   // inform the simulation about what the sink facility will be requesting
-  if (requestAmt > cyclus::eps()) {
+  if (amt > cyclus::eps()) {
+    if (random_size == "None") {
+      requestAmt = amt;
+    }
+    else if (random_size == "UniformInt") {
+      requestAmt = context()->random_uniform_int(0, amt);
+    }
+    else if (random_size == "UniformReal") {
+      requestAmt = context()->random_uniform_real(0, amt);
+    }
+    else if (random_size == "NormalReal") {
+      requestAmt = context()->random_normal_real(amt * random_size_mean,
+      amt * random_size_stddev, 0, amt);
+    }
+    else if (random_size == "NormalInt") {
+      requestAmt = context()->random_normal_int(amt * random_size_mean,
+      amt * random_size_stddev, 0, amt);
+    }
+    else {
+      requestAmt = amt;
+    }
+    LOG(cyclus::LEV_INFO4, "SnkFac") << prototype()
+                                       << " has request amount " << requestAmt
+                                       << " kg of " << in_commods[0] << ".";
     for (vector<string>::iterator commod = in_commods.begin();
          commod != in_commods.end();
          commod++) {
