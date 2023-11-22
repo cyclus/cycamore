@@ -233,8 +233,8 @@ void Sink::SetRequestAmt() {
   }
   else if (random_size == "NormalReal") {
     requestAmt =  context()->random_normal_real(amt * random_size_mean,
-                                         amt * random_size_stddev, 0, 
-                                         amt);
+                                                amt * random_size_stddev, 
+                                                0, amt);
   }
   else {
     requestAmt =  amt;
