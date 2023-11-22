@@ -69,6 +69,9 @@ class Sink
       const std::vector< std::pair<cyclus::Trade<cyclus::Product>,
       cyclus::Product::Ptr> >& responses);
 
+  /// @brief SinkFacilities update request amount using random behavior
+  virtual void SetRequestAmt();
+
   ///  add a commodity to the set of input commodities
   ///  @param name the commodity name
   inline void AddCommodity(std::string name) { in_commods.push_back(name); }
@@ -87,7 +90,7 @@ class Sink
   inline double InventorySize() const { return inventory.quantity(); }
 
   /// determines the amount to request
-  inline double RequestAmt() const {
+  inline double SpaceAvailable() const {
     return std::min(capacity, std::max(0.0, inventory.space()));
   }
 
@@ -107,6 +110,7 @@ class Sink
       input_commodity_preferences() const { return in_commod_prefs; }
 
  private:
+  double requestAmt;
   /// all facilities must have at least one input commodity
   #pragma cyclus var {"tooltip": "input commodities", \
                       "doc": "commodities that the sink facility accepts", \

@@ -53,6 +53,10 @@ void Sink::EnterNotify() {
        << " values, expected " << in_commods.size();
     throw cyclus::ValueError(ss.str());
   }
+  /// Create first requestAmt. Only used in testing, as a simulation will
+  /// overwrite this on Tick()
+  SetRequestAmt();
+
   RecordPosition();
 }
 
@@ -86,17 +90,21 @@ Sink::GetMatlRequests() {
 
   std::set<RequestPortfolio<Material>::Ptr> ports;
   RequestPortfolio<Material>::Ptr port(new RequestPortfolio<Material>());
-  double amt = RequestAmt();
   Material::Ptr mat;
 
-  if (recipe_name.empty()) {
-    mat = cyclus::NewBlankMaterial(amt);
-  } else {
-    Composition::Ptr rec = this->context()->GetRecipe(recipe_name);
-    mat = cyclus::Material::CreateUntracked(amt, rec);
+  /// for testing
+  if (requestAmt > SpaceAvailable()) {
+    SetRequestAmt();
   }
 
-  if (amt > cyclus::eps()) {
+  if (recipe_name.empty()) {
+    mat = cyclus::NewBlankMaterial(requestAmt);
+  } else {
+    Composition::Ptr rec = this->context()->GetRecipe(recipe_name);
+    mat = cyclus::Material::CreateUntracked(requestAmt, rec);
+  }
+
+  if (requestAmt > cyclus::eps()) {  
     std::vector<Request<Material>*> mutuals;
     for (int i = 0; i < in_commods.size(); i++) {
       mutuals.push_back(port->AddRequest(mat, this, in_commods[i], in_commod_prefs[i]));
@@ -119,16 +127,15 @@ Sink::GetGenRsrcRequests() {
   std::set<RequestPortfolio<Product>::Ptr> ports;
   RequestPortfolio<Product>::Ptr
       port(new RequestPortfolio<Product>());
-  double amt = RequestAmt();
 
-  if (amt > cyclus::eps()) {
-    CapacityConstraint<Product> cc(amt);
+  if (requestAmt > cyclus::eps()) {
+    CapacityConstraint<Product> cc(requestAmt);
     port->AddConstraint(cc);
 
     std::vector<std::string>::const_iterator it;
     for (it = in_commods.begin(); it != in_commods.end(); ++it) {
       std::string quality = "";  // not clear what this should be..
-      Product::Ptr rsrc = Product::CreateUntracked(amt, quality);
+      Product::Ptr rsrc = Product::CreateUntracked(requestAmt, quality);
       port->AddRequest(rsrc, this, *it);
     }
 
@@ -165,33 +172,12 @@ void Sink::Tick() {
   using std::vector;
   LOG(cyclus::LEV_INFO3, "SnkFac") << prototype() << " is ticking {";
 
-  double amt = RequestAmt();
-  double requestAmt = 0;
+  SetRequestAmt();
 
-  LOG(cyclus::LEV_INFO3, "SnkFac") << prototype() << " has default request amount " << amt;
+  LOG(cyclus::LEV_INFO3, "SnkFac") << prototype() << " has default request amount " << requestAmt;
 
   // inform the simulation about what the sink facility will be requesting
-  if (amt > cyclus::eps()) {
-    if (random_size == "None") {
-      requestAmt = amt;
-    }
-    else if (random_size == "UniformInt") {
-      requestAmt = context()->random_uniform_int(0, amt);
-    }
-    else if (random_size == "UniformReal") {
-      requestAmt = context()->random_uniform_real(0, amt);
-    }
-    else if (random_size == "NormalReal") {
-      requestAmt = context()->random_normal_real(amt * random_size_mean,
-      amt * random_size_stddev, 0, amt);
-    }
-    else if (random_size == "NormalInt") {
-      requestAmt = context()->random_normal_int(amt * random_size_mean,
-      amt * random_size_stddev, 0, amt);
-    }
-    else {
-      requestAmt = amt;
-    }
+  if (requestAmt > cyclus::eps()) {
     LOG(cyclus::LEV_INFO4, "SnkFac") << prototype()
                                        << " has request amount " << requestAmt
                                        << " kg of " << in_commods[0] << ".";
@@ -231,6 +217,29 @@ void Sink::RecordPosition() {
       ->AddVal("Latitude", latitude)
       ->AddVal("Longitude", longitude)
       ->Record();
+}
+
+void Sink::SetRequestAmt() {
+  double amt = SpaceAvailable();
+  if (amt < cyclus::eps()) {
+    requestAmt = 0;
+  }
+
+  if (random_size == "None") {
+    requestAmt =  amt;
+  }
+  else if (random_size == "UniformReal") {
+    requestAmt =  context()->random_uniform_real(0, amt);
+  }
+  else if (random_size == "NormalReal") {
+    requestAmt =  context()->random_normal_real(amt * random_size_mean,
+                                         amt * random_size_stddev, 0, 
+                                         amt);
+  }
+  else {
+    requestAmt =  amt;
+  }
+  return;
 }
 
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
