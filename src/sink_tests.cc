@@ -45,7 +45,7 @@ TEST_F(SinkTest, InitialState) {
   EXPECT_DOUBLE_EQ(0.0, src_facility->InventorySize());
   EXPECT_DOUBLE_EQ(capacity_, src_facility->Capacity());
   EXPECT_DOUBLE_EQ(inv_, src_facility->MaxInventorySize());
-  EXPECT_DOUBLE_EQ(capacity_, src_facility->RequestAmt());
+  EXPECT_DOUBLE_EQ(capacity_, src_facility->SpaceAvailable());
   EXPECT_DOUBLE_EQ(0.0, src_facility->InventorySize());
   std::string arr[] = {commod1_, commod2_};
   std::vector<std::string> vexp (arr, arr + sizeof(arr) / sizeof(arr[0]) );
@@ -66,7 +66,7 @@ TEST_F(SinkTest, Clone) {
   EXPECT_DOUBLE_EQ(0.0, cloned_fac->InventorySize());
   EXPECT_DOUBLE_EQ(capacity_, cloned_fac->Capacity());
   EXPECT_DOUBLE_EQ(inv_, cloned_fac->MaxInventorySize());
-  EXPECT_DOUBLE_EQ(capacity_, cloned_fac->RequestAmt());
+  EXPECT_DOUBLE_EQ(capacity_, cloned_fac->SpaceAvailable());
   std::string arr[] = {commod1_, commod2_};
   std::vector<std::string> vexp (arr, arr + sizeof(arr) / sizeof(arr[0]) );
   EXPECT_EQ(vexp, cloned_fac->input_commodities());
@@ -104,7 +104,7 @@ TEST_F(SinkTest, DISABLED_XMLInit) {
   EXPECT_EQ(vexp, fac.input_commodities());
   EXPECT_DOUBLE_EQ(capacity_, fac.Capacity());
   EXPECT_DOUBLE_EQ(inv_, fac.MaxInventorySize());
-  EXPECT_DOUBLE_EQ(capacity_, fac.RequestAmt());
+  EXPECT_DOUBLE_EQ(capacity_, fac.SpaceAvailable());
   EXPECT_DOUBLE_EQ(0.0, fac.InventorySize());
 }
 
@@ -340,6 +340,74 @@ TEST_F(SinkTest, PositionInitialize2) {
   EXPECT_EQ(qr.GetVal<double>("Longitude"), 35.0);
   EXPECT_EQ(qr.GetVal<double>("Latitude"), 50.0);
 
+}
+
+TEST_F(SinkTest, RandomUniform) {
+  using cyclus::QueryResult;
+  using cyclus::Cond;
+
+  std::string config =
+    "   <in_commods>"
+    "     <val>commods_1</val>"
+    "   </in_commods>"
+    "   <capacity>10</capacity>"
+    "   <random_size>UniformReal</random_size> ";
+
+  int simdur = 1;
+  cyclus::MockSim sim(cyclus::AgentSpec
+          (":cycamore:Sink"), config, simdur);
+  sim.AddSource("commods_1").capacity(10).Finalize();
+  int id = sim.Run();
+
+  QueryResult qr = sim.db().Query("Resources", NULL);
+  EXPECT_EQ(qr.rows.size(), 1);
+  EXPECT_NEAR(qr.GetVal<double>("Quantity"), 9.41273, 0.0001);
+}
+
+TEST_F(SinkTest, RandomNormal) {
+  using cyclus::QueryResult;
+  using cyclus::Cond;
+
+  std::string config =
+    "   <in_commods>"
+    "     <val>commods_1</val>"
+    "   </in_commods>"
+    "   <capacity>10</capacity>"
+    "   <random_size>NormalReal</random_size> ";
+
+  int simdur = 1;
+  cyclus::MockSim sim(cyclus::AgentSpec
+          (":cycamore:Sink"), config, simdur);
+  sim.AddSource("commods_1").capacity(10).Finalize();
+  int id = sim.Run();
+
+  QueryResult qr = sim.db().Query("Resources", NULL);
+  EXPECT_EQ(qr.rows.size(), 1);
+  EXPECT_NEAR(qr.GetVal<double>("Quantity"), 9.60929, 0.0001);
+}
+
+TEST_F(SinkTest, RandomNormalWithMeanSttdev) {
+  using cyclus::QueryResult;
+  using cyclus::Cond;
+
+  std::string config =
+    "   <in_commods>"
+    "     <val>commods_1</val>"
+    "   </in_commods>"
+    "   <capacity>10</capacity>"
+    "   <random_size>NormalReal</random_size> "
+    "   <random_size_mean>0.5</random_size_mean> "
+    "   <random_size_stddev>0.2</random_size_stddev> ";
+
+  int simdur = 1;
+  cyclus::MockSim sim(cyclus::AgentSpec
+          (":cycamore:Sink"), config, simdur);
+  sim.AddSource("commods_1").capacity(10).Finalize();
+  int id = sim.Run();
+
+  QueryResult qr = sim.db().Query("Resources", NULL);
+  EXPECT_EQ(qr.rows.size(), 1);
+  EXPECT_NEAR(qr.GetVal<double>("Quantity"), 1.52979, 0.0001);
 }
 
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
