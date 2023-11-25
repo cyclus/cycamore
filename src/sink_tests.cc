@@ -351,7 +351,7 @@ TEST_F(SinkTest, RandomUniform) {
     "     <val>commods_1</val>"
     "   </in_commods>"
     "   <capacity>10</capacity>"
-    "   <random_size>UniformReal</random_size> ";
+    "   <random_size_type>UniformReal</random_size_type> ";
 
   int simdur = 1;
   cyclus::MockSim sim(cyclus::AgentSpec
@@ -373,7 +373,7 @@ TEST_F(SinkTest, RandomNormal) {
     "     <val>commods_1</val>"
     "   </in_commods>"
     "   <capacity>10</capacity>"
-    "   <random_size>NormalReal</random_size> ";
+    "   <random_size_type>NormalReal</random_size_type> ";
 
   int simdur = 1;
   cyclus::MockSim sim(cyclus::AgentSpec
@@ -395,7 +395,7 @@ TEST_F(SinkTest, RandomNormalWithMeanSttdev) {
     "     <val>commods_1</val>"
     "   </in_commods>"
     "   <capacity>10</capacity>"
-    "   <random_size>NormalReal</random_size> "
+    "   <random_size_type>NormalReal</random_size_type> "
     "   <random_size_mean>0.5</random_size_mean> "
     "   <random_size_stddev>0.2</random_size_stddev> ";
 

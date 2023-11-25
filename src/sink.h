@@ -168,7 +168,7 @@ class Sink
                       "doc": "type of random behavior to use. Default None, " \
                       "other options are 'UniformReal', 'UniformInt', " \
                       "'NormalReal', and 'NormalInt'"}
-  std::string random_size;
+  std::string random_size_type;
 
   // random size mean (as a fraction of available space)
   #pragma cyclus var {"default": 1.0, \

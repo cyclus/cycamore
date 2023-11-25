@@ -41,7 +41,7 @@ Sink::~Sink() {}
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 void Sink::EnterNotify() {
   cyclus::Facility::EnterNotify();
-  LOG(cyclus::LEV_INFO4, "SnkFac") << " using random behavior " << random_size;
+  LOG(cyclus::LEV_INFO4, "SnkFac") << " using random behavior " << random_size_type;
 
   if (in_commod_prefs.size() == 0) {
     for (int i = 0; i < in_commods.size(); ++i) {
@@ -225,13 +225,13 @@ void Sink::SetRequestAmt() {
     requestAmt = 0;
   }
 
-  if (random_size == "None") {
+  if (random_size_type == "None") {
     requestAmt =  amt;
   }
-  else if (random_size == "UniformReal") {
+  else if (random_size_type == "UniformReal") {
     requestAmt =  context()->random_uniform_real(0, amt);
   }
-  else if (random_size == "NormalReal") {
+  else if (random_size_type == "NormalReal") {
     requestAmt =  context()->random_normal_real(amt * random_size_mean,
                                                 amt * random_size_stddev, 
                                                 0, amt);
