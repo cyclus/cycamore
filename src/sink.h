@@ -175,11 +175,13 @@ class Sink
                       "tooltip": "fraction of available space to determine the mean", \
                       "uilabel": "Random Size Mean", \
                       "uitype": "range", \
-                      "range": [0.0, 1.0], \
+                      "range": [0.0, 1e299], \
                       "doc": "When a normal distribution is used to determine the " \
                              "size of the request, this is the fraction of available " \
-                             "space to use as the mean. Default 1.0, must be between " \
-                             "0.0 and 1.0"}
+                             "space to use as the mean. Default 1.0. Note " \
+                             "that values significantly above 1 without a " \
+                             "correspondingly large std dev may result in " \
+                             "inefficient use of the random number generator."}
   double random_size_mean;
 
   // random size std dev (as a fraction of available space)
