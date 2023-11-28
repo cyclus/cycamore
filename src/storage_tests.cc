@@ -23,6 +23,9 @@ void StorageTest::InitParameters(){
   max_inv_size = 200;
   throughput = 20;
   discrete_handling = 0;
+  // Active period longer than any of the residence time related-tests needs
+  active_buying = 20;
+  dormant_buying = 1;
 
   cyclus::CompMap v;
   v[922350000] = 1;
@@ -39,6 +42,8 @@ void StorageTest::SetUpStorage(){
   src_facility_->max_inv_size = max_inv_size;
   src_facility_->throughput = throughput;
   src_facility_->discrete_handling = discrete_handling;
+  src_facility_->active_buying = active_buying;
+  src_facility_->dormant_buying = dormant_buying;
 }
 
 void StorageTest::TestInitState(Storage* fac){
@@ -454,6 +459,58 @@ TEST_F(StorageTest, MultipleCommods){
   int n_trans2 = qr2.rows.size();
   EXPECT_EQ(1, n_trans2) << "expected 1 transactions, got " << n_trans;
 }
+
+// Should get one transaction in a 2 step simulation when agent is active for
+// one step and dormant for one step
+TEST_F(StorageTest, ActiveDormant){
+  std::string config =
+    "   <in_commods> <val>spent_fuel</val> </in_commods> "
+    "   <out_commods> <val>dry_spent</val> </out_commods> "
+    "   <throughput>1</throughput>"
+    "   <active_buying>1</active_buying>"
+    "   <dormant_buying>1</dormant_buying>";
+
+  int simdur = 2;
+
+  cyclus::MockSim sim(cyclus::AgentSpec (":cycamore:Storage"), config, simdur);
+
+  sim.AddSource("spent_fuel").capacity(5).Finalize();
+  sim.AddSink("dry_spent").Finalize();
+
+  int id = sim.Run();
+
+  // return all transactions where our storage facility is the acceptor
+  std::vector<cyclus::Cond> conds;
+  conds.push_back(cyclus::Cond("Commodity", "==", std::string("spent_fuel")));
+  cyclus::QueryResult qr = sim.db().Query("Transactions", &conds);
+  int n_trans = qr.rows.size();
+  EXPECT_EQ(1, n_trans) << "expected 1 transactions, got " << n_trans;
+ }
+
+  // Should get two transactions in a 2 step simulation when there is no 
+  // dormant period, i.e. agent is always active
+TEST_F(StorageTest, NoDormant){
+  std::string config =
+    "   <in_commods> <val>spent_fuel</val> </in_commods> "
+    "   <out_commods> <val>dry_spent</val> </out_commods> "
+    "   <throughput>1</throughput>"
+    "   <active_buying>1</active_buying>";
+
+  int simdur = 2;
+
+  cyclus::MockSim sim(cyclus::AgentSpec (":cycamore:Storage"), config, simdur);
+
+  sim.AddSource("spent_fuel").capacity(5).Finalize();
+  sim.AddSink("dry_spent").Finalize();
+
+  int id = sim.Run();
+
+  std::vector<cyclus::Cond> conds;
+  conds.push_back(cyclus::Cond("Commodity", "==", std::string("spent_fuel")));
+  cyclus::QueryResult qr = sim.db().Query("Transactions", &conds);
+  int n_trans = qr.rows.size();
+  EXPECT_EQ(2, n_trans) << "expected 2 transactions, got " << n_trans;
+ }
 
 TEST_F(StorageTest, PositionInitialize){
   // Verify Storage behavior

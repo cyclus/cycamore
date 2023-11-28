@@ -35,6 +35,10 @@ namespace cycamore {
 /// sell_quantity restricts selling to only integer multiples of this value
 /// max_inv_size is the maximum capacity of the inventory storage
 /// throughput is the maximum processing capacity per timestep
+/// active_buying is the number of time steps in a row where the agent 
+/// exhibits default behavior
+/// dormant_buying is the number of time steps in a row where the agent is 
+/// not requesting any new material
 ///
 /// @section detailed Detailed Behavior
 ///
@@ -201,6 +205,29 @@ class Storage
                             "Otherwise, batches may be divided during processing. Default to false (continuous))",\
                       "uilabel":"Batch Handling"}
   bool discrete_handling;
+
+  #pragma cyclus var {"default": 1,\
+                      "tooltip": "Length of the active buying "\
+                        "period",\
+                      "doc":"During the length of the active buying "\
+                        "period, agent exhibits regular behavior. "\
+                        "If paired with dormant buying period, "\
+                        "alternates between buying and not buying, "\
+                        "regardless if space is available",\
+                      "uilabel":"Active Buying Period"}
+  int active_buying;
+
+  #pragma cyclus var {"default": 0,\
+                      "tooltip": "Length of the dormant buying "\
+                        "period",\
+                      "doc":"During the length of the dormant buying "\
+                        "period, agent will not request any new "\
+                        "material from the DRE. Paired with active "\
+                        "buying period, alternates between buying "\
+                        "and not buying, regardless if space is "\
+                        "available",\
+                      "uilabel":"Dormant (No Buying) Period"}
+  int dormant_buying;
 
   #pragma cyclus var {"tooltip":"Incoming material buffer"}
   cyclus::toolkit::ResBuf<cyclus::Material> inventory;

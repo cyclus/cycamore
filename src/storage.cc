@@ -49,7 +49,7 @@ void Storage::InitFrom(cyclus::QueryableBackend* b) {
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 void Storage::EnterNotify() {
   cyclus::Facility::EnterNotify();
-  buy_policy.Init(this, &inventory, std::string("inventory"));
+  buy_policy.Init(this, &inventory, std::string("inventory"), throughput, active_buying, dormant_buying);
 
   // dummy comp, use in_recipe if provided
   cyclus::CompMap v;
@@ -158,8 +158,13 @@ void Storage::Tock() {
   std::vector<double>::iterator result;
   result = std::max_element(in_commod_prefs.begin(), in_commod_prefs.end());
   int maxindx = std::distance(in_commod_prefs.begin(), result);
-  cyclus::toolkit::RecordTimeSeries<double>("demand"+in_commods[maxindx], this,
-                                            current_capacity());
+  double demand = 0;
+  if (manager()->context()->time() % (active_buying + dormant_buying) < active_buying) {
+    demand = current_capacity();
+  }
+  
+  cyclus::toolkit::RecordTimeSeries<double>("demand"+in_commods[maxindx], this, demand);
+  
   // Multiple commodity tracking is not supported, user can only
   // provide one value for out_commods, despite it being a vector of strings.
   cyclus::toolkit::RecordTimeSeries<double>("supply"+out_commods[0], this,
