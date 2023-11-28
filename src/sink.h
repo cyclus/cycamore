@@ -69,6 +69,9 @@ class Sink
       const std::vector< std::pair<cyclus::Trade<cyclus::Product>,
       cyclus::Product::Ptr> >& responses);
 
+  /// @brief SinkFacilities update request amount using random behavior
+  virtual void SetRequestAmt();
+
   ///  add a commodity to the set of input commodities
   ///  @param name the commodity name
   inline void AddCommodity(std::string name) { in_commods.push_back(name); }
@@ -87,7 +90,7 @@ class Sink
   inline double InventorySize() const { return inventory.quantity(); }
 
   /// determines the amount to request
-  inline double RequestAmt() const {
+  inline double SpaceAvailable() const {
     return std::min(capacity, std::max(0.0, inventory.space()));
   }
 
@@ -107,6 +110,7 @@ class Sink
       input_commodity_preferences() const { return in_commod_prefs; }
 
  private:
+  double requestAmt;
   /// all facilities must have at least one input commodity
   #pragma cyclus var {"tooltip": "input commodities", \
                       "doc": "commodities that the sink facility accepts", \
@@ -153,6 +157,46 @@ class Sink
   /// this facility holds material in storage.
   #pragma cyclus var {'capacity': 'max_inv_size'}
   cyclus::toolkit::ResBuf<cyclus::Resource> inventory;
+
+  /// random status (size of request)
+  #pragma cyclus var {"default": "None", \
+                      "tooltip": "type of random behavior when setting the " \
+                      "size of the request", \
+                      "uitype": "combobox", \
+                      "uilabel": "Random Size", \
+                      "categorical": ["None", "UniformReal", "UniformInt", "NormalReal", "NormalInt"], \
+                      "doc": "type of random behavior to use. Default None, " \
+                      "other options are 'UniformReal', 'UniformInt', " \
+                      "'NormalReal', and 'NormalInt'"}
+  std::string random_size_type;
+
+  // random size mean (as a fraction of available space)
+  #pragma cyclus var {"default": 1.0, \
+                      "tooltip": "fraction of available space to determine the mean", \
+                      "uilabel": "Random Size Mean", \
+                      "uitype": "range", \
+                      "range": [0.0, 1e299], \
+                      "doc": "When a normal distribution is used to determine the " \
+                             "size of the request, this is the fraction of available " \
+                             "space to use as the mean. Default 1.0. Note " \
+                             "that values significantly above 1 without a " \
+                             "correspondingly large std dev may result in " \
+                             "inefficient use of the random number generator."}
+  double random_size_mean;
+
+  // random size std dev (as a fraction of available space)
+  #pragma cyclus var {"default": 0.1, \
+                      "tooltip": "fraction of available space to determine the std dev", \
+                      "uilabel": "Random Size Std Dev", \
+                      "uitype": "range", \
+                      "range": [0.0, 1e299], \
+                      "doc": "When a normal distribution is used to determine the " \
+                             "size of the request, this is the fraction of available " \
+                             "space to use as the standard deviation. Default 0.1"}
+  double random_size_stddev;
+
+
+  // random status (frequencing/timing of request)
 
   #pragma cyclus var { \
     "default": 0.0, \
