@@ -1,8 +1,18 @@
 =================
-cyclus Change Log
+cycamore Change Log
 =================
 
 .. current developments
+**Added:**
+
+* GitHub workflows for building/testing on a PR and push to `main` (#549)
+* Add functionality for random behavior on the size of a sink (#550)
+* GitHub workflow to check that the CHANGELOG has been updated (#562) 
+
+**Changed:** 
+
+* Updated build procedure to use newer versions of packages in 2023 (#549)
+
 
 v1.5.5
 ====================
