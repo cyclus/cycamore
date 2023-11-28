@@ -160,7 +160,7 @@ void Storage::Tock() {
   int maxindx = std::distance(in_commod_prefs.begin(), result);
   double demand = 0;
   if (manager()->context()->time() % (active_buying + dormant_buying) < active_buying) {
-    demand = current_capacity());
+    demand = current_capacity();
   }
   
   cyclus::toolkit::RecordTimeSeries<double>("demand"+in_commods[maxindx], this, demand);
