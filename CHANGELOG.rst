@@ -7,7 +7,7 @@ cycamore Change Log
 
 * GitHub workflows for building/testing on a PR and push to `main` (#549)
 * Add functionality for random behavior on the size of a sink (#550)
-* GitHub workflow to check that the CHANGELOG has been updated (#551) 
+* GitHub workflow to check that the CHANGELOG has been updated (#562) 
 
 **Changed:** 
 
