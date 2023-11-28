@@ -158,14 +158,12 @@ void Storage::Tock() {
   std::vector<double>::iterator result;
   result = std::max_element(in_commod_prefs.begin(), in_commod_prefs.end());
   int maxindx = std::distance(in_commod_prefs.begin(), result);
-  
+  double demand = 0;
   if (manager()->context()->time() % (active_buying + dormant_buying) < active_buying) {
-    cyclus::toolkit::RecordTimeSeries<double>("demand"+in_commods[maxindx], this,
-                                            current_capacity());
+    demand = current_capacity());
   }
-  else {
-    cyclus::toolkit::RecordTimeSeries<double>("demand"+in_commods[maxindx], this, 0);
-    }
+  
+  cyclus::toolkit::RecordTimeSeries<double>("demand"+in_commods[maxindx], this, demand);
   
   // Multiple commodity tracking is not supported, user can only
   // provide one value for out_commods, despite it being a vector of strings.
