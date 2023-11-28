@@ -218,7 +218,7 @@ class Storage
   int active_buying;
 
   #pragma cyclus var {"default": 0,\
-                      "tooltip": "Length of the active buying "\
+                      "tooltip": "Length of the dormant buying "\
                         "period",\
                       "doc":"During the length of the dormant buying "\
                         "period, agent will not request any new "\
