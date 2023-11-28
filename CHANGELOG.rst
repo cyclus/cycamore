@@ -1,5 +1,5 @@
 =================
-cyclus Change Log
+cycamore Change Log
 =================
 
 .. current developments
