@@ -6,7 +6,7 @@ cycamore Change Log
 **Added:**
 
 * GitHub workflows for building/testing on a PR and push to `main` (#549, #564)
-* Add functionality for random behavior on the size of a sink (#550)
+* Add functionality for random behavior on the size (#550) and frequency (#565) of a sink 
 * GitHub workflow to check that the CHANGELOG has been updated (#562) 
 
 **Changed:** 

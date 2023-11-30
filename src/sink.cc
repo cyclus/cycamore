@@ -58,18 +58,18 @@ void Sink::EnterNotify() {
   SetRequestAmt();
   SetNextBuyTime();
 
-  if (random_frequency_size != "None") {
+  if (random_size_type != "None") {
     LOG(cyclus::LEV_INFO4, "SnkFac") << "Sink " << this->id()
                                      << " is using random behavior "
                                      << random_size_type
                                      << " for determining request size.";
   }
-  if (random_frequency_size != "None") {
+  if (random_frequency_type != "None") {
     LOG(cyclus::LEV_INFO4, "SnkFac") << "Sink " << this->id()
                                      << " is using random behavior "
                                      << random_frequency_type
                                      << " for determining request frequency.";
-
+  }
   RecordPosition();
 }
 
