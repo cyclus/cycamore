@@ -342,7 +342,7 @@ TEST_F(SinkTest, PositionInitialize2) {
 
 }
 
-TEST_F(SinkTest, RandomUniform) {
+TEST_F(SinkTest, RandomUniformSize) {
   using cyclus::QueryResult;
   using cyclus::Cond;
 
@@ -364,7 +364,7 @@ TEST_F(SinkTest, RandomUniform) {
   EXPECT_NEAR(qr.GetVal<double>("Quantity"), 9.41273, 0.0001);
 }
 
-TEST_F(SinkTest, RandomNormal) {
+TEST_F(SinkTest, RandomNormalSize) {
   using cyclus::QueryResult;
   using cyclus::Cond;
 
@@ -386,7 +386,7 @@ TEST_F(SinkTest, RandomNormal) {
   EXPECT_NEAR(qr.GetVal<double>("Quantity"), 9.60929, 0.0001);
 }
 
-TEST_F(SinkTest, RandomNormalWithMeanSttdev) {
+TEST_F(SinkTest, RandomNormalSizeWithMeanSttdev) {
   using cyclus::QueryResult;
   using cyclus::Cond;
 
@@ -410,6 +410,145 @@ TEST_F(SinkTest, RandomNormalWithMeanSttdev) {
   EXPECT_NEAR(qr.GetVal<double>("Quantity"), 1.52979, 0.0001);
 }
 
+TEST_F(SinkTest, RandomUniformFreq) {
+  using cyclus::QueryResult;
+  using cyclus::Cond;
+
+  std::string config =
+    "   <in_commods>"
+    "     <val>commods_1</val>"
+    "   </in_commods>"
+    "   <capacity>10</capacity>"
+    "   <random_frequency_type>UniformInt</random_frequency_type> "
+    "   <random_frequency_min>2</random_frequency_min> "
+    "   <random_frequency_max>4</random_frequency_max> ";
+
+  int simdur = 3;
+  cyclus::MockSim sim(cyclus::AgentSpec
+          (":cycamore:Sink"), config, simdur);
+  sim.AddSource("commods_1").capacity(10).Finalize();
+  int id = sim.Run();
+
+  QueryResult qr = sim.db().Query("Transactions", NULL);
+  EXPECT_EQ(qr.rows.size(), 1);
+  int trans_time = qr.GetVal<int>("Time", 0);
+  EXPECT_EQ(trans_time, 2);
+}
+
+TEST_F(SinkTest, RandomNormalFreq) {
+  using cyclus::QueryResult;
+  using cyclus::Cond;
+
+  std::string config =
+    "   <in_commods>"
+    "     <val>commods_1</val>"
+    "   </in_commods>"
+    "   <capacity>10</capacity>"
+    "   <random_frequency_type>NormalInt</random_frequency_type> ";
+
+  int simdur = 3;
+  cyclus::MockSim sim(cyclus::AgentSpec
+          (":cycamore:Sink"), config, simdur);
+  sim.AddSource("commods_1").capacity(10).Finalize();
+  int id = sim.Run();
+
+  QueryResult qr = sim.db().Query("Transactions", NULL);
+  EXPECT_EQ(qr.rows.size(), 1);
+  int trans_time = qr.GetVal<int>("Time", 0);
+  EXPECT_EQ(trans_time, 2);
+}
+
+TEST_F(SinkTest, RandomNormalFreqWithMeanSttdev) {
+  using cyclus::QueryResult;
+  using cyclus::Cond;
+
+  std::string config =
+    "   <in_commods>"
+    "     <val>commods_1</val>"
+    "   </in_commods>"
+    "   <capacity>10</capacity>"
+    "   <random_frequency_type>NormalInt</random_frequency_type> "
+    "   <random_frequency_mean>2</random_frequency_mean> "
+    "   <random_frequency_stddev>0.2</random_frequency_stddev> ";
+
+  int simdur = 3;
+  cyclus::MockSim sim(cyclus::AgentSpec
+          (":cycamore:Sink"), config, simdur);
+  sim.AddSource("commods_1").capacity(10).Finalize();
+  int id = sim.Run();
+
+  QueryResult qr = sim.db().Query("Transactions", NULL);
+  EXPECT_EQ(qr.rows.size(), 1);
+  int trans_time = qr.GetVal<int>("Time", 0);
+  EXPECT_EQ(trans_time, 2);
+}
+
+// Make sure that multiple random 
+TEST_F(SinkTest, RandomNormalFreqMultipleCycles) {
+  using cyclus::QueryResult;
+  using cyclus::Cond;
+
+  std::string config =
+    "   <in_commods>"
+    "     <val>commods_1</val>"
+    "   </in_commods>"
+    "   <capacity>10</capacity>"
+    "   <random_frequency_type>NormalInt</random_frequency_type> "
+    "   <random_frequency_mean>4</random_frequency_mean> "
+    "   <random_frequency_stddev>1</random_frequency_stddev> ";
+
+  int simdur = 12;
+  cyclus::MockSim sim(cyclus::AgentSpec
+          (":cycamore:Sink"), config, simdur);
+  sim.AddSource("commods_1").capacity(10).Finalize();
+  int id = sim.Run();
+
+  QueryResult qr = sim.db().Query("Transactions", NULL);
+  EXPECT_EQ(3, qr.rows.size());
+  // check multiple cycles execute at the expected time
+  // Buy times should occur at timestep 5, 7, and 10
+  int first_trans_time = qr.GetVal<int>("Time", 0);
+  EXPECT_EQ(5, first_trans_time);
+  int second_trans_time = qr.GetVal<int>("Time", 1);
+  EXPECT_EQ(7, second_trans_time);
+  int third_trans_time = qr.GetVal<int>("Time", 2);
+  EXPECT_EQ(10, third_trans_time);  
+}
+
+// Check that randomness can be implemented in both size of request and
+// request frequency at the same time
+TEST_F(SinkTest, RandomNormalSizeUniformFreq) {
+  using cyclus::QueryResult;
+  using cyclus::Cond;
+
+  std::string config =
+    "   <in_commods>"
+    "     <val>commods_1</val>"
+    "   </in_commods>"
+    "   <capacity>10</capacity>"
+    "   <random_size_type>NormalReal</random_size_type>"
+    "   <random_size_mean>0.8</random_size_mean>"
+    "   <random_size_stddev>0.2</random_size_stddev>"
+    "   <random_frequency_type>UniformInt</random_frequency_type> "
+    "   <random_frequency_min>2</random_frequency_min> "
+    "   <random_frequency_max>4</random_frequency_max> ";
+
+  int simdur = 6;
+  cyclus::MockSim sim(cyclus::AgentSpec
+          (":cycamore:Sink"), config, simdur);
+  sim.AddSource("commods_1").capacity(20).Finalize();
+  int id = sim.Run();
+
+  QueryResult tqr = sim.db().Query("Transactions", NULL);
+  EXPECT_EQ(2, tqr.rows.size());
+  // check multiple cycles execute at the expected time
+  int trans_time = tqr.GetVal<int>("Time", 0);
+  EXPECT_EQ(3, trans_time);
+  int res_id = tqr.GetVal<int>("ResourceId", 0);
+  QueryResult rqr = sim.db().Query("Resources", NULL);
+  double quantity = rqr.GetVal<double>("Quantity", 0);
+  EXPECT_NEAR(6.54143, quantity, 0.00001);
+}
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 cyclus::Agent* SinkConstructor(cyclus::Context* ctx) {
   return new cycamore::Sink(ctx);

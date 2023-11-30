@@ -56,6 +56,7 @@ void Sink::EnterNotify() {
   /// Create first requestAmt. Only used in testing, as a simulation will
   /// overwrite this on Tick()
   SetRequestAmt();
+  SetNextBuyTime();
 
   RecordPosition();
 }
@@ -172,7 +173,23 @@ void Sink::Tick() {
   using std::vector;
   LOG(cyclus::LEV_INFO3, "SnkFac") << prototype() << " is ticking {";
 
-  SetRequestAmt();
+  if (nextBuyTime == -1) {
+    std::cerr << "not randomizing at time " << context()->time() << "\n";
+    SetRequestAmt();
+    std::cerr << "request amt is " << requestAmt << "\n";
+  }
+  else if (nextBuyTime == context()->time()) {
+    std::cerr << "buy time is now, " << context()->time() << "\n";
+    SetRequestAmt();
+    SetNextBuyTime();
+    std::cerr << "request amt is " << requestAmt << "\n";
+    std::cerr << "next buy time is " << nextBuyTime << "\n";
+  }
+  else {
+    std::cerr << "next buy time is " << nextBuyTime << " and current time is " << context()->time() << ". no buying yet\n";
+    requestAmt = 0;
+  }
+  
 
   LOG(cyclus::LEV_INFO3, "SnkFac") << prototype() << " has default request amount " << requestAmt;
 
@@ -238,6 +255,22 @@ void Sink::SetRequestAmt() {
   }
   else {
     requestAmt =  amt;
+  }
+  return;
+}
+
+void Sink::SetNextBuyTime() {
+  if (random_frequency_type == "None") {
+    nextBuyTime = -1;
+  }
+  else if (random_frequency_type == "UniformInt") {
+    nextBuyTime = context()->time() + context()->random_uniform_int(random_frequency_min, random_frequency_max);
+  }
+  else if (random_frequency_type == "NormalInt") {
+    nextBuyTime = context()->time() + context()->random_normal_int(random_frequency_mean, random_frequency_stddev, random_frequency_min, random_frequency_max);
+  }
+  else {
+    nextBuyTime = -1;
   }
   return;
 }
