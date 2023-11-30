@@ -58,6 +58,18 @@ void Sink::EnterNotify() {
   SetRequestAmt();
   SetNextBuyTime();
 
+  if (random_frequency_size != "None") {
+    LOG(cyclus::LEV_INFO4, "SnkFac") << "Sink " << this->id()
+                                     << " is using random behavior "
+                                     << random_size_type
+                                     << " for determining request size.";
+  }
+  if (random_frequency_size != "None") {
+    LOG(cyclus::LEV_INFO4, "SnkFac") << "Sink " << this->id()
+                                     << " is using random behavior "
+                                     << random_frequency_type
+                                     << " for determining request frequency.";
+
   RecordPosition();
 }
 
@@ -171,37 +183,32 @@ void Sink::AcceptGenRsrcTrades(
 void Sink::Tick() {
   using std::string;
   using std::vector;
-  LOG(cyclus::LEV_INFO3, "SnkFac") << prototype() << " is ticking {";
+  LOG(cyclus::LEV_INFO3, "SnkFac") << "Sink " << this->id() << " is ticking {";
 
   if (nextBuyTime == -1) {
-    std::cerr << "not randomizing at time " << context()->time() << "\n";
     SetRequestAmt();
-    std::cerr << "request amt is " << requestAmt << "\n";
   }
   else if (nextBuyTime == context()->time()) {
-    std::cerr << "buy time is now, " << context()->time() << "\n";
     SetRequestAmt();
     SetNextBuyTime();
-    std::cerr << "request amt is " << requestAmt << "\n";
-    std::cerr << "next buy time is " << nextBuyTime << "\n";
+
+    LOG(cyclus::LEV_INFO4, "SnkFac") << "Sink " << this->id() 
+                                     << " has reached buying time. The next buy time will be time step " << nextBuyTime;
   }
   else {
-    std::cerr << "next buy time is " << nextBuyTime << " and current time is " << context()->time() << ". no buying yet\n";
     requestAmt = 0;
   }
-  
-
-  LOG(cyclus::LEV_INFO3, "SnkFac") << prototype() << " has default request amount " << requestAmt;
 
   // inform the simulation about what the sink facility will be requesting
   if (requestAmt > cyclus::eps()) {
-    LOG(cyclus::LEV_INFO4, "SnkFac") << prototype()
-                                       << " has request amount " << requestAmt
-                                       << " kg of " << in_commods[0] << ".";
+    LOG(cyclus::LEV_INFO4, "SnkFac") << "Sink " << this->id()
+                                     << " has request amount " << requestAmt
+                                     << " kg of " << in_commods[0] << ".";
     for (vector<string>::iterator commod = in_commods.begin();
          commod != in_commods.end();
          commod++) {
-      LOG(cyclus::LEV_INFO4, "SnkFac") << " will request " << requestAmt
+      LOG(cyclus::LEV_INFO4, "SnkFac") << "Sink " << this->id() 
+                                       << " will request " << requestAmt
                                        << " kg of " << *commod << ".";
       cyclus::toolkit::RecordTimeSeries<double>("demand"+*commod, this,
                                             requestAmt);
