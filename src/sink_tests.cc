@@ -342,6 +342,8 @@ TEST_F(SinkTest, PositionInitialize2) {
 
 }
 
+// A random number pulled from a uniform integer distribution can be
+// implemented as the request size
 TEST_F(SinkTest, RandomUniformSize) {
   using cyclus::QueryResult;
   using cyclus::Cond;
@@ -361,9 +363,12 @@ TEST_F(SinkTest, RandomUniformSize) {
 
   QueryResult qr = sim.db().Query("Resources", NULL);
   EXPECT_EQ(qr.rows.size(), 1);
+  // Given the PRNG with default seed, the resource should have mass 9.41273
   EXPECT_NEAR(qr.GetVal<double>("Quantity"), 9.41273, 0.0001);
 }
 
+// A random number pulled from a normal int distribution with default mean and
+// stddev can be implemented as the request size
 TEST_F(SinkTest, RandomNormalSize) {
   using cyclus::QueryResult;
   using cyclus::Cond;
@@ -383,9 +388,12 @@ TEST_F(SinkTest, RandomNormalSize) {
 
   QueryResult qr = sim.db().Query("Resources", NULL);
   EXPECT_EQ(qr.rows.size(), 1);
+  // Given the PRNG with default seed, the resource should have mass 9.60929
   EXPECT_NEAR(qr.GetVal<double>("Quantity"), 9.60929, 0.0001);
 }
 
+// A random number pulled from a normal int distribution with user-defined mean
+// and stddev can be implemented as the request size
 TEST_F(SinkTest, RandomNormalSizeWithMeanSttdev) {
   using cyclus::QueryResult;
   using cyclus::Cond;
@@ -407,9 +415,12 @@ TEST_F(SinkTest, RandomNormalSizeWithMeanSttdev) {
 
   QueryResult qr = sim.db().Query("Resources", NULL);
   EXPECT_EQ(qr.rows.size(), 1);
+  // Given the PRNG with default seed, the resource should have mass 1.52979
   EXPECT_NEAR(qr.GetVal<double>("Quantity"), 1.52979, 0.0001);
 }
 
+// A random number pulled from a uniform integer distribution can be
+// implemented as the buying frequency
 TEST_F(SinkTest, RandomUniformFreq) {
   using cyclus::QueryResult;
   using cyclus::Cond;
@@ -430,11 +441,16 @@ TEST_F(SinkTest, RandomUniformFreq) {
   int id = sim.Run();
 
   QueryResult qr = sim.db().Query("Transactions", NULL);
+  // only one transaction has occurred
   EXPECT_EQ(qr.rows.size(), 1);
+  // Get the time from the first transaction in the database (0th entry)
   int trans_time = qr.GetVal<int>("Time", 0);
+  // Given the PRNG with default seed , this time should be time step 2
   EXPECT_EQ(trans_time, 2);
 }
 
+// A random number pulled from a normal int distribution with default mean and
+// stddev can be implemented as the buying frequency
 TEST_F(SinkTest, RandomNormalFreq) {
   using cyclus::QueryResult;
   using cyclus::Cond;
@@ -453,11 +469,16 @@ TEST_F(SinkTest, RandomNormalFreq) {
   int id = sim.Run();
 
   QueryResult qr = sim.db().Query("Transactions", NULL);
+  // only one transaction has occurred
   EXPECT_EQ(qr.rows.size(), 1);
+  // Get the time from the first transaction in the database (0th entry)
   int trans_time = qr.GetVal<int>("Time", 0);
+  // Given the PRNG with default seed , this time should be time step 2
   EXPECT_EQ(trans_time, 2);
 }
 
+// A random number pulled from a normal int distribution with user-defined mean
+// and stddev can be implemented as the buying frequency
 TEST_F(SinkTest, RandomNormalFreqWithMeanSttdev) {
   using cyclus::QueryResult;
   using cyclus::Cond;
@@ -478,12 +499,15 @@ TEST_F(SinkTest, RandomNormalFreqWithMeanSttdev) {
   int id = sim.Run();
 
   QueryResult qr = sim.db().Query("Transactions", NULL);
+  // only one transaction has occurred
   EXPECT_EQ(qr.rows.size(), 1);
+  // Get the time from the first transaction in the database (0th entry)
   int trans_time = qr.GetVal<int>("Time", 0);
+  // Given the PRNG with default seed, this time should be time step 2
   EXPECT_EQ(trans_time, 2);
 }
 
-// Make sure that multiple random 
+// Check that multiple buying cycles set by random number execute as expected
 TEST_F(SinkTest, RandomNormalFreqMultipleCycles) {
   using cyclus::QueryResult;
   using cyclus::Cond;
@@ -504,9 +528,12 @@ TEST_F(SinkTest, RandomNormalFreqMultipleCycles) {
   int id = sim.Run();
 
   QueryResult qr = sim.db().Query("Transactions", NULL);
+  // three transaction should have occurred
   EXPECT_EQ(3, qr.rows.size());
   // check multiple cycles execute at the expected time
-  // Buy times should occur at timestep 5, 7, and 10
+  // Get the time from the first, second, and third transactions in the
+  // database (0th, 1st, and 2nd entry)
+  // Given the PRNG with default seed, buy times on time step 5, 7, and 10
   int first_trans_time = qr.GetVal<int>("Time", 0);
   EXPECT_EQ(5, first_trans_time);
   int second_trans_time = qr.GetVal<int>("Time", 1);
@@ -540,6 +567,7 @@ TEST_F(SinkTest, RandomNormalSizeUniformFreq) {
   int id = sim.Run();
 
   QueryResult tqr = sim.db().Query("Transactions", NULL);
+  // two transactions should have occurred
   EXPECT_EQ(2, tqr.rows.size());
   // check multiple cycles execute at the expected time
   int trans_time = tqr.GetVal<int>("Time", 0);
