@@ -56,7 +56,20 @@ void Sink::EnterNotify() {
   /// Create first requestAmt. Only used in testing, as a simulation will
   /// overwrite this on Tick()
   SetRequestAmt();
+  SetNextBuyTime();
 
+  if (random_size_type != "None") {
+    LOG(cyclus::LEV_INFO4, "SnkFac") << "Sink " << this->id()
+                                     << " is using random behavior "
+                                     << random_size_type
+                                     << " for determining request size.";
+  }
+  if (random_frequency_type != "None") {
+    LOG(cyclus::LEV_INFO4, "SnkFac") << "Sink " << this->id()
+                                     << " is using random behavior "
+                                     << random_frequency_type
+                                     << " for determining request frequency.";
+  }
   RecordPosition();
 }
 
@@ -170,21 +183,32 @@ void Sink::AcceptGenRsrcTrades(
 void Sink::Tick() {
   using std::string;
   using std::vector;
-  LOG(cyclus::LEV_INFO3, "SnkFac") << prototype() << " is ticking {";
+  LOG(cyclus::LEV_INFO3, "SnkFac") << "Sink " << this->id() << " is ticking {";
 
-  SetRequestAmt();
+  if (nextBuyTime == -1) {
+    SetRequestAmt();
+  }
+  else if (nextBuyTime == context()->time()) {
+    SetRequestAmt();
+    SetNextBuyTime();
 
-  LOG(cyclus::LEV_INFO3, "SnkFac") << prototype() << " has default request amount " << requestAmt;
+    LOG(cyclus::LEV_INFO4, "SnkFac") << "Sink " << this->id() 
+                                     << " has reached buying time. The next buy time will be time step " << nextBuyTime;
+  }
+  else {
+    requestAmt = 0;
+  }
 
   // inform the simulation about what the sink facility will be requesting
   if (requestAmt > cyclus::eps()) {
-    LOG(cyclus::LEV_INFO4, "SnkFac") << prototype()
-                                       << " has request amount " << requestAmt
-                                       << " kg of " << in_commods[0] << ".";
+    LOG(cyclus::LEV_INFO4, "SnkFac") << "Sink " << this->id()
+                                     << " has request amount " << requestAmt
+                                     << " kg of " << in_commods[0] << ".";
     for (vector<string>::iterator commod = in_commods.begin();
          commod != in_commods.end();
          commod++) {
-      LOG(cyclus::LEV_INFO4, "SnkFac") << " will request " << requestAmt
+      LOG(cyclus::LEV_INFO4, "SnkFac") << "Sink " << this->id() 
+                                       << " will request " << requestAmt
                                        << " kg of " << *commod << ".";
       cyclus::toolkit::RecordTimeSeries<double>("demand"+*commod, this,
                                             requestAmt);
@@ -238,6 +262,22 @@ void Sink::SetRequestAmt() {
   }
   else {
     requestAmt =  amt;
+  }
+  return;
+}
+
+void Sink::SetNextBuyTime() {
+  if (random_frequency_type == "None") {
+    nextBuyTime = -1;
+  }
+  else if (random_frequency_type == "UniformInt") {
+    nextBuyTime = context()->time() + context()->random_uniform_int(random_frequency_min, random_frequency_max);
+  }
+  else if (random_frequency_type == "NormalInt") {
+    nextBuyTime = context()->time() + context()->random_normal_int(random_frequency_mean, random_frequency_stddev, random_frequency_min, random_frequency_max);
+  }
+  else {
+    nextBuyTime = -1;
   }
   return;
 }

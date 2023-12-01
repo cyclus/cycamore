@@ -72,6 +72,9 @@ class Sink
   /// @brief SinkFacilities update request amount using random behavior
   virtual void SetRequestAmt();
 
+  /// @brief SinkFacilities update request time using random behavior
+  virtual void SetNextBuyTime();
+
   ///  add a commodity to the set of input commodities
   ///  @param name the commodity name
   inline void AddCommodity(std::string name) { in_commods.push_back(name); }
@@ -111,6 +114,7 @@ class Sink
 
  private:
   double requestAmt;
+  int nextBuyTime;
   /// all facilities must have at least one input commodity
   #pragma cyclus var {"tooltip": "input commodities", \
                       "doc": "commodities that the sink facility accepts", \
@@ -195,8 +199,61 @@ class Sink
                              "space to use as the standard deviation. Default 0.1"}
   double random_size_stddev;
 
-
   // random status (frequencing/timing of request)
+  #pragma cyclus var {"default": "None", \
+                      "tooltip": "type of random behavior when setting the " \
+                      "timing of the request", \
+                      "uitype": "combobox", \
+                      "uilabel": "Random Timing", \
+                      "categorical": ["None", "UniformInt", "NormalInt"], \
+                      "doc": "type of random behavior to use. Default None, " \
+                      "other options are, 'UniformInt', and 'NormalInt'. " \
+                      "When using 'UniformInt', also set "\
+                      "'random_frequency_min' and 'random_frequency_max'. " \
+                      "For 'NormalInt', set 'random_frequency_mean' and " \
+                      "'random_fequency_stddev', min and max values are " \
+                      "optional. "}
+  std::string random_frequency_type;
+
+  // random frequency mean 
+  #pragma cyclus var {"default": 1, \
+                      "tooltip": "mean of the random frequency", \
+                      "uilabel": "Random Frequency Mean", \
+                      "uitype": "range", \
+                      "range": [0.0, 1e299], \
+                      "doc": "When a normal distribution is used to determine the " \
+                             "frequency of the request, this is the mean. Default 1"}
+  double random_frequency_mean;
+
+  // random frequency std dev
+  #pragma cyclus var {"default": 1, \
+                      "tooltip": "std dev of the random frequency", \
+                      "uilabel": "Random Frequency Std Dev", \
+                      "uitype": "range", \
+                      "range": [0.0, 1e299], \
+                      "doc": "When a normal distribution is used to determine the " \
+                             "frequency of the request, this is the standard deviation. Default 1"}
+  double random_frequency_stddev;
+
+  // random frequency lower bound
+  #pragma cyclus var {"default": 1, \
+                      "tooltip": "lower bound of the random frequency", \
+                      "uilabel": "Random Frequency Lower Bound", \
+                      "uitype": "range", \
+                      "range": [1, 1e299], \
+                      "doc": "When a random distribution is used to determine the " \
+                             "frequency of the request, this is the lower bound. Default 1"}
+  int random_frequency_min;
+
+  // random frequency upper bound
+  #pragma cyclus var {"default": 1e299, \
+                      "tooltip": "upper bound of the random frequency", \
+                      "uilabel": "Random Frequency Upper Bound", \
+                      "uitype": "range", \
+                      "range": [1, 1e299], \
+                      "doc": "When a random distribution is used to determine the " \
+                             "frequency of the request, this is the upper bound. Default 1e299"}
+  int random_frequency_max;
 
   #pragma cyclus var { \
     "default": 0.0, \
