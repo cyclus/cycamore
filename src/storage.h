@@ -111,8 +111,6 @@ class Storage
 
   // --- Agent Members ---
     /// 
-  virtual void SetUpBuyPolicy();
-
   /// Sets up the Storage Facility's trade requests
   virtual void EnterNotify();
 
@@ -125,6 +123,8 @@ class Storage
   virtual std::string version() { return CYCAMORE_VERSION; }
 
  protected:
+  ///   @brief sets up the distributions for the buy policy
+  void SetUpBuyPolicy();
   ///   @brief adds a material into the incoming commodity inventory
   ///   @param mat the material to add to the incoming inventory.
   ///   @throws if there is trouble with pushing to the inventory buffer.
