@@ -105,14 +105,8 @@ void Storage::EnterNotify() {
  
   SetUpBuyPolicy();
   
-  // cyclus::FixedIntDist a_dist = cyclus::FixedIntDist(1);
-  // cyclus::FixedIntDist d_dist =  cyclus::FixedIntDist(1);  
-  // cyclus::FixedDoubleDist size_dist =  cyclus::FixedDoubleDist(1.0);
   buy_policy.Init(this, &inventory, std::string("inventory"), throughput,
                   active_dist_, dormant_dist_, size_dist_);
-  // buy_policy.Init(this, &inventory, std::string("inventory"), throughput);
-  // active_dist_ = new cyclus::FixedIntDist(1);
-  // int test = active_dist_->sample();
 
   // dummy comp, use in_recipe if provided
   cyclus::CompMap v;
@@ -222,9 +216,6 @@ void Storage::Tock() {
   result = std::max_element(in_commod_prefs.begin(), in_commod_prefs.end());
   int maxindx = std::distance(in_commod_prefs.begin(), result);
   double demand = 0;
-  // if (manager()->context()->time() % (active_buying + dormant_buying) < active_buying) {
-  //   demand = current_capacity();
-  // }
   demand = current_capacity();
   
   cyclus::toolkit::RecordTimeSeries<double>("demand"+in_commods[maxindx], this, demand);
