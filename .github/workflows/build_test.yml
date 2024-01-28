@@ -53,5 +53,5 @@ jobs:
 
       - name: Cycamore Python Tests
         run: |
-          export PYTHONPATH=$(find /root/.local/lib -type d -name 'cyclus-*-*.egg' -print -quit)
+          export PYTHONPATH=$(find /root/.local/lib -type d -name 'python*.* -print -quit)/site-packages
           cd tests && python -m pytest
