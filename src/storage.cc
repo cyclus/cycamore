@@ -121,7 +121,7 @@ void Storage::SetUpBuyPolicy() {
     if (buying_size_min == -1) {buying_size_min = 0;}
     if (buying_size_max == -1) {buying_size_max = 1;}
     size_dist_ = boost::shared_ptr<cyclus::NormalDoubleDist>(new cyclus::NormalDoubleDist(buying_size_mean, buying_size_stddev,
-    buying_size_min, buying_size_max));
+                             buying_size_min, buying_size_max));
   }
   else {
     throw cyclus::ValueError("Invalid buying size type");}

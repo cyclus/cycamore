@@ -289,9 +289,9 @@ class Storage
   #pragma cyclus var {"default": "Fixed",\
                       "tooltip": "Type of dormant buying frequency",\
                       "doc": "Options: Fixed, Uniform, Normal. Fixed requires dormant_buying_val. Uniform "\
-                      "requires dormant_buying_max, with optional dormant_buying_min (default 1). Normal "\
-                      "requires dormant_buying_mean and dormant_buying_std, with optional "\
-                      "dormant_buying_min and dormant_buying_max.",\
+                      "requires dormant_buying_min and dormant_buying_max. Normal requires "\
+                      "dormant_buying_mean and dormant_buying_std, with optional dormant_buying_min "\
+                      "and dormant_buying_max.",\
                       "uitype": "combobox",\
                       "categorical": ["Fixed", "Uniform", "Normal"],\
                       "uilabel": "Dormant Buying Frequency Type"}
@@ -308,8 +308,8 @@ class Storage
 
   #pragma cyclus var {"default": -1,\
                       "tooltip": "Dormant buying distribution minimum",\
-                      "doc": "The minimum length in time steps of the dormant buying period. Optional for "\
-                      "Uniform and Normal dormant_buying_frequency_type.",\
+                      "doc": "The minimum length in time steps of the dormant buying period. Required for Uniform and optional for "\
+                      "Normal dormant_buying_frequency_type.",\
                       "uitype": "range", \
                       "range": [0, 1e299], \
                       "uilabel": "Dormant Buying Frequency Minimum"}
@@ -347,7 +347,7 @@ class Storage
                       "doc": "Behavior function used to determine the size of requests made. All values are "\
                       "a fraction of maximum capacity, determined by the throughput and capacity remaining."\
                       " Options: Fixed, Uniform, Normal. Fixed is default behavior. Uniform requires "\
-                      "buying_size_max, optional buying_size_min (default 0). Normal requires "\
+                      "buying_size_min and buying_size_max. Normal requires "\
                       "buying_size_mean and buying_size_stddev, optional buying_size_min and "\
                       "buying_size_max.",\
                       "uitype": "combobox",\
@@ -367,7 +367,8 @@ class Storage
   #pragma cyclus var {"default": -1.0,\
                       "tooltip": "Buying size distribution minimum",\
                       "doc": "The minimum size of the buy request as a fraction of maximum capacity. "\
-                      "Optional for Uniform and Normal buying_size_type.",\
+                      "Required for Uniform and optional for Normal buying_size_type. Must be greater than "\
+                      "or equal to zero.",\
                       "uitype": "range", \
                       "range": [0.0, 1.0], \
                       "uilabel": "Buying Size Minimum"}
