@@ -645,16 +645,64 @@ TEST_F(StorageTest, NormalActiveDormantBuyingSize){
   // second cycle (rows 4 and 4) include time steps 6 and 7
   EXPECT_EQ(6, qr.GetVal<int>("Time", 4));
   EXPECT_EQ(7, qr.GetVal<int>("Time", 5));
-  // third cycle (row 6) includes time step 8 
+  // third cycle (row 6) includes time step 8 -9
   EXPECT_EQ(8, qr.GetVal<int>("Time", 6));
-  // fourth cycle (rows 7, 8, 9) includes time steps 12 - 14
-  EXPECT_EQ(12, qr.GetVal<int>("Time", 7));
+  EXPECT_EQ(9, qr.GetVal<int>("Time", 7));
+  // fourth cycle (rows  8, 9) includes time steps 13 - 14
+  EXPECT_EQ(13, qr.GetVal<int>("Time", 8));
   EXPECT_EQ(14, qr.GetVal<int>("Time", 9));
 
   qr = sim.db().Query("Resources", NULL);
-  EXPECT_NEAR(0.30861, qr.GetVal<double>("Quantity", 0), 0.00001);
-  EXPECT_NEAR(0.51678, qr.GetVal<double>("Quantity", 1), 0.00001);
-  EXPECT_NEAR(0.61256, qr.GetVal<double>("Quantity", 2), 0.00001);
+  EXPECT_NEAR(0.61256, qr.GetVal<double>("Quantity", 0), 0.00001);
+  EXPECT_NEAR(0.62217, qr.GetVal<double>("Quantity", 1), 0.00001);
+  EXPECT_NEAR(0.39705, qr.GetVal<double>("Quantity", 2), 0.00001);
+}
+
+TEST_F(StorageTest, IncorrectBuyPolSetupUniform) {
+  // uniform missing min and max
+  std::string config_uniform =
+    "   <in_commods> <val>spent_fuel</val> </in_commods> "
+    "   <out_commods> <val>dry_spent</val> </out_commods> "
+    "   <throughput>1</throughput>"
+    "   <active_buying_frequency_type>Uniform</active_buying_frequency_type>";
+
+  int simdur = 15;
+
+  cyclus::MockSim sim(cyclus::AgentSpec (":cycamore:Storage"), config_uniform,
+                                         simdur);
+  EXPECT_THROW(sim.Run(), cyclus::ValueError);
+}
+
+TEST_F(StorageTest, IncorrectBuyPolSetupNormal) {
+  // normal missing mean and std dev
+  std::string config_normal =
+    "   <in_commods> <val>spent_fuel</val> </in_commods> "
+    "   <out_commods> <val>dry_spent</val> </out_commods> "
+    "   <throughput>1</throughput>"
+    "   <active_buying_frequency_type>Normal</active_buying_frequency_type>";
+  int simdur = 15;
+
+  cyclus::MockSim sim(cyclus::AgentSpec (":cycamore:Storage"), config_normal,
+                                         simdur);
+  EXPECT_THROW(sim.Run(), cyclus::ValueError);
+}
+
+TEST_F(StorageTest, IncorrectBuyPolSetupMinMax) {
+  // tries to set min > max
+  std::string config_uniform_min_bigger_max =
+    "   <in_commods> <val>spent_fuel</val> </in_commods> "
+    "   <out_commods> <val>dry_spent</val> </out_commods> "
+    "   <throughput>1</throughput>"
+    "   <active_buying_frequency_type>Uniform</active_buying_frequency_type>"
+    "   <active_buying_min>3</active_buying_min>"
+    "   <active_buying_max>2</active_buying_max>";
+
+  int simdur = 15;
+
+  cyclus::MockSim sim(cyclus::AgentSpec (":cycamore:Storage"), 
+                                         config_uniform_min_bigger_max, simdur);
+  EXPECT_THROW(sim.Run(), cyclus::ValueError);
+
 }
 
 TEST_F(StorageTest, PositionInitialize){

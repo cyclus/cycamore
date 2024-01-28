@@ -231,7 +231,7 @@ class Storage
   #pragma cyclus var {"default": "Fixed",\
                       "tooltip": "Type of active buying frequency",\
                       "doc": "Options: Fixed, Uniform, Normal. Fixed requires active_buying_val. Uniform "\
-                      "requires active_buying_max, with optional active_buying_min (default 1). Normal "\
+                      "requires active_buying_min and active_buying_max.  Normal "\
                       "requires active_buying_mean and active_buying_std, with optional "\
                       "active_buying_min and active_buying_max.",\
                       "uitype": "combobox",\
@@ -239,7 +239,7 @@ class Storage
                       "uilabel": "Active Buying Frequency Type"}
   std::string active_buying_frequency_type;
 
-  #pragma cyclus var {"default": 1,\
+  #pragma cyclus var {"default": -1,\
                       "tooltip": "Fixed active buying frequency",\
                       "doc": "The length in time steps of the active buying period. Required for fixed "\
                       "active_buying_frequency_type. Must be greater than or equal to 1 (i.e., agent "\
@@ -249,16 +249,17 @@ class Storage
                       "uilabel": "Active Buying Frequency Value"}
   int active_buying_val;
 
-  #pragma cyclus var {"default": 1,\
+  #pragma cyclus var {"default": -1,\
                       "tooltip": "Active buying distribution minimum",\
-                      "doc": "The minimum length in time steps of the active buying period. Optional for "\
-                      "Uniform and Normal active_buying_frequency_type. Must be greater than or equal to 1 ",\
+                      "doc": "The minimum length in time steps of the active buying period. Required for "\
+                      "Uniform and optional for Normal active_buying_frequency_type. Must be greater than "\
+                      "or equal to 1 ",\
                       "uitype": "range", \
                       "range": [1, 1e299], \
                       "uilabel": "Active Buying Frequency Minimum"}
   int active_buying_min;
 
-  #pragma cyclus var {"default": 1e299,\
+  #pragma cyclus var {"default": -1,\
                       "tooltip": "Active buying distribution maximum",\
                       "doc": "The maximum length in time steps of the active buying period. Required for "\
                       "Uniform active_buying_frequency_type, optional for Normal. Must be greater than or equal to active_buying_min ",\
@@ -267,7 +268,7 @@ class Storage
                       "uilabel": "Active Buying Frequency Maximum"}
   int active_buying_max;
 
-  #pragma cyclus var {"default": 1,\
+  #pragma cyclus var {"default": -1,\
                       "tooltip": "Active buying distribution mean",\
                       "doc": "The mean length in time steps of the active buying period. Required for "\
                       "Normal active_buying_frequency_type. Must be greater than or equal to 1 ",\
@@ -276,7 +277,7 @@ class Storage
                       "uilabel": "Active Buying Frequency Mean"}
   double active_buying_mean;
 
-  #pragma cyclus var {"default": 1,\
+  #pragma cyclus var {"default": -1,\
                       "tooltip": "Active buying distribution standard deviation",\
                       "doc": "The standard deviation of the length in time steps of the active buying period. "\
                       "Required for Normal active_buying_frequency_type. Must be greater than or equal to 0 ",\
@@ -305,7 +306,7 @@ class Storage
                       "uilabel": "Dormant Buying Frequency Value"}
   int dormant_buying_val;
 
-  #pragma cyclus var {"default": 0,\
+  #pragma cyclus var {"default": -1,\
                       "tooltip": "Dormant buying distribution minimum",\
                       "doc": "The minimum length in time steps of the dormant buying period. Optional for "\
                       "Uniform and Normal dormant_buying_frequency_type.",\
@@ -314,7 +315,7 @@ class Storage
                       "uilabel": "Dormant Buying Frequency Minimum"}
   int dormant_buying_min;
 
-  #pragma cyclus var {"default": 0,\
+  #pragma cyclus var {"default": -1,\
                       "tooltip": "Dormant buying distribution maximum",\
                       "doc": "The maximum length in time steps of the dormant buying period. Required for "\
                       "Uniform dormant_buying_frequency_type, optional for Normal. Must be greater than or equal to dormant_buying_min ",\
@@ -323,7 +324,7 @@ class Storage
                       "uilabel": "Dormant Buying Frequency Maximum"}
   int dormant_buying_max;
 
-  #pragma cyclus var {"default": 0,\
+  #pragma cyclus var {"default": -1,\
                       "tooltip": "Dormant buying distribution mean",\
                       "doc": "The mean length in time steps of the dormant buying period. Required for "\
                       "Normal dormant_buying_frequency_type. Must be greater than or equal to 0 ",\
@@ -332,7 +333,7 @@ class Storage
                       "uilabel": "Dormant Buying Frequency Mean"}
   double dormant_buying_mean;
 
-  #pragma cyclus var {"default": 0,\
+  #pragma cyclus var {"default": -1,\
                       "tooltip": "Dormant buying distribution standard deviation",\
                       "doc": "The standard deviation of the length in time steps of the dormant buying period. "\
                       "Required for Normal dormant_buying_frequency_type. Must be greater than or equal to 0 ",\
@@ -363,7 +364,7 @@ class Storage
                       "uilabel": "Buying Size Value"}
   double buying_size_val;
 
-  #pragma cyclus var {"default": 0.0,\
+  #pragma cyclus var {"default": -1.0,\
                       "tooltip": "Buying size distribution minimum",\
                       "doc": "The minimum size of the buy request as a fraction of maximum capacity. "\
                       "Optional for Uniform and Normal buying_size_type.",\
@@ -372,7 +373,7 @@ class Storage
                       "uilabel": "Buying Size Minimum"}
   double buying_size_min;
 
-  #pragma cyclus var {"default": 1.0,\
+  #pragma cyclus var {"default": -1.0,\
                       "tooltip": "Buying size distribution maximum",\
                       "doc": "The maximum size of the buy request as a fraction of maximum capacity. "\
                       "Required for Uniform buying_size_type, optional for Normal. Must be greater than "\
@@ -382,7 +383,7 @@ class Storage
                       "uilabel": "Buying Size Maximum"}
   double buying_size_max;
 
-  #pragma cyclus var {"default": 1.0,\
+  #pragma cyclus var {"default": -1.0,\
                       "tooltip": "Buying size distribution mean",\
                       "doc": "The mean size of the buy request as a fraction of maximum capacity. "\
                       "Required for Normal buying_size_type.",\
@@ -391,7 +392,7 @@ class Storage
                       "uilabel": "Buying Size Mean"}
   double buying_size_mean;
 
-  #pragma cyclus var {"default": 0.0,\
+  #pragma cyclus var {"default": -1.0,\
                       "tooltip": "Buying size distribution standard deviation",\
                       "doc": "The standard deviation of the size of the buy request as a fraction of "\
                       "maximum capacity. Required for Normal buying_size_type.",\
