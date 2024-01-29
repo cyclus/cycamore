@@ -1,4 +1,4 @@
-name: Build and Publish Cycamore Images
+name: Publish Latest Cycamore
 
 on:
   # allows us to run workflows manually
@@ -32,7 +32,7 @@ jobs:
           latest,
         ]
 
-    name: Installing Dependencies, Building Cycamore and Running Tests
+    name: Building Cycamore and Running Tests
     steps:
       - name: Tag as ci-image-cache
         run: |

@@ -1,4 +1,4 @@
-name: Publish Cycamore Release
+name: Publish Stable Cycamore
 
 on:
   push:
@@ -26,7 +26,7 @@ jobs:
           conda
         ]
 
-    name: Installing Dependencies, Building Cycamore and running tests
+    name: Building Cycamore and running tests
     steps:
       - name: Tag as ci-image-cache
         run: |
