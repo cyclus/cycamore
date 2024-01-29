@@ -32,7 +32,7 @@ jobs:
           latest,
         ]
 
-    name: Building Cycamore and Running Tests
+    name: Build, Test, Publish
     steps:
       - name: Tag as ci-image-cache
         run: |
