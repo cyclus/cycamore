@@ -14,6 +14,9 @@ on:
 jobs:
   build-dependency-and-test-img:
     runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      packages: write
 
     strategy:
       matrix:
@@ -25,17 +28,20 @@ jobs:
           apt,
           conda,
         ]
+        cyclus_tag : [
+          latest,
+        ]
 
     name: Installing Dependencies, Building Cycamore and Running Tests
     steps:
-      - name: default environment
+      - name: Tag as ci-image-cache
         run: |
-          echo "tag-latest-on-default=false" >> "$GITHUB_ENV"
+          echo "tag=ci-image-cache" >> "$GITHUB_ENV"
 
-      - name: condition on trigger parameters
+      - name: Tag as latest
         if: ${{ github.repository_owner == 'cyclus' && github.ref == 'refs/heads/main' }}
         run: |
-          echo "tag-latest-on-default=true" >> "$GITHUB_ENV"
+          echo "tag=latest" >> "$GITHUB_ENV"
 
       - name: Log in to the Container registry
         uses: docker/login-action@v2
@@ -47,14 +53,29 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v3
 
-      - name: Multi-Stage Build Action
-        uses: firehed/multistage-docker-build-action@v1
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      - name: Build and Test Cycamore
+        uses: docker/build-push-action@v5
         with:
-          repository: ghcr.io/${{ github.repository_owner }}/cycamore_${{ matrix.ubuntu_versions }}_${{ matrix.pkg_mgr }}
-          stages: cycamore
-          server-stage: cycamore-test
-          quiet: false
-          parallel: true
-          tag-latest-on-default: ${{ env.tag-latest-on-default }}
-          dockerfile: docker/Dockerfile
-          build-args: pkg_mgr=${{ matrix.pkg_mgr }}, ubuntu_version=${{ matrix.ubuntu_versions }}
+          cache-from: type=registry,ref=ghcr.io/cyclus/cycamore_${{ matrix.ubuntu_versions }}_${{ matrix.pkg_mgr }}/cycamore:ci-layer-cache
+          cache-to: type=registry,ref=ghcr.io/cyclus/cycamore_${{ matrix.ubuntu_versions }}_${{ matrix.pkg_mgr }}/cycamore:ci-layer-cache,mode=max
+          file: docker/Dockerfile
+          build-args: |
+            pkg_mgr=${{ matrix.pkg_mgr }}
+            ubuntu_version=${{ matrix.ubuntu_versions }}
+            cyclus_tag=${{ matrix.cyclus_tag }}
+
+      - name: Push Cycamore Image
+        uses: docker/build-push-action@v5
+        with:
+          cache-from: type=registry,ref=ghcr.io/cyclus/cycamore_${{ matrix.ubuntu_versions }}_${{ matrix.pkg_mgr }}/cycamore:ci-layer-cache
+          file: docker/Dockerfile
+          target: cycamore
+          push: true
+          tags: ghcr.io/cyclus/cycamore_${{ matrix.ubuntu_versions }}_${{ matrix.pkg_mgr }}/cycamore:${{ env.tag }}
+          build-args: |
+            pkg_mgr=${{ matrix.pkg_mgr }}
+            ubuntu_version=${{ matrix.ubuntu_versions }}
+            cyclus_tag=latest
