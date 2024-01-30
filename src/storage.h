@@ -419,11 +419,15 @@ class Storage
   double reorder_quantity;
 
   #pragma cyclus var {"default": 1,\
-                      "tooltip":"Reorder point as a fraction of full inventory",\
-                      "doc":"The point at which the facility will request more material. "\
-                            "This is a fraction of the maximum inventory size.",\
-                      "uilabel":"Reorder Point"}
-  double reorder_point;
+                      "tooltip": "Length of the active buying "\
+                        "period",\
+                      "doc":"During the length of the active buying "\
+                        "period, agent exhibits regular behavior. "\
+                        "If paired with dormant buying period, "\
+                        "alternates between buying and not buying, "\
+                        "regardless if space is available",\
+                      "uilabel":"Active Buying Period"}
+  int active_buying;
 
   #pragma cyclus var {"default": 0,\
                       "tooltip": "Length of the dormant buying "\

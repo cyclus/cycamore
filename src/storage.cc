@@ -10,6 +10,7 @@ Storage::Storage(cyclus::Context* ctx)
       latitude(0.0),
       longitude(0.0),
       coordinates(latitude, longitude) {
+  inventory_tracker.Init({&inventory, &stocks, &ready, &processing}, 1e299);
   cyclus::Warn<cyclus::EXPERIMENTAL_WARNING>(
       "The Storage Facility is experimental.");};
 
@@ -130,12 +131,22 @@ void Storage::InitBuyPolicyParameters() {
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 void Storage::EnterNotify() {
   cyclus::Facility::EnterNotify();
- 
-  InitBuyPolicyParameters();
-  
-  buy_policy.Init(this, &inventory, std::string("inventory"), throughput,
-                  active_dist_, dormant_dist_, size_dist_);
-  buy_policy.Init(this, &inventory, std::string("inventory"), reorder_point, reorder_quantity);
+
+  inventory_tracker.set_capacity(max_inv_size);
+  if ((reorder_point >= 0 && reorder_quantity > 0)) {
+    if (reorder_point + reorder_quantity > max_inv_size) {
+      throw cyclus::ValueError(
+          "reorder_point + reorder_quantity must be less than max_inv_size");
+    }
+    buy_policy.Init(this, &inventory, std::string("inventory"),
+                    &inventory_tracker, throughput, "RQ",
+                    reorder_quantity,
+                    reorder_point);
+  }
+  else {
+    buy_policy.Init(this, &inventory, std::string("inventory"),
+                    &inventory_tracker, throughput);
+  }
 
   // dummy comp, use in_recipe if provided
   cyclus::CompMap v;
@@ -210,8 +221,8 @@ void Storage::Tick() {
   LOG(cyclus::LEV_INFO4, "ComCnv") << "current capacity " << max_inv_size << " - " << processing.quantity() << " - " << ready.quantity() << " - " << stocks.quantity() << " = " << current_capacity();
 
   // Set available capacity for Buy Policy
-  inventory.capacity(current_capacity());
-
+  // not necessary any more
+  // inventory.capacity(current_capacity());
 
   if (current_capacity() > cyclus::eps_rsrc()) {
     LOG(cyclus::LEV_INFO4, "ComCnv")
