@@ -729,6 +729,46 @@ TEST_F(StorageTest, IncorrectBuyPolSetupMinMax) {
   EXPECT_THROW(sim.Run(), cyclus::ValueError);
 
   EXPECT_EQ(3, n_trans) << "expected 3 transactions, got " << n_trans;
+  // check that the transactions occur at the expected time (0, 2, 4)
+  EXPECT_EQ(0, qr.GetVal<int>("Time", 0));
+  EXPECT_EQ(2, qr.GetVal<int>("Time", 1));
+  EXPECT_EQ(4, qr.GetVal<int>("Time", 2));
+
+  // check that all transactions are of size 3
+  qr = sim.db().Query("Resources", NULL);
+  EXPECT_EQ(3, qr.GetVal<double>("Quantity", 0));
+}
+
+
+TEST_F(StorageTest, sS_Inventory) {
+  std::string config =
+    "   <in_commods> <val>spent_fuel</val> </in_commods> "
+    "   <out_commods> <val>dry_spent</val> </out_commods> "
+    "   <max_inv_size>5</max_inv_size>"
+    "   <reorder_point>2</reorder_point>";
+
+  int simdur = 5;
+
+  cyclus::MockSim sim(cyclus::AgentSpec (":cycamore:Storage"), config, simdur);
+
+  sim.AddSource("spent_fuel").capacity(5).Finalize();
+  sim.AddSink("dry_spent").Finalize();
+
+  int id = sim.Run();
+
+  std::vector<cyclus::Cond> conds;
+  conds.push_back(cyclus::Cond("Commodity", "==", std::string("spent_fuel")));
+  cyclus::QueryResult qr = sim.db().Query("Transactions", &conds);
+  int n_trans = qr.rows.size();
+  EXPECT_EQ(3, n_trans) << "expected 3 transactions, got " << n_trans;
+  // check that the transactions occur at the expected time (0, 2, 4)
+  EXPECT_EQ(0, qr.GetVal<int>("Time", 0));
+  EXPECT_EQ(2, qr.GetVal<int>("Time", 1));
+  EXPECT_EQ(4, qr.GetVal<int>("Time", 2));
+
+  // check that all transactions are of size 3
+  qr = sim.db().Query("Resources", NULL);
+  EXPECT_EQ(5, qr.GetVal<double>("Quantity", 0));
 }
 
 TEST_F(StorageTest, PositionInitialize){

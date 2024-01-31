@@ -406,12 +406,15 @@ class Storage
   #pragma cyclus var {"default": -1,\
                       "tooltip":"Reorder point",\
                       "doc":"The point at which the facility will request more material. "\
-                      "Above this point, no request will be made. Must be less than max_inv_size",\
+                      "Above this point, no request will be made. Must be less than max_inv_size."\
+                      "If paired with reorder_quantity, this agent will have an (R,Q) inventory policy. "\
+                      "If reorder_point is used alone, this agent will have an (s,S) inventory policy, "\
+                      " with S (the maximum) being set at max_inv_size.",\
                       "uilabel":"Reorder Point"}
   double reorder_point;
 
   #pragma cyclus var {"default": -1,\
-                      "tooltip":"Reorder amount",\
+                      "tooltip":"Reorder amount (R,Q inventory policy)",\
                       "doc":"The amount of material that will be requested when the reorder point is reached. "\
                       "Exclusive request, so will demand exactly reorder_quantity."\
                       "Reorder_point + reorder_quantity must be less than max_inv_size.",\

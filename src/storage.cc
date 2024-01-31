@@ -133,19 +133,23 @@ void Storage::EnterNotify() {
   cyclus::Facility::EnterNotify();
 
   inventory_tracker.set_capacity(max_inv_size);
-  if ((reorder_point >= 0 && reorder_quantity > 0)) {
+  if (reorder_point < 0) {
+    buy_policy.Init(this, &inventory, std::string("inventory"),
+                    &inventory_tracker, throughput);
+  }
+  else if (reorder_quantity > 0) {
     if (reorder_point + reorder_quantity > max_inv_size) {
       throw cyclus::ValueError(
-          "reorder_point + reorder_quantity must be less than max_inv_size");
+          "reorder_point + reorder_quantity must be less than or equal to max_inv_size");
     }
     buy_policy.Init(this, &inventory, std::string("inventory"),
                     &inventory_tracker, throughput, "RQ",
-                    reorder_quantity,
-                    reorder_point);
+                    reorder_quantity, reorder_point);
   }
   else {
     buy_policy.Init(this, &inventory, std::string("inventory"),
-                    &inventory_tracker, throughput);
+                    &inventory_tracker, throughput, "sS",
+                    max_inv_size, reorder_point);
   }
 
   // dummy comp, use in_recipe if provided
