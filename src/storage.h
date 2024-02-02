@@ -110,7 +110,6 @@ class Storage
   // --- Facility Members ---
 
   // --- Agent Members ---
-    /// 
   /// Sets up the Storage Facility's trade requests
   virtual void EnterNotify();
 
