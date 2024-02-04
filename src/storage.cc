@@ -46,7 +46,7 @@ void Storage::InitFrom(cyclus::QueryableBackend* b) {
   cyclus::toolkit::CommodityProducer::SetCapacity(commod, throughput);
 }
 
-void Storage::SetUpBuyPolicy() {
+void Storage::InitBuyPolicyParameters() {
   /// set up active buying distribution
   if (active_buying_min > active_buying_max) {
     throw cyclus::ValueError("Active min larger than max.");
@@ -131,7 +131,7 @@ void Storage::SetUpBuyPolicy() {
 void Storage::EnterNotify() {
   cyclus::Facility::EnterNotify();
  
-  SetUpBuyPolicy();
+  InitBuyPolicyParameters();
   
   buy_policy.Init(this, &inventory, std::string("inventory"), throughput,
                   active_dist_, dormant_dist_, size_dist_);

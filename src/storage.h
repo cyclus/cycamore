@@ -123,7 +123,7 @@ class Storage
 
  protected:
   ///   @brief sets up the distributions for the buy policy
-  void SetUpBuyPolicy();
+  void InitBuyPolicyParameters();
   ///   @brief adds a material into the incoming commodity inventory
   ///   @param mat the material to add to the incoming inventory.
   ///   @throws if there is trouble with pushing to the inventory buffer.
