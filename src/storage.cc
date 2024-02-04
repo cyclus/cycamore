@@ -46,10 +46,95 @@ void Storage::InitFrom(cyclus::QueryableBackend* b) {
   cyclus::toolkit::CommodityProducer::SetCapacity(commod, throughput);
 }
 
+void Storage::InitBuyPolicyParameters() {
+  /// set up active buying distribution
+  if (active_buying_min > active_buying_max) {
+    throw cyclus::ValueError("Active min larger than max.");
+  }
+  if (dormant_buying_min > dormant_buying_max) {
+    throw cyclus::ValueError("Dormant min larger than max.");
+  }
+  if (buying_size_min > buying_size_max) {
+    throw cyclus::ValueError("Buying size min larger than max.");
+  }
+
+  if (active_buying_frequency_type == "Fixed") {
+    active_dist_ = boost::shared_ptr<cyclus::FixedIntDist>(new cyclus::FixedIntDist(active_buying_val));
+  }
+  else if (active_buying_frequency_type == "Uniform") {
+    if ((active_buying_min == -1) || (active_buying_max == -1)) {
+      throw cyclus::ValueError("Invalid active buying frequency range. Please provide both a min and max value.");
+    }
+    active_dist_ = boost::shared_ptr<cyclus::UniformIntDist>(new cyclus::UniformIntDist(active_buying_min, active_buying_max));
+  }
+  else if (active_buying_frequency_type == "Normal") {
+    if ((active_buying_mean == -1) || (active_buying_stddev == -1)) {
+      throw cyclus::ValueError("Invalid active buying frequency range. Please provide both a mean and standard deviation value.");
+    }
+    if (active_buying_min == -1) {active_buying_min = 1;}
+    if (active_buying_max == -1) {
+      active_buying_max = std::numeric_limits<int>::max();}
+
+    active_dist_ = boost::shared_ptr<cyclus::NormalIntDist>(new cyclus::NormalIntDist(active_buying_mean, active_buying_stddev, 
+                          active_buying_min, active_buying_max));
+  }
+  else {
+    throw cyclus::ValueError("Invalid active buying frequency type");}
+
+  /// set up dormant buying distribution
+  if (dormant_buying_frequency_type == "Fixed") {
+    dormant_dist_ = boost::shared_ptr<cyclus::FixedIntDist>(new cyclus::FixedIntDist(dormant_buying_val));
+  }
+  else if (dormant_buying_frequency_type == "Uniform") {
+    if ((dormant_buying_min == -1) || (dormant_buying_max == -1)) {
+      throw cyclus::ValueError("Invalid dormant buying frequency range. Please provide both a min and max value.");
+    }
+    dormant_dist_ = boost::shared_ptr<cyclus::UniformIntDist>(new cyclus::UniformIntDist(dormant_buying_min, dormant_buying_max));
+  }
+  else if (dormant_buying_frequency_type == "Normal") {
+    if ((dormant_buying_mean == -1) || (dormant_buying_stddev == -1)) {
+      throw cyclus::ValueError("Invalid dormant buying frequency range. Please provide both a mean and standard deviation value.");
+    }
+    if (dormant_buying_min == -1) {dormant_buying_min = 1;}
+    if (dormant_buying_max == -1) {
+      dormant_buying_max = std::numeric_limits<int>::max();}
+    dormant_dist_ = boost::shared_ptr<cyclus::NormalIntDist>(new cyclus::NormalIntDist(dormant_buying_mean, dormant_buying_stddev,
+                          dormant_buying_min, dormant_buying_max));
+  }
+  else {
+    throw cyclus::ValueError("Invalid dormant buying frequency type");}
+
+  /// set up buying size distribution
+  if (buying_size_type == "Fixed") {
+    size_dist_ = boost::shared_ptr<cyclus::FixedDoubleDist>(new cyclus::FixedDoubleDist(buying_size_val));
+  }
+  else if (buying_size_type == "Uniform") {
+    if ((buying_size_min == -1) || (buying_size_max == -1)) {
+      throw cyclus::ValueError("Invalid buying size range. Please provide both a min and max value.");
+    }
+    size_dist_ = boost::shared_ptr<cyclus::UniformDoubleDist>(new cyclus::UniformDoubleDist(buying_size_min, buying_size_max));
+  }
+  else if (buying_size_type == "Normal") {
+    if ((buying_size_mean == -1) || (buying_size_stddev == -1)) {
+      throw cyclus::ValueError("Invalid buying size range. Please provide both a mean and standard deviation value.");
+    }
+    if (buying_size_min == -1) {buying_size_min = 0;}
+    if (buying_size_max == -1) {buying_size_max = 1;}
+    size_dist_ = boost::shared_ptr<cyclus::NormalDoubleDist>(new cyclus::NormalDoubleDist(buying_size_mean, buying_size_stddev,
+                             buying_size_min, buying_size_max));
+  }
+  else {
+    throw cyclus::ValueError("Invalid buying size type");}
+}
+
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 void Storage::EnterNotify() {
   cyclus::Facility::EnterNotify();
-  buy_policy.Init(this, &inventory, std::string("inventory"), throughput, active_buying, dormant_buying);
+ 
+  InitBuyPolicyParameters();
+  
+  buy_policy.Init(this, &inventory, std::string("inventory"), throughput,
+                  active_dist_, dormant_dist_, size_dist_);
 
   // dummy comp, use in_recipe if provided
   cyclus::CompMap v;
@@ -159,9 +244,7 @@ void Storage::Tock() {
   result = std::max_element(in_commod_prefs.begin(), in_commod_prefs.end());
   int maxindx = std::distance(in_commod_prefs.begin(), result);
   double demand = 0;
-  if (manager()->context()->time() % (active_buying + dormant_buying) < active_buying) {
-    demand = current_capacity();
-  }
+  demand = current_capacity();
   
   cyclus::toolkit::RecordTimeSeries<double>("demand"+in_commods[maxindx], this, demand);
   

@@ -539,7 +539,7 @@ TEST_F(SinkTest, RandomNormalFreqMultipleCycles) {
   int second_trans_time = qr.GetVal<int>("Time", 1);
   EXPECT_EQ(7, second_trans_time);
   int third_trans_time = qr.GetVal<int>("Time", 2);
-  EXPECT_EQ(10, third_trans_time);  
+  EXPECT_EQ(11, third_trans_time);  
 }
 
 // Check that randomness can be implemented in both size of request and

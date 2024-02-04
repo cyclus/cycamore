@@ -24,8 +24,7 @@ void StorageTest::InitParameters(){
   throughput = 20;
   discrete_handling = 0;
   // Active period longer than any of the residence time related-tests needs
-  active_buying = 20;
-  dormant_buying = 1;
+
 
   cyclus::CompMap v;
   v[922350000] = 1;
@@ -42,8 +41,6 @@ void StorageTest::SetUpStorage(){
   src_facility_->max_inv_size = max_inv_size;
   src_facility_->throughput = throughput;
   src_facility_->discrete_handling = discrete_handling;
-  src_facility_->active_buying = active_buying;
-  src_facility_->dormant_buying = dormant_buying;
 }
 
 void StorageTest::TestInitState(Storage* fac){
@@ -467,8 +464,8 @@ TEST_F(StorageTest, ActiveDormant){
     "   <in_commods> <val>spent_fuel</val> </in_commods> "
     "   <out_commods> <val>dry_spent</val> </out_commods> "
     "   <throughput>1</throughput>"
-    "   <active_buying>1</active_buying>"
-    "   <dormant_buying>1</dormant_buying>";
+    "   <active_buying_val>1</active_buying_val>"
+    "   <dormant_buying_val>1</dormant_buying_val>";
 
   int simdur = 2;
 
@@ -494,9 +491,12 @@ TEST_F(StorageTest, NoDormant){
     "   <in_commods> <val>spent_fuel</val> </in_commods> "
     "   <out_commods> <val>dry_spent</val> </out_commods> "
     "   <throughput>1</throughput>"
-    "   <active_buying>1</active_buying>";
+    "   <active_buying_frequency_type>Fixed</active_buying_frequency_type>"
+    "   <active_buying_val>1</active_buying_val>"
+    "   <dormant_buying_frequency_type>Fixed</dormant_buying_frequency_type>"
+    "   <dormant_buying_val>-1</dormant_buying_val>";
 
-  int simdur = 2;
+  int simdur = 3;
 
   cyclus::MockSim sim(cyclus::AgentSpec (":cycamore:Storage"), config, simdur);
 
@@ -509,8 +509,201 @@ TEST_F(StorageTest, NoDormant){
   conds.push_back(cyclus::Cond("Commodity", "==", std::string("spent_fuel")));
   cyclus::QueryResult qr = sim.db().Query("Transactions", &conds);
   int n_trans = qr.rows.size();
-  EXPECT_EQ(2, n_trans) << "expected 2 transactions, got " << n_trans;
+  EXPECT_EQ(3, n_trans) << "expected 3 transactions, got " << n_trans;
  }
+
+TEST_F(StorageTest, UniformActiveNormalDormant){
+  std::string config =
+    "   <in_commods> <val>spent_fuel</val> </in_commods> "
+    "   <out_commods> <val>dry_spent</val> </out_commods> "
+    "   <throughput>1</throughput>"
+    "   <active_buying_frequency_type>Uniform</active_buying_frequency_type>"
+    "   <active_buying_min>2</active_buying_min>"
+    "   <active_buying_max>3</active_buying_max>"
+    "   <dormant_buying_frequency_type>Normal</dormant_buying_frequency_type>"
+    "   <dormant_buying_mean>5</dormant_buying_mean>"
+    "   <dormant_buying_stddev>1</dormant_buying_stddev>";
+
+  int simdur = 20;
+
+  cyclus::MockSim sim(cyclus::AgentSpec (":cycamore:Storage"), config, simdur);
+
+  sim.AddSource("spent_fuel").capacity(5).Finalize();
+  sim.AddSink("dry_spent").Finalize();
+
+  int id = sim.Run();
+
+  std::vector<cyclus::Cond> conds;
+  conds.push_back(cyclus::Cond("Commodity", "==", std::string("spent_fuel")));
+  cyclus::QueryResult qr = sim.db().Query("Transactions", &conds);
+  // confirm that transactions are only occurring during active periods
+  // first cycle includes time steps 0 and 1
+  EXPECT_EQ(0, qr.GetVal<int>("Time", 0));
+  EXPECT_EQ(1, qr.GetVal<int>("Time", 1));
+  // second cycle (lines 2, 3 and 4) includes time steps 7, 8, and 9
+  EXPECT_EQ(7, qr.GetVal<int>("Time", 2));
+  EXPECT_EQ(8, qr.GetVal<int>("Time", 3));
+  EXPECT_EQ(9, qr.GetVal<int>("Time", 4));
+}
+
+TEST_F(StorageTest, FixedBuyingSize){
+  std::string config =
+    "   <in_commods> <val>spent_fuel</val> </in_commods> "
+    "   <out_commods> <val>dry_spent</val> </out_commods> "
+    "   <throughput>1</throughput>"
+    "   <buying_size_type>Fixed</buying_size_type>"
+    "   <buying_size_val>0.5</buying_size_val>";
+
+  int simdur = 2;
+
+  cyclus::MockSim sim(cyclus::AgentSpec (":cycamore:Storage"), config, simdur);
+
+  sim.AddSource("spent_fuel").Finalize();
+  int id = sim.Run();
+
+  cyclus::QueryResult qr = sim.db().Query("Resources", NULL);
+  EXPECT_NEAR(0.5, qr.GetVal<double>("Quantity", 0), 0.00001);
+  EXPECT_NEAR(0.5, qr.GetVal<double>("Quantity", 1), 0.00001);
+}
+
+TEST_F(StorageTest, UniformBuyingSize){
+  std::string config =
+    "   <in_commods> <val>spent_fuel</val> </in_commods> "
+    "   <out_commods> <val>dry_spent</val> </out_commods> "
+    "   <throughput>1</throughput>"
+    "   <buying_size_type>Uniform</buying_size_type>"
+    "   <buying_size_min>0.5</buying_size_min>"
+    "   <buying_size_max>0.7</buying_size_max>";
+
+  int simdur = 2;
+
+  cyclus::MockSim sim(cyclus::AgentSpec (":cycamore:Storage"), config, simdur);
+
+  sim.AddSource("spent_fuel").Finalize();
+  int id = sim.Run();
+
+  cyclus::QueryResult qr = sim.db().Query("Resources", NULL);
+  EXPECT_NEAR(0.56393, qr.GetVal<double>("Quantity", 0), 0.00001);
+  EXPECT_NEAR(0.68825, qr.GetVal<double>("Quantity", 1), 0.00001);
+}
+
+TEST_F(StorageTest, NormalBuyingSize){
+  std::string config =
+    "   <in_commods> <val>spent_fuel</val> </in_commods> "
+    "   <out_commods> <val>dry_spent</val> </out_commods> "
+    "   <throughput>1</throughput>"
+    "   <buying_size_type>Normal</buying_size_type>"
+    "   <buying_size_mean>0.5</buying_size_mean>"
+    "   <buying_size_stddev>0.1</buying_size_stddev>";
+
+  int simdur = 2;
+
+  cyclus::MockSim sim(cyclus::AgentSpec (":cycamore:Storage"), config, simdur);
+
+  sim.AddSource("spent_fuel").Finalize();
+
+  int id = sim.Run();
+
+  cyclus::QueryResult qr = sim.db().Query("Resources", NULL);
+  EXPECT_NEAR(0.64083, qr.GetVal<double>("Quantity", 0), 0.00001);
+  EXPECT_NEAR(0.32648, qr.GetVal<double>("Quantity", 1), 0.00001);
+}
+
+TEST_F(StorageTest, NormalActiveDormantBuyingSize){
+    std::string config =
+    "   <in_commods> <val>spent_fuel</val> </in_commods> "
+    "   <out_commods> <val>dry_spent</val> </out_commods> "
+    "   <throughput>1</throughput>"
+    "   <active_buying_frequency_type>Normal</active_buying_frequency_type>"
+    "   <active_buying_mean>3</active_buying_mean>"
+    "   <active_buying_stddev>1</active_buying_stddev>"
+    "   <dormant_buying_frequency_type>Normal</dormant_buying_frequency_type>"
+    "   <dormant_buying_mean>2</dormant_buying_mean>"
+    "   <dormant_buying_stddev>1</dormant_buying_stddev>"
+    "   <buying_size_type>Normal</buying_size_type>"
+    "   <buying_size_mean>0.5</buying_size_mean>"
+    "   <buying_size_stddev>0.1</buying_size_stddev>";
+
+    int simdur = 15;
+
+  cyclus::MockSim sim(cyclus::AgentSpec (":cycamore:Storage"), config, simdur);
+
+  sim.AddSource("spent_fuel").capacity(5).Finalize();
+  sim.AddSink("dry_spent").Finalize();
+
+  int id = sim.Run();
+
+  std::vector<cyclus::Cond> conds;
+  conds.push_back(cyclus::Cond("Commodity", "==", std::string("spent_fuel")));
+  cyclus::QueryResult qr = sim.db().Query("Transactions", &conds);
+  int n_trans = qr.rows.size();
+  EXPECT_EQ(10, n_trans) << "expected 10 transactions, got " << n_trans;
+  // confirm that transactions are only occurring during active periods
+  // first cycle includes time steps 0 - 3
+  EXPECT_EQ(0, qr.GetVal<int>("Time", 0));
+  EXPECT_EQ(3, qr.GetVal<int>("Time", 3));
+  // second cycle (rows 4 and 4) include time steps 6 and 7
+  EXPECT_EQ(6, qr.GetVal<int>("Time", 4));
+  EXPECT_EQ(7, qr.GetVal<int>("Time", 5));
+  // third cycle (row 6) includes time step 8 -9
+  EXPECT_EQ(8, qr.GetVal<int>("Time", 6));
+  EXPECT_EQ(9, qr.GetVal<int>("Time", 7));
+  // fourth cycle (rows  8, 9) includes time steps 13 - 14
+  EXPECT_EQ(13, qr.GetVal<int>("Time", 8));
+  EXPECT_EQ(14, qr.GetVal<int>("Time", 9));
+
+  qr = sim.db().Query("Resources", NULL);
+  EXPECT_NEAR(0.61256, qr.GetVal<double>("Quantity", 0), 0.00001);
+  EXPECT_NEAR(0.62217, qr.GetVal<double>("Quantity", 1), 0.00001);
+  EXPECT_NEAR(0.39705, qr.GetVal<double>("Quantity", 2), 0.00001);
+}
+
+TEST_F(StorageTest, IncorrectBuyPolSetupUniform) {
+  // uniform missing min and max
+  std::string config_uniform =
+    "   <in_commods> <val>spent_fuel</val> </in_commods> "
+    "   <out_commods> <val>dry_spent</val> </out_commods> "
+    "   <throughput>1</throughput>"
+    "   <active_buying_frequency_type>Uniform</active_buying_frequency_type>";
+
+  int simdur = 15;
+
+  cyclus::MockSim sim(cyclus::AgentSpec (":cycamore:Storage"), config_uniform,
+                                         simdur);
+  EXPECT_THROW(sim.Run(), cyclus::ValueError);
+}
+
+TEST_F(StorageTest, IncorrectBuyPolSetupNormal) {
+  // normal missing mean and std dev
+  std::string config_normal =
+    "   <in_commods> <val>spent_fuel</val> </in_commods> "
+    "   <out_commods> <val>dry_spent</val> </out_commods> "
+    "   <throughput>1</throughput>"
+    "   <active_buying_frequency_type>Normal</active_buying_frequency_type>";
+  int simdur = 15;
+
+  cyclus::MockSim sim(cyclus::AgentSpec (":cycamore:Storage"), config_normal,
+                                         simdur);
+  EXPECT_THROW(sim.Run(), cyclus::ValueError);
+}
+
+TEST_F(StorageTest, IncorrectBuyPolSetupMinMax) {
+  // tries to set min > max
+  std::string config_uniform_min_bigger_max =
+    "   <in_commods> <val>spent_fuel</val> </in_commods> "
+    "   <out_commods> <val>dry_spent</val> </out_commods> "
+    "   <throughput>1</throughput>"
+    "   <active_buying_frequency_type>Uniform</active_buying_frequency_type>"
+    "   <active_buying_min>3</active_buying_min>"
+    "   <active_buying_max>2</active_buying_max>";
+
+  int simdur = 15;
+
+  cyclus::MockSim sim(cyclus::AgentSpec (":cycamore:Storage"), 
+                                         config_uniform_min_bigger_max, simdur);
+  EXPECT_THROW(sim.Run(), cyclus::ValueError);
+
+}
 
 TEST_F(StorageTest, PositionInitialize){
   // Verify Storage behavior
