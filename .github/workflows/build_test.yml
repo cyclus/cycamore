@@ -51,7 +51,6 @@ jobs:
           registry: ghcr.io
           username: ${{ github.repository_owner }}
           password: ${{ secrets.GITHUB_TOKEN }}
-          logout: false
 
       - name: Checkout Cycamore
         uses: actions/checkout@v4
@@ -95,8 +94,6 @@ jobs:
             pkg_mgr=${{ matrix.pkg_mgr }}
             ubuntu_version=${{ matrix.ubuntu_versions }}
             cycamore_tag=ci-image-cache@${{ steps.build-cycamore.outputs.digest }}
-          secrets: |
-            GIT_AUTH_TOKEN=${{ secrets.GITHUB_TOKEN }}
 
       - name: PR Comment
         if: ${{ github.event_name == 'pull_request' }}
