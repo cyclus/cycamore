@@ -766,7 +766,7 @@ TEST_F(StorageTest, sS_Inventory) {
   EXPECT_EQ(2, qr.GetVal<int>("Time", 1));
   EXPECT_EQ(4, qr.GetVal<int>("Time", 2));
 
-  // check that all transactions are of size 3
+  // check that all transactions are of size 5
   qr = sim.db().Query("Resources", NULL);
   EXPECT_EQ(5, qr.GetVal<double>("Quantity", 0));
 }
