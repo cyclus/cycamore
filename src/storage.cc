@@ -134,8 +134,10 @@ void Storage::EnterNotify() {
 
   inventory_tracker.set_capacity(max_inv_size);
   if (reorder_point < 0) {
+    InitBuyPolicyParameters();
     buy_policy.Init(this, &inventory, std::string("inventory"),
-                    &inventory_tracker, throughput);
+                    &inventory_tracker, throughput, active_dist_,
+                    dormant_dist_, size_dist_);
   }
   else if (reorder_quantity > 0) {
     if (reorder_point + reorder_quantity > max_inv_size) {
@@ -223,10 +225,6 @@ void Storage::Tick() {
   LOG(cyclus::LEV_INFO5, "ComCnv") << "Processing = " << processing.quantity() << ", ready = " << ready.quantity() << ", stocks = " << stocks.quantity() << " and max inventory = " << max_inv_size;
 
   LOG(cyclus::LEV_INFO4, "ComCnv") << "current capacity " << max_inv_size << " - " << processing.quantity() << " - " << ready.quantity() << " - " << stocks.quantity() << " = " << current_capacity();
-
-  // Set available capacity for Buy Policy
-  // not necessary any more
-  // inventory.capacity(current_capacity());
 
   if (current_capacity() > cyclus::eps_rsrc()) {
     LOG(cyclus::LEV_INFO4, "ComCnv")

@@ -298,10 +298,10 @@ class Storage
                       "uilabel": "Dormant Buying Frequency Type"}
   std::string dormant_buying_frequency_type;
 
-  #pragma cyclus var {"default": 0,\
+  #pragma cyclus var {"default": -1,\
                       "tooltip": "Fixed dormant buying frequency",\
                       "doc": "The length in time steps of the dormant buying period. Required for fixed "\
-                      "dormant_buying_frequency_type. Can be zero and agent will only be active (default behavior)",\
+                      "dormant_buying_frequency_type. Default is -1, agent has no dormant period and stays active.",\
                       "uitype": "range", \
                       "range": [-1, 1e299], \
                       "uilabel": "Dormant Buying Frequency Value"}
