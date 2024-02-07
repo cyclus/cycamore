@@ -639,7 +639,6 @@ TEST_F(StorageTest, NormalActiveDormantBuyingSize){
   conds.push_back(cyclus::Cond("Commodity", "==", std::string("spent_fuel")));
   cyclus::QueryResult qr = sim.db().Query("Transactions", &conds);
   int n_trans = qr.rows.size();
-
   EXPECT_EQ(10, n_trans) << "expected 10 transactions, got " << n_trans;
   // confirm that transactions are only occurring during active periods
   // first cycle includes time steps 0 - 3
