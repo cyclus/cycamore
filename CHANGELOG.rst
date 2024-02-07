@@ -8,6 +8,7 @@ cycamore Change Log
 * GitHub workflows for building/testing on a PR and push to `main` (#549, #564)
 * Add functionality for random behavior on the size (#550) and frequency (#565) of a sink 
 * GitHub workflow to check that the CHANGELOG has been updated (#562) 
+* Added inventory policies to Storage through the material buy policy (#574)
 
 **Changed:** 
 
