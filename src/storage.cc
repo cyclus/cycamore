@@ -10,6 +10,7 @@ Storage::Storage(cyclus::Context* ctx)
       latitude(0.0),
       longitude(0.0),
       coordinates(latitude, longitude) {
+  inventory_tracker.Init({&inventory, &stocks, &ready, &processing}, 1e299);
   cyclus::Warn<cyclus::EXPERIMENTAL_WARNING>(
       "The Storage Facility is experimental.");};
 
@@ -130,11 +131,28 @@ void Storage::InitBuyPolicyParameters() {
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 void Storage::EnterNotify() {
   cyclus::Facility::EnterNotify();
- 
-  InitBuyPolicyParameters();
-  
-  buy_policy.Init(this, &inventory, std::string("inventory"), throughput,
-                  active_dist_, dormant_dist_, size_dist_);
+
+  inventory_tracker.set_capacity(max_inv_size);
+  if (reorder_point < 0) {
+    InitBuyPolicyParameters();
+    buy_policy.Init(this, &inventory, std::string("inventory"),
+                    &inventory_tracker, throughput, active_dist_,
+                    dormant_dist_, size_dist_);
+  }
+  else if (reorder_quantity > 0) {
+    if (reorder_point + reorder_quantity > max_inv_size) {
+      throw cyclus::ValueError(
+          "reorder_point + reorder_quantity must be less than or equal to max_inv_size");
+    }
+    buy_policy.Init(this, &inventory, std::string("inventory"),
+                    &inventory_tracker, throughput, "RQ",
+                    reorder_quantity, reorder_point);
+  }
+  else {
+    buy_policy.Init(this, &inventory, std::string("inventory"),
+                    &inventory_tracker, throughput, "sS",
+                    max_inv_size, reorder_point);
+  }
 
   // dummy comp, use in_recipe if provided
   cyclus::CompMap v;
@@ -207,10 +225,6 @@ void Storage::Tick() {
   LOG(cyclus::LEV_INFO5, "ComCnv") << "Processing = " << processing.quantity() << ", ready = " << ready.quantity() << ", stocks = " << stocks.quantity() << " and max inventory = " << max_inv_size;
 
   LOG(cyclus::LEV_INFO4, "ComCnv") << "current capacity " << max_inv_size << " - " << processing.quantity() << " - " << ready.quantity() << " - " << stocks.quantity() << " = " << current_capacity();
-
-  // Set available capacity for Buy Policy
-  inventory.capacity(current_capacity());
-
 
   if (current_capacity() > cyclus::eps_rsrc()) {
     LOG(cyclus::LEV_INFO4, "ComCnv")

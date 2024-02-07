@@ -143,9 +143,11 @@ class Storage
     /* --- Storage Members --- */
 
   /// @brief current maximum amount that can be added to processing
-  inline double current_capacity() const {
-    return (max_inv_size - processing.quantity() - stocks.quantity()
-     - ready.quantity()); }
+  inline double current_capacity() {
+    return (inventory_tracker.space()); }
+
+  /// @brief returns total capacity
+  inline double capacity() { return inventory_tracker.capacity(); }
 
   /// @brief returns the time key for ready materials
   int ready_time(){ return context()->time() - residence_time; }
@@ -296,10 +298,10 @@ class Storage
                       "uilabel": "Dormant Buying Frequency Type"}
   std::string dormant_buying_frequency_type;
 
-  #pragma cyclus var {"default": 0,\
+  #pragma cyclus var {"default": -1,\
                       "tooltip": "Fixed dormant buying frequency",\
                       "doc": "The length in time steps of the dormant buying period. Required for fixed "\
-                      "dormant_buying_frequency_type. Can be zero and agent will only be active (default behavior)",\
+                      "dormant_buying_frequency_type. Default is -1, agent has no dormant period and stays active.",\
                       "uitype": "range", \
                       "range": [-1, 1e299], \
                       "uilabel": "Dormant Buying Frequency Value"}
@@ -401,6 +403,47 @@ class Storage
                       "uilabel": "Buying Size Standard Deviation"}
   double buying_size_stddev;
 
+  #pragma cyclus var {"default": -1,\
+                      "tooltip":"Reorder point",\
+                      "doc":"The point at which the facility will request more material. "\
+                      "Above this point, no request will be made. Must be less than max_inv_size."\
+                      "If paired with reorder_quantity, this agent will have an (R,Q) inventory policy. "\
+                      "If reorder_point is used alone, this agent will have an (s,S) inventory policy, "\
+                      " with S (the maximum) being set at max_inv_size.",\
+                      "uilabel":"Reorder Point"}
+  double reorder_point;
+
+  #pragma cyclus var {"default": -1,\
+                      "tooltip":"Reorder amount (R,Q inventory policy)",\
+                      "doc":"The amount of material that will be requested when the reorder point is reached. "\
+                      "Exclusive request, so will demand exactly reorder_quantity."\
+                      "Reorder_point + reorder_quantity must be less than max_inv_size.",\
+                      "uilabel":"Reorder Quantity"}
+  double reorder_quantity;
+
+  #pragma cyclus var {"default": 1,\
+                      "tooltip": "Length of the active buying "\
+                        "period",\
+                      "doc":"During the length of the active buying "\
+                        "period, agent exhibits regular behavior. "\
+                        "If paired with dormant buying period, "\
+                        "alternates between buying and not buying, "\
+                        "regardless if space is available",\
+                      "uilabel":"Active Buying Period"}
+  int active_buying;
+
+  #pragma cyclus var {"default": 0,\
+                      "tooltip": "Length of the dormant buying "\
+                        "period",\
+                      "doc":"During the length of the dormant buying "\
+                        "period, agent will not request any new "\
+                        "material from the DRE. Paired with active "\
+                        "buying period, alternates between buying "\
+                        "and not buying, regardless if space is "\
+                        "available",\
+                      "uilabel":"Dormant (No Buying) Period"}
+  int dormant_buying;
+
   #pragma cyclus var {"tooltip":"Incoming material buffer"}
   cyclus::toolkit::ResBuf<cyclus::Material> inventory;
 
@@ -417,6 +460,9 @@ class Storage
 
   #pragma cyclus var {"tooltip":"Buffer for material still waiting for required residence_time"}
   cyclus::toolkit::ResBuf<cyclus::Material> processing;
+
+  #pragma cyclus var {"tooltip": "Total Inventory Tracker to restrict maximum agent inventory"}
+  cyclus::toolkit::TotalInvTracker inventory_tracker;
 
   //// A policy for requesting material
   cyclus::toolkit::MatlBuyPolicy buy_policy;

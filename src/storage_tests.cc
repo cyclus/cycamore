@@ -39,6 +39,7 @@ void StorageTest::SetUpStorage(){
   src_facility_->out_commods = out_c1;
   src_facility_->residence_time = residence_time;
   src_facility_->max_inv_size = max_inv_size;
+  src_facility_->inventory_tracker.set_capacity(max_inv_size);
   src_facility_->throughput = throughput;
   src_facility_->discrete_handling = discrete_handling;
 }
@@ -457,6 +458,7 @@ TEST_F(StorageTest, MultipleCommods){
   EXPECT_EQ(1, n_trans2) << "expected 1 transactions, got " << n_trans;
 }
 
+
 // Should get one transaction in a 2 step simulation when agent is active for
 // one step and dormant for one step
 TEST_F(StorageTest, ActiveDormant){
@@ -624,7 +626,7 @@ TEST_F(StorageTest, NormalActiveDormantBuyingSize){
     "   <buying_size_mean>0.5</buying_size_mean>"
     "   <buying_size_stddev>0.1</buying_size_stddev>";
 
-    int simdur = 15;
+  int simdur = 15;
 
   cyclus::MockSim sim(cyclus::AgentSpec (":cycamore:Storage"), config, simdur);
 
@@ -702,7 +704,6 @@ TEST_F(StorageTest, IncorrectBuyPolSetupMinMax) {
   cyclus::MockSim sim(cyclus::AgentSpec (":cycamore:Storage"), 
                                          config_uniform_min_bigger_max, simdur);
   EXPECT_THROW(sim.Run(), cyclus::ValueError);
-
 }
 
 TEST_F(StorageTest, PositionInitialize){
@@ -752,6 +753,86 @@ TEST_F(StorageTest, Longitude){
   EXPECT_EQ(qr.GetVal<double>("Latitude"), 50.0);
   EXPECT_EQ(qr.GetVal<double>("Longitude"), 35.0);
 }
+
+TEST_F(StorageTest, RQ_Inventory_Invalid) {
+  std::string config =
+    "   <in_commods> <val>spent_fuel</val> </in_commods> "
+    "   <out_commods> <val>dry_spent</val> </out_commods> "
+    "   <max_inv_size>5</max_inv_size>"
+    "   <reorder_point>2</reorder_point>"
+    "   <reorder_quantity>10</reorder_quantity>";
+
+  int simdur = 2;
+ 
+  cyclus::MockSim sim(cyclus::AgentSpec(":cycamore:Storage"), config, simdur);
+
+  EXPECT_THROW(int id = sim.Run(), cyclus::ValueError);
+}
+
+TEST_F(StorageTest, RQ_Inventory) {
+  std::string config =
+    "   <in_commods> <val>spent_fuel</val> </in_commods> "
+    "   <out_commods> <val>dry_spent</val> </out_commods> "
+    "   <max_inv_size>5</max_inv_size>"
+    "   <reorder_point>2</reorder_point>"
+    "   <reorder_quantity>3</reorder_quantity>";
+
+  int simdur = 5;
+
+  cyclus::MockSim sim(cyclus::AgentSpec (":cycamore:Storage"), config, simdur);
+
+  sim.AddSource("spent_fuel").capacity(5).Finalize();
+  sim.AddSink("dry_spent").Finalize();
+
+  int id = sim.Run();
+
+  std::vector<cyclus::Cond> conds;
+  conds.push_back(cyclus::Cond("Commodity", "==", std::string("spent_fuel")));
+  cyclus::QueryResult qr = sim.db().Query("Transactions", &conds);
+  int n_trans = qr.rows.size();
+
+  EXPECT_EQ(3, n_trans) << "expected 3 transactions, got " << n_trans;
+  // check that the transactions occur at the expected time (0, 2, 4)
+  EXPECT_EQ(0, qr.GetVal<int>("Time", 0));
+  EXPECT_EQ(2, qr.GetVal<int>("Time", 1));
+  EXPECT_EQ(4, qr.GetVal<int>("Time", 2));
+
+  // check that all transactions are of size 3
+  qr = sim.db().Query("Resources", NULL);
+  EXPECT_EQ(3, qr.GetVal<double>("Quantity", 0));
+}
+
+TEST_F(StorageTest, sS_Inventory) {
+  std::string config =
+    "   <in_commods> <val>spent_fuel</val> </in_commods> "
+    "   <out_commods> <val>dry_spent</val> </out_commods> "
+    "   <max_inv_size>5</max_inv_size>"
+    "   <reorder_point>2</reorder_point>";
+
+  int simdur = 5;
+
+  cyclus::MockSim sim(cyclus::AgentSpec (":cycamore:Storage"), config, simdur);
+
+  sim.AddSource("spent_fuel").capacity(5).Finalize();
+  sim.AddSink("dry_spent").Finalize();
+
+  int id = sim.Run();
+
+  std::vector<cyclus::Cond> conds;
+  conds.push_back(cyclus::Cond("Commodity", "==", std::string("spent_fuel")));
+  cyclus::QueryResult qr = sim.db().Query("Transactions", &conds);
+  int n_trans = qr.rows.size();
+  EXPECT_EQ(3, n_trans) << "expected 3 transactions, got " << n_trans;
+  // check that the transactions occur at the expected time (0, 2, 4)
+  EXPECT_EQ(0, qr.GetVal<int>("Time", 0));
+  EXPECT_EQ(2, qr.GetVal<int>("Time", 1));
+  EXPECT_EQ(4, qr.GetVal<int>("Time", 2));
+
+  // check that all transactions are of size 5
+  qr = sim.db().Query("Resources", NULL);
+  EXPECT_EQ(5, qr.GetVal<double>("Quantity", 0));
+}
+
 
 } // namespace cycamore
 
