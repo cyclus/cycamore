@@ -6,7 +6,6 @@ on:
   pull_request:
     paths:
       - '.github/workflows/publish_latest.yml'
-      - 'docker/**'
   push:
     branches:
       - main
@@ -68,7 +67,6 @@ jobs:
             cyclus_tag=latest
           
       - name: Checkout Cymetric
-        if: ${{ steps.build-cycamore.outcome == 'success' }}
         uses: actions/checkout@v4
         with:
           repository: cyclus/cymetric
@@ -76,7 +74,6 @@ jobs:
           path: $HOME/cymetric
 
       - name: Build and Test Cymetric
-        if: ${{ steps.build-cycamore.outcome == 'success' }}
         continue-on-error: true
         uses: docker/build-push-action@v5
         with:
