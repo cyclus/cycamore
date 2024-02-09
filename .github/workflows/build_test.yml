@@ -76,7 +76,7 @@ jobs:
         with:
           repository: cyclus/cymetric
           ref: tag-build-arg
-          path: $HOME/cymetric
+          path: ${{ github.workspace }}/cymetric
 
       - name: Build and Test Cymetric
         if: ${{ github.event_name == 'pull_request' && steps.build-cycamore.outcome == 'success' }}
@@ -84,8 +84,8 @@ jobs:
         continue-on-error: true
         uses: docker/build-push-action@v5
         with:
-          context: $HOME/cymetric
-          file: $HOME/cymetric/docker/Dockerfile
+          context: ${{ github.workspace }}/cymetric
+          file: ${{ github.workspace }}/cymetric/docker/Dockerfile
           cache-from: type=registry,ref=ghcr.io/cyclus/cymetric_${{ matrix.ubuntu_versions }}_${{ matrix.pkg_mgr }}/cymetric:ci-layer-cache
           cache-to: type=registry,ref=ghcr.io/cyclus/cymetric_${{ matrix.ubuntu_versions }}_${{ matrix.pkg_mgr }}/cymetric:ci-layer-cache,mode=max
           tags: ghcr.io/cyclus/cymetric_${{ matrix.ubuntu_versions }}_${{ matrix.pkg_mgr }}/cymetric:ci-image-cache
