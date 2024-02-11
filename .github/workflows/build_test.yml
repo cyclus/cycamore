@@ -5,21 +5,24 @@ on:
   workflow_dispatch:
   pull_request:
     paths-ignore:
-      - '.github/workflows/build_test_publish.yml'
-      - 'docker/**'
+      - '.github/workflows/publish_latest.yml'
+      - '.github/workflows/publish_release.yml'
       - 'doc/**'
       - 'CHANGELOG.rst'
   push:
     paths-ignore:
-      - '.github/workflows/build_test_publish.yml'
-      - 'docker/**'
+      - '.github/workflows/publish_latest.yml'
+      - '.github/workflows/publish_release.yml'
       - 'doc/**'
       - 'CHANGELOG.rst'
 
 jobs:
   build-and-test:
-
     runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      packages: write
+      pull-requests: write
 
     strategy:
       fail-fast: false
@@ -34,24 +37,73 @@ jobs:
         ]
         cyclus_tag: [
           latest,
+          stable,
         ]
-    
-    container:
-      image: ghcr.io/cyclus/cyclus_${{ matrix.ubuntu_versions }}_${{ matrix.pkg_mgr }}/cyclus:${{matrix.cyclus_tag}}
 
     steps:
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      - name: Log in to the Container registry
+        uses: docker/login-action@v3
+        with:
+          registry: ghcr.io
+          username: ${{ github.repository_owner }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
       - name: Checkout Cycamore
-        uses: actions/checkout@v3
+        uses: actions/checkout@v4
 
       - name: Build Cycamore
-        run: |
-          python install.py --prefix=/root/.local --cyclus-root=/root/.local -j 2 --build-type=Release --core-version 99999.99999
+        id: build-cycamore
+        continue-on-error: true
+        uses: docker/build-push-action@v5
+        with:
+          file: docker/Dockerfile
+          cache-from: type=registry,ref=ghcr.io/cyclus/cycamore_${{ matrix.ubuntu_versions }}_${{ matrix.pkg_mgr }}/cycamore:ci-layer-cache
+          cache-to: type=registry,ref=ghcr.io/cyclus/cycamore_${{ matrix.ubuntu_versions }}_${{ matrix.pkg_mgr }}/cycamore:ci-layer-cache,mode=max
+          tags: ghcr.io/cyclus/cycamore_${{ matrix.ubuntu_versions }}_${{ matrix.pkg_mgr }}/cycamore:ci-image-cache
+          push: true
+          build-args: |
+            pkg_mgr=${{ matrix.pkg_mgr }}
+            ubuntu_version=${{ matrix.ubuntu_versions }}
+            cyclus_tag=${{ matrix.cyclus_tag }}
 
-      - name: Cycamore Unit Tests
-        run: |
-          cycamore_unit_tests
+      - name: Checkout Cymetric
+        if: ${{ github.event_name == 'pull_request' && steps.build-cycamore.outcome == 'success' }}
+        uses: actions/checkout@v4
+        with:
+          repository: cyclus/cymetric
+          path: ${{ github.workspace }}/cymetric
 
-      - name: Cycamore Python Tests
-        run: |
-          export PYTHONPATH=$(find /root/.local/lib -type d -name 'python*.*' -print -quit)/site-packages
-          cd tests && python -m pytest
+      - name: Build and Test Cymetric
+        if: ${{ github.event_name == 'pull_request' && steps.build-cycamore.outcome == 'success' }}
+        id: build-cymetric
+        continue-on-error: true
+        uses: docker/build-push-action@v5
+        with:
+          context: ${{ github.workspace }}/cymetric
+          file: ${{ github.workspace }}/cymetric/docker/Dockerfile
+          cache-from: type=registry,ref=ghcr.io/cyclus/cymetric_${{ matrix.ubuntu_versions }}_${{ matrix.pkg_mgr }}/cymetric:ci-layer-cache
+          cache-to: type=registry,ref=ghcr.io/cyclus/cymetric_${{ matrix.ubuntu_versions }}_${{ matrix.pkg_mgr }}/cymetric:ci-layer-cache,mode=max
+          tags: ghcr.io/cyclus/cymetric_${{ matrix.ubuntu_versions }}_${{ matrix.pkg_mgr }}/cymetric:ci-image-cache
+          push: true
+          build-args: |
+            pkg_mgr=${{ matrix.pkg_mgr }}
+            ubuntu_version=${{ matrix.ubuntu_versions }}
+            cycamore_tag=ci-image-cache@${{ steps.build-cycamore.outputs.digest }}
+
+      - name: PR Comment
+        if: ${{ github.event_name == 'pull_request' }}
+        uses: thollander/actions-comment-pull-request@v2
+        with:
+          comment_tag: ${{ matrix.ubuntu_versions }}_${{ matrix.pkg_mgr }}_${{ matrix.cyclus_tag }}
+          message: |
+            ## Build statuses using cyclus_${{ matrix.ubuntu_versions }}_${{ matrix.pkg_mgr }}:${{ matrix.cyclus_tag }}
+            - Cycamore: ${{steps.build-cycamore.outcome == 'success' && '*Success* :white_check_mark:' || 
+                steps.build-cycamore.outcome == 'failure' && '**Failure** :x:' || 
+                '**Skipped due to upstream failure** :warning:'}}
+            - Cymetric: ${{steps.build-cymetric.outcome == 'success' && '*Success* :white_check_mark:' || 
+                steps.build-cymetric.outcome == 'failure' && '**Failure** :x:' || 
+                '**Skipped due to upstream failure** :warning:'}}
