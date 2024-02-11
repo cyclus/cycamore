@@ -5,7 +5,7 @@ cycamore Change Log
 .. current developments
 **Added:**
 
-* GitHub workflow for publishing images on release (#573)
+* GitHub workflow for publishing images on release (#573, #580)
 * GitHub workflows for building/testing on a PR and push to `main` (#549, #564, #573)
 * Add functionality for random behavior on the size (#550) and frequency (#565) of a sink 
 * GitHub workflow to check that the CHANGELOG has been updated (#562) 
