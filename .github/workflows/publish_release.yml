@@ -52,13 +52,13 @@ jobs:
       - name: Build, Test, and Push Cycamore
         uses: docker/build-push-action@v5
         with:
-          cache-from: type=registry,ref=ghcr.io/cyclus/cycamore_${{ matrix.ubuntu_versions }}_${{ matrix.pkg_mgr }}/cycamore:ci-layer-cache
-          cache-to: type=registry,ref=ghcr.io/cyclus/cycamore_${{ matrix.ubuntu_versions }}_${{ matrix.pkg_mgr }}/cycamore:ci-layer-cache,mode=max
+          cache-from: type=registry,ref=ghcr.io/${{ github.repository_owner }}/cycamore_${{ matrix.ubuntu_versions }}_${{ matrix.pkg_mgr }}/cycamore:ci-layer-cache
+          cache-to: type=registry,ref=ghcr.io/${{ github.repository_owner }}/cycamore_${{ matrix.ubuntu_versions }}_${{ matrix.pkg_mgr }}/cycamore:ci-layer-cache,mode=max
           file: docker/Dockerfile
           push: true
           tags: |
-            ghcr.io/cyclus/cycamore_${{ matrix.ubuntu_versions }}_${{ matrix.pkg_mgr }}/cycamore:${{ env.version_tag }}
-            ghcr.io/cyclus/cycamore_${{ matrix.ubuntu_versions }}_${{ matrix.pkg_mgr }}/cycamore:${{ env.stable_tag }}
+            ghcr.io/${{ github.repository_owner }}/cycamore_${{ matrix.ubuntu_versions }}_${{ matrix.pkg_mgr }}/cycamore:${{ env.version_tag }}
+            ghcr.io/${{ github.repository_owner }}/cycamore_${{ matrix.ubuntu_versions }}_${{ matrix.pkg_mgr }}/cycamore:${{ env.stable_tag }}
           build-args: |
             pkg_mgr=${{ matrix.pkg_mgr }}
             ubuntu_version=${{ matrix.ubuntu_versions }}
