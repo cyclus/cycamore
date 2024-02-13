@@ -108,7 +108,7 @@ jobs:
         if: github.event_name == 'pull_request'
         run: |
           echo "
-          ##### Build \`FROM cyclus_${{ matrix.ubuntu_versions }}_${{ matrix.pkg_mgr }}/cyclus:${{ matrix.cyclus }}\`
+          ##### Build \`FROM cyclus_${{ matrix.ubuntu_versions }}_${{ matrix.pkg_mgr }}/cyclus:${{ matrix.cyclus_tag }}\`
            - Cycamore: ${{ env.CYCAMORE_BUILD_STATUS }}
            - Cymetric: ${{ env.CYMETRIC_BUILD_STATUS }}" > ${{ env.ARTIFACT_NAME }}.txt
       
