@@ -107,7 +107,8 @@ jobs:
       - name: Construct Artifact
         if: github.event_name == 'pull_request'
         run: |
-          echo "Build \`FROM cyclus_${{ matrix.ubuntu_versions }}_${{ matrix.pkg_mgr }}/cyclus:${{ matrix.cyclus }}\`
+          echo "
+          ##### Build \`FROM cyclus_${{ matrix.ubuntu_versions }}_${{ matrix.pkg_mgr }}/cyclus:${{ matrix.cyclus }}\`
            - Cycamore: ${{ env.CYCAMORE_BUILD_STATUS }}
            - Cymetric: ${{ env.CYMETRIC_BUILD_STATUS }}" > ${{ env.ARTIFACT_NAME }}.txt
       
