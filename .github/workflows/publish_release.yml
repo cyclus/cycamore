@@ -1,6 +1,9 @@
 name: Publish Stable Cycamore
 
 on:
+  pull_request:
+    paths:
+      - '.github/workflows/publish_release.yml'
   release:
     types: [released]
 
@@ -31,7 +34,7 @@ jobs:
           echo "stable_tag=ci-image-cache" >> "$GITHUB_ENV"
 
       - name: Tag as stable
-        if: ${{ github.repository_owner == 'cyclus' }}
+        if: ${{ github.repository_owner == 'cyclus' && github.event_name == 'release' }}
         run: |
           echo "version_tag=${{ github.event.release.tag_name }}" >> "$GITHUB_ENV"
           echo "stable_tag=stable" >> "$GITHUB_ENV"
@@ -40,7 +43,7 @@ jobs:
         uses: docker/login-action@v3
         with:
           registry: ghcr.io
-          username: ${{ github.repository_owner }}
+          username: ${{ github.actor }}
           password: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Set up Docker Buildx
@@ -52,13 +55,12 @@ jobs:
       - name: Build, Test, and Push Cycamore
         uses: docker/build-push-action@v5
         with:
-          cache-from: type=registry,ref=ghcr.io/${{ github.repository_owner }}/cycamore_${{ matrix.ubuntu_versions }}_${{ matrix.pkg_mgr }}/cycamore:ci-layer-cache
-          cache-to: type=registry,ref=ghcr.io/${{ github.repository_owner }}/cycamore_${{ matrix.ubuntu_versions }}_${{ matrix.pkg_mgr }}/cycamore:ci-layer-cache,mode=max
+          cache-from: type=registry,ref=ghcr.io/cyclus/cycamore_${{ matrix.ubuntu_versions }}_${{ matrix.pkg_mgr }}/cycamore:ci-layer-cache
           file: docker/Dockerfile
           push: true
           tags: |
-            ghcr.io/${{ github.repository_owner }}/cycamore_${{ matrix.ubuntu_versions }}_${{ matrix.pkg_mgr }}/cycamore:${{ env.version_tag }}
-            ghcr.io/${{ github.repository_owner }}/cycamore_${{ matrix.ubuntu_versions }}_${{ matrix.pkg_mgr }}/cycamore:${{ env.stable_tag }}
+            ghcr.io/cyclus/cycamore_${{ matrix.ubuntu_versions }}_${{ matrix.pkg_mgr }}/cycamore:${{ env.version_tag }}
+            ghcr.io/cyclus/cycamore_${{ matrix.ubuntu_versions }}_${{ matrix.pkg_mgr }}/cycamore:${{ env.stable_tag }}
           build-args: |
             pkg_mgr=${{ matrix.pkg_mgr }}
             ubuntu_version=${{ matrix.ubuntu_versions }}
