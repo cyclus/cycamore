@@ -71,7 +71,6 @@ jobs:
         uses: actions/checkout@v4
         with:
           repository: cyclus/cymetric
-          ref: ci-updates
           path: ${{ github.workspace }}/cymetric
 
       - name: Build and Test Cymetric
