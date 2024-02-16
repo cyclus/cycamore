@@ -1,6 +1,6 @@
 ARG pkg_mgr=apt
 ARG ubuntu_version=22.04
-ARG cyclus_tag=stable
+ARG cyclus_tag=latest
 
 FROM ghcr.io/cyclus/cyclus_${ubuntu_version}_${pkg_mgr}/cyclus:${cyclus_tag} as cycamore
 ARG make_cores=2

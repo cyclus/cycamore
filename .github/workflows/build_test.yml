@@ -19,9 +19,6 @@ on:
 jobs:
   build-and-test:
     runs-on: ubuntu-latest
-    permissions:
-      contents: read
-      packages: write
 
     strategy:
       fail-fast: false
@@ -39,17 +36,18 @@ jobs:
           stable,
         ]
 
+    services:
+      registry:
+        image: registry:2
+        ports:
+          - 5000:5000
+
     steps:
 
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v3
-
-      - name: Log in to the Container registry
-        uses: docker/login-action@v3
         with:
-          registry: ghcr.io
-          username: ${{ github.repository_owner }}
-          password: ${{ secrets.GITHUB_TOKEN }}
+          driver-opts: network=host
 
       - name: Checkout Cycamore
         uses: actions/checkout@v4
@@ -60,9 +58,8 @@ jobs:
         uses: docker/build-push-action@v5
         with:
           file: docker/Dockerfile
-          cache-from: type=registry,ref=ghcr.io/${{ github.repository_owner }}/cycamore_${{ matrix.ubuntu_versions }}_${{ matrix.pkg_mgr }}/cycamore:ci-layer-cache
-          cache-to: type=registry,ref=ghcr.io/${{ github.repository_owner }}/cycamore_${{ matrix.ubuntu_versions }}_${{ matrix.pkg_mgr }}/cycamore:ci-layer-cache,mode=max
-          tags: ghcr.io/${{ github.repository_owner }}/cycamore_${{ matrix.ubuntu_versions }}_${{ matrix.pkg_mgr }}/cycamore:ci-image-cache
+          cache-from: type=registry,ref=ghcr.io/cyclus/cycamore_${{ matrix.ubuntu_versions }}_${{ matrix.pkg_mgr }}/cycamore:ci-layer-cache
+          tags: localhost:5000/cycamore:local
           push: true
           build-args: |
             pkg_mgr=${{ matrix.pkg_mgr }}
@@ -84,14 +81,12 @@ jobs:
         with:
           context: ${{ github.workspace }}/cymetric
           file: ${{ github.workspace }}/cymetric/docker/Dockerfile
-          cache-from: type=registry,ref=ghcr.io/${{ github.repository_owner }}/cymetric_${{ matrix.ubuntu_versions }}_${{ matrix.pkg_mgr }}/cymetric:ci-layer-cache
-          cache-to: type=registry,ref=ghcr.io/${{ github.repository_owner }}/cymetric_${{ matrix.ubuntu_versions }}_${{ matrix.pkg_mgr }}/cymetric:ci-layer-cache,mode=max
+          build-contexts: |
+            ghcr.io/cyclus/cycamore_${{ matrix.ubuntu_versions }}_${{ matrix.pkg_mgr }}/cycamore=docker-image://localhost:5000/cycamore:local
+          cache-from: type=registry,ref=ghcr.io/cyclus/cymetric_${{ matrix.ubuntu_versions }}_${{ matrix.pkg_mgr }}/cymetric:ci-layer-cache
           build-args: |
             pkg_mgr=${{ matrix.pkg_mgr }}
             ubuntu_version=${{ matrix.ubuntu_versions }}
-            cycamore_tag=ci-image-cache
-          build-contexts: |
-            ghcr.io/cyclus/cycamore_${{ matrix.ubuntu_versions }}_${{ matrix.pkg_mgr }}/cycamore:ci-image-cache=docker-image://ghcr.io/${{ github.repository_owner }}/cycamore_${{ matrix.ubuntu_versions }}_${{ matrix.pkg_mgr }}/cycamore:ci-image-cache@${{ steps.build-cycamore.outputs.digest }}
 
       - name: Export Environment Variables
         if: github.event_name == 'pull_request'
