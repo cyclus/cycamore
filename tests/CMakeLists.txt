@@ -20,7 +20,7 @@ INSTALL(FILES run_inputs.py
     COMPONENT testing
     )
 
-    # CMAKE_CONFIGURE_DEPENDS will force a rebuild on a change to the source file
+# CMAKE_CONFIGURE_DEPENDS will force a rebuild on a change to the source file
 FILE(GLOB test_files CONFIGURE_DEPENDS "${CMAKE_SOURCE_DIR}/src/*_tests.*")
 FOREACH(file ${test_files})
     SET_PROPERTY(
