@@ -1,4 +1,13 @@
 # ------------------- Add all Concrete Agents ----------------------------
+# CMAKE_CONFIGURE_DEPENDS will force a rebuild on a change to the source file
+FILE(GLOB test_files CONFIGURE_DEPENDS "${CMAKE_CURRENT_SOURCE_DIR}/*_tests.*")
+FOREACH(file ${test_files})
+    SET_PROPERTY(
+        DIRECTORY
+        APPEND
+        PROPERTY CMAKE_CONFIGURE_DEPENDS ${file}
+    )
+ENDFOREACH()
 
 EXECUTE_PROCESS(COMMAND git describe --tags OUTPUT_VARIABLE cycamore_version OUTPUT_STRIP_TRAILING_WHITESPACE)
 CONFIGURE_FILE(cycamore_version.h.in "${CMAKE_CURRENT_SOURCE_DIR}/cycamore_version.h" @ONLY)
