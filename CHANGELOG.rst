@@ -16,6 +16,7 @@ cycamore Change Log
 
 * Updated build procedure to use newer versions of packages in 2023 (#549)
 * Added active/dormant and request size variation from buy policy to Storage (#546, #568)
+* Update build procedure to force a rebuild when a test file is changed (#584)
 
 v1.5.5
 ====================
