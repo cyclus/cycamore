@@ -486,9 +486,9 @@ class Storage
   }
   double longitude;
 
-  boost::shared_ptr<cyclus::IntDistribution> active_dist_ = NULL;
-  boost::shared_ptr<cyclus::IntDistribution> dormant_dist_ = NULL;
-  boost::shared_ptr<cyclus::DoubleDistribution> size_dist_ = NULL;
+  cyclus::IntDistribution::Ptr active_dist_ = NULL;
+  cyclus::IntDistribution::Ptr dormant_dist_ = NULL;
+  cyclus::DoubleDistribution::Ptr size_dist_ = NULL;
 
   cyclus::toolkit::Position coordinates;
 
