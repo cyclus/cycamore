@@ -8,14 +8,14 @@ cycamore Change Log
 * Downstream testing in CI workflows (#573, #580, #582, #583)
 * GitHub workflow for publishing images on release (#573, #582, #583)
 * GitHub workflows for building/testing on a PR and push to `main` (#549, #564, #573, #582, #583)
-* Add functionality for random behavior on the size (#550) and frequency (#565) of a sink (#586)
+* Add functionality for random behavior on the size (#550) and frequency (#565) of a sink
 * GitHub workflow to check that the CHANGELOG has been updated (#562) 
 * Added inventory policies to Storage through the material buy policy (#574)
 
 **Changed:** 
 
 * Updated build procedure to use newer versions of packages in 2023 (#549)
-* Added active/dormant and request size variation from buy policy to Storage (#546, #568)
+* Added active/dormant and request size variation from buy policy to Storage (#546, #568, #586, #587)
 * Update build procedure to force a rebuild when a test file is changed (#584)
 
 v1.5.5
