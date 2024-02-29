@@ -421,29 +421,6 @@ class Storage
                       "uilabel":"Reorder Quantity"}
   double reorder_quantity;
 
-  #pragma cyclus var {"default": 1,\
-                      "tooltip": "Length of the active buying "\
-                        "period",\
-                      "doc":"During the length of the active buying "\
-                        "period, agent exhibits regular behavior. "\
-                        "If paired with dormant buying period, "\
-                        "alternates between buying and not buying, "\
-                        "regardless if space is available",\
-                      "uilabel":"Active Buying Period"}
-  int active_buying;
-
-  #pragma cyclus var {"default": 0,\
-                      "tooltip": "Length of the dormant buying "\
-                        "period",\
-                      "doc":"During the length of the dormant buying "\
-                        "period, agent will not request any new "\
-                        "material from the DRE. Paired with active "\
-                        "buying period, alternates between buying "\
-                        "and not buying, regardless if space is "\
-                        "available",\
-                      "uilabel":"Dormant (No Buying) Period"}
-  int dormant_buying;
-
   #pragma cyclus var {"tooltip":"Incoming material buffer"}
   cyclus::toolkit::ResBuf<cyclus::Material> inventory;
 
