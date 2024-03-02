@@ -133,11 +133,17 @@ void Storage::EnterNotify() {
   cyclus::Facility::EnterNotify();
 
   inventory_tracker.set_capacity(max_inv_size);
-  if (reorder_point < 0) {
+  if (reorder_point < 0 && cumulative_cap <= 0) {
     InitBuyPolicyParameters();
     buy_policy.Init(this, &inventory, std::string("inventory"),
                     &inventory_tracker, throughput, active_dist_,
                     dormant_dist_, size_dist_);
+  }
+  else if (cumulative_cap > 0) {
+    InitBuyPolicyParameters();
+    buy_policy.Init(this, &inventory, std::string("inventory"),
+                    &inventory_tracker, throughput, cumulative_cap,
+                    dormant_dist_);
   }
   else if (reorder_quantity > 0) {
     if (reorder_point + reorder_quantity > max_inv_size) {

@@ -421,6 +421,14 @@ class Storage
                       "uilabel":"Reorder Quantity"}
   double reorder_quantity;
 
+  #pragma cyclus var {"default": -1,\
+                      "tooltip": "Total amount of material that can be recieved per cycle.",\
+                      "doc": "After receiving this much material cumulatively, the agent will go dormant. "\
+                      "Must be paired with dormant_buying_frequency_type and any other dormant parameters. "\
+                      "The per-time step demand is unchanged except the cycle cap is almost reached.",\
+                      "uilabel": "Cumulative Cap"}
+  double cumulative_cap;
+
   #pragma cyclus var {"tooltip":"Incoming material buffer"}
   cyclus::toolkit::ResBuf<cyclus::Material> inventory;
 
