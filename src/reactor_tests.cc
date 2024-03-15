@@ -490,6 +490,62 @@ TEST(ReactorTests, PrefChange) {
   EXPECT_EQ(25, qr.rows.size()) << "failed to adjust preferences properly";
 }
 
+TEST(ReactorTests, PrefChange2) {
+  std::string config =
+     "  <fuel_inrecipes>  <val>uox_fresh</val> <val>mox_fresh</val> </fuel_inrecipes>  "
+     "  <fuel_outrecipes> <val>uox_spent</val> <val>mox_spent</val> </fuel_outrecipes>  "
+     "  <fuel_incommods>  <val>uox</val>       <val>mox</val>       </fuel_incommods>  "
+     "  <fuel_outcommods> <val>uox_waste</val> <val>mox_waste</val> </fuel_outcommods>  "
+     "  <fuel_prefs>      <val>2</val>         <val>1</val>         </fuel_prefs>  "
+     ""
+     "  <cycle_time>1</cycle_time>  "
+     "  <refuel_time>0</refuel_time>  "
+     "  <assem_size>300</assem_size>  "
+     "  <n_assem_core>1</n_assem_core>  "
+     "  <n_assem_batch>1</n_assem_batch>  "
+     ""
+     "  <pref_change_times>   <val>2</val>   <val>3</val>   </pref_change_times>  "
+     "  <pref_change_commods> <val>mox</val> <val>mox</val> </pref_change_commods>  "
+     "  <pref_change_values>  <val>3</val>   <val>1</val>   </pref_change_values>  ";
+
+  int simdur = 4;
+  cyclus::MockSim sim(cyclus::AgentSpec(":cycamore:Reactor"), config, simdur);
+  sim.AddSource("uox").Finalize();
+  sim.AddSource("mox").Finalize();
+  sim.AddRecipe("uox_fresh", c_uox());
+  sim.AddRecipe("uox_spent", c_spentuox());
+  sim.AddRecipe("mox_fresh", c_mox());
+  sim.AddRecipe("mox_spent", c_spentmox());
+  int aid = sim.Run();
+
+  std::vector<Cond> conds;
+  int resid;
+
+  conds.clear();
+  conds.push_back(Cond("Time", "==", 1));
+  conds.push_back(Cond("ReceiverId", "==", aid));
+  resid = sim.db().Query("Transactions", &conds).GetVal<int>("ResourceId");
+  MatQuery mq = MatQuery(sim.GetMaterial(resid));
+  EXPECT_TRUE(0 < mq.qty());
+  EXPECT_TRUE(0 == mq.mass(id("pu239")));
+  
+  conds.clear();
+  conds.push_back(Cond("Time", "==", 2));
+  conds.push_back(Cond("ReceiverId", "==", aid));
+  resid = sim.db().Query("Transactions", &conds).GetVal<int>("ResourceId");
+  mq = MatQuery(sim.GetMaterial(resid));
+  EXPECT_TRUE(0 < mq.qty());
+  EXPECT_TRUE(0 < mq.mass(id("pu239")));
+
+  conds.clear();
+  conds.push_back(Cond("Time", "==", 3));
+  conds.push_back(Cond("ReceiverId", "==", aid));
+  resid = sim.db().Query("Transactions", &conds).GetVal<int>("ResourceId");
+  mq = MatQuery(sim.GetMaterial(resid));
+  EXPECT_TRUE(0 < mq.qty());
+  EXPECT_TRUE(0 == mq.mass(id("pu239")));
+}
+
 TEST(ReactorTests, RecipeChange) {
   // it is important that the fuel_prefs not be present in the config below.
   std::string config =
