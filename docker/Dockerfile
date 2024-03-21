@@ -8,7 +8,7 @@ ARG make_cores=2
 COPY . /cycamore
 WORKDIR /cycamore
 
-RUN python install.py -j ${make_cores} --build-type=Release --core-version 999999.999999
+RUN python install.py -j ${make_cores} --build-type=Release
 
 FROM cycamore as cycamore-test
 RUN cycamore_unit_tests
