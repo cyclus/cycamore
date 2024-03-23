@@ -7,7 +7,7 @@ cycamore Change Log
 
 * Downstream testing in CI workflows (#573, #580, #582, #583)
 * GitHub workflow for publishing images on release (#573, #582, #583)
-* GitHub workflows for building/testing on a PR and push to `main` (#549, #564, #573, #582, #583)
+* GitHub workflows for building/testing on a PR and push to `main` (#549, #564, #573, #582, #583, #590)
 * Add functionality for random behavior on the size (#550) and frequency (#565) of a sink
 * GitHub workflow to check that the CHANGELOG has been updated (#562) 
 * Added inventory policies to Storage through the material buy policy (#574, #588)
