@@ -137,5 +137,5 @@ jobs:
       - name: Upload Commit hash artifact
         uses: actions/upload-artifact@v4
         with:
-          name: commit_hash
-          path: commit_hash
+          name: commit_hash_timestamp
+          path: commit_hash_timestamp
