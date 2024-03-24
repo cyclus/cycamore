@@ -120,10 +120,13 @@ jobs:
     runs-on: ubuntu-latest
     if: github.event_name == 'pull_request'
     steps:
+      - name: Checkout cycamore
+        uses: actions/checkout@v4
+
       - name: Save PR number to file
         run: |
           echo "${{ github.event.number }}" > pr_number
-          echo "${{ github.event.pull_request.head.sha }}" > commit_hash
+          echo "${{ github.event.pull_request.head.sha }} - $(git log -1 --format=%ci)" > commit_hash_timestamp
       
       - name: Upload PR number artifact
         uses: actions/upload-artifact@v4
