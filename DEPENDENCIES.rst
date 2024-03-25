@@ -98,13 +98,13 @@ installation procedure also assumes that you have root access to you computer.
 
       * - Ubuntu 20.04
         - `Standard install
-          <https://github.com/bennibbelink/cyclus/releases/latest>`_ 
+          <https://github.com/cyclus/cyclus/releases/latest>`_ 
       * - Ubuntu 22.04
         - `Standard install
-          <https://github.com/bennibbelink/cyclus/releases/latest>`_ 
+          <https://github.com/cyclus/cyclus/releases/latest>`_ 
 
   You can download previous/different version `here
-   <https://github.com/bennibbelink/cyclus/releases>`_.
+   <https://github.com/cyclus/cyclus/releases>`_.
 
         
 #. Install the package by running:
