@@ -17,7 +17,7 @@ Cycamore's only dependency is the Cyclus Core.
 ====================   ==================
 Package                Minimum Version
 ====================   ==================
-`Cyclus`               1.4
+`Cyclus`               1.5
 ====================   ==================
 
 There are a number of ways to install the Cyclus core:
