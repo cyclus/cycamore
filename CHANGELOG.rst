@@ -18,6 +18,7 @@ cycamore Change Log
 * Added active/dormant and request size variation from buy policy to Storage (#546, #568, #586, #587)
 * Update build procedure to force a rebuild when a test file is changed (#584)
 * Define the version number in `CMakeLists.txt` and rely on CMake to propagate the version throughout the code (#589)
+* Update version numbers in documentation and fix references to `master` branch (#591)
 
 v1.5.5
 ====================

@@ -12,9 +12,9 @@ General Notes
 * Use a branching workflow similar to the one described at
   http://progit.org/book/ch3-4.html.
 
-* Keep your own "master"  branch in sync with the mainline
-  repository's "master" branch. Specifically, do not push your
-  own commits directly to your "master" branch.
+* Keep your own "main"  branch in sync with the mainline
+  repository's "main" branch. Specifically, do not push your
+  own commits directly to your "main" branch.
 
 * Any commit should *pass all tests* (see `Running Tests`_).
 
@@ -30,11 +30,11 @@ Issuing a Pull Request
 ======================
 
 * When you are ready to move changes from one of your topic branches into the
-  "master" branch, it must be reviewed and accepted by another developer.
+  "main" branch, it must be reviewed and accepted by another developer.
 
 * You may want to review this `tutorial
   <https://help.github.com/articles/using-pull-requests/>`_ before you make a
-  pull request to the master branch.
+  pull request to the main branch.
 
 Reviewing a Pull Request
 ========================
@@ -51,7 +51,7 @@ Reviewing a Pull Request
 * Click the green "Merge Pull Request" button
 
   * Note: if the button is not available, the requester needs to merge or rebase
-    from the current HEAD of the blessed's "master" branch.
+    from the current HEAD of the blessed's "main" branch.
 
 Running Tests
 =============
@@ -75,7 +75,7 @@ Cautions
 * **DO NOT** rebase any commits that have been pulled/pushed anywhere else other
   than your own fork (especially if those commits have been integrated into the
   blessed repository).  You should NEVER rebase commits that are a part of the
-  'master' branch. *If you do, we will never, ever accept your pull request*.
+  'main' branch. *If you do, we will never, ever accept your pull request*.
 
 An Example
 ==========
@@ -90,13 +90,13 @@ For the sake of simplicity, let us assume that we want a single "sandbox" branch
 in which we would like to work, i.e. where we can store all of our work that may not
 yet pass tests or even compile, but where we also want to save our progress. Let us
 call this branch "Work". So, when all is said and done, in our fork there will be
-three branches: "Master", "Develop", and "Work".
+three branches: "Main", "Develop", and "Work".
 
 Acquiring Cyclus and Workflow
 -----------------------------
 
 We begin with a fork of the main ("blessed") Cyclus repository. After initially forking
-the repo, we will have two branches in our fork: "Master" and "Develop".
+the repo, we will have two branches in our fork: "Main" and "Develop".
 
 Acquiring a Fork of the Cyclus Repository
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
@@ -111,9 +111,9 @@ First, let's make our "work" branch:
     .../cyclus_dir/$ git branch work
     .../cyclus_dir/$ git push origin work
 
-We now have the following situation: there exists the "blessed" copy of the Master and
-Develop branches, there exists your fork's copy of the Master, Develop, and Work branches,
-*AND* there exists your *local* copy of the Master, Develop, and Work branches. It is
+We now have the following situation: there exists the "blessed" copy of the Main and
+Develop branches, there exists your fork's copy of the Main, Develop, and Work branches,
+*AND* there exists your *local* copy of the Main, Develop, and Work branches. It is
 important now to note that you may wish to work from home or the office. If you keep your
 fork's branches up to date (i.e., "push" your changes before you leave), only your *local*
 copies of your branches may be different when you next sit down at the other location.
@@ -128,22 +128,22 @@ work, finished, and successfully pushed your changes to your *Origin*
 repository. You are now at home and want to continue working a bit. To begin,
 let's update our *home's local branches*.  ::
 
-    .../cyclus_dir/$ git checkout master
-    .../cyclus_dir/$ git pull upstream master
-    .../cyclus_dir/$ git push origin master
+    .../cyclus_dir/$ git checkout main
+    .../cyclus_dir/$ git pull upstream main
+    .../cyclus_dir/$ git push origin main
 
     .../cyclus_dir/$ git checkout work
     .../cyclus_dir/$ git pull origin work
-    .../cyclus_dir/$ git rebase master
+    .../cyclus_dir/$ git rebase main
     .../cyclus_dir/$ git push origin work
 
 Perhaps a little explanation is required. We first want to make sure that this new local copy of
-the master branch is up-to-date with respect to the remote origin's branch and remote upstream's
+the main branch is up-to-date with respect to the remote origin's branch and remote upstream's
 branch. If there was a change from the remote upstream's branch, we want to push that to origin.
 We then follow the same process to update the work branch, except:
 
 #. we don't need to worry about the *upstream* repo because it doesn't have a work branch, and
-#. we want to incorporate any changes which may have been introduced in the master branch update.
+#. we want to incorporate any changes which may have been introduced in the main branch update.
 
 Workflow: The End
 ^^^^^^^^^^^^^^^^^
@@ -176,5 +176,5 @@ Releases
 
 If you are going through a release of Cyclus and Cycamore, check out the release
 procedure notes `here
-<https://github.com/cyclus/cyclus/blob/master/doc/release_procedure.rst>`_ and
+<https://github.com/cyclus/cyclus/blob/main/doc/release_procedure.rst>`_ and
 on the `website <http://fuelcycle.org/cep/cep3.html>`_.
