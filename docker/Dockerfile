@@ -10,6 +10,13 @@ WORKDIR /cycamore
 
 RUN python install.py -j ${make_cores} --build-type=Release
 
+FROM cycamore as deb-generation
+WORKDIR /cyclus/build
+RUN make package
+
+FROM scratch as deb-package
+COPY --from=deb-generation /cycamore/build/cycamore*.deb /
+
 FROM cycamore as cycamore-test
 RUN cycamore_unit_tests
 
