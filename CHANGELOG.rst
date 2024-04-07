@@ -6,7 +6,7 @@ cycamore Change Log
 **Added:**
 
 * Downstream testing in CI workflows (#573, #580, #582, #583)
-* GitHub workflow for publishing images on release (#573, #582, #583)
+* GitHub workflow for publishing images and debian packages on release (#573, #582, #583, #593)
 * GitHub workflows for building/testing on a PR and push to `main` (#549, #564, #573, #582, #583, #590)
 * Add functionality for random behavior on the size (#550) and frequency (#565) of a sink
 * GitHub workflow to check that the CHANGELOG has been updated (#562) 
