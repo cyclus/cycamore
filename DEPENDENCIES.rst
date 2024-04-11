@@ -103,8 +103,7 @@ installation procedure also assumes that you have root access to you computer.
         - `Standard install
           <https://github.com/cyclus/cyclus/releases/latest>`_ 
 
-  You can download previous/different version `here
-   <https://github.com/cyclus/cyclus/releases>`_.
+  You can download previous/different version `here<https://github.com/cyclus/cyclus/releases>`_.
 
         
 #. Install the package by running:
