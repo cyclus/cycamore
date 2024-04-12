@@ -92,7 +92,7 @@ installation procedure also assumes that you have root access to you computer.
    If you need/want more information about dependency installation please read the
    `dependency installation documentation`_.
 
-* Download the latest version Cyclus Core Debian installation package (previous version located `here <https://github.com/cyclus/cyclus/releases>`_):
+* Download the latest version Cyclus Core Debian installation package (previous versions located `here <https://github.com/cyclus/cyclus/releases>`_):
    
    .. list-table::
 
