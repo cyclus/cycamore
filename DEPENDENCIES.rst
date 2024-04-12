@@ -57,17 +57,17 @@ Conda
 ~~~~~~~~~~~~~~~~~~~~~
 
 
-* If you don't have Conda, start by installing the Python 3.x version of
+#. If you don't have Conda, start by installing the Python 3.x version of
    Anaconda_ (or miniconda_ for a more lightweight choice) to prepare it for
    Cyclus.
 
 .. website_include_conda_end
 
-* Once you have Conda installed, installing Cyclus straightforward.
+#. Once you have Conda installed, installing Cyclus straightforward.
 
-.. code-block:: bash
+   .. code-block:: bash
 
-   $ conda install -c conda-forge cyclus
+      $ conda install -c conda-forge cyclus
 
 
 .. website_include_deb_start
@@ -81,34 +81,34 @@ This installation procedure assumes that you are using Ubuntu (LTS) 20.04 or
 22.04. This method has only been tested on those Ubuntu versions. This
 installation procedure also assumes that you have root access to you computer.
 
-* Install Cyclus dependencies:
+#. Install Cyclus dependencies:
 
-.. code-block:: bash 
+   .. code-block:: bash 
 
-   $ sudo apt-get install libtcmalloc-minimal4 libboost-filesystem-dev libboost-program-options-dev libboost-serialization-dev libhdf5-dev libxml++2.6-dev coinor-libcbc-dev
+     $ sudo apt-get install libtcmalloc-minimal4 libboost-filesystem-dev libboost-program-options-dev libboost-serialization-dev libhdf5-dev libxml++2.6-dev coinor-libcbc-dev
+  
+   WARNING: This dependency list is ONLY correct for the debian binary
+   installation, additional dependencies are required to install from source.
+   If you need/want more information about dependency installation please read the
+   `dependency installation documentation`_.
 
-WARNING: This dependency list is ONLY correct for the debian binary
-installation, additional dependencies are required to install from source.
-If you need/want more information about dependency installation please read the
-`dependency installation documentation`_.
-
-* Download the latest version Cyclus Core Debian installation package (previous versions located `here <https://github.com/cyclus/cyclus/releases>`_):
+#. Download the latest version Cyclus Core Debian installation package (previous versions located `here <https://github.com/cyclus/cyclus/releases>`_):
    
-.. list-table::
+   .. list-table::
 
-   * - Ubuntu 20.04
-      - `Standard install
-         <https://github.com/cyclus/cyclus/releases/latest>`_ 
-   * - Ubuntu 22.04
-      - `Standard install
-         <https://github.com/cyclus/cyclus/releases/latest>`_ 
+      * - Ubuntu 20.04
+        - `Standard install
+          <https://github.com/cyclus/cyclus/releases/latest>`_ 
+      * - Ubuntu 22.04
+        - `Standard install
+          <https://github.com/cyclus/cyclus/releases/latest>`_ 
 
         
-* Install the package by running:
+#. Install the package by running:
 
-.. code-block:: bash 
+   .. code-block:: bash 
 
-   $ sudo dpkg -i cyclus-x.x.x-Linux.deb
+     $ sudo dpkg -i cyclus-x.x.x-Linux.deb
 
 .. website_include_deb_end
 
