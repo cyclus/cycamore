@@ -57,13 +57,13 @@ Conda
 ~~~~~~~~~~~~~~~~~~~~~
 
 
-1. If you don't have Conda, start by installing the Python 3.x version of
+* If you don't have Conda, start by installing the Python 3.x version of
    Anaconda_ (or miniconda_ for a more lightweight choice) to prepare it for
    Cyclus.
 
 .. website_include_conda_end
 
-2. Once you have Conda installed, installing Cyclus straightforward.
+* Once you have Conda installed, installing Cyclus straightforward.
 
    .. code-block:: bash
 
