@@ -81,7 +81,7 @@ This installation procedure assumes that you are using Ubuntu (LTS) 20.04 or
 22.04. This method has only been tested on those Ubuntu versions. This
 installation procedure also assumes that you have root access to you computer.
 
-#. Install Cyclus dependencies:
+* Install Cyclus dependencies:
 
    .. code-block:: bash 
 
@@ -92,7 +92,7 @@ installation procedure also assumes that you have root access to you computer.
    If you need/want more information about dependency installation please read the
    `dependency installation documentation`_.
 
-#. Download the latest version Cyclus Core Debian installation package:
+* Download the latest version Cyclus Core Debian installation package:
    
    .. list-table::
 
@@ -106,7 +106,7 @@ installation procedure also assumes that you have root access to you computer.
 You can download previous/different version `here <https://github.com/cyclus/cyclus/releases>`_.
 
         
-#. Install the package by running:
+* Install the package by running:
 
    .. code-block:: bash 
 
