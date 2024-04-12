@@ -65,9 +65,9 @@ Conda
 
 * Once you have Conda installed, installing Cyclus straightforward.
 
-   .. code-block:: bash
+.. code-block:: bash
 
-      $ conda install -c conda-forge cyclus
+   $ conda install -c conda-forge cyclus
 
 
 .. website_include_deb_start
@@ -83,32 +83,32 @@ installation procedure also assumes that you have root access to you computer.
 
 * Install Cyclus dependencies:
 
-   .. code-block:: bash 
+.. code-block:: bash 
 
-     $ sudo apt-get install libtcmalloc-minimal4 libboost-filesystem-dev libboost-program-options-dev libboost-serialization-dev libhdf5-dev libxml++2.6-dev coinor-libcbc-dev
-  
-   WARNING: This dependency list is ONLY correct for the debian binary
-   installation, additional dependencies are required to install from source.
-   If you need/want more information about dependency installation please read the
-   `dependency installation documentation`_.
+   $ sudo apt-get install libtcmalloc-minimal4 libboost-filesystem-dev libboost-program-options-dev libboost-serialization-dev libhdf5-dev libxml++2.6-dev coinor-libcbc-dev
+
+WARNING: This dependency list is ONLY correct for the debian binary
+installation, additional dependencies are required to install from source.
+If you need/want more information about dependency installation please read the
+`dependency installation documentation`_.
 
 * Download the latest version Cyclus Core Debian installation package (previous versions located `here <https://github.com/cyclus/cyclus/releases>`_):
    
-   .. list-table::
+.. list-table::
 
-      * - Ubuntu 20.04
-        - `Standard install
-          <https://github.com/cyclus/cyclus/releases/latest>`_ 
-      * - Ubuntu 22.04
-        - `Standard install
-          <https://github.com/cyclus/cyclus/releases/latest>`_ 
+   * - Ubuntu 20.04
+      - `Standard install
+         <https://github.com/cyclus/cyclus/releases/latest>`_ 
+   * - Ubuntu 22.04
+      - `Standard install
+         <https://github.com/cyclus/cyclus/releases/latest>`_ 
 
         
 * Install the package by running:
 
-   .. code-block:: bash 
+.. code-block:: bash 
 
-     $ sudo dpkg -i cyclus-x.x.x-Linux.deb
+   $ sudo dpkg -i cyclus-x.x.x-Linux.deb
 
 .. website_include_deb_end
 
