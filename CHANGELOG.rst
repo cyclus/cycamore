@@ -14,7 +14,7 @@ cycamore Change Log
 
 **Changed:** 
 
-* Updated build procedure to use newer versions of packages in 2023 (#549, #596)
+* Updated build procedure to use newer versions of packages and compilers in 2023 (#549, #596, #599)
 * Added active/dormant and request size variation from buy policy to Storage (#546, #568, #586, #587)
 * Update build procedure to force a rebuild when a test file is changed (#584)
 * Define the version number in `CMakeLists.txt` and rely on CMake to propagate the version throughout the code (#589)
