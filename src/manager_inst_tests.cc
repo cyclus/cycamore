@@ -60,7 +60,7 @@ static int cyclus_agent_tests_connected = ConnectAgentTests();
 #endif  // CYCLUS_AGENT_TESTS_CONNECTED
 
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-INSTANTIATE_TEST_CASE_P(ManagerInst, InstitutionTests,
+INSTANTIATE_TEST_SUITE_P(ManagerInst, InstitutionTests,
                         Values(&ManagerInstitutionConstructor));
-INSTANTIATE_TEST_CASE_P(ManagerInst, AgentTests,
+INSTANTIATE_TEST_SUITE_P(ManagerInst, AgentTests,
                         Values(&ManagerInstitutionConstructor));

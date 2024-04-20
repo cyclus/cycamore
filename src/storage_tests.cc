@@ -885,8 +885,8 @@ static int cyclus_agent_tests_connected = ConnectAgentTests();
 #endif // CYCLUS_AGENT_TESTS_CONNECTED
 
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-INSTANTIATE_TEST_CASE_P(StorageFac, FacilityTests,
+INSTANTIATE_TEST_SUITE_P(StorageFac, FacilityTests,
                         ::testing::Values(&StorageConstructor));
 
-INSTANTIATE_TEST_CASE_P(StorageFac, AgentTests,
+INSTANTIATE_TEST_SUITE_P(StorageFac, AgentTests,
                         ::testing::Values(&StorageConstructor));

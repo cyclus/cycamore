@@ -49,8 +49,8 @@ static int cyclus_agent_tests_connected = ConnectAgentTests();
 #endif  // CYCLUS_AGENT_TESTS_CONNECTED
 
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-INSTANTIATE_TEST_CASE_P(GrowthRegion, RegionTests,
+INSTANTIATE_TEST_SUITE_P(GrowthRegion, RegionTests,
                         Values(&GrowthRegionConstructor));
-INSTANTIATE_TEST_CASE_P(GrowthRegion, AgentTests,
+INSTANTIATE_TEST_SUITE_P(GrowthRegion, AgentTests,
                         Values(&GrowthRegionConstructor));
 #endif  // CYCLUS_HAS_COIN
