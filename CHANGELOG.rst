@@ -20,6 +20,7 @@ cycamore Change Log
 * Define the version number in `CMakeLists.txt` and rely on CMake to propagate the version throughout the code (#589)
 * Update version numbers in documentation and fix references to `master` branch (#591)
 * Update build procedure to link against Cyclus' cython generated libraries if needed (#596)
+* Minor modifications for compatibility with the latest GTest library (#598)
 
 v1.5.5
 ====================
