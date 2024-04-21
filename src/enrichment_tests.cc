@@ -798,7 +798,7 @@ static int cyclus_agent_tests_connected = ConnectAgentTests();
 #endif  // CYCLUS_AGENT_TESTS_CONNECTED
 
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-INSTANTIATE_TEST_CASE_P(EnrichmentFac, FacilityTests,
+INSTANTIATE_TEST_SUITE_P(EnrichmentFac, FacilityTests,
                         Values(&EnrichmentConstructor));
-INSTANTIATE_TEST_CASE_P(EnrichmentFac, AgentTests,
+INSTANTIATE_TEST_SUITE_P(EnrichmentFac, AgentTests,
                         Values(&EnrichmentConstructor));
