@@ -57,18 +57,24 @@ Conda
 ~~~~~~~~~~~~~~~~~~~~~
 
 
-1. If you don't have Conda, start by installing the Python 3.x version of
+#. If you don't have Conda, start by installing the Python 3.x version of
    Anaconda_ (or miniconda_ for a more lightweight choice) to prepare it for
    Cyclus.
 
-.. website_include_conda_end
-
-2. Once you have Conda installed, installing Cyclus straightforward.
+#. Once you have conda installed, installing Cyclus and Cycamore is
+   straightforward. If you are having issues with certificate verification
+   you may install using the second set of commands to fix these issues. 
 
    .. code-block:: bash
 
-      $ conda install -c conda-forge cyclus
+      $ conda install -c conda-forge cycamore
 
+   .. code-block:: bash
+
+      $ conda config --set ssl_verify false
+      $ conda install -c conda-forge cycamore
+
+.. website_include_conda_end
 
 .. website_include_deb_start
 
@@ -92,7 +98,7 @@ installation procedure also assumes that you have root access to you computer.
    If you need/want more information about dependency installation please read the
    `dependency installation documentation`_.
 
-#. Download the latest version Cyclus Core Debian installation package:
+#. Download the latest version Cyclus Core Debian installation package (previous versions located `here <https://github.com/cyclus/cyclus/releases>`_):
    
    .. list-table::
 
@@ -102,9 +108,6 @@ installation procedure also assumes that you have root access to you computer.
       * - Ubuntu 22.04
         - `Standard install
           <https://github.com/cyclus/cyclus/releases/latest>`_ 
-
-  You can download previous/different version `here
-   <https://github.com/cyclus/cyclus/releases>`_.
 
         
 #. Install the package by running:
