@@ -184,7 +184,8 @@ def main():
     parser.add_argument('--cmake_prefix_path', help=cmake_prefix_path)
 
     build_type = "the CMAKE_BUILD_TYPE"
-    parser.add_argument('--build-type', '--build_type', help=build_type)
+    parser.add_argument('--build-type', '--build_type', help=build_type,
+                        default='Release')
 
     parser.add_argument('-D', metavar='VAR', action='append',
                         help='Set enviornment variable(s).')
