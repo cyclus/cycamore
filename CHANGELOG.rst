@@ -23,6 +23,7 @@ cycamore Change Log
 * Minor modifications for compatibility with the latest GTest library (#598)
 * Remove FindCyclus.cmake from this repo since it is installed with Cyclus (#597)
 * Default to a Release build when installing via python script (#600)
+* Update pytests to skip appropriately when COIN is not supported (#601)
 
 v1.5.5
 ====================
