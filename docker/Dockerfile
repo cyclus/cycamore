@@ -8,7 +8,7 @@ ARG make_cores=2
 COPY . /cycamore
 WORKDIR /cycamore
 
-RUN python install.py -j ${make_cores} --build-type=Release --allow-milps
+RUN python install.py -j ${make_cores} --allow-milps
 
 FROM cycamore as deb-generation
 WORKDIR /cycamore/build
