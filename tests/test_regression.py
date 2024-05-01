@@ -13,7 +13,7 @@ from cyclus.lib import Env
 from pytest import skip
 
 import helper
-from helper import check_cmd, run_cyclus, table_exist, cyclus_has_coin
+from helper import run_cyclus
 
 
 ALLOW_MILPS = Env().allow_milps
@@ -276,9 +276,8 @@ class TestDynamicCapacitated(TestRegression):
     """   
     @classmethod
     def setup_class(cls):
+        skip_if_dont_allow_milps()
         super(TestDynamicCapacitated, cls).setup_class("./input/dynamic_capacitated.xml")
-        if not cyclus_has_coin():
-            raise skip('Cyclus not compiled with COIN')
 
         # Find agent ids of source and sink facilities
         cls.agent_ids = cls.to_ary(cls.agent_entry, "AgentId")
@@ -380,9 +379,8 @@ class TestGrowth1(TestRegression):
     """
     @classmethod
     def setup_class(cls):
+        skip_if_dont_allow_milps()
         super(TestGrowth1, cls).setup_class("./input/growth.xml")
-        if not cyclus_has_coin():
-            raise skip('Cyclus not compiled with COIN')
 
     @classmethod
     def teardown_class(cls):
@@ -425,9 +423,8 @@ class TestGrowth2(TestRegression):
     """
     @classmethod
     def setup_class(cls):
+        skip_if_dont_allow_milps()
         super(TestGrowth2, cls).setup_class("../input/growth/deploy_and_manager_insts.xml")
-        if not cyclus_has_coin():
-            raise skip('Cyclus not compiled with COIN')
 
     @classmethod
     def teardown_class(cls):
@@ -465,9 +462,8 @@ class TestDeployInst(TestRegression):
     """        
     @classmethod
     def setup_class(cls):
+        skip_if_dont_allow_milps()
         super(TestDeployInst, cls).setup_class("../input/deploy_inst.xml")
-        if not cyclus_has_coin():
-            raise skip('Cyclus not compiled with COIN')
 
     @classmethod
     def teardown_class(cls):
