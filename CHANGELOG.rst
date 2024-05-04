@@ -2,7 +2,21 @@
 cycamore Change Log
 =================
 
-.. current developments
+Since last release
+======================
+
+**Added:**
+
+**Changed:**
+
+**Fixed:**
+
+**Removed:**
+
+
+v1.6.0
+====================
+
 **Added:**
 
 * Downstream testing in CI workflows (#573, #580, #582, #583)
@@ -46,8 +60,6 @@ v1.5.4
 **Changed:** 
 
 - All cycamore archetypes have been edited to now include Cyclus::toolkit::Position.
-
-
 
 
 v1.5.3
