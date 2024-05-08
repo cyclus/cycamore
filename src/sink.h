@@ -126,7 +126,7 @@ class Sink
                       "doc":"preferences for each of the given commodities, in the same order."\
                       "Defauts to 1 if unspecified",\
                       "uilabel":"In Commody Preferences", \
-                      "range": [None, [1e-299, 1e299]], \
+                      "range": [None, ["kConstraintEps", "kLinBoundLimit"]], \
                       "uitype":["oneormore", "range"]}
   std::vector<double> in_commod_prefs;
 
@@ -140,20 +140,20 @@ class Sink
   std::string recipe_name;
 
   /// max inventory size
-  #pragma cyclus var {"default": 1e299, \
+  #pragma cyclus var {"default": "kLinBoundLimit", \
                       "tooltip": "sink maximum inventory size", \
                       "uilabel": "Maximum Inventory", \
                       "uitype": "range", \
-                      "range": [0.0, 1e299], \
+                      "range": [0.0, "kLinBoundLimit"], \
                       "doc": "total maximum inventory size of sink facility"}
   double max_inv_size;
 
   /// monthly acceptance capacity
-  #pragma cyclus var {"default": 1e299, \
+  #pragma cyclus var {"default": "kLinBoundLimit", \
                       "tooltip": "sink capacity", \
                       "uilabel": "Maximum Throughput", \
                       "uitype": "range", \
-                      "range": [0.0, 1e299], \
+                      "range": [0.0, "kLinBoundLimit"], \
                       "doc": "capacity the sink facility can " \
                              "accept at each time step"}
   double capacity;
@@ -179,7 +179,7 @@ class Sink
                       "tooltip": "fraction of available space to determine the mean", \
                       "uilabel": "Random Size Mean", \
                       "uitype": "range", \
-                      "range": [0.0, 1e299], \
+                      "range": [0.0, "kLinBoundLimit"], \
                       "doc": "When a normal distribution is used to determine the " \
                              "size of the request, this is the fraction of available " \
                              "space to use as the mean. Default 1.0. Note " \
@@ -193,7 +193,7 @@ class Sink
                       "tooltip": "fraction of available space to determine the std dev", \
                       "uilabel": "Random Size Std Dev", \
                       "uitype": "range", \
-                      "range": [0.0, 1e299], \
+                      "range": [0.0, "kLinBoundLimit"], \
                       "doc": "When a normal distribution is used to determine the " \
                              "size of the request, this is the fraction of available " \
                              "space to use as the standard deviation. Default 0.1"}
@@ -220,7 +220,7 @@ class Sink
                       "tooltip": "mean of the random frequency", \
                       "uilabel": "Random Frequency Mean", \
                       "uitype": "range", \
-                      "range": [0.0, 1e299], \
+                      "range": [0.0, "kLinBoundLimit"], \
                       "doc": "When a normal distribution is used to determine the " \
                              "frequency of the request, this is the mean. Default 1"}
   double random_frequency_mean;
@@ -230,7 +230,7 @@ class Sink
                       "tooltip": "std dev of the random frequency", \
                       "uilabel": "Random Frequency Std Dev", \
                       "uitype": "range", \
-                      "range": [0.0, 1e299], \
+                      "range": [0.0, "kLinBoundLimit"], \
                       "doc": "When a normal distribution is used to determine the " \
                              "frequency of the request, this is the standard deviation. Default 1"}
   double random_frequency_stddev;
@@ -240,19 +240,19 @@ class Sink
                       "tooltip": "lower bound of the random frequency", \
                       "uilabel": "Random Frequency Lower Bound", \
                       "uitype": "range", \
-                      "range": [1, 1e299], \
+                      "range": [1, "kIntBoundLimit"], \
                       "doc": "When a random distribution is used to determine the " \
                              "frequency of the request, this is the lower bound. Default 1"}
   int random_frequency_min;
 
   // random frequency upper bound
-  #pragma cyclus var {"default": 1e299, \
+  #pragma cyclus var {"default": "std::numeric_limits<int>::max()", \
                       "tooltip": "upper bound of the random frequency", \
                       "uilabel": "Random Frequency Upper Bound", \
                       "uitype": "range", \
-                      "range": [1, 1e299], \
+                      "range": [1, "kIntBoundLimit"], \
                       "doc": "When a random distribution is used to determine the " \
-                             "frequency of the request, this is the upper bound. Default 1e299"}
+                             "frequency of the request, this is the upper bound. Default cyclus::kLinBoundLimit"}
   int random_frequency_max;
 
   #pragma cyclus var { \

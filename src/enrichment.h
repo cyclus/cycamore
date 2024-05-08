@@ -324,10 +324,10 @@ class Enrichment
   double initial_feed;
 
   #pragma cyclus var {							\
-    "default": 1e299, "tooltip": "max inventory of feed material (kg)", \
+    "default": "kLinBoundLimit", "tooltip": "max inventory of feed material (kg)", \
     "uilabel": "Maximum Feed Inventory", \
     "uitype": "range", \
-    "range": [0.0, 1e299], \
+    "range": [0.0, "kLinBoundLimit"], \
     "doc": "maximum total inventory of natural uranium in "		\
            "the enrichment facility (kg)"     \
   }
@@ -362,11 +362,11 @@ class Enrichment
   bool order_prefs;
 
   #pragma cyclus var {						       \
-    "default": 1e299,						       \
+    "default": "kLinBoundLimit",						       \
     "tooltip": "SWU capacity (kgSWU/timestep)",			       \
     "uilabel": "SWU Capacity",                                         \
     "uitype": "range",                                                  \
-    "range": [0.0, 1e299],                                               \
+    "range": [0.0, "kLinBoundLimit"],                                               \
     "doc": "separative work unit (SWU) capacity of enrichment "		\
            "facility (kgSWU/timestep) "                                     \
   }

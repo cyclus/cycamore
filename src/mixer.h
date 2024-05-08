@@ -85,9 +85,9 @@ class Mixer
             " If full, the facility halts operation until space becomes" \
             " available.", \
     "uilabel": "Maximum Leftover Inventory", \
-    "default": 1e299, \
+    "default": "kLinBoundLimit", \
     "uitype": "range", \
-    "range": [0.0, 1e299], \
+    "range": [0.0, "kLinBoundLimit"], \
     "units": "kg", \
   }
   double out_buf_size;
@@ -96,11 +96,11 @@ class Mixer
   cyclus::toolkit::ResBuf<cyclus::Material> output;
 
 #pragma cyclus var { \
-    "default": 1e299, \
+    "default": "kLinBoundLimit", \
     "doc": "Maximum number of kg of fuel material that can be mixed per time step.", \
     "uilabel": "Maximum Throughput", \
     "uitype": "range", \
-    "range": [0.0, 1e299], \
+    "range": [0.0, "kLinBoundLimit"], \
     "units": "kg", \
   }
   double throughput;

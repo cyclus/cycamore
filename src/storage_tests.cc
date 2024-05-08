@@ -105,7 +105,7 @@ TEST_F(StorageTest, InitialState) {
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 TEST_F(StorageTest, CurrentCapacity){
   TestCurrentCap(src_facility_,max_inv_size);
-  max_inv_size = 1e299;
+  max_inv_size = cyclus::kLinBoundLimit;
   SetUpStorage();
   TestInitState(src_facility_);
 }
