@@ -8,7 +8,7 @@ ARG make_cores=2
 COPY . /cycamore
 WORKDIR /cycamore
 
-RUN python install.py -j ${make_cores} --allow-milps
+RUN python3 install.py -j ${make_cores} --allow-milps
 
 FROM cycamore as deb-generation
 WORKDIR /cycamore/build
@@ -21,4 +21,4 @@ FROM cycamore as cycamore-test
 RUN cycamore_unit_tests
 
 FROM cycamore-test as cycamore-pytest
-RUN cd tests && python -m pytest
+RUN cd tests && python3 -m pytest
