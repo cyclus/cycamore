@@ -147,9 +147,9 @@ class Separations
     "doc" : "Maximum quantity of feed material that can be processed per time "\
             "step.", \
     "uilabel": "Maximum Separations Throughput", \
-    "default": 1e299, \
+    "default": "kLinBoundLimit", \
     "uitype": "range", \
-    "range": [0.0, 1e299], \
+    "range": [0.0, "kLinBoundLimit"], \
     "units": "kg/(time step)", \
   }
   double throughput;
@@ -170,9 +170,9 @@ class Separations
             " If full, the facility halts operation until space becomes " \
             "available.", \
     "uilabel": "Maximum Leftover Inventory", \
-    "default": 1e299, \
+    "default": "kLinBoundLimit", \
     "uitype": "range", \
-    "range": [0.0, 1e299], \
+    "range": [0.0, "kLinBoundLimit"], \
     "units": "kg", \
   }
   double leftoverbuf_size;

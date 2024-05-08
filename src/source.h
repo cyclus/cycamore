@@ -97,21 +97,21 @@ class Source : public cyclus::Facility,
            " Every trade decreases this value by the supplied material " \
            "quantity.  When it reaches zero, the source cannot provide any " \
            " more material.", \
-    "default": 1e299, \
+    "default": "kLinBoundLimit", \
     "uitype": "range", \
-    "range": [0.0, 1e299], \
+    "range": [0.0, "kLinBoundLimit"], \
     "uilabel": "Initial Inventory", \
     "units": "kg", \
   }
   double inventory_size;
 
   #pragma cyclus var {  \
-    "default": 1e299, \
+    "default": "kLinBoundLimit", \
     "tooltip": "per time step throughput", \
     "units": "kg/(time step)", \
     "uilabel": "Maximum Throughput", \
     "uitype": "range", \
-    "range": [0.0, 1e299], \
+    "range": [0.0, "kLinBoundLimit"], \
     "doc": "amount of commodity that can be supplied at each time step", \
   }
   double throughput;

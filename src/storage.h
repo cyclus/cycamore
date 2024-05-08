@@ -165,7 +165,7 @@ class Storage
                       "doc":"preferences for each of the given commodities, in the same order."\
                       "Defauts to 1 if unspecified",\
                       "uilabel":"In Commody Preferences", \
-                      "range": [None, [1e-299, 1e299]], \
+                      "range": [None, ["kConstraintEps", "kLinBoundLimit"]], \
                       "uitype":["oneormore", "range"]}
   std::vector<double> in_commod_prefs;
 
@@ -199,25 +199,25 @@ class Storage
                       " offered", \
                       "uilabel":"Sell Quantity",\
                       "uitype": "range", \
-                      "range": [0.0, 1e299], \
+                      "range": [0.0, "kLinBoundLimit"], \
                       "units": "kg"}
   double sell_quantity;
 
-  #pragma cyclus var {"default": 1e299,\
+  #pragma cyclus var {"default": "kLinBoundLimit",\
                      "tooltip":"throughput per timestep (kg)",\
                      "doc":"the max amount that can be moved through the facility per timestep (kg)",\
                      "uilabel":"Throughput",\
                      "uitype": "range", \
-                     "range": [0.0, 1e299], \
+                     "range": [0.0, "kLinBoundLimit"], \
                      "units":"kg"}
   double throughput;
 
-  #pragma cyclus var {"default": 1e299,\
+  #pragma cyclus var {"default": "kLinBoundLimit",\
                       "tooltip":"maximum inventory size (kg)",\
                       "doc":"the maximum amount of material that can be in all storage buffer stages",\
                       "uilabel":"Maximum Inventory Size",\
                       "uitype": "range", \
-                      "range": [0.0, 1e299], \
+                      "range": [0.0, "kLinBoundLimit"], \
                       "units":"kg"}
   double max_inv_size;
 
@@ -247,7 +247,7 @@ class Storage
                       "active_buying_frequency_type. Must be greater than or equal to 1 (i.e., agent "\
                       "cannot always be dormant)",\
                       "uitype": "range", \
-                      "range": [1, 1e299], \
+                      "range": [1, "kLinBoundLimit"], \
                       "uilabel": "Active Buying Frequency Value"}
   int active_buying_val;
 
@@ -257,7 +257,7 @@ class Storage
                       "Uniform and optional for Normal active_buying_frequency_type. Must be greater than "\
                       "or equal to 1 ",\
                       "uitype": "range", \
-                      "range": [1, 1e299], \
+                      "range": [1, "kLinBoundLimit"], \
                       "uilabel": "Active Buying Frequency Minimum"}
   int active_buying_min;
 
@@ -266,7 +266,7 @@ class Storage
                       "doc": "The maximum length in time steps of the active buying period. Required for "\
                       "Uniform active_buying_frequency_type, optional for Normal. Must be greater than or equal to active_buying_min ",\
                       "uitype": "range", \
-                      "range": [1, 1e299], \
+                      "range": [1, "kLinBoundLimit"], \
                       "uilabel": "Active Buying Frequency Maximum"}
   int active_buying_max;
 
@@ -275,7 +275,7 @@ class Storage
                       "doc": "The mean length in time steps of the active buying period. Required for "\
                       "Normal active_buying_frequency_type. Must be greater than or equal to 1 ",\
                       "uitype": "range", \
-                      "range": [1.0, 1e299], \
+                      "range": [1.0, "kLinBoundLimit"], \
                       "uilabel": "Active Buying Frequency Mean"}
   double active_buying_mean;
 
@@ -284,7 +284,7 @@ class Storage
                       "doc": "The standard deviation of the length in time steps of the active buying period. "\
                       "Required for Normal active_buying_frequency_type. Must be greater than or equal to 0 ",\
                       "uitype": "range", \
-                      "range": [0.0, 1e299], \
+                      "range": [0.0, "kLinBoundLimit"], \
                       "uilabel": "Active Buying Frequency Standard Deviation"}
   double active_buying_stddev;
 
@@ -304,7 +304,7 @@ class Storage
                       "doc": "The length in time steps of the dormant buying period. Required for fixed "\
                       "dormant_buying_frequency_type. Default is -1, agent has no dormant period and stays active.",\
                       "uitype": "range", \
-                      "range": [-1, 1e299], \
+                      "range": [-1, "kLinBoundLimit"], \
                       "uilabel": "Dormant Buying Frequency Value"}
   int dormant_buying_val;
 
@@ -313,7 +313,7 @@ class Storage
                       "doc": "The minimum length in time steps of the dormant buying period. Required for Uniform and optional for "\
                       "Normal dormant_buying_frequency_type.",\
                       "uitype": "range", \
-                      "range": [0, 1e299], \
+                      "range": [0, "kLinBoundLimit"], \
                       "uilabel": "Dormant Buying Frequency Minimum"}
   int dormant_buying_min;
 
@@ -322,7 +322,7 @@ class Storage
                       "doc": "The maximum length in time steps of the dormant buying period. Required for "\
                       "Uniform dormant_buying_frequency_type, optional for Normal. Must be greater than or equal to dormant_buying_min ",\
                       "uitype": "range", \
-                      "range": [0, 1e299], \
+                      "range": [0, "kLinBoundLimit"], \
                       "uilabel": "Dormant Buying Frequency Maximum"}
   int dormant_buying_max;
 
@@ -331,7 +331,7 @@ class Storage
                       "doc": "The mean length in time steps of the dormant buying period. Required for "\
                       "Normal dormant_buying_frequency_type. Must be greater than or equal to 0 ",\
                       "uitype": "range", \
-                      "range": [0.0, 1e299], \
+                      "range": [0.0, "kLinBoundLimit"], \
                       "uilabel": "Dormant Buying Frequency Mean"}
   double dormant_buying_mean;
 
@@ -340,7 +340,7 @@ class Storage
                       "doc": "The standard deviation of the length in time steps of the dormant buying period. "\
                       "Required for Normal dormant_buying_frequency_type. Must be greater than or equal to 0 ",\
                       "uitype": "range", \
-                      "range": [0.0, 1e299], \
+                      "range": [0.0, "kLinBoundLimit"], \
                       "uilabel": "Dormant Buying Frequency Standard Deviation"}
   double dormant_buying_stddev;
 
