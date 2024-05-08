@@ -1,4 +1,4 @@
-#!/usr/bin/python
+#!/usr/bin/python3
 
 import sys
 import subprocess
@@ -42,7 +42,7 @@ def check_inputs():
 
 def print_usage() :
     """This prints the proper way to treat the command line interface"""
-    print(""" Usage: python run_inputs.py\n 
+    print(""" Usage: python3 run_inputs.py\n 
             Allowed Options : \n 
             -v arg                    output log verbosity. \n 
                                 

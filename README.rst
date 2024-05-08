@@ -65,7 +65,7 @@ github is fairly straightforward:
 
 - Clone the Cyclus Repo: ``git clone https://github.com/cyclus/cycamore.git``,
 
-- to install Cyclus locally (in ``~/.local/``) just run: ``python install.py``
+- to install Cyclus locally (in ``~/.local/``) just run: ``python3 install.py``
   from cycamore folder,
 
 - finally, add the following Cyclus installation path (``~/.local/cyclus``) to
