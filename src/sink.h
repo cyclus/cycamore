@@ -126,7 +126,11 @@ class Sink
                       "doc":"preferences for each of the given commodities, in the same order."\
                       "Defauts to 1 if unspecified",\
                       "uilabel":"In Commody Preferences", \
+<<<<<<< Updated upstream
                       "range": [None, ["kConstraintEps", "kLinBoundLimit"]], \
+=======
+                      "range": [None, ["cy_eps", "cy_max_double"]], \
+>>>>>>> Stashed changes
                       "uitype":["oneormore", "range"]}
   std::vector<double> in_commod_prefs;
 
@@ -140,20 +144,36 @@ class Sink
   std::string recipe_name;
 
   /// max inventory size
+<<<<<<< Updated upstream
   #pragma cyclus var {"default": "kLinBoundLimit", \
                       "tooltip": "sink maximum inventory size", \
                       "uilabel": "Maximum Inventory", \
                       "uitype": "range", \
                       "range": [0.0, "kLinBoundLimit"], \
+=======
+  #pragma cyclus var {"default": "cy_max_double", \
+                      "tooltip": "sink maximum inventory size", \
+                      "uilabel": "Maximum Inventory", \
+                      "uitype": "range", \
+                      "range": [0.0, "cy_max_double"], \
+>>>>>>> Stashed changes
                       "doc": "total maximum inventory size of sink facility"}
   double max_inv_size;
 
   /// monthly acceptance capacity
+<<<<<<< Updated upstream
   #pragma cyclus var {"default": "kLinBoundLimit", \
                       "tooltip": "sink capacity", \
                       "uilabel": "Maximum Throughput", \
                       "uitype": "range", \
                       "range": [0.0, "kLinBoundLimit"], \
+=======
+  #pragma cyclus var {"default": "cy_max_double", \
+                      "tooltip": "sink capacity", \
+                      "uilabel": "Maximum Throughput", \
+                      "uitype": "range", \
+                      "range": [0.0, "cy_max_double"], \
+>>>>>>> Stashed changes
                       "doc": "capacity the sink facility can " \
                              "accept at each time step"}
   double capacity;
@@ -179,7 +199,11 @@ class Sink
                       "tooltip": "fraction of available space to determine the mean", \
                       "uilabel": "Random Size Mean", \
                       "uitype": "range", \
+<<<<<<< Updated upstream
                       "range": [0.0, "kLinBoundLimit"], \
+=======
+                      "range": [0.0, "cy_max_double"], \
+>>>>>>> Stashed changes
                       "doc": "When a normal distribution is used to determine the " \
                              "size of the request, this is the fraction of available " \
                              "space to use as the mean. Default 1.0. Note " \
@@ -193,7 +217,11 @@ class Sink
                       "tooltip": "fraction of available space to determine the std dev", \
                       "uilabel": "Random Size Std Dev", \
                       "uitype": "range", \
+<<<<<<< Updated upstream
                       "range": [0.0, "kLinBoundLimit"], \
+=======
+                      "range": [0.0, "cy_max_double"], \
+>>>>>>> Stashed changes
                       "doc": "When a normal distribution is used to determine the " \
                              "size of the request, this is the fraction of available " \
                              "space to use as the standard deviation. Default 0.1"}
@@ -220,7 +248,11 @@ class Sink
                       "tooltip": "mean of the random frequency", \
                       "uilabel": "Random Frequency Mean", \
                       "uitype": "range", \
+<<<<<<< Updated upstream
                       "range": [0.0, "kLinBoundLimit"], \
+=======
+                      "range": [0.0, "cy_max_double"], \
+>>>>>>> Stashed changes
                       "doc": "When a normal distribution is used to determine the " \
                              "frequency of the request, this is the mean. Default 1"}
   double random_frequency_mean;
@@ -230,7 +262,11 @@ class Sink
                       "tooltip": "std dev of the random frequency", \
                       "uilabel": "Random Frequency Std Dev", \
                       "uitype": "range", \
+<<<<<<< Updated upstream
                       "range": [0.0, "kLinBoundLimit"], \
+=======
+                      "range": [0.0, "cy_max_double"], \
+>>>>>>> Stashed changes
                       "doc": "When a normal distribution is used to determine the " \
                              "frequency of the request, this is the standard deviation. Default 1"}
   double random_frequency_stddev;
@@ -240,12 +276,17 @@ class Sink
                       "tooltip": "lower bound of the random frequency", \
                       "uilabel": "Random Frequency Lower Bound", \
                       "uitype": "range", \
+<<<<<<< Updated upstream
                       "range": [1, "kIntBoundLimit"], \
+=======
+                      "range": [1, "cy_max_int"], \
+>>>>>>> Stashed changes
                       "doc": "When a random distribution is used to determine the " \
                              "frequency of the request, this is the lower bound. Default 1"}
   int random_frequency_min;
 
   // random frequency upper bound
+<<<<<<< Updated upstream
   #pragma cyclus var {"default": "std::numeric_limits<int>::max()", \
                       "tooltip": "upper bound of the random frequency", \
                       "uilabel": "Random Frequency Upper Bound", \
@@ -253,6 +294,15 @@ class Sink
                       "range": [1, "kIntBoundLimit"], \
                       "doc": "When a random distribution is used to determine the " \
                              "frequency of the request, this is the upper bound. Default cyclus::kLinBoundLimit"}
+=======
+  #pragma cyclus var {"default": "cy_max_int", \
+                      "tooltip": "upper bound of the random frequency", \
+                      "uilabel": "Random Frequency Upper Bound", \
+                      "uitype": "range", \
+                      "range": [1, "cy_max_int"], \
+                      "doc": "When a random distribution is used to determine the " \
+                             "frequency of the request, this is the upper bound. Default cy_max_int"}
+>>>>>>> Stashed changes
   int random_frequency_max;
 
   #pragma cyclus var { \

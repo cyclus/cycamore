@@ -11,7 +11,11 @@ Storage::Storage(cyclus::Context* ctx)
       latitude(0.0),
       longitude(0.0),
       coordinates(latitude, longitude) {
+<<<<<<< Updated upstream
   inventory_tracker.Init({&inventory, &stocks, &ready, &processing}, cyclus::kLinBoundLimit);
+=======
+  inventory_tracker.Init({&inventory, &stocks, &ready, &processing}, cy_max_double);
+>>>>>>> Stashed changes
   cyclus::Warn<cyclus::EXPERIMENTAL_WARNING>(
       "The Storage Facility is experimental.");};
 

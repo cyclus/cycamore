@@ -105,7 +105,11 @@ TEST_F(StorageTest, InitialState) {
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 TEST_F(StorageTest, CurrentCapacity){
   TestCurrentCap(src_facility_,max_inv_size);
+<<<<<<< Updated upstream
   max_inv_size = cyclus::kLinBoundLimit;
+=======
+  max_inv_size = cy_max_double;
+>>>>>>> Stashed changes
   SetUpStorage();
   TestInitState(src_facility_);
 }
