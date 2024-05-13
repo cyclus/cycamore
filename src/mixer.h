@@ -85,9 +85,15 @@ class Mixer
             " If full, the facility halts operation until space becomes" \
             " available.", \
     "uilabel": "Maximum Leftover Inventory", \
+<<<<<<< Updated upstream
     "default": "kLinBoundLimit", \
     "uitype": "range", \
     "range": [0.0, "kLinBoundLimit"], \
+=======
+    "default": "cy_max_double", \
+    "uitype": "range", \
+    "range": [0.0, "cy_max_double"], \
+>>>>>>> Stashed changes
     "units": "kg", \
   }
   double out_buf_size;
@@ -96,11 +102,19 @@ class Mixer
   cyclus::toolkit::ResBuf<cyclus::Material> output;
 
 #pragma cyclus var { \
+<<<<<<< Updated upstream
     "default": "kLinBoundLimit", \
     "doc": "Maximum number of kg of fuel material that can be mixed per time step.", \
     "uilabel": "Maximum Throughput", \
     "uitype": "range", \
     "range": [0.0, "kLinBoundLimit"], \
+=======
+    "default": "cy_max_double", \
+    "doc": "Maximum number of kg of fuel material that can be mixed per time step.", \
+    "uilabel": "Maximum Throughput", \
+    "uitype": "range", \
+    "range": [0.0, "cyclus::cy_max_double"], \
+>>>>>>> Stashed changes
     "units": "kg", \
   }
   double throughput;
