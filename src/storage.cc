@@ -318,7 +318,6 @@ void Storage::ProcessMat_(double cap) {
   using cyclus::Material;
   using cyclus::ResCast;
   using cyclus::toolkit::ResBuf;
-  using cyclus::toolkit::Manifest;
 
   if (!ready.empty()) {
     try {
