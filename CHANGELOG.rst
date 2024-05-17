@@ -9,11 +9,13 @@ Since last release
 
 **Changed:**
 
-* Rely on `python3` in environment instead of `python` (#602)
+* Rely on ``python3`` in environment instead of ``python`` (#602)
 
 **Fixed:**
 
 **Removed:**
+
+* Removed references to deprecated ``ResourceBuff`` class (#604)
 
 
 v1.6.0
