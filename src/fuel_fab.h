@@ -234,15 +234,9 @@ class FuelFab
     "doc": "Maximum number of kg of fuel material that can be supplied per time step.", \
     "uilabel": "Maximum Throughput", \
     "units": "kg", \
-<<<<<<< Updated upstream
-    "default": "kLinBoundLimit", \
+    "default": "cyclus::cy_large_double", \
     "uitype": "range", \
-    "range": [0.0, "kLinBoundLimit"], \
-=======
-    "default": "cy_max_double", \
-    "uitype": "range", \
-    "range": [0.0, "cy_max_double"], \
->>>>>>> Stashed changes
+    "range": [0.0, "cyclus::cy_large_double"], \
   }
   double throughput;
 

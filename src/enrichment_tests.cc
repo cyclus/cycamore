@@ -575,31 +575,22 @@ TEST_F(EnrichmentTest, ValidReq) {
   TEST_F(EnrichmentTest, ConstraintConverters) {
     // Tests the SWU and NatU converters to make sure that amount of
     // feed and SWU required are correct to fulfill the enrichment request.
-  using cyclus::CompMap;
-  using cyclus::Material;
-  using cyclus::toolkit::MatQuery;
-  using cyclus::Composition;
-  using cyclus::toolkit::Assays;
-  using cyclus::toolkit::UraniumAssayMass;
-  using cyclus::toolkit::SwuRequired;
-  using cyclus::toolkit::FeedQty;
-  using cyclus::toolkit::MatQuery;
   cyclus::Env::SetNucDataPath();
 
   double qty = 5;  // 5 kg
   double product_assay = 0.05;  // of 5 w/o enriched U
-  CompMap v;
+  cyclus::CompMap v;
   v[922350000] = product_assay;
   v[922380000] = 1 - product_assay;
   v[94239] = 0.5;  // 94239 shouldn't be taken into account
   Material::Ptr target = Material::CreateUntracked(
-      qty, Composition::CreateFromMass(v));
+      qty, cyclus::Composition::CreateFromMass(v));
 
   std::set<cyclus::Nuc> nucs;
   nucs.insert(922350000);
   nucs.insert(922380000);
 
-  MatQuery mq(target);
+  cyclus::toolkit::MatQuery mq(target);
   double mass_frac = mq.mass_frac(nucs);
 
   SWUConverter swuc(feed_assay, tails_assay);
@@ -617,14 +608,6 @@ TEST_F(EnrichmentTest, Enrich) {
   // of natural uranium required that is exactly its inventory level. that
   // inventory will be comprised of two materials to test the manifest/absorb
   // strategy employed in Enrich_.
-  using cyclus::CompMap;
-  using cyclus::Material;
-  using cyclus::toolkit::MatQuery;
-  using cyclus::Composition;
-  using cyclus::toolkit::Assays;
-  using cyclus::toolkit::UraniumAssayMass;
-  using cyclus::toolkit::SwuRequired;
-  using cyclus::toolkit::FeedQty;
 
   double qty = 5;  // kg
   double product_assay = 0.05;  // of 5 w/o enriched U
@@ -635,10 +618,10 @@ TEST_F(EnrichmentTest, Enrich) {
   Material::Ptr target = cyclus::Material::CreateUntracked(
       qty + 10, cyclus::Composition::CreateFromMass(v));
 
-  Assays assays(feed_assay, UraniumAssayMass(target), tails_assay);
-  double swu_req = SwuRequired(qty, assays);
-  double natu_req = FeedQty(qty, assays);
-  double tails_qty = TailsQty(qty, assays);
+  cyclus::toolkit::Assays assays(feed_assay, cyclus::toolkit::UraniumAssayMass(target), tails_assay);
+  double swu_req = cyclus::toolkit::SwuRequired(qty, assays);
+  double natu_req = cyclus::toolkit::FeedQty(qty, assays);
+  double tails_qty = cyclus::toolkit::TailsQty(qty, assays);
 
   double swu_cap = swu_req * 5;
   src_facility->SwuCapacity(swu_cap);
@@ -650,7 +633,7 @@ TEST_F(EnrichmentTest, Enrich) {
   EXPECT_NO_THROW(response = DoEnrich(target, qty));
   EXPECT_DOUBLE_EQ(src_facility->Tails().quantity(), tails_qty);
 
-  MatQuery q(response);
+  cyclus::toolkit::MatQuery q(response);
   EXPECT_EQ(response->quantity(), qty);
   EXPECT_EQ(q.mass_frac(922350000), product_assay);
   EXPECT_EQ(q.mass_frac(922380000), 1 - product_assay);
@@ -711,7 +694,7 @@ TEST_F(EnrichmentTest, Response) {
 
   Request<Material>* req =
       Request<Material>::Create(target, trader, product_commod);
-  Bid<Material>* bid = Bid<Material>::Create(req, target, src_facility);
+  cyclus::Bid<Material>* bid = Bid<Material>::Create(req, target, src_facility);
   Trade<Material> trade(req, bid, trade_qty);
   trades.push_back(trade);
 
