@@ -147,15 +147,9 @@ class Separations
     "doc" : "Maximum quantity of feed material that can be processed per time "\
             "step.", \
     "uilabel": "Maximum Separations Throughput", \
-<<<<<<< Updated upstream
-    "default": "kLinBoundLimit", \
+    "default": "cyclus::cy_large_double", \
     "uitype": "range", \
-    "range": [0.0, "kLinBoundLimit"], \
-=======
-    "default": "cy_max_double", \
-    "uitype": "range", \
-    "range": [0.0, "cy_max_double"], \
->>>>>>> Stashed changes
+    "range": [0.0, "cyclus::cy_large_double"], \
     "units": "kg/(time step)", \
   }
   double throughput;
@@ -176,15 +170,9 @@ class Separations
             " If full, the facility halts operation until space becomes " \
             "available.", \
     "uilabel": "Maximum Leftover Inventory", \
-<<<<<<< Updated upstream
-    "default": "kLinBoundLimit", \
+    "default": "cyclus::cy_large_double", \
     "uitype": "range", \
-    "range": [0.0, "kLinBoundLimit"], \
-=======
-    "default": "cy_max_double", \
-    "uitype": "range", \
-    "range": [0.0, "cy_max_double"], \
->>>>>>> Stashed changes
+    "range": [0.0, "cyclus::cy_large_double"], \
     "units": "kg", \
   }
   double leftoverbuf_size;

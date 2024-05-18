@@ -324,17 +324,10 @@ class Enrichment
   double initial_feed;
 
   #pragma cyclus var {							\
-<<<<<<< Updated upstream
-    "default": "kLinBoundLimit", "tooltip": "max inventory of feed material (kg)", \
+    "default": "cyclus::cy_large_double", "tooltip": "max inventory of feed material (kg)", \
     "uilabel": "Maximum Feed Inventory", \
     "uitype": "range", \
-    "range": [0.0, "kLinBoundLimit"], \
-=======
-    "default": "cy_max_double", "tooltip": "max inventory of feed material (kg)", \
-    "uilabel": "Maximum Feed Inventory", \
-    "uitype": "range", \
-    "range": [0.0, "cy_max_double"], \
->>>>>>> Stashed changes
+    "range": [0.0, "cyclus::cy_large_double"], \
     "doc": "maximum total inventory of natural uranium in "		\
            "the enrichment facility (kg)"     \
   }
@@ -369,19 +362,11 @@ class Enrichment
   bool order_prefs;
 
   #pragma cyclus var {						       \
-<<<<<<< Updated upstream
-    "default": "kLinBoundLimit",						       \
+    "default": "cyclus::cy_large_double",						       \
     "tooltip": "SWU capacity (kgSWU/timestep)",			       \
     "uilabel": "SWU Capacity",                                         \
     "uitype": "range",                                                  \
-    "range": [0.0, "kLinBoundLimit"],                                               \
-=======
-    "default": "cy_max_double",						       \
-    "tooltip": "SWU capacity (kgSWU/timestep)",			       \
-    "uilabel": "SWU Capacity",                                         \
-    "uitype": "range",                                                  \
-    "range": [0.0, "cy_max_double"],                                               \
->>>>>>> Stashed changes
+    "range": [0.0, "cyclus::cy_large_double"],                                               \
     "doc": "separative work unit (SWU) capacity of enrichment "		\
            "facility (kgSWU/timestep) "                                     \
   }
