@@ -246,7 +246,7 @@ class Storage
                       "active_buying_frequency_type. Must be greater than or equal to 1 (i.e., agent "\
                       "cannot always be dormant)",\
                       "uitype": "range", \
-                      "range": [1, "cy_large_int"], \
+                      "range": [1, "cyclus::cy_large_int"], \
                       "uilabel": "Active Buying Frequency Value"}
   int active_buying_val;
 
@@ -256,7 +256,7 @@ class Storage
                       "Uniform and optional for Normal active_buying_frequency_type. Must be greater than "\
                       "or equal to 1 ",\
                       "uitype": "range", \
-                      "range": [1, "cy_large_int"], \
+                      "range": [1, "cyclus::cy_large_int"], \
                       "uilabel": "Active Buying Frequency Minimum"}
   int active_buying_min;
 
@@ -265,7 +265,7 @@ class Storage
                       "doc": "The maximum length in time steps of the active buying period. Required for "\
                       "Uniform active_buying_frequency_type, optional for Normal. Must be greater than or equal to active_buying_min ",\
                       "uitype": "range", \
-                      "range": [1, "cy_large_int"], \
+                      "range": [1, "cyclus::cy_large_int"], \
                       "uilabel": "Active Buying Frequency Maximum"}
   int active_buying_max;
 
@@ -303,7 +303,7 @@ class Storage
                       "doc": "The length in time steps of the dormant buying period. Required for fixed "\
                       "dormant_buying_frequency_type. Default is -1, agent has no dormant period and stays active.",\
                       "uitype": "range", \
-                      "range": [-1, "cy_large_int"], \
+                      "range": [-1, "cyclus::cy_large_int"], \
                       "uilabel": "Dormant Buying Frequency Value"}
   int dormant_buying_val;
 
@@ -312,7 +312,7 @@ class Storage
                       "doc": "The minimum length in time steps of the dormant buying period. Required for Uniform and optional for "\
                       "Normal dormant_buying_frequency_type.",\
                       "uitype": "range", \
-                      "range": [0, "cy_large_int"], \
+                      "range": [0, "cyclus::cy_large_int"], \
                       "uilabel": "Dormant Buying Frequency Minimum"}
   int dormant_buying_min;
 
@@ -321,7 +321,7 @@ class Storage
                       "doc": "The maximum length in time steps of the dormant buying period. Required for "\
                       "Uniform dormant_buying_frequency_type, optional for Normal. Must be greater than or equal to dormant_buying_min ",\
                       "uitype": "range", \
-                      "range": [0, "cy_large_int"], \
+                      "range": [0, "cyclus::cy_large_int"], \
                       "uilabel": "Dormant Buying Frequency Maximum"}
   int dormant_buying_max;
 
