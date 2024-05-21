@@ -10,6 +10,7 @@ Since last release
 **Changed:**
 
 * Rely on ``python3`` in environment instead of ``python`` (#602)
+* Link against ``libxml++`` imported target in CMake instead of ``LIBXMLXX_LIBRARIES`` (#608)
 
 **Fixed:**
 
