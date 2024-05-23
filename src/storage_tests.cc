@@ -23,6 +23,7 @@ void StorageTest::InitParameters(){
   max_inv_size = 200;
   throughput = 20;
   discrete_handling = 0;
+  package = "foo";
   // Active period longer than any of the residence time related-tests needs
 
 
@@ -42,6 +43,7 @@ void StorageTest::SetUpStorage(){
   src_facility_->inventory_tracker.set_capacity(max_inv_size);
   src_facility_->throughput = throughput;
   src_facility_->discrete_handling = discrete_handling;
+  src_facility_->package = package;
 }
 
 void StorageTest::TestInitState(Storage* fac){
@@ -49,6 +51,7 @@ void StorageTest::TestInitState(Storage* fac){
   EXPECT_EQ(max_inv_size, fac->max_inv_size);
   EXPECT_EQ(throughput, fac->throughput);
   EXPECT_EQ(in_r1, fac->in_recipe);
+  EXPECT_EQ(package, fac->package);
 }
 
 void StorageTest::TestAddMat(Storage* fac,
@@ -869,6 +872,113 @@ TEST_F(StorageTest, CCap_Inventory) {
   EXPECT_EQ(1, qr.GetVal<double>("Quantity", 4));
 }
 
+TEST_F(StorageTest, PackageExactly) {
+  std::string config =
+    "   <in_commods> <val>spent_fuel</val> </in_commods> "
+    "   <out_commods> <val>dry_spent</val> </out_commods> "
+    "   <throughput>10</throughput> "
+    "   <package>foo</package>";
+
+  int simdur = 3;
+
+  cyclus::MockSim sim(cyclus::AgentSpec (":cycamore:Storage"), config, simdur);
+  sim.context()->AddPackage("foo", 1, 2, "first");
+  cyclus::Package::Ptr p = sim.context()->GetPackageByName("foo");
+
+  sim.AddSource("spent_fuel").capacity(2).Finalize();
+  sim.AddSink("dry_spent").Finalize();
+
+  int id = sim.Run();
+
+  std::vector<cyclus::Cond> tr_conds;
+  tr_conds.push_back(cyclus::Cond("Commodity", "==", std::string("dry_spent")));
+  cyclus::QueryResult qr_trans = sim.db().Query("Transactions", &tr_conds);
+  EXPECT_EQ(2, qr_trans.rows.size());
+
+  EXPECT_EQ(1, qr_trans.GetVal<int>("Time", 0));
+  EXPECT_EQ(2, qr_trans.GetVal<int>("Time", 1));
+
+  std::vector<cyclus::Cond> res_conds;
+  res_conds.push_back(cyclus::Cond("PackageId", "==", p->id()));
+  cyclus::QueryResult qr_res = sim.db().Query("Resources", &res_conds);
+  EXPECT_EQ(qr_res.rows.size(), 2);
+  // Given the PRNG with default seed, the resource should have mass 9.41273
+  EXPECT_EQ(qr_res.GetVal<double>("Quantity", 0), 2);
+  EXPECT_EQ(qr_res.GetVal<double>("Quantity", 1), 2);
+}
+
+TEST_F(StorageTest, PackageSplitEqual) {
+  std::string config =
+    "   <in_commods> <val>commodity</val> </in_commods> "
+    "   <out_commods> <val>commodity1</val> </out_commods> "
+    "   <throughput>10</throughput> "
+    "   <package>foo</package>";
+
+  int simdur = 3;
+
+  cyclus::MockSim sim(cyclus::AgentSpec (":cycamore:Storage"), config, simdur);
+  sim.context()->AddPackage("foo", 1, 2, "equal");
+  cyclus::Package::Ptr p = sim.context()->GetPackageByName("foo");
+
+  sim.AddSource("commodity").capacity(3).Finalize();
+  sim.AddSink("commodity1").Finalize();
+
+  int id = sim.Run();
+
+  std::vector<cyclus::Cond> tr_conds;
+  tr_conds.push_back(cyclus::Cond("Commodity", "==", std::string("commodity1")));
+  cyclus::QueryResult qr_trans = sim.db().Query("Transactions", &tr_conds);
+  EXPECT_EQ(4, qr_trans.rows.size());
+
+  EXPECT_EQ(1, qr_trans.GetVal<int>("Time", 0));
+  EXPECT_EQ(1, qr_trans.GetVal<int>("Time", 1));
+  EXPECT_EQ(2, qr_trans.GetVal<int>("Time", 2));
+  EXPECT_EQ(2, qr_trans.GetVal<int>("Time", 3));
+
+  std::vector<cyclus::Cond> res_conds;
+  res_conds.push_back(cyclus::Cond("PackageId", "==", p->id()));
+  cyclus::QueryResult qr_res = sim.db().Query("Resources", &res_conds);
+  EXPECT_EQ(qr_res.rows.size(), 4);
+  EXPECT_EQ(qr_res.GetVal<double>("Quantity", 0), 1.5);
+  EXPECT_EQ(qr_res.GetVal<double>("Quantity", 1), 1.5);
+  EXPECT_EQ(qr_res.GetVal<double>("Quantity", 2), 1.5);
+  EXPECT_EQ(qr_res.GetVal<double>("Quantity", 2), 1.5);
+}
+
+TEST_F(StorageTest, PackageMerge) {
+  std::string config =
+    "   <in_commods> <val>commodity</val> </in_commods> "
+    "   <out_commods> <val>commodity1</val> </out_commods> "
+    "   <throughput>1</throughput> "
+    "   <package>foo</package>";
+
+  int simdur = 5;
+
+  cyclus::MockSim sim(cyclus::AgentSpec (":cycamore:Storage"), config, simdur);
+  sim.context()->AddPackage("foo", 1, 2, "first");
+  cyclus::Package::Ptr p = sim.context()->GetPackageByName("foo");
+
+  sim.AddSource("commodity").capacity(0.5).Finalize();
+  sim.AddSink("commodity1").Finalize();
+
+  int id = sim.Run();
+
+  std::vector<cyclus::Cond> tr_conds;
+  tr_conds.push_back(cyclus::Cond("Commodity", "==", std::string("commodity1")));
+
+  cyclus::QueryResult qr_trans = sim.db().Query("Transactions", &tr_conds);
+  EXPECT_EQ(2, qr_trans.rows.size());
+
+  EXPECT_EQ(2, qr_trans.GetVal<int>("Time", 0));
+  EXPECT_EQ(4, qr_trans.GetVal<int>("Time", 1));
+
+  std::vector<cyclus::Cond> res_conds;
+  res_conds.push_back(cyclus::Cond("PackageId", "==", p->id()));
+  cyclus::QueryResult qr_res = sim.db().Query("Resources", &res_conds);
+  EXPECT_EQ(qr_res.rows.size(), 2);
+  EXPECT_EQ(qr_res.GetVal<double>("Quantity", 0), 1);
+  EXPECT_EQ(qr_res.GetVal<double>("Quantity", 1), 1);
+}
 
 } // namespace cycamore
 

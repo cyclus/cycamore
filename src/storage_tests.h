@@ -36,6 +36,7 @@ class StorageTest : public ::testing::Test {
   int residence_time;
   double throughput, max_inv_size;
   bool discrete_handling;
+  std::string package;
 };
 } // namespace cycamore
 #endif // STORAGE_TESTS_H_
