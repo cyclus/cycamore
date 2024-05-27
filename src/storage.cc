@@ -182,9 +182,10 @@ void Storage::EnterNotify() {
   }
   buy_policy.Start();
 
-  int package_id_ =  context()->GetPackageByName(package)->id();
+  int package_name_ =  context()->GetPackageByName(package)->name();
   if (out_commods.size() == 1) {
-    sell_policy.Init(this, &stocks, std::string("stocks"), 1e+299, false, sell_quantity, package_id_)
+    sell_policy.Init(this, &stocks, std::string("stocks"), 1e+299, false,
+                     sell_quantity, package_name_)
       .Set(out_commods.front())
       .Start();
 
