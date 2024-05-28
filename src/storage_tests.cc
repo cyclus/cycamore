@@ -883,7 +883,7 @@ TEST_F(StorageTest, PackageExactly) {
 
   cyclus::MockSim sim(cyclus::AgentSpec (":cycamore:Storage"), config, simdur);
   sim.context()->AddPackage("foo", 1, 2, "first");
-  cyclus::Package::Ptr p = sim.context()->GetPackageByName("foo");
+  cyclus::Package::Ptr p = sim.context()->GetPackage("foo");
 
   sim.AddSource("spent_fuel").capacity(2).Finalize();
   sim.AddSink("dry_spent").Finalize();
@@ -899,7 +899,7 @@ TEST_F(StorageTest, PackageExactly) {
   EXPECT_EQ(2, qr_trans.GetVal<int>("Time", 1));
 
   std::vector<cyclus::Cond> res_conds;
-  res_conds.push_back(cyclus::Cond("PackageId", "==", p->id()));
+  res_conds.push_back(cyclus::Cond("PackageName", "==", p->name()));
   cyclus::QueryResult qr_res = sim.db().Query("Resources", &res_conds);
   EXPECT_EQ(qr_res.rows.size(), 2);
   // Given the PRNG with default seed, the resource should have mass 9.41273
@@ -918,7 +918,7 @@ TEST_F(StorageTest, PackageSplitEqual) {
 
   cyclus::MockSim sim(cyclus::AgentSpec (":cycamore:Storage"), config, simdur);
   sim.context()->AddPackage("foo", 1, 2, "equal");
-  cyclus::Package::Ptr p = sim.context()->GetPackageByName("foo");
+  cyclus::Package::Ptr p = sim.context()->GetPackage("foo");
 
   sim.AddSource("commodity").capacity(3).Finalize();
   sim.AddSink("commodity1").Finalize();
@@ -936,7 +936,7 @@ TEST_F(StorageTest, PackageSplitEqual) {
   EXPECT_EQ(2, qr_trans.GetVal<int>("Time", 3));
 
   std::vector<cyclus::Cond> res_conds;
-  res_conds.push_back(cyclus::Cond("PackageId", "==", p->id()));
+  res_conds.push_back(cyclus::Cond("PackageName", "==", p->name()));
   cyclus::QueryResult qr_res = sim.db().Query("Resources", &res_conds);
   EXPECT_EQ(qr_res.rows.size(), 4);
   EXPECT_EQ(qr_res.GetVal<double>("Quantity", 0), 1.5);
@@ -956,7 +956,7 @@ TEST_F(StorageTest, PackageMerge) {
 
   cyclus::MockSim sim(cyclus::AgentSpec (":cycamore:Storage"), config, simdur);
   sim.context()->AddPackage("foo", 1, 2, "first");
-  cyclus::Package::Ptr p = sim.context()->GetPackageByName("foo");
+  cyclus::Package::Ptr p = sim.context()->GetPackage("foo");
 
   sim.AddSource("commodity").capacity(0.5).Finalize();
   sim.AddSink("commodity1").Finalize();
@@ -973,7 +973,7 @@ TEST_F(StorageTest, PackageMerge) {
   EXPECT_EQ(4, qr_trans.GetVal<int>("Time", 1));
 
   std::vector<cyclus::Cond> res_conds;
-  res_conds.push_back(cyclus::Cond("PackageId", "==", p->id()));
+  res_conds.push_back(cyclus::Cond("PackageName", "==", p->name()));
   cyclus::QueryResult qr_res = sim.db().Query("Resources", &res_conds);
   EXPECT_EQ(qr_res.rows.size(), 2);
   EXPECT_EQ(qr_res.GetVal<double>("Quantity", 0), 1);
