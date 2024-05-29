@@ -159,8 +159,8 @@ TEST_F(SinkTest, Accept) {
   using test_helpers::get_mat;
 
   double qty = qty_ * 2;
-  std::vector< std::pair<cyclus::Trade<cyclus::Material>,
-                         cyclus::Material::Ptr> > responses;
+  std::vector< std::pair<Trade<Material>,
+                         Material::Ptr> > responses;
 
   Request<Material>* req1 =
       Request<Material>::Create(get_mat(922350000, qty_), src_facility,
@@ -271,7 +271,6 @@ TEST_F(SinkTest, Print) {
 
 TEST_F(SinkTest, PositionInitialize) {
   using cyclus::QueryResult;
-  using cyclus::Cond;
 
   std::string config =
     "   <in_commods>"
@@ -306,7 +305,6 @@ TEST_F(SinkTest, PositionInitialize) {
 
 TEST_F(SinkTest, PositionInitialize2) {
   using cyclus::QueryResult;
-  using cyclus::Cond;
 
   std::string config =
     "   <in_commods>"
@@ -346,7 +344,6 @@ TEST_F(SinkTest, PositionInitialize2) {
 // implemented as the request size
 TEST_F(SinkTest, RandomUniformSize) {
   using cyclus::QueryResult;
-  using cyclus::Cond;
 
   std::string config =
     "   <in_commods>"
@@ -371,7 +368,6 @@ TEST_F(SinkTest, RandomUniformSize) {
 // stddev can be implemented as the request size
 TEST_F(SinkTest, RandomNormalSize) {
   using cyclus::QueryResult;
-  using cyclus::Cond;
 
   std::string config =
     "   <in_commods>"
@@ -396,7 +392,6 @@ TEST_F(SinkTest, RandomNormalSize) {
 // and stddev can be implemented as the request size
 TEST_F(SinkTest, RandomNormalSizeWithMeanSttdev) {
   using cyclus::QueryResult;
-  using cyclus::Cond;
 
   std::string config =
     "   <in_commods>"
@@ -423,7 +418,6 @@ TEST_F(SinkTest, RandomNormalSizeWithMeanSttdev) {
 // implemented as the buying frequency
 TEST_F(SinkTest, RandomUniformFreq) {
   using cyclus::QueryResult;
-  using cyclus::Cond;
 
   std::string config =
     "   <in_commods>"
@@ -453,7 +447,6 @@ TEST_F(SinkTest, RandomUniformFreq) {
 // stddev can be implemented as the buying frequency
 TEST_F(SinkTest, RandomNormalFreq) {
   using cyclus::QueryResult;
-  using cyclus::Cond;
 
   std::string config =
     "   <in_commods>"
@@ -481,7 +474,6 @@ TEST_F(SinkTest, RandomNormalFreq) {
 // and stddev can be implemented as the buying frequency
 TEST_F(SinkTest, RandomNormalFreqWithMeanSttdev) {
   using cyclus::QueryResult;
-  using cyclus::Cond;
 
   std::string config =
     "   <in_commods>"
@@ -510,7 +502,6 @@ TEST_F(SinkTest, RandomNormalFreqWithMeanSttdev) {
 // Check that multiple buying cycles set by random number execute as expected
 TEST_F(SinkTest, RandomNormalFreqMultipleCycles) {
   using cyclus::QueryResult;
-  using cyclus::Cond;
 
   std::string config =
     "   <in_commods>"
@@ -546,7 +537,6 @@ TEST_F(SinkTest, RandomNormalFreqMultipleCycles) {
 // request frequency at the same time
 TEST_F(SinkTest, RandomNormalSizeUniformFreq) {
   using cyclus::QueryResult;
-  using cyclus::Cond;
 
   std::string config =
     "   <in_commods>"

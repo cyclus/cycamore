@@ -1,8 +1,6 @@
 #include "reactor.h"
 
 using cyclus::Material;
-using cyclus::Composition;
-using cyclus::toolkit::ResBuf;
 using cyclus::toolkit::MatVec;
 using cyclus::KeyError;
 using cyclus::ValueError;
@@ -105,7 +103,7 @@ void Reactor::EnterNotify() {
   }
 
   if (ss.str().size() > 0) {
-    throw cyclus::ValueError(ss.str());
+    throw ValueError(ss.str());
   }
   RecordPosition();
 }
@@ -232,7 +230,7 @@ std::set<cyclus::RequestPortfolio<Material>::Ptr> Reactor::GetMatlRequests() {
     for (int j = 0; j < fuel_incommods.size(); j++) {
       std::string commod = fuel_incommods[j];
       double pref = fuel_prefs[j];
-      Composition::Ptr recipe = context()->GetRecipe(fuel_inrecipes[j]);
+      cyclus::Composition::Ptr recipe = context()->GetRecipe(fuel_inrecipes[j]);
       m = Material::CreateUntracked(assem_size, recipe);
 
       Request<Material>* r = port->AddRequest(m, this, commod, pref, true);
@@ -272,8 +270,8 @@ void Reactor::GetMatlTrades(
 
 void Reactor::AcceptMatlTrades(const std::vector<
     std::pair<cyclus::Trade<Material>, Material::Ptr> >& responses) {
-  std::vector<std::pair<cyclus::Trade<cyclus::Material>,
-                        cyclus::Material::Ptr> >::const_iterator trade;
+  std::vector<std::pair<cyclus::Trade<Material>,
+                        Material::Ptr> >::const_iterator trade;
 
   std::stringstream ss;
   int nload = std::min((int)responses.size(), n_assem_core - core.count());

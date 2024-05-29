@@ -14,37 +14,36 @@
 using cyclus::QueryResult;
 using cyclus::Cond;
 using cyclus::CompMap;
-using cyclus::toolkit::MatQuery;
-using pyne::nucname::id;
 using cyclus::Material;
+using pyne::nucname::id;
 
 namespace cycamore {
 
 Composition::Ptr c_nou235() {
-  cyclus::CompMap m;
+  CompMap m;
   m[922380000] = 1.0;
   return Composition::CreateFromMass(m);
 };
 Composition::Ptr c_natu1() {
-  cyclus::CompMap m;
+  CompMap m;
   m[922350000] = 0.007;
   m[922380000] = 0.993;
   return Composition::CreateFromMass(m);
 };
 Composition::Ptr c_natu2() {
-  cyclus::CompMap m;
+  CompMap m;
   m[922350000] = 0.01;
   m[922380000] = 0.99;
   return Composition::CreateFromMass(m);
 };
 Composition::Ptr c_leu() {
-  cyclus::CompMap m;
+  CompMap m;
   m[922350000] = 0.04;
   m[922380000] = 0.96;
   return Composition::CreateFromMass(m);
 };
 Composition::Ptr c_heu() {
-  cyclus::CompMap m;
+  CompMap m;
   m[922350000] = 0.20;
   m[922380000] = 0.80;
   return Composition::CreateFromMass(m);
@@ -464,7 +463,7 @@ void EnrichmentTest::InitParameters() {
   feed_recipe = "recipe";
   feed_assay = 0.0072;
 
-  cyclus::CompMap v;
+  CompMap v;
   v[922350000] = feed_assay;
   v[922380000] = 1 - feed_assay;
   recipe = cyclus::Composition::CreateFromMass(v);
@@ -491,30 +490,30 @@ void EnrichmentTest::SetUpSource() {
 }
 
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-cyclus::Material::Ptr EnrichmentTest::GetMat(double qty) {
-  return cyclus::Material::CreateUntracked(qty,
+Material::Ptr EnrichmentTest::GetMat(double qty) {
+  return Material::CreateUntracked(qty,
                                            tc_.get()->GetRecipe(feed_recipe));
 }
 
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-void EnrichmentTest::DoAddMat(cyclus::Material::Ptr mat) {
+void EnrichmentTest::DoAddMat(Material::Ptr mat) {
   src_facility->AddMat_(mat);
 }
 
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-cyclus::Material::Ptr EnrichmentTest::DoRequest() {
+Material::Ptr EnrichmentTest::DoRequest() {
   return src_facility->Request_();
 }
 
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-cyclus::Material::Ptr
-EnrichmentTest::DoOffer(cyclus::Material::Ptr mat) {
+Material::Ptr
+EnrichmentTest::DoOffer(Material::Ptr mat) {
   return src_facility->Offer_(mat);
 }
 
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-cyclus::Material::Ptr
-EnrichmentTest::DoEnrich(cyclus::Material::Ptr mat, double qty) {
+Material::Ptr
+EnrichmentTest::DoEnrich(Material::Ptr mat, double qty) {
   return src_facility->Enrich_(mat, qty);
 }
 
@@ -523,7 +522,7 @@ TEST_F(EnrichmentTest, Request) {
   // Tests that quantity in material request is accurate
   double req = inv_size;
   double add = 0;
-  cyclus::Material::Ptr mat = DoRequest();
+  Material::Ptr mat = DoRequest();
   EXPECT_DOUBLE_EQ(mat->quantity(), req);
   EXPECT_EQ(mat->comp(), tc_.get()->GetRecipe(feed_recipe));
 
@@ -545,26 +544,24 @@ TEST_F(EnrichmentTest, Request) {
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 TEST_F(EnrichmentTest, ValidReq) {
   // Tests that material requests have U235/(U235+U238) > tails assay
-  using cyclus::CompMap;
   using cyclus::Composition;
-  using cyclus::Material;
 
   double qty = 4.5;  // some magic number
 
-  cyclus::CompMap v1;
+  CompMap v1;
   v1[922350000] = 1;
   Material::Ptr mat = Material::CreateUntracked
     (qty,Composition::CreateFromAtom(v1));
   EXPECT_FALSE(src_facility->ValidReq(mat));  // u238 = 0
 
-  cyclus::CompMap v2;
+  CompMap v2;
   v2[922350000] = tails_assay;
   v2[922380000] = 1 - tails_assay;
   mat = Material::CreateUntracked(qty, Composition::CreateFromAtom(v2));
   // u235 / (u235 + u238) <= tails_assay
   EXPECT_FALSE(src_facility->ValidReq(mat));
 
-  cyclus::CompMap v3;
+  CompMap v3;
   v3[922350000] = 1;
   v3[922380000] = 1;
   mat = Material::CreateUntracked(qty, Composition::CreateFromAtom(v3));
@@ -575,15 +572,9 @@ TEST_F(EnrichmentTest, ValidReq) {
   TEST_F(EnrichmentTest, ConstraintConverters) {
     // Tests the SWU and NatU converters to make sure that amount of
     // feed and SWU required are correct to fulfill the enrichment request.
-  using cyclus::CompMap;
-  using cyclus::Material;
   using cyclus::toolkit::MatQuery;
   using cyclus::Composition;
-  using cyclus::toolkit::Assays;
-  using cyclus::toolkit::UraniumAssayMass;
-  using cyclus::toolkit::SwuRequired;
-  using cyclus::toolkit::FeedQty;
-  using cyclus::toolkit::MatQuery;
+
   cyclus::Env::SetNucDataPath();
 
   double qty = 5;  // 5 kg
@@ -617,8 +608,6 @@ TEST_F(EnrichmentTest, Enrich) {
   // of natural uranium required that is exactly its inventory level. that
   // inventory will be comprised of two materials to test the manifest/absorb
   // strategy employed in Enrich_.
-  using cyclus::CompMap;
-  using cyclus::Material;
   using cyclus::toolkit::MatQuery;
   using cyclus::Composition;
   using cyclus::toolkit::Assays;
@@ -628,12 +617,12 @@ TEST_F(EnrichmentTest, Enrich) {
 
   double qty = 5;  // kg
   double product_assay = 0.05;  // of 5 w/o enriched U
-  cyclus::CompMap v;
+  CompMap v;
   v[922350000] = product_assay;
   v[922380000] = 1 - product_assay;
   // target qty need not be = to request qty
-  Material::Ptr target = cyclus::Material::CreateUntracked(
-      qty + 10, cyclus::Composition::CreateFromMass(v));
+  Material::Ptr target = Material::CreateUntracked(
+      qty + 10, Composition::CreateFromMass(v));
 
   Assays assays(feed_assay, UraniumAssayMass(target), tails_assay);
   double swu_req = SwuRequired(qty, assays);
@@ -670,8 +659,6 @@ TEST_F(EnrichmentTest, Response) {
   // note that response quantity and quality need not be tested, because they
   // are covered by the Enrich and RequestEnrich tests
   using cyclus::Bid;
-  using cyclus::CompMap;
-  using cyclus::Material;
   using cyclus::Request;
   using cyclus::Trade;
   using cyclus::toolkit::Assays;
@@ -680,19 +667,19 @@ TEST_F(EnrichmentTest, Response) {
   using cyclus::toolkit::UraniumAssayMass;
 
   // problem set up
-  std::vector< cyclus::Trade<cyclus::Material> > trades;
-  std::vector<std::pair<cyclus::Trade<cyclus::Material>,
-                        cyclus::Material::Ptr> > responses;
+  std::vector< Trade<Material> > trades;
+  std::vector<std::pair<Trade<Material>,
+                        Material::Ptr> > responses;
 
   double qty = 5;  // kg
   double trade_qty = qty / 3;
   double product_assay = 0.05;  // of 5 w/o enriched U
 
-  cyclus::CompMap v;
+  CompMap v;
   v[922350000] = product_assay;
   v[922380000] = 1 - product_assay;
   // target qty need not be = to request qty
-  Material::Ptr target = cyclus::Material::CreateUntracked(
+  Material::Ptr target = Material::CreateUntracked(
       qty + 10, cyclus::Composition::CreateFromMass(v));
 
   Assays assays(feed_assay, UraniumAssayMass(target), tails_assay);

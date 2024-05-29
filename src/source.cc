@@ -53,7 +53,6 @@ std::string Source::str() {
 
 std::set<cyclus::BidPortfolio<cyclus::Material>::Ptr> Source::GetMatlBids(
     cyclus::CommodMap<cyclus::Material>::type& commod_requests) {
-  using cyclus::Bid;
   using cyclus::BidPortfolio;
   using cyclus::CapacityConstraint;
   using cyclus::Material;
@@ -100,7 +99,7 @@ void Source::GetMatlTrades(
   using cyclus::Material;
   using cyclus::Trade;
 
-  std::vector<cyclus::Trade<cyclus::Material> >::const_iterator it;
+  std::vector<Trade<Material> >::const_iterator it;
   for (it = trades.begin(); it != trades.end(); ++it) {
     double qty = it->amt;
     inventory_size -= qty;
