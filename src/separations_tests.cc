@@ -332,7 +332,7 @@ TEST(SeparationsTests, Retire) {
   qr = sim.db().Query("Transactions", &conds);
   double tot_mat = 0;
   for (int i = 0; i < qr.rows.size(); i++) {
-    cyclus::Material::Ptr m = sim.GetMaterial(qr.GetVal<int>("ResourceId", i));
+    Material::Ptr m = sim.GetMaterial(qr.GetVal<int>("ResourceId", i));
     tot_mat += m->quantity();
   }
   EXPECT_EQ(100, tot_mat)

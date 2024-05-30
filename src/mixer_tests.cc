@@ -376,7 +376,7 @@ TEST(MixerTests, MultipleFissStreams) {
   int id = sim.Run();
 
   // Checking the number of transaction is as expected 3.
-  cyclus::QueryResult qr = sim.db().Query("Transactions", NULL);
+  QueryResult qr = sim.db().Query("Transactions", NULL);
   EXPECT_EQ(3, qr.rows.size());
 
   // Checking that all input stream get one transaction each.
@@ -454,7 +454,7 @@ TEST(MixerTests, CompleteMixingProcess) {
   // Checking that all input stream get one transaction each.
   std::vector<cyclus::Cond> conds;
   conds.push_back(cyclus::Cond("Commodity", "==", std::string("mixedstream")));
-  cyclus::QueryResult qr = sim.db().Query("Transactions", &conds);
+  QueryResult qr = sim.db().Query("Transactions", &conds);
   EXPECT_EQ(1, qr.rows.size());
 
   cyclus::Material::Ptr m = sim.GetMaterial(qr.GetVal<int>("ResourceId"));

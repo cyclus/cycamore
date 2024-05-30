@@ -10,7 +10,6 @@ using cyclus::CompMap;
 using cyclus::Material;
 using cyclus::QueryResult;
 using cyclus::Cond;
-using cyclus::toolkit::MatQuery;
 
 namespace cycamore {
 namespace fuelfabtests {
