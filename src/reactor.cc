@@ -143,7 +143,7 @@ void Reactor::Tick() {
       spent.Push(fresh.Pop());
     }
     if(CheckDecommissionCondition()) {
-      Decommission();    
+      context()->SchedDecom(this);    
     }
     return;
   }

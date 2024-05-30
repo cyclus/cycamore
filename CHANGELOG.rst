@@ -15,6 +15,8 @@ Since last release
 
 **Fixed:**
 
+* Schedule Decommission in ``Reactor::Tick()`` instead of Decommission (#609)
+
 **Removed:**
 
 * Removed references to deprecated ``ResourceBuff`` class (#604)
