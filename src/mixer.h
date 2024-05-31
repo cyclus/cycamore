@@ -5,6 +5,8 @@
 #include "cycamore_version.h"
 #include "cyclus.h"
 
+#pragma cyclus exec from cyclus.system import CY_LARGE_DOUBLE, CY_LARGE_INT, CY_NEAR_ZERO
+
 namespace cycamore {
 
 /// Mixer mixes N streams with fixed, static, user-specified
@@ -85,9 +87,9 @@ class Mixer
             " If full, the facility halts operation until space becomes" \
             " available.", \
     "uilabel": "Maximum Leftover Inventory", \
-    "default": "cyclus::cy_large_double", \
+    "default": CY_LARGE_DOUBLE, \
     "uitype": "range", \
-    "range": [0.0, "cyclus::cy_large_double"], \
+    "range": [0.0, CY_LARGE_DOUBLE], \
     "units": "kg", \
   }
   double out_buf_size;
@@ -96,11 +98,11 @@ class Mixer
   cyclus::toolkit::ResBuf<cyclus::Material> output;
 
 #pragma cyclus var { \
-    "default": "cyclus::cy_large_double", \
+    "default": CY_LARGE_DOUBLE, \
     "doc": "Maximum number of kg of fuel material that can be mixed per time step.", \
     "uilabel": "Maximum Throughput", \
     "uitype": "range", \
-    "range": [0.0, "cyclus::cy_large_double"], \
+    "range": [0.0, CY_LARGE_DOUBLE], \
     "units": "kg", \
   }
   double throughput;

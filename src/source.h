@@ -7,6 +7,8 @@
 #include "cyclus.h"
 #include "cycamore_version.h"
 
+#pragma cyclus exec from cyclus.system import CY_LARGE_DOUBLE, CY_LARGE_INT, CY_NEAR_ZERO
+
 namespace cycamore {
 
 class Context;
@@ -97,21 +99,21 @@ class Source : public cyclus::Facility,
            " Every trade decreases this value by the supplied material " \
            "quantity.  When it reaches zero, the source cannot provide any " \
            " more material.", \
-    "default": "cyclus::cy_large_double", \
+    "default": CY_LARGE_DOUBLE, \
     "uitype": "range", \
-    "range": [0.0, "cyclus::cy_large_double"], \
+    "range": [0.0, CY_LARGE_DOUBLE], \
     "uilabel": "Initial Inventory", \
     "units": "kg", \
   }
   double inventory_size;
 
   #pragma cyclus var {  \
-    "default": "cyclus::cy_large_double", \
+    "default": CY_LARGE_DOUBLE, \
     "tooltip": "per time step throughput", \
     "units": "kg/(time step)", \
     "uilabel": "Maximum Throughput", \
     "uitype": "range", \
-    "range": [0.0, "cyclus::cy_large_double"], \
+    "range": [0.0, CY_LARGE_DOUBLE], \
     "doc": "amount of commodity that can be supplied at each time step", \
   }
   double throughput;
