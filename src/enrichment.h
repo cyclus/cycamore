@@ -6,6 +6,8 @@
 #include "cyclus.h"
 #include "cycamore_version.h"
 
+#pragma cyclus exec from cyclus.system import CY_LARGE_DOUBLE, CY_LARGE_INT, CY_NEAR_ZERO
+
 namespace cycamore {
 
 /// @class SWUConverter
@@ -324,10 +326,10 @@ class Enrichment
   double initial_feed;
 
   #pragma cyclus var {							\
-    "default": "cyclus::cy_large_double", "tooltip": "max inventory of feed material (kg)", \
+    "default": CY_LARGE_DOUBLE, "tooltip": "max inventory of feed material (kg)", \
     "uilabel": "Maximum Feed Inventory", \
     "uitype": "range", \
-    "range": [0.0, "cyclus::cy_large_double"], \
+    "range": [0.0, CY_LARGE_DOUBLE], \
     "doc": "maximum total inventory of natural uranium in "		\
            "the enrichment facility (kg)"     \
   }
@@ -362,11 +364,11 @@ class Enrichment
   bool order_prefs;
 
   #pragma cyclus var {						       \
-    "default": "cyclus::cy_large_double",						       \
+    "default": CY_LARGE_DOUBLE,						       \
     "tooltip": "SWU capacity (kgSWU/timestep)",			       \
     "uilabel": "SWU Capacity",                                         \
     "uitype": "range",                                                  \
-    "range": [0.0, "cyclus::cy_large_double"],                                               \
+    "range": [0.0, CY_LARGE_DOUBLE],                                               \
     "doc": "separative work unit (SWU) capacity of enrichment "		\
            "facility (kgSWU/timestep) "                                     \
   }

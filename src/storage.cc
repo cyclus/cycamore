@@ -11,7 +11,7 @@ Storage::Storage(cyclus::Context* ctx)
       latitude(0.0),
       longitude(0.0),
       coordinates(latitude, longitude) {
-  inventory_tracker.Init({&inventory, &stocks, &ready, &processing}, cyclus::cy_large_double);
+  inventory_tracker.Init({&inventory, &stocks, &ready, &processing}, cyclus::CY_LARGE_DOUBLE);
   cyclus::Warn<cyclus::EXPERIMENTAL_WARNING>(
       "The Storage Facility is experimental.");};
 
