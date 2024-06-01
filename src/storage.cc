@@ -1,7 +1,6 @@
 // storage.cc
 // Implements the Storage class
 #include "storage.h"
-#include <iostream>
 
 namespace cycamore {
 
@@ -75,8 +74,6 @@ void Storage::InitBuyPolicyParameters() {
     if (active_buying_min == -1) {active_buying_min = 1;}
     if (active_buying_max == -1) {
       active_buying_max = std::numeric_limits<int>::max();}
-    
-    std::cout << "active_buying_max=" << active_buying_max << std::endl;
 
     active_dist_ = cyclus::NormalIntDist::Ptr (new cyclus::NormalIntDist(active_buying_mean, active_buying_stddev, 
                           active_buying_min, active_buying_max));
