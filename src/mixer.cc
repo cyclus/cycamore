@@ -96,7 +96,6 @@ void Mixer::EnterNotify() {
 }
 
 void Mixer::Tick() {
-  using cyclus::toolkit::RecordTimeSeries;
   if (output.quantity() < output.capacity()) {
     double tgt_qty = output.space();
 
@@ -130,7 +129,6 @@ void Mixer::Tick() {
 std::set<cyclus::RequestPortfolio<cyclus::Material>::Ptr>
 Mixer::GetMatlRequests() {
   using cyclus::RequestPortfolio;
-  using cyclus::toolkit::RecordTimeSeries;
 
   for (int i = 0; i < mixing_ratios.size(); i++)
   {

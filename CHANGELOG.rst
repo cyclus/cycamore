@@ -12,8 +12,11 @@ Since last release
 * Rely on ``python3`` in environment instead of ``python`` (#602)
 * Link against ``libxml++`` imported target in CMake instead of ``LIBXMLXX_LIBRARIES`` (#608)
 * Update archetype definitions to use cyclus constants instead of arbitrary hardcoded values (#606)
+* Cleaned up ``using`` declarations throughout archetypes (#610)
 
 **Fixed:**
+
+* Schedule Decommission in ``Reactor::Tick()`` instead of Decommission (#609)
 
 **Removed:**
 

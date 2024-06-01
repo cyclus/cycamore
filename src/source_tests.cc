@@ -61,7 +61,7 @@ TEST_F(SourceTest, AddBids) {
 
   int nreqs = 5;
 
-  boost::shared_ptr< cyclus::ExchangeContext<Material> >
+  boost::shared_ptr< ExchangeContext<Material> >
       ec = GetContext(nreqs, commod);
 
   std::set<BidPortfolio<Material>::Ptr> ports =
@@ -87,9 +87,9 @@ TEST_F(SourceTest, Response) {
   using cyclus::Trade;
   using test_helpers::get_mat;
 
-  std::vector< cyclus::Trade<cyclus::Material> > trades;
-  std::vector<std::pair<cyclus::Trade<cyclus::Material>,
-                        cyclus::Material::Ptr> > responses;
+  std::vector< Trade<Material> > trades;
+  std::vector<std::pair<Trade<Material>,
+                        Material::Ptr> > responses;
 
   // Null response
   EXPECT_NO_THROW(src_facility->GetMatlTrades(trades, responses));

@@ -135,7 +135,6 @@ Sink::GetGenRsrcRequests() {
   using cyclus::CapacityConstraint;
   using cyclus::Product;
   using cyclus::RequestPortfolio;
-  using cyclus::Request;
 
   std::set<RequestPortfolio<Product>::Ptr> ports;
   RequestPortfolio<Product>::Ptr
