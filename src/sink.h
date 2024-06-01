@@ -254,7 +254,7 @@ class Sink
                       "uitype": "range", \
                       "range": [1, CY_LARGE_INT], \
                       "doc": "When a random distribution is used to determine the " \
-                             "frequency of the request, this is the upper bound. Default cyclus::cy_large_int"}
+                             "frequency of the request, this is the upper bound. Default CY_LARGE_INT (1e299)"}
   int random_frequency_max;
 
   #pragma cyclus var { \

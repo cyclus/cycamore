@@ -78,22 +78,24 @@ void DeployInst::DecomNotify(Agent* a) {
 
 void DeployInst::Register_(Agent* a) {
   using cyclus::toolkit::CommodityProducer;
+  using cyclus::toolkit::CommodityProducerManager;
 
   CommodityProducer* cp_cast = dynamic_cast<CommodityProducer*>(a);
   if (cp_cast != NULL) {
     LOG(cyclus::LEV_INFO3, "mani") << "Registering agent "
                                    << a->prototype() << a->id()
                                    << " as a commodity producer.";
-    cyclus::toolkit::CommodityProducerManager::Register(cp_cast);
+    CommodityProducerManager::Register(cp_cast);
   }
 }
 
 void DeployInst::Unregister_(Agent* a) {
   using cyclus::toolkit::CommodityProducer;
+  using cyclus::toolkit::CommodityProducerManager;
 
   CommodityProducer* cp_cast = dynamic_cast<CommodityProducer*>(a);
   if (cp_cast != NULL)
-    cyclus::toolkit::CommodityProducerManager::Unregister(cp_cast);
+    CommodityProducerManager::Unregister(cp_cast);
 }
 
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -

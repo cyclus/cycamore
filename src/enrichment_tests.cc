@@ -576,18 +576,18 @@ TEST_F(EnrichmentTest, ValidReq) {
 
   double qty = 5;  // 5 kg
   double product_assay = 0.05;  // of 5 w/o enriched U
-  cyclus::CompMap v;
+  CompMap v;
   v[922350000] = product_assay;
   v[922380000] = 1 - product_assay;
   v[94239] = 0.5;  // 94239 shouldn't be taken into account
   Material::Ptr target = Material::CreateUntracked(
-      qty, cyclus::Composition::CreateFromMass(v));
+      qty, Composition::CreateFromMass(v));
 
   std::set<cyclus::Nuc> nucs;
   nucs.insert(922350000);
   nucs.insert(922380000);
 
-  cyclus::toolkit::MatQuery mq(target);
+  MatQuery mq(target);
   double mass_frac = mq.mass_frac(nucs);
 
   SWUConverter swuc(feed_assay, tails_assay);
@@ -615,10 +615,10 @@ TEST_F(EnrichmentTest, Enrich) {
   Material::Ptr target = Material::CreateUntracked(
       qty + 10, Composition::CreateFromMass(v));
 
-  cyclus::toolkit::Assays assays(feed_assay, cyclus::toolkit::UraniumAssayMass(target), tails_assay);
-  double swu_req = cyclus::toolkit::SwuRequired(qty, assays);
-  double natu_req = cyclus::toolkit::FeedQty(qty, assays);
-  double tails_qty = cyclus::toolkit::TailsQty(qty, assays);
+  Assays assays(feed_assay, UraniumAssayMass(target), tails_assay);
+  double swu_req = SwuRequired(qty, assays);
+  double natu_req = FeedQty(qty, assays);
+  double tails_qty = TailsQty(qty, assays);
 
   double swu_cap = swu_req * 5;
   src_facility->SwuCapacity(swu_cap);
@@ -630,7 +630,7 @@ TEST_F(EnrichmentTest, Enrich) {
   EXPECT_NO_THROW(response = DoEnrich(target, qty));
   EXPECT_DOUBLE_EQ(src_facility->Tails().quantity(), tails_qty);
 
-  cyclus::toolkit::MatQuery q(response);
+  MatQuery q(response);
   EXPECT_EQ(response->quantity(), qty);
   EXPECT_EQ(q.mass_frac(922350000), product_assay);
   EXPECT_EQ(q.mass_frac(922380000), 1 - product_assay);
@@ -689,7 +689,7 @@ TEST_F(EnrichmentTest, Response) {
 
   Request<Material>* req =
       Request<Material>::Create(target, trader, product_commod);
-  cyclus::Bid<Material>* bid = Bid<Material>::Create(req, target, src_facility);
+  Bid<Material>* bid = Bid<Material>::Create(req, target, src_facility);
   Trade<Material> trade(req, bid, trade_qty);
   trades.push_back(trade);
 
