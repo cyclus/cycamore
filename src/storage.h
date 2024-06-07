@@ -58,6 +58,7 @@ namespace cycamore {
 /// buying_size_max is the maximum size of the buy request if buying_size_type is Uniform (required) or Normal (optional)
 /// buying_size_mean is the mean size of the buy request if buying_size_type is Normal
 /// buying_size_stddev is the standard deviation of the buy request if buying_size_type is Normal
+/// package is the name of the package type to ship
 ///
 /// @section detailed Detailed Behavior
 ///
@@ -428,6 +429,13 @@ class Storage
                       "The per-time step demand is unchanged except the cycle cap is almost reached.",\
                       "uilabel": "Cumulative Cap"}
   double cumulative_cap;
+
+  #pragma cyclus var {"default": "unpackaged", \
+                      "tooltip": "Output package", \
+                      "doc": "Outgoing material will be packaged when trading.", \
+                      "uitype": "package", \
+                      "uilabel": "Package"}
+  std::string package;
 
   #pragma cyclus var {"tooltip":"Incoming material buffer"}
   cyclus::toolkit::ResBuf<cyclus::Material> inventory;
