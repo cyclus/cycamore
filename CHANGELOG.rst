@@ -6,13 +6,13 @@ Since last release
 ======================
 
 **Added:**
+* Added package parameter to storage (#603, #612)
 
 **Changed:**
 
 * Rely on ``python3`` in environment instead of ``python`` (#602)
 * Link against ``libxml++`` imported target in CMake instead of ``LIBXMLXX_LIBRARIES`` (#608)
 * Cleaned up ``using`` declarations throughout archetypes (#610)
-* Added package parameter to storage (#603)
 
 **Fixed:**
 

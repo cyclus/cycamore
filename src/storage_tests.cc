@@ -1036,9 +1036,9 @@ TEST_F(StorageTest, PackageMerge) {
   res_conds.push_back(cyclus::Cond("PackageName", "==", p->name()));
   cyclus::QueryResult qr_res = sim.db().Query("Resources", &res_conds);
   // Combines two 0.5 mass resources to make packages with mass 1
-  EXPECT_EQ(qr_res.rows.size(), 2);
-  EXPECT_EQ(qr_res.GetVal<double>("Quantity", 0), 1);
-  EXPECT_EQ(qr_res.GetVal<double>("Quantity", 1), 1);
+  EXPECT_EQ(2, qr_res.rows.size());
+  EXPECT_EQ(1, qr_res.GetVal<double>("Quantity", 0));
+  EXPECT_EQ(1, qr_res.GetVal<double>("Quantity", 1));
 }
 
 } // namespace cycamore
