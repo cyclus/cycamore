@@ -984,10 +984,22 @@ TEST_F(StorageTest, PackageSplitFirst) {
   cyclus::QueryResult qr_res = sim.db().Query("Resources", &res_conds);
   // because package does split-first, resources are size 2 and 1
   EXPECT_EQ(qr_res.rows.size(), 4);
-  EXPECT_EQ(2, qr_res.GetVal<double>("Quantity", 0));
-  EXPECT_EQ(1, qr_res.GetVal<double>("Quantity", 1));
-  EXPECT_EQ(2, qr_res.GetVal<double>("Quantity", 2));
-  EXPECT_EQ(1, qr_res.GetVal<double>("Quantity", 3));
+
+  // order of trade execution is not guaranteed. Therefore, create vector, 
+  // sort by size, and then check values
+  std::vector<double> pkgd_t0 = {qr_res.GetVal<double>("Quantity", 0),
+                                    qr_res.GetVal<double>("Quantity", 1)};
+  std::sort(pkgd_t0.begin(), pkgd_t0.end(), std::greater<double>());
+  std::vector<double> exp_t0 = {2, 1};
+
+  EXPECT_EQ(exp_t0, pkgd_t0);
+
+  std::vector<double> pkgd_t1 = {qr_res.GetVal<double>("Quantity", 2),
+                                    qr_res.GetVal<double>("Quantity", 3)};
+  std::sort(pkgd_t1.begin(), pkgd_t1.end(), std::greater<double>());
+  std::vector<double> exp_t1 = {2, 1};
+
+  EXPECT_EQ(exp_t1, pkgd_t1);
 }
 
 TEST_F(StorageTest, PackageMerge) {
@@ -1024,9 +1036,9 @@ TEST_F(StorageTest, PackageMerge) {
   res_conds.push_back(cyclus::Cond("PackageName", "==", p->name()));
   cyclus::QueryResult qr_res = sim.db().Query("Resources", &res_conds);
   // Combines two 0.5 mass resources to make packages with mass 1
-  EXPECT_EQ(qr_res.rows.size(), 2);
-  EXPECT_EQ(qr_res.GetVal<double>("Quantity", 0), 1);
-  EXPECT_EQ(qr_res.GetVal<double>("Quantity", 1), 1);
+  EXPECT_EQ(2, qr_res.rows.size());
+  EXPECT_EQ(1, qr_res.GetVal<double>("Quantity", 0));
+  EXPECT_EQ(1, qr_res.GetVal<double>("Quantity", 1));
 }
 
 } // namespace cycamore
