@@ -67,6 +67,8 @@ class Source : public cyclus::Facility,
       GetMatlBids(cyclus::CommodMap<cyclus::Material>::type&
                   commod_requests);
 
+  virtual void EnterNotify();
+
   virtual void GetMatlTrades(
     const std::vector< cyclus::Trade<cyclus::Material> >& trades,
     std::vector<std::pair<cyclus::Trade<cyclus::Material>,
@@ -117,6 +119,28 @@ class Source : public cyclus::Facility,
   double throughput;
 
   #pragma cyclus var { \
+    "default": "unpackaged", \
+    "tooltip": "name of package to provide material in", \
+    "doc": "Name of package that this source provides. Offers will only be" \
+           "made in packagable quantities of material.", \
+    "uilabel": "Output Package Type", \
+    "uitype": "package", \
+  }
+  std::string package;
+
+  #pragma cyclus var { \
+    "default": "unrestricted", \
+    "tooltip": "name of transport unit to ship packages in", \
+    "doc": "Name of transport unit that this source uses to ship packages of " \
+           "material. Offers will only be made in shippable quantities of " \
+           "packages. Optional if packaging is used, but use of transport " \
+           "units requires packaging type to also be set", \
+    "uilabel": "Output Transport Unit Type", \
+    "uitype": "transportunit", \
+  }
+  std::string transport_unit;
+
+  #pragma cyclus var { \
     "default": 0.0, \
     "uilabel": "Geographical latitude in degrees as a double", \
     "doc": "Latitude of the agent's geographical position. The value should " \
@@ -132,9 +156,14 @@ class Source : public cyclus::Facility,
   }
   double longitude;
 
+  #pragma cyclus var { \
+    "tooltip":"Material buffer"}
+  cyclus::toolkit::ResBuf<cyclus::Material> inventory;
+
   cyclus::toolkit::Position coordinates;
 
   void RecordPosition();
+  void SetPackage();
 };
 
 }  // namespace cycamore

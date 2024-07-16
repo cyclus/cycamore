@@ -15,6 +15,7 @@ void SourceTest::SetUp() {
   trader = tc.trader();
   InitParameters();
   SetUpSource();
+  src_facility->EnterNotify();
 }
 
 void SourceTest::TearDown() {
@@ -24,6 +25,8 @@ void SourceTest::TearDown() {
 void SourceTest::InitParameters() {
   commod = "commod";
   recipe_name = "recipe";
+  package_name = "testpackage";
+  tu_name = "testtu";
   capacity = 5;  // some magic number..
 
   recipe = cyclus::Composition::CreateFromAtom(cyclus::CompMap());
@@ -63,6 +66,8 @@ TEST_F(SourceTest, AddBids) {
 
   boost::shared_ptr< ExchangeContext<Material> >
       ec = GetContext(nreqs, commod);
+
+  src_facility->EnterNotify();
 
   std::set<BidPortfolio<Material>::Ptr> ports =
       src_facility->GetMatlBids(ec.get()->commod_requests);
@@ -151,6 +156,38 @@ TEST_F(SourceTest, Longitude) {
   EXPECT_EQ(qr.GetVal<double>("Latitude"), -0.01);
   EXPECT_EQ(qr.GetVal<double>("Longitude"), 0.01);
 
+}
+
+TEST_F(SourceTest, Package) {
+  using cyclus::QueryResult;
+  using cyclus::Cond;
+
+  std::string config =
+    "<outcommod>commod</outcommod>"
+    "<package>testpackage</package>"
+    "<throughput>5</throughput>";
+
+  int simdur = 3;
+  cyclus::MockSim sim(cyclus::AgentSpec (":cycamore:Source"), config, simdur);
+  
+  sim.context()->AddPackage(package_name, 3, 4, "first");
+  package = sim.context()->GetPackage(package_name);
+  // sim.context()->AddTransportUnit(tu_name, 1, 2, "hybrid");
+  // tu = sim.context()->GetTransportUnit(tu_name);
+  
+  sim.AddSink("commod").Finalize();
+
+  EXPECT_NO_THROW(sim.Run());
+
+  QueryResult qr_tr = sim.db().Query("Transactions", NULL);
+  EXPECT_EQ(qr_tr.rows.size(), 3);
+  
+  std::vector<Cond> conds;
+  conds.push_back(Cond("PackageName", "==", package->name()));
+  QueryResult qr_res = sim.db().Query("Resources", &conds);
+
+  EXPECT_EQ(qr_res.rows.size(), 3);
+    
 }
 
 boost::shared_ptr< cyclus::ExchangeContext<cyclus::Material> >
