@@ -172,8 +172,6 @@ TEST_F(SourceTest, Package) {
   
   sim.context()->AddPackage(package_name, 3, 4, "first");
   package = sim.context()->GetPackage(package_name);
-  // sim.context()->AddTransportUnit(tu_name, 1, 2, "hybrid");
-  // tu = sim.context()->GetTransportUnit(tu_name);
   
   sim.AddSink("commod").Finalize();
 
@@ -186,8 +184,41 @@ TEST_F(SourceTest, Package) {
   conds.push_back(Cond("PackageName", "==", package->name()));
   QueryResult qr_res = sim.db().Query("Resources", &conds);
 
-  EXPECT_EQ(qr_res.rows.size(), 3);
-    
+  EXPECT_EQ(qr_res.rows.size(), 3); 
+}
+
+TEST_F(SourceTest, TransportUnit) {
+  using cyclus::QueryResult;
+  using cyclus::Cond;
+
+  std::string config =
+    "<outcommod>commod</outcommod>"
+    "<package>testpackage</package>"
+    "<transport_unit>testtu</transport_unit>"
+    "<throughput>10</throughput>";
+
+  int simdur = 2;
+  cyclus::MockSim sim(cyclus::AgentSpec (":cycamore:Source"), config, simdur);
+  
+  sim.context()->AddPackage(package_name, 3, 4, "equal");
+  package = sim.context()->GetPackage(package_name);
+  sim.context()->AddTransportUnit(tu_name, 2, 2);
+  tu = sim.context()->GetTransportUnit(tu_name);
+  
+  sim.AddSink("commod").Finalize();
+
+  EXPECT_NO_THROW(sim.Run());
+
+  QueryResult qr_tr = sim.db().Query("Transactions", NULL);
+  EXPECT_EQ(qr_tr.rows.size(), 4);
+  
+  std::vector<Cond> conds;
+  conds.push_back(Cond("PackageName", "==", package->name()));
+  QueryResult qr_res = sim.db().Query("Resources", &conds);
+
+  EXPECT_EQ(qr_res.rows.size(), 4);
+
+  QueryResult qr_allres = sim.db().Query("Resources", NULL);
 }
 
 boost::shared_ptr< cyclus::ExchangeContext<cyclus::Material> >

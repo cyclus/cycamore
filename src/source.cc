@@ -109,7 +109,7 @@ std::set<cyclus::BidPortfolio<cyclus::Material>::Ptr> Source::GetMatlBids(
     std::vector<double> bids;
     bids.assign(n_full_bids, bid_qty);
 
-    double remaining_qty = std::fmod(qty, bid_qty);
+    double remaining_qty = qty - (n_full_bids * bid_qty);
     if ((remaining_qty > cyclus::eps()) && (remaining_qty >= context()->GetPackage(package)->fill_min())) {
       bids.push_back(remaining_qty);
     }
@@ -165,7 +165,6 @@ void Source::GetMatlTrades(
         // If not all material is packaged successfully, return the excess
         // amount to the inventory
         inventory.Push(m);
-        //inventory_size += m->quantity();
       }
 
       Material::Ptr response;
