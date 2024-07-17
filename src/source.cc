@@ -151,14 +151,9 @@ void Source::GetMatlTrades(
   for (it = trades.begin(); it != trades.end(); ++it) {
     if (shippable_trades > 0) {
       double qty = it->amt;
-      
-      // inventory_size -= qty;
 
       Material::Ptr m = inventory.Pop(qty);
-      if (outrecipe.empty()) {
-        m->Transmute(it->request->target()->comp());
-      }
-
+      
       std::vector<Material::Ptr> m_pkgd = m->Package<Material>(context()->GetPackage(package));
 
       if (m->quantity() > cyclus::eps()) {
@@ -171,6 +166,10 @@ void Source::GetMatlTrades(
       if (m_pkgd.size() > 0) {
         response = m_pkgd[0];
         shippable_trades -= 1;
+      }
+
+      if (outrecipe.empty() && response->comp() != it->request->target()->comp()) {
+        response->Transmute(it->request->target()->comp());
       }
 
       responses.push_back(std::make_pair(*it, response));
