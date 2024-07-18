@@ -164,6 +164,9 @@ void Source::GetMatlTrades(
 
       Material::Ptr response;
       if (m_pkgd.size() > 0) {
+        // Because we responded (in GetMatlBids) with individual package-sized
+        // bids, each packaged vector is guaranteed to have no more than one
+        // package in it. This single packaged resource is our response
         response = m_pkgd[0];
         shippable_trades -= 1;
       }
