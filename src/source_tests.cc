@@ -164,12 +164,14 @@ TEST_F(SourceTest, Package) {
 
   std::string config =
     "<outcommod>commod</outcommod>"
+    "<outrecipe>recipe</outrecipe>"
     "<package>testpackage</package>"
     "<throughput>5</throughput>";
 
   int simdur = 3;
   cyclus::MockSim sim(cyclus::AgentSpec (":cycamore:Source"), config, simdur);
   
+  sim.context()->AddRecipe(recipe_name, recipe);
   sim.context()->AddPackage(package_name, 3, 4, "first");
   package = sim.context()->GetPackage(package_name);
   
@@ -193,6 +195,7 @@ TEST_F(SourceTest, TransportUnit) {
 
   std::string config =
     "<outcommod>commod</outcommod>"
+    "<outrecipe>recipe</outrecipe>"
     "<package>testpackage</package>"
     "<transport_unit>testtu</transport_unit>"
     "<throughput>10</throughput>";
@@ -200,6 +203,7 @@ TEST_F(SourceTest, TransportUnit) {
   int simdur = 2;
   cyclus::MockSim sim(cyclus::AgentSpec (":cycamore:Source"), config, simdur);
   
+  sim.context()->AddRecipe(recipe_name, recipe);
   sim.context()->AddPackage(package_name, 3, 4, "equal");
   package = sim.context()->GetPackage(package_name);
   sim.context()->AddTransportUnit(tu_name, 2, 2);
