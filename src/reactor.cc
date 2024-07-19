@@ -23,6 +23,7 @@ Reactor::Reactor(cyclus::Context* ctx)
       discharged(false),
       latitude(0.0),
       longitude(0.0),
+      keep_packaging(1),
       coordinates(latitude, longitude) {}
 
 
@@ -61,6 +62,11 @@ void Reactor::InitFrom(cyclus::QueryableBackend* b) {
 
 void Reactor::EnterNotify() {
   cyclus::Facility::EnterNotify();
+
+  // Set keep packaging parameter in all ResBufs
+  fresh.keep_packaging(keep_packaging);
+  core.keep_packaging(keep_packaging);
+  spent.keep_packaging(keep_packaging);
 
   // If the user ommitted fuel_prefs, we set it to zeros for each fuel
   // type.  Without this segfaults could occur - yuck.

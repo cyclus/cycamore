@@ -407,13 +407,28 @@ class Reactor : public cyclus::Facility,
   }
   std::vector<double> pref_change_values;
 
+  #pragma cyclus var { \
+    "default": 1, \
+    "tooltip": "Whether to persist packaging throughout the reactor", \
+    "doc": "Boolean value about whether to keep packaging. If true, " \
+           "packaging will not be stripped upon acceptance into the " \
+           "reactor. If false, package type will be stripped immediately " \
+           "upon acceptance. Has no effect if the incoming material is not " \
+           "packaged.", \
+    "uilabel": "Keep Packaging", \
+    "uitype": "bool"}
+  bool keep_packaging;
+
   // Resource inventories - these must be defined AFTER/BELOW the member vars
   // referenced (e.g. n_batch_fresh, assem_size, etc.).
-  #pragma cyclus var {"capacity": "n_assem_fresh * assem_size"}
+  #pragma cyclus var {"capacity": "n_assem_fresh * assem_size", \
+    "keep_packaging": "keep_packaging"}
   cyclus::toolkit::ResBuf<cyclus::Material> fresh;
-  #pragma cyclus var {"capacity": "n_assem_core * assem_size"}
+  #pragma cyclus var {"capacity": "n_assem_core * assem_size", \
+    "keep_packaging": "keep_packaging"}
   cyclus::toolkit::ResBuf<cyclus::Material> core;
-  #pragma cyclus var {"capacity": "n_assem_spent * assem_size"}
+  #pragma cyclus var {"capacity": "n_assem_spent * assem_size", \
+    "keep_packaging": "keep_packaging"}
   cyclus::toolkit::ResBuf<cyclus::Material> spent;
 
 

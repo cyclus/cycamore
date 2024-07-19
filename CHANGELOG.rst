@@ -8,6 +8,7 @@ Since last release
 **Added:**
 * Added package parameter to storage (#603, #612)
 * Added package parameter to source (#613, #617)
+* Added default keep packaging to reactor (#618)
 
 **Changed:**
 
