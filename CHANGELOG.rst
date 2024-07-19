@@ -6,7 +6,7 @@ Since last release
 ======================
 
 **Added:**
-* Added package parameter to storage (#603, #612)
+* Added package parameter to storage (#603, #612, #616)
 * Added package parameter to source (#613, #617)
 
 **Changed:**
