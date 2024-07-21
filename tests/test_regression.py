@@ -9,6 +9,7 @@ import numpy as np
 from numpy.testing import assert_array_almost_equal
 from numpy.testing import assert_almost_equal
 from cyclus.lib import Env
+from cyclus.system import CY_NEAR_ZERO
 
 from pytest import skip
 
@@ -273,7 +274,7 @@ class TestDynamicCapacitated(TestRegression):
     facilities being the constraint. At time step 3, after decommissioning 2
     older sink facilities, the remaining number of sink facilities becomes
     the constraint, resulting in the same transaction amount as in time step 1.
-    """   
+    """
     @classmethod
     def setup_class(cls):
         skip_if_dont_allow_milps()
@@ -365,7 +366,7 @@ class TestDynamicCapacitated(TestRegression):
 
 class TestGrowth1(TestRegression):
     """This class tests the growth.xml
-    
+
     Tests GrowthRegion, ManagerInst, and Source over a 4-time step
     simulation.
 
@@ -411,7 +412,7 @@ class TestGrowth1(TestRegression):
 
 class TestGrowth2(TestRegression):
     """This class tests the ./input/deploy_and_manager_insts.xml
-    
+
     Tests GrowthRegion, ManagerInst, DeployInst, and Source over a 10-time step
     simulation.
 
@@ -449,17 +450,17 @@ class TestGrowth2(TestRegression):
 
 class TestDeployInst(TestRegression):
     """This class tests the ../input/deploy_inst.xml
-    
+
     Tests DeployInst, and NullRegion over a 10-time step
     simulation.
 
-    A DeployInst is used to define that a Source agent is to be deployed at 
+    A DeployInst is used to define that a Source agent is to be deployed at
     time t=1 within a Null Region. A Sink agent is also deployed as
-    an initial facility. This input is used to test that the Source and 
-    Sink agents are deployed at their respecitve times and that the correct 
+    an initial facility. This input is used to test that the Source and
+    Sink agents are deployed at their respecitve times and that the correct
     number of these agents are deployed.
 
-    """        
+    """
     @classmethod
     def setup_class(cls):
         skip_if_dont_allow_milps()
@@ -487,7 +488,7 @@ class TestDeployInst(TestRegression):
 
 class _Recycle(TestRegression):
     """This class tests the input/recycle.xml file.
-    """       
+    """
     @classmethod
     def setup_class(cls, inf):
         super(_Recycle, cls).setup_class(inf)
@@ -506,7 +507,7 @@ class _Recycle(TestRegression):
     def do_compare(self, fromfac, tofac, nuclide, exp_invs):
         conn = sqlite3.connect(self.outf)
         c = conn.cursor()
-        eps = 1e-10
+        eps = CY_NEAR_ZERO
         simdur = len(exp_invs)
 
         invs = [0.0] * simdur
@@ -583,7 +584,7 @@ class TestGreedyRecycle(_Recycle):
 
 class TestCBCRecycle(_Recycle):
     """This class tests the input/recycle.xml file.
-    """ 
+    """
     @classmethod
     def setup_class(cls):
         skip_if_dont_allow_milps()

@@ -176,7 +176,7 @@ class MixerTest : public ::testing::Test {
 // Checking that ratios correctly default to 1/N.
 TEST_F(MixerTest, StreamDefaultRatio) {
   SetOutStream_capacity(50);
-  SetThroughput(1e200);
+  SetThroughput(cyclus::CY_LARGE_DOUBLE);
   mf_facility_->EnterNotify();
 
   double ext_val = 1.0 / 3.0;
@@ -198,7 +198,7 @@ TEST_F(MixerTest, StreamRatio) {
   SetStream_ratio(in_frac_);
   SetStream_capacity(in_cap_);
   SetOutStream_capacity(50);
-  SetThroughput(1e200);
+  SetThroughput(cyclus::CY_LARGE_DOUBLE);
   mf_facility_->EnterNotify();
 
   std::vector<double> strm_ratio_ = GetStream_ratio();
@@ -213,7 +213,7 @@ TEST_F(MixerTest, StreamRatio) {
   // Checking renormalisation when sum of ratio is smaller tham 1.
   in_frac_ = {0.1, 0.2, 0.5};
   SetOutStream_capacity(50);
-  SetThroughput(1e200);
+  SetThroughput(cyclus::CY_LARGE_DOUBLE);
 
   SetStream_ratio(in_frac_);
   mf_facility_->EnterNotify();
@@ -237,7 +237,7 @@ TEST_F(MixerTest, MixingComposition) {
 
   SetOutStream_capacity(50);
 
-  SetThroughput(1e200);
+  SetThroughput(cyclus::CY_LARGE_DOUBLE);
 
   std::vector<Material::Ptr> mat;
   mat.push_back(Material::CreateUntracked(in_cap[0], c_natu()));

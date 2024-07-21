@@ -75,7 +75,7 @@ void Storage::InitBuyPolicyParameters() {
     if (active_buying_max == -1) {
       active_buying_max = std::numeric_limits<int>::max();}
 
-    active_dist_ = cyclus::NormalIntDist::Ptr (new cyclus::NormalIntDist(active_buying_mean, active_buying_stddev, 
+    active_dist_ = cyclus::NormalIntDist::Ptr (new cyclus::NormalIntDist(active_buying_mean, active_buying_stddev,
                           active_buying_min, active_buying_max));
   }
   else {
@@ -184,7 +184,7 @@ void Storage::EnterNotify() {
 
   std::string package_name_ =  context()->GetPackage(package)->name();
   if (out_commods.size() == 1) {
-    sell_policy.Init(this, &stocks, std::string("stocks"), 1e+299, false,
+    sell_policy.Init(this, &stocks, std::string("stocks"), cyclus::CY_LARGE_DOUBLE, false,
                      sell_quantity, package_name_)
       .Set(out_commods.front())
       .Start();
@@ -225,7 +225,7 @@ std::string Storage::str() {
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 void Storage::Tick() {
-  
+
 
   LOG(cyclus::LEV_INFO3, "ComCnv") << prototype() << " is ticking {";
 
@@ -265,9 +265,9 @@ void Storage::Tock() {
   int maxindx = std::distance(in_commod_prefs.begin(), result);
   double demand = 0;
   demand = current_capacity();
-  
+
   cyclus::toolkit::RecordTimeSeries<double>("demand"+in_commods[maxindx], this, demand);
-  
+
   // Multiple commodity tracking is not supported, user can only
   // provide one value for out_commods, despite it being a vector of strings.
   cyclus::toolkit::RecordTimeSeries<double>("supply"+out_commods[0], this,

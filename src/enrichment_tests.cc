@@ -81,7 +81,7 @@ TEST_F(EnrichmentTest, RequestQty) {
   // Should be only one transaction into the EF,
   // and it should be exactly 1kg of natu
   EXPECT_EQ(1.0, qr.rows.size());
-  EXPECT_NEAR(1.0, m->quantity(), 1e-10) <<
+  EXPECT_NEAR(1.0, m->quantity(), cyclus::CY_NEAR_ZERO) <<
     "matched trade provides the wrong quantity of material";
 }
 
@@ -572,6 +572,9 @@ TEST_F(EnrichmentTest, ValidReq) {
   TEST_F(EnrichmentTest, ConstraintConverters) {
     // Tests the SWU and NatU converters to make sure that amount of
     // feed and SWU required are correct to fulfill the enrichment request.
+  using cyclus::toolkit::MatQuery;
+  using cyclus::Composition;
+
   cyclus::Env::SetNucDataPath();
 
   double qty = 5;  // 5 kg
@@ -605,6 +608,12 @@ TEST_F(EnrichmentTest, Enrich) {
   // of natural uranium required that is exactly its inventory level. that
   // inventory will be comprised of two materials to test the manifest/absorb
   // strategy employed in Enrich_.
+  using cyclus::toolkit::MatQuery;
+  using cyclus::Composition;
+  using cyclus::toolkit::Assays;
+  using cyclus::toolkit::UraniumAssayMass;
+  using cyclus::toolkit::SwuRequired;
+  using cyclus::toolkit::FeedQty;
 
   double qty = 5;  // kg
   double product_assay = 0.05;  // of 5 w/o enriched U

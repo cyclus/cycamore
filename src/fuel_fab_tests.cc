@@ -531,12 +531,12 @@ TEST(FuelFabTests, CorrectMixing) {
   conds[0] = Cond("Commodity", "==", std::string("natu"));
   qr = sim.db().Query("Transactions", &conds);
   m = sim.GetMaterial(qr.GetVal<int>("ResourceId"));
-  EXPECT_NEAR(9.7463873197, m->quantity(), 1e-6) << "mixed wrong amount of Nat. U stream";
+  EXPECT_NEAR(9.7463873197, m->quantity(), cyclus::CY_NEAR_ZERO) << "mixed wrong amount of Nat. U stream";
 
   conds[0] = Cond("Commodity", "==", std::string("pustream"));
   qr = sim.db().Query("Transactions", &conds);
   m = sim.GetMaterial(qr.GetVal<int>("ResourceId"));
-  EXPECT_NEAR(0.25361268029, m->quantity(), 1e-6) << "mixed wrong amount of Pu stream";
+  EXPECT_NEAR(0.25361268029, m->quantity(), cyclus::CY_NEAR_ZERO) << "mixed wrong amount of Pu stream";
 }
 
 // fuel is requested requiring more filler than is available with plenty of
@@ -582,7 +582,7 @@ TEST(FuelFabTests, FillConstrained) {
   QueryResult qr = sim.db().Query("Transactions", &conds);
   Material::Ptr m = sim.GetMaterial(qr.GetVal<int>("ResourceId"));
 
-  EXPECT_NEAR(max_provide, m->quantity(), 1e-10) << "matched trade uses more fill than available";
+  EXPECT_NEAR(max_provide, m->quantity(), cyclus::CY_NEAR_ZERO) << "matched trade uses more fill than available";
 }
 
 // fuel is requested requiring more fissile material than is available with
@@ -628,7 +628,7 @@ TEST(FuelFabTests, FissConstrained) {
   QueryResult qr = sim.db().Query("Transactions", &conds);
   Material::Ptr m = sim.GetMaterial(qr.GetVal<int>("ResourceId"));
 
-  EXPECT_NEAR(max_provide, m->quantity(), 1e-10) << "matched trade uses more fill than available";
+  EXPECT_NEAR(max_provide, m->quantity(), cyclus::CY_NEAR_ZERO) << "matched trade uses more fill than available";
 }
 
 // swap to topup inventory because fissile has too low reactivity.
@@ -669,7 +669,7 @@ TEST(FuelFabTests, SwapTopup) {
   QueryResult qr = sim.db().Query("Transactions", &conds);
   ASSERT_EQ(1, qr.rows.size()) << "failed to meet fuel request";
   Material::Ptr m = sim.GetMaterial(qr.GetVal<int>("ResourceId"));
-  EXPECT_NEAR(sink_cap, m->quantity(), 1e-10) << "supplied fuel was constrained too much";
+  EXPECT_NEAR(sink_cap, m->quantity(), cyclus::CY_NEAR_ZERO) << "supplied fuel was constrained too much";
 
   conds[0] = Cond("Commodity", "==", std::string("natu"));
   conds.push_back(Cond("Time", "==", 2));
@@ -719,7 +719,7 @@ TEST(FuelFabTests, SwapTopup_ZeroFill) {
   QueryResult qr = sim.db().Query("Transactions", &conds);
   ASSERT_EQ(1, qr.rows.size()) << "failed to meet fuel request";
   Material::Ptr m = sim.GetMaterial(qr.GetVal<int>("ResourceId"));
-  EXPECT_NEAR(sink_cap, m->quantity(), 1e-10) << "supplied fuel was constrained too much";
+  EXPECT_NEAR(sink_cap, m->quantity(), cyclus::CY_NEAR_ZERO) << "supplied fuel was constrained too much";
 
   conds[0] = Cond("Commodity", "==", std::string("pustream"));
   conds.push_back(Cond("Time", "==", 2));
@@ -786,7 +786,7 @@ TEST(FuelFabTests, SwapTopup_TopupConstrained) {
   ASSERT_EQ(1, qr.rows.size()) << "failed to meet fuel request";
   Material::Ptr m = sim.GetMaterial(qr.GetVal<int>("ResourceId"));
 
-  EXPECT_NEAR(max_provide, m->quantity(), 1e-10) << "matched trade uses more fiss than available";
+  EXPECT_NEAR(max_provide, m->quantity(), cyclus::CY_NEAR_ZERO) << "matched trade uses more fiss than available";
 }
 
 // swap to topup inventory but are limited by fiss inventory quantity.  This
@@ -841,7 +841,7 @@ TEST(FuelFabTests, SwapTopup_FissConstrained) {
   ASSERT_EQ(1, qr.rows.size()) << "failed to meet fuel request";
   Material::Ptr m = sim.GetMaterial(qr.GetVal<int>("ResourceId"));
 
-  EXPECT_NEAR(max_provide, m->quantity(), 1e-10) << "matched trade uses more fiss than available";
+  EXPECT_NEAR(max_provide, m->quantity(), cyclus::CY_NEAR_ZERO) << "matched trade uses more fiss than available";
 }
 
 // Before this test and a fix, the fuel fab (partially) assumed each entire material
@@ -987,5 +987,3 @@ TEST(FuelFabTests, PositionInitialize2) {
 
 } // namespace fuelfabtests
 } // namespace cycamore
-
-
