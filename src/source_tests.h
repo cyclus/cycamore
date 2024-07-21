@@ -19,9 +19,11 @@ class SourceTest : public ::testing::Test {
   cyclus::TestContext tc;
   TestFacility* trader;
   cycamore::Source* src_facility;
-  std::string commod, recipe_name;
+  std::string commod, recipe_name, package_name, tu_name;
   double capacity;
   cyclus::Composition::Ptr recipe;
+  cyclus::Package::Ptr package;
+  cyclus::TransportUnit::Ptr tu;
 
   virtual void SetUp();
   virtual void TearDown();
