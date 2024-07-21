@@ -439,6 +439,14 @@ class Storage
                       "uilabel": "Package"}
   std::string package;
 
+  #pragma cyclus var {"default": "unrestricted", \
+                      "tooltip": "Output transport unit", \
+                      "doc": "Outgoing material, after packaging, will be "\
+                      "further restricted by transport unit when trading.", \
+                      "uitype": "transportunit", \
+                      "uilabel": "Transport Unit"}
+  std::string transport_unit;
+
   #pragma cyclus var {"tooltip":"Incoming material buffer"}
   cyclus::toolkit::ResBuf<cyclus::Material> inventory;
 

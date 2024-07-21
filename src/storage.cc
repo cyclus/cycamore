@@ -183,6 +183,7 @@ void Storage::EnterNotify() {
   buy_policy.Start();
 
   std::string package_name_ =  context()->GetPackage(package)->name();
+  std::string tu_name_ = context()->GetTransportUnit(transport_unit)->name();
   if (out_commods.size() == 1) {
     sell_policy.Init(this, &stocks, std::string("stocks"), cyclus::CY_LARGE_DOUBLE, false,
                      sell_quantity, package_name_)

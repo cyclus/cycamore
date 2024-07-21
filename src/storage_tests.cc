@@ -1041,6 +1041,59 @@ TEST_F(StorageTest, PackageMerge) {
   EXPECT_EQ(1, qr_res.GetVal<double>("Quantity", 1));
 }
 
+TEST_F(StorageTest, TransportUnit) {
+    std::string config =
+    "   <in_commods> <val>commodity</val> </in_commods> "
+    "   <out_commods> <val>commodity1</val> </out_commods> "
+    "   <throughput>3</throughput> "
+    "   <package>foo</package>"
+    "   <transport_unit>bar</transport_unit>";
+
+  int simdur = 3;
+
+  cyclus::MockSim sim(cyclus::AgentSpec (":cycamore:Storage"), config, simdur);
+  sim.context()->AddPackage("foo", 1, 1, "first");
+  cyclus::Package::Ptr p = sim.context()->GetPackage("foo");
+  sim.context()->AddTransportUnit("bar", 2, 2, "first");
+
+  sim.AddSource("commodity").Finalize();
+  sim.AddSink("commodity1").Finalize();
+
+  int id = sim.Run();
+
+  std::vector<cyclus::Cond> tr_conds;
+  tr_conds.push_back(cyclus::Cond("Commodity", "==", std::string("commodity1")));
+
+  cyclus::QueryResult qr_trans = sim.db().Query("Transactions", &tr_conds);
+  // 6 transactions. While all three units could be packaged in one time step,
+  // the transport unit only allows two packages to be transported. Therefore,
+  // zero transactions the first timestep (material coming to storage from
+  // source). Then only two packages can be shipped at time step 1. Then the
+  // two packages plus the leftover material is able to ship four packages,
+  // two transport units in time 2
+  EXPECT_EQ(6, qr_trans.rows.size());
+
+  EXPECT_EQ(1, qr_trans.GetVal<int>("Time", 0));
+  EXPECT_EQ(1, qr_trans.GetVal<int>("Time", 1));
+  EXPECT_EQ(2, qr_trans.GetVal<int>("Time", 2));
+  EXPECT_EQ(2, qr_trans.GetVal<int>("Time", 3));
+  EXPECT_EQ(2, qr_trans.GetVal<int>("Time", 4));
+  EXPECT_EQ(2, qr_trans.GetVal<int>("Time", 5));
+
+  for (int i = 0; i < qr_trans.rows.size(); i++) {
+    std::cerr << "transaction " << i << "is at time " << qr_trans.GetVal<int>("Time", i) << std::endl;
+  }
+
+  std::vector<cyclus::Cond> res_conds;
+  res_conds.push_back(cyclus::Cond("PackageName", "==", p->name()));
+  cyclus::QueryResult qr_res = sim.db().Query("Resources", &res_conds);
+  // All pkgd resources are size 1
+  EXPECT_EQ(6, qr_res.rows.size());
+
+  EXPECT_EQ(1, qr_res.GetVal<double>("Quantity", 0));
+  EXPECT_EQ(1, qr_res.GetVal<double>("Quantity", 5));
+}
+
 } // namespace cycamore
 
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
