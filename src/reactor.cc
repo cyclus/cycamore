@@ -64,9 +64,9 @@ void Reactor::EnterNotify() {
   cyclus::Facility::EnterNotify();
 
   // Set keep packaging parameter in all ResBufs
-  fresh.keep_packaging(keep_packaging);
-  core.keep_packaging(keep_packaging);
-  spent.keep_packaging(keep_packaging);
+  fresh.unpackaged(!keep_packaging);
+  core.unpackaged(!keep_packaging);
+  spent.unpackaged(!keep_packaging);
 
   // If the user ommitted fuel_prefs, we set it to zeros for each fuel
   // type.  Without this segfaults could occur - yuck.
