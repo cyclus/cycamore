@@ -256,6 +256,18 @@ class Sink
   int random_frequency_max;
 
   #pragma cyclus var { \
+    "default": 1, \
+    "tooltip": "Whether to persist packaging in the sink.", \
+    "doc": "Boolean value about whether to keep packaging. If true, " \
+           "packaging will not be stripped upon acceptance into the " \
+           "sink. If false, package type will be stripped immediately " \
+           "upon acceptance. Has no effect if the incoming material is not " \
+           "packaged.", \
+    "uilabel": "Keep Packaging", \
+    "uitype": "bool"}
+  bool keep_packaging;
+
+  #pragma cyclus var { \
     "default": 0.0, \
     "uilabel": "Geographical latitude in degrees as a double", \
     "doc": "Latitude of the agent's geographical position. The value should " \
