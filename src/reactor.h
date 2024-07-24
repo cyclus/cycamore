@@ -421,14 +421,11 @@ class Reactor : public cyclus::Facility,
 
   // Resource inventories - these must be defined AFTER/BELOW the member vars
   // referenced (e.g. n_batch_fresh, assem_size, etc.).
-  #pragma cyclus var {"capacity": "n_assem_fresh * assem_size", \
-    "keep_packaging": "keep_packaging"}
+  #pragma cyclus var {"capacity": "n_assem_fresh * assem_size"}
   cyclus::toolkit::ResBuf<cyclus::Material> fresh;
-  #pragma cyclus var {"capacity": "n_assem_core * assem_size", \
-    "keep_packaging": "keep_packaging"}
+  #pragma cyclus var {"capacity": "n_assem_core * assem_size"}
   cyclus::toolkit::ResBuf<cyclus::Material> core;
-  #pragma cyclus var {"capacity": "n_assem_spent * assem_size", \
-    "keep_packaging": "keep_packaging"}
+  #pragma cyclus var {"capacity": "n_assem_spent * assem_size"}
   cyclus::toolkit::ResBuf<cyclus::Material> spent;
 
 
