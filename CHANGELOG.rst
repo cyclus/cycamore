@@ -14,6 +14,7 @@ Since last release
 * Rely on ``python3`` in environment instead of ``python`` (#602)
 * Link against ``libxml++`` imported target in CMake instead of ``LIBXMLXX_LIBRARIES`` (#608)
 * Cleaned up ``using`` declarations throughout archetypes (#610)
+* Update archetype definitions to use cyclus constants instead of arbitrary hardcoded values (#606)
 
 **Fixed:**
 

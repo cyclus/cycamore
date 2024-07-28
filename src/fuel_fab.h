@@ -5,6 +5,8 @@
 #include "cyclus.h"
 #include "cycamore_version.h"
 
+#pragma cyclus exec from cyclus.system import CY_LARGE_DOUBLE, CY_LARGE_INT, CY_NEAR_ZERO
+
 namespace cycamore {
 
 /// FuelFab takes in 2 streams of material and mixes them in ratios in order to
@@ -234,9 +236,9 @@ class FuelFab
     "doc": "Maximum number of kg of fuel material that can be supplied per time step.", \
     "uilabel": "Maximum Throughput", \
     "units": "kg", \
-    "default": 1e299, \
+    "default": CY_LARGE_DOUBLE, \
     "uitype": "range", \
-    "range": [0.0, 1e299], \
+    "range": [0.0, CY_LARGE_DOUBLE], \
   }
   double throughput;
 
@@ -277,8 +279,8 @@ class FuelFab
 
 double CosiWeight(cyclus::Composition::Ptr c, const std::string& spectrum);
 bool ValidWeights(double w_low, double w_tgt, double w_high);
-double LowFrac(double w_low, double w_tgt, double w_high, double eps = 1e-6);
-double HighFrac(double w_low, double w_tgt, double w_high, double eps = 1e-6);
+double LowFrac(double w_low, double w_tgt, double w_high, double eps = cyclus::CY_NEAR_ZERO);
+double HighFrac(double w_low, double w_tgt, double w_high, double eps = cyclus::CY_NEAR_ZERO);
 double AtomToMassFrac(double atomfrac, cyclus::Composition::Ptr c1, cyclus::Composition::Ptr c2);
 
 } // namespace cycamore

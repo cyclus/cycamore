@@ -81,7 +81,7 @@ TEST_F(EnrichmentTest, RequestQty) {
   // Should be only one transaction into the EF,
   // and it should be exactly 1kg of natu
   EXPECT_EQ(1.0, qr.rows.size());
-  EXPECT_NEAR(1.0, m->quantity(), 1e-10) <<
+  EXPECT_NEAR(1.0, m->quantity(), cyclus::CY_NEAR_ZERO) <<
     "matched trade provides the wrong quantity of material";
 }
 

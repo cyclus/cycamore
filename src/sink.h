@@ -9,6 +9,8 @@
 #include "cyclus.h"
 #include "cycamore_version.h"
 
+#pragma cyclus exec from cyclus.system import CY_LARGE_DOUBLE, CY_LARGE_INT, CY_NEAR_ZERO
+
 namespace cycamore {
 
 class Context;
@@ -126,7 +128,7 @@ class Sink
                       "doc":"preferences for each of the given commodities, in the same order."\
                       "Defauts to 1 if unspecified",\
                       "uilabel":"In Commody Preferences", \
-                      "range": [None, [1e-299, 1e299]], \
+                      "range": [None, [CY_NEAR_ZERO, CY_LARGE_DOUBLE]], \
                       "uitype":["oneormore", "range"]}
   std::vector<double> in_commod_prefs;
 
@@ -140,20 +142,20 @@ class Sink
   std::string recipe_name;
 
   /// max inventory size
-  #pragma cyclus var {"default": 1e299, \
+  #pragma cyclus var {"default": CY_LARGE_DOUBLE, \
                       "tooltip": "sink maximum inventory size", \
                       "uilabel": "Maximum Inventory", \
                       "uitype": "range", \
-                      "range": [0.0, 1e299], \
+                      "range": [0.0, CY_LARGE_DOUBLE], \
                       "doc": "total maximum inventory size of sink facility"}
   double max_inv_size;
 
   /// monthly acceptance capacity
-  #pragma cyclus var {"default": 1e299, \
+  #pragma cyclus var {"default": CY_LARGE_DOUBLE, \
                       "tooltip": "sink capacity", \
                       "uilabel": "Maximum Throughput", \
                       "uitype": "range", \
-                      "range": [0.0, 1e299], \
+                      "range": [0.0, CY_LARGE_DOUBLE], \
                       "doc": "capacity the sink facility can " \
                              "accept at each time step"}
   double capacity;
@@ -179,7 +181,7 @@ class Sink
                       "tooltip": "fraction of available space to determine the mean", \
                       "uilabel": "Random Size Mean", \
                       "uitype": "range", \
-                      "range": [0.0, 1e299], \
+                      "range": [0.0, CY_LARGE_DOUBLE], \
                       "doc": "When a normal distribution is used to determine the " \
                              "size of the request, this is the fraction of available " \
                              "space to use as the mean. Default 1.0. Note " \
@@ -193,7 +195,7 @@ class Sink
                       "tooltip": "fraction of available space to determine the std dev", \
                       "uilabel": "Random Size Std Dev", \
                       "uitype": "range", \
-                      "range": [0.0, 1e299], \
+                      "range": [0.0, CY_LARGE_DOUBLE], \
                       "doc": "When a normal distribution is used to determine the " \
                              "size of the request, this is the fraction of available " \
                              "space to use as the standard deviation. Default 0.1"}
@@ -220,7 +222,7 @@ class Sink
                       "tooltip": "mean of the random frequency", \
                       "uilabel": "Random Frequency Mean", \
                       "uitype": "range", \
-                      "range": [0.0, 1e299], \
+                      "range": [0.0, CY_LARGE_DOUBLE], \
                       "doc": "When a normal distribution is used to determine the " \
                              "frequency of the request, this is the mean. Default 1"}
   double random_frequency_mean;
@@ -230,7 +232,7 @@ class Sink
                       "tooltip": "std dev of the random frequency", \
                       "uilabel": "Random Frequency Std Dev", \
                       "uitype": "range", \
-                      "range": [0.0, 1e299], \
+                      "range": [0.0, CY_LARGE_DOUBLE], \
                       "doc": "When a normal distribution is used to determine the " \
                              "frequency of the request, this is the standard deviation. Default 1"}
   double random_frequency_stddev;
@@ -240,19 +242,19 @@ class Sink
                       "tooltip": "lower bound of the random frequency", \
                       "uilabel": "Random Frequency Lower Bound", \
                       "uitype": "range", \
-                      "range": [1, 1e299], \
+                      "range": [1, CY_LARGE_INT], \
                       "doc": "When a random distribution is used to determine the " \
                              "frequency of the request, this is the lower bound. Default 1"}
   int random_frequency_min;
 
   // random frequency upper bound
-  #pragma cyclus var {"default": 1e299, \
+  #pragma cyclus var {"default": CY_LARGE_INT, \
                       "tooltip": "upper bound of the random frequency", \
                       "uilabel": "Random Frequency Upper Bound", \
                       "uitype": "range", \
-                      "range": [1, 1e299], \
+                      "range": [1, CY_LARGE_INT], \
                       "doc": "When a random distribution is used to determine the " \
-                             "frequency of the request, this is the upper bound. Default 1e299"}
+                             f"frequency of the request, this is the upper bound. Default {CY_LARGE_INT} (CY_LARGE_INT)"}
   int random_frequency_max;
 
   #pragma cyclus var { \

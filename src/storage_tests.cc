@@ -108,7 +108,7 @@ TEST_F(StorageTest, InitialState) {
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 TEST_F(StorageTest, CurrentCapacity){
   TestCurrentCap(src_facility_,max_inv_size);
-  max_inv_size = 1e299;
+  max_inv_size = cyclus::CY_LARGE_DOUBLE;
   SetUpStorage();
   TestInitState(src_facility_);
 }

@@ -38,7 +38,7 @@ class FissConverter : public cyclus::Converter<Material> {
       return AtomToMassFrac(frac, c_fiss_, c_topup_) * m->quantity();
     } else {
       // don't bid at all
-      return 1e200;
+      return cyclus::CY_LARGE_DOUBLE;
     }
   }
 
@@ -77,7 +77,7 @@ class FillConverter : public cyclus::Converter<Material> {
       return 0;
     } else {
       // don't bid at all
-      return 1e200;
+      return cyclus::CY_LARGE_DOUBLE;
     }
   }
 
@@ -116,7 +116,7 @@ class TopupConverter : public cyclus::Converter<Material> {
       return AtomToMassFrac(frac, c_topup_, c_fiss_) * m->quantity();
     } else {
       // don't bid at all
-      return 1e200;
+      return cyclus::CY_LARGE_DOUBLE;
     }
   }
 
@@ -375,11 +375,11 @@ std::set<cyclus::BidPortfolio<Material>::Ptr> FuelFab::GetMatlBids(
       new TopupConverter(c_fill, c_fiss, c_topup, spectrum));
   // important! - the std::max calls prevent CapacityConstraint throwing a zero
   // cap exception
-  cyclus::CapacityConstraint<Material> fissc(std::max(fiss.quantity(), 1e-10),
+  cyclus::CapacityConstraint<Material> fissc(std::max(fiss.quantity(), cyclus::CY_NEAR_ZERO),
                                              fissconv);
-  cyclus::CapacityConstraint<Material> fillc(std::max(fill.quantity(), 1e-10),
+  cyclus::CapacityConstraint<Material> fillc(std::max(fill.quantity(), cyclus::CY_NEAR_ZERO),
                                              fillconv);
-  cyclus::CapacityConstraint<Material> topupc(std::max(topup.quantity(), 1e-10),
+  cyclus::CapacityConstraint<Material> topupc(std::max(topup.quantity(), cyclus::CY_NEAR_ZERO),
                                               topupconv);
   port->AddConstraint(fillc);
   port->AddConstraint(fissc);
