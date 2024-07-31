@@ -258,7 +258,7 @@ class Sink
   int random_frequency_max;
 
   #pragma cyclus var { \
-    "default": true, \
+    "default": True, \
     "tooltip": "Whether to persist packaging in the sink.", \
     "doc": "Boolean value about whether to keep packaging. If true, " \
            "packaging will not be stripped upon acceptance into the " \
