@@ -408,7 +408,7 @@ class Reactor : public cyclus::Facility,
   std::vector<double> pref_change_values;
 
   #pragma cyclus var { \
-    "default": true, \
+    "default": True, \
     "tooltip": "Whether to persist packaging throughout the reactor", \
     "doc": "Boolean value about whether to keep packaging. If true, " \
            "packaging will not be stripped upon acceptance into the " \
