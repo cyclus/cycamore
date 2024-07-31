@@ -23,7 +23,7 @@ Reactor::Reactor(cyclus::Context* ctx)
       discharged(false),
       latitude(0.0),
       longitude(0.0),
-      keep_packaging(1),
+      keep_packaging(true),
       coordinates(latitude, longitude) {}
 
 
