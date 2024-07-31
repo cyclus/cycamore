@@ -14,6 +14,7 @@ Sink::Sink(cyclus::Context* ctx)
       capacity(std::numeric_limits<double>::max()),
       latitude(0.0),
       longitude(0.0),
+      keep_packaging(true),
       coordinates(latitude, longitude) {
   SetMaxInventorySize(std::numeric_limits<double>::max());}
 
@@ -42,6 +43,8 @@ Sink::~Sink() {}
 void Sink::EnterNotify() {
   cyclus::Facility::EnterNotify();
   LOG(cyclus::LEV_INFO4, "SnkFac") << " using random behavior " << random_size_type;
+
+  inventory.keep_packaging(keep_packaging);
 
   if (in_commod_prefs.size() == 0) {
     for (int i = 0; i < in_commods.size(); ++i) {
