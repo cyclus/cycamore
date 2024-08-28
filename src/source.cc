@@ -102,11 +102,9 @@ std::set<cyclus::BidPortfolio<cyclus::Material>::Ptr> Source::GetMatlBids(
     double qty = std::min(target->quantity(), max_qty);
 
     // calculate packaging
-    double bid_qty = context()->GetPackage(package)->GetFillMass(qty);
-    int n_full_bids = 0;
-    if (bid_qty >= context()->GetPackage(package)->fill_min()) {
-      n_full_bids = static_cast<int>(std::floor(qty / bid_qty));
-    }
+    std::pair<double, int> fill = context()->GetPackage(package)->GetFillMass(qty);
+    double bid_qty = fill.first;
+    int n_full_bids = fill.second;
     Package::ExceedsSplitLimits(n_full_bids);
 
     std::vector<double> bids;
