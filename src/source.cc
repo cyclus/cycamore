@@ -160,7 +160,6 @@ void Source::GetMatlTrades(
     if (shippable_trades > 0) {
       double qty = it->amt;
 
-      std::cerr << "source trade amount " << qty << std::endl;
       Material::Ptr m = inventory.Pop(qty);
       
       std::vector<Material::Ptr> m_pkgd = m->Package<Material>(context()->GetPackage(package));
