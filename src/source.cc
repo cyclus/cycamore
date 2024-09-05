@@ -54,20 +54,27 @@ std::string Source::str() {
 }
 
 void Source::EnterNotify() {
+  cyclus::Facility::EnterNotify();
+
+}
+
+void Source::Build(cyclus::Agent* parent) {
+  Facility::Build(parent);
+
   using cyclus::CompMap;
   using cyclus::Composition;
   using cyclus::Material;
-  cyclus::Facility::EnterNotify();
-  RecordPosition();
 
   // create all source inventory and place into buf
   cyclus::Material::Ptr all_inv;
   Composition::Ptr blank_comp = Composition::CreateFromMass(CompMap());
-
   all_inv = (outrecipe.empty() || context() == NULL) ? \
           Material::Create(this, inventory_size, blank_comp) : \
           Material::Create(this, inventory_size, context()->GetRecipe(outrecipe));
+  std::cerr << "Source created all inv with state id " << all_inv->state_id() << std::endl;
   inventory.Push(all_inv);
+
+  RecordPosition();
 }
 
 std::set<cyclus::BidPortfolio<cyclus::Material>::Ptr> Source::GetMatlBids(
@@ -153,6 +160,7 @@ void Source::GetMatlTrades(
     if (shippable_trades > 0) {
       double qty = it->amt;
 
+      std::cerr << "source trade amount " << qty << std::endl;
       Material::Ptr m = inventory.Pop(qty);
       
       std::vector<Material::Ptr> m_pkgd = m->Package<Material>(context()->GetPackage(package));

@@ -71,6 +71,10 @@ class Source : public cyclus::Facility,
 
   virtual void EnterNotify();
 
+  /// --- Facility Members ---
+  /// perform module-specific tasks when entering the simulation
+  virtual void Build(cyclus::Agent* parent);
+
   virtual void GetMatlTrades(
     const std::vector< cyclus::Trade<cyclus::Material> >& trades,
     std::vector<std::pair<cyclus::Trade<cyclus::Material>,
