@@ -71,7 +71,6 @@ void Source::Build(cyclus::Agent* parent) {
   all_inv = (outrecipe.empty() || context() == NULL) ? \
           Material::Create(this, inventory_size, blank_comp) : \
           Material::Create(this, inventory_size, context()->GetRecipe(outrecipe));
-  std::cerr << "Source created all inv with state id " << all_inv->state_id() << std::endl;
   inventory.Push(all_inv);
 
   RecordPosition();
