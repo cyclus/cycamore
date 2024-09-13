@@ -55,7 +55,7 @@ std::string Source::str() {
 
 void Source::EnterNotify() {
   cyclus::Facility::EnterNotify();
-
+  RecordPosition();
 }
 
 void Source::Build(cyclus::Agent* parent) {
@@ -73,7 +73,6 @@ void Source::Build(cyclus::Agent* parent) {
           Material::Create(this, inventory_size, context()->GetRecipe(outrecipe));
   inventory.Push(all_inv);
 
-  RecordPosition();
 }
 
 std::set<cyclus::BidPortfolio<cyclus::Material>::Ptr> Source::GetMatlBids(
