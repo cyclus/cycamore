@@ -15,7 +15,7 @@ void SourceTest::SetUp() {
   trader = tc.trader();
   InitParameters();
   SetUpSource();
-  src_facility->EnterNotify();
+  src_facility->Build(NULL);
 }
 
 void SourceTest::TearDown() {

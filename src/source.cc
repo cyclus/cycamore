@@ -54,20 +54,25 @@ std::string Source::str() {
 }
 
 void Source::EnterNotify() {
+  cyclus::Facility::EnterNotify();
+  RecordPosition();
+}
+
+void Source::Build(cyclus::Agent* parent) {
+  Facility::Build(parent);
+
   using cyclus::CompMap;
   using cyclus::Composition;
   using cyclus::Material;
-  cyclus::Facility::EnterNotify();
-  RecordPosition();
 
   // create all source inventory and place into buf
   cyclus::Material::Ptr all_inv;
   Composition::Ptr blank_comp = Composition::CreateFromMass(CompMap());
-
   all_inv = (outrecipe.empty() || context() == NULL) ? \
           Material::Create(this, inventory_size, blank_comp) : \
           Material::Create(this, inventory_size, context()->GetRecipe(outrecipe));
   inventory.Push(all_inv);
+
 }
 
 std::set<cyclus::BidPortfolio<cyclus::Material>::Ptr> Source::GetMatlBids(
