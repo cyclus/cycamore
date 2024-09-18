@@ -334,7 +334,7 @@ void Storage::ProcessMat_(double cap) {
         stocks.Push(ready.Pop(max_pop, cyclus::eps_rsrc()));
       }
 
-      LOG(cyclus::LEV_INFO1, "ComCnv") << "Storage " << prototype()
+      LOG(cyclus::LEV_INFO4, "ComCnv") << "Storage " << prototype()
                                        << " moved resources"
                                        << " from ready to stocks"
                                        << " at t= " << context()->time();

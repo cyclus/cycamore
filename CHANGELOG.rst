@@ -23,6 +23,7 @@ Since last release
 
 * Schedule Decommission in ``Reactor::Tick()`` instead of Decommission (#609)
 * When trades fail in Source due to packaging, send empty material instead of seg faulting (#629)
+* Logging of resource moves between ResBufs in Storage is INFO4 not INFO1 (#625)
 
 **Removed:**
 
