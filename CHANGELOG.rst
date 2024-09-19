@@ -16,6 +16,7 @@ Since last release
 * Link against ``libxml++`` imported target in CMake instead of ``LIBXMLXX_LIBRARIES`` (#608)
 * Cleaned up ``using`` declarations throughout archetypes (#610)
 * Update archetype definitions to use cyclus constants instead of arbitrary hardcoded values (#606)
+* Changed the styling of doxygen docs (#626)
 
 **Fixed:**
 
