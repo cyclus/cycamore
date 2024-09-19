@@ -1,6 +1,17 @@
 #ifndef CYCAMORE_SRC_CYCAMORE_H_
 #define CYCAMORE_SRC_CYCAMORE_H_
 
+// For Doxygen mainpage
+/*!
+ * \mainpage Cycamore API Reference
+ *
+ * Welcome to the Cycamore API reference! Below are some helpful links for learning more:
+ *   - GitHub repository: https://github.com/cyclus/cycamore
+ *   - Kernel developer guide: https://fuelcycle.org/kernel
+ *   - Archetype developer guide: https://fuelcycle.org/arche
+ * 
+ */
+
 // These includes must come before others.
 #include "cyclus.h"
 #include "cycamore_version.h"
