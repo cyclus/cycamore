@@ -17,6 +17,7 @@ Since last release
 * Cleaned up ``using`` declarations throughout archetypes (#610)
 * Update archetype definitions to use cyclus constants instead of arbitrary hardcoded values (#606)
 * Changed the styling of doxygen docs (#626)
+* Use ``CyclusBuildSetup`` macros to replace CMake boilerplate (#627)
 
 **Fixed:**
 
