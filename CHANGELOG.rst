@@ -22,6 +22,7 @@ Since last release
 **Fixed:**
 
 * Schedule Decommission in ``Reactor::Tick()`` instead of Decommission (#609)
+* When trades fail in Source due to packaging, send empty material instead of seg faulting (#629)
 
 **Removed:**
 
