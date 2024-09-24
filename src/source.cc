@@ -175,6 +175,9 @@ void Source::GetMatlTrades(
         // package in it. This single packaged resource is our response
         response = m_pkgd[0];
         shippable_trades -= 1;
+      } else {
+        // If packaging failed, respond with a zero (empty) material
+        response = Material::CreateUntracked(0, m->comp());
       }
 
       if (outrecipe.empty() && response->comp() != it->request->target()->comp()) {
