@@ -107,18 +107,7 @@ std::set<cyclus::BidPortfolio<cyclus::Material>::Ptr> Source::GetMatlBids(
     double qty = std::min(target->quantity(), max_qty);
 
     // calculate packaging
-    std::pair<double, int> fill = context()->GetPackage(package)->GetFillMass(qty);
-    double bid_qty = fill.first;
-    int n_full_bids = fill.second;
-    Package::ExceedsSplitLimits(n_full_bids);
-
-    std::vector<double> bids;
-    bids.assign(n_full_bids, bid_qty);
-
-    double remaining_qty = qty - (n_full_bids * bid_qty);
-    if ((remaining_qty > cyclus::eps()) && (remaining_qty >= context()->GetPackage(package)->fill_min())) {
-      bids.push_back(remaining_qty);
-    }
+    std::vector<double> bids = context()->GetPackage(package)->GetFillMass(qty);
 
     // calculate transport units
     int shippable_pkgs = context()->GetTransportUnit(transport_unit)
