@@ -18,6 +18,7 @@ Since last release
 * Update archetype definitions to use cyclus constants instead of arbitrary hardcoded values (#606)
 * Changed the styling of doxygen docs (#626)
 * Use ``CyclusBuildSetup`` macros to replace CMake boilerplate (#627)
+* Updated Doxygen homepage (#632)
 
 **Fixed:**
 
