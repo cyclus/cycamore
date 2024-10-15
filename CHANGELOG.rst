@@ -9,6 +9,7 @@ Since last release
 * Added package parameter to storage (#603, #612, #616)
 * Added package parameter to source (#613, #617, #621, #623, #630)
 * Added default keep packaging to reactor (#618, #619)
+* Added support for Ubuntu 24.04 (#633)
 
 **Changed:**
 
