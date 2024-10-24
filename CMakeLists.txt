@@ -70,15 +70,6 @@ IF(NOT CYCLUS_DOC_ONLY)
     # Include macros installed with cyclus core
     INCLUDE(UseCyclus)
 
-    # Find LibXML++ and dependencies
-    pkg_check_modules(LIBXMLXX IMPORTED_TARGET libxml++-4.0)
-    IF ( NOT LIBXMLXX_FOUND )
-       pkg_check_modules(LIBXMLXX REQUIRED IMPORTED_TARGET libxml++-2.6)
-    ENDIF ( NOT LIBXMLXX_FOUND )
-    SET(LIBS ${LIBS} PkgConfig::LIBXMLXX)
-    message("-- LibXML++ Include Dir: ${LIBXMLXX_INCLUDE_DIRS}")
-    message("-- LibXML++ Librarires: ${LIBXMLXX_LIBRARIES}")
-
     # Include the boost header files and the program_options library
     # Please be sure to use Boost rather than BOOST.
     # Capitalization matters on some platforms
