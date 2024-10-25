@@ -234,12 +234,12 @@ class Storage
 
   #pragma cyclus var {"default": "Fixed",\
                       "tooltip": "Type of active buying frequency",\
-                      "doc": "Options: Fixed, Uniform, Normal. Fixed requires active_buying_val. Uniform "\
+                      "doc": "Options: Fixed, Uniform, Normal, Binomial. Fixed requires active_buying_val. Uniform "\
                       "requires active_buying_min and active_buying_max.  Normal "\
                       "requires active_buying_mean and active_buying_std, with optional "\
-                      "active_buying_min and active_buying_max.",\
+                      "active_buying_min and active_buying_max. Binomial requires active_buying_end_probability.",\
                       "uitype": "combobox",\
-                      "categorical": ["Fixed", "Uniform", "Normal"],\
+                      "categorical": ["Fixed", "Uniform", "Normal", "Binomial"],\
                       "uilabel": "Active Buying Frequency Type"}
   std::string active_buying_frequency_type;
 
@@ -290,14 +290,24 @@ class Storage
                       "uilabel": "Active Buying Frequency Standard Deviation"}
   double active_buying_stddev;
 
+  #pragma cyclus var {"default": 0,\
+                      "tooltip": "Probability that agent will go offline during the next time step",\
+                      "doc": "Binomial distribution has a fixed probability of going dormant at any given "\
+                      "timestep, like a weighted coin flip. Required for Binomial active_buying_frequency_type. "\
+                      "Must be between 0 and 1",\
+                      "uitype": "range", \
+                      "range": [0.0, 1.0], \
+                      "uilabel": "Active Buying Offline Probability"}
+  double active_buying_end_probability;
+
   #pragma cyclus var {"default": "Fixed",\
                       "tooltip": "Type of dormant buying frequency",\
-                      "doc": "Options: Fixed, Uniform, Normal. Fixed requires dormant_buying_val. Uniform "\
-                      "requires dormant_buying_min and dormant_buying_max. Normal requires "\
+                      "doc": "Options: Fixed, Uniform, Normal, Binomial. Fixed requires dormant_buying_val. "\
+                      "Uniform requires dormant_buying_min and dormant_buying_max. Normal requires "\
                       "dormant_buying_mean and dormant_buying_std, with optional dormant_buying_min "\
-                      "and dormant_buying_max.",\
+                      "and dormant_buying_max. Binomial requires dormant_buying_end_probability.",\
                       "uitype": "combobox",\
-                      "categorical": ["Fixed", "Uniform", "Normal"],\
+                      "categorical": ["Fixed", "Uniform", "Normal", "Binomial"],\
                       "uilabel": "Dormant Buying Frequency Type"}
   std::string dormant_buying_frequency_type;
 
@@ -345,6 +355,16 @@ class Storage
                       "range": [0.0, CY_LARGE_DOUBLE], \
                       "uilabel": "Dormant Buying Frequency Standard Deviation"}
   double dormant_buying_stddev;
+
+  #pragma cyclus var {"default": 0,\
+                      "tooltip": "Probability that agent will return to active during the next time step",\
+                      "doc": "Binomial distribution has a fixed probability of going active at any given "\
+                      "timestep, like a weighted coin flip. Required for Binomial dormant_buying_frequency_type. "\
+                      "Must be between 0 and 1",\
+                      "uitype": "range", \
+                      "range": [0.0, 1.0], \
+                      "uilabel": "Dormant Buying Offline Probability"}
+  double dormant_buying_end_probability;
 
   #pragma cyclus var {"default": "Fixed",\
                       "tooltip": "Type of behavior used to determine size of buy request",\

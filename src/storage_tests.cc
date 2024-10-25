@@ -551,6 +551,36 @@ TEST_F(StorageTest, UniformActiveNormalDormant){
   EXPECT_EQ(9, qr.GetVal<int>("Time", 4));
 }
 
+TEST_F(StorageTest, BinomialActiveDormant) {
+  std::string config =
+  "   <in_commods> <val>commod</val> </in_commods> "
+  "   <out_commods> <val>commod1</val> </out_commods> "
+  "   <throughput>1</throughput>"
+  "   <active_buying_frequency_type>Binomial</active_buying_frequency_type>"
+  "   <active_buying_end_probability>0.2</active_buying_end_probability>"
+  "   <dormant_buying_frequency_type>Binomial</dormant_buying_frequency_type>"
+  "   <dormant_buying_end_probability>0.3</dormant_buying_end_probability>";
+
+  int simdur = 30;
+
+  cyclus::MockSim sim(cyclus::AgentSpec (":cycamore:Storage"), config, simdur);
+  sim.AddSource("commod").capacity(5).Finalize();
+
+  int id = sim.Run();
+
+  std::vector<cyclus::Cond> conds;
+  conds.push_back(cyclus::Cond("Commodity", "==", std::string("commod")));
+  cyclus::QueryResult qr = sim.db().Query("Transactions", &conds);
+  // confirm that transactions are only occurring during active periods
+  // first active length = 7
+  EXPECT_EQ(0, qr.GetVal<int>("Time", 0));
+  EXPECT_EQ(1, qr.GetVal<int>("Time", 1));
+  // ... end of active
+  EXPECT_EQ(6, qr.GetVal<int>("Time", 6));
+  // transactions resume at time 10
+  EXPECT_EQ(10, qr.GetVal<int>("Time", 7));
+}
+
 TEST_F(StorageTest, FixedBuyingSize){
   std::string config =
     "   <in_commods> <val>spent_fuel</val> </in_commods> "
@@ -1079,10 +1109,6 @@ TEST_F(StorageTest, TransportUnit) {
   EXPECT_EQ(2, qr_trans.GetVal<int>("Time", 3));
   EXPECT_EQ(2, qr_trans.GetVal<int>("Time", 4));
   EXPECT_EQ(2, qr_trans.GetVal<int>("Time", 5));
-
-  for (int i = 0; i < qr_trans.rows.size(); i++) {
-    std::cerr << "transaction " << i << "is at time " << qr_trans.GetVal<int>("Time", i) << std::endl;
-  }
 
   std::vector<cyclus::Cond> res_conds;
   res_conds.push_back(cyclus::Cond("PackageName", "==", p->name()));
