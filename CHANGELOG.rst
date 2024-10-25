@@ -30,6 +30,7 @@ Since last release
 **Removed:**
 
 * Removed references to deprecated ``ResourceBuff`` class (#604)
+* Removed ``Libxml++`` from build requirements (#634)
 
 
 v1.6.0
