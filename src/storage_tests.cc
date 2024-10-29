@@ -581,6 +581,42 @@ TEST_F(StorageTest, BinomialActiveDormant) {
   EXPECT_EQ(10, qr.GetVal<int>("Time", 7));
 }
 
+TEST_F(StorageTest, DisruptionActiveDormant) {
+  std::string config =
+  "    <in_commods><val>commod</val></in_commods>"
+  "    <out_commods><val>commod1</val></out_commods>"
+  "    <throughput>1</throughput>"
+  "    <active_buying_frequency_type>FixedWithDisruption</active_buying_frequency_type>"
+  "    <active_buying_disruption_probability>0.4</active_buying_disruption_probability>"
+  "    <active_buying_val>2</active_buying_val>"
+  "    <active_buying_disruption>5</active_buying_disruption>"
+  "    <dormant_buying_frequency_type>FixedWithDisruption</dormant_buying_frequency_type>"
+  "    <dormant_buying_disruption_probability>0.5</dormant_buying_disruption_probability>"
+  "    <dormant_buying_val>1</dormant_buying_val>"
+  "    <dormant_buying_disruption>10</dormant_buying_disruption>";
+
+  int simdur = 50;
+
+  cyclus::MockSim sim(cyclus::AgentSpec (":cycamore:Storage"), config, simdur);
+  sim.AddSource("commod").capacity(5).Finalize();
+  int id = sim.Run();
+
+  cyclus::QueryResult qr = sim.db().Query("Transactions", NULL);
+  // confirm that transactions are only occurring during active periods
+  // first active length = 5 (disrupted)
+  EXPECT_EQ(0, qr.GetVal<int>("Time", 0));
+  EXPECT_EQ(1, qr.GetVal<int>("Time", 1)); // ... end of active
+  
+  // first dormant length = 1 (not disrupted)
+  // second active length = 2 (not disrupted)
+  EXPECT_EQ(3, qr.GetVal<int>("Time", 2)); // ... end of dormant
+  EXPECT_EQ(4, qr.GetVal<int>("Time", 3));
+  
+  // second dormant length = 10 (disrupted)
+  // third active length = 2 (not disrupted)
+  EXPECT_EQ(15, qr.GetVal<int>("Time", 4)); // ... end of second active
+}
+
 TEST_F(StorageTest, FixedBuyingSize){
   std::string config =
     "   <in_commods> <val>spent_fuel</val> </in_commods> "

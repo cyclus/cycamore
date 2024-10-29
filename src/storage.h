@@ -234,12 +234,17 @@ class Storage
 
   #pragma cyclus var {"default": "Fixed",\
                       "tooltip": "Type of active buying frequency",\
-                      "doc": "Options: Fixed, Uniform, Normal, Binomial. Fixed requires active_buying_val. Uniform "\
+                      "doc": "Options: Fixed, Uniform, Normal, Binomial, FixedWithDisruption. "\
+                      "Fixed requires active_buying_val. Uniform "\
                       "requires active_buying_min and active_buying_max.  Normal "\
                       "requires active_buying_mean and active_buying_std, with optional "\
-                      "active_buying_min and active_buying_max. Binomial requires active_buying_end_probability.",\
+                      "active_buying_min and active_buying_max. Binomial requires active_buying_end_probability."\
+                      "FixedWithDisruption has a probability that any given cycle will have a disrupted, "\
+                      "active length.  Once per cycle, a Bernoulli distribution (Binomial dist "\
+                      "with N=1) will be sampled to determine if typical or disrupted cycle. If typical, "\
+                      "active_buying_val is cycle length. If disrupted, active_buying_disruption.",\
                       "uitype": "combobox",\
-                      "categorical": ["Fixed", "Uniform", "Normal", "Binomial"],\
+                      "categorical": ["Fixed", "Uniform", "Normal", "Binomial", "FixedWithDisruption"],\
                       "uilabel": "Active Buying Frequency Type"}
   std::string active_buying_frequency_type;
 
@@ -300,14 +305,36 @@ class Storage
                       "uilabel": "Active Buying Offline Probability"}
   double active_buying_end_probability;
 
+  #pragma cyclus var {"default": 0,\
+                      "tooltip": "Probability that a cycle contains a disruption",\
+                      "doc": "Probability that the agent undergoes a disruption (disrupted active period) "\
+                      "during any given cycle. Required for FixedWithDisruption active_buying_frequency_type.",\
+                      "uitype": "range",\
+                      "range": [0.0, 1.0],\
+                      "uilabel": "Active Buying Disruption Probability"}
+  double active_buying_disruption_probability;
+
+  #pragma cyclus var {"default": -1,\
+                      "tooltip": "Fixed length of disrupted active cycle",\
+                      "doc": "When a active cycle is disrupted, this is length of the active period instead "\
+                      "of active_buying_val. Required for FixedWithDisruption active_buying_frequency_type",\
+                      "uitype": "range",\
+                      "range": [0, CY_LARGE_INT]}
+  int active_buying_disruption;
+
   #pragma cyclus var {"default": "Fixed",\
                       "tooltip": "Type of dormant buying frequency",\
-                      "doc": "Options: Fixed, Uniform, Normal, Binomial. Fixed requires dormant_buying_val. "\
+                      "doc": "Options: Fixed, Uniform, Normal, Binomial, FixedWithDisruption. "\
+                      "Fixed requires dormant_buying_val. "\
                       "Uniform requires dormant_buying_min and dormant_buying_max. Normal requires "\
                       "dormant_buying_mean and dormant_buying_std, with optional dormant_buying_min "\
-                      "and dormant_buying_max. Binomial requires dormant_buying_end_probability.",\
+                      "and dormant_buying_max. Binomial requires dormant_buying_end_probability. "\
+                      "FixedWithDisruption has a probability that any given cycle will have a disrupted, "\
+                      "or long, outage.  Once per cycle, a Bernoulli distribution (Binomial dist "\
+                      "with N=1) will be sampled to determine if typical or disrupted cycle. If typical, "\
+                      "dormant_buying_val is cycle length. If disrupted, dormant_buying_disruption.",\
                       "uitype": "combobox",\
-                      "categorical": ["Fixed", "Uniform", "Normal", "Binomial"],\
+                      "categorical": ["Fixed", "Uniform", "Normal", "Binomial", "FixedWithDisruption"],\
                       "uilabel": "Dormant Buying Frequency Type"}
   std::string dormant_buying_frequency_type;
 
@@ -363,8 +390,25 @@ class Storage
                       "Must be between 0 and 1",\
                       "uitype": "range", \
                       "range": [0.0, 1.0], \
-                      "uilabel": "Dormant Buying Offline Probability"}
+                      "uilabel": "Dormant Buying Binomial Offline Probability"}
   double dormant_buying_end_probability;
+
+  #pragma cyclus var {"default": 0,\
+                      "tooltip": "Probability that a cycle contains a disruption",\
+                      "doc": "Probability that the agent undergoes a disruption (longer offline period) "\
+                      "during any given cycle. Required for FixedWithDisruption dormant_buying_frequency_type.",\
+                      "uitype": "range",\
+                      "range": [0.0, 1.0],\
+                      "uilabel": "Dormant Buying Disruption Probability"}
+  double dormant_buying_disruption_probability;
+
+  #pragma cyclus var {"default": -1,\
+                      "tooltip": "Fixed length of disrupted cycle",\
+                      "doc": "When a dormant cycle is disrupted, this is length of the offline period instead "\
+                      "of dormant_buying_val. Required for FixedWithDisruption dormant_buying_frequency_type",\
+                      "uitype": "range",\
+                      "range": [0, CY_LARGE_INT]}
+  int dormant_buying_disruption;
 
   #pragma cyclus var {"default": "Fixed",\
                       "tooltip": "Type of behavior used to determine size of buy request",\
