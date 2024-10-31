@@ -78,6 +78,20 @@ void Storage::InitBuyPolicyParameters() {
     active_dist_ = cyclus::NormalIntDist::Ptr (new cyclus::NormalIntDist(active_buying_mean, active_buying_stddev,
                           active_buying_min, active_buying_max));
   }
+  else if (active_buying_frequency_type == "Binomial") {
+    if (active_buying_end_probability < 0 || active_buying_end_probability > 1) {
+      throw cyclus::ValueError("Active buying end probability must be between 0 and 1");
+    }
+    int success = 1; // only one success is needed to end the active buying period
+    active_dist_ = cyclus::NegativeBinomialIntDist::Ptr (new cyclus::NegativeBinomialIntDist(success, active_buying_end_probability));
+  } else if (active_buying_frequency_type == "FixedWithDisruption") {
+    if (active_buying_disruption < 0) {
+      throw cyclus::ValueError("Disruption must be greater than or equal to 0");
+    }
+    active_dist_ = cyclus::BinaryIntDist::Ptr (
+      new cyclus::BinaryIntDist(active_buying_disruption_probability,
+      active_buying_disruption, active_buying_val));
+  }
   else {
     throw cyclus::ValueError("Invalid active buying frequency type");}
 
@@ -100,6 +114,20 @@ void Storage::InitBuyPolicyParameters() {
       dormant_buying_max = std::numeric_limits<int>::max();}
     dormant_dist_ = cyclus::NormalIntDist::Ptr (new cyclus::NormalIntDist(dormant_buying_mean, dormant_buying_stddev,
                           dormant_buying_min, dormant_buying_max));
+  }
+  else if (dormant_buying_frequency_type == "Binomial") {
+    if (dormant_buying_end_probability < 0 || dormant_buying_end_probability > 1) {
+      throw cyclus::ValueError("Dormant buying end probability must be between 0 and 1");
+    }
+    int success = 1; // only one success is needed to end the dormant buying period
+    dormant_dist_ = cyclus::NegativeBinomialIntDist::Ptr (new cyclus::NegativeBinomialIntDist(success, dormant_buying_end_probability));
+  } else if (dormant_buying_frequency_type == "FixedWithDisruption") {
+    if (dormant_buying_disruption < 0) {
+      throw cyclus::ValueError("Disruption must be greater than or equal to 0");
+    }
+    dormant_dist_ = cyclus::BinaryIntDist::Ptr (
+      new cyclus::BinaryIntDist(dormant_buying_disruption_probability,
+      dormant_buying_disruption, dormant_buying_val));
   }
   else {
     throw cyclus::ValueError("Invalid dormant buying frequency type");}
