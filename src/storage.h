@@ -61,9 +61,11 @@ namespace cycamore {
 /// dormant_buying_mean is the mean length of the dormant buying period if dormant_buying_frequency_type is Normal
 /// dormant_buying_std is the standard deviation of the dormant buying period if dormant_buying_frequency_type is Normal
 /// dormant_buying_end_probability is the probability that at any given timestep, the agent ends the dormant buying period if
-/// the dormant buying frequency type is Binomial
+///                               the dormant buying frequency type is Binomial
 /// dormant_buying_disruption_probability is the probability that in any given cycle, the agent undergoes a disruption (disrupted
-/// offline period) if the dormant buying frequency type is FixedWithDisruption
+///                               offline period) if the dormant buying frequency type is FixedWithDisruption
+/// dormant_buying_disruption is the length of the disrupted dormant cycle if the dormant buying frequency type is 
+///                               FixedWithDisruption
 /// buying_size_type is the type of distribution used to determine the size of buy requests, as a fraction of the current capacity
 /// buying_size_val is the size of the buy request for Fixed  buying_size_type
 /// buying_size_min is the minimum size of the buy request if buying_size_type is Uniform (required) or Normal (optional)
