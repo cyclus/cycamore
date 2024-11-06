@@ -93,6 +93,7 @@ IF(NOT CYCLUS_DOC_ONLY)
     MESSAGE("--    Boost Filesystem location: ${Boost_FILESYSTEM_LIBRARY}")
     SET(LIBS ${LIBS} ${Boost_SERIALIZATION_LIBRARY})
     MESSAGE("--    Boost Serialization location: ${Boost_SERIALIZATION_LIBRARY}")
+    ADD_DEFINITIONS(-DBOOST_VERSION_MINOR=${Boost_VERSION_MINOR})
 
     # find lapack and link to it
     # note there is no include directory variable:
