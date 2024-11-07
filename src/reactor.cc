@@ -171,7 +171,7 @@ void Reactor::Tick() {
   // update preferences
   for (int i = 0; i < pref_change_times.size(); i++) {
     int change_t = pref_change_times[i];
-    if (t != change_t) {
+    if (t < change_t) {
       continue;
     }
 
