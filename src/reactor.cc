@@ -23,8 +23,9 @@ Reactor::Reactor(cyclus::Context* ctx)
       discharged(false),
       latitude(0.0),
       longitude(0.0),
-      coordinates(0,0) {},
-      keep_packaging(true)
+      coordinates(0,0),
+      keep_packaging(true) {}
+
 
 #pragma cyclus def clone cycamore::Reactor
 
