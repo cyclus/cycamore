@@ -13,7 +13,9 @@ Source::Source(cyclus::Context* ctx)
       inventory_size(std::numeric_limits<double>::max()),
       latitude(0.0),
       longitude(0.0),
-      coordinates(0,0) {}
+      coordinates(0,0),
+      package(cyclus::Package::unpackaged_name()),
+      transport_unit(cyclus::TransportUnit::unrestricted_name())
 
 Source::~Source() {}
 
@@ -45,6 +47,8 @@ std::string Source::str() {
      << " commod producer members: "
      << " produces " << outcommod << "?: " << ans
      << " throughput: " << cyclus::toolkit::CommodityProducer::Capacity(outcommod)
+     << " with package type: " << package
+     << " and transport unit type: " << transport_unit
      << " cost: " << cyclus::toolkit::CommodityProducer::Cost(outcommod);
   return ss.str();
 }
@@ -56,16 +60,35 @@ void Source::EnterNotify() {
   coordinates.RecordPosition(this);
 }
 
+}
+
+void Source::Build(cyclus::Agent* parent) {
+  Facility::Build(parent);
+
+  using cyclus::CompMap;
+  using cyclus::Composition;
+  using cyclus::Material;
+
+  // create all source inventory and place into buf
+  cyclus::Material::Ptr all_inv;
+  Composition::Ptr blank_comp = Composition::CreateFromMass(CompMap());
+  all_inv = (outrecipe.empty() || context() == NULL) ? \
+          Material::Create(this, inventory_size, blank_comp) : \
+          Material::Create(this, inventory_size, context()->GetRecipe(outrecipe));
+  inventory.Push(all_inv);
+
+}
 
 std::set<cyclus::BidPortfolio<cyclus::Material>::Ptr> Source::GetMatlBids(
     cyclus::CommodMap<cyclus::Material>::type& commod_requests) {
-  using cyclus::Bid;
   using cyclus::BidPortfolio;
   using cyclus::CapacityConstraint;
   using cyclus::Material;
+  using cyclus::Package;
   using cyclus::Request;
+  using cyclus::TransportUnit;
 
-  double max_qty = std::min(throughput, inventory_size);
+  double max_qty = std::min(throughput, inventory.quantity());
   cyclus::toolkit::RecordTimeSeries<double>("supply"+outcommod, this,
                                             max_qty);
   LOG(cyclus::LEV_INFO3, "Source") << prototype() << " is bidding up to "
@@ -86,11 +109,25 @@ std::set<cyclus::BidPortfolio<cyclus::Material>::Ptr> Source::GetMatlBids(
     Request<Material>* req = *it;
     Material::Ptr target = req->target();
     double qty = std::min(target->quantity(), max_qty);
-    Material::Ptr m = Material::CreateUntracked(qty, target->comp());
-    if (!outrecipe.empty()) {
-      m = Material::CreateUntracked(qty, context()->GetRecipe(outrecipe));
+
+    // calculate packaging
+    std::vector<double> bids = context()->GetPackage(package)->GetFillMass(qty);
+
+    // calculate transport units
+    int shippable_pkgs = context()->GetTransportUnit(transport_unit)
+                         ->MaxShippablePackages(bids.size());
+    if (shippable_pkgs < bids.size()) {
+      bids.erase(bids.begin() + shippable_pkgs, bids.end());
     }
-    port->AddBid(req, m, this);
+
+    std::vector<double>::iterator bit;
+    for (bit = bids.begin(); bit != bids.end(); ++bit) {
+      Material::Ptr m;
+      m = outrecipe.empty() ? \
+          Material::CreateUntracked(*bit, target->comp()) : \
+          Material::CreateUntracked(*bit, context()->GetRecipe(outrecipe));
+      port->AddBid(req, m, this);
+    }
   }
 
   CapacityConstraint<Material> cc(max_qty);
@@ -106,20 +143,44 @@ void Source::GetMatlTrades(
   using cyclus::Material;
   using cyclus::Trade;
 
-  std::vector<cyclus::Trade<cyclus::Material> >::const_iterator it;
-  for (it = trades.begin(); it != trades.end(); ++it) {
-    double qty = it->amt;
-    inventory_size -= qty;
+  int shippable_trades = context()->GetTransportUnit(transport_unit)
+                         ->MaxShippablePackages(trades.size());
 
-    Material::Ptr response;
-    if (!outrecipe.empty()) {
-      response = Material::Create(this, qty, context()->GetRecipe(outrecipe));
-    } else {
-      response = Material::Create(this, qty, it->request->target()->comp());
+  std::vector<Trade<Material> >::const_iterator it;
+  for (it = trades.begin(); it != trades.end(); ++it) {
+    if (shippable_trades > 0) {
+      double qty = it->amt;
+
+      Material::Ptr m = inventory.Pop(qty);
+      
+      std::vector<Material::Ptr> m_pkgd = m->Package<Material>(context()->GetPackage(package));
+
+      if (m->quantity() > cyclus::eps()) {
+        // If not all material is packaged successfully, return the excess
+        // amount to the inventory
+        inventory.Push(m);
+      }
+
+      Material::Ptr response;
+      if (m_pkgd.size() > 0) {
+        // Because we responded (in GetMatlBids) with individual package-sized
+        // bids, each packaged vector is guaranteed to have no more than one
+        // package in it. This single packaged resource is our response
+        response = m_pkgd[0];
+        shippable_trades -= 1;
+      } else {
+        // If packaging failed, respond with a zero (empty) material
+        response = Material::CreateUntracked(0, m->comp());
+      }
+
+      if (outrecipe.empty() && response->comp() != it->request->target()->comp()) {
+        response->Transmute(it->request->target()->comp());
+      }
+
+      responses.push_back(std::make_pair(*it, response));
+      LOG(cyclus::LEV_INFO5, "Source") << prototype() << " sent an order"
+                                      << " for " << response->quantity() << " of " << outcommod;
     }
-    responses.push_back(std::make_pair(*it, response));
-    LOG(cyclus::LEV_INFO5, "Source") << prototype() << " sent an order"
-                                     << " for " << qty << " of " << outcommod;
   }
 }
 

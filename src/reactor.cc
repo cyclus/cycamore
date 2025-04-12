@@ -1,8 +1,6 @@
 #include "reactor.h"
 
 using cyclus::Material;
-using cyclus::Composition;
-using cyclus::toolkit::ResBuf;
 using cyclus::toolkit::MatVec;
 using cyclus::KeyError;
 using cyclus::ValueError;
@@ -25,7 +23,8 @@ Reactor::Reactor(cyclus::Context* ctx)
       discharged(false),
       latitude(0.0),
       longitude(0.0),
-      coordinates(0,0) {}
+      coordinates(0,0) {},
+      keep_packaging(true)
 
 #pragma cyclus def clone cycamore::Reactor
 
@@ -65,6 +64,11 @@ void Reactor::EnterNotify() {
   
   coordinates = cyclus::toolkit::Position(latitude, longitude);
   coordinates.RecordPosition(this);
+
+  // Set keep packaging parameter in all ResBufs
+  fresh.keep_packaging(keep_packaging);
+  core.keep_packaging(keep_packaging);
+  spent.keep_packaging(keep_packaging);
 
   // If the user ommitted fuel_prefs, we set it to zeros for each fuel
   // type.  Without this segfaults could occur - yuck.
@@ -107,7 +111,7 @@ void Reactor::EnterNotify() {
   }
 
   if (ss.str().size() > 0) {
-    throw cyclus::ValueError(ss.str());
+    throw ValueError(ss.str());
   }
 }
 
@@ -144,6 +148,9 @@ void Reactor::Tick() {
     // this batch also needs to be discharged to spent fuel inventory.
     while (fresh.count() > 0 && spent.space() >= assem_size) {
       spent.Push(fresh.Pop());
+    }
+    if(CheckDecommissionCondition()) {
+      context()->SchedDecom(this);    
     }
     return;
   }
@@ -230,7 +237,7 @@ std::set<cyclus::RequestPortfolio<Material>::Ptr> Reactor::GetMatlRequests() {
     for (int j = 0; j < fuel_incommods.size(); j++) {
       std::string commod = fuel_incommods[j];
       double pref = fuel_prefs[j];
-      Composition::Ptr recipe = context()->GetRecipe(fuel_inrecipes[j]);
+      cyclus::Composition::Ptr recipe = context()->GetRecipe(fuel_inrecipes[j]);
       m = Material::CreateUntracked(assem_size, recipe);
       
       Request<Material>* r = port->AddRequest(m, this, commod, pref, true);
@@ -241,8 +248,8 @@ std::set<cyclus::RequestPortfolio<Material>::Ptr> Reactor::GetMatlRequests() {
     result = std::max_element(fuel_prefs.begin(), fuel_prefs.end());
     int max_index = std::distance(fuel_prefs.begin(), result);
 
-    cyclus::toolkit::RecordTimeSeries<double>("demand"+fuel_incommods[max_index], this, 
-                                          assem_size * n_assem_order) ;
+    cyclus::toolkit::RecordTimeSeries<double>("demand"+fuel_incommods[max_index], this,
+                                          assem_size) ;
 
     port->AddMutualReqs(mreqs);
     ports.insert(port);
@@ -270,8 +277,8 @@ void Reactor::GetMatlTrades(
 
 void Reactor::AcceptMatlTrades(const std::vector<
     std::pair<cyclus::Trade<Material>, Material::Ptr> >& responses) {
-  std::vector<std::pair<cyclus::Trade<cyclus::Material>,
-                        cyclus::Material::Ptr> >::const_iterator trade;
+  std::vector<std::pair<cyclus::Trade<Material>,
+                        Material::Ptr> >::const_iterator trade;
 
   std::stringstream ss;
   int nload = std::min((int)responses.size(), n_assem_core - core.count());
@@ -354,8 +361,11 @@ void Reactor::Tock() {
   if (retired()) {
     return;
   }
-
-  if (cycle_step >= cycle_time + refuel_time && core.count() == n_assem_core) {
+  
+  // Check that irradiation and refueling periods are over, that 
+  // the core is full and that fuel was successfully discharged in this refueling time.
+  // If this is the case, then a new cycle will be initiated.
+  if (cycle_step >= cycle_time + refuel_time && core.count() == n_assem_core && discharged == true) {
     discharged = false;
     cycle_step = 0;
   }
@@ -371,6 +381,7 @@ void Reactor::Tock() {
     RecordSideProduct(true);
   } else {
     cyclus::toolkit::RecordTimeSeries<cyclus::toolkit::POWER>(this, 0);
+    cyclus::toolkit::RecordTimeSeries<double>("supplyPOWER", this, 0);
     RecordSideProduct(false);
   }
 
@@ -420,7 +431,7 @@ bool Reactor::Discharge() {
 
   std::stringstream ss;
   ss << npop << " assemblies";
-  Record("DISCHARGE", ss.str());  
+  Record("DISCHARGE", ss.str());
   spent.Push(core.PopN(npop));
 
   std::map<std::string, MatVec> spent_mats;
@@ -430,7 +441,7 @@ bool Reactor::Discharge() {
     double tot_spent = 0;
     for (int j = 0; j<mats.size(); j++){
       Material::Ptr m = mats[j];
-      tot_spent += m->quantity(); 
+      tot_spent += m->quantity();
     }
     cyclus::toolkit::RecordTimeSeries<double>("supply"+fuel_outcommods[i], this, tot_spent);
   }

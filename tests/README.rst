@@ -37,7 +37,7 @@ Next, generate the new databases:
 
 .. code-block:: bash
 
-  $ python ref.py gen
+  $ python3 ref.py gen
 
 Next, rename the databases:
 
@@ -93,4 +93,4 @@ those tables. See the module's help:
 
 .. code-block:: python
 
-  $ python analysis.py -h
+  $ python3 analysis.py -h

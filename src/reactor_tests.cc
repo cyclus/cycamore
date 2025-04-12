@@ -56,7 +56,7 @@ Composition::Ptr c_water() {
 // (the default), fuel can be ordered and the cycle started with no time step
 // delay.
 TEST(ReactorTests, JustInTimeOrdering) {
-  std::string config = 
+  std::string config =
      "  <fuel_inrecipes>  <val>lwr_fresh</val>  </fuel_inrecipes>  "
      "  <fuel_outrecipes> <val>lwr_spent</val>  </fuel_outrecipes>  "
      "  <fuel_incommods>  <val>enriched_u</val> </fuel_incommods>  "
@@ -83,7 +83,7 @@ TEST(ReactorTests, JustInTimeOrdering) {
 // tests that the correct number of assemblies are popped from the core each
 // cycle.
 TEST(ReactorTests, BatchSizes) {
-  std::string config = 
+  std::string config =
      "  <fuel_inrecipes>  <val>uox</val>      </fuel_inrecipes>  "
      "  <fuel_outrecipes> <val>spentuox</val> </fuel_outrecipes>  "
      "  <fuel_incommods>  <val>uox</val>      </fuel_incommods>  "
@@ -110,7 +110,7 @@ TEST(ReactorTests, BatchSizes) {
 // tests that the refueling period between cycle end and start of the next
 // cycle is honored.
 TEST(ReactorTests, RefuelTimes) {
-  std::string config = 
+  std::string config =
      "  <fuel_inrecipes>  <val>uox</val>      </fuel_inrecipes>  "
      "  <fuel_outrecipes> <val>spentuox</val> </fuel_outrecipes>  "
      "  <fuel_incommods>  <val>uox</val>      </fuel_incommods>  "
@@ -140,7 +140,7 @@ TEST(ReactorTests, RefuelTimes) {
 // tests that a reactor decommissions on time without producing
 // power at the end of its lifetime.
 TEST(ReactorTests, DecomTimes) {
-  std::string config = 
+  std::string config =
      "  <fuel_inrecipes>  <val>uox</val>      </fuel_inrecipes>  "
      "  <fuel_outrecipes> <val>spentuox</val> </fuel_outrecipes>  "
      "  <fuel_incommods>  <val>uox</val>      </fuel_incommods>  "
@@ -179,7 +179,7 @@ TEST(ReactorTests, DecomTimes) {
 // Tests if a reactor produces power at the time of its decommission
 // given a refuel_time of zero.
 TEST(ReactorTests, DecomZeroRefuel) {
-  std::string config = 
+  std::string config =
      "  <fuel_inrecipes>  <val>uox</val>      </fuel_inrecipes>  "
      "  <fuel_outrecipes> <val>spentuox</val> </fuel_outrecipes>  "
      "  <fuel_incommods>  <val>uox</val>      </fuel_incommods>  "
@@ -212,7 +212,7 @@ TEST(ReactorTests, DecomZeroRefuel) {
 // start of the refueling period - not before and not after. - thie is subtly
 // different than RefuelTimes test and is not a duplicate of it.
 TEST(ReactorTests, OrderAtRefuelStart) {
-  std::string config = 
+  std::string config =
      "  <fuel_inrecipes>  <val>uox</val>      </fuel_inrecipes>  "
      "  <fuel_outrecipes> <val>spentuox</val> </fuel_outrecipes>  "
      "  <fuel_incommods>  <val>uox</val>      </fuel_incommods>  "
@@ -241,7 +241,7 @@ TEST(ReactorTests, OrderAtRefuelStart) {
 // tests that the reactor handles requesting multiple types of fuel correctly
 // - with proper inventory constraint honoring, etc.
 TEST(ReactorTests, MultiFuelMix) {
-  std::string config = 
+  std::string config =
      "  <fuel_inrecipes>  <val>uox</val>      <val>mox</val>      </fuel_inrecipes>  "
      "  <fuel_outrecipes> <val>spentuox</val> <val>spentmox</val> </fuel_outrecipes>  "
      "  <fuel_incommods>  <val>uox</val>      <val>mox</val>      </fuel_incommods>  "
@@ -277,7 +277,7 @@ TEST(ReactorTests, MultiFuelMix) {
 // tests that the reactor halts operation when it has no more room in its
 // spent fuel inventory buffer.
 TEST(ReactorTests, FullSpentInventory) {
-  std::string config = 
+  std::string config =
      "  <fuel_inrecipes>  <val>uox</val>      </fuel_inrecipes>  "
      "  <fuel_outrecipes> <val>spentuox</val> </fuel_outrecipes>  "
      "  <fuel_incommods>  <val>uox</val>      </fuel_incommods>  "
@@ -304,13 +304,42 @@ TEST(ReactorTests, FullSpentInventory) {
   EXPECT_EQ(n_assem_spent+1, qr.rows.size());
 }
 
+// tests that the reactor shuts down, ie., does not generate power, when the
+// spent fuel inventory is full and the core cannot be unloaded.
+TEST(ReactorTests, FullSpentInventoryShutdown) {
+  std::string config =
+    " <fuel_inrecipes> <val>uox</val> </fuel_inrecipes> "
+    " <fuel_outrecipes> <val>spentuox</val> </fuel_outrecipes> "
+    " <fuel_incommods> <val>uox</val> </fuel_incommods> "
+    " <fuel_outcommods> <val>waste</val> </fuel_outcommods> "
+    ""
+    " <cycle_time>1</cycle_time> "
+    " <refuel_time>0</refuel_time> "
+    " <assem_size>1</assem_size> "
+    " <n_assem_core>1</n_assem_core> "
+    " <n_assem_batch>1</n_assem_batch> "
+    " <n_assem_spent>1</n_assem_spent> "
+    " <power_cap>100</power_cap> ";
+
+  int simdur = 3;
+  cyclus::MockSim sim(cyclus::AgentSpec(":cycamore:Reactor"), config, simdur);
+  sim.AddSource("uox").Finalize();
+  sim.AddRecipe("uox", c_uox());
+  sim.AddRecipe("spentuox", c_spentuox());
+  int id = sim.Run();
+
+  QueryResult qr = sim.db().Query("TimeSeriesPower", NULL);
+  EXPECT_EQ(0, qr.GetVal<double>("Value", simdur - 1));
+
+}
+
 // tests that the reactor cycle is delayed as expected when it is unable to
 // acquire fuel in time for the next cycle start.  This checks that after a
 // cycle is delayed past an original scheduled start time, as soon as enough fuel is
 // received, a new cycle pattern is established starting from the delayed
 // start time.
 TEST(ReactorTests, FuelShortage) {
-  std::string config = 
+  std::string config =
      "  <fuel_inrecipes>  <val>uox</val>      </fuel_inrecipes>  "
      "  <fuel_outrecipes> <val>spentuox</val> </fuel_outrecipes>  "
      "  <fuel_incommods>  <val>uox</val>      </fuel_incommods>  "
@@ -359,7 +388,7 @@ TEST(ReactorTests, FuelShortage) {
 
 // tests that discharged fuel is transmuted properly immediately at cycle end.
 TEST(ReactorTests, DischargedFuelTransmute) {
-  std::string config = 
+  std::string config =
      "  <fuel_inrecipes>  <val>uox</val>      </fuel_inrecipes>  "
      "  <fuel_outrecipes> <val>spentuox</val> </fuel_outrecipes>  "
      "  <fuel_incommods>  <val>uox</val>      </fuel_incommods>  "
@@ -393,7 +422,7 @@ TEST(ReactorTests, DischargedFuelTransmute) {
 // incommod it was received on - esp when dealing with multiple fuel commods
 // simultaneously.
 TEST(ReactorTests, SpentFuelProperCommodTracking) {
-  std::string config = 
+  std::string config =
      "  <fuel_inrecipes>  <val>uox</val>      <val>mox</val>      </fuel_inrecipes>  "
      "  <fuel_outrecipes> <val>spentuox</val> <val>spentmox</val> </fuel_outrecipes>  "
      "  <fuel_incommods>  <val>uox</val>      <val>mox</val>      </fuel_incommods>  "
@@ -434,7 +463,7 @@ TEST(ReactorTests, SpentFuelProperCommodTracking) {
 // correctly and the reactor could segfault.  Check that this doesn't happen.
 TEST(ReactorTests, PrefChange) {
   // it is important that the fuel_prefs not be present in the config below.
-  std::string config = 
+  std::string config =
      "  <fuel_inrecipes>  <val>lwr_fresh</val>  </fuel_inrecipes>  "
      "  <fuel_outrecipes> <val>lwr_spent</val>  </fuel_outrecipes>  "
      "  <fuel_incommods>  <val>enriched_u</val> </fuel_incommods>  "
@@ -463,7 +492,7 @@ TEST(ReactorTests, PrefChange) {
 
 TEST(ReactorTests, RecipeChange) {
   // it is important that the fuel_prefs not be present in the config below.
-  std::string config = 
+  std::string config =
      "  <fuel_inrecipes>  <val>lwr_fresh</val>  </fuel_inrecipes>  "
      "  <fuel_outrecipes> <val>lwr_spent</val>  </fuel_outrecipes>  "
      "  <fuel_incommods>  <val>enriched_u</val> </fuel_incommods>  "
@@ -534,7 +563,7 @@ TEST(ReactorTests, RecipeChange) {
 }
 
 TEST(ReactorTests, Retire) {
-  std::string config = 
+  std::string config =
      "  <fuel_inrecipes>  <val>lwr_fresh</val>  </fuel_inrecipes>  "
      "  <fuel_outrecipes> <val>lwr_spent</val>  </fuel_outrecipes>  "
      "  <fuel_incommods>  <val>enriched_u</val> </fuel_incommods>  "
@@ -582,7 +611,7 @@ TEST(ReactorTests, Retire) {
       << "failed to discharge all material by retirement time";
 
   // reactor should record power entry on the time step it retires if operating
-  int time_online = life / (cycle_time + refuel_time) * cycle_time + std::min(life % (cycle_time + refuel_time), cycle_time); 
+  int time_online = life / (cycle_time + refuel_time) * cycle_time + std::min(life % (cycle_time + refuel_time), cycle_time);
   conds.clear();
   conds.push_back(Cond("AgentId", "==", id));
   conds.push_back(Cond("Value", ">", 0));
@@ -591,8 +620,8 @@ TEST(ReactorTests, Retire) {
       << "failed to generate power for the correct number of time steps";
 }
 
-TEST(ReactorTests, PositionDefault) {
-  std::string config = 
+TEST(ReactorTests, PositionInitialize) {
+  std::string config =
      "  <fuel_inrecipes>  <val>lwr_fresh</val>  </fuel_inrecipes>  "
      "  <fuel_outrecipes> <val>lwr_spent</val>  </fuel_outrecipes>  "
      "  <fuel_incommods>  <val>enriched_u</val> </fuel_incommods>  "
@@ -617,8 +646,8 @@ TEST(ReactorTests, PositionDefault) {
   EXPECT_EQ(qr.GetVal<double>("Longitude"), 0.0);
 }
 
-TEST(ReactorTests, PositionInitialize) {
-  std::string config = 
+TEST(ReactorTests, PositionInitialize2) {
+  std::string config =
      "  <fuel_inrecipes>  <val>lwr_fresh</val>  </fuel_inrecipes>  "
      "  <fuel_outrecipes> <val>lwr_spent</val>  </fuel_outrecipes>  "
      "  <fuel_incommods>  <val>enriched_u</val> </fuel_incommods>  "
@@ -646,7 +675,7 @@ TEST(ReactorTests, PositionInitialize) {
 }
 
 TEST(ReactorTests, ByProduct) {
-  std::string config = 
+  std::string config =
      "  <fuel_inrecipes>  <val>uox</val>      </fuel_inrecipes>  "
      "  <fuel_outrecipes> <val>spentuox</val> </fuel_outrecipes>  "
      "  <fuel_incommods>  <val>uox</val>      </fuel_incommods>  "
@@ -683,7 +712,7 @@ TEST(ReactorTests, ByProduct) {
 }
 
 TEST(ReactorTests, MultipleByProduct) {
-  std::string config = 
+  std::string config =
      "  <fuel_inrecipes>  <val>uox</val>      </fuel_inrecipes>  "
      "  <fuel_outrecipes> <val>spentuox</val> </fuel_outrecipes>  "
      "  <fuel_incommods>  <val>uox</val>      </fuel_incommods>  "

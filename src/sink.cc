@@ -14,12 +14,12 @@ Sink::Sink(cyclus::Context* ctx)
       capacity(std::numeric_limits<double>::max()),
       latitude(0.0),
       longitude(0.0),
-      coordinates(0,0) {
-  SetMaxInventorySize(std::numeric_limits<double>::max());
-}
+      coordinates(0,0)
+      keep_packaging(true) {
+  SetMaxInventorySize(std::numeric_limits<double>::max());}
 
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-Sink::~Sink() {}
+Sink::~Sink() {}s
 
 #pragma cyclus def schema cycamore::Sink
 
@@ -45,6 +45,9 @@ void Sink::EnterNotify() {
   
   coordinates = cyclus::toolkit::Position(latitude, longitude);
   coordinates.RecordPosition(this);
+  LOG(cyclus::LEV_INFO4, "SnkFac") << " using random behavior " << random_size_type;
+
+  inventory.keep_packaging(keep_packaging);
 
   if (in_commod_prefs.size() == 0) {
     for (int i = 0; i < in_commods.size(); ++i) {
@@ -55,6 +58,23 @@ void Sink::EnterNotify() {
     ss << "in_commod_prefs has " << in_commod_prefs.size()
        << " values, expected " << in_commods.size();
     throw cyclus::ValueError(ss.str());
+  }
+  /// Create first requestAmt. Only used in testing, as a simulation will
+  /// overwrite this on Tick()
+  SetRequestAmt();
+  SetNextBuyTime();
+
+  if (random_size_type != "None") {
+    LOG(cyclus::LEV_INFO4, "SnkFac") << "Sink " << this->id()
+                                     << " is using random behavior "
+                                     << random_size_type
+                                     << " for determining request size.";
+  }
+  if (random_frequency_type != "None") {
+    LOG(cyclus::LEV_INFO4, "SnkFac") << "Sink " << this->id()
+                                     << " is using random behavior "
+                                     << random_frequency_type
+                                     << " for determining request frequency.";
   }
 }
 
@@ -88,17 +108,21 @@ Sink::GetMatlRequests() {
 
   std::set<RequestPortfolio<Material>::Ptr> ports;
   RequestPortfolio<Material>::Ptr port(new RequestPortfolio<Material>());
-  double amt = RequestAmt();
   Material::Ptr mat;
 
-  if (recipe_name.empty()) {
-    mat = cyclus::NewBlankMaterial(amt);
-  } else {
-    Composition::Ptr rec = this->context()->GetRecipe(recipe_name);
-    mat = cyclus::Material::CreateUntracked(amt, rec);
+  /// for testing
+  if (requestAmt > SpaceAvailable()) {
+    SetRequestAmt();
   }
 
-  if (amt > cyclus::eps()) {
+  if (recipe_name.empty()) {
+    mat = cyclus::NewBlankMaterial(requestAmt);
+  } else {
+    Composition::Ptr rec = this->context()->GetRecipe(recipe_name);
+    mat = cyclus::Material::CreateUntracked(requestAmt, rec);
+  }
+
+  if (requestAmt > cyclus::eps()) {  
     std::vector<Request<Material>*> mutuals;
     for (int i = 0; i < in_commods.size(); i++) {
       mutuals.push_back(port->AddRequest(mat, this, in_commods[i], in_commod_prefs[i]));
@@ -116,21 +140,19 @@ Sink::GetGenRsrcRequests() {
   using cyclus::CapacityConstraint;
   using cyclus::Product;
   using cyclus::RequestPortfolio;
-  using cyclus::Request;
 
   std::set<RequestPortfolio<Product>::Ptr> ports;
   RequestPortfolio<Product>::Ptr
       port(new RequestPortfolio<Product>());
-  double amt = RequestAmt();
 
-  if (amt > cyclus::eps()) {
-    CapacityConstraint<Product> cc(amt);
+  if (requestAmt > cyclus::eps()) {
+    CapacityConstraint<Product> cc(requestAmt);
     port->AddConstraint(cc);
 
     std::vector<std::string>::const_iterator it;
     for (it = in_commods.begin(); it != in_commods.end(); ++it) {
       std::string quality = "";  // not clear what this should be..
-      Product::Ptr rsrc = Product::CreateUntracked(amt, quality);
+      Product::Ptr rsrc = Product::CreateUntracked(requestAmt, quality);
       port->AddRequest(rsrc, this, *it);
     }
 
@@ -165,15 +187,32 @@ void Sink::AcceptGenRsrcTrades(
 void Sink::Tick() {
   using std::string;
   using std::vector;
-  LOG(cyclus::LEV_INFO3, "SnkFac") << prototype() << " is ticking {";
+  LOG(cyclus::LEV_INFO3, "SnkFac") << "Sink " << this->id() << " is ticking {";
 
-  double requestAmt = RequestAmt();
+  if (nextBuyTime == -1) {
+    SetRequestAmt();
+  }
+  else if (nextBuyTime == context()->time()) {
+    SetRequestAmt();
+    SetNextBuyTime();
+
+    LOG(cyclus::LEV_INFO4, "SnkFac") << "Sink " << this->id() 
+                                     << " has reached buying time. The next buy time will be time step " << nextBuyTime;
+  }
+  else {
+    requestAmt = 0;
+  }
+
   // inform the simulation about what the sink facility will be requesting
   if (requestAmt > cyclus::eps()) {
+    LOG(cyclus::LEV_INFO4, "SnkFac") << "Sink " << this->id()
+                                     << " has request amount " << requestAmt
+                                     << " kg of " << in_commods[0] << ".";
     for (vector<string>::iterator commod = in_commods.begin();
          commod != in_commods.end();
          commod++) {
-      LOG(cyclus::LEV_INFO4, "SnkFac") << " will request " << requestAmt
+      LOG(cyclus::LEV_INFO4, "SnkFac") << "Sink " << this->id() 
+                                       << " will request " << requestAmt
                                        << " kg of " << *commod << ".";
       cyclus::toolkit::RecordTimeSeries<double>("demand"+*commod, this,
                                             requestAmt);
@@ -191,11 +230,50 @@ void Sink::Tock() {
   // For now, lets just print out what we have at each timestep.
   LOG(cyclus::LEV_INFO4, "SnkFac") << "Sink " << this->id()
                                    << " is holding " << inventory.quantity()
-                                   << " units of material at the close of month "
+                                   << " units of material at the close of timestep "
                                    << context()->time() << ".";
   LOG(cyclus::LEV_INFO3, "SnkFac") << "}";
 }
 
+
+void Sink::SetRequestAmt() {
+  double amt = SpaceAvailable();
+  if (amt < cyclus::eps()) {
+    requestAmt = 0;
+  }
+
+  if (random_size_type == "None") {
+    requestAmt =  amt;
+  }
+  else if (random_size_type == "UniformReal") {
+    requestAmt =  context()->random_uniform_real(0, amt);
+  }
+  else if (random_size_type == "NormalReal") {
+    requestAmt =  context()->random_normal_real(amt * random_size_mean,
+                                                amt * random_size_stddev, 
+                                                0, amt);
+  }
+  else {
+    requestAmt =  amt;
+  }
+  return;
+}
+
+void Sink::SetNextBuyTime() {
+  if (random_frequency_type == "None") {
+    nextBuyTime = -1;
+  }
+  else if (random_frequency_type == "UniformInt") {
+    nextBuyTime = context()->time() + context()->random_uniform_int(random_frequency_min, random_frequency_max);
+  }
+  else if (random_frequency_type == "NormalInt") {
+    nextBuyTime = context()->time() + context()->random_normal_int(random_frequency_mean, random_frequency_stddev, random_frequency_min, random_frequency_max);
+  }
+  else {
+    nextBuyTime = -1;
+  }
+  return;
+}
 
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 extern "C" cyclus::Agent* ConstructSink(cyclus::Context* ctx) {

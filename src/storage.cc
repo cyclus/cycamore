@@ -2,7 +2,7 @@
 // Implements the Storage class
 #include "storage.h"
 
-namespace storage {
+namespace cycamore {
 
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 Storage::Storage(cyclus::Context* ctx)
@@ -10,6 +10,7 @@ Storage::Storage(cyclus::Context* ctx)
       latitude(0.0),
       longitude(0.0),
       coordinates(0,0) {
+  inventory_tracker.Init({&inventory, &stocks, &ready, &processing}, cyclus::CY_LARGE_DOUBLE);
   cyclus::Warn<cyclus::EXPERIMENTAL_WARNING>(
       "The Storage Facility is experimental.");
 }
@@ -17,34 +18,142 @@ Storage::Storage(cyclus::Context* ctx)
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 // pragmas
 
-#pragma cyclus def schema storage::Storage
+#pragma cyclus def schema cycamore::Storage
 
-#pragma cyclus def annotations storage::Storage
+#pragma cyclus def annotations cycamore::Storage
 
-#pragma cyclus def initinv storage::Storage
+#pragma cyclus def initinv cycamore::Storage
 
-#pragma cyclus def snapshotinv storage::Storage
+#pragma cyclus def snapshotinv cycamore::Storage
 
-#pragma cyclus def infiletodb storage::Storage
+#pragma cyclus def infiletodb cycamore::Storage
 
-#pragma cyclus def snapshot storage::Storage
+#pragma cyclus def snapshot cycamore::Storage
 
-#pragma cyclus def clone storage::Storage
+#pragma cyclus def clone cycamore::Storage
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 void Storage::InitFrom(Storage* m) {
-#pragma cyclus impl initfromcopy storage::Storage
+#pragma cyclus impl initfromcopy cycamore::Storage
   cyclus::toolkit::CommodityProducer::Copy(m);
 }
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 void Storage::InitFrom(cyclus::QueryableBackend* b) {
-#pragma cyclus impl initfromdb storage::Storage
+#pragma cyclus impl initfromdb cycamore::Storage
 
-  using cyclus::toolkit::Commodity;
-  Commodity commod = Commodity(out_commods.front());
+  cyclus::toolkit::Commodity commod = cyclus::toolkit::Commodity(out_commods.front());
   cyclus::toolkit::CommodityProducer::Add(commod);
   cyclus::toolkit::CommodityProducer::SetCapacity(commod, throughput);
+}
+
+void Storage::InitBuyPolicyParameters() {
+  /// set up active buying distribution
+  if (active_buying_min > active_buying_max) {
+    throw cyclus::ValueError("Active min larger than max.");
+  }
+  if (dormant_buying_min > dormant_buying_max) {
+    throw cyclus::ValueError("Dormant min larger than max.");
+  }
+  if (buying_size_min > buying_size_max) {
+    throw cyclus::ValueError("Buying size min larger than max.");
+  }
+
+  if (active_buying_frequency_type == "Fixed") {
+    active_dist_ = cyclus::FixedIntDist::Ptr (new cyclus::FixedIntDist(active_buying_val));
+  }
+  else if (active_buying_frequency_type == "Uniform") {
+    if ((active_buying_min == -1) || (active_buying_max == -1)) {
+      throw cyclus::ValueError("Invalid active buying frequency range. Please provide both a min and max value.");
+    }
+    active_dist_ = cyclus::UniformIntDist::Ptr (new cyclus::UniformIntDist(active_buying_min, active_buying_max));
+  }
+  else if (active_buying_frequency_type == "Normal") {
+    if ((active_buying_mean == -1) || (active_buying_stddev == -1)) {
+      throw cyclus::ValueError("Invalid active buying frequency range. Please provide both a mean and standard deviation value.");
+    }
+    if (active_buying_min == -1) {active_buying_min = 1;}
+    if (active_buying_max == -1) {
+      active_buying_max = std::numeric_limits<int>::max();}
+
+    active_dist_ = cyclus::NormalIntDist::Ptr (new cyclus::NormalIntDist(active_buying_mean, active_buying_stddev,
+                          active_buying_min, active_buying_max));
+  }
+  else if (active_buying_frequency_type == "Binomial") {
+    if (active_buying_end_probability < 0 || active_buying_end_probability > 1) {
+      throw cyclus::ValueError("Active buying end probability must be between 0 and 1");
+    }
+    int success = 1; // only one success is needed to end the active buying period
+    active_dist_ = cyclus::NegativeBinomialIntDist::Ptr (new cyclus::NegativeBinomialIntDist(success, active_buying_end_probability));
+  } else if (active_buying_frequency_type == "FixedWithDisruption") {
+    if (active_buying_disruption < 0) {
+      throw cyclus::ValueError("Disruption must be greater than or equal to 0");
+    }
+    active_dist_ = cyclus::BinaryIntDist::Ptr (
+      new cyclus::BinaryIntDist(active_buying_disruption_probability,
+      active_buying_disruption, active_buying_val));
+  }
+  else {
+    throw cyclus::ValueError("Invalid active buying frequency type");}
+
+  /// set up dormant buying distribution
+  if (dormant_buying_frequency_type == "Fixed") {
+    dormant_dist_ = cyclus::FixedIntDist::Ptr (new cyclus::FixedIntDist(dormant_buying_val));
+  }
+  else if (dormant_buying_frequency_type == "Uniform") {
+    if ((dormant_buying_min == -1) || (dormant_buying_max == -1)) {
+      throw cyclus::ValueError("Invalid dormant buying frequency range. Please provide both a min and max value.");
+    }
+    dormant_dist_ = cyclus::UniformIntDist::Ptr (new cyclus::UniformIntDist(dormant_buying_min, dormant_buying_max));
+  }
+  else if (dormant_buying_frequency_type == "Normal") {
+    if ((dormant_buying_mean == -1) || (dormant_buying_stddev == -1)) {
+      throw cyclus::ValueError("Invalid dormant buying frequency range. Please provide both a mean and standard deviation value.");
+    }
+    if (dormant_buying_min == -1) {dormant_buying_min = 1;}
+    if (dormant_buying_max == -1) {
+      dormant_buying_max = std::numeric_limits<int>::max();}
+    dormant_dist_ = cyclus::NormalIntDist::Ptr (new cyclus::NormalIntDist(dormant_buying_mean, dormant_buying_stddev,
+                          dormant_buying_min, dormant_buying_max));
+  }
+  else if (dormant_buying_frequency_type == "Binomial") {
+    if (dormant_buying_end_probability < 0 || dormant_buying_end_probability > 1) {
+      throw cyclus::ValueError("Dormant buying end probability must be between 0 and 1");
+    }
+    int success = 1; // only one success is needed to end the dormant buying period
+    dormant_dist_ = cyclus::NegativeBinomialIntDist::Ptr (new cyclus::NegativeBinomialIntDist(success, dormant_buying_end_probability));
+  } else if (dormant_buying_frequency_type == "FixedWithDisruption") {
+    if (dormant_buying_disruption < 0) {
+      throw cyclus::ValueError("Disruption must be greater than or equal to 0");
+    }
+    dormant_dist_ = cyclus::BinaryIntDist::Ptr (
+      new cyclus::BinaryIntDist(dormant_buying_disruption_probability,
+      dormant_buying_disruption, dormant_buying_val));
+  }
+  else {
+    throw cyclus::ValueError("Invalid dormant buying frequency type");}
+
+  /// set up buying size distribution
+  if (buying_size_type == "Fixed") {
+    size_dist_ = cyclus::FixedDoubleDist::Ptr (new cyclus::FixedDoubleDist(buying_size_val));
+  }
+  else if (buying_size_type == "Uniform") {
+    if ((buying_size_min == -1) || (buying_size_max == -1)) {
+      throw cyclus::ValueError("Invalid buying size range. Please provide both a min and max value.");
+    }
+    size_dist_ = cyclus::UniformDoubleDist::Ptr (new cyclus::UniformDoubleDist(buying_size_min, buying_size_max));
+  }
+  else if (buying_size_type == "Normal") {
+    if ((buying_size_mean == -1) || (buying_size_stddev == -1)) {
+      throw cyclus::ValueError("Invalid buying size range. Please provide both a mean and standard deviation value.");
+    }
+    if (buying_size_min == -1) {buying_size_min = 0;}
+    if (buying_size_max == -1) {buying_size_max = 1;}
+    size_dist_ = cyclus::NormalDoubleDist::Ptr (new cyclus::NormalDoubleDist(buying_size_mean, buying_size_stddev,
+                             buying_size_min, buying_size_max));
+  }
+  else {
+    throw cyclus::ValueError("Invalid buying size type");}
 }
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -54,7 +163,33 @@ void Storage::EnterNotify() {
   coordinates = cyclus::toolkit::Position(latitude, longitude);
   coordinates.RecordPosition(this);
   
-  buy_policy.Init(this, &inventory, std::string("inventory"));
+  inventory_tracker.set_capacity(max_inv_size);
+  if (reorder_point < 0 && cumulative_cap <= 0) {
+    InitBuyPolicyParameters();
+    buy_policy.Init(this, &inventory, std::string("inventory"),
+                    &inventory_tracker, throughput, active_dist_,
+                    dormant_dist_, size_dist_);
+  }
+  else if (cumulative_cap > 0) {
+    InitBuyPolicyParameters();
+    buy_policy.Init(this, &inventory, std::string("inventory"),
+                    &inventory_tracker, throughput, cumulative_cap,
+                    dormant_dist_);
+  }
+  else if (reorder_quantity > 0) {
+    if (reorder_point + reorder_quantity > max_inv_size) {
+      throw cyclus::ValueError(
+          "reorder_point + reorder_quantity must be less than or equal to max_inv_size");
+    }
+    buy_policy.Init(this, &inventory, std::string("inventory"),
+                    &inventory_tracker, throughput, "RQ",
+                    reorder_quantity, reorder_point);
+  }
+  else {
+    buy_policy.Init(this, &inventory, std::string("inventory"),
+                    &inventory_tracker, throughput, "sS",
+                    max_inv_size, reorder_point);
+  }
 
   // dummy comp, use in_recipe if provided
   cyclus::CompMap v;
@@ -79,10 +214,14 @@ void Storage::EnterNotify() {
   }
   buy_policy.Start();
 
+  std::string package_name_ =  context()->GetPackage(package)->name();
+  std::string tu_name_ = context()->GetTransportUnit(transport_unit)->name();
   if (out_commods.size() == 1) {
-    sell_policy.Init(this, &stocks, std::string("stocks"))
-        .Set(out_commods.front())
-        .Start();
+    sell_policy.Init(this, &stocks, std::string("stocks"), cyclus::CY_LARGE_DOUBLE, false,
+                     sell_quantity, package_name_, tu_name_)
+      .Set(out_commods.front())
+      .Start();
+
   } else {
     std::stringstream ss;
     ss << "out_commods has " << out_commods.size() << " values, expected 1.";
@@ -118,41 +257,56 @@ std::string Storage::str() {
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 void Storage::Tick() {
-  // Set available capacity for Buy Policy
-  inventory.capacity(current_capacity());
+
 
   LOG(cyclus::LEV_INFO3, "ComCnv") << prototype() << " is ticking {";
 
+  LOG(cyclus::LEV_INFO5, "ComCnv") << "Processing = " << processing.quantity() << ", ready = " << ready.quantity() << ", stocks = " << stocks.quantity() << " and max inventory = " << max_inv_size;
+
+  LOG(cyclus::LEV_INFO4, "ComCnv") << "current capacity " << max_inv_size << " - " << processing.quantity() << " - " << ready.quantity() << " - " << stocks.quantity() << " = " << current_capacity();
+
   if (current_capacity() > cyclus::eps_rsrc()) {
     LOG(cyclus::LEV_INFO4, "ComCnv")
-        << " has capacity for " << current_capacity() << " kg of material.";
+        << " has capacity for " << current_capacity() << ".";
   }
   LOG(cyclus::LEV_INFO3, "ComCnv") << "}";
 }
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 void Storage::Tock() {
-  using cyclus::toolkit::RecordTimeSeries;
   LOG(cyclus::LEV_INFO3, "ComCnv") << prototype() << " is tocking {";
 
   BeginProcessing_();  // place unprocessed inventory into processing
+
+  LOG(cyclus::LEV_INFO4, "ComCnv") << "processing currently holds " << processing.quantity() << ". ready currently holds " << ready.quantity() << ".";
 
   if (ready_time() >= 0 || residence_time == 0 && !inventory.empty()) {
     ReadyMatl_(ready_time());  // place processing into ready
   }
 
-  ProcessMat_(throughput);  // place ready into stocks
+  LOG(cyclus::LEV_INFO5, "ComCnv") << "Ready now holds " << ready.quantity() << " kg.";
 
+  if (ready.quantity() > throughput) {
+    LOG(cyclus::LEV_INFO5, "ComCnv") << "Up to " << throughput << " kg will be placed in stocks based on throughput limits. ";
+    }
+
+  ProcessMat_(throughput);  // place ready into stocks
 
   std::vector<double>::iterator result;
   result = std::max_element(in_commod_prefs.begin(), in_commod_prefs.end());
   int maxindx = std::distance(in_commod_prefs.begin(), result);
-  cyclus::toolkit::RecordTimeSeries<double>("demand"+in_commods[maxindx], this,
-                                            current_capacity());
+  double demand = 0;
+  demand = current_capacity();
+
+  cyclus::toolkit::RecordTimeSeries<double>("demand"+in_commods[maxindx], this, demand);
+
   // Multiple commodity tracking is not supported, user can only
   // provide one value for out_commods, despite it being a vector of strings.
   cyclus::toolkit::RecordTimeSeries<double>("supply"+out_commods[0], this,
                                             stocks.quantity());
+
+  LOG(cyclus::LEV_INFO4, "ComCnv") << "process has "
+                                   << processing.quantity() << ". Ready has " << ready.quantity() << ". Stocks has " << stocks.quantity() << ".";
   LOG(cyclus::LEV_INFO3, "ComCnv") << "}";
 }
 
@@ -193,11 +347,6 @@ void Storage::BeginProcessing_() {
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 void Storage::ProcessMat_(double cap) {
-  using cyclus::Material;
-  using cyclus::ResCast;
-  using cyclus::toolkit::ResBuf;
-  using cyclus::toolkit::Manifest;
-
   if (!ready.empty()) {
     try {
       double max_pop = std::min(cap, ready.quantity());
@@ -216,7 +365,7 @@ void Storage::ProcessMat_(double cap) {
         stocks.Push(ready.Pop(max_pop, cyclus::eps_rsrc()));
       }
 
-      LOG(cyclus::LEV_INFO1, "ComCnv") << "Storage " << prototype()
+      LOG(cyclus::LEV_INFO4, "ComCnv") << "Storage " << prototype()
                                        << " moved resources"
                                        << " from ready to stocks"
                                        << " at t= " << context()->time();
@@ -229,7 +378,7 @@ void Storage::ProcessMat_(double cap) {
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 void Storage::ReadyMatl_(int time) {
-  using cyclus::toolkit::ResBuf;
+  LOG(cyclus::LEV_INFO5, "ComCnv") << "Placing material into ready";
 
   int to_ready = 0;
 
@@ -246,4 +395,4 @@ extern "C" cyclus::Agent* ConstructStorage(cyclus::Context* ctx) {
   return new Storage(ctx);
 }
 
-}  // namespace storage
+}  // namespace cycamore

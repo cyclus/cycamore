@@ -17,7 +17,7 @@ Cycamore's only dependency is the Cyclus Core.
 ====================   ==================
 Package                Minimum Version
 ====================   ==================
-`Cyclus`               1.4
+`Cyclus`               1.6
 ====================   ==================
 
 There are a number of ways to install the Cyclus core:
@@ -45,7 +45,7 @@ Run the install script:
 
 .. code-block:: bash
   
-  python install.py
+  python3 install.py
 
 
 If you successfully followed the instructions above, then the Cycamore library
@@ -130,7 +130,7 @@ installation flag. The otherwise identical process would look like:
 
 .. code-block:: bash
 
-    .../cycamore$  python install.py --coin_root=path/to/coin
+    .../cycamore$  python3 install.py --coin_root=path/to/coin
 
 
 CMake Cycamore Installation

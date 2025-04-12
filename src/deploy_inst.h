@@ -19,13 +19,16 @@ typedef std::map<int, std::vector<std::string> > BuildSched;
 // lifetimes.  The same prototype can be specified multiple times with any
 // combination of the same or different build times, build number, and
 // lifetimes.
-class DeployInst : public cyclus::Institution {
+class DeployInst : 
+  public cyclus::Institution, 
+  public cyclus::toolkit::CommodityProducerManager{
   #pragma cyclus note { \
     "doc": \
       "Builds and manages agents (facilities) according to a manually" \
       " specified deployment schedule. Deployed agents are automatically" \
-      " decommissioned at the end of their lifetime.  The user specifies a" \
-      " list of prototypes for" \
+      " decommissioned at the end of their lifetime.  Deployed and" \
+      " decommissioned agents are registered and unregistered with a" \
+      " region. The user specifies a list of prototypes for" \
       " each and corresponding build times, number to build, and (optionally)" \
       " lifetimes.  The same prototype can be specified multiple times with" \
       " any combination of the same or different build times, build number," \
@@ -43,6 +46,20 @@ class DeployInst : public cyclus::Institution {
   virtual void Build(cyclus::Agent* parent);
 
   virtual void EnterNotify();
+
+  virtual void BuildNotify(Agent* m);
+  virtual void DecomNotify(Agent* m);
+  /// write information about a commodity producer to a stream
+  /// @param producer the producer
+  void WriteProducerInformation(cyclus::toolkit::CommodityProducer*
+                                producer);
+
+  private:
+  /// register a child
+  void Register_(cyclus::Agent* agent);
+
+  /// unregister a child
+  void Unregister_(cyclus::Agent* agent);
 
  protected:
   #pragma cyclus var { \

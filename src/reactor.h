@@ -407,6 +407,18 @@ class Reactor
   }
   std::vector<double> pref_change_values;
 
+  #pragma cyclus var { \
+    "default": True, \
+    "tooltip": "Whether to persist packaging throughout the reactor", \
+    "doc": "Boolean value about whether to keep packaging. If true, " \
+           "packaging will not be stripped upon acceptance into the " \
+           "reactor. If false, package type will be stripped immediately " \
+           "upon acceptance. Has no effect if the incoming material is not " \
+           "packaged.", \
+    "uilabel": "Keep Packaging", \
+    "uitype": "bool"}
+  bool keep_packaging;
+
   // Resource inventories - these must be defined AFTER/BELOW the member vars
   // referenced (e.g. n_batch_fresh, assem_size, etc.).
   #pragma cyclus var {"capacity": "n_assem_fresh * assem_size"}

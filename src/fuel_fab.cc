@@ -12,7 +12,7 @@ using pyne::simple_xs;
 
 namespace cycamore {
 
-class FissConverter : public cyclus::Converter<cyclus::Material> {
+class FissConverter : public cyclus::Converter<Material> {
  public:
   FissConverter(Composition::Ptr c_fill, Composition::Ptr c_fiss,
                 Composition::Ptr c_topup, std::string spectrum)
@@ -25,8 +25,8 @@ class FissConverter : public cyclus::Converter<cyclus::Material> {
   virtual ~FissConverter() {}
 
   virtual double convert(
-      cyclus::Material::Ptr m, cyclus::Arc const* a = NULL,
-      cyclus::ExchangeTranslationContext<cyclus::Material> const* ctx =
+      Material::Ptr m, cyclus::Arc const* a = NULL,
+      cyclus::ExchangeTranslationContext<Material> const* ctx =
           NULL) const {
     double w_tgt = CosiWeight(m->comp(), spec_);
     if (ValidWeights(w_fill_, w_tgt, w_fiss_)) {
@@ -38,7 +38,7 @@ class FissConverter : public cyclus::Converter<cyclus::Material> {
       return AtomToMassFrac(frac, c_fiss_, c_topup_) * m->quantity();
     } else {
       // don't bid at all
-      return 1e200;
+      return cyclus::CY_LARGE_DOUBLE;
     }
   }
 
@@ -52,7 +52,7 @@ class FissConverter : public cyclus::Converter<cyclus::Material> {
   Composition::Ptr c_topup_;
 };
 
-class FillConverter : public cyclus::Converter<cyclus::Material> {
+class FillConverter : public cyclus::Converter<Material> {
  public:
   FillConverter(Composition::Ptr c_fill, Composition::Ptr c_fiss,
                 Composition::Ptr c_topup, std::string spectrum)
@@ -65,8 +65,8 @@ class FillConverter : public cyclus::Converter<cyclus::Material> {
   virtual ~FillConverter() {}
 
   virtual double convert(
-      cyclus::Material::Ptr m, cyclus::Arc const* a = NULL,
-      cyclus::ExchangeTranslationContext<cyclus::Material> const* ctx =
+      Material::Ptr m, cyclus::Arc const* a = NULL,
+      cyclus::ExchangeTranslationContext<Material> const* ctx =
           NULL) const {
     double w_tgt = CosiWeight(m->comp(), spec_);
     if (ValidWeights(w_fill_, w_tgt, w_fiss_)) {
@@ -77,7 +77,7 @@ class FillConverter : public cyclus::Converter<cyclus::Material> {
       return 0;
     } else {
       // don't bid at all
-      return 1e200;
+      return cyclus::CY_LARGE_DOUBLE;
     }
   }
 
@@ -91,7 +91,7 @@ class FillConverter : public cyclus::Converter<cyclus::Material> {
   Composition::Ptr c_topup_;
 };
 
-class TopupConverter : public cyclus::Converter<cyclus::Material> {
+class TopupConverter : public cyclus::Converter<Material> {
  public:
   TopupConverter(Composition::Ptr c_fill, Composition::Ptr c_fiss,
                  Composition::Ptr c_topup, std::string spectrum)
@@ -104,8 +104,8 @@ class TopupConverter : public cyclus::Converter<cyclus::Material> {
   virtual ~TopupConverter() {}
 
   virtual double convert(
-      cyclus::Material::Ptr m, cyclus::Arc const* a = NULL,
-      cyclus::ExchangeTranslationContext<cyclus::Material> const* ctx =
+      Material::Ptr m, cyclus::Arc const* a = NULL,
+      cyclus::ExchangeTranslationContext<Material> const* ctx =
           NULL) const {
     double w_tgt = CosiWeight(m->comp(), spec_);
     if (ValidWeights(w_fill_, w_tgt, w_fiss_)) {
@@ -116,7 +116,7 @@ class TopupConverter : public cyclus::Converter<cyclus::Material> {
       return AtomToMassFrac(frac, c_topup_, c_fiss_) * m->quantity();
     } else {
       // don't bid at all
-      return 1e200;
+      return cyclus::CY_LARGE_DOUBLE;
     }
   }
 
@@ -244,8 +244,8 @@ bool Contains(std::vector<std::string> vec, std::string s) {
 void FuelFab::AcceptMatlTrades(
     const std::vector<std::pair<cyclus::Trade<Material>, Material::Ptr> >&
         responses) {
-  std::vector<std::pair<cyclus::Trade<cyclus::Material>,
-                        cyclus::Material::Ptr> >::const_iterator trade;
+  std::vector<std::pair<cyclus::Trade<Material>,
+                        Material::Ptr> >::const_iterator trade;
 
   for (trade = responses.begin(); trade != responses.end(); ++trade) {
     std::string commod = trade->first.request->commodity();
@@ -377,11 +377,11 @@ std::set<cyclus::BidPortfolio<Material>::Ptr> FuelFab::GetMatlBids(
       new TopupConverter(c_fill, c_fiss, c_topup, spectrum));
   // important! - the std::max calls prevent CapacityConstraint throwing a zero
   // cap exception
-  cyclus::CapacityConstraint<Material> fissc(std::max(fiss.quantity(), 1e-10),
+  cyclus::CapacityConstraint<Material> fissc(std::max(fiss.quantity(), cyclus::CY_NEAR_ZERO),
                                              fissconv);
-  cyclus::CapacityConstraint<Material> fillc(std::max(fill.quantity(), 1e-10),
+  cyclus::CapacityConstraint<Material> fillc(std::max(fill.quantity(), cyclus::CY_NEAR_ZERO),
                                              fillconv);
-  cyclus::CapacityConstraint<Material> topupc(std::max(topup.quantity(), 1e-10),
+  cyclus::CapacityConstraint<Material> topupc(std::max(topup.quantity(), cyclus::CY_NEAR_ZERO),
                                               topupconv);
   port->AddConstraint(fillc);
   port->AddConstraint(fissc);
@@ -414,7 +414,7 @@ void FuelFab::GetMatlTrades(
     w_fiss = CosiWeight(fiss.Peek()->comp(), spectrum);
   }
 
-  std::vector<cyclus::Trade<cyclus::Material> >::const_iterator it;
+  std::vector<cyclus::Trade<Material> >::const_iterator it;
   double tot = 0;
   for (int i = 0; i < trades.size(); i++) {
     Material::Ptr tgt = trades[i].request->target();
@@ -514,7 +514,7 @@ extern "C" cyclus::Agent* ConstructFuelFab(cyclus::Context* ctx) {
 // are computed based on nuclide atom fractions, corresponding computed
 // material/mixing fractions will also be atom-based naturally and will need
 // to be converted to mass-based for actual material object mixing.
-double CosiWeight(cyclus::Composition::Ptr c, const std::string& spectrum) {
+double CosiWeight(Composition::Ptr c, const std::string& spectrum) {
   cyclus::CompMap cm = c->atom();
   cyclus::compmath::Normalize(&cm);
 

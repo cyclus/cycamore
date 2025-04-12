@@ -7,6 +7,8 @@
 #include "cyclus.h"
 #include "cycamore_version.h"
 
+#pragma cyclus exec from cyclus.system import CY_LARGE_DOUBLE, CY_LARGE_INT, CY_NEAR_ZERO
+
 namespace cycamore {
 
 class Context;
@@ -69,6 +71,12 @@ class Source
       GetMatlBids(cyclus::CommodMap<cyclus::Material>::type&
                   commod_requests);
 
+  virtual void EnterNotify();
+
+  /// --- Facility Members ---
+  /// perform module-specific tasks when entering the simulation
+  virtual void Build(cyclus::Agent* parent);
+
   virtual void GetMatlTrades(
     const std::vector< cyclus::Trade<cyclus::Material> >& trades,
     std::vector<std::pair<cyclus::Trade<cyclus::Material>,
@@ -99,28 +107,71 @@ class Source
            " Every trade decreases this value by the supplied material " \
            "quantity.  When it reaches zero, the source cannot provide any " \
            " more material.", \
-    "default": 1e299, \
+    "default": CY_LARGE_DOUBLE, \
     "uitype": "range", \
-    "range": [0.0, 1e299], \
+    "range": [0.0, CY_LARGE_DOUBLE], \
     "uilabel": "Initial Inventory", \
     "units": "kg", \
   }
   double inventory_size;
 
   #pragma cyclus var {  \
-    "default": 1e299, \
+    "default": CY_LARGE_DOUBLE, \
     "tooltip": "per time step throughput", \
     "units": "kg/(time step)", \
     "uilabel": "Maximum Throughput", \
     "uitype": "range", \
-    "range": [0.0, 1e299], \
+    "range": [0.0, CY_LARGE_DOUBLE], \
     "doc": "amount of commodity that can be supplied at each time step", \
   }
   double throughput;
   
+  #pragma cyclus var { \
+    "default": "unpackaged", \
+    "tooltip": "name of package to provide material in", \
+    "doc": "Name of package that this source provides. Offers will only be" \
+           "made in packagable quantities of material.", \
+    "uilabel": "Output Package Type", \
+    "uitype": "package", \
+  }
+  std::string package;
+
+  #pragma cyclus var { \
+    "default": "unrestricted", \
+    "tooltip": "name of transport unit to ship packages in", \
+    "doc": "Name of transport unit that this source uses to ship packages of " \
+           "material. Offers will only be made in shippable quantities of " \
+           "packages. Optional if packaging is used, but use of transport " \
+           "units requires packaging type to also be set", \
+    "uilabel": "Output Transport Unit Type", \
+    "uitype": "transportunit", \
+  }
+  std::string transport_unit;
+
+  #pragma cyclus var { \
+    "default": 0.0, \
+    "uilabel": "Geographical latitude in degrees as a double", \
+    "doc": "Latitude of the agent's geographical position. The value should " \
+           "be expressed in degrees as a double." \
+  }
+  double latitude;
+
+  #pragma cyclus var { \
+    "default": 0.0, \
+    "uilabel": "Geographical longitude in degrees as a double", \
+    "doc": "Longitude of the agent's geographical position. The value should " \
+           "be expressed in degrees as a double." \
+  }
+  double longitude;
+
+  #pragma cyclus var { \
+    "tooltip":"Material buffer"}
+  cyclus::toolkit::ResBuf<cyclus::Material> inventory;
+
+  void SetPackage();
+ 
   // Adds required header to add geographic coordinates to the archetype
   #include "toolkit/position.cycpp.h"
-
 };
 
 }  // namespace cycamore

@@ -30,7 +30,7 @@ a list of `contributed modules <http://fuelcycle.org/user/index.html#third-party
   the** `Users Guide <http://fuelcycle.org/user/index.html>`_,
 
 - **If you would like to contribute to Cycamore, please check our**
-  `Contribution Guidelines <https://github.com/cyclus/cyclus/blob/master/CONTRIBUTING.rst>`_.
+  `Contribution Guidelines <https://github.com/cyclus/cyclus/blob/main/CONTRIBUTING.rst>`_.
 
 
 .. contents:: Table of Contents
@@ -45,7 +45,7 @@ Cycamore's only dependency is the Cyclus Core.
 ====================   ==================
 Package                Minimum Version
 ====================   ==================
-`Cyclus`               1.4
+`Cyclus`               1.5
 ====================   ==================
 
 There are a number of ways to install the Cyclus core:
@@ -65,7 +65,7 @@ github is fairly straightforward:
 
 - Clone the Cyclus Repo: ``git clone https://github.com/cyclus/cycamore.git``,
 
-- to install Cyclus locally (in ``~/.local/``) just run: ``python install.py``
+- to install Cyclus locally (in ``~/.local/``) just run: ``python3 install.py``
   from cycamore folder,
 
 - finally, add the following Cyclus installation path (``~/.local/cyclus``) to
@@ -95,11 +95,11 @@ to contribute into Cyclus, please follow this procedure:
 
 #. Fork Cycamore repository,
 
-#. Create a working branch on you fork from the ``master`` branch,
+#. Create a working branch on you fork from the ``main`` branch,
 
 #. Implement your modification of the Cycamore source code,
 
-#. Submit a Pull request into ``cycamore/master`` branch,
+#. Submit a Pull request into ``cycamore/main`` branch,
 
 #. Wait for reviews/merge (the Puller cannot be the Merger).
 

@@ -9,6 +9,8 @@
 
 #include <boost/lexical_cast.hpp>
 
+using cyclus::Material;
+
 namespace cycamore {
 
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -44,8 +46,6 @@ std::string Enrichment::str() {
 
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 void Enrichment::Build(cyclus::Agent* parent) {
-  using cyclus::Material;
-
   Facility::Build(parent);
   if (initial_feed > 0) {
     inventory.Push(Material::Create(this, initial_feed,
@@ -68,7 +68,7 @@ void Enrichment::EnterNotify() {
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 void Enrichment::Tick() {
   current_swu_capacity = SwuCapacity();
-  
+
 }
 
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -84,11 +84,9 @@ void Enrichment::Tock() {
 }
 
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-std::set<cyclus::RequestPortfolio<cyclus::Material>::Ptr>
+std::set<cyclus::RequestPortfolio<Material>::Ptr>
 Enrichment::GetMatlRequests() {
-  using cyclus::Material;
   using cyclus::RequestPortfolio;
-  using cyclus::Request;
 
   std::set<RequestPortfolio<Material>::Ptr> ports;
   RequestPortfolio<Material>::Ptr port(new RequestPortfolio<Material>());
@@ -104,10 +102,10 @@ Enrichment::GetMatlRequests() {
 }
 
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-bool SortBids(cyclus::Bid<cyclus::Material>* i,
-              cyclus::Bid<cyclus::Material>* j) {
-  cyclus::Material::Ptr mat_i = i->offer();
-  cyclus::Material::Ptr mat_j = j->offer();
+bool SortBids(cyclus::Bid<Material>* i,
+              cyclus::Bid<Material>* j) {
+  Material::Ptr mat_i = i->offer();
+  Material::Ptr mat_j = j->offer();
 
   cyclus::toolkit::MatQuery mq_i(mat_i);
   cyclus::toolkit::MatQuery mq_j(mat_j);
@@ -119,16 +117,14 @@ bool SortBids(cyclus::Bid<cyclus::Material>* i,
 // Sort offers of input material to have higher preference for more
 //  U-235 content
 void Enrichment::AdjustMatlPrefs(
-    cyclus::PrefMap<cyclus::Material>::type& prefs) {
+    cyclus::PrefMap<Material>::type& prefs) {
   using cyclus::Bid;
-  using cyclus::Material;
-  using cyclus::Request;
 
   if (order_prefs == false) {
     return;
   }
 
-  cyclus::PrefMap<cyclus::Material>::type::iterator reqit;
+  cyclus::PrefMap<Material>::type::iterator reqit;
 
   // Loop over all requests
   for (reqit = prefs.begin(); reqit != prefs.end(); ++reqit) {
@@ -149,7 +145,7 @@ void Enrichment::AdjustMatlPrefs(
 
       // For any bids with U-235 qty=0, set pref to zero.
       if (!u235_mass) {
-        cyclus::Material::Ptr mat = bids_vector[bidit]->offer();
+        Material::Ptr mat = bids_vector[bidit]->offer();
         cyclus::toolkit::MatQuery mq(mat);
         if (mq.mass(922350000) == 0) {
           new_pref = -1;
@@ -164,25 +160,23 @@ void Enrichment::AdjustMatlPrefs(
 
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 void Enrichment::AcceptMatlTrades(
-    const std::vector<std::pair<cyclus::Trade<cyclus::Material>,
-                                cyclus::Material::Ptr> >& responses) {
+    const std::vector<std::pair<cyclus::Trade<Material>,
+                                Material::Ptr> >& responses) {
   // see
   // http://stackoverflow.com/questions/5181183/boostshared-ptr-and-inheritance
-  std::vector<std::pair<cyclus::Trade<cyclus::Material>,
-                        cyclus::Material::Ptr> >::const_iterator it;
+  std::vector<std::pair<cyclus::Trade<Material>,
+                        Material::Ptr> >::const_iterator it;
   for (it = responses.begin(); it != responses.end(); ++it) {
     AddMat_(it->second);
   }
 }
 
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-std::set<cyclus::BidPortfolio<cyclus::Material>::Ptr> Enrichment::GetMatlBids(
-    cyclus::CommodMap<cyclus::Material>::type& out_requests) {
-  using cyclus::Bid;
+std::set<cyclus::BidPortfolio<Material>::Ptr> Enrichment::GetMatlBids(
+    cyclus::CommodMap<Material>::type& out_requests) {
   using cyclus::BidPortfolio;
   using cyclus::CapacityConstraint;
   using cyclus::Converter;
-  using cyclus::Material;
   using cyclus::Request;
   using cyclus::toolkit::MatVec;
   using cyclus::toolkit::RecordTimeSeries;
@@ -253,7 +247,7 @@ std::set<cyclus::BidPortfolio<cyclus::Material>::Ptr> Enrichment::GetMatlBids(
 }
 
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-bool Enrichment::ValidReq(const cyclus::Material::Ptr mat) {
+bool Enrichment::ValidReq(const Material::Ptr mat) {
   cyclus::toolkit::MatQuery q(mat);
   double u235 = q.atom_frac(922350000);
   double u238 = q.atom_frac(922380000);
@@ -262,10 +256,9 @@ bool Enrichment::ValidReq(const cyclus::Material::Ptr mat) {
 
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 void Enrichment::GetMatlTrades(
-    const std::vector<cyclus::Trade<cyclus::Material> >& trades,
-    std::vector<std::pair<cyclus::Trade<cyclus::Material>,
-                          cyclus::Material::Ptr> >& responses) {
-  using cyclus::Material;
+    const std::vector<cyclus::Trade<Material> >& trades,
+    std::vector<std::pair<cyclus::Trade<Material>,
+                          Material::Ptr> >& responses) {
   using cyclus::Trade;
 
   intra_timestep_swu_ = 0;
@@ -306,7 +299,7 @@ void Enrichment::GetMatlTrades(
 
 }
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-void Enrichment::AddMat_(cyclus::Material::Ptr mat) {
+void Enrichment::AddMat_(Material::Ptr mat) {
   // Elements and isotopes other than U-235, U-238 are sent directly to tails
   cyclus::CompMap cm = mat->comp()->atom();
   bool extra_u = false;
@@ -349,26 +342,24 @@ void Enrichment::AddMat_(cyclus::Material::Ptr mat) {
 }
 
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-cyclus::Material::Ptr Enrichment::Request_() {
+Material::Ptr Enrichment::Request_() {
   double qty = std::max(0.0, inventory.capacity() - inventory.quantity());
-  return cyclus::Material::CreateUntracked(qty,
+  return Material::CreateUntracked(qty,
                                            context()->GetRecipe(feed_recipe));
 }
 
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-cyclus::Material::Ptr Enrichment::Offer_(cyclus::Material::Ptr mat) {
+Material::Ptr Enrichment::Offer_(Material::Ptr mat) {
   cyclus::toolkit::MatQuery q(mat);
   cyclus::CompMap comp;
   comp[922350000] = q.atom_frac(922350000);
   comp[922380000] = q.atom_frac(922380000);
-  return cyclus::Material::CreateUntracked(
+  return Material::CreateUntracked(
       mat->quantity(), cyclus::Composition::CreateFromAtom(comp));
 }
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-cyclus::Material::Ptr Enrichment::Enrich_(cyclus::Material::Ptr mat,
+Material::Ptr Enrichment::Enrich_(Material::Ptr mat,
                                           double qty) {
-  using cyclus::Material;
-  using cyclus::ResCast;
   using cyclus::toolkit::Assays;
   using cyclus::toolkit::UraniumAssayMass;
   using cyclus::toolkit::SwuRequired;
@@ -463,13 +454,11 @@ void Enrichment::RecordEnrichment_(double natural_u, double swu) {
 }
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 double Enrichment::FeedAssay() {
-  using cyclus::Material;
-
   if (inventory.empty()) {
     return 0;
   }
   double pop_qty = inventory.quantity();
-  cyclus::Material::Ptr fission_matl =
+  Material::Ptr fission_matl =
       inventory.Pop(pop_qty, cyclus::eps_rsrc());
   inventory.Push(fission_matl);
   return cyclus::toolkit::UraniumAssayMass(fission_matl);

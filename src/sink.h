@@ -9,6 +9,8 @@
 #include "cyclus.h"
 #include "cycamore_version.h"
 
+#pragma cyclus exec from cyclus.system import CY_LARGE_DOUBLE, CY_LARGE_INT, CY_NEAR_ZERO
+
 namespace cycamore {
 
 class Context;
@@ -41,7 +43,7 @@ class Sink : public cyclus::Facility {
   virtual std::string str();
 
   virtual void EnterNotify();
-  
+
   virtual void Tick();
 
   virtual void Tock();
@@ -67,6 +69,12 @@ class Sink : public cyclus::Facility {
       const std::vector< std::pair<cyclus::Trade<cyclus::Product>,
       cyclus::Product::Ptr> >& responses);
 
+  /// @brief SinkFacilities update request amount using random behavior
+  virtual void SetRequestAmt();
+
+  /// @brief SinkFacilities update request time using random behavior
+  virtual void SetNextBuyTime();
+
   ///  add a commodity to the set of input commodities
   ///  @param name the commodity name
   inline void AddCommodity(std::string name) { in_commods.push_back(name); }
@@ -85,7 +93,7 @@ class Sink : public cyclus::Facility {
   inline double InventorySize() const { return inventory.quantity(); }
 
   /// determines the amount to request
-  inline double RequestAmt() const {
+  inline double SpaceAvailable() const {
     return std::min(capacity, std::max(0.0, inventory.space()));
   }
 
@@ -105,6 +113,8 @@ class Sink : public cyclus::Facility {
       input_commodity_preferences() const { return in_commod_prefs; }
 
  private:
+  double requestAmt;
+  int nextBuyTime;
   /// all facilities must have at least one input commodity
   #pragma cyclus var {"tooltip": "input commodities", \
                       "doc": "commodities that the sink facility accepts", \
@@ -116,7 +126,7 @@ class Sink : public cyclus::Facility {
                       "doc":"preferences for each of the given commodities, in the same order."\
                       "Defauts to 1 if unspecified",\
                       "uilabel":"In Commody Preferences", \
-                      "range": [None, [1e-299, 1e299]], \
+                      "range": [None, [CY_NEAR_ZERO, CY_LARGE_DOUBLE]], \
                       "uitype":["oneormore", "range"]}
   std::vector<double> in_commod_prefs;
 
@@ -130,20 +140,20 @@ class Sink : public cyclus::Facility {
   std::string recipe_name;
 
   /// max inventory size
-  #pragma cyclus var {"default": 1e299, \
+  #pragma cyclus var {"default": CY_LARGE_DOUBLE, \
                       "tooltip": "sink maximum inventory size", \
                       "uilabel": "Maximum Inventory", \
                       "uitype": "range", \
-                      "range": [0.0, 1e299], \
+                      "range": [0.0, CY_LARGE_DOUBLE], \
                       "doc": "total maximum inventory size of sink facility"}
   double max_inv_size;
 
   /// monthly acceptance capacity
-  #pragma cyclus var {"default": 1e299, \
+  #pragma cyclus var {"default": CY_LARGE_DOUBLE, \
                       "tooltip": "sink capacity", \
                       "uilabel": "Maximum Throughput", \
                       "uitype": "range", \
-                      "range": [0.0, 1e299], \
+                      "range": [0.0, CY_LARGE_DOUBLE], \
                       "doc": "capacity the sink facility can " \
                              "accept at each time step"}
   double capacity;
@@ -151,6 +161,111 @@ class Sink : public cyclus::Facility {
   /// this facility holds material in storage.
   #pragma cyclus var {'capacity': 'max_inv_size'}
   cyclus::toolkit::ResBuf<cyclus::Resource> inventory;
+
+  /// random status (size of request)
+  #pragma cyclus var {"default": "None", \
+                      "tooltip": "type of random behavior when setting the " \
+                      "size of the request", \
+                      "uitype": "combobox", \
+                      "uilabel": "Random Size", \
+                      "categorical": ["None", "UniformReal", "UniformInt", "NormalReal", "NormalInt"], \
+                      "doc": "type of random behavior to use. Default None, " \
+                      "other options are 'UniformReal', 'UniformInt', " \
+                      "'NormalReal', and 'NormalInt'"}
+  std::string random_size_type;
+
+  // random size mean (as a fraction of available space)
+  #pragma cyclus var {"default": 1.0, \
+                      "tooltip": "fraction of available space to determine the mean", \
+                      "uilabel": "Random Size Mean", \
+                      "uitype": "range", \
+                      "range": [0.0, CY_LARGE_DOUBLE], \
+                      "doc": "When a normal distribution is used to determine the " \
+                             "size of the request, this is the fraction of available " \
+                             "space to use as the mean. Default 1.0. Note " \
+                             "that values significantly above 1 without a " \
+                             "correspondingly large std dev may result in " \
+                             "inefficient use of the random number generator."}
+  double random_size_mean;
+
+  // random size std dev (as a fraction of available space)
+  #pragma cyclus var {"default": 0.1, \
+                      "tooltip": "fraction of available space to determine the std dev", \
+                      "uilabel": "Random Size Std Dev", \
+                      "uitype": "range", \
+                      "range": [0.0, CY_LARGE_DOUBLE], \
+                      "doc": "When a normal distribution is used to determine the " \
+                             "size of the request, this is the fraction of available " \
+                             "space to use as the standard deviation. Default 0.1"}
+  double random_size_stddev;
+
+  // random status (frequencing/timing of request)
+  #pragma cyclus var {"default": "None", \
+                      "tooltip": "type of random behavior when setting the " \
+                      "timing of the request", \
+                      "uitype": "combobox", \
+                      "uilabel": "Random Timing", \
+                      "categorical": ["None", "UniformInt", "NormalInt"], \
+                      "doc": "type of random behavior to use. Default None, " \
+                      "other options are, 'UniformInt', and 'NormalInt'. " \
+                      "When using 'UniformInt', also set "\
+                      "'random_frequency_min' and 'random_frequency_max'. " \
+                      "For 'NormalInt', set 'random_frequency_mean' and " \
+                      "'random_fequency_stddev', min and max values are " \
+                      "optional. "}
+  std::string random_frequency_type;
+
+  // random frequency mean 
+  #pragma cyclus var {"default": 1, \
+                      "tooltip": "mean of the random frequency", \
+                      "uilabel": "Random Frequency Mean", \
+                      "uitype": "range", \
+                      "range": [0.0, CY_LARGE_DOUBLE], \
+                      "doc": "When a normal distribution is used to determine the " \
+                             "frequency of the request, this is the mean. Default 1"}
+  double random_frequency_mean;
+
+  // random frequency std dev
+  #pragma cyclus var {"default": 1, \
+                      "tooltip": "std dev of the random frequency", \
+                      "uilabel": "Random Frequency Std Dev", \
+                      "uitype": "range", \
+                      "range": [0.0, CY_LARGE_DOUBLE], \
+                      "doc": "When a normal distribution is used to determine the " \
+                             "frequency of the request, this is the standard deviation. Default 1"}
+  double random_frequency_stddev;
+
+  // random frequency lower bound
+  #pragma cyclus var {"default": 1, \
+                      "tooltip": "lower bound of the random frequency", \
+                      "uilabel": "Random Frequency Lower Bound", \
+                      "uitype": "range", \
+                      "range": [1, CY_LARGE_INT], \
+                      "doc": "When a random distribution is used to determine the " \
+                             "frequency of the request, this is the lower bound. Default 1"}
+  int random_frequency_min;
+
+  // random frequency upper bound
+  #pragma cyclus var {"default": CY_LARGE_INT, \
+                      "tooltip": "upper bound of the random frequency", \
+                      "uilabel": "Random Frequency Upper Bound", \
+                      "uitype": "range", \
+                      "range": [1, CY_LARGE_INT], \
+                      "doc": "When a random distribution is used to determine the " \
+                             f"frequency of the request, this is the upper bound. Default {CY_LARGE_INT} (CY_LARGE_INT)"}
+  int random_frequency_max;
+
+  #pragma cyclus var { \
+    "default": True, \
+    "tooltip": "Whether to persist packaging in the sink.", \
+    "doc": "Boolean value about whether to keep packaging. If true, " \
+           "packaging will not be stripped upon acceptance into the " \
+           "sink. If false, package type will be stripped immediately " \
+           "upon acceptance. Has no effect if the incoming material is not " \
+           "packaged.", \
+    "uilabel": "Keep Packaging", \
+    "uitype": "bool"}
+  bool keep_packaging;
 
   // Adds required header to add geographic coordinates to the archetype
   #include "toolkit/position.cycpp.h"

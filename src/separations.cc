@@ -4,10 +4,7 @@ using cyclus::Material;
 using cyclus::Composition;
 using cyclus::toolkit::ResBuf;
 using cyclus::toolkit::MatVec;
-using cyclus::KeyError;
-using cyclus::ValueError;
 using cyclus::Request;
-using cyclus::CompMap;
 
 namespace cycamore {
 
@@ -141,7 +138,7 @@ void Separations::Tick() {
           mat->ExtractComp(qty * maxfrac, m->comp()));
       Record("Separated", qty * maxfrac, name);
     }
-    cyclus::toolkit::RecordTimeSeries<double>("supply"+name, this, 
+    cyclus::toolkit::RecordTimeSeries<double>("supply"+name, this,
                                               streambufs[name].quantity());
   }
 
@@ -167,6 +164,8 @@ void Separations::Tick() {
 // Note that this returns an untracked material that should just be used for
 // its composition and qty - not in any real inventories, etc.
 Material::Ptr SepMaterial(std::map<int, double> effs, Material::Ptr mat) {
+  using cyclus::CompMap;
+
   CompMap cm = mat->comp()->mass();
   cyclus::compmath::Normalize(&cm, mat->quantity());
   double tot_qty = 0;
@@ -225,7 +224,7 @@ Separations::GetMatlRequests() {
     m = Material::CreateUntracked(feed.space(), c);
   }
 
-  std::vector<cyclus::Request<Material>*> reqs;
+  std::vector<Request<Material>*> reqs;
   for (int i = 0; i < feed_commods.size(); i++) {
     std::string commod = feed_commods[i];
     double pref = feed_commod_prefs[i];
@@ -243,7 +242,7 @@ void Separations::GetMatlTrades(
         responses) {
   using cyclus::Trade;
 
-  std::vector<cyclus::Trade<cyclus::Material> >::const_iterator it;
+  std::vector<Trade<Material> >::const_iterator it;
   for (int i = 0; i < trades.size(); i++) {
     std::string commod = trades[i].request->commodity();
     if (commod == leftover_commod) {
@@ -255,7 +254,7 @@ void Separations::GetMatlTrades(
       Material::Ptr m = streambufs[commod].Pop(amt, cyclus::eps_rsrc());
       responses.push_back(std::make_pair(trades[i], m));
     } else {
-      throw ValueError("invalid commodity " + commod +
+      throw cyclus::ValueError("invalid commodity " + commod +
                        " on trade matched to prototype " + prototype());
     }
   }
@@ -264,8 +263,8 @@ void Separations::GetMatlTrades(
 void Separations::AcceptMatlTrades(
     const std::vector<std::pair<cyclus::Trade<Material>, Material::Ptr> >&
         responses) {
-  std::vector<std::pair<cyclus::Trade<cyclus::Material>,
-                        cyclus::Material::Ptr> >::const_iterator trade;
+  std::vector<std::pair<cyclus::Trade<Material>,
+                        Material::Ptr> >::const_iterator trade;
 
   for (trade = responses.begin(); trade != responses.end(); ++trade) {
     feed.Push(trade->second);

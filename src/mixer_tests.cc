@@ -73,11 +73,11 @@ class MixerTest : public ::testing::Test {
       in_com.insert(std::pair<std::string, double>("in_c3", 1));
       in_commods.push_back(in_com);
     }
-    
+
     std::vector<double> in_ratios = {1, 1, 1};
     std::vector<double> in_caps = {30, 20, 10};
     SetIn_stream(in_commods, in_ratios,  in_caps);
-  
+
     SetOutStream_comds("out_com");
   }
   virtual void TearDown() { delete mf_facility_; }
@@ -98,7 +98,7 @@ class MixerTest : public ::testing::Test {
 
   void SetIn_stream(t_instream streams) {
     mf_facility_->streams_ = streams;
-    
+
     in_frac.clear();
     in_cap.clear();
     for (int i = 0; i < streams.size(); i++) {
@@ -176,7 +176,7 @@ class MixerTest : public ::testing::Test {
 // Checking that ratios correctly default to 1/N.
 TEST_F(MixerTest, StreamDefaultRatio) {
   SetOutStream_capacity(50);
-  SetThroughput(1e200);
+  SetThroughput(cyclus::CY_LARGE_DOUBLE);
   mf_facility_->EnterNotify();
 
   double ext_val = 1.0 / 3.0;
@@ -198,7 +198,7 @@ TEST_F(MixerTest, StreamRatio) {
   SetStream_ratio(in_frac_);
   SetStream_capacity(in_cap_);
   SetOutStream_capacity(50);
-  SetThroughput(1e200);
+  SetThroughput(cyclus::CY_LARGE_DOUBLE);
   mf_facility_->EnterNotify();
 
   std::vector<double> strm_ratio_ = GetStream_ratio();
@@ -213,7 +213,7 @@ TEST_F(MixerTest, StreamRatio) {
   // Checking renormalisation when sum of ratio is smaller tham 1.
   in_frac_ = {0.1, 0.2, 0.5};
   SetOutStream_capacity(50);
-  SetThroughput(1e200);
+  SetThroughput(cyclus::CY_LARGE_DOUBLE);
 
   SetStream_ratio(in_frac_);
   mf_facility_->EnterNotify();
@@ -237,7 +237,7 @@ TEST_F(MixerTest, MixingComposition) {
 
   SetOutStream_capacity(50);
 
-  SetThroughput(1e200);
+  SetThroughput(cyclus::CY_LARGE_DOUBLE);
 
   std::vector<Material::Ptr> mat;
   mat.push_back(Material::CreateUntracked(in_cap[0], c_natu()));
@@ -376,7 +376,7 @@ TEST(MixerTests, MultipleFissStreams) {
   int id = sim.Run();
 
   // Checking the number of transaction is as expected 3.
-  cyclus::QueryResult qr = sim.db().Query("Transactions", NULL);
+  QueryResult qr = sim.db().Query("Transactions", NULL);
   EXPECT_EQ(3, qr.rows.size());
 
   // Checking that all input stream get one transaction each.
@@ -454,7 +454,7 @@ TEST(MixerTests, CompleteMixingProcess) {
   // Checking that all input stream get one transaction each.
   std::vector<cyclus::Cond> conds;
   conds.push_back(cyclus::Cond("Commodity", "==", std::string("mixedstream")));
-  cyclus::QueryResult qr = sim.db().Query("Transactions", &conds);
+  QueryResult qr = sim.db().Query("Transactions", &conds);
   EXPECT_EQ(1, qr.rows.size());
 
   cyclus::Material::Ptr m = sim.GetMaterial(qr.GetVal<int>("ResourceId"));

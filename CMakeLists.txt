@@ -1,26 +1,19 @@
-CMAKE_MINIMUM_REQUIRED(VERSION 2.8)
-#taken from http://geant4.cern.ch/support/source/geant4/CMakeLists.txt
-IF(${CMAKE_SOURCE_DIR} STREQUAL ${CMAKE_BINARY_DIR})
-    message(STATUS "Cycamore requires an out-of-source build.")
-    message(STATUS "Please remove these files from ${CMAKE_BINARY_DIR} first:")
-    message(STATUS "CMakeCache.txt")
-    message(STATUS "CMakeFiles")
-    message(STATUS "Once these files are removed, create a separate directory")
-    message(STATUS "and run CMake from there")
-    message(FATAL_ERROR "in-source build detected")
-ENDIF()
+SET(CYCAMORE_SOURCE_DIR ${CMAKE_SOURCE_DIR})
+# Tell CMake where the modules are
+LIST(APPEND CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${CMAKE_INSTALL_PREFIX}/share/cyclus/cmake" ${CYCAMORE_SOURCE_DIR}/cmake)
+MESSAGE("--CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH}")
+
+INCLUDE(CyclusBuildSetup)
+
+cyclus_minimum_cmake_version(MINIMUM_CMAKE_VERSION)
+CMAKE_MINIMUM_REQUIRED(VERSION ${MINIMUM_CMAKE_VERSION})
+
+cyclus_require_out_of_source_build()
 
 # This project name is cycamore.
-PROJECT(CYCAMORE)
+PROJECT(CYCAMORE VERSION 1.6.0)
 
-# check for and enable c++11 support (required for cyclus)
-INCLUDE(CheckCXXCompilerFlag)
-CHECK_CXX_COMPILER_FLAG("-std=c++11" COMPILER_SUPPORTS_CXX11)
-IF(COMPILER_SUPPORTS_CXX11)
-    SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++11")
-ELSE()
-    MESSAGE(STATUS "The compiler ${CMAKE_CXX_COMPILER} has no C++11 support. Please use a different C++ compiler.")
-ENDIF()
+cyclus_require_cxx_support()
 
 # quiets fortify_source warnings when not compiling with optimizations
 # in linux distros where compilers were compiled with fortify_source enabled by
@@ -33,9 +26,6 @@ ENDIF()
 # no overflow warnings because of silly coin-ness
 SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wno-overflow")
 
-# Direct any out-of-source builds to this directory
-SET(CYCAMORE_SOURCE_DIR ${CMAKE_SOURCE_DIR})
-
 IF(NOT CYCLUS_DOC_ONLY)
     # Direct any binary installation paths to this directory
     SET(CYCAMORE_BINARY_DIR ${CMAKE_BINARY_DIR})
@@ -44,48 +34,11 @@ IF(NOT CYCLUS_DOC_ONLY)
     SET(BUILD_SHARED_LIBS true)
 
     # Setup build locations.
-    IF(NOT CMAKE_RUNTIME_OUTPUT_DIRECTORY)
-        SET(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CYCAMORE_BINARY_DIR}/bin)
-    endif()
-    IF(NOT CMAKE_LIBRARY_OUTPUT_DIRECTORY)
-        SET(CMAKE_LIBRARY_OUTPUT_DIRECTORY ${CYCAMORE_BINARY_DIR}/lib)
-    endif()
-    IF(NOT CMAKE_ARCHIVE_OUTPUT_DIRECTORY)
-        SET(CMAKE_ARCHIVE_OUTPUT_DIRECTORY ${CYCAMORE_BINARY_DIR}/lib)
-    ENDIF()
+    cyclus_setup_build_locations(${CYCAMORE_BINARY_DIR})
 
     SET(CYCAMORE_EXECUTABLE_DIR ${CMAKE_RUNTIME_OUTPUT_DIRECTORY})
 
-    # use, i.e. don't skip the full RPATH for the build tree
-    SET(CMAKE_SKIP_BUILD_RPATH  FALSE)
-
-    # when building, don't use the install RPATH already
-    # (but later on when installing)
-    SET(CMAKE_BUILD_WITH_INSTALL_RPATH FALSE)
-
-    SET(CMAKE_INSTALL_RPATH "${CMAKE_INSTALL_PREFIX}/lib:${CMAKE_INSTALL_PREFIX}/lib/cyclus")
-
-    # add the automatically determined parts of the RPATH
-    # which point to directories outside the build tree to the install RPATH
-    SET(CMAKE_INSTALL_RPATH_USE_LINK_PATH TRUE)
-
-    # the RPATH to be used when installing, but only if it's not a system directory
-    LIST(FIND CMAKE_PLATFORM_IMPLICIT_LINK_DIRECTORIES "${CMAKE_INSTALL_PREFIX}/lib" isSystemDir)
-    IF("${isSystemDir}" STREQUAL "-1")
-        SET(CMAKE_INSTALL_RPATH "${CMAKE_INSTALL_PREFIX}/lib:${CMAKE_INSTALL_PREFIX}/lib/cyclus")
-        GET_FILENAME_COMPONENT(cxxCompilerRoot ${CMAKE_CXX_COMPILER} DIRECTORY)
-        GET_FILENAME_COMPONENT(cxxCompilerRoot ${cxxCompilerRoot} DIRECTORY)
-        IF (NOT "${CMAKE_INSTALL_RPATH}" STREQUAL "${cxxCompilerRoot}")
-            SET(CMAKE_INSTALL_RPATH "${CMAKE_INSTALL_RPATH}:${cxxCompilerRoot}/lib:${cxxCompilerRoot}/lib/cyclus")
-        ENDIF (NOT "${CMAKE_INSTALL_RPATH}" STREQUAL "${cxxCompilerRoot}")
-        SET(CMAKE_BUILD_RPATH "${CMAKE_INSTALL_RPATH}")
-    ENDIF("${isSystemDir}" STREQUAL "-1")
-    MESSAGE("-- CMAKE_INSTALL_RPATH: ${CMAKE_INSTALL_RPATH}")
-
-    # Tell CMake where the modules are
-    SET(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${CMAKE_INSTALL_PREFIX}/share/cyclus/cmake")
-    SET(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} ${CYCAMORE_SOURCE_DIR}/cmake)
-    MESSAGE("--CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH}")
+    cyclus_set_rpath()
 
     # get dependency hints
     if (NOT DEPS_ROOT_DIR)
@@ -102,6 +55,9 @@ IF(NOT CYCLUS_DOC_ONLY)
     MESSAGE("-- Dependency Library Hints (DEPS_LIB_HINTS): ${DEPS_LIB_HINTS}")
     MESSAGE("-- Dependency Include Hints (DEPS_INCLUDE_HINTS): ${DEPS_INCLUDE_HINTS}")
 
+    # Search pkg-config utility first
+    FIND_PACKAGE(PkgConfig REQUIRED)
+
     # Find cyclus
     FIND_PACKAGE(Cyclus REQUIRED)
     SET(
@@ -113,17 +69,6 @@ IF(NOT CYCLUS_DOC_ONLY)
 
     # Include macros installed with cyclus core
     INCLUDE(UseCyclus)
-
-    # Find LibXML++ and dependencies
-    FIND_PACKAGE(LibXML++)
-    IF(NOT LibXML++_LIBRARIES)
-        FIND_LIBRARY(LibXML++ REQUIRED ${DEPS_HINTS})
-    ENDIF()
-    SET(CYCAMORE_INCLUDE_DIRS ${CYCAMORE_INCLUDE_DIRS} ${LibXML++_INCLUDE_DIR} ${Glibmm_INCLUDE_DIRS} ${LibXML++Config_INCLUDE_DIR})
-    SET(LIBS ${LIBS} ${LibXML++_LIBRARIES})
-    MESSAGE("-- LIBS: ${LIBS}")
-
-    MESSAGE("-- LD_LIBRARY_PATH: $ENV{LD_LIBRARY_PATH}")
 
     # Include the boost header files and the program_options library
     # Please be sure to use Boost rather than BOOST.
@@ -148,6 +93,7 @@ IF(NOT CYCLUS_DOC_ONLY)
     MESSAGE("--    Boost Filesystem location: ${Boost_FILESYSTEM_LIBRARY}")
     SET(LIBS ${LIBS} ${Boost_SERIALIZATION_LIBRARY})
     MESSAGE("--    Boost Serialization location: ${Boost_SERIALIZATION_LIBRARY}")
+    ADD_DEFINITIONS(-DBOOST_VERSION_MINOR=${Boost_VERSION_MINOR})
 
     # find lapack and link to it
     # note there is no include directory variable:
@@ -172,20 +118,23 @@ IF(NOT CYCLUS_DOC_ONLY)
     MESSAGE("--    HDF5 High Level Libraries: ${HDF5_C_HL_LIBRARIES}")
 
     # find coin and link to it
-    FIND_PACKAGE(COIN)
-    if(COIN_FOUND)
-      SET(CYCAMORE_INCLUDE_DIRS ${CYCAMORE_INCLUDE_DIRS} ${COIN_INCLUDE_DIRS})
-      SET(LIBS ${LIBS} ${COIN_LIBRARIES})
+    if(DEFAULT_ALLOW_MILPS)
+        FIND_PACKAGE(COIN REQUIRED)
+        if(COIN_FOUND)
+        SET(CYCAMORE_INCLUDE_DIRS ${CYCAMORE_INCLUDE_DIRS} ${COIN_INCLUDE_DIRS})
+        SET(LIBS ${LIBS} ${COIN_LIBRARIES})
+        endif()
+        MESSAGE("--    COIN Root: ${COIN_ROOT}")
+        MESSAGE("--    COIN Include directories: ${COIN_INCLUDE_DIRS}")
+        MESSAGE("--    COIN Libraries: ${COIN_LIBRARIES}")
     endif()
-    MESSAGE("--    COIN Root: ${COIN_ROOT}")
-    MESSAGE("--    COIN Include directories: ${COIN_INCLUDE_DIRS}")
-    MESSAGE("--    COIN Libraries: ${COIN_LIBRARIES}")
 
-    FIND_PACKAGE( Sqlite3 REQUIRED )
-    SET(CYCAMORE_INCLUDE_DIRS ${CYCAMORE_INCLUDE_DIRS} ${SQLITE3_INCLUDE_DIR})
-    SET(LIBS ${LIBS} ${SQLITE3_LIBRARIES})
-    MESSAGE("--    SQLITE3 Include directories: ${SQLITE3_INCLUDE_DIR}")
-    MESSAGE("--    SQLITE3 Libraries: ${SQLITE3_LIBRARIES}")
+    # find SQLite
+    FIND_PACKAGE( SQLite3 REQUIRED )
+    SET(CYCAMORE_INCLUDE_DIRS ${CYCAMORE_INCLUDE_DIRS} ${SQLite3_INCLUDE_DIR})
+    SET(LIBS ${LIBS} ${SQLite3_LIBRARIES})
+    MESSAGE("--    SQLite3 Include directories: ${SQLite3_INCLUDE_DIR}")
+    MESSAGE("--    SQLite3 Libraries: ${SQLite_LIBRARIES}")
 
     #
     # Some optional libraries to link in, as availble. Required for conda.
@@ -247,13 +196,13 @@ IF(NOT CYCLUS_DOC_ONLY)
     ENDIF(ICUUC_LIBRARIES)
 
     # Python
-    find_package(PythonInterp)
-    message("-- PYTHON_EXECUTABLE: ${PYTHON_EXECUTABLE}")
-    find_package(PythonLibs)
-    MESSAGE("-- Found Python Libraries (optional): ${PYTHON_LIBRARIES}")
-    IF(PYTHON_LIBRARIES)
-        set(LIBS ${LIBS} ${PYTHON_LIBRARIES})
-    ENDIF(PYTHON_LIBRARIES)
+    find_package(Python3 COMPONENTS Interpreter Development)
+    message("-- PYTHON_EXECUTABLE: ${Python3_EXECUTABLE}")
+    MESSAGE("-- Found Python Libraries (optional): ${Python3_LIBRARIES}")
+    IF(Python3_FOUND)
+        set(LIBS ${LIBS} ${Python3_LIBRARIES})
+        message("libs set with ${Python3_LIBRARIES}")
+    ENDIF(Python3_FOUND)
 
     # include all the directories we just found
     INCLUDE_DIRECTORIES(${CYCAMORE_INCLUDE_DIRS})
@@ -342,12 +291,12 @@ IF(NOT CYCLUS_DOC_ONLY)
     SET(CPACK_RESOURCE_FILE_LICENSE "${CMAKE_CURRENT_SOURCE_DIR}/LICENSE.rst")
 
     # Version
-    SET(CPACK_PACKAGE_VERSION_MAJOR "1")
-    SET(CPACK_PACKAGE_VERSION_MINOR "4")
-    SET(CPACK_PACKAGE_VERSION_PATCH "0")
+    SET(CPACK_PACKAGE_VERSION_MAJOR "${CMAKE_PROJECT_VERSION_MAJOR}")
+    SET(CPACK_PACKAGE_VERSION_MINOR "${CMAKE_PROJECT_VERSION_MINOR}")
+    SET(CPACK_PACKAGE_VERSION_PATCH "${CMAKE_PROJECT_VERSION_PATCH}")
 
     # Dependencies
-    SET(CPACK_DEBIAN_PACKAGE_DEPENDS "cyclus (>= 1.4.0)")
+    SET(CPACK_DEBIAN_PACKAGE_DEPENDS "cyclus (>= 1.5.5)")
     MESSAGE("CPACK_DEBIAN_PACKAGE_DEPENDS ${CPACK_DEBIAN_PACKAGE_DEPENDS}")
 
     # Names
@@ -355,13 +304,6 @@ IF(NOT CYCLUS_DOC_ONLY)
     SET(CPACK_PACKAGE_INSTALL_DIRECTORY "cycamore_${CPACK_PACKAGE_VERSION_MAJOR}")
     SET(CPACK_PACKAGE_INSTALL_DIRECTORY "${CPACK_PACKAGE_INSTALL_DIRECTORY}.${CPACK_PACKAGE_VERSION_MINOR}")
     SET(CPACK_PACKAGE_INSTALL_DIRECTORY "${CPACK_PACKAGE_INSTALL_DIRECTORY}.${CPACK_PACKAGE_VERSION_PATCH}")
-
-    SET(CPACK_PACKAGE_FILE_NAME "${CPACK_PACKAGE_NAME}")
-    SET(CPACK_PACKAGE_FILE_NAME "${CPACK_PACKAGE_FILE_NAME}_${CPACK_PACKAGE_VERSION_MAJOR}")
-    SET(CPACK_PACKAGE_FILE_NAME "${CPACK_PACKAGE_FILE_NAME}.${CPACK_PACKAGE_VERSION_MINOR}")
-    SET(CPACK_PACKAGE_FILE_NAME "${CPACK_PACKAGE_FILE_NAME}.${CPACK_PACKAGE_VERSION_PATCH}")
-    SET(CPACK_PACKAGE_FILE_NAME "${CPACK_PACKAGE_FILE_NAME}_${CPACK_HASH_NAME}")
-    SET(CPACK_PACKAGE_FILE_NAME "${CPACK_PACKAGE_FILE_NAME}_${CPACK_SYSTEM_NAME}")
 
     # Configuration
     SET(CPACK_INCLUDE_TOPLEVEL_DIRECTORY "1")

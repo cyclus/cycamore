@@ -4,6 +4,8 @@
 #include "cyclus.h"
 #include "cycamore_version.h"
 
+#pragma cyclus exec from cyclus.system import CY_LARGE_DOUBLE, CY_LARGE_INT, CY_NEAR_ZERO
+
 namespace cycamore {
 
 /// SepMaterial returns a material object that represents the composition and
@@ -145,9 +147,9 @@ class Separations : public cyclus::Facility {
     "doc" : "Maximum quantity of feed material that can be processed per time "\
             "step.", \
     "uilabel": "Maximum Separations Throughput", \
-    "default": 1e299, \
+    "default": CY_LARGE_DOUBLE, \
     "uitype": "range", \
-    "range": [0.0, 1e299], \
+    "range": [0.0, CY_LARGE_DOUBLE], \
     "units": "kg/(time step)", \
   }
   double throughput;
@@ -168,9 +170,9 @@ class Separations : public cyclus::Facility {
             " If full, the facility halts operation until space becomes " \
             "available.", \
     "uilabel": "Maximum Leftover Inventory", \
-    "default": 1e299, \
+    "default": CY_LARGE_DOUBLE, \
     "uitype": "range", \
-    "range": [0.0, 1e299], \
+    "range": [0.0, CY_LARGE_DOUBLE], \
     "units": "kg", \
   }
   double leftoverbuf_size;

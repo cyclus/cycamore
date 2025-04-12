@@ -10,7 +10,6 @@ using cyclus::CompMap;
 using cyclus::Material;
 using cyclus::QueryResult;
 using cyclus::Cond;
-using cyclus::toolkit::MatQuery;
 
 namespace cycamore {
 namespace fuelfabtests {
@@ -185,7 +184,7 @@ TEST(FuelFabTests, ValidWeights) {
 
 // request (and receive) a specific recipe for fissile stream correctly.
 TEST(FuelFabTests, FissRecipe) {
-  std::string config = 
+  std::string config =
      "<fill_commods> <val>dummy</val> </fill_commods>"
      "<fill_recipe>natu</fill_recipe>"
      "<fill_size>1</fill_size>"
@@ -220,7 +219,7 @@ TEST(FuelFabTests, FissRecipe) {
 // multiple fissile streams can be correctly requested and used as
 // fissile material inventory.
 TEST(FuelFabTests, MultipleFissStreams) {
-  std::string config = 
+  std::string config =
      "<fill_commods> <val>dummy</val> </fill_commods>"
      "<fill_recipe>natu</fill_recipe>"
      "<fill_size>1</fill_size>"
@@ -261,7 +260,7 @@ TEST(FuelFabTests, MultipleFissStreams) {
 
 // fissile stream preferences can be specified.
 TEST(FuelFabTests, FissStreamPrefs) {
-  std::string config = 
+  std::string config =
      "<fill_commods> <val>dummy</val> </fill_commods>"
      "<fill_recipe>natu</fill_recipe>"
      "<fill_size>1</fill_size>"
@@ -302,7 +301,7 @@ TEST(FuelFabTests, FissStreamPrefs) {
 
 // zero throughput must not result in a zero capacity constraint excception.
 TEST(FuelFabTests, ZeroThroughput) {
-  std::string config = 
+  std::string config =
      "<fill_commods> <val>natu</val> </fill_commods>"
      "<fill_recipe>natu</fill_recipe>"
      "<fill_size>3.9</fill_size>"
@@ -335,7 +334,7 @@ TEST(FuelFabTests, ZeroThroughput) {
 // filled as expected. Inventory size constraints are properly
 // enforced after they are full.
 TEST(FuelFabTests, FillAllInventories) {
-  std::string config = 
+  std::string config =
      "<fill_commods> <val>natu</val> </fill_commods>"
      "<fill_recipe>natu</fill_recipe>"
      "<fill_size>3.9</fill_size>"
@@ -385,7 +384,7 @@ TEST(FuelFabTests, FillAllInventories) {
 // Meet a request requiring zero fill inventory when we have zero fill
 // inventory quantity.
 TEST(FuelFabTests, ProvideStraightFiss_WithZeroFill) {
-  std::string config = 
+  std::string config =
      "<fill_commods> <val>nothing</val> </fill_commods>"
      "<fill_recipe>natu</fill_recipe>"
      "<fill_size>100</fill_size>"
@@ -415,7 +414,7 @@ TEST(FuelFabTests, ProvideStraightFiss_WithZeroFill) {
 }
 
 TEST(FuelFabTests, ProvideStraightFill_ZeroFiss) {
-  std::string config = 
+  std::string config =
      "<fill_commods> <val>anything</val> </fill_commods>"
      "<fill_recipe>natu</fill_recipe>"
      "<fill_size>100</fill_size>"
@@ -447,7 +446,7 @@ TEST(FuelFabTests, ProvideStraightFill_ZeroFiss) {
 // throughput is properly restricted when faced with many fuel
 // requests and with ample material inventory.
 TEST(FuelFabTests, ThroughputLimit) {
-  std::string config = 
+  std::string config =
      "<fill_commods> <val>anything</val> </fill_commods>"
      "<fill_recipe>natu</fill_recipe>"
      "<fill_size>100</fill_size>"
@@ -493,7 +492,7 @@ TEST(FuelFabTests, ThroughputLimit) {
 
 // supplied fuel has proper equivalence weights as requested.
 TEST(FuelFabTests, CorrectMixing) {
-  std::string config = 
+  std::string config =
      "<fill_commods> <val>natu</val> </fill_commods>"
      "<fill_recipe>natu</fill_recipe>"
      "<fill_size>100</fill_size>"
@@ -532,19 +531,19 @@ TEST(FuelFabTests, CorrectMixing) {
   conds[0] = Cond("Commodity", "==", std::string("natu"));
   qr = sim.db().Query("Transactions", &conds);
   m = sim.GetMaterial(qr.GetVal<int>("ResourceId"));
-  EXPECT_NEAR(9.7463873197, m->quantity(), 1e-6) << "mixed wrong amount of Nat. U stream";
+  EXPECT_NEAR(9.7463873197, m->quantity(), cyclus::CY_NEAR_ZERO) << "mixed wrong amount of Nat. U stream";
 
   conds[0] = Cond("Commodity", "==", std::string("pustream"));
   qr = sim.db().Query("Transactions", &conds);
   m = sim.GetMaterial(qr.GetVal<int>("ResourceId"));
-  EXPECT_NEAR(0.25361268029, m->quantity(), 1e-6) << "mixed wrong amount of Pu stream";
+  EXPECT_NEAR(0.25361268029, m->quantity(), cyclus::CY_NEAR_ZERO) << "mixed wrong amount of Pu stream";
 }
 
 // fuel is requested requiring more filler than is available with plenty of
 // fissile.
 TEST(FuelFabTests, FillConstrained) {
   cyclus::Env::SetNucDataPath();
-  std::string config = 
+  std::string config =
      "<fill_commods> <val>natu</val> </fill_commods>"
      "<fill_recipe>natu</fill_recipe>"
      "<fill_size>1</fill_size>"
@@ -583,14 +582,14 @@ TEST(FuelFabTests, FillConstrained) {
   QueryResult qr = sim.db().Query("Transactions", &conds);
   Material::Ptr m = sim.GetMaterial(qr.GetVal<int>("ResourceId"));
 
-  EXPECT_NEAR(max_provide, m->quantity(), 1e-10) << "matched trade uses more fill than available";
+  EXPECT_NEAR(max_provide, m->quantity(), cyclus::CY_NEAR_ZERO) << "matched trade uses more fill than available";
 }
 
 // fuel is requested requiring more fissile material than is available with
 // plenty of filler.
 TEST(FuelFabTests, FissConstrained) {
   cyclus::Env::SetNucDataPath();
-  std::string config = 
+  std::string config =
      "<fill_commods> <val>natu</val> </fill_commods>"
      "<fill_recipe>natu</fill_recipe>"
      "<fill_size>10000</fill_size>"
@@ -629,12 +628,12 @@ TEST(FuelFabTests, FissConstrained) {
   QueryResult qr = sim.db().Query("Transactions", &conds);
   Material::Ptr m = sim.GetMaterial(qr.GetVal<int>("ResourceId"));
 
-  EXPECT_NEAR(max_provide, m->quantity(), 1e-10) << "matched trade uses more fill than available";
+  EXPECT_NEAR(max_provide, m->quantity(), cyclus::CY_NEAR_ZERO) << "matched trade uses more fill than available";
 }
 
 // swap to topup inventory because fissile has too low reactivity.
 TEST(FuelFabTests, SwapTopup) {
-  std::string config = 
+  std::string config =
      "<fill_commods> <val>natu</val> </fill_commods>"
      "<fill_recipe>natu</fill_recipe>"
      "<fill_size>10000</fill_size>"
@@ -670,7 +669,7 @@ TEST(FuelFabTests, SwapTopup) {
   QueryResult qr = sim.db().Query("Transactions", &conds);
   ASSERT_EQ(1, qr.rows.size()) << "failed to meet fuel request";
   Material::Ptr m = sim.GetMaterial(qr.GetVal<int>("ResourceId"));
-  EXPECT_NEAR(sink_cap, m->quantity(), 1e-10) << "supplied fuel was constrained too much";
+  EXPECT_NEAR(sink_cap, m->quantity(), cyclus::CY_NEAR_ZERO) << "supplied fuel was constrained too much";
 
   conds[0] = Cond("Commodity", "==", std::string("natu"));
   conds.push_back(Cond("Time", "==", 2));
@@ -684,7 +683,7 @@ TEST(FuelFabTests, SwapTopup) {
 }
 
 TEST(FuelFabTests, SwapTopup_ZeroFill) {
-  std::string config = 
+  std::string config =
      "<fill_commods> <val>natu</val> </fill_commods>"
      "<fill_recipe>natu</fill_recipe>"
      "<fill_size>0</fill_size>"
@@ -720,7 +719,7 @@ TEST(FuelFabTests, SwapTopup_ZeroFill) {
   QueryResult qr = sim.db().Query("Transactions", &conds);
   ASSERT_EQ(1, qr.rows.size()) << "failed to meet fuel request";
   Material::Ptr m = sim.GetMaterial(qr.GetVal<int>("ResourceId"));
-  EXPECT_NEAR(sink_cap, m->quantity(), 1e-10) << "supplied fuel was constrained too much";
+  EXPECT_NEAR(sink_cap, m->quantity(), cyclus::CY_NEAR_ZERO) << "supplied fuel was constrained too much";
 
   conds[0] = Cond("Commodity", "==", std::string("pustream"));
   conds.push_back(Cond("Time", "==", 2));
@@ -740,7 +739,7 @@ TEST(FuelFabTests, SwapTopup_ZeroFill) {
 // fiss).
 TEST(FuelFabTests, SwapTopup_TopupConstrained) {
   cyclus::Env::SetNucDataPath();
-  std::string config = 
+  std::string config =
      "<fill_commods> <val>natu</val> </fill_commods>"
      "<fill_recipe>natu</fill_recipe>"
      "<fill_size>10000</fill_size>"
@@ -787,7 +786,7 @@ TEST(FuelFabTests, SwapTopup_TopupConstrained) {
   ASSERT_EQ(1, qr.rows.size()) << "failed to meet fuel request";
   Material::Ptr m = sim.GetMaterial(qr.GetVal<int>("ResourceId"));
 
-  EXPECT_NEAR(max_provide, m->quantity(), 1e-10) << "matched trade uses more fiss than available";
+  EXPECT_NEAR(max_provide, m->quantity(), cyclus::CY_NEAR_ZERO) << "matched trade uses more fiss than available";
 }
 
 // swap to topup inventory but are limited by fiss inventory quantity.  This
@@ -795,7 +794,7 @@ TEST(FuelFabTests, SwapTopup_TopupConstrained) {
 // small fiss inventory.
 TEST(FuelFabTests, SwapTopup_FissConstrained) {
   cyclus::Env::SetNucDataPath();
-  std::string config = 
+  std::string config =
      "<fill_commods> <val>natu</val> </fill_commods>"
      "<fill_recipe>natu</fill_recipe>"
      "<fill_size>0</fill_size>"
@@ -842,7 +841,7 @@ TEST(FuelFabTests, SwapTopup_FissConstrained) {
   ASSERT_EQ(1, qr.rows.size()) << "failed to meet fuel request";
   Material::Ptr m = sim.GetMaterial(qr.GetVal<int>("ResourceId"));
 
-  EXPECT_NEAR(max_provide, m->quantity(), 1e-10) << "matched trade uses more fiss than available";
+  EXPECT_NEAR(max_provide, m->quantity(), cyclus::CY_NEAR_ZERO) << "matched trade uses more fiss than available";
 }
 
 // Before this test and a fix, the fuel fab (partially) assumed each entire material
@@ -854,7 +853,7 @@ TEST(FuelFabTests, SwapTopup_FissConstrained) {
 // thinking it had an inventory of higher quality material than was actually
 // the case.  This test makes sure that doesn't happen again.
 TEST(FuelFabTests, HomogenousBuffers) {
-  std::string config = 
+  std::string config =
      "<fill_commods> <val>natu</val> </fill_commods>"
      "<fill_recipe>natu</fill_recipe>"
      "<fill_size>40</fill_size>"
@@ -893,7 +892,7 @@ TEST(FuelFabTests, HomogenousBuffers) {
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 TEST(FuelFabTests, PositionDefault) {
   cyclus::Env::SetNucDataPath();
-  std::string config = 
+  std::string config =
      "<fill_commods> <val>natu</val> </fill_commods>"
      "<fill_recipe>natu</fill_recipe>"
      "<fill_size>0</fill_size>"
@@ -939,7 +938,7 @@ TEST(FuelFabTests, PositionDefault) {
 
 TEST(FuelFabTests, PositionInitialize) {
   cyclus::Env::SetNucDataPath();
-  std::string config = 
+  std::string config =
      "<fill_commods> <val>natu</val> </fill_commods>"
      "<fill_recipe>natu</fill_recipe>"
      "<fill_size>0</fill_size>"
@@ -969,7 +968,7 @@ TEST(FuelFabTests, PositionInitialize) {
   fiss_frac = AtomToMassFrac(fiss_frac, c_pustream(), c_natu());
   fill_frac = AtomToMassFrac(fill_frac, c_natu(), c_pustream());
   double max_provide = fillinv / fill_frac;
-  
+
   cyclus::MockSim sim(cyclus::AgentSpec(":cycamore:FuelFab"), config, simdur);
   sim.AddSource("pustream").Finalize();
   sim.AddSource("pustreambad").Finalize();
@@ -988,5 +987,3 @@ TEST(FuelFabTests, PositionInitialize) {
 
 } // namespace fuelfabtests
 } // namespace cycamore
-
-
