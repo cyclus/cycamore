@@ -12,7 +12,7 @@ Separations::Separations(cyclus::Context* ctx)
     : cyclus::Facility(ctx),
       latitude(0.0),
       longitude(0.0),
-      coordinates(0,0) {}
+      coordinates(0, 0) {}
 
 cyclus::Inventories Separations::SnapshotInv() {
   cyclus::Inventories invs;

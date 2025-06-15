@@ -9,7 +9,7 @@ Mixer::Mixer(cyclus::Context* ctx)
       throughput(0),
       latitude(0.0),
       longitude(0.0),
-      coordinates(0,0) {
+      coordinates(0, 0) {
   cyclus::Warn<cyclus::EXPERIMENTAL_WARNING>(
       "the Mixer archetype is experimental");
 }

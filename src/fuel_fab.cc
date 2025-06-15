@@ -137,7 +137,7 @@ FuelFab::FuelFab(cyclus::Context* ctx)
       throughput(0),
       latitude(0.0),
       longitude(0.0),
-      coordinates(0,0) {}
+      coordinates(0, 0) {}
 
 void FuelFab::EnterNotify() {
   cyclus::Facility::EnterNotify();

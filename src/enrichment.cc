@@ -27,7 +27,7 @@ Enrichment::Enrichment(cyclus::Context* ctx)
       order_prefs(true),
       latitude(0.0),
       longitude(0.0),
-      coordinates(0,0) {}
+      coordinates(0, 0) {}
 
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 Enrichment::~Enrichment() {}
