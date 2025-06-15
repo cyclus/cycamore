@@ -119,9 +119,7 @@ class NatUConverter : public cyclus::Converter<cyclus::Material> {
 ///  no associated recipe.  Bids for tails are constrained only by total
 ///  tails inventory.
 
-class Enrichment
-  : public cyclus::Facility,
-    public cyclus::toolkit::Position {
+class Enrichment : public cyclus::Facility {
 #pragma cyclus note {   	  \
   "niche": "enrichment facility",				  \
   "doc":								\
@@ -178,6 +176,7 @@ class Enrichment
   /// perform module-specific tasks when entering the simulation
   virtual void Build(cyclus::Agent* parent);
   // ---
+  virtual void EnterNotify();
 
   // --- Agent Members ---
   ///  Each facility is prompted to do its beginning-of-time-step
@@ -386,26 +385,11 @@ class Enrichment
   double intra_timestep_swu_;
   double intra_timestep_feed_;
 
+  // Adds required header to add geographic coordinates to the archetype
+  #include "toolkit/position.cycpp.h"
+
   friend class EnrichmentTest;
-  // ---
 
-  #pragma cyclus var { \
-    "default": 0.0, \
-    "uilabel": "Geographical latitude in degrees as a double", \
-    "doc": "Latitude of the agent's geographical position. The value should " \
-           "be expressed in degrees as a double." \
-  }
-  double latitude;
-
-  #pragma cyclus var { \
-    "default": 0.0, \
-    "uilabel": "Geographical longitude in degrees as a double", \
-    "doc": "Longitude of the agent's geographical position. The value should " \
-           "be expressed in degrees as a double." \
-  }
-  double longitude;
-
-  cyclus::toolkit::Position coordinates;
 };
 
 }  // namespace cycamore

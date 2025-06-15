@@ -142,8 +142,8 @@ TEST_F(SourceTest, PositionInitialize) {
 
 }
 
-TEST_F(SourceTest, Longitude) {
-  std::string config =
+TEST_F(SourceTest, PositionInitialize2) {
+  std::string config = 
     "<outcommod>spent_fuel</outcommod>"
     "<latitude>-0.01</latitude>"
     "<longitude>0.01</longitude>"

@@ -14,9 +14,7 @@ namespace cycamore {
 /// one for each streams to be mixed, and one output stream. The supplying of
 /// mixed material is constrained by available inventory of mixed material
 /// quantities.
-class Mixer
-  : public cyclus::Facility,
-    public cyclus::toolkit::Position {
+class Mixer : public cyclus::Facility {
 #pragma cyclus note {   	  \
     "niche": "mixing facility",				  \
     "doc": "Mixer mixes N streams with fixed, static, user-specified" \
@@ -60,6 +58,7 @@ class Mixer
   virtual void InitInv(cyclus::Inventories& inv);
 
  protected:
+
 #pragma cyclus var { \
     "alias": ["in_streams", [ "stream", [ "info", "mixing_ratio", "buf_size"], [ "commodities", "commodity", "pref"]]], \
     "uitype": ["oneormore", [ "pair", ["pair", "double", "double"], ["oneormore", "incommodity", "double"]]], \
@@ -115,26 +114,10 @@ class Mixer
   cyclus::toolkit::MatlSellPolicy sell_policy;
 
   private:
-  #pragma cyclus var { \
-    "default": 0.0, \
-    "uilabel": "Geographical latitude in degrees as a double", \
-    "doc": "Latitude of the agent's geographical position. The value should " \
-           "be expressed in degrees as a double." \
-  }
-  double latitude;
+  
+  // Adds required header to add geographic coordinates to the archetype
+  #include "toolkit/position.cycpp.h"
 
-  #pragma cyclus var { \
-    "default": 0.0, \
-    "uilabel": "Geographical longitude in degrees as a double", \
-    "doc": "Longitude of the agent's geographical position. The value should " \
-           "be expressed in degrees as a double." \
-  }
-  double longitude;
-
-  cyclus::toolkit::Position coordinates;
-
-  /// Records an agent's latitude and longitude to the output db
-  void RecordPosition();
 };
 
 }  // namespace cycamore

@@ -23,8 +23,8 @@ Reactor::Reactor(cyclus::Context* ctx)
       discharged(false),
       latitude(0.0),
       longitude(0.0),
-      keep_packaging(true),
-      coordinates(latitude, longitude) {}
+      coordinates(0, 0),
+      keep_packaging(true) {}
 
 
 #pragma cyclus def clone cycamore::Reactor
@@ -62,6 +62,9 @@ void Reactor::InitFrom(cyclus::QueryableBackend* b) {
 
 void Reactor::EnterNotify() {
   cyclus::Facility::EnterNotify();
+  
+  coordinates = cyclus::toolkit::Position(latitude, longitude);
+  coordinates.RecordPosition(this);
 
   // Set keep packaging parameter in all ResBufs
   fresh.keep_packaging(keep_packaging);
@@ -111,7 +114,6 @@ void Reactor::EnterNotify() {
   if (ss.str().size() > 0) {
     throw ValueError(ss.str());
   }
-  RecordPosition();
 }
 
 bool Reactor::CheckDecommissionCondition() {
@@ -238,7 +240,7 @@ std::set<cyclus::RequestPortfolio<Material>::Ptr> Reactor::GetMatlRequests() {
       double pref = fuel_prefs[j];
       cyclus::Composition::Ptr recipe = context()->GetRecipe(fuel_inrecipes[j]);
       m = Material::CreateUntracked(assem_size, recipe);
-
+      
       Request<Material>* r = port->AddRequest(m, this, commod, pref, true);
       mreqs.push_back(r);
     }
@@ -566,18 +568,6 @@ void Reactor::Record(std::string name, std::string val) {
       ->AddVal("Time", context()->time())
       ->AddVal("Event", name)
       ->AddVal("Value", val)
-      ->Record();
-}
-
-void Reactor::RecordPosition() {
-  std::string specification = this->spec();
-  context()
-      ->NewDatum("AgentPosition")
-      ->AddVal("Spec", specification)
-      ->AddVal("Prototype", this->prototype())
-      ->AddVal("AgentId", id())
-      ->AddVal("Latitude", latitude)
-      ->AddVal("Longitude", longitude)
       ->Record();
 }
 

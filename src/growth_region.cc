@@ -7,7 +7,7 @@ GrowthRegion::GrowthRegion(cyclus::Context* ctx)
     : cyclus::Region(ctx),
       latitude(0.0),
       longitude(0.0),
-      coordinates(latitude, longitude) {
+      coordinates(0, 0) {
   #if !CYCLUS_HAS_COIN
     throw cyclus::Error("Growth Region requires that Cyclus & Cycamore be compiled "
                         "with COIN support.");
@@ -41,6 +41,10 @@ void GrowthRegion::AddCommodityDemand_(std::string commod,
 
 void GrowthRegion::EnterNotify() {
   cyclus::Region::EnterNotify();
+  
+  coordinates = cyclus::toolkit::Position(latitude, longitude);
+  coordinates.RecordPosition(this);
+  
   std::set<cyclus::Agent*>::iterator ait;
   for (ait = cyclus::Agent::children().begin();
        ait != cyclus::Agent::children().end();
@@ -55,7 +59,6 @@ void GrowthRegion::EnterNotify() {
                                    << it->first;
     AddCommodityDemand_(it->first, it->second);
   }
-  RecordPosition();
 }
 
 void GrowthRegion::DecomNotify(Agent* a) {
@@ -174,17 +177,6 @@ void GrowthRegion::OrderBuilds(cyclus::toolkit::Commodity& commodity,
 #endif
 }
 
-void GrowthRegion::RecordPosition() {
-  std::string specification = this->spec();
-  context()
-      ->NewDatum("AgentPosition")
-      ->AddVal("Spec", specification)
-      ->AddVal("Prototype", this->prototype())
-      ->AddVal("AgentId", id())
-      ->AddVal("Latitude", latitude)
-      ->AddVal("Longitude", longitude)
-      ->Record();
-}
 
 extern "C" cyclus::Agent* ConstructGrowthRegion(cyclus::Context* ctx) {
   return new GrowthRegion(ctx);

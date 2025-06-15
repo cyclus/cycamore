@@ -100,9 +100,8 @@ namespace cycamore {
 /// Matched resources are sent immediately.
 class Storage
   : public cyclus::Facility,
-    public cyclus::toolkit::CommodityProducer,
-    public cyclus::toolkit::Position {
- public:
+    public cyclus::toolkit::CommodityProducer {
+ public:  
   /// @param ctx the cyclus context for access to simulation-wide parameters
   Storage(cyclus::Context* ctx);
 
@@ -549,21 +548,7 @@ class Storage
   //// A policy for sending material
   cyclus::toolkit::MatlSellPolicy sell_policy;
 
-  #pragma cyclus var { \
-    "default": 0.0, \
-    "uilabel": "Geographical latitude in degrees as a double", \
-    "doc": "Latitude of the agent's geographical position. The value should " \
-           "be expressed in degrees as a double." \
-  }
-  double latitude;
 
-  #pragma cyclus var { \
-    "default": 0.0, \
-    "uilabel": "Geographical longitude in degrees as a double", \
-    "doc": "Longitude of the agent's geographical position. The value should " \
-           "be expressed in degrees as a double." \
-  }
-  double longitude;
 
   cyclus::IntDistribution::Ptr active_dist_ = NULL;
   cyclus::IntDistribution::Ptr dormant_dist_ = NULL;
@@ -571,9 +556,10 @@ class Storage
 
   cyclus::toolkit::Position coordinates;
 
-  void RecordPosition();
-
   friend class StorageTest;
+
+  // Adds required header to add geographic coordinates to the archetype
+  #include "toolkit/position.cycpp.h"
 };
 
 }  // namespace cycamore

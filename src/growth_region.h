@@ -35,9 +35,9 @@ typedef std::vector<
 /// multiple commodities being demanded.
 ///
 /// @warning The growth region is experimental
-class GrowthRegion : public cyclus::Region,
-  public cyclus::toolkit::Position {
+class GrowthRegion : public cyclus::Region {
   friend class GrowthRegionTests;
+ 
  public:
   /// The default constructor for the GrowthRegion
   GrowthRegion(cyclus::Context* ctx);
@@ -129,26 +129,10 @@ class GrowthRegion : public cyclus::Region,
   void OrderBuilds(cyclus::toolkit::Commodity& commodity, double unmetdemand);
 
   private:
-  #pragma cyclus var { \
-    "default": 0.0, \
-    "uilabel": "Geographical latitude in degrees as a double", \
-    "doc": "Latitude of the agent's geographical position. The value should " \
-           "be expressed in degrees as a double." \
-  }
-  double latitude;
+  
+  // Adds required header to add geographic coordinates to the archetype
+  #include "toolkit/position.cycpp.h"
 
-  #pragma cyclus var { \
-    "default": 0.0, \
-    "uilabel": "Geographical longitude in degrees as a double", \
-    "doc": "Longitude of the agent's geographical position. The value should " \
-           "be expressed in degrees as a double." \
-  }
-  double longitude;
-
-  cyclus::toolkit::Position coordinates;
-
-  /// Records an agent's latitude and longitude to the output db
-  void RecordPosition();
 };
 }  // namespace cycamore
 

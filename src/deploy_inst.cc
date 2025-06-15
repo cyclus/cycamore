@@ -7,7 +7,7 @@ DeployInst::DeployInst(cyclus::Context* ctx)
     : cyclus::Institution(ctx),
       latitude(0.0),
       longitude(0.0),
-      coordinates(latitude, longitude) {}
+      coordinates(0, 0) {}
 
 DeployInst::~DeployInst() {}
 
@@ -48,6 +48,10 @@ void DeployInst::Build(cyclus::Agent* parent) {
 
 void DeployInst::EnterNotify() {
   cyclus::Institution::EnterNotify();
+  
+  coordinates = cyclus::toolkit::Position(latitude, longitude);
+  coordinates.RecordPosition(this);
+  
   int n = prototypes.size();
   if (build_times.size() != n) {
     std::stringstream ss;
@@ -65,7 +69,6 @@ void DeployInst::EnterNotify() {
        << " lifetimes vals, expected " << n;
     throw cyclus::ValueError(ss.str());
   }
-  RecordPosition();
 }
 
 void DeployInst::BuildNotify(Agent* a) {
@@ -117,18 +120,6 @@ void DeployInst::WriteProducerInformation(
     LOG(cyclus::LEV_DEBUG3, "maninst") << "               cost: " <<
                                        producer->Cost(*it);
   }
-}
-
-void DeployInst::RecordPosition() {
-  std::string specification = this->spec();
-  context()
-      ->NewDatum("AgentPosition")
-      ->AddVal("Spec", specification)
-      ->AddVal("Prototype", this->prototype())
-      ->AddVal("AgentId", id())
-      ->AddVal("Latitude", latitude)
-      ->AddVal("Longitude", longitude)
-      ->Record();
 }
 
 extern "C" cyclus::Agent* ConstructDeployInst(cyclus::Context* ctx) {

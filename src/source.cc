@@ -1,7 +1,7 @@
 #include "source.h"
 
-#include <sstream>
 #include <limits>
+#include <sstream>
 
 #include <boost/lexical_cast.hpp>
 
@@ -13,9 +13,9 @@ Source::Source(cyclus::Context* ctx)
       inventory_size(std::numeric_limits<double>::max()),
       latitude(0.0),
       longitude(0.0),
+      coordinates(0, 0),
       package(cyclus::Package::unpackaged_name()),
-      transport_unit(cyclus::TransportUnit::unrestricted_name()),
-      coordinates(latitude, longitude) {}
+      transport_unit(cyclus::TransportUnit::unrestricted_name())
 
 Source::~Source() {}
 
@@ -55,7 +55,11 @@ std::string Source::str() {
 
 void Source::EnterNotify() {
   cyclus::Facility::EnterNotify();
-  RecordPosition();
+  
+  coordinates = cyclus::toolkit::Position(latitude, longitude);
+  coordinates.RecordPosition(this);
+}
+
 }
 
 void Source::Build(cyclus::Agent* parent) {
@@ -178,18 +182,6 @@ void Source::GetMatlTrades(
                                       << " for " << response->quantity() << " of " << outcommod;
     }
   }
-}
-
-void Source::RecordPosition() {
-  std::string specification = this->spec();
-  context()
-      ->NewDatum("AgentPosition")
-      ->AddVal("Spec", specification)
-      ->AddVal("Prototype", this->prototype())
-      ->AddVal("AgentId", id())
-      ->AddVal("Latitude", latitude)
-      ->AddVal("Longitude", longitude)
-      ->Record();
 }
 
 extern "C" cyclus::Agent* ConstructSource(cyclus::Context* ctx) {

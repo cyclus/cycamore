@@ -798,7 +798,7 @@ TEST_F(StorageTest, PositionInitialize){
   EXPECT_EQ(qr.GetVal<double>("Longitude"), 0.0);
 }
 
-TEST_F(StorageTest, Longitude){
+TEST_F(StorageTest, PositionInitialize){
   // Verify Storage behavior
 
   std::string config =

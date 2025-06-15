@@ -14,12 +14,12 @@ Sink::Sink(cyclus::Context* ctx)
       capacity(std::numeric_limits<double>::max()),
       latitude(0.0),
       longitude(0.0),
-      keep_packaging(true),
-      coordinates(latitude, longitude) {
+      coordinates(0, 0)
+      keep_packaging(true) {
   SetMaxInventorySize(std::numeric_limits<double>::max());}
 
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-Sink::~Sink() {}
+Sink::~Sink() {}s
 
 #pragma cyclus def schema cycamore::Sink
 
@@ -42,6 +42,9 @@ Sink::~Sink() {}
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 void Sink::EnterNotify() {
   cyclus::Facility::EnterNotify();
+  
+  coordinates = cyclus::toolkit::Position(latitude, longitude);
+  coordinates.RecordPosition(this);
   LOG(cyclus::LEV_INFO4, "SnkFac") << " using random behavior " << random_size_type;
 
   inventory.keep_packaging(keep_packaging);
@@ -73,7 +76,6 @@ void Sink::EnterNotify() {
                                      << random_frequency_type
                                      << " for determining request frequency.";
   }
-  RecordPosition();
 }
 
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -233,17 +235,6 @@ void Sink::Tock() {
   LOG(cyclus::LEV_INFO3, "SnkFac") << "}";
 }
 
-void Sink::RecordPosition() {
-  std::string specification = this->spec();
-  context()
-      ->NewDatum("AgentPosition")
-      ->AddVal("Spec", specification)
-      ->AddVal("Prototype", this->prototype())
-      ->AddVal("AgentId", id())
-      ->AddVal("Latitude", latitude)
-      ->AddVal("Longitude", longitude)
-      ->Record();
-}
 
 void Sink::SetRequestAmt() {
   double amt = SpaceAvailable();

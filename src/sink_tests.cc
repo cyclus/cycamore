@@ -303,7 +303,7 @@ TEST_F(SinkTest, PositionInitialize) {
   EXPECT_EQ(qr.GetVal<double>("Longitude"), 0.0);
 }
 
-TEST_F(SinkTest, PositionInitialize2) {
+TEST_F(SinkTest, PositionInitialize) {
   using cyclus::QueryResult;
 
   std::string config =

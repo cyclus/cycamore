@@ -12,7 +12,7 @@ Separations::Separations(cyclus::Context* ctx)
     : cyclus::Facility(ctx),
       latitude(0.0),
       longitude(0.0),
-      coordinates(latitude, longitude) {}
+      coordinates(0, 0) {}
 
 cyclus::Inventories Separations::SnapshotInv() {
   cyclus::Inventories invs;
@@ -49,6 +49,10 @@ typedef std::map<std::string, Stream> StreamSet;
 
 void Separations::EnterNotify() {
   cyclus::Facility::EnterNotify();
+  
+  coordinates = cyclus::toolkit::Position(latitude, longitude);
+  coordinates.RecordPosition(this);
+  
   std::map<int, double> efficiency_;
 
   StreamSet::iterator it;
@@ -65,7 +69,6 @@ void Separations::EnterNotify() {
     for (it2 = stream.second.begin(); it2 != stream.second.end(); it2++) {
       efficiency_[it2->first] += it2->second;
     }
-    RecordPosition();
   }
 
   std::vector<int> eff_pb_;
@@ -365,18 +368,6 @@ bool Separations::CheckDecommissionCondition() {
   }
 
   return true;
-}
-
-void Separations::RecordPosition() {
-  std::string specification = this->spec();
-  context()
-      ->NewDatum("AgentPosition")
-      ->AddVal("Spec", specification)
-      ->AddVal("Prototype", this->prototype())
-      ->AddVal("AgentId", id())
-      ->AddVal("Latitude", latitude)
-      ->AddVal("Longitude", longitude)
-      ->Record();
 }
 
 void Separations::Record(std::string name, double val, std::string type) {

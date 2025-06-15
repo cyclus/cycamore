@@ -52,9 +52,9 @@ namespace cycamore {
 /// int) of its assemblies are transmuted to their respective burnt
 /// compositions.
 
-class Reactor : public cyclus::Facility,
-  public cyclus::toolkit::CommodityProducer,
-  public cyclus::toolkit::Position {
+class Reactor 
+  : public cyclus::Facility,
+    public cyclus::toolkit::CommodityProducer {
 #pragma cyclus note { \
 "niche": "reactor", \
 "doc": \
@@ -446,26 +446,9 @@ class Reactor : public cyclus::Facility,
   // populated lazily and no need to persist.
   std::set<std::string> uniq_outcommods_;
 
-  #pragma cyclus var { \
-    "default": 0.0, \
-    "uilabel": "Geographical latitude in degrees as a double", \
-    "doc": "Latitude of the agent's geographical position. The value should " \
-           "be expressed in degrees as a double." \
-  }
-  double latitude;
+  // Adds required header to add geographic coordinates to the archetype
+  #include "toolkit/position.cycpp.h"
 
-  #pragma cyclus var { \
-    "default": 0.0, \
-    "uilabel": "Geographical longitude in degrees as a double", \
-    "doc": "Longitude of the agent's geographical position. The value should " \
-           "be expressed in degrees as a double." \
-  }
-  double longitude;
-
-  cyclus::toolkit::Position coordinates;
-
-  /// Records an agent's latitude and longitude to the output db
-  void RecordPosition();
 };
 
 } // namespace cycamore

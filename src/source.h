@@ -22,9 +22,9 @@ class Context;
 /// infinite.  Supplies material results in corresponding decrease in
 /// inventory, and when the inventory size reaches zero, the source can provide
 /// no more material.
-class Source : public cyclus::Facility,
-  public cyclus::toolkit::CommodityProducer,
-  public cyclus::toolkit::Position {
+class Source 
+  : public cyclus::Facility,
+    public cyclus::toolkit::CommodityProducer {
   friend class SourceTest;
  public:
 
@@ -62,6 +62,8 @@ class Source : public cyclus::Facility,
   virtual void Tick() {};
 
   virtual void Tock() {};
+  
+  virtual void EnterNotify();
 
   virtual std::string str();
 
@@ -123,7 +125,7 @@ class Source : public cyclus::Facility,
     "doc": "amount of commodity that can be supplied at each time step", \
   }
   double throughput;
-
+  
   #pragma cyclus var { \
     "default": "unpackaged", \
     "tooltip": "name of package to provide material in", \
@@ -166,10 +168,10 @@ class Source : public cyclus::Facility,
     "tooltip":"Material buffer"}
   cyclus::toolkit::ResBuf<cyclus::Material> inventory;
 
-  cyclus::toolkit::Position coordinates;
-
-  void RecordPosition();
   void SetPackage();
+ 
+  // Adds required header to add geographic coordinates to the archetype
+  #include "toolkit/position.cycpp.h"
 };
 
 }  // namespace cycamore

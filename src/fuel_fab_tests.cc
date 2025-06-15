@@ -890,7 +890,7 @@ TEST(FuelFabTests, HomogenousBuffers) {
 }
 
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-TEST(FuelFabTests, PositionInitialize) {
+TEST(FuelFabTests, PositionDefault) {
   cyclus::Env::SetNucDataPath();
   std::string config =
      "<fill_commods> <val>natu</val> </fill_commods>"
@@ -936,7 +936,7 @@ TEST(FuelFabTests, PositionInitialize) {
   EXPECT_EQ(qr.GetVal<double>("Longitude"), 0.0);
 }
 
-TEST(FuelFabTests, PositionInitialize2) {
+TEST(FuelFabTests, PositionInitialize) {
   cyclus::Env::SetNucDataPath();
   std::string config =
      "<fill_commods> <val>natu</val> </fill_commods>"

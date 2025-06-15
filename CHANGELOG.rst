@@ -21,6 +21,7 @@ Since last release
 * Changed the styling of doxygen docs (#626)
 * Use ``CyclusBuildSetup`` macros to replace CMake boilerplate (#627)
 * Updated Doxygen homepage (#632)
+* Adds archetype locations with simplified toolkit::Position implementation (#502)
 
 **Fixed:**
 
