@@ -35,7 +35,6 @@ namespace cycamore {
 /// in_recipe (optional) describes the incoming resource by recipe
 ///
 /// @section optionalparams Optional Parameters
-/// sell_quantity restricts selling to only integer multiples of this value
 /// max_inv_size is the maximum capacity of the inventory storage
 /// throughput is the maximum processing capacity per timestep
 /// package is the name of the package type to ship
@@ -105,6 +104,7 @@ class Storage
  private:
   // Code Injection
   #include "toolkit/matl_buy_policy.cycpp.h"
+  #include "toolkit/matl_sell_policy.cycpp.h"
 
  protected:
   ///   @brief adds a material into the incoming commodity inventory
@@ -123,7 +123,7 @@ class Storage
   /// @param time the time of interest
   void ReadyMatl_(int time);
 
-    /* --- Storage Members --- */
+  // --- Storage Members ---
 
   /// @brief current maximum amount that can be added to processing
   inline double current_capacity() {
@@ -135,7 +135,7 @@ class Storage
   /// @brief returns the time key for ready materials
   int ready_time(){ return context()->time() - residence_time; }
 
-  /* --- Module Members --- */
+  // --- Module Members --- 
 
   #pragma cyclus var {"tooltip":"input commodity",\
                       "doc":"commodities accepted by this facility",\
@@ -173,17 +173,6 @@ class Storage
                       "uitype": "range", \
                       "range": [0, 12000]}
   int residence_time;
-
-  #pragma cyclus var {"default": 0,\
-                      "tooltip":"sell quantity (kg)",\
-                      "doc":"material will be sold in integer multiples of this quantity. If"\
-                      " the buffer contains less than the sell quantity, no material will be"\
-                      " offered", \
-                      "uilabel":"Sell Quantity",\
-                      "uitype": "range", \
-                      "range": [0.0, CY_LARGE_DOUBLE], \
-                      "units": "kg"}
-  double sell_quantity;
 
   #pragma cyclus var {"default": CY_LARGE_DOUBLE,\
                      "tooltip":"throughput per timestep (kg)",\
@@ -246,9 +235,6 @@ class Storage
 
   #pragma cyclus var {"tooltip": "Total Inventory Tracker to restrict maximum agent inventory"}
   cyclus::toolkit::TotalInvTracker inventory_tracker;
-
-  //// A policy for sending material
-  cyclus::toolkit::MatlSellPolicy sell_policy;
 
   #pragma cyclus var { \
     "default": 0.0, \
