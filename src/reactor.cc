@@ -23,8 +23,7 @@ Reactor::Reactor(cyclus::Context* ctx)
       discharged(false),
       latitude(0.0),
       longitude(0.0),
-      keep_packaging(true),
-      coordinates(latitude, longitude) {}
+      keep_packaging(true) {}
 
 
 #pragma cyclus def clone cycamore::Reactor
@@ -111,7 +110,8 @@ void Reactor::EnterNotify() {
   if (ss.str().size() > 0) {
     throw ValueError(ss.str());
   }
-  RecordPosition();
+  
+  InitializePosition(this);
 }
 
 bool Reactor::CheckDecommissionCondition() {
@@ -566,18 +566,6 @@ void Reactor::Record(std::string name, std::string val) {
       ->AddVal("Time", context()->time())
       ->AddVal("Event", name)
       ->AddVal("Value", val)
-      ->Record();
-}
-
-void Reactor::RecordPosition() {
-  std::string specification = this->spec();
-  context()
-      ->NewDatum("AgentPosition")
-      ->AddVal("Spec", specification)
-      ->AddVal("Prototype", this->prototype())
-      ->AddVal("AgentId", id())
-      ->AddVal("Latitude", latitude)
-      ->AddVal("Longitude", longitude)
       ->Record();
 }
 

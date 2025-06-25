@@ -14,8 +14,7 @@ Sink::Sink(cyclus::Context* ctx)
       capacity(std::numeric_limits<double>::max()),
       latitude(0.0),
       longitude(0.0),
-      keep_packaging(true),
-      coordinates(latitude, longitude) {
+      keep_packaging(true) {
   SetMaxInventorySize(std::numeric_limits<double>::max());}
 
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -73,7 +72,8 @@ void Sink::EnterNotify() {
                                      << random_frequency_type
                                      << " for determining request frequency.";
   }
-  RecordPosition();
+
+  InitializePosition(this);
 }
 
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -231,18 +231,6 @@ void Sink::Tock() {
                                    << " units of material at the close of timestep "
                                    << context()->time() << ".";
   LOG(cyclus::LEV_INFO3, "SnkFac") << "}";
-}
-
-void Sink::RecordPosition() {
-  std::string specification = this->spec();
-  context()
-      ->NewDatum("AgentPosition")
-      ->AddVal("Spec", specification)
-      ->AddVal("Prototype", this->prototype())
-      ->AddVal("AgentId", id())
-      ->AddVal("Latitude", latitude)
-      ->AddVal("Longitude", longitude)
-      ->Record();
 }
 
 void Sink::SetRequestAmt() {

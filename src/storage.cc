@@ -8,8 +8,7 @@ namespace cycamore {
 Storage::Storage(cyclus::Context* ctx)
     : cyclus::Facility(ctx),
       latitude(0.0),
-      longitude(0.0),
-      coordinates(latitude, longitude) {
+      longitude(0.0) {
   inventory_tracker.Init({&inventory, &stocks, &ready, &processing}, cyclus::CY_LARGE_DOUBLE);
   cyclus::Warn<cyclus::EXPERIMENTAL_WARNING>(
       "The Storage Facility is experimental.");};
@@ -223,7 +222,8 @@ void Storage::EnterNotify() {
     ss << "out_commods has " << out_commods.size() << " values, expected 1.";
     throw cyclus::ValueError(ss.str());
   }
-  RecordPosition();
+  
+  InitializePosition(this);
 }
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -386,19 +386,6 @@ void Storage::ReadyMatl_(int time) {
 
   ready.Push(processing.PopN(to_ready));
 }
-
-void Storage::RecordPosition() {
-  std::string specification = this->spec();
-  context()
-      ->NewDatum("AgentPosition")
-      ->AddVal("Spec", specification)
-      ->AddVal("Prototype", this->prototype())
-      ->AddVal("AgentId", id())
-      ->AddVal("Latitude", latitude)
-      ->AddVal("Longitude", longitude)
-      ->Record();
-}
-
 
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 extern "C" cyclus::Agent* ConstructStorage(cyclus::Context* ctx) {
