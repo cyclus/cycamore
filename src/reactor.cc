@@ -111,7 +111,7 @@ void Reactor::EnterNotify() {
     throw ValueError(ss.str());
   }
   
-  InitializePosition(this);
+  InitializePosition();
 }
 
 bool Reactor::CheckDecommissionCondition() {

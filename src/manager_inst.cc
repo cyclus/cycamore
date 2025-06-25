@@ -43,7 +43,7 @@ void ManagerInst::EnterNotify() {
     }
   }
 
-  InitializePosition(this);
+  InitializePosition();
 }
 
 void ManagerInst::Register_(Agent* a) {

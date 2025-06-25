@@ -163,7 +163,7 @@ void FuelFab::EnterNotify() {
     throw cyclus::ValidationError(ss.str());
   }
 
-  InitializePosition(this);
+  InitializePosition();
 }
 
 std::set<cyclus::RequestPortfolio<Material>::Ptr> FuelFab::GetMatlRequests() {

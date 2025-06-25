@@ -60,7 +60,7 @@ void Mixer::EnterNotify() {
     }
     in_commods.push_back(streams_[i].second);
 
-    InitializePosition(this);
+    InitializePosition();
   }
 
   // ratio normalisation

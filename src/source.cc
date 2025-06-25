@@ -54,7 +54,7 @@ std::string Source::str() {
 
 void Source::EnterNotify() {
   cyclus::Facility::EnterNotify();
-  InitializePosition(this);
+  InitializePosition();
 }
 
 void Source::Build(cyclus::Agent* parent) {

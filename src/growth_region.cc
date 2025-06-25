@@ -55,7 +55,7 @@ void GrowthRegion::EnterNotify() {
     AddCommodityDemand_(it->first, it->second);
   }
   
-  InitializePosition(this);
+  InitializePosition();
 }
 
 void GrowthRegion::DecomNotify(Agent* a) {

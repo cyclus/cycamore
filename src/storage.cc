@@ -223,7 +223,7 @@ void Storage::EnterNotify() {
     throw cyclus::ValueError(ss.str());
   }
   
-  InitializePosition(this);
+  InitializePosition();
 }
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -

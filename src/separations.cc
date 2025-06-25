@@ -65,7 +65,7 @@ void Separations::EnterNotify() {
       efficiency_[it2->first] += it2->second;
     }
 
-    InitializePosition(this);
+    InitializePosition();
   }
 
   std::vector<int> eff_pb_;

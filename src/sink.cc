@@ -73,7 +73,7 @@ void Sink::EnterNotify() {
                                      << " for determining request frequency.";
   }
 
-  InitializePosition(this);
+  InitializePosition();
 }
 
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
