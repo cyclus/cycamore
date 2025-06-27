@@ -24,8 +24,6 @@ Enrichment::Enrichment(cyclus::Context* ctx)
       feed_recipe(""),
       product_commod(""),
       tails_commod(""),
-      latitude(0.0),
-      longitude(0.0),
       order_prefs(true) {}
 
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -

@@ -4,9 +4,7 @@
 namespace cycamore {
 
 GrowthRegion::GrowthRegion(cyclus::Context* ctx)
-    : cyclus::Region(ctx),
-      latitude(0.0),
-      longitude(0.0) {
+    : cyclus::Region(ctx) {
   #if !CYCLUS_HAS_COIN
     throw cyclus::Error("Growth Region requires that Cyclus & Cycamore be compiled "
                         "with COIN support.");

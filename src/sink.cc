@@ -12,8 +12,6 @@ namespace cycamore {
 Sink::Sink(cyclus::Context* ctx)
     : cyclus::Facility(ctx),
       capacity(std::numeric_limits<double>::max()),
-      latitude(0.0),
-      longitude(0.0),
       keep_packaging(true) {
   SetMaxInventorySize(std::numeric_limits<double>::max());}
 

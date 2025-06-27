@@ -21,8 +21,6 @@ Reactor::Reactor(cyclus::Context* ctx)
       power_cap(0),
       power_name("power"),
       discharged(false),
-      latitude(0.0),
-      longitude(0.0),
       keep_packaging(true) {}
 
 

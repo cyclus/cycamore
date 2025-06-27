@@ -11,8 +11,6 @@ Source::Source(cyclus::Context* ctx)
     : cyclus::Facility(ctx),
       throughput(std::numeric_limits<double>::max()),
       inventory_size(std::numeric_limits<double>::max()),
-      latitude(0.0),
-      longitude(0.0),
       package(cyclus::Package::unpackaged_name()),
       transport_unit(cyclus::TransportUnit::unrestricted_name()) {}
 
