@@ -134,12 +134,16 @@ class FuelFab
   GetMatlRequests();
 
  private:
+  // Code Injection:
+  #include "toolkit/position.cycpp.h"
+
   #pragma cyclus var { \
     "doc": "Ordered list of commodities on which to requesting filler stream material.", \
     "uilabel": "Filler Stream Commodities", \
     "uitype": ["oneormore", "incommodity"], \
   }
   std::vector<std::string> fill_commods;
+
   #pragma cyclus var { \
     "default": [], \
     "uilabel": "Filler Stream Preferences", \
@@ -147,18 +151,21 @@ class FuelFab
            " If unspecified, default is to use 1.0 for all preferences.", \
   }
   std::vector<double> fill_commod_prefs;
+
   #pragma cyclus var { \
     "doc": "Name of recipe to be used in filler material stream requests.", \
     "uilabel": "Filler Stream Recipe", \
     "uitype": "inrecipe", \
   }
   std::string fill_recipe;
+
   #pragma cyclus var { \
     "doc": "Size of filler material stream inventory.", \
     "uilabel": "Filler Stream Inventory Capacity", \
     "units": "kg", \
   }
   double fill_size;
+
   #pragma cyclus var {"capacity": "fill_size"}
   cyclus::toolkit::ResBuf<cyclus::Material> fill;
 
@@ -168,6 +175,7 @@ class FuelFab
     "uitype": ["oneormore", "incommodity"], \
   }
   std::vector<std::string> fiss_commods;
+
   #pragma cyclus var { \
     "default": [], \
     "uilabel": "Fissile Stream Preferences", \
@@ -175,6 +183,7 @@ class FuelFab
            " If unspecified, default is to use 1.0 for all preferences.", \
   }
   std::vector<double> fiss_commod_prefs;
+
   #pragma cyclus var { \
     "doc": "Name for recipe to be used in fissile stream requests." \
            " Empty string results in use of an empty dummy recipe.", \
@@ -183,12 +192,14 @@ class FuelFab
     "default": "", \
   }
   std::string fiss_recipe;
+
   #pragma cyclus var { \
     "doc": "Size of fissile material stream inventory.", \
     "uilabel": "Fissile Stream Inventory Capacity", \
     "units": "kg", \
   }
   double fiss_size;
+
   #pragma cyclus var {"capacity": "fiss_size"}
   cyclus::toolkit::ResBuf<cyclus::Material> fiss;
 
@@ -200,6 +211,7 @@ class FuelFab
     "uitype": "incommodity", \
   }
   std::string topup_commod;
+
   #pragma cyclus var { \
     "doc": "Top-up material stream request preference.", \
     "uilabel": "Top-up Stream Preference", \
@@ -215,6 +227,7 @@ class FuelFab
     "default": "", \
   }
   std::string topup_recipe;
+
   #pragma cyclus var { \
     "doc": "Size of top-up material stream inventory.", \
     "uilabel": "Top-up Stream Inventory Capacity", \
@@ -222,6 +235,7 @@ class FuelFab
     "default": 0, \
   }
   double topup_size;
+
   #pragma cyclus var {"capacity": "topup_size"}
   cyclus::toolkit::ResBuf<cyclus::Material> topup;
 
@@ -255,26 +269,6 @@ class FuelFab
   // map<request, inventory name>
   std::map<cyclus::Request<cyclus::Material>*, std::string> req_inventories_;
 
-  #pragma cyclus var { \
-    "default": 0.0, \
-    "uilabel": "Geographical latitude in degrees as a double", \
-    "doc": "Latitude of the agent's geographical position. The value should " \
-           "be expressed in degrees as a double." \
-  }
-  double latitude;
-
-  #pragma cyclus var { \
-    "default": 0.0, \
-    "uilabel": "Geographical longitude in degrees as a double", \
-    "doc": "Longitude of the agent's geographical position. The value should " \
-           "be expressed in degrees as a double." \
-  }
-  double longitude;
-
-  cyclus::toolkit::Position coordinates;
-
-  /// Records an agent's latitude and longitude to the output db
-  void RecordPosition();
 };
 
 double CosiWeight(cyclus::Composition::Ptr c, const std::string& spectrum);
