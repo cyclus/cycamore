@@ -1,8 +1,8 @@
 #ifndef CYCAMORE_SRC_REACTOR_H_
 #define CYCAMORE_SRC_REACTOR_H_
 
-#include "cyclus.h"
 #include "cycamore_version.h"
+#include "cyclus.h"
 
 namespace cycamore {
 
@@ -53,10 +53,9 @@ namespace cycamore {
 /// compositions.
 
 class Reactor : public cyclus::Facility,
-  public cyclus::toolkit::CommodityProducer,
-  public cyclus::toolkit::Position {
-
-// clang-format off
+                public cyclus::toolkit::CommodityProducer,
+                public cyclus::toolkit::Position {
+  // clang-format off
 #pragma cyclus note { \
 "niche": "reactor", \
 "doc": \
@@ -107,7 +106,7 @@ class Reactor : public cyclus::Facility,
   " compositions." \
   "", \
 }
-// clang-format on
+  // clang-format on
 
  public:
   Reactor(cyclus::Context* ctx);
@@ -120,8 +119,9 @@ class Reactor : public cyclus::Facility,
   virtual void EnterNotify();
   virtual bool CheckDecommissionCondition();
 
-  virtual void AcceptMatlTrades(const std::vector<std::pair<
-      cyclus::Trade<cyclus::Material>, cyclus::Material::Ptr> >& responses);
+  virtual void AcceptMatlTrades(
+      const std::vector<std::pair<cyclus::Trade<cyclus::Material>,
+                                  cyclus::Material::Ptr>>& responses);
 
   virtual std::set<cyclus::RequestPortfolio<cyclus::Material>::Ptr>
   GetMatlRequests();
@@ -130,11 +130,11 @@ class Reactor : public cyclus::Facility,
       cyclus::CommodMap<cyclus::Material>::type& commod_requests);
 
   virtual void GetMatlTrades(
-      const std::vector<cyclus::Trade<cyclus::Material> >& trades,
+      const std::vector<cyclus::Trade<cyclus::Material>>& trades,
       std::vector<std::pair<cyclus::Trade<cyclus::Material>,
-                            cyclus::Material::Ptr> >& responses);
+                            cyclus::Material::Ptr>>& responses);
 
-  #pragma cyclus decl
+#pragma cyclus decl
 
  private:
   std::string fuel_incommod(cyclus::Material::Ptr m);
@@ -182,7 +182,7 @@ class Reactor : public cyclus::Facility,
   /// Returns all spent assemblies indexed by outcommod without removing them
   /// from the spent fuel buffer.
   std::map<std::string, cyclus::toolkit::MatVec> PeekSpent();
-  
+
   // clang-format off
   /////// fuel specifications /////////
   #pragma cyclus var { \
@@ -487,6 +487,6 @@ class Reactor : public cyclus::Facility,
   void RecordPosition();
 };
 
-} // namespace cycamore
+}  // namespace cycamore
 
 #endif  // CYCAMORE_SRC_REACTOR_H_

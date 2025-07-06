@@ -1,8 +1,8 @@
 #ifndef CYCAMORE_SRC_SEPARATIONS_H_
 #define CYCAMORE_SRC_SEPARATIONS_H_
 
-#include "cyclus.h"
 #include "cycamore_version.h"
+#include "cyclus.h"
 
 // clang-format off
 #pragma cyclus exec from cyclus.system import CY_LARGE_DOUBLE, CY_LARGE_INT, CY_NEAR_ZERO
@@ -38,9 +38,7 @@ cyclus::Material::Ptr SepMaterial(std::map<int, double> effs,
 /// reduce its stocks by trading and hits this limit for any of its output
 /// streams, further processing/separations of feed material will halt until
 /// room is again available in the output streams.
-class Separations
-  : public cyclus::Facility,
-    public cyclus::toolkit::Position {
+class Separations : public cyclus::Facility, public cyclus::toolkit::Position {
   // clang-format off
   #pragma cyclus note { \
     "niche": "separations", \
@@ -76,11 +74,12 @@ class Separations
   virtual void Tock();
   virtual void EnterNotify();
 
-  virtual void AcceptMatlTrades(const std::vector<std::pair<
-      cyclus::Trade<cyclus::Material>, cyclus::Material::Ptr>>& responses);
+  virtual void AcceptMatlTrades(
+      const std::vector<std::pair<cyclus::Trade<cyclus::Material>,
+                                  cyclus::Material::Ptr>>& responses);
 
   virtual std::set<cyclus::RequestPortfolio<cyclus::Material>::Ptr>
-      GetMatlRequests();
+  GetMatlRequests();
 
   virtual std::set<cyclus::BidPortfolio<cyclus::Material>::Ptr> GetMatlBids(
       cyclus::CommodMap<cyclus::Material>::type& commod_requests);
@@ -208,7 +207,7 @@ class Separations
 
   // Custom SnapshotInv and InitInv and EnterNotify are used to persist this
   // state var.
-  std::map<std::string, cyclus::toolkit::ResBuf<cyclus::Material> > streambufs;
+  std::map<std::string, cyclus::toolkit::ResBuf<cyclus::Material>> streambufs;
 
   // clang-format off
   #pragma cyclus var { \
@@ -233,7 +232,6 @@ class Separations
   /// Records an agent's latitude and longitude to the output db
   void RecordPosition();
   void Record(std::string name, double val, std::string type);
-
 };
 
 }  // namespace cycamore

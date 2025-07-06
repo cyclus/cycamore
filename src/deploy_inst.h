@@ -1,16 +1,16 @@
 #ifndef CYCAMORE_SRC_DEPLOY_INST_H_
 #define CYCAMORE_SRC_DEPLOY_INST_H_
 
-#include <utility>
-#include <set>
 #include <map>
+#include <set>
+#include <utility>
 
-#include "cyclus.h"
 #include "cycamore_version.h"
+#include "cyclus.h"
 
 namespace cycamore {
 
-typedef std::map<int, std::vector<std::string> > BuildSched;
+typedef std::map<int, std::vector<std::string>> BuildSched;
 
 // Builds and manages agents (facilities) according to a manually specified
 // deployment schedule. Deployed agents are automatically decommissioned at
@@ -19,11 +19,9 @@ typedef std::map<int, std::vector<std::string> > BuildSched;
 // lifetimes.  The same prototype can be specified multiple times with any
 // combination of the same or different build times, build number, and
 // lifetimes.
-class DeployInst : 
-  public cyclus::Institution, 
-  public cyclus::toolkit::CommodityProducerManager,
-  public cyclus::toolkit::Position {
-
+class DeployInst : public cyclus::Institution,
+                   public cyclus::toolkit::CommodityProducerManager,
+                   public cyclus::toolkit::Position {
   // clang-format off
   #pragma cyclus note { \
     "doc": \
@@ -45,7 +43,7 @@ class DeployInst :
 
   virtual std::string version() { return CYCAMORE_VERSION; }
 
-  #pragma cyclus
+#pragma cyclus
 
   virtual void Build(cyclus::Agent* parent);
 
@@ -55,8 +53,7 @@ class DeployInst :
   virtual void DecomNotify(Agent* m);
   /// write information about a commodity producer to a stream
   /// @param producer the producer
-  void WriteProducerInformation(cyclus::toolkit::CommodityProducer*
-                                producer);
+  void WriteProducerInformation(cyclus::toolkit::CommodityProducer* producer);
 
  protected:
   // clang-format off

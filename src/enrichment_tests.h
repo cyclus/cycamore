@@ -5,12 +5,11 @@
 
 #include <boost/shared_ptr.hpp>
 
-#include "test_context.h"
+#include "enrichment.h"
 #include "env.h"
 #include "exchange_context.h"
 #include "material.h"
-
-#include "enrichment.h"
+#include "test_context.h"
 
 namespace cycamore {
 
@@ -43,8 +42,8 @@ class EnrichmentTest : public ::testing::Test {
   cyclus::Material::Ptr DoEnrich(cyclus::Material::Ptr mat, double qty);
   /// @param nreqs the total number of requests
   /// @param nvalid the number of requests that are valid
-  boost::shared_ptr< cyclus::ExchangeContext<cyclus::Material> >
-      GetContext(int nreqs, int nvalid);
+  boost::shared_ptr<cyclus::ExchangeContext<cyclus::Material>> GetContext(
+      int nreqs, int nvalid);
 };
 
 }  // namespace cycamore

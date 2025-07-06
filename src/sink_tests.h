@@ -4,7 +4,6 @@
 #include <gtest/gtest.h>
 
 #include "sink.h"
-
 #include "test_context.h"
 
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
