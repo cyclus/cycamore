@@ -7,7 +7,10 @@
 #include "cyclus.h"
 #include "cycamore_version.h"
 
-#pragma cyclus exec from cyclus.system import CY_LARGE_DOUBLE, CY_LARGE_INT, CY_NEAR_ZERO
+// clang-format off
+#pragma cyclus exec from cyclus.system import CY_LARGE_DOUBLE, CY_LARGE_INT, \
+    CY_NEAR_ZERO
+// clang-format on
 
 namespace cycamore {
 
@@ -23,28 +26,28 @@ class Context;
 /// inventory, and when the inventory size reaches zero, the source can provide
 /// no more material.
 class Source : public cyclus::Facility,
-  public cyclus::toolkit::CommodityProducer,
-  public cyclus::toolkit::Position {
+               public cyclus::toolkit::CommodityProducer,
+               public cyclus::toolkit::Position {
   friend class SourceTest;
+
  public:
-
   Source(cyclus::Context* ctx);
-
   virtual ~Source();
 
   virtual std::string version() { return CYCAMORE_VERSION; }
 
+  // clang-format off
   #pragma cyclus note { \
-    "doc": "This facility acts as a source of material with a fixed throughput (per\n" \
-           "time step) capacity and a lifetime capacity defined by a total inventory\n" \
-           "size.  It offers its material as a single commodity. If a composition\n" \
-           "recipe is specified, it provides that single material composition to\n" \
-           "requesters.  If unspecified, the source provides materials with the exact\n" \
-           "requested compositions.  The inventory size and throughput both default to\n" \
-           "infinite.  Supplies material results in corresponding decrease in\n" \
-           "inventory, and when the inventory size reaches zero, the source can provide\n" \
-           "no more material.\n" \
-           "", \
+    "doc": \
+      "This facility acts as a source of material with a fixed throughput " \
+      "(per time step) capacity and a lifetime capacity defined by a total " \
+      "inventory size.  It offers its material as a single commodity. If a " \
+      "composition recipe is specified, it provides that single material " \
+      "composition to requesters.  If unspecified, the source provides " \
+      "materials with the exact requested compositions.  The inventory size " \
+      "and throughput both default to infinite.  Supplies material results " \
+      "in corresponding decrease in inventory, and when the inventory size " \
+      "reaches zero, the source can provide no more material.", \
   }
 
   #pragma cyclus def clone
@@ -54,13 +57,12 @@ class Source : public cyclus::Facility,
   #pragma cyclus def snapshot
   #pragma cyclus def snapshotinv
   #pragma cyclus def initinv
+  // clang-format on
 
   virtual void InitFrom(Source* m);
-
   virtual void InitFrom(cyclus::QueryableBackend* b);
 
   virtual void Tick() {};
-
   virtual void Tock() {};
 
   virtual std::string str();
@@ -76,61 +78,60 @@ class Source : public cyclus::Facility,
   virtual void Build(cyclus::Agent* parent);
 
   virtual void GetMatlTrades(
-    const std::vector< cyclus::Trade<cyclus::Material> >& trades,
+    const std::vector<cyclus::Trade<cyclus::Material>>& trades,
     std::vector<std::pair<cyclus::Trade<cyclus::Material>,
-    cyclus::Material::Ptr> >& responses);
-
+                          cyclus::Material::Ptr>>& responses);
  private:
+  // clang-format off
   #pragma cyclus var { \
     "tooltip": "source output commodity", \
     "doc": "Output commodity on which the source offers material.", \
     "uilabel": "Output Commodity", \
-    "uitype": "outcommodity", \
+    "uitype": "outcommodity" \
   }
   std::string outcommod;
 
   #pragma cyclus var { \
     "tooltip": "name of material recipe to provide", \
     "doc": "Name of composition recipe that this source provides regardless " \
-           "of requested composition. If empty, source creates and provides " \
-           "whatever compositions are requested.", \
+           "of requested composition. If empty, source provides whatever " \
+           "compositions are requested.", \
     "uilabel": "Output Recipe", \
     "default": "", \
-    "uitype": "outrecipe", \
+    "uitype": "outrecipe" \
   }
   std::string outrecipe;
 
   #pragma cyclus var { \
-    "doc": "Total amount of material this source has remaining." \
-           " Every trade decreases this value by the supplied material " \
-           "quantity.  When it reaches zero, the source cannot provide any " \
-           " more material.", \
+    "doc": "Total amount of material this source has remaining. Every trade " \
+           "decreases this value by the supplied material quantity. When it " \
+           "reaches zero, the source cannot provide any more material.", \
     "default": CY_LARGE_DOUBLE, \
     "uitype": "range", \
     "range": [0.0, CY_LARGE_DOUBLE], \
     "uilabel": "Initial Inventory", \
-    "units": "kg", \
+    "units": "kg" \
   }
   double inventory_size;
 
-  #pragma cyclus var {  \
+  #pragma cyclus var { \
     "default": CY_LARGE_DOUBLE, \
     "tooltip": "per time step throughput", \
     "units": "kg/(time step)", \
     "uilabel": "Maximum Throughput", \
     "uitype": "range", \
     "range": [0.0, CY_LARGE_DOUBLE], \
-    "doc": "amount of commodity that can be supplied at each time step", \
+    "doc": "Amount of commodity that can be supplied at each time step." \
   }
   double throughput;
 
   #pragma cyclus var { \
     "default": "unpackaged", \
     "tooltip": "name of package to provide material in", \
-    "doc": "Name of package that this source provides. Offers will only be" \
-           "made in packagable quantities of material.", \
+    "doc": "Name of package that this source provides. Offers will only be " \
+           "made in packagable quantities.", \
     "uilabel": "Output Package Type", \
-    "uitype": "package", \
+    "uitype": "package" \
   }
   std::string package;
 
@@ -138,11 +139,10 @@ class Source : public cyclus::Facility,
     "default": "unrestricted", \
     "tooltip": "name of transport unit to ship packages in", \
     "doc": "Name of transport unit that this source uses to ship packages of " \
-           "material. Offers will only be made in shippable quantities of " \
-           "packages. Optional if packaging is used, but use of transport " \
-           "units requires packaging type to also be set", \
+           "material. Offers will only be made in shippable quantities. " \
+           "Optional if packaging is used.", \
     "uilabel": "Output Transport Unit Type", \
-    "uitype": "transportunit", \
+    "uitype": "transportunit" \
   }
   std::string transport_unit;
 
@@ -163,8 +163,10 @@ class Source : public cyclus::Facility,
   double longitude;
 
   #pragma cyclus var { \
-    "tooltip":"Material buffer"}
+    "tooltip": "Material buffer" \
+  }
   cyclus::toolkit::ResBuf<cyclus::Material> inventory;
+  // clang-format on
 
   cyclus::toolkit::Position coordinates;
 

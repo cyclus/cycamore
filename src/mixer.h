@@ -5,26 +5,32 @@
 #include "cycamore_version.h"
 #include "cyclus.h"
 
-#pragma cyclus exec from cyclus.system import CY_LARGE_DOUBLE, CY_LARGE_INT, CY_NEAR_ZERO
+// clang-format off
+#pragma cyclus exec \
+  from cyclus.system import CY_LARGE_DOUBLE, CY_LARGE_INT, CY_NEAR_ZERO
+// clang-format on
 
 namespace cycamore {
 
 /// Mixer mixes N streams with fixed, static, user-specified
-/// ratios into a single output stream. The Mixer has N input inventories:
-/// one for each streams to be mixed, and one output stream. The supplying of
-/// mixed material is constrained by available inventory of mixed material
-/// quantities.
+/// ratios into a single output stream. The Mixer has N input
+/// inventories: one for each stream to be mixed, and one output
+/// stream. The supplying of mixed material is constrained by
+/// available inventory of mixed material quantities.
 class Mixer
   : public cyclus::Facility,
     public cyclus::toolkit::Position {
-#pragma cyclus note {   	  \
-    "niche": "mixing facility",				  \
-    "doc": "Mixer mixes N streams with fixed, static, user-specified" \
-           " ratios into a single output stream. The Mixer has N input"\
-           " inventories: one for each streams to be mixed, and one output"\
-           " stream. The supplying of mixed material is constrained by "\
-           " available inventory of mixed material quantities.", \
-    }
+
+  // clang-format off
+  #pragma cyclus note { \
+    "niche": "mixing facility", \
+    "doc": "Mixer mixes N streams with fixed, static, user-specified " \
+           "ratios into a single output stream. The Mixer has N input " \
+           "inventories: one for each stream to be mixed, and one output " \
+           "stream. The supplying of mixed material is constrained by " \
+           "available inventory of mixed material quantities.", \
+  }
+  // clang-format on
 
   friend class MixerTest;
 
@@ -38,10 +44,10 @@ class Mixer
 
   virtual void AcceptMatlTrades(
       const std::vector<std::pair<cyclus::Trade<cyclus::Material>,
-                                  cyclus::Material::Ptr> >& responses);
+                                  cyclus::Material::Ptr>>& responses);
 
   virtual std::set<cyclus::RequestPortfolio<cyclus::Material>::Ptr>
-  GetMatlRequests();
+      GetMatlRequests();
 
 #pragma cyclus clone
 #pragma cyclus initfromcopy
@@ -50,7 +56,7 @@ class Mixer
 #pragma cyclus schema
 #pragma cyclus annotations
 #pragma cyclus snapshot
-  // the following pragmas are ommitted and the functions are written
+  // the following pragmas are omitted and the functions are written
   // manually in order to handle the vector of resource buffers:
   //
   //     #pragma cyclus snapshotinv
@@ -60,52 +66,60 @@ class Mixer
   virtual void InitInv(cyclus::Inventories& inv);
 
  protected:
-#pragma cyclus var { \
-    "alias": ["in_streams", [ "stream", [ "info", "mixing_ratio", "buf_size"], [ "commodities", "commodity", "pref"]]], \
-    "uitype": ["oneormore", [ "pair", ["pair", "double", "double"], ["oneormore", "incommodity", "double"]]], \
+  // clang-format off
+  #pragma cyclus var { \
+    "alias": ["in_streams", [ "stream", [ "info", "mixing_ratio", "buf_size"], \
+                             [ "commodities", "commodity", "pref"]]], \
+    "uitype": ["oneormore", [ "pair", ["pair", "double", "double"], \
+                             ["oneormore", "incommodity", "double"]]], \
     "uilabel": "", \
-    "doc": "", \
+    "doc": "" \
   }
-  std::vector<std::pair<std::pair<double, double>, std::map<std::string, double> > > streams_;
+ std::vector<std::pair<std::pair<double, double>, std::map<std::string, double> > > streams_;
+  // clang-format on
 
-  std::vector<std::map<std::string, double> > in_commods;
+  std::vector<std::map<std::string, double>> in_commods;
   std::vector<double> in_buf_sizes;
   std::vector<double> mixing_ratios;
 
   // custom SnapshotInv and InitInv and EnterNotify are used to persist this
   // state var.
-  std::map<std::string, cyclus::toolkit::ResBuf<cyclus::Material> > streambufs;
+  std::map<std::string, cyclus::toolkit::ResBuf<cyclus::Material>>
+      streambufs;
 
-
-#pragma cyclus var {                                                 \
-  "doc" : "Commodity on which to offer/supply mixed fuel material.", \
-  "uilabel" : "Output Commodity", "uitype" : "outcommodity", }
+  // clang-format off
+  #pragma cyclus var { \
+    "doc": "Commodity on which to offer/supply mixed fuel material.", \
+    "uilabel": "Output Commodity", \
+    "uitype": "outcommodity" \
+  }
   std::string out_commod;
 
-#pragma cyclus var { \
-    "doc" : "Maximum amount of mixed material that can be stored." \
-            " If full, the facility halts operation until space becomes" \
-            " available.", \
+  #pragma cyclus var { \
+    "doc": "Maximum amount of mixed material that can be stored. If full, " \
+           "the facility halts operation until space becomes available.", \
     "uilabel": "Maximum Leftover Inventory", \
     "default": CY_LARGE_DOUBLE, \
     "uitype": "range", \
     "range": [0.0, CY_LARGE_DOUBLE], \
-    "units": "kg", \
+    "units": "kg" \
   }
   double out_buf_size;
 
-#pragma cyclus var { "capacity" : "out_buf_size", }
+  #pragma cyclus var { "capacity": "out_buf_size" }
   cyclus::toolkit::ResBuf<cyclus::Material> output;
 
-#pragma cyclus var { \
+  #pragma cyclus var { \
     "default": CY_LARGE_DOUBLE, \
-    "doc": "Maximum number of kg of fuel material that can be mixed per time step.", \
+    "doc": "Maximum number of kg of fuel material that can be mixed per " \
+           "time step.", \
     "uilabel": "Maximum Throughput", \
     "uitype": "range", \
     "range": [0.0, CY_LARGE_DOUBLE], \
-    "units": "kg", \
+    "units": "kg" \
   }
   double throughput;
+  // clang-format on
 
   // intra-time-step state - no need to be a state var
   // map<request, inventory name>
@@ -114,7 +128,8 @@ class Mixer
   //// A policy for sending material
   cyclus::toolkit::MatlSellPolicy sell_policy;
 
-  private:
+ private:
+  // clang-format off
   #pragma cyclus var { \
     "default": 0.0, \
     "uilabel": "Geographical latitude in degrees as a double", \
@@ -130,6 +145,7 @@ class Mixer
            "be expressed in degrees as a double." \
   }
   double longitude;
+  // clang-format on
 
   cyclus::toolkit::Position coordinates;
 

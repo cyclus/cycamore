@@ -26,9 +26,12 @@ class ManagerInst
 
   #pragma cyclus
 
-  #pragma cyclus note {"doc": "An institution that owns and operates a " \
-                              "manually entered list of facilities in " \
-                              "the input file"}
+  // clang-format off
+  #pragma cyclus note { \
+    "doc": "An institution that owns and operates a manually entered list " \
+           "of facilities in the input file", \
+  }
+  // clang-format on
 
   /// enter the simulation and register any children present
   virtual void EnterNotify();
@@ -44,38 +47,40 @@ class ManagerInst
   void WriteProducerInformation(cyclus::toolkit::CommodityProducer*
                                 producer);
 
-  private:
+ private:
   /// register a child
   void Register_(cyclus::Agent* agent);
 
   /// unregister a child
   void Unregister_(cyclus::Agent* agent);
- 
+
+  // clang-format off
   #pragma cyclus var { \
-    "tooltip": "producer facility prototypes",                          \
-    "uilabel": "Producer Prototype List",                               \
-    "uitype": ["oneormore", "prototype"],                                    \
+    "tooltip": "producer facility prototypes", \
+    "uilabel": "Producer Prototype List", \
+    "uitype": ["oneormore", "prototype"], \
     "doc": "A set of facility prototypes that this institution can build. " \
-    "All prototypes in this list must be based on an archetype that "   \
-    "implements the cyclus::toolkit::CommodityProducer interface",      \
-    }
+           "All prototypes in this list must be based on an archetype that " \
+           "implements the cyclus::toolkit::CommodityProducer interface" \
+  }
   std::vector<std::string> prototypes;
 
   #pragma cyclus var { \
     "default": 0.0, \
     "uilabel": "Geographical latitude in degrees as a double", \
-    "doc": "Latitude of the agent's geographical position. The value should " \
-           "be expressed in degrees as a double." \
+    "doc": "Latitude of the agent's geographical position. The value " \
+           "should be expressed in degrees as a double." \
   }
   double latitude;
 
   #pragma cyclus var { \
     "default": 0.0, \
     "uilabel": "Geographical longitude in degrees as a double", \
-    "doc": "Longitude of the agent's geographical position. The value should " \
-           "be expressed in degrees as a double." \
+    "doc": "Longitude of the agent's geographical position. The value " \
+           "should be expressed in degrees as a double." \
   }
   double longitude;
+  // clang-format on
 
   cyclus::toolkit::Position coordinates;
 
