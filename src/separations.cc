@@ -1,10 +1,10 @@
 #include "separations.h"
 
-using cyclus::Material;
 using cyclus::Composition;
-using cyclus::toolkit::ResBuf;
-using cyclus::toolkit::MatVec;
+using cyclus::Material;
 using cyclus::Request;
+using cyclus::toolkit::MatVec;
+using cyclus::toolkit::ResBuf;
 
 namespace cycamore {
 
@@ -25,7 +25,7 @@ cyclus::Inventories Separations::SnapshotInv() {
   invs["feed-inv-name"] = feed.PopNRes(feed.count());
   feed.Push(invs["feed-inv-name"]);
 
-  std::map<std::string, ResBuf<Material> >::iterator it;
+  std::map<std::string, ResBuf<Material>>::iterator it;
   for (it = streambufs.begin(); it != streambufs.end(); ++it) {
     invs[it->first] = it->second.PopNRes(it->second.count());
     it->second.Push(invs[it->first]);
@@ -44,7 +44,7 @@ void Separations::InitInv(cyclus::Inventories& inv) {
   }
 }
 
-typedef std::pair<double, std::map<int, double> > Stream;
+typedef std::pair<double, std::map<int, double>> Stream;
 typedef std::map<std::string, Stream> StreamSet;
 
 void Separations::EnterNotify() {
@@ -131,11 +131,10 @@ void Separations::Tick() {
       if (m->quantity() > mat->quantity()) {
         qty = mat->quantity();
       }
-      streambufs[name].Push(
-          mat->ExtractComp(qty * maxfrac, m->comp()));
+      streambufs[name].Push(mat->ExtractComp(qty * maxfrac, m->comp()));
       Record("Separated", qty * maxfrac, name);
     }
-    cyclus::toolkit::RecordTimeSeries<double>("supply"+name, this,
+    cyclus::toolkit::RecordTimeSeries<double>("supply" + name, this,
                                               streambufs[name].quantity());
   }
 
@@ -153,9 +152,8 @@ void Separations::Tick() {
       leftover.Push(mat);
     }
   }
-  cyclus::toolkit::RecordTimeSeries<double>("supply"+leftover_commod, this,
+  cyclus::toolkit::RecordTimeSeries<double>("supply" + leftover_commod, this,
                                             leftover.quantity());
-
 }
 
 // Note that this returns an untracked material that should just be used for
@@ -204,7 +202,7 @@ Separations::GetMatlRequests() {
   std::vector<double>::iterator result;
   result = std::max_element(feed_commod_prefs.begin(), feed_commod_prefs.end());
   int maxindx = std::distance(feed_commod_prefs.begin(), result);
-  cyclus::toolkit::RecordTimeSeries<double>("demand"+feed_commods[maxindx],
+  cyclus::toolkit::RecordTimeSeries<double>("demand" + feed_commods[maxindx],
                                             this, feed.space());
   if (t_exit >= 0 && (feed.quantity() >= (t_exit - t) * throughput)) {
     return ports;  // already have enough feed for remainder of life
@@ -234,12 +232,11 @@ Separations::GetMatlRequests() {
 }
 
 void Separations::GetMatlTrades(
-    const std::vector<cyclus::Trade<Material> >& trades,
-    std::vector<std::pair<cyclus::Trade<Material>, Material::Ptr> >&
-        responses) {
+    const std::vector<cyclus::Trade<Material>>& trades,
+    std::vector<std::pair<cyclus::Trade<Material>, Material::Ptr>>& responses) {
   using cyclus::Trade;
 
-  std::vector<Trade<Material> >::const_iterator it;
+  std::vector<Trade<Material>>::const_iterator it;
   for (int i = 0; i < trades.size(); i++) {
     std::string commod = trades[i].request->commodity();
     if (commod == leftover_commod) {
@@ -252,16 +249,16 @@ void Separations::GetMatlTrades(
       responses.push_back(std::make_pair(trades[i], m));
     } else {
       throw cyclus::ValueError("invalid commodity " + commod +
-                       " on trade matched to prototype " + prototype());
+                               " on trade matched to prototype " + prototype());
     }
   }
 }
 
 void Separations::AcceptMatlTrades(
-    const std::vector<std::pair<cyclus::Trade<Material>, Material::Ptr> >&
+    const std::vector<std::pair<cyclus::Trade<Material>, Material::Ptr>>&
         responses) {
-  std::vector<std::pair<cyclus::Trade<Material>,
-                        Material::Ptr> >::const_iterator trade;
+  std::vector<std::pair<cyclus::Trade<Material>, Material::Ptr>>::const_iterator
+      trade;
 
   for (trade = responses.begin(); trade != responses.end(); ++trade) {
     feed.Push(trade->second);
@@ -275,7 +272,7 @@ std::set<cyclus::BidPortfolio<Material>::Ptr> Separations::GetMatlBids(
   std::set<BidPortfolio<Material>::Ptr> ports;
 
   // bid streams
-  std::map<std::string, ResBuf<Material> >::iterator it;
+  std::map<std::string, ResBuf<Material>>::iterator it;
   for (it = streambufs.begin(); it != streambufs.end(); ++it) {
     std::string commod = it->first;
     std::vector<Request<Material>*>& reqs = commod_requests[commod];
@@ -357,7 +354,7 @@ bool Separations::CheckDecommissionCondition() {
     return false;
   }
 
-  std::map<std::string, ResBuf<Material> >::iterator it;
+  std::map<std::string, ResBuf<Material>>::iterator it;
   for (it = streambufs.begin(); it != streambufs.end(); ++it) {
     if (it->second.count() > 0) {
       return false;

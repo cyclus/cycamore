@@ -1,6 +1,6 @@
-#include <sstream>
-
 #include "mixer.h"
+
+#include <sstream>
 
 namespace cycamore {
 
@@ -24,8 +24,7 @@ cyclus::Inventories Mixer::SnapshotInv() {
   invs["output-inv-name"] = output.PopNRes(output.count());
   output.Push(invs["output-inv-name"]);
 
-  std::map<std::string, cyclus::toolkit::ResBuf<cyclus::Material> >::iterator
-      it;
+  std::map<std::string, cyclus::toolkit::ResBuf<cyclus::Material>>::iterator it;
   for (it = streambufs.begin(); it != streambufs.end(); ++it) {
     invs[it->first] = it->second.PopNRes(it->second.count());
     it->second.Push(invs[it->first]);
@@ -76,9 +75,10 @@ void Mixer::EnterNotify() {
 
     if (frac_sum != 1.0) {
       std::stringstream ss;
-      ss << "prototype '" << prototype() << "': the sum of mixing fractions is "
-                                            "not 1, renormalization will be "
-                                            "done.";
+      ss << "prototype '" << prototype()
+         << "': the sum of mixing fractions is "
+            "not 1, renormalization will be "
+            "done.";
       cyclus::Warn<cyclus::VALUE_WARNING>(ss.str());
     }
     if (frac_sum != 0) {
@@ -123,21 +123,20 @@ void Mixer::Tick() {
       output.Push(m);
     }
   }
-  cyclus::toolkit::RecordTimeSeries<double>("supply"+out_commod, this, output.quantity());
+  cyclus::toolkit::RecordTimeSeries<double>("supply" + out_commod, this,
+                                            output.quantity());
 }
 
 std::set<cyclus::RequestPortfolio<cyclus::Material>::Ptr>
 Mixer::GetMatlRequests() {
   using cyclus::RequestPortfolio;
 
-  for (int i = 0; i < mixing_ratios.size(); i++)
-  {
+  for (int i = 0; i < mixing_ratios.size(); i++) {
     std::string name = "in_stream_" + std::to_string(i);
     std::map<std::string, double>::iterator it;
     std::map<std::string, double>::iterator max_it = in_commods[i].begin();
     double prev_pref = 0;
-    for (it = in_commods[i].begin(); it != in_commods[i].end(); it++)
-    {
+    for (it = in_commods[i].begin(); it != in_commods[i].end(); it++) {
       cyclus::toolkit::RecordTimeSeries<double>("demand" + it->first, this,
                                                 streambufs[name].space());
     }
@@ -158,10 +157,10 @@ Mixer::GetMatlRequests() {
       std::vector<cyclus::Request<cyclus::Material>*> reqs;
 
       std::map<std::string, double>::iterator it;
-      for (it = in_commods[i].begin() ; it != in_commods[i].end(); it++) {
+      for (it = in_commods[i].begin(); it != in_commods[i].end(); it++) {
         std::string commod = it->first;
         double pref = it->second;
-        reqs.push_back(port->AddRequest(m, this, commod , pref, false));
+        reqs.push_back(port->AddRequest(m, this, commod, pref, false));
         req_inventories_[reqs.back()] = name;
       }
       port->AddMutualReqs(reqs);
@@ -173,9 +172,9 @@ Mixer::GetMatlRequests() {
 
 void Mixer::AcceptMatlTrades(
     const std::vector<std::pair<cyclus::Trade<cyclus::Material>,
-                                cyclus::Material::Ptr> >& responses) {
+                                cyclus::Material::Ptr>>& responses) {
   std::vector<std::pair<cyclus::Trade<cyclus::Material>,
-                        cyclus::Material::Ptr> >::const_iterator trade;
+                        cyclus::Material::Ptr>>::const_iterator trade;
 
   for (trade = responses.begin(); trade != responses.end(); ++trade) {
     cyclus::Request<cyclus::Material>* req = trade->first.request;
@@ -183,7 +182,7 @@ void Mixer::AcceptMatlTrades(
 
     std::string name = req_inventories_[req];
     bool assigned = false;
-    std::map<std::string, cyclus::toolkit::ResBuf<cyclus::Material> >::iterator
+    std::map<std::string, cyclus::toolkit::ResBuf<cyclus::Material>>::iterator
         it;
 
     for (it = streambufs.begin(); it != streambufs.end(); it++) {
@@ -216,4 +215,4 @@ void Mixer::RecordPosition() {
 extern "C" cyclus::Agent* ConstructMixer(cyclus::Context* ctx) {
   return new Mixer(ctx);
 }
-}
+}  // namespace cycamore

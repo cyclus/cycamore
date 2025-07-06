@@ -5,15 +5,13 @@
 
 #include <gtest/gtest.h>
 
+#include "agent_tests.h"
 #include "context.h"
 #include "growth_region.h"
 #include "recorder.h"
-#include "timer.h"
-
-#include "test_context.h"
 #include "region_tests.h"
-#include "agent_tests.h"
-
+#include "test_context.h"
+#include "timer.h"
 
 namespace cycamore {
 

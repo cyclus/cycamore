@@ -1,8 +1,8 @@
 #ifndef CYCAMORE_SRC_REACTOR_H_
 #define CYCAMORE_SRC_REACTOR_H_
 
-#include "cyclus.h"
 #include "cycamore_version.h"
+#include "cyclus.h"
 
 namespace cycamore {
 
@@ -53,8 +53,9 @@ namespace cycamore {
 /// compositions.
 
 class Reactor : public cyclus::Facility,
-  public cyclus::toolkit::CommodityProducer,
-  public cyclus::toolkit::Position {
+                public cyclus::toolkit::CommodityProducer,
+                public cyclus::toolkit::Position {
+  // clang-format off
 #pragma cyclus note { \
 "niche": "reactor", \
 "doc": \
@@ -105,6 +106,7 @@ class Reactor : public cyclus::Facility,
   " compositions." \
   "", \
 }
+  // clang-format on
 
  public:
   Reactor(cyclus::Context* ctx);
@@ -117,8 +119,9 @@ class Reactor : public cyclus::Facility,
   virtual void EnterNotify();
   virtual bool CheckDecommissionCondition();
 
-  virtual void AcceptMatlTrades(const std::vector<std::pair<
-      cyclus::Trade<cyclus::Material>, cyclus::Material::Ptr> >& responses);
+  virtual void AcceptMatlTrades(
+      const std::vector<std::pair<cyclus::Trade<cyclus::Material>,
+                                  cyclus::Material::Ptr>>& responses);
 
   virtual std::set<cyclus::RequestPortfolio<cyclus::Material>::Ptr>
   GetMatlRequests();
@@ -127,11 +130,11 @@ class Reactor : public cyclus::Facility,
       cyclus::CommodMap<cyclus::Material>::type& commod_requests);
 
   virtual void GetMatlTrades(
-      const std::vector<cyclus::Trade<cyclus::Material> >& trades,
+      const std::vector<cyclus::Trade<cyclus::Material>>& trades,
       std::vector<std::pair<cyclus::Trade<cyclus::Material>,
-                            cyclus::Material::Ptr> >& responses);
+                            cyclus::Material::Ptr>>& responses);
 
-  #pragma cyclus decl
+#pragma cyclus decl
 
  private:
   std::string fuel_incommod(cyclus::Material::Ptr m);
@@ -180,6 +183,7 @@ class Reactor : public cyclus::Facility,
   /// from the spent fuel buffer.
   std::map<std::string, cyclus::toolkit::MatVec> PeekSpent();
 
+  // clang-format off
   /////// fuel specifications /////////
   #pragma cyclus var { \
     "uitype": ["oneormore", "incommodity"], \
@@ -187,6 +191,7 @@ class Reactor : public cyclus::Facility,
     "doc": "Ordered list of input commodities on which to requesting fuel.", \
   }
   std::vector<std::string> fuel_incommods;
+
   #pragma cyclus var { \
     "uitype": ["oneormore", "inrecipe"], \
     "uilabel": "Fresh Fuel Recipe List", \
@@ -204,6 +209,7 @@ class Reactor : public cyclus::Facility,
            "requests (default).", \
   }
   std::vector<double> fuel_prefs;
+
   #pragma cyclus var { \
     "uitype": ["oneormore", "outcommodity"], \
     "uilabel": "Spent Fuel Commodity List", \
@@ -211,6 +217,7 @@ class Reactor : public cyclus::Facility,
            "received as each particular input commodity (same order)." \
   }
   std::vector<std::string> fuel_outcommods;
+
   #pragma cyclus var {           \
     "uitype": ["oneormore", "outrecipe"], \
     "uilabel": "Spent Fuel Recipe List", \
@@ -229,6 +236,7 @@ class Reactor : public cyclus::Facility,
            "a requested fresh fuel.", \
   }
   std::vector<int> recipe_change_times;
+
   #pragma cyclus var { \
     "default": [], \
     "uilabel": "Commodity for Changed Fresh/Spent Fuel Recipe", \
@@ -238,6 +246,7 @@ class Reactor : public cyclus::Facility,
     "uitype": ["oneormore", "incommodity"], \
   }
   std::vector<std::string> recipe_change_commods;
+
   #pragma cyclus var { \
     "default": [], \
     "uilabel": "New Recipe for Fresh Fuel", \
@@ -247,6 +256,7 @@ class Reactor : public cyclus::Facility,
     "uitype": ["oneormore", "inrecipe"], \
   }
   std::vector<std::string> recipe_change_in;
+
   #pragma cyclus var { \
     "default": [], \
     "uilabel": "New Recipe for Spent Fuel", \
@@ -283,6 +293,7 @@ class Reactor : public cyclus::Facility,
     "doc": "Number of assemblies that constitute a full core.", \
   }
   int n_assem_core;
+
   #pragma cyclus var { \
     "default": 0, \
     "uilabel": "Minimum Fresh Fuel Inventory", \
@@ -292,6 +303,7 @@ class Reactor : public cyclus::Facility,
     "doc": "Number of fresh fuel assemblies to keep on-hand if possible.", \
   }
   int n_assem_fresh;
+
   #pragma cyclus var { \
     "default": 1000000000, \
     "uilabel": "Maximum Spent Fuel Inventory", \
@@ -312,6 +324,7 @@ class Reactor : public cyclus::Facility,
     "units": "time steps", \
   }
   int cycle_time;
+
   #pragma cyclus var { \
     "default": 1, \
     "doc": "The duration of a full refueling period - the minimum time between"\
@@ -320,6 +333,7 @@ class Reactor : public cyclus::Facility,
     "units": "time steps", \
   }
   int refuel_time;
+
   #pragma cyclus var { \
     "default": 0, \
     "doc": "Number of time steps since the start of the last cycle." \
@@ -350,7 +364,6 @@ class Reactor : public cyclus::Facility,
   std::string power_name;
 
   /////////// hybrid params ///////////
-
   #pragma cyclus var { \
     "uilabel": "Side Product from Reactor Plant", \
     "default": [], \
@@ -365,21 +378,21 @@ class Reactor : public cyclus::Facility,
   }
   std::vector<double> side_product_quantity;
 
-  #pragma cyclus var {"default": 1,\
-                      "internal": True,\
-                      "doc": "True if reactor is a hybrid system (produces side products)", \
+  #pragma cyclus var { \
+    "default": 1,\
+    "internal": True,\
+    "doc": "True if reactor is a hybrid system (produces side products)", \
   }
   bool hybrid_;
 
-
   /////////// Decommission transmutation behavior ///////////
-  #pragma cyclus var {"default": 0, \
-                      "uilabel": "Boolean for transmutation behavior upon decommissioning.", \
-                      "doc": "If true, the archetype transmutes all assemblies upon decommissioning " \
-                             "If false, the archetype only transmutes half.", \
+  #pragma cyclus var { \
+    "default": 0, \
+    "uilabel": "Boolean for transmutation behavior upon decommissioning.", \
+    "doc": "If true, the archetype transmutes all assemblies upon decommissioning " \
+           "If false, the archetype only transmutes half.", \
   }
   bool decom_transmute_all;
-
 
   /////////// preference changes ///////////
   #pragma cyclus var { \
@@ -389,6 +402,7 @@ class Reactor : public cyclus::Facility,
            "particular fresh fuel type.", \
   }
   std::vector<int> pref_change_times;
+
   #pragma cyclus var { \
     "default": [], \
     "doc": "The input commodity for a particular fuel preference change.  " \
@@ -398,6 +412,7 @@ class Reactor : public cyclus::Facility,
     "uitype": ["oneormore", "incommodity"], \
   }
   std::vector<std::string> pref_change_commods;
+
   #pragma cyclus var { \
     "default": [], \
     "uilabel": "Changed Fresh Fuel Preference",                        \
@@ -428,18 +443,21 @@ class Reactor : public cyclus::Facility,
   #pragma cyclus var {"capacity": "n_assem_spent * assem_size"}
   cyclus::toolkit::ResBuf<cyclus::Material> spent;
 
-
   // should be hidden in ui (internal only). True if fuel has already been
   // discharged this cycle.
-  #pragma cyclus var {"default": 0, "doc": "This should NEVER be set manually",\
-                      "internal": True \
+  #pragma cyclus var { \
+    "default": 0, \
+    "doc": "This should NEVER be set manually", \
+    "internal": True \
   }
   bool discharged;
 
   // This variable should be hidden/unavailable in ui.  Maps resource object
   // id's to the index for the incommod through which they were received.
-  #pragma cyclus var {"default": {}, "doc": "This should NEVER be set manually", \
-                      "internal": True \
+  #pragma cyclus var { \
+    "default": {}, \
+    "doc": "This should NEVER be set manually", \
+    "internal": True \
   }
   std::map<int, int> res_indexes;
 
@@ -461,6 +479,7 @@ class Reactor : public cyclus::Facility,
            "be expressed in degrees as a double." \
   }
   double longitude;
+  // clang-format on
 
   cyclus::toolkit::Position coordinates;
 
@@ -468,6 +487,6 @@ class Reactor : public cyclus::Facility,
   void RecordPosition();
 };
 
-} // namespace cycamore
+}  // namespace cycamore
 
 #endif  // CYCAMORE_SRC_REACTOR_H_

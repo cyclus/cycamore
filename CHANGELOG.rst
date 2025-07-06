@@ -6,6 +6,7 @@ Since last release
 ======================
 
 **Added:**
+* Added clang-format protection to all .h files with #pragma blocks in /src (#644)
 * Replaced manual matl_buy/sell_policy code in storage with code injection (#639)
 * Added package parameter to storage (#603, #612, #616)
 * Added package parameter to source (#613, #617, #621, #623, #630)
@@ -14,7 +15,7 @@ Since last release
 * Added (negative)binomial distributions for disruption modeling to storage (#635)
 
 **Changed:**
-
+* Ran clang-format on /src (#644)
 * Rely on ``python3`` in environment instead of ``python`` (#602)
 * Link against ``libxml++`` imported target in CMake instead of ``LIBXMLXX_LIBRARIES`` (#608)
 * Cleaned up ``using`` declarations throughout archetypes (#610)

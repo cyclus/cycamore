@@ -2,12 +2,11 @@
 #include "enrichment.h"
 
 #include <algorithm>
+#include <boost/lexical_cast.hpp>
 #include <cmath>
 #include <limits>
 #include <sstream>
 #include <vector>
-
-#include <boost/lexical_cast.hpp>
 
 using cyclus::Material;
 
@@ -52,8 +51,8 @@ void Enrichment::Build(cyclus::Agent* parent) {
                                     context()->GetRecipe(feed_recipe)));
   }
 
-  LOG(cyclus::LEV_DEBUG2, "EnrFac") << "Enrichment "
-                                    << " entering the simuluation: ";
+  LOG(cyclus::LEV_DEBUG2, "EnrFac")
+      << "Enrichment " << " entering the simuluation: ";
   LOG(cyclus::LEV_DEBUG2, "EnrFac") << str();
   RecordPosition();
 }
@@ -61,19 +60,18 @@ void Enrichment::Build(cyclus::Agent* parent) {
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 void Enrichment::Tick() {
   current_swu_capacity = SwuCapacity();
-
 }
 
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 void Enrichment::Tock() {
   using cyclus::toolkit::RecordTimeSeries;
-  LOG(cyclus::LEV_INFO4, "EnrFac") << prototype() << " used "
-                                   << intra_timestep_swu_ << " SWU";
+  LOG(cyclus::LEV_INFO4, "EnrFac")
+      << prototype() << " used " << intra_timestep_swu_ << " SWU";
   RecordTimeSeries<cyclus::toolkit::ENRICH_SWU>(this, intra_timestep_swu_);
-  LOG(cyclus::LEV_INFO4, "EnrFac") << prototype() << " used "
-                                   << intra_timestep_feed_ << " feed";
+  LOG(cyclus::LEV_INFO4, "EnrFac")
+      << prototype() << " used " << intra_timestep_feed_ << " feed";
   RecordTimeSeries<cyclus::toolkit::ENRICH_FEED>(this, intra_timestep_feed_);
-  RecordTimeSeries<double>("demand"+feed_commod, this, intra_timestep_feed_);
+  RecordTimeSeries<double>("demand" + feed_commod, this, intra_timestep_feed_);
 }
 
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -95,8 +93,7 @@ Enrichment::GetMatlRequests() {
 }
 
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-bool SortBids(cyclus::Bid<Material>* i,
-              cyclus::Bid<Material>* j) {
+bool SortBids(cyclus::Bid<Material>* i, cyclus::Bid<Material>* j) {
   Material::Ptr mat_i = i->offer();
   Material::Ptr mat_j = j->offer();
 
@@ -109,8 +106,7 @@ bool SortBids(cyclus::Bid<Material>* i,
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 // Sort offers of input material to have higher preference for more
 //  U-235 content
-void Enrichment::AdjustMatlPrefs(
-    cyclus::PrefMap<Material>::type& prefs) {
+void Enrichment::AdjustMatlPrefs(cyclus::PrefMap<Material>::type& prefs) {
   using cyclus::Bid;
 
   if (order_prefs == false) {
@@ -148,17 +144,17 @@ void Enrichment::AdjustMatlPrefs(
       }
       (reqit->second)[bids_vector[bidit]] = new_pref;
     }  // each bid
-  }    // each Material Request
+  }  // each Material Request
 }
 
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 void Enrichment::AcceptMatlTrades(
-    const std::vector<std::pair<cyclus::Trade<Material>,
-                                Material::Ptr> >& responses) {
+    const std::vector<std::pair<cyclus::Trade<Material>, Material::Ptr>>&
+        responses) {
   // see
   // http://stackoverflow.com/questions/5181183/boostshared-ptr-and-inheritance
-  std::vector<std::pair<cyclus::Trade<Material>,
-                        Material::Ptr> >::const_iterator it;
+  std::vector<std::pair<cyclus::Trade<Material>, Material::Ptr>>::const_iterator
+      it;
   for (it = responses.begin(); it != responses.end(); ++it) {
     AddMat_(it->second);
   }
@@ -177,7 +173,8 @@ std::set<cyclus::BidPortfolio<Material>::Ptr> Enrichment::GetMatlBids(
   std::set<BidPortfolio<Material>::Ptr> ports;
 
   RecordTimeSeries<double>("supply" + tails_commod, this, tails.quantity());
-  RecordTimeSeries<double>("supply" + product_commod, this, inventory.quantity());
+  RecordTimeSeries<double>("supply" + product_commod, this,
+                           inventory.quantity());
   if ((out_requests.count(tails_commod) > 0) && (tails.quantity() > 0)) {
     BidPortfolio<Material>::Ptr tails_port(new BidPortfolio<Material>());
 
@@ -199,9 +196,9 @@ std::set<cyclus::BidPortfolio<Material>::Ptr> Enrichment::GetMatlBids(
     // add an overall capacity constraint
     CapacityConstraint<Material> tails_constraint(tails.quantity());
     tails_port->AddConstraint(tails_constraint);
-    LOG(cyclus::LEV_INFO5, "EnrFac") << prototype()
-                                     << " adding tails capacity constraint of "
-                                     << tails.capacity();
+    LOG(cyclus::LEV_INFO5, "EnrFac")
+        << prototype() << " adding tails capacity constraint of "
+        << tails.capacity();
     ports.insert(tails_port);
   }
 
@@ -249,9 +246,8 @@ bool Enrichment::ValidReq(const Material::Ptr mat) {
 
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 void Enrichment::GetMatlTrades(
-    const std::vector<cyclus::Trade<Material> >& trades,
-    std::vector<std::pair<cyclus::Trade<Material>,
-                          Material::Ptr> >& responses) {
+    const std::vector<cyclus::Trade<Material>>& trades,
+    std::vector<std::pair<cyclus::Trade<Material>, Material::Ptr>>& responses) {
   using cyclus::Trade;
 
   intra_timestep_swu_ = 0;
@@ -266,14 +262,14 @@ void Enrichment::GetMatlTrades(
     // if tails then make transfer of material
     if (commod_type == tails_commod) {
       LOG(cyclus::LEV_INFO5, "EnrFac")
-          << prototype() << " just received an order"
-          << " for " << it->amt << " of " << tails_commod;
+          << prototype() << " just received an order" << " for " << it->amt
+          << " of " << tails_commod;
       double pop_qty = std::min(qty, tails.quantity());
       response = tails.Pop(pop_qty, cyclus::eps_rsrc());
     } else {
       LOG(cyclus::LEV_INFO5, "EnrFac")
-          << prototype() << " just received an order"
-          << " for " << it->amt << " of " << product_commod;
+          << prototype() << " just received an order" << " for " << it->amt
+          << " of " << product_commod;
       response = Enrich_(it->bid->offer(), qty);
     }
     responses.push_back(std::make_pair(*it, response));
@@ -289,7 +285,6 @@ void Enrichment::GetMatlTrades(
                              " is being asked to provide more than" +
                              " its SWU capacity.");
   }
-
 }
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 void Enrichment::AddMat_(Material::Ptr mat) {
@@ -337,8 +332,7 @@ void Enrichment::AddMat_(Material::Ptr mat) {
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 Material::Ptr Enrichment::Request_() {
   double qty = std::max(0.0, inventory.capacity() - inventory.quantity());
-  return Material::CreateUntracked(qty,
-                                           context()->GetRecipe(feed_recipe));
+  return Material::CreateUntracked(qty, context()->GetRecipe(feed_recipe));
 }
 
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -347,17 +341,16 @@ Material::Ptr Enrichment::Offer_(Material::Ptr mat) {
   cyclus::CompMap comp;
   comp[922350000] = q.atom_frac(922350000);
   comp[922380000] = q.atom_frac(922380000);
-  return Material::CreateUntracked(
-      mat->quantity(), cyclus::Composition::CreateFromAtom(comp));
+  return Material::CreateUntracked(mat->quantity(),
+                                   cyclus::Composition::CreateFromAtom(comp));
 }
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-Material::Ptr Enrichment::Enrich_(Material::Ptr mat,
-                                          double qty) {
+Material::Ptr Enrichment::Enrich_(Material::Ptr mat, double qty) {
   using cyclus::toolkit::Assays;
-  using cyclus::toolkit::UraniumAssayMass;
-  using cyclus::toolkit::SwuRequired;
   using cyclus::toolkit::FeedQty;
+  using cyclus::toolkit::SwuRequired;
   using cyclus::toolkit::TailsQty;
+  using cyclus::toolkit::UraniumAssayMass;
 
   // get enrichment parameters
   Assays assays(FeedAssay(), UraniumAssayMass(mat), tails_assay);
@@ -408,32 +401,32 @@ Material::Ptr Enrichment::Enrich_(Material::Ptr mat,
   intra_timestep_feed_ += feed_req;
   RecordEnrichment_(feed_req, swu_req);
 
-  LOG(cyclus::LEV_INFO5, "EnrFac") << prototype()
-                                   << " has performed an enrichment: ";
+  LOG(cyclus::LEV_INFO5, "EnrFac")
+      << prototype() << " has performed an enrichment: ";
   LOG(cyclus::LEV_INFO5, "EnrFac") << "   * Feed Qty: " << feed_req;
-  LOG(cyclus::LEV_INFO5, "EnrFac") << "   * Feed Assay: "
-                                   << assays.Feed() * 100;
+  LOG(cyclus::LEV_INFO5, "EnrFac")
+      << "   * Feed Assay: " << assays.Feed() * 100;
   LOG(cyclus::LEV_INFO5, "EnrFac") << "   * Product Qty: " << qty;
-  LOG(cyclus::LEV_INFO5, "EnrFac") << "   * Product Assay: "
-                                   << assays.Product() * 100;
-  LOG(cyclus::LEV_INFO5, "EnrFac") << "   * Tails Qty: "
-                                   << TailsQty(qty, assays);
-  LOG(cyclus::LEV_INFO5, "EnrFac") << "   * Tails Assay: "
-                                   << assays.Tails() * 100;
+  LOG(cyclus::LEV_INFO5, "EnrFac")
+      << "   * Product Assay: " << assays.Product() * 100;
+  LOG(cyclus::LEV_INFO5, "EnrFac")
+      << "   * Tails Qty: " << TailsQty(qty, assays);
+  LOG(cyclus::LEV_INFO5, "EnrFac")
+      << "   * Tails Assay: " << assays.Tails() * 100;
   LOG(cyclus::LEV_INFO5, "EnrFac") << "   * SWU: " << swu_req;
-  LOG(cyclus::LEV_INFO5, "EnrFac") << "   * Current SWU capacity: "
-                                   << current_swu_capacity;
+  LOG(cyclus::LEV_INFO5, "EnrFac")
+      << "   * Current SWU capacity: " << current_swu_capacity;
 
   return response;
 }
 
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 void Enrichment::RecordEnrichment_(double natural_u, double swu) {
-  using cyclus::Context;
   using cyclus::Agent;
+  using cyclus::Context;
 
-  LOG(cyclus::LEV_DEBUG1, "EnrFac") << prototype()
-                                    << " has enriched a material:";
+  LOG(cyclus::LEV_DEBUG1, "EnrFac")
+      << prototype() << " has enriched a material:";
   LOG(cyclus::LEV_DEBUG1, "EnrFac") << "  * Amount: " << natural_u;
   LOG(cyclus::LEV_DEBUG1, "EnrFac") << "  *    SWU: " << swu;
 
@@ -451,8 +444,7 @@ double Enrichment::FeedAssay() {
     return 0;
   }
   double pop_qty = inventory.quantity();
-  Material::Ptr fission_matl =
-      inventory.Pop(pop_qty, cyclus::eps_rsrc());
+  Material::Ptr fission_matl = inventory.Pop(pop_qty, cyclus::eps_rsrc());
   inventory.Push(fission_matl);
   return cyclus::toolkit::UraniumAssayMass(fission_matl);
 }
