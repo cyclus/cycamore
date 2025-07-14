@@ -35,7 +35,6 @@ namespace cycamore {
 /// in_recipe (optional) describes the incoming resource by recipe
 ///
 /// @section optionalparams Optional Parameters
-/// sell_quantity restricts selling to only integer multiples of this value
 /// max_inv_size is the maximum capacity of the inventory storage
 /// throughput is the maximum processing capacity per timestep
 /// package is the name of the package type to ship
@@ -98,6 +97,12 @@ class Storage
   virtual void Tock();
 
   virtual std::string version() { return CYCAMORE_VERSION; }
+
+ private:
+  // Code Injection
+  #include "toolkit/matl_buy_policy.cycpp.h"
+  #include "toolkit/matl_sell_policy.cycpp.h"
+  #include "toolkit/position.cycpp.h"
 
  protected:
   ///   @brief adds a material into the incoming commodity inventory
@@ -236,6 +241,7 @@ class Storage
   #include "toolkit/matl_buy_policy.cycpp.h"
   #include "toolkit/matl_sell_policy.cycpp.h"
   #include "toolkit/position.cycpp.h"
+
 };
 
 }  // namespace cycamore
