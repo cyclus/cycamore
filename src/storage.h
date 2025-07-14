@@ -98,12 +98,6 @@ class Storage
 
   virtual std::string version() { return CYCAMORE_VERSION; }
 
- private:
-  // Code Injection
-  #include "toolkit/matl_buy_policy.cycpp.h"
-  #include "toolkit/matl_sell_policy.cycpp.h"
-  #include "toolkit/position.cycpp.h"
-
  protected:
   ///   @brief adds a material into the incoming commodity inventory
   ///   @param mat the material to add to the incoming inventory.
