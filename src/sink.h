@@ -115,6 +115,9 @@ class Sink
       input_commodity_preferences() const { return in_commod_prefs; }
 
  private:
+  // Code Injection:
+  #include "toolkit/position.cycpp.h"
+
   double requestAmt;
   int nextBuyTime;
   /// all facilities must have at least one input commodity
@@ -269,25 +272,6 @@ class Sink
     "uitype": "bool"}
   bool keep_packaging;
 
-  #pragma cyclus var { \
-    "default": 0.0, \
-    "uilabel": "Geographical latitude in degrees as a double", \
-    "doc": "Latitude of the agent's geographical position. The value should " \
-           "be expressed in degrees as a double." \
-  }
-  double latitude;
-
-  #pragma cyclus var { \
-    "default": 0.0, \
-    "uilabel": "Geographical longitude in degrees as a double", \
-    "doc": "Longitude of the agent's geographical position. The value should " \
-           "be expressed in degrees as a double." \
-  }
-  double longitude;
-
-  cyclus::toolkit::Position coordinates;
-
-  void RecordPosition();
 };
 
 }  // namespace cycamore

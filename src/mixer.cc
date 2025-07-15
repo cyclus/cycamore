@@ -6,13 +6,9 @@ namespace cycamore {
 
 Mixer::Mixer(cyclus::Context* ctx)
     : cyclus::Facility(ctx),
-      throughput(0),
-      latitude(0.0),
-      longitude(0.0),
-      coordinates(latitude, longitude) {
+      throughput(0) {
   cyclus::Warn<cyclus::EXPERIMENTAL_WARNING>(
       "the Mixer archetype is experimental");
-  RecordPosition();
 }
 
 cyclus::Inventories Mixer::SnapshotInv() {
@@ -61,6 +57,8 @@ void Mixer::EnterNotify() {
       streambufs[name].capacity(cap);
     }
     in_commods.push_back(streams_[i].second);
+
+    InitializePosition();
   }
 
   // ratio normalisation
@@ -199,18 +197,6 @@ void Mixer::AcceptMatlTrades(
   }
 
   req_inventories_.clear();
-}
-
-void Mixer::RecordPosition() {
-  std::string specification = spec();
-  context()
-      ->NewDatum("AgentPosition")
-      ->AddVal("Spec", specification)
-      ->AddVal("Prototype", this->prototype())
-      ->AddVal("AgentId", id())
-      ->AddVal("Latitude", latitude)
-      ->AddVal("Longitude", longitude)
-      ->Record();
 }
 
 extern "C" cyclus::Agent* ConstructMixer(cyclus::Context* ctx) {

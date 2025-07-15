@@ -65,9 +65,9 @@ namespace cycamore {
 /// Matched resources are sent immediately.
 class Storage
   : public cyclus::Facility,
-    public cyclus::toolkit::CommodityProducer,
-    public cyclus::toolkit::Position {
- public:
+    public cyclus::toolkit::CommodityProducer {
+      
+ public:  
   /// @param ctx the cyclus context for access to simulation-wide parameters
   Storage(cyclus::Context* ctx);
 
@@ -87,9 +87,6 @@ class Storage
   /// A verbose printer for the Storage Facility
   virtual std::string str();
 
-  // --- Facility Members ---
-
-  // --- Agent Members ---
   /// Sets up the Storage Facility's trade requests
   virtual void EnterNotify();
 
@@ -100,11 +97,6 @@ class Storage
   virtual void Tock();
 
   virtual std::string version() { return CYCAMORE_VERSION; }
-
- private:
-  // Code Injection
-  #include "toolkit/matl_buy_policy.cycpp.h"
-  #include "toolkit/matl_sell_policy.cycpp.h"
 
  protected:
   ///   @brief adds a material into the incoming commodity inventory
@@ -236,27 +228,14 @@ class Storage
   #pragma cyclus var {"tooltip": "Total Inventory Tracker to restrict maximum agent inventory"}
   cyclus::toolkit::TotalInvTracker inventory_tracker;
 
-  #pragma cyclus var { \
-    "default": 0.0, \
-    "uilabel": "Geographical latitude in degrees as a double", \
-    "doc": "Latitude of the agent's geographical position. The value should " \
-           "be expressed in degrees as a double." \
-  }
-  double latitude;
-
-  #pragma cyclus var { \
-    "default": 0.0, \
-    "uilabel": "Geographical longitude in degrees as a double", \
-    "doc": "Longitude of the agent's geographical position. The value should " \
-           "be expressed in degrees as a double." \
-  }
-  double longitude;
-
-  cyclus::toolkit::Position coordinates;
-
-  void RecordPosition();
-
   friend class StorageTest;
+
+ private:
+  // Code Injection
+  #include "toolkit/matl_buy_policy.cycpp.h"
+  #include "toolkit/matl_sell_policy.cycpp.h"
+  #include "toolkit/position.cycpp.h"
+
 };
 
 }  // namespace cycamore

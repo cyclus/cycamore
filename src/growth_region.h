@@ -90,7 +90,7 @@ class GrowthRegion : public cyclus::Region,
     "description is comprised of a function type and associated parameters. "\
     "\n\n"                                       \
     "  * Start times are inclusive. For a start time :math:`t_0`, the demand "\
-    "function is evaluated on :math:`[t_0, \infty)`."                     \
+    "function is evaluated on :math:`[t_0, infinity)`."                     \
     "\n\n"                                       \
     "  * Supported function types are based on the "\
     "`cyclus::toolkit::BasicFunctionFactory "\
@@ -129,26 +129,9 @@ class GrowthRegion : public cyclus::Region,
   void OrderBuilds(cyclus::toolkit::Commodity& commodity, double unmetdemand);
 
   private:
-  #pragma cyclus var { \
-    "default": 0.0, \
-    "uilabel": "Geographical latitude in degrees as a double", \
-    "doc": "Latitude of the agent's geographical position. The value should " \
-           "be expressed in degrees as a double." \
-  }
-  double latitude;
+  // Code Injection:
+  #include "toolkit/position.cycpp.h"
 
-  #pragma cyclus var { \
-    "default": 0.0, \
-    "uilabel": "Geographical longitude in degrees as a double", \
-    "doc": "Longitude of the agent's geographical position. The value should " \
-           "be expressed in degrees as a double." \
-  }
-  double longitude;
-
-  cyclus::toolkit::Position coordinates;
-
-  /// Records an agent's latitude and longitude to the output db
-  void RecordPosition();
 };
 }  // namespace cycamore
 

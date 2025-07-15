@@ -134,10 +134,7 @@ FuelFab::FuelFab(cyclus::Context* ctx)
     : cyclus::Facility(ctx),
       fill_size(0),
       fiss_size(0),
-      throughput(0),
-      latitude(0.0),
-      longitude(0.0),
-      coordinates(latitude, longitude) {}
+      throughput(0) {}
 
 void FuelFab::EnterNotify() {
   cyclus::Facility::EnterNotify();
@@ -163,7 +160,8 @@ void FuelFab::EnterNotify() {
        << " fill_commod_prefs vals, expected " << fill_commods.size();
     throw cyclus::ValidationError(ss.str());
   }
-  RecordPosition();
+
+  InitializePosition();
 }
 
 std::set<cyclus::RequestPortfolio<Material>::Ptr> FuelFab::GetMatlRequests() {
@@ -493,18 +491,6 @@ void FuelFab::GetMatlTrades(
       responses.push_back(std::make_pair(trades[i], m));
     }
   }
-}
-
-void FuelFab::RecordPosition() {
-  std::string specification = this->spec();
-  context()
-      ->NewDatum("AgentPosition")
-      ->AddVal("Spec", specification)
-      ->AddVal("Prototype", this->prototype())
-      ->AddVal("AgentId", id())
-      ->AddVal("Latitude", latitude)
-      ->AddVal("Longitude", longitude)
-      ->Record();
 }
 
 extern "C" cyclus::Agent* ConstructFuelFab(cyclus::Context* ctx) {

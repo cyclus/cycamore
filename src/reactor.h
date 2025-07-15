@@ -134,6 +134,9 @@ class Reactor : public cyclus::Facility,
   #pragma cyclus decl
 
  private:
+  // Code Injection:
+  #include "toolkit/position.cycpp.h"
+
   std::string fuel_incommod(cyclus::Material::Ptr m);
   std::string fuel_outcommod(cyclus::Material::Ptr m);
   std::string fuel_inrecipe(cyclus::Material::Ptr m);
@@ -187,6 +190,7 @@ class Reactor : public cyclus::Facility,
     "doc": "Ordered list of input commodities on which to requesting fuel.", \
   }
   std::vector<std::string> fuel_incommods;
+
   #pragma cyclus var { \
     "uitype": ["oneormore", "inrecipe"], \
     "uilabel": "Fresh Fuel Recipe List", \
@@ -204,6 +208,7 @@ class Reactor : public cyclus::Facility,
            "requests (default).", \
   }
   std::vector<double> fuel_prefs;
+
   #pragma cyclus var { \
     "uitype": ["oneormore", "outcommodity"], \
     "uilabel": "Spent Fuel Commodity List", \
@@ -211,6 +216,7 @@ class Reactor : public cyclus::Facility,
            "received as each particular input commodity (same order)." \
   }
   std::vector<std::string> fuel_outcommods;
+
   #pragma cyclus var {           \
     "uitype": ["oneormore", "outrecipe"], \
     "uilabel": "Spent Fuel Recipe List", \
@@ -229,6 +235,7 @@ class Reactor : public cyclus::Facility,
            "a requested fresh fuel.", \
   }
   std::vector<int> recipe_change_times;
+
   #pragma cyclus var { \
     "default": [], \
     "uilabel": "Commodity for Changed Fresh/Spent Fuel Recipe", \
@@ -238,6 +245,7 @@ class Reactor : public cyclus::Facility,
     "uitype": ["oneormore", "incommodity"], \
   }
   std::vector<std::string> recipe_change_commods;
+
   #pragma cyclus var { \
     "default": [], \
     "uilabel": "New Recipe for Fresh Fuel", \
@@ -247,6 +255,7 @@ class Reactor : public cyclus::Facility,
     "uitype": ["oneormore", "inrecipe"], \
   }
   std::vector<std::string> recipe_change_in;
+
   #pragma cyclus var { \
     "default": [], \
     "uilabel": "New Recipe for Spent Fuel", \
@@ -275,6 +284,7 @@ class Reactor : public cyclus::Facility,
            "Batch size is equivalent to ``n_assem_batch / n_assem_core``.", \
   }
   int n_assem_batch;
+
   #pragma cyclus var { \
     "default": 3, \
     "uilabel": "Number of Assemblies in Core", \
@@ -283,6 +293,7 @@ class Reactor : public cyclus::Facility,
     "doc": "Number of assemblies that constitute a full core.", \
   }
   int n_assem_core;
+
   #pragma cyclus var { \
     "default": 0, \
     "uilabel": "Minimum Fresh Fuel Inventory", \
@@ -292,6 +303,7 @@ class Reactor : public cyclus::Facility,
     "doc": "Number of fresh fuel assemblies to keep on-hand if possible.", \
   }
   int n_assem_fresh;
+
   #pragma cyclus var { \
     "default": 1000000000, \
     "uilabel": "Maximum Spent Fuel Inventory", \
@@ -312,6 +324,7 @@ class Reactor : public cyclus::Facility,
     "units": "time steps", \
   }
   int cycle_time;
+
   #pragma cyclus var { \
     "default": 1, \
     "doc": "The duration of a full refueling period - the minimum time between"\
@@ -320,6 +333,7 @@ class Reactor : public cyclus::Facility,
     "units": "time steps", \
   }
   int refuel_time;
+
   #pragma cyclus var { \
     "default": 0, \
     "doc": "Number of time steps since the start of the last cycle." \
@@ -389,6 +403,7 @@ class Reactor : public cyclus::Facility,
            "particular fresh fuel type.", \
   }
   std::vector<int> pref_change_times;
+
   #pragma cyclus var { \
     "default": [], \
     "doc": "The input commodity for a particular fuel preference change.  " \
@@ -398,6 +413,7 @@ class Reactor : public cyclus::Facility,
     "uitype": ["oneormore", "incommodity"], \
   }
   std::vector<std::string> pref_change_commods;
+
   #pragma cyclus var { \
     "default": [], \
     "uilabel": "Changed Fresh Fuel Preference",                        \
@@ -445,27 +461,6 @@ class Reactor : public cyclus::Facility,
 
   // populated lazily and no need to persist.
   std::set<std::string> uniq_outcommods_;
-
-  #pragma cyclus var { \
-    "default": 0.0, \
-    "uilabel": "Geographical latitude in degrees as a double", \
-    "doc": "Latitude of the agent's geographical position. The value should " \
-           "be expressed in degrees as a double." \
-  }
-  double latitude;
-
-  #pragma cyclus var { \
-    "default": 0.0, \
-    "uilabel": "Geographical longitude in degrees as a double", \
-    "doc": "Longitude of the agent's geographical position. The value should " \
-           "be expressed in degrees as a double." \
-  }
-  double longitude;
-
-  cyclus::toolkit::Position coordinates;
-
-  /// Records an agent's latitude and longitude to the output db
-  void RecordPosition();
 };
 
 } // namespace cycamore
