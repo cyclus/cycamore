@@ -119,7 +119,13 @@ std::set<cyclus::BidPortfolio<cyclus::Material>::Ptr> Source::GetMatlBids(
       m = outrecipe.empty() ? \
           Material::CreateUntracked(*bit, target->comp()) : \
           Material::CreateUntracked(*bit, context()->GetRecipe(outrecipe));
-      port->AddBid(req, m, this);
+      
+      // Calculate Pref in stages for readability
+      double bid_price = CalculateBidPrice(throughput, target->quantity());
+      double unit_price = bid_price/target->quantity();
+      double pref = 1.0 / unit_price;
+
+      port->AddBid(req, m, this, false, pref);
     }
   }
 

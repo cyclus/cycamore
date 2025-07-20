@@ -160,9 +160,19 @@ void Enrichment::AcceptMatlTrades(
   // http://stackoverflow.com/questions/5181183/boostshared-ptr-and-inheritance
   std::vector<std::pair<cyclus::Trade<Material>,
                         Material::Ptr> >::const_iterator it;
+
+  double prev_weighted_cost = 0.0;
+  double prev_qty = 0.0;
+  
   for (it = responses.begin(); it != responses.end(); ++it) {
     AddMat_(it->second);
+
+    prev_weighted_cost += 1/it->first.bid->preference() * it->first.amt;
+    prev_qty += it->first.amt;
   }
+
+  total_qty_purchased += prev_qty;
+  avg_per_unit_cost = (avg_per_unit_cost * (total_qty_purchased - prev_qty) + prev_weighted_cost) / total_qty_purchased;
 }
 
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -220,7 +230,19 @@ std::set<cyclus::BidPortfolio<Material>::Ptr> Enrichment::GetMatlBids(
           ((request_enrich < max_enrich) ||
            (cyclus::AlmostEq(request_enrich, max_enrich)))) {
         Material::Ptr offer = Offer_(req->target());
-        commod_port->AddBid(req, offer, this);
+        
+        cyclus::toolkit::Assays assays(FeedAssay(), cyclus::toolkit::UraniumAssayMass(mat), tails_assay);
+        double natu_req = cyclus::toolkit::FeedQty(mat->quantity(), assays);
+        double swu_req = cyclus::toolkit::SwuRequired(mat->quantity(), assays);
+
+        // swu_capacity here is wrong, but I'm not sure what's right...
+        // Enrichment has a SWU capacity --> sells kg of U, but that cost depends
+        // on how many SWUs it took to make it (???)
+        double bid_price = CalculateBidPrice(swu_capacity, swu_req, natu_req * avg_per_unit_cost);
+        double unit_price = bid_price/mat->quantity();
+        double pref = 1.0 / unit_price;
+        
+        commod_port->AddBid(req, offer, this, false, pref);
       }
     }
 

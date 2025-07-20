@@ -253,6 +253,7 @@ class Enrichment
  private:
   // Code Injection:
   #include "toolkit/position.cycpp.h"
+  #include "toolkit/facility_cost.cycpp.h"
 
   ///   @brief adds a material into the natural uranium inventory
   ///   @throws if the material is not the same composition as the feed_recipe
@@ -377,6 +378,8 @@ class Enrichment
   double swu_capacity;
 
   double current_swu_capacity;
+  double total_qty_purchased = 0.0;
+  double avg_per_unit_cost = 0.0;
 
   #pragma cyclus var { 'capacity': 'max_feed_inventory' }
   cyclus::toolkit::ResBuf<cyclus::Material> inventory;  // natural u

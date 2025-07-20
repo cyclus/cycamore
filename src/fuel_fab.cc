@@ -243,21 +243,59 @@ void FuelFab::AcceptMatlTrades(
   std::vector<std::pair<cyclus::Trade<Material>,
                         Material::Ptr> >::const_iterator trade;
 
+  double prev_weighted_fiss_cost = 0.0;
+  double prev_fiss_qty = 0.0;
+
+  double prev_weighted_fill_cost = 0.0;
+  double prev_fill_qty = 0.0;
+  
+  double prev_weighted_topup_cost = 0.0;
+  double prev_topup_qty = 0.0;
+
   for (trade = responses.begin(); trade != responses.end(); ++trade) {
     std::string commod = trade->first.request->commodity();
     double req_qty = trade->first.request->target()->quantity();
     cyclus::Request<Material>* req = trade->first.request;
     Material::Ptr m = trade->second;
+
     if (req_inventories_[req] == "fill") {
+
+      prev_weighted_fill_cost += 1/trade->first.bid->preference() * trade->first.amt;
+      prev_fill_qty += trade->first.amt;
       fill.Push(m);
+
     } else if (req_inventories_[req] == "topup") {
+
+      prev_weighted_topup_cost += 1/trade->first.bid->preference() * trade->first.amt;
+      prev_topup_qty += trade->first.amt;
       topup.Push(m);
+
     } else if (req_inventories_[req] == "fiss") {
+
+      prev_weighted_fiss_cost += 1/trade->first.bid->preference() * trade->first.amt;
+      prev_fiss_qty += trade->first.amt;
       fiss.Push(m);
+
     } else {
       throw cyclus::ValueError("cycamore::FuelFab was overmatched on requests");
     }
   }
+
+  // Struggling with whether this should be functionalized...
+  total_fiss_qty_purchased += prev_fiss_qty;
+  double new_fiss_matl = total_fiss_qty_purchased - prev_fiss_qty;
+  double total_fiss_cost = avg_per_unit_fiss_cost * new_fiss_matl + prev_weighted_fiss_cost;
+  avg_per_unit_fiss_cost = total_fiss_cost / total_fiss_qty_purchased;
+
+  total_fill_qty_purchased += prev_fill_qty;
+  double new_fill_matl = total_fill_qty_purchased - prev_fill_qty;
+  double total_fill_cost = avg_per_unit_fill_cost * new_fill_matl + prev_weighted_fill_cost;
+  avg_per_unit_fill_cost = total_fill_cost / total_fill_qty_purchased;
+
+  total_topup_qty_purchased += prev_topup_qty;
+  double new_topup_matl = total_topup_qty_purchased - prev_topup_qty;
+  double total_topup_cost = avg_per_unit_topup_cost * new_topup_matl + prev_weighted_topup_cost;
+  avg_per_unit_topup_cost = total_topup_cost / total_topup_qty_purchased;
 
   req_inventories_.clear();
 
@@ -333,10 +371,15 @@ std::set<cyclus::BidPortfolio<Material>::Ptr> FuelFab::GetMatlBids(
       fill_frac = AtomToMassFrac(fill_frac, c_fill, c_fiss);
       Material::Ptr m1 = Material::CreateUntracked(fiss_frac * tgt_qty, c_fiss);
       Material::Ptr m2 = Material::CreateUntracked(fill_frac * tgt_qty, c_fill);
-      m1->Absorb(m2);
 
+      double input_cost = m1->quantity() * avg_per_unit_fiss_cost + m2->quantity() * avg_per_unit_fill_cost;
+      double bid_price = CalculateBidPrice(throughput, tgt_qty, input_cost);
+      double unit_price = bid_price/tgt_qty;
+      double pref = 1.0 / unit_price;
+
+      m1->Absorb(m2);
       bool exclusive = false;
-      port->AddBid(req, m1, this, exclusive);
+      port->AddBid(req, m1, this, exclusive, pref);
     } else if (topup.count() > 0 && ValidWeights(w_fiss, w_tgt, w_topup)) {
       // only bid with topup if we have filler - otherwise we might be able to
       // meet target with filler when we get it. we should only use topup
@@ -348,10 +391,15 @@ std::set<cyclus::BidPortfolio<Material>::Ptr> FuelFab::GetMatlBids(
       Material::Ptr m1 =
           Material::CreateUntracked(topup_frac * tgt_qty, c_topup);
       Material::Ptr m2 = Material::CreateUntracked(fiss_frac * tgt_qty, c_fiss);
-      m1->Absorb(m2);
 
+      double input_cost = m1->quantity() * avg_per_unit_topup_cost + m2->quantity() * avg_per_unit_fiss_cost;
+      double bid_price = CalculateBidPrice(throughput, tgt_qty, input_cost);
+      double unit_price = bid_price/tgt_qty;
+      double pref = 1.0 / unit_price;
+
+      m1->Absorb(m2);
       bool exclusive = false;
-      port->AddBid(req, m1, this, exclusive);
+      port->AddBid(req, m1, this, exclusive, pref);
     } else if (fiss.count() > 0 && fill.count() > 0 ||
                fiss.count() > 0 && topup.count() > 0) {
       // else can't meet the target weight - don't bid.  Just a plain else

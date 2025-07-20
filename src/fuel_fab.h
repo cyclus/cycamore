@@ -136,6 +136,7 @@ class FuelFab
  private:
   // Code Injection:
   #include "toolkit/position.cycpp.h"
+  #include "toolkit/facility_cost.cycpp.h"
 
   #pragma cyclus var { \
     "doc": "Ordered list of commodities on which to requesting filler stream material.", \
@@ -264,6 +265,15 @@ class FuelFab
            " Use 'fission_spectrum_ave' for fast reactor compositions or 'thermal' for thermal reactors.", \
   }
   std::string spectrum;
+
+  double total_fiss_qty_purchased = 0.0;
+  double avg_per_unit_fiss_cost = 0.0;
+
+  double total_fill_qty_purchased = 0.0;
+  double avg_per_unit_fill_cost = 0.0;
+
+  double total_topup_qty_purchased = 0.0;
+  double avg_per_unit_topup_cost = 0.0;
 
   // intra-time-step state - no need to be a state var
   // map<request, inventory name>
