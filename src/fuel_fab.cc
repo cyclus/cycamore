@@ -373,9 +373,7 @@ std::set<cyclus::BidPortfolio<Material>::Ptr> FuelFab::GetMatlBids(
       Material::Ptr m2 = Material::CreateUntracked(fill_frac * tgt_qty, c_fill);
 
       double input_cost = m1->quantity() * avg_per_unit_fiss_cost + m2->quantity() * avg_per_unit_fill_cost;
-      double bid_price = CalculateBidPrice(throughput, tgt_qty, input_cost);
-      double unit_price = bid_price/tgt_qty;
-      double pref = 1.0 / unit_price;
+      double pref = 1.0 / CalculateUnitPrice(throughput, tgt_qty, input_cost);
 
       m1->Absorb(m2);
       bool exclusive = false;
@@ -393,9 +391,7 @@ std::set<cyclus::BidPortfolio<Material>::Ptr> FuelFab::GetMatlBids(
       Material::Ptr m2 = Material::CreateUntracked(fiss_frac * tgt_qty, c_fiss);
 
       double input_cost = m1->quantity() * avg_per_unit_topup_cost + m2->quantity() * avg_per_unit_fiss_cost;
-      double bid_price = CalculateBidPrice(throughput, tgt_qty, input_cost);
-      double unit_price = bid_price/tgt_qty;
-      double pref = 1.0 / unit_price;
+      double pref = 1.0 / CalculateUnitPrice(throughput, tgt_qty, input_cost);
 
       m1->Absorb(m2);
       bool exclusive = false;

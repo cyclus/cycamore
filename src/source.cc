@@ -120,10 +120,7 @@ std::set<cyclus::BidPortfolio<cyclus::Material>::Ptr> Source::GetMatlBids(
           Material::CreateUntracked(*bit, target->comp()) : \
           Material::CreateUntracked(*bit, context()->GetRecipe(outrecipe));
       
-      // Calculate Pref in stages for readability
-      double bid_price = CalculateBidPrice(throughput, target->quantity());
-      double unit_price = bid_price/target->quantity();
-      double pref = 1.0 / unit_price;
+      double pref = 1.0 /CalculateUnitPrice(throughput, target->quantity());
 
       port->AddBid(req, m, this, false, pref);
     }
