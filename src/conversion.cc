@@ -107,13 +107,17 @@ std::set<RequestPortfolio<Material>::Ptr> Conversion::GetMatlRequests() {
   RequestPortfolio<Material>::Ptr port(new RequestPortfolio<Material>());
 
   // Create material request
-  Material::Ptr dummy = Material::CreateUntracked(needed,
-                                                 context()->GetRecipe(inrecipe_name));
+  Material::Ptr mat;
+  if (inrecipe_name.empty()) {
+    mat = cyclus::NewBlankMaterial(needed);
+  } else {
+    mat = Material::CreateUntracked(needed, context()->GetRecipe(inrecipe_name));
+  }
 
   // Add request for all commodities using default preference
   for (std::vector<std::string>::iterator it = incommods.begin();
        it != incommods.end(); ++it) {
-    Request<Material>* req = port->AddRequest(dummy, this, *it);
+    Request<Material>* req = port->AddRequest(mat, this, *it);
   }
 
   // Add capacity constraint to ensure we never get more feed than needed
