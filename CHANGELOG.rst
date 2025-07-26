@@ -6,6 +6,7 @@ Since last release
 ======================
 
 **Added:**
+* Added Conversion Facility (#657)
 * Replaced manual matl_buy/sell_policy code in storage with code injection (#639)
 * Added package parameter to storage (#603, #612, #616)
 * Added package parameter to source (#613, #617, #621, #623, #630)
