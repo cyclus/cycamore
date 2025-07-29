@@ -24,7 +24,6 @@ Conversion::Conversion(cyclus::Context* ctx)
       // Make our Resource Buffers bulk buffers
       input = ResBuf<Material>(true);
       output = ResBuf<Material>(true);
-      waste = ResBuf<Material>(true);
     }
 
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -65,14 +64,16 @@ std::string Conversion::str() {
   msg += std::to_string(input.capacity());
   msg += " kg.";
 
-  msg += "} and converts into commodity ";
+  msg += "} and converts ";
+  msg += std::to_string(throughput);
+  msg += " kg/timestep into commodity ";
   ss << msg << outcommod;
   return "" + ss.str();
 }
 
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 void Conversion::Tick() {
-  ConvertUranium();
+  Convert();
 }
 
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -81,17 +82,14 @@ void Conversion::Tock() {
 }
 
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-double Conversion::CalculateNeededFeedstock() {
+double Conversion::AvailableFeedstockCapacity() {
   return input.capacity() - input.quantity();
 }
 
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-void Conversion::ConvertUranium() {
-  if (input.quantity() <= 0) return;
-  else if (input.quantity() < throughput) {
-    output.Push(input.Pop(input.quantity()));
-  } else {
-    output.Push(input.Pop(throughput));
+void Conversion::Convert() {
+  if (input.quantity() > 0) {
+    output.Push(input.Pop(std::min(input.quantity(), throughput)));
   }
 }
 
@@ -100,8 +98,8 @@ std::set<RequestPortfolio<Material>::Ptr> Conversion::GetMatlRequests() {
   std::set<RequestPortfolio<Material>::Ptr> ports;
 
   // Check if we need material
-  double needed = CalculateNeededFeedstock();
-  if (needed <= 0) return ports;
+  double available_capacity = AvailableFeedstockCapacity();
+  if (available_capacity <= 0) return ports;
 
   // Create request portfolio
   RequestPortfolio<Material>::Ptr port(new RequestPortfolio<Material>());
@@ -109,9 +107,9 @@ std::set<RequestPortfolio<Material>::Ptr> Conversion::GetMatlRequests() {
   // Create material request
   Material::Ptr mat;
   if (inrecipe_name.empty()) {
-    mat = cyclus::NewBlankMaterial(needed);
+    mat = cyclus::NewBlankMaterial(available_capacity);
   } else {
-    mat = Material::CreateUntracked(needed, context()->GetRecipe(inrecipe_name));
+    mat = Material::CreateUntracked(available_capacity, context()->GetRecipe(inrecipe_name));
   }
 
   // Add request for all commodities using default preference
@@ -120,8 +118,8 @@ std::set<RequestPortfolio<Material>::Ptr> Conversion::GetMatlRequests() {
     Request<Material>* req = port->AddRequest(mat, this, *it);
   }
 
-  // Add capacity constraint to ensure we never get more feed than needed
-  CapacityConstraint<Material> cc(needed);
+  // Add capacity constraint to ensure we never get more feed than capacity
+  CapacityConstraint<Material> cc(available_capacity);
   port->AddConstraint(cc);
 
   ports.insert(port);
@@ -148,7 +146,6 @@ std::set<BidPortfolio<Material>::Ptr> Conversion::GetMatlBids(
     double requested = (*it)->target()->quantity();
     double offer_qty = std::min(available, requested);
 
-    // This part may be wrong. Not sure if we really should pop here.
     if (offer_qty > 0) {
       Material::Ptr offer = Material::CreateUntracked(offer_qty, output.Peek()->comp());
       port->AddBid(*it, offer, this);  // Note: *it, not **it
@@ -176,12 +173,9 @@ void Conversion::AcceptMatlTrades(
     // Check if there's uranium in the material
     double u_mass = mq.mass(922350000) + mq.mass(922380000);
 
-    // If there's uranium, add it to the input buffer, otherwise add it to waste
-    if (u_mass > 0) {
-      input.Push(mat);
-    } else {
-      waste.Push(mat);
-    }
+    // Add material to the input buffer
+    input.Push(mat);
+    
   }
 }
 

@@ -17,9 +17,9 @@ namespace cycamore {
 
 class Context;
 
-/// This facility acts as a simple conversion facility. Its current fidelity
-/// is incredibly low, but it will be expanded to operate more realistically
-/// in the future. 
+/// This facility acts as a simple conversion facility from its input commodity
+/// to its output commodity. It has a fixed throughput (per time step), and 
+/// converts without regard to the composition of the input material.
 class Conversion
   : public cyclus::Facility,
     public cyclus::toolkit::Position  {
@@ -33,9 +33,8 @@ class Conversion
   // clanag-format off
   #pragma cyclus note { \
     "doc": \
-    " A conversion facility that accepts materials and products with a fixed\n"\
-    " throughput (per time step) and converts them into its outcommod. More\n"\
-    " complex behavior is planned for the future." \
+    " A conversion facility that accepts materials and products and with a \n"\
+    " fixed throughput (per time step) converts them into its outcommod. " \
     }
 
   #pragma cyclus decl
@@ -49,9 +48,9 @@ class Conversion
 
   virtual void Tock();
   
-  double CalculateNeededFeedstock();
+  double AvailableFeedstockCapacity();
 
-  void ConvertUranium();
+  void Convert();
 
 
   /// @brief Conversion Facilities request Materials of their given commodity.
@@ -104,8 +103,8 @@ class Conversion
   std::string inrecipe_name;
   
   #pragma cyclus var { \
-    "tooltip": "source output commodity", \
-    "doc": "Output commodity on which the source offers material.", \
+    "tooltip": "output commodity", \
+    "doc": "Output commodity on which the conversion facility offers material.", \
     "uilabel": "Output Commodity", \
     "uitype": "outcommodity", \
   }
@@ -138,9 +137,6 @@ class Conversion
 
   /// a buffer for outgoing material
   cyclus::toolkit::ResBuf<cyclus::Material> output;
-
-  /// a buffer for waste material
-  cyclus::toolkit::ResBuf<cyclus::Material> waste;
   // clang-format on
 
 };
