@@ -14,6 +14,7 @@ using cyclus::Trade;
 using cyclus::Material;
 using cyclus::CapacityConstraint;
 using cyclus::toolkit::ResBuf;
+using cyclus::toolkit::RecordTimeSeries;
 
 namespace cycamore {
 
@@ -42,6 +43,13 @@ Conversion::~Conversion() {}
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 void Conversion::EnterNotify() {
   cyclus::Facility::EnterNotify();
+
+  // Handle the string to boolean conversion for track_flourine_str
+  if (track_flourine == "True") {
+    track_flourine_bool = true;
+  } else {
+    track_flourine_bool = false;
+  }
   InitializePosition();
 }
 
@@ -78,7 +86,7 @@ void Conversion::Tick() {
 
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 void Conversion::Tock() {
-  
+  RecordTimeSeries<double>("FlourineUsed", this, flourine_used, "kg");
 }
 
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -88,8 +96,11 @@ double Conversion::AvailableFeedstockCapacity() {
 
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 void Conversion::Convert() {
+  flourine_used = 0.0;
   if (input.quantity() > 0) {
-    output.Push(input.Pop(std::min(input.quantity(), throughput)));
+    double converted_qty = std::min(input.quantity(), throughput);
+    output.Push(input.Pop(converted_qty));
+    flourine_used = converted_qty * flourine_uranium_ratio * track_flourine_bool;
   }
 }
 
