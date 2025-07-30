@@ -169,9 +169,6 @@ void Conversion::AcceptMatlTrades(
     Material::Ptr mat = it->second;
     cyclus::toolkit::MatQuery mq(mat);
 
-    // Check if there's uranium in the material
-    double u_mass = mq.mass(922350000) + mq.mass(922380000);
-
     // Add material to the input buffer
     input.Push(mat);
     
