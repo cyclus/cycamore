@@ -43,13 +43,6 @@ Conversion::~Conversion() {}
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 void Conversion::EnterNotify() {
   cyclus::Facility::EnterNotify();
-
-  // Handle the string to boolean conversion for track_flourine_str
-  if (track_flourine == "True") {
-    track_flourine_bool = true;
-  } else {
-    track_flourine_bool = false;
-  }
   InitializePosition();
 }
 
@@ -85,9 +78,7 @@ void Conversion::Tick() {
 }
 
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-void Conversion::Tock() {
-  RecordTimeSeries<double>("FlourineUsed", this, flourine_used, "kg");
-}
+void Conversion::Tock() {}
 
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 double Conversion::AvailableFeedstockCapacity() {
@@ -96,11 +87,8 @@ double Conversion::AvailableFeedstockCapacity() {
 
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 void Conversion::Convert() {
-  flourine_used = 0.0;
   if (input.quantity() > 0) {
-    double converted_qty = std::min(input.quantity(), throughput);
-    output.Push(input.Pop(converted_qty));
-    flourine_used = converted_qty * flourine_uranium_ratio * track_flourine_bool;
+    output.Push(input.Pop(std::min(input.quantity(), throughput)));
   }
 }
 

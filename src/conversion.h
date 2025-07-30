@@ -136,34 +136,6 @@ class Conversion
   }
   double input_capacity;
 
-  #pragma cyclus var { \
-    "default": "False", \
-    "tooltip": "'True' or 'False'", \
-    "uilabel": "Boolean of whether to track flourine", \
-    "uitype": "combobox", \
-    "categorical": ["True", "False"], \
-    "doc": "Whether to track flourine in the conversion process. This is " \
-           "intended to be used ONLY when converting U3O8 into UF6." \
-           "This is a boolean variable, so it must be either 'True' or 'False'." \
-  }
-  std::string track_flourine;
-
-  #pragma cyclus var { \
-    "default": 0.47889, \
-    "tooltip": "kg of flourine per kg of uranium", \
-    "uilabel": "Flourine to Uranium Ratio", \
-    "uitype": "range", \
-    "range": [0.0, CY_LARGE_DOUBLE], \
-    "doc": "The ratio of flourine to uranium in the conversion process. This is " \
-           "intended to be used ONLY when converting U3O8 into UF6. Its default " \
-           "value is set to the stoichiometric ratio of flourine to uranium." \
-  }
-  double flourine_uranium_ratio;
-  // clang-format on
-
-  double flourine_used;
-  bool track_flourine_bool;
-
   // clang-format off
   /// this facility holds a certain amount of material
   #pragma cyclus var {'capacity': 'input_capacity'}
