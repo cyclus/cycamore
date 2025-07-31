@@ -87,17 +87,17 @@ class Conversion
   }
   std::vector<std::string> incommods;
 
-    #pragma cyclus var { \
-      "default": [], \
-      "doc":"preferences for each of the given commodities, in the same order."\
-      "Defauts to 1 if unspecified",\
-      "uilabel":"In Commody Preferences", \
-      "range": [None, [CY_NEAR_ZERO, CY_LARGE_DOUBLE]], \
-      "uitype":["oneormore", "range"] \
-    }
+  #pragma cyclus var { \
+    "default": [], \
+    "doc":"preferences for each of the given commodities, in the same order."\
+    "Defauts to 1 if unspecified",\
+    "uilabel":"In Commody Preferences", \
+    "range": [None, [CY_NEAR_ZERO, CY_LARGE_DOUBLE]], \
+    "uitype":["oneormore", "range"] \
+  }
   std::vector<double> incommod_prefs;
 
-   #pragma cyclus var { \
+  #pragma cyclus var { \
     "default": "", \
     "tooltip": "requested composition", \
     "doc": "name of recipe to use for material requests, where the default " \
@@ -136,7 +136,6 @@ class Conversion
   }
   double input_capacity;
 
-  // clang-format off
   /// this facility holds a certain amount of material
   #pragma cyclus var {'capacity': 'input_capacity'}
   cyclus::toolkit::ResBuf<cyclus::Material> input;

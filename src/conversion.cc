@@ -166,11 +166,9 @@ void Conversion::AcceptMatlTrades(
   for (std::vector<std::pair<Trade<Material>, Material::Ptr>>::const_iterator it =
       responses.begin(); it != responses.end(); ++it) {
 
-    Material::Ptr mat = it->second;
-    cyclus::toolkit::MatQuery mq(mat);
 
     // Add material to the input buffer
-    input.Push(mat);
+    input.Push(it->second);
     
   }
 }
@@ -183,8 +181,7 @@ void Conversion::GetMatlTrades(
   for (std::vector<Trade<Material>>::const_iterator it = trades.begin();
       it != trades.end(); ++it) {
 
-    double requested_qty = it->amt;
-    Material::Ptr response = output.Pop(requested_qty);
+    Material::Ptr response = output.Pop(it->amt);
 
     responses.push_back(std::make_pair(*it, response));
   }
