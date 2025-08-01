@@ -88,26 +88,6 @@ class Conversion
   std::vector<std::string> incommods;
 
   #pragma cyclus var { \
-    "default": [], \
-    "doc":"preferences for each of the given commodities, in the same order."\
-    "Defauts to 1 if unspecified",\
-    "uilabel":"In Commody Preferences", \
-    "range": [None, [CY_NEAR_ZERO, CY_LARGE_DOUBLE]], \
-    "uitype":["oneormore", "range"] \
-  }
-  std::vector<double> incommod_prefs;
-
-  #pragma cyclus var { \
-    "default": "", \
-    "tooltip": "requested composition", \
-    "doc": "name of recipe to use for material requests, where the default " \
-           "(empty string) is to accept everything", \
-    "uilabel": "Input Recipe", \
-    "uitype": "inrecipe" \
-  }
-  std::string inrecipe_name;
-  
-  #pragma cyclus var { \
     "tooltip": "output commodity", \
     "doc": "Output commodity on which the conversion facility offers material.", \
     "uilabel": "Output Commodity", \
@@ -115,14 +95,14 @@ class Conversion
   }
   std::string outcommod;
 
-  /// throughput per timestep
+  /// Conversion throughput per timestep
   #pragma cyclus var { \
     "default": CY_LARGE_DOUBLE, \
-    "tooltip": "conversion capacity", \
-    "uilabel": "Maximum Throughput", \
+    "tooltip": "conversion throughput per timestep", \
+    "uilabel": "Maximum conversion throughput", \
     "uitype": "range", \
     "range": [0.0, CY_LARGE_DOUBLE], \
-    "doc": "capacity the conversion facility can convert at each time step" \
+    "doc": "throughput the facility can convert at each time step" \
   }
   double throughput;
 
@@ -132,7 +112,9 @@ class Conversion
     "uilabel": "Maximum Storage of Input Buffer", \
     "uitype": "range", \
     "range": [0.0, CY_LARGE_DOUBLE], \
-    "doc": "capacity the conversion facility can accept at each time step" \
+    "doc": "Total capacity of the input buffer. The amount requested per " \
+    "time step is the minimum the conversion throughput and this capacity " \
+    "minus the amount of material in the input buffer." \
   }
   double input_capacity;
 

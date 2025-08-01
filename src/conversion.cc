@@ -103,13 +103,9 @@ std::set<RequestPortfolio<Material>::Ptr> Conversion::GetMatlRequests() {
   // Create request portfolio
   RequestPortfolio<Material>::Ptr port(new RequestPortfolio<Material>());
 
-  // Create material request
-  Material::Ptr mat;
-  if (inrecipe_name.empty()) {
-    mat = cyclus::NewBlankMaterial(available_capacity);
-  } else {
-    mat = Material::CreateUntracked(available_capacity, context()->GetRecipe(inrecipe_name));
-  }
+  // Create material request with no recipe
+  Material::Ptr mat = cyclus::NewBlankMaterial(available_capacity);
+ 
 
   // Add request for all commodities using default preference
   for (std::vector<std::string>::iterator it = incommods.begin();
