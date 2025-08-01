@@ -23,6 +23,7 @@ class Context;
 class Conversion
   : public cyclus::Facility,
     public cyclus::toolkit::Position  {
+  friend class ConversionTest;
  public:
   Conversion(cyclus::Context* ctx);
 
