@@ -78,17 +78,18 @@ void TariffRegion::AdjustProductPrefs(cyclus::PrefMap<cyclus::Product>::type& pr
       }
 
       // If the supplier is from a friend region, apply the appropriate subsidy
-      auto it = std::find(friend_regions.begin(), friend_regions.end(), 
-                      supplier_region);
-      if (it != friend_regions.end()) {
-        bid_pair.second *= 1.0 / (1.0 + friend_subsidies[it - friend_regions.begin()]);
+      auto it = std::find(friend_region_names.begin(), friend_region_names.end(), 
+                      supplier_region->prototype());
+      if (it != friend_region_names.end()) {
+        double cost_multiplier = 1.0 - friend_subsidies[it - friend_region_names.begin()];
+        bid_pair.second *= cost_multiplier > 0.0 ? 1.0 / cost_multiplier : std::numeric_limits<double>::infinity();
       }
 
       // If the supplier is from an enemy region, apply the appropriate tariff
-      it = std::find(enemy_regions.begin(), enemy_regions.end(), 
-                      supplier_region);
-      if (it != enemy_regions.end()) {
-        bid_pair.second *= 1.0 / enemy_tariffs[it - enemy_regions.begin()];
+      it = std::find(enemy_region_names.begin(), enemy_region_names.end(), 
+                      supplier_region->prototype());
+      if (it != enemy_region_names.end()) {
+        bid_pair.second *= 1.0 / enemy_tariffs[it - enemy_region_names.begin()];
       }
     }
   }
