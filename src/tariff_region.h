@@ -49,9 +49,6 @@ class TariffRegion : public cyclus::Region {
     "(percent as decimal, must be in same order as friend_region_names)" \
   }
   std::vector<double> friend_subsidies;
-
-  std::vector<cyclus::Region*> friend_regions;
-  std::vector<cyclus::Region*> enemy_regions;
 };
 
 } // namespace cycamore
