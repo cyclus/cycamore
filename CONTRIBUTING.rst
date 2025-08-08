@@ -91,19 +91,19 @@ yet pass tests or even compile, but where we also want to save our progress. Let
 call this branch ``work``. So, when all is said and done, in our fork there will be
 two branches: ``main`` and ``work``
 
-We begin with a fork of the mainline Cyclus repository. After initially forking
+We begin with a fork of the mainline Cycamore repository. After initially forking
 the repo, we will have the ``main`` branch in your fork.
 
-Acquiring a Fork of the Cyclus Repository
+Acquiring a Fork of the Cycamore Repository
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-A fork is *your* copy of Cyclus. Github offers an excellent `tutorial
+A fork is *your* copy of Cycamore. Github offers an excellent `tutorial
 <https://docs.github.com/en/pull-requests/collaborating-with-pull-requests/working-with-forks/fork-a-repo>`_
 on how to create a fork and then setup your local development evnironment with
-remote connections to both the ``upstream`` repository at ``cyclus/cyclus`` and
+remote connections to both the ``upstream`` repository at ``cyclus/cycamore`` and
 your fork of this repository referred to as ``origin``.
 
-First, let's make our ``work`` branch.  Assuming that you are in the ``cyclus`` directory:
+First, let's make our ``work`` branch.  Assuming that you are in the ``cyamore`` directory:
 ::
     $ git branch work
     $ git checkout work
