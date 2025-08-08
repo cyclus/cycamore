@@ -30,6 +30,7 @@ Since last release
 * When trades fail in Source due to packaging, send empty material instead of seg faulting (#629)
 * Logging of resource moves between ResBufs in Storage is INFO4 not INFO1 (#625)
 * Support Boost>=1.86.0 (#637)
+* Update conributing guide to match current practice (#662)
 
 **Removed:**
 
