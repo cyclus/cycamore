@@ -23,32 +23,19 @@ class TariffRegion : public cyclus::Region {
 
   #pragma cyclus var { \
     "default": [], \
-    "doc": "List of regions that will have an advantageous trade adjustment " \
+    "doc": "List of regions that will have a trade adjustment " \
     "(subsidy)" \
   }
-  std::vector<std::string> friend_region_names;
+  std::vector<std::string> region_names;
 
   #pragma cyclus var { \
     "default": [], \
-    "doc": "List of regions that will have a disadvantageous trade adjustment " \
-    "(tariff)" \
-  }
-  std::vector<std::string> enemy_region_names;
-
-  #pragma cyclus var { \
-    "default": [], \
-    "doc": "Multiplicative tariff penalties to apply to trades from enemy " \
+    "doc": "Multiplicative tariffs to apply to trades from affected " \
     "regions (percent as decimal, must be in same order as " \
-    "enemy_region_names)" \
+    "region_names)" \
   }
-  std::vector<double> enemy_tariffs;
+  std::vector<double> tariffs;
 
-  #pragma cyclus var { \
-    "default": [], \
-    "doc": "Multiplicative subsidies to apply to trades from friend regions " \
-    "(percent as decimal, must be in same order as friend_region_names)" \
-  }
-  std::vector<double> friend_subsidies;
 };
 
 } // namespace cycamore
