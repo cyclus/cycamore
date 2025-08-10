@@ -35,11 +35,11 @@ void TariffRegion::AdjustMatlPrefs(cyclus::PrefMap<cyclus::Material>::type& pref
         current = current->parent();
       }
       
-      // If the supplier is in the region list, apply the appropriate tariff
+      // If the supplier is in the region list, apply the appropriate adjustment
       auto it = std::find(region_names.begin(), region_names.end(), 
           supplier_region->prototype());
       if (it != region_names.end()) {
-        double cost_multiplier = 1.0 + tariffs[it - region_names.begin()];
+        double cost_multiplier = 1.0 + adjustments[it - region_names.begin()];
         bid_pair.second *= cost_multiplier > 0.0 ? 1.0 / cost_multiplier : std::numeric_limits<double>::infinity();
       }
     }
@@ -70,11 +70,11 @@ void TariffRegion::AdjustProductPrefs(cyclus::PrefMap<cyclus::Product>::type& pr
         current = current->parent();
       }
 
-      // If the supplier is in the region list, apply the appropriate tariff
+      // If the supplier is in the region list, apply the appropriate adjustment
       auto it = std::find(region_names.begin(), region_names.end(), 
                       supplier_region->prototype());
       if (it != region_names.end()) {
-        double cost_multiplier = 1.0 + tariffs[it - region_names.begin()];
+        double cost_multiplier = 1.0 + adjustments[it - region_names.begin()];
         bid_pair.second *= cost_multiplier > 0.0 ? 1.0 / cost_multiplier : std::numeric_limits<double>::infinity();
       }
     }
