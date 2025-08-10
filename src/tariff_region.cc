@@ -35,19 +35,12 @@ void TariffRegion::AdjustMatlPrefs(cyclus::PrefMap<cyclus::Material>::type& pref
         current = current->parent();
       }
       
-      // If the supplier is from a friend region, apply the appropriate subsidy
-      auto it = std::find(friend_region_names.begin(), friend_region_names.end(), 
+      // If the supplier is in the region list, apply the appropriate tariff
+      auto it = std::find(region_names.begin(), region_names.end(), 
           supplier_region->prototype());
-      if (it != friend_region_names.end()) {
-        double cost_multiplier = 1.0 - friend_subsidies[it - friend_region_names.begin()];
+      if (it != region_names.end()) {
+        double cost_multiplier = 1.0 + tariffs[it - region_names.begin()];
         bid_pair.second *= cost_multiplier > 0.0 ? 1.0 / cost_multiplier : std::numeric_limits<double>::infinity();
-      }
-
-      // If the supplier is from an enemy region, apply the appropriate tariff
-      it = std::find(enemy_region_names.begin(), enemy_region_names.end(), 
-          supplier_region->prototype());
-      if (it != enemy_region_names.end()) {
-        bid_pair.second *= 1.0 / enemy_tariffs[it - enemy_region_names.begin()];
       }
     }
   }
@@ -77,19 +70,12 @@ void TariffRegion::AdjustProductPrefs(cyclus::PrefMap<cyclus::Product>::type& pr
         current = current->parent();
       }
 
-      // If the supplier is from a friend region, apply the appropriate subsidy
-      auto it = std::find(friend_region_names.begin(), friend_region_names.end(), 
+      // If the supplier is in the region list, apply the appropriate tariff
+      auto it = std::find(region_names.begin(), region_names.end(), 
                       supplier_region->prototype());
-      if (it != friend_region_names.end()) {
-        double cost_multiplier = 1.0 - friend_subsidies[it - friend_region_names.begin()];
+      if (it != region_names.end()) {
+        double cost_multiplier = 1.0 + tariffs[it - region_names.begin()];
         bid_pair.second *= cost_multiplier > 0.0 ? 1.0 / cost_multiplier : std::numeric_limits<double>::infinity();
-      }
-
-      // If the supplier is from an enemy region, apply the appropriate tariff
-      it = std::find(enemy_region_names.begin(), enemy_region_names.end(), 
-                      supplier_region->prototype());
-      if (it != enemy_region_names.end()) {
-        bid_pair.second *= 1.0 / enemy_tariffs[it - enemy_region_names.begin()];
       }
     }
   }
