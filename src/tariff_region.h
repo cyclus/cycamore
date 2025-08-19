@@ -23,16 +23,16 @@ class TariffRegion : public cyclus::Region {
 
   #pragma cyclus var { \
     "default": [], \
-    "doc": "List of regions that will have a trade adjustment " \
-    "(subsidy)" \
+    "doc": "List of regions that will have a trade adjustment applied to them." \
   }
   std::vector<std::string> region_names;
 
   #pragma cyclus var { \
     "default": [], \
-    "doc": "Adjustments (1+val) to apply to trades from affected " \
-    "regions (percent as decimal, must be in same order as " \
-    "region_names). Positive values are tariffs, negative values are subsidies." \
+    "doc": "Adjustments (multiply by (1+val)) to apply to cost of trades from " \
+           "affected regions. Positive values are tariffs, negative values " \
+           "are subsidies. Must be in same order as region_names." , \
+    "tooltip": "Percent as decimal." \
   }
   std::vector<double> adjustments;
 
