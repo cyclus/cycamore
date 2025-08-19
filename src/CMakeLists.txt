@@ -26,6 +26,8 @@ USE_CYCLUS("cycamore" "manager_inst")
 
 USE_CYCLUS("cycamore" "growth_region")
 
+USE_CYCLUS("cycamore" "tariff_region")
+
 USE_CYCLUS("cycamore" "storage")
 
 INSTALL_CYCLUS_MODULE("cycamore" "" "NONE")
