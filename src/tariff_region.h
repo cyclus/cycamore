@@ -34,9 +34,9 @@ class TariffRegion : public cyclus::Region {
 
         cyclus::Region* supplier_region = nullptr;
         cyclus::Agent* current = supplier;
-        while (current != nullptr) {
+        while (current) {
           supplier_region = dynamic_cast<cyclus::Region*>(current);
-          if (supplier_region != nullptr) {
+          if (supplier_region) {
             break;  // Found a region
           }
           current = current->parent();
