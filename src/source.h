@@ -4,8 +4,8 @@
 #include <set>
 #include <vector>
 
-#include "cycamore_version.h"
 #include "cyclus.h"
+#include "cycamore_version.h"
 
 // clang-format off
 #pragma cyclus exec from cyclus.system import CY_LARGE_DOUBLE, CY_LARGE_INT, \
@@ -67,8 +67,9 @@ class Source : public cyclus::Facility,
 
   virtual std::string str();
 
-  virtual std::set<cyclus::BidPortfolio<cyclus::Material>::Ptr> GetMatlBids(
-      cyclus::CommodMap<cyclus::Material>::type& commod_requests);
+  virtual std::set<cyclus::BidPortfolio<cyclus::Material>::Ptr>
+      GetMatlBids(cyclus::CommodMap<cyclus::Material>::type&
+                  commod_requests);
 
   virtual void EnterNotify();
 
@@ -77,10 +78,9 @@ class Source : public cyclus::Facility,
   virtual void Build(cyclus::Agent* parent);
 
   virtual void GetMatlTrades(
-      const std::vector<cyclus::Trade<cyclus::Material>>& trades,
-      std::vector<std::pair<cyclus::Trade<cyclus::Material>,
-                            cyclus::Material::Ptr>>& responses);
-
+    const std::vector<cyclus::Trade<cyclus::Material>>& trades,
+    std::vector<std::pair<cyclus::Trade<cyclus::Material>,
+                          cyclus::Material::Ptr>>& responses);
  private:
   // clang-format off
   #pragma cyclus var { \

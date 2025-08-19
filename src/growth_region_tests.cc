@@ -1,6 +1,6 @@
-#include "growth_region_tests.h"
-
 #include <sstream>
+
+#include "growth_region_tests.h"
 #if CYCLUS_HAS_COIN
 
 namespace cycamore {
@@ -22,8 +22,7 @@ void GrowthRegionTests::TearDown() {
 }
 
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-bool GrowthRegionTests::ManagesCommodity(
-    cyclus::toolkit::Commodity& commodity) {
+bool GrowthRegionTests::ManagesCommodity(cyclus::toolkit::Commodity& commodity) {
   return region->sdmanager()->ManagesCommodity(commodity);
 }
 
@@ -31,8 +30,7 @@ bool GrowthRegionTests::ManagesCommodity(
 TEST_F(GrowthRegionTests, init) {
   cyclus::toolkit::Commodity commodity(commodity_name);
   cyclus::toolkit::ExpFunctionFactory eff;
-  region->sdmanager()->RegisterCommodity(commodity,
-                                         eff.GetFunctionPtr("2.0 4.0"));
+  region->sdmanager()->RegisterCommodity(commodity, eff.GetFunctionPtr("2.0 4.0"));
   EXPECT_TRUE(ManagesCommodity(commodity));
 }
 
@@ -52,7 +50,7 @@ static int cyclus_agent_tests_connected = ConnectAgentTests();
 
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 INSTANTIATE_TEST_SUITE_P(GrowthRegion, RegionTests,
-                         Values(&GrowthRegionConstructor));
+                        Values(&GrowthRegionConstructor));
 INSTANTIATE_TEST_SUITE_P(GrowthRegion, AgentTests,
-                         Values(&GrowthRegionConstructor));
+                        Values(&GrowthRegionConstructor));
 #endif  // CYCLUS_HAS_COIN

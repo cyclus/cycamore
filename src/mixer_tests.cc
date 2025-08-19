@@ -1,11 +1,12 @@
-#include <gtest/gtest.h>
+#include "mixer.h"
 
 #include "agent_tests.h"
 #include "context.h"
 #include "cyclus.h"
 #include "equality_helpers.h"
 #include "facility_tests.h"
-#include "mixer.h"
+
+#include <gtest/gtest.h>
 
 using cyclus::QueryResult;
 
@@ -14,7 +15,7 @@ namespace cycamore {
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 
 typedef std::vector<
-    std::pair<std::pair<double, double>, std::map<std::string, double>>>
+    std::pair<std::pair<double, double>, std::map<std::string, double> > >
     t_instream;
 
 cyclus::Composition::Ptr c_pustream() {
@@ -56,7 +57,7 @@ class MixerTest : public ::testing::Test {
   virtual void SetUp() {
     mf_facility_ = new Mixer(tc_.get());
 
-    std::vector<std::map<std::string, double>> in_commods;
+    std::vector<std::map<std::string, double> > in_commods;
     {
       std::map<std::string, double> in_com;
       in_com.insert(std::pair<std::string, double>("in_c1", 1));
@@ -75,13 +76,13 @@ class MixerTest : public ::testing::Test {
 
     std::vector<double> in_ratios = {1, 1, 1};
     std::vector<double> in_caps = {30, 20, 10};
-    SetIn_stream(in_commods, in_ratios, in_caps);
+    SetIn_stream(in_commods, in_ratios,  in_caps);
 
     SetOutStream_comds("out_com");
   }
   virtual void TearDown() { delete mf_facility_; }
 
-  std::vector<std::map<std::string, double>> in_coms;
+  std::vector<std::map<std::string, double> > in_coms;
   std::vector<double> in_frac;
   std::vector<double> in_cap;
 
@@ -106,14 +107,14 @@ class MixerTest : public ::testing::Test {
     }
   }
 
-  void SetIn_stream(std::vector<std::map<std::string, double>> in_stream,
+  void SetIn_stream(std::vector<std::map<std::string, double> > in_stream,
                     std::vector<double> ratios, std::vector<double> caps) {
     t_instream instream_tmp;
     for (int i = 0; i < in_stream.size(); i++) {
       std::pair<double, double> info_mtp =
           std::pair<double, double>(ratios[i], caps[i]);
       instream_tmp.push_back(
-          std::pair<std::pair<double, double>, std::map<std::string, double>>(
+          std::pair<std::pair<double, double>, std::map<std::string, double> >(
               info_mtp, in_stream[i]));
     }
     SetIn_stream(instream_tmp);
@@ -260,6 +261,7 @@ TEST_F(MixerTest, MixingComposition) {
   Material::Ptr final_mat = cyclus::ResCast<Material>(buffer->PopBack());
   cyclus::CompMap final_comp = final_mat->comp()->mass();
 
+
   cyclus::compmath::Normalize(&v, 1);
   cyclus::compmath::Normalize(&final_comp, 1);
 
@@ -323,42 +325,42 @@ TEST_F(MixerTest, Throughput) {
 TEST(MixerTests, MultipleFissStreams) {
   std::string config =
       "<in_streams>"
-      "<stream>"
-      "<info>"
-      "<mixing_ratio>0.8</mixing_ratio>"
-      "<buf_size>2.5</buf_size>"
-      "</info>"
-      "<commodities>"
-      "<item>"
-      "<commodity>stream1</commodity>"
-      "<pref>1</pref>"
-      "</item>"
-      "</commodities>"
-      "</stream>"
-      "<stream>"
-      "<info>"
-      "<mixing_ratio>0.15</mixing_ratio>"
-      "<buf_size>3</buf_size>"
-      "</info>"
-      "<commodities>"
-      "<item>"
-      "<commodity>stream2</commodity>"
-      "<pref>1</pref>"
-      "</item>"
-      "</commodities>"
-      "</stream>"
-      "<stream>"
-      "<info>"
-      "<mixing_ratio>0.05</mixing_ratio>"
-      "<buf_size>5</buf_size>"
-      "</info>"
-      "<commodities>"
-      "<item>"
-      "<commodity>stream3</commodity>"
-      "<pref>1</pref>"
-      "</item>"
-      "</commodities>"
-      "</stream>"
+        "<stream>"
+          "<info>"
+            "<mixing_ratio>0.8</mixing_ratio>"
+            "<buf_size>2.5</buf_size>"
+          "</info>"
+          "<commodities>"
+            "<item>"
+              "<commodity>stream1</commodity>"
+              "<pref>1</pref>"
+            "</item>"
+          "</commodities>"
+        "</stream>"
+        "<stream>"
+          "<info>"
+            "<mixing_ratio>0.15</mixing_ratio>"
+            "<buf_size>3</buf_size>"
+          "</info>"
+          "<commodities>"
+            "<item>"
+              "<commodity>stream2</commodity>"
+              "<pref>1</pref>"
+            "</item>"
+          "</commodities>"
+        "</stream>"
+        "<stream>"
+          "<info>"
+            "<mixing_ratio>0.05</mixing_ratio>"
+            "<buf_size>5</buf_size>"
+          "</info>"
+          "<commodities>"
+            "<item>"
+              "<commodity>stream3</commodity>"
+              "<pref>1</pref>"
+            "</item>"
+          "</commodities>"
+        "</stream>"
       "</in_streams>"
       "<out_commod>mixedstream</out_commod>"
       "<outputbuf_size>0</outputbuf_size>"
@@ -397,42 +399,42 @@ TEST(MixerTests, MultipleFissStreams) {
 TEST(MixerTests, CompleteMixingProcess) {
   std::string config =
       "<in_streams>"
-      "<stream>"
-      "<info>"
-      "<mixing_ratio>0.8</mixing_ratio>"
-      "<buf_size>2.5</buf_size>"
-      "</info>"
-      "<commodities>"
-      "<item>"
-      "<commodity>stream1</commodity>"
-      "<pref>1</pref>"
-      "</item>"
-      "</commodities>"
-      "</stream>"
-      "<stream>"
-      "<info>"
-      "<mixing_ratio>0.15</mixing_ratio>"
-      "<buf_size>3</buf_size>"
-      "</info>"
-      "<commodities>"
-      "<item>"
-      "<commodity>stream2</commodity>"
-      "<pref>1</pref>"
-      "</item>"
-      "</commodities>"
-      "</stream>"
-      "<stream>"
-      "<info>"
-      "<mixing_ratio>0.05</mixing_ratio>"
-      "<buf_size>5</buf_size>"
-      "</info>"
-      "<commodities>"
-      "<item>"
-      "<commodity>stream3</commodity>"
-      "<pref>1</pref>"
-      "</item>"
-      "</commodities>"
-      "</stream>"
+        "<stream>"
+          "<info>"
+            "<mixing_ratio>0.8</mixing_ratio>"
+            "<buf_size>2.5</buf_size>"
+          "</info>"
+          "<commodities>"
+            "<item>"
+              "<commodity>stream1</commodity>"
+              "<pref>1</pref>"
+            "</item>"
+          "</commodities>"
+        "</stream>"
+        "<stream>"
+          "<info>"
+            "<mixing_ratio>0.15</mixing_ratio>"
+            "<buf_size>3</buf_size>"
+          "</info>"
+          "<commodities>"
+            "<item>"
+              "<commodity>stream2</commodity>"
+              "<pref>1</pref>"
+            "</item>"
+          "</commodities>"
+        "</stream>"
+        "<stream>"
+          "<info>"
+            "<mixing_ratio>0.05</mixing_ratio>"
+            "<buf_size>5</buf_size>"
+          "</info>"
+          "<commodities>"
+            "<item>"
+              "<commodity>stream3</commodity>"
+              "<pref>1</pref>"
+            "</item>"
+          "</commodities>"
+        "</stream>"
       "</in_streams>"
       "<out_commod>mixedstream</out_commod>"
       "<outputbuf_size>10</outputbuf_size>"
@@ -462,42 +464,42 @@ TEST(MixerTests, CompleteMixingProcess) {
 TEST(MixerTests, PositionInitialize) {
   std::string config =
       "<in_streams>"
-      "<stream>"
-      "<info>"
-      "<mixing_ratio>0.8</mixing_ratio>"
-      "<buf_size>2.5</buf_size>"
-      "</info>"
-      "<commodities>"
-      "<item>"
-      "<commodity>stream1</commodity>"
-      "<pref>1</pref>"
-      "</item>"
-      "</commodities>"
-      "</stream>"
-      "<stream>"
-      "<info>"
-      "<mixing_ratio>0.15</mixing_ratio>"
-      "<buf_size>3</buf_size>"
-      "</info>"
-      "<commodities>"
-      "<item>"
-      "<commodity>stream2</commodity>"
-      "<pref>1</pref>"
-      "</item>"
-      "</commodities>"
-      "</stream>"
-      "<stream>"
-      "<info>"
-      "<mixing_ratio>0.05</mixing_ratio>"
-      "<buf_size>5</buf_size>"
-      "</info>"
-      "<commodities>"
-      "<item>"
-      "<commodity>stream3</commodity>"
-      "<pref>1</pref>"
-      "</item>"
-      "</commodities>"
-      "</stream>"
+        "<stream>"
+          "<info>"
+            "<mixing_ratio>0.8</mixing_ratio>"
+            "<buf_size>2.5</buf_size>"
+          "</info>"
+          "<commodities>"
+            "<item>"
+              "<commodity>stream1</commodity>"
+              "<pref>1</pref>"
+            "</item>"
+          "</commodities>"
+        "</stream>"
+        "<stream>"
+          "<info>"
+            "<mixing_ratio>0.15</mixing_ratio>"
+            "<buf_size>3</buf_size>"
+          "</info>"
+          "<commodities>"
+            "<item>"
+              "<commodity>stream2</commodity>"
+              "<pref>1</pref>"
+            "</item>"
+          "</commodities>"
+        "</stream>"
+        "<stream>"
+          "<info>"
+            "<mixing_ratio>0.05</mixing_ratio>"
+            "<buf_size>5</buf_size>"
+          "</info>"
+          "<commodities>"
+            "<item>"
+              "<commodity>stream3</commodity>"
+              "<pref>1</pref>"
+            "</item>"
+          "</commodities>"
+        "</stream>"
       "</in_streams>"
       "<out_commod>mixedstream</out_commod>"
       "<outputbuf_size>0</outputbuf_size>"

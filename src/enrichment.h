@@ -3,8 +3,8 @@
 
 #include <string>
 
-#include "cycamore_version.h"
 #include "cyclus.h"
+#include "cycamore_version.h"
 
 // clang-format off
 #pragma cyclus exec \
@@ -27,8 +27,8 @@ class SWUConverter : public cyclus::Converter<cyclus::Material> {
   virtual double convert(
       cyclus::Material::Ptr m,
       cyclus::Arc const* a = NULL,
-      cyclus::ExchangeTranslationContext<cyclus::Material> const* ctx =
-          NULL) const {
+      cyclus::ExchangeTranslationContext<cyclus::Material> const* ctx = NULL)
+      const {
     cyclus::toolkit::Assays assays(feed_, cyclus::toolkit::UraniumAssayMass(m),
                                    tails_);
     return cyclus::toolkit::SwuRequired(m->quantity(), assays);
@@ -61,8 +61,8 @@ class NatUConverter : public cyclus::Converter<cyclus::Material> {
   virtual double convert(
       cyclus::Material::Ptr m,
       cyclus::Arc const* a = NULL,
-      cyclus::ExchangeTranslationContext<cyclus::Material> const* ctx =
-          NULL) const {
+      cyclus::ExchangeTranslationContext<cyclus::Material> const* ctx = NULL)
+      const {
     cyclus::toolkit::Assays assays(feed_, cyclus::toolkit::UraniumAssayMass(m),
                                    tails_);
     cyclus::toolkit::MatQuery mq(m);
@@ -118,7 +118,10 @@ class NatUConverter : public cyclus::Converter<cyclus::Material> {
 /// The Enrichment facility also offers its tails as an output
 /// commodity with no associated recipe. Bids for tails are
 /// constrained only by total tails inventory.
-class Enrichment : public cyclus::Facility, public cyclus::toolkit::Position {
+class Enrichment
+  : public cyclus::Facility,
+    public cyclus::toolkit::Position {
+
   // clang-format off
   #pragma cyclus note { \
     "niche": "enrichment facility", \
@@ -166,7 +169,7 @@ class Enrichment : public cyclus::Facility, public cyclus::toolkit::Position {
 
   virtual std::string version() { return CYCAMORE_VERSION; }
 
-#pragma cyclus
+  #pragma cyclus
 
   /// Print information about this agent
   virtual std::string str();
@@ -182,7 +185,7 @@ class Enrichment : public cyclus::Facility, public cyclus::toolkit::Position {
 
   /// @brief Requests Materials of its given commodity.
   virtual std::set<cyclus::RequestPortfolio<cyclus::Material>::Ptr>
-  GetMatlRequests();
+      GetMatlRequests();
 
   /// @brief Adjusts preferences for offers to maximize U-235 content.
   /// Any offers that have zero U-235 content are not accepted
@@ -190,7 +193,7 @@ class Enrichment : public cyclus::Facility, public cyclus::toolkit::Position {
 
   /// @brief Place accepted trade Materials in inventory.
   virtual void AcceptMatlTrades(
-      const std::vector<std::pair<cyclus::Trade<cyclus::Material>,
+      const std::vector<std::pair<cyclus::Trade<cyclus::Material>, 
                                   cyclus::Material::Ptr>>& responses);
 
   /// @brief Responds to each request for this facility's commodity.  If a given
@@ -364,12 +367,11 @@ class Enrichment : public cyclus::Facility, public cyclus::toolkit::Position {
   // clang-format on
 
   double current_swu_capacity;
-  // clang-format off
+
   #pragma cyclus var { "capacity": "max_feed_inventory" }
   cyclus::toolkit::ResBuf<cyclus::Material> inventory;  // natural u
   #pragma cyclus var {}
   cyclus::toolkit::ResBuf<cyclus::Material> tails;      // depleted u
-  // clang-format on
 
   // used to total intra-timestep swu and natu usage for meeting requests -
   // these help enable time series generation.

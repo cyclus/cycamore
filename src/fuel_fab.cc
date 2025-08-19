@@ -2,8 +2,8 @@
 
 #include <sstream>
 
-using cyclus::Composition;
 using cyclus::Material;
+using cyclus::Composition;
 using pyne::simple_xs;
 
 #define SHOW(X)                                                     \
@@ -26,7 +26,8 @@ class FissConverter : public cyclus::Converter<Material> {
 
   virtual double convert(
       Material::Ptr m, cyclus::Arc const* a = NULL,
-      cyclus::ExchangeTranslationContext<Material> const* ctx = NULL) const {
+      cyclus::ExchangeTranslationContext<Material> const* ctx =
+          NULL) const {
     double w_tgt = CosiWeight(m->comp(), spec_);
     if (ValidWeights(w_fill_, w_tgt, w_fiss_)) {
       double frac = HighFrac(w_fill_, w_tgt, w_fiss_);
@@ -65,7 +66,8 @@ class FillConverter : public cyclus::Converter<Material> {
 
   virtual double convert(
       Material::Ptr m, cyclus::Arc const* a = NULL,
-      cyclus::ExchangeTranslationContext<Material> const* ctx = NULL) const {
+      cyclus::ExchangeTranslationContext<Material> const* ctx =
+          NULL) const {
     double w_tgt = CosiWeight(m->comp(), spec_);
     if (ValidWeights(w_fill_, w_tgt, w_fiss_)) {
       double frac = LowFrac(w_fill_, w_tgt, w_fiss_);
@@ -103,7 +105,8 @@ class TopupConverter : public cyclus::Converter<Material> {
 
   virtual double convert(
       Material::Ptr m, cyclus::Arc const* a = NULL,
-      cyclus::ExchangeTranslationContext<Material> const* ctx = NULL) const {
+      cyclus::ExchangeTranslationContext<Material> const* ctx =
+          NULL) const {
     double w_tgt = CosiWeight(m->comp(), spec_);
     if (ValidWeights(w_fill_, w_tgt, w_fiss_)) {
       return 0;
@@ -237,10 +240,10 @@ bool Contains(std::vector<std::string> vec, std::string s) {
 }
 
 void FuelFab::AcceptMatlTrades(
-    const std::vector<std::pair<cyclus::Trade<Material>, Material::Ptr>>&
+    const std::vector<std::pair<cyclus::Trade<Material>, Material::Ptr> >&
         responses) {
-  std::vector<std::pair<cyclus::Trade<Material>, Material::Ptr>>::const_iterator
-      trade;
+  std::vector<std::pair<cyclus::Trade<Material>,
+                        Material::Ptr> >::const_iterator trade;
 
   for (trade = responses.begin(); trade != responses.end(); ++trade) {
     std::string commod = trade->first.request->commodity();
@@ -372,12 +375,12 @@ std::set<cyclus::BidPortfolio<Material>::Ptr> FuelFab::GetMatlBids(
       new TopupConverter(c_fill, c_fiss, c_topup, spectrum));
   // important! - the std::max calls prevent CapacityConstraint throwing a zero
   // cap exception
-  cyclus::CapacityConstraint<Material> fissc(
-      std::max(fiss.quantity(), cyclus::CY_NEAR_ZERO), fissconv);
-  cyclus::CapacityConstraint<Material> fillc(
-      std::max(fill.quantity(), cyclus::CY_NEAR_ZERO), fillconv);
-  cyclus::CapacityConstraint<Material> topupc(
-      std::max(topup.quantity(), cyclus::CY_NEAR_ZERO), topupconv);
+  cyclus::CapacityConstraint<Material> fissc(std::max(fiss.quantity(), cyclus::CY_NEAR_ZERO),
+                                             fissconv);
+  cyclus::CapacityConstraint<Material> fillc(std::max(fill.quantity(), cyclus::CY_NEAR_ZERO),
+                                             fillconv);
+  cyclus::CapacityConstraint<Material> topupc(std::max(topup.quantity(), cyclus::CY_NEAR_ZERO),
+                                              topupconv);
   port->AddConstraint(fillc);
   port->AddConstraint(fissc);
   port->AddConstraint(topupc);
@@ -389,8 +392,9 @@ std::set<cyclus::BidPortfolio<Material>::Ptr> FuelFab::GetMatlBids(
 }
 
 void FuelFab::GetMatlTrades(
-    const std::vector<cyclus::Trade<Material>>& trades,
-    std::vector<std::pair<cyclus::Trade<Material>, Material::Ptr>>& responses) {
+    const std::vector<cyclus::Trade<Material> >& trades,
+    std::vector<std::pair<cyclus::Trade<Material>, Material::Ptr> >&
+        responses) {
   using cyclus::Trade;
 
   // guard against cases where a buffer is empty - this is okay because some
@@ -408,7 +412,7 @@ void FuelFab::GetMatlTrades(
     w_fiss = CosiWeight(fiss.Peek()->comp(), spectrum);
   }
 
-  std::vector<cyclus::Trade<Material>>::const_iterator it;
+  std::vector<cyclus::Trade<Material> >::const_iterator it;
   double tot = 0;
   for (int i = 0; i < trades.size(); i++) {
     Material::Ptr tgt = trades[i].request->target();

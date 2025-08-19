@@ -1,10 +1,10 @@
 #include "reactor.h"
 
-using cyclus::KeyError;
 using cyclus::Material;
-using cyclus::Request;
-using cyclus::ValueError;
 using cyclus::toolkit::MatVec;
+using cyclus::KeyError;
+using cyclus::ValueError;
+using cyclus::Request;
 
 namespace cycamore {
 
@@ -26,6 +26,7 @@ Reactor::Reactor(cyclus::Context* ctx)
       keep_packaging(true),
       coordinates(latitude, longitude) {}
 
+
 #pragma cyclus def clone cycamore::Reactor
 
 #pragma cyclus def schema cycamore::Reactor
@@ -41,21 +42,21 @@ Reactor::Reactor(cyclus::Context* ctx)
 #pragma cyclus def initinv cycamore::Reactor
 
 void Reactor::InitFrom(Reactor* m) {
-#pragma cyclus impl initfromcopy cycamore::Reactor
+  #pragma cyclus impl initfromcopy cycamore::Reactor
   cyclus::toolkit::CommodityProducer::Copy(m);
 }
 
 void Reactor::InitFrom(cyclus::QueryableBackend* b) {
-#pragma cyclus impl initfromdb cycamore::Reactor
+  #pragma cyclus impl initfromdb cycamore::Reactor
 
   namespace tk = cyclus::toolkit;
   tk::CommodityProducer::Add(tk::Commodity(power_name),
                              tk::CommodInfo(power_cap, power_cap));
 
   for (int i = 0; i < side_products.size(); i++) {
-    tk::CommodityProducer::Add(
-        tk::Commodity(side_products[i]),
-        tk::CommodInfo(side_product_quantity[i], side_product_quantity[i]));
+    tk::CommodityProducer::Add(tk::Commodity(side_products[i]),
+                               tk::CommodInfo(side_product_quantity[i],
+                                              side_product_quantity[i]));
   }
 }
 
@@ -76,7 +77,7 @@ void Reactor::EnterNotify() {
   }
 
   // Test if any side products have been defined.
-  if (side_products.size() == 0) {
+  if (side_products.size() == 0){
     hybrid_ = false;
   }
 
@@ -128,10 +129,11 @@ void Reactor::Tick() {
   if (retired()) {
     Record("RETIRED", "");
 
-    if (context()->time() == exit_time() + 1) {  // only need to transmute once
+    if (context()->time() == exit_time() + 1) { // only need to transmute once
       if (decom_transmute_all == true) {
         Transmute(ceil(static_cast<double>(n_assem_core)));
-      } else {
+      }
+      else {
         Transmute(ceil(static_cast<double>(n_assem_core) / 2.0));
       }
     }
@@ -146,8 +148,8 @@ void Reactor::Tick() {
     while (fresh.count() > 0 && spent.space() >= assem_size) {
       spent.Push(fresh.Pop());
     }
-    if (CheckDecommissionCondition()) {
-      context()->SchedDecom(this);
+    if(CheckDecommissionCondition()) {
+      context()->SchedDecom(this);    
     }
     return;
   }
@@ -208,8 +210,7 @@ std::set<cyclus::RequestPortfolio<Material>::Ptr> Reactor::GetMatlRequests() {
 
   // second min expression reduces assembles to amount needed until
   // retirement if it is near.
-  int n_assem_order =
-      n_assem_core - core.count() + n_assem_fresh - fresh.count();
+  int n_assem_order = n_assem_core - core.count() + n_assem_fresh - fresh.count();
 
   if (exit_time() != -1) {
     // the +1 accounts for the fact that the reactor is alive and gets to
@@ -217,10 +218,9 @@ std::set<cyclus::RequestPortfolio<Material>::Ptr> Reactor::GetMatlRequests() {
     int t_left = exit_time() - context()->time() + 1;
     int t_left_cycle = cycle_time + refuel_time - cycle_step;
     double n_cycles_left = static_cast<double>(t_left - t_left_cycle) /
-                           static_cast<double>(cycle_time + refuel_time);
+                         static_cast<double>(cycle_time + refuel_time);
     n_cycles_left = ceil(n_cycles_left);
-    int n_need = std::max(0.0, n_cycles_left * n_assem_batch - n_assem_fresh +
-                                   n_assem_core - core.count());
+    int n_need = std::max(0.0, n_cycles_left * n_assem_batch - n_assem_fresh + n_assem_core - core.count());
     n_assem_order = std::min(n_assem_order, n_need);
   }
 
@@ -247,8 +247,8 @@ std::set<cyclus::RequestPortfolio<Material>::Ptr> Reactor::GetMatlRequests() {
     result = std::max_element(fuel_prefs.begin(), fuel_prefs.end());
     int max_index = std::distance(fuel_prefs.begin(), result);
 
-    cyclus::toolkit::RecordTimeSeries<double>(
-        "demand" + fuel_incommods[max_index], this, assem_size);
+    cyclus::toolkit::RecordTimeSeries<double>("demand"+fuel_incommods[max_index], this,
+                                          assem_size) ;
 
     port->AddMutualReqs(mreqs);
     ports.insert(port);
@@ -258,8 +258,9 @@ std::set<cyclus::RequestPortfolio<Material>::Ptr> Reactor::GetMatlRequests() {
 }
 
 void Reactor::GetMatlTrades(
-    const std::vector<cyclus::Trade<Material>>& trades,
-    std::vector<std::pair<cyclus::Trade<Material>, Material::Ptr>>& responses) {
+    const std::vector<cyclus::Trade<Material> >& trades,
+    std::vector<std::pair<cyclus::Trade<Material>, Material::Ptr> >&
+        responses) {
   using cyclus::Trade;
 
   std::map<std::string, MatVec> mats = PopSpent();
@@ -273,11 +274,10 @@ void Reactor::GetMatlTrades(
   PushSpent(mats);  // return leftovers back to spent buffer
 }
 
-void Reactor::AcceptMatlTrades(
-    const std::vector<std::pair<cyclus::Trade<Material>, Material::Ptr>>&
-        responses) {
-  std::vector<std::pair<cyclus::Trade<Material>, Material::Ptr>>::const_iterator
-      trade;
+void Reactor::AcceptMatlTrades(const std::vector<
+    std::pair<cyclus::Trade<Material>, Material::Ptr> >& responses) {
+  std::vector<std::pair<cyclus::Trade<Material>,
+                        Material::Ptr> >::const_iterator trade;
 
   std::stringstream ss;
   int nload = std::min((int)responses.size(), n_assem_core - core.count());
@@ -360,12 +360,11 @@ void Reactor::Tock() {
   if (retired()) {
     return;
   }
-
-  // Check that irradiation and refueling periods are over, that
-  // the core is full and that fuel was successfully discharged in this
-  // refueling time. If this is the case, then a new cycle will be initiated.
-  if (cycle_step >= cycle_time + refuel_time && core.count() == n_assem_core &&
-      discharged == true) {
+  
+  // Check that irradiation and refueling periods are over, that 
+  // the core is full and that fuel was successfully discharged in this refueling time.
+  // If this is the case, then a new cycle will be initiated.
+  if (cycle_step >= cycle_time + refuel_time && core.count() == n_assem_core && discharged == true) {
     discharged = false;
     cycle_step = 0;
   }
@@ -392,9 +391,7 @@ void Reactor::Tock() {
   }
 }
 
-void Reactor::Transmute() {
-  Transmute(n_assem_batch);
-}
+void Reactor::Transmute() { Transmute(n_assem_batch); }
 
 void Reactor::Transmute(int n_assem) {
   MatVec old = core.PopN(std::min(n_assem, core.count()));
@@ -441,12 +438,11 @@ bool Reactor::Discharge() {
     spent_mats = PeekSpent();
     MatVec mats = spent_mats[fuel_outcommods[i]];
     double tot_spent = 0;
-    for (int j = 0; j < mats.size(); j++) {
+    for (int j = 0; j<mats.size(); j++){
       Material::Ptr m = mats[j];
       tot_spent += m->quantity();
     }
-    cyclus::toolkit::RecordTimeSeries<double>("supply" + fuel_outcommods[i],
-                                              this, tot_spent);
+    cyclus::toolkit::RecordTimeSeries<double>("supply"+fuel_outcommods[i], this, tot_spent);
   }
 
   return true;
@@ -541,14 +537,15 @@ void Reactor::PushSpent(std::map<std::string, MatVec> leftover) {
   }
 }
 
-void Reactor::RecordSideProduct(bool produce) {
-  if (hybrid_) {
+void Reactor::RecordSideProduct(bool produce){
+  if (hybrid_){
     double value;
     for (int i = 0; i < side_products.size(); i++) {
-      if (produce) {
-        value = side_product_quantity[i];
-      } else {
-        value = 0;
+      if (produce){
+          value = side_product_quantity[i];
+      }
+      else {
+          value = 0;
       }
 
       context()

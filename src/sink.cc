@@ -1,9 +1,10 @@
 // Implements the Sink class
-#include "sink.h"
-
 #include <algorithm>
-#include <boost/lexical_cast.hpp>
 #include <sstream>
+
+#include <boost/lexical_cast.hpp>
+
+#include "sink.h"
 
 namespace cycamore {
 
@@ -15,8 +16,7 @@ Sink::Sink(cyclus::Context* ctx)
       longitude(0.0),
       keep_packaging(true),
       coordinates(latitude, longitude) {
-  SetMaxInventorySize(std::numeric_limits<double>::max());
-}
+  SetMaxInventorySize(std::numeric_limits<double>::max());}
 
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 Sink::~Sink() {}
@@ -42,8 +42,7 @@ Sink::~Sink() {}
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 void Sink::EnterNotify() {
   cyclus::Facility::EnterNotify();
-  LOG(cyclus::LEV_INFO4, "SnkFac")
-      << " using random behavior " << random_size_type;
+  LOG(cyclus::LEV_INFO4, "SnkFac") << " using random behavior " << random_size_type;
 
   inventory.keep_packaging(keep_packaging);
 
@@ -63,14 +62,16 @@ void Sink::EnterNotify() {
   SetNextBuyTime();
 
   if (random_size_type != "None") {
-    LOG(cyclus::LEV_INFO4, "SnkFac")
-        << "Sink " << this->id() << " is using random behavior "
-        << random_size_type << " for determining request size.";
+    LOG(cyclus::LEV_INFO4, "SnkFac") << "Sink " << this->id()
+                                     << " is using random behavior "
+                                     << random_size_type
+                                     << " for determining request size.";
   }
   if (random_frequency_type != "None") {
-    LOG(cyclus::LEV_INFO4, "SnkFac")
-        << "Sink " << this->id() << " is using random behavior "
-        << random_frequency_type << " for determining request frequency.";
+    LOG(cyclus::LEV_INFO4, "SnkFac") << "Sink " << this->id()
+                                     << " is using random behavior "
+                                     << random_frequency_type
+                                     << " for determining request frequency.";
   }
   RecordPosition();
 }
@@ -98,10 +99,10 @@ std::string Sink::str() {
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 std::set<cyclus::RequestPortfolio<cyclus::Material>::Ptr>
 Sink::GetMatlRequests() {
-  using cyclus::Composition;
   using cyclus::Material;
-  using cyclus::Request;
   using cyclus::RequestPortfolio;
+  using cyclus::Request;
+  using cyclus::Composition;
 
   std::set<RequestPortfolio<Material>::Ptr> ports;
   RequestPortfolio<Material>::Ptr port(new RequestPortfolio<Material>());
@@ -119,11 +120,11 @@ Sink::GetMatlRequests() {
     mat = cyclus::Material::CreateUntracked(requestAmt, rec);
   }
 
-  if (requestAmt > cyclus::eps()) {
+  if (requestAmt > cyclus::eps()) {  
     std::vector<Request<Material>*> mutuals;
     for (int i = 0; i < in_commods.size(); i++) {
-      mutuals.push_back(
-          port->AddRequest(mat, this, in_commods[i], in_commod_prefs[i]));
+      mutuals.push_back(port->AddRequest(mat, this, in_commods[i], in_commod_prefs[i]));
+
     }
     port->AddMutualReqs(mutuals);
     ports.insert(port);
@@ -139,7 +140,8 @@ Sink::GetGenRsrcRequests() {
   using cyclus::RequestPortfolio;
 
   std::set<RequestPortfolio<Product>::Ptr> ports;
-  RequestPortfolio<Product>::Ptr port(new RequestPortfolio<Product>());
+  RequestPortfolio<Product>::Ptr
+      port(new RequestPortfolio<Product>());
 
   if (requestAmt > cyclus::eps()) {
     CapacityConstraint<Product> cc(requestAmt);
@@ -159,10 +161,10 @@ Sink::GetGenRsrcRequests() {
 
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 void Sink::AcceptMatlTrades(
-    const std::vector<std::pair<cyclus::Trade<cyclus::Material>,
-                                cyclus::Material::Ptr>>& responses) {
-  std::vector<std::pair<cyclus::Trade<cyclus::Material>,
-                        cyclus::Material::Ptr>>::const_iterator it;
+    const std::vector< std::pair<cyclus::Trade<cyclus::Material>,
+                                 cyclus::Material::Ptr> >& responses) {
+  std::vector< std::pair<cyclus::Trade<cyclus::Material>,
+                         cyclus::Material::Ptr> >::const_iterator it;
   for (it = responses.begin(); it != responses.end(); ++it) {
     inventory.Push(it->second);
   }
@@ -170,10 +172,10 @@ void Sink::AcceptMatlTrades(
 
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 void Sink::AcceptGenRsrcTrades(
-    const std::vector<std::pair<cyclus::Trade<cyclus::Product>,
-                                cyclus::Product::Ptr>>& responses) {
-  std::vector<std::pair<cyclus::Trade<cyclus::Product>,
-                        cyclus::Product::Ptr>>::const_iterator it;
+    const std::vector< std::pair<cyclus::Trade<cyclus::Product>,
+                                 cyclus::Product::Ptr> >& responses) {
+  std::vector< std::pair<cyclus::Trade<cyclus::Product>,
+                         cyclus::Product::Ptr> >::const_iterator it;
   for (it = responses.begin(); it != responses.end(); ++it) {
     inventory.Push(it->second);
   }
@@ -187,31 +189,31 @@ void Sink::Tick() {
 
   if (nextBuyTime == -1) {
     SetRequestAmt();
-  } else if (nextBuyTime == context()->time()) {
+  }
+  else if (nextBuyTime == context()->time()) {
     SetRequestAmt();
     SetNextBuyTime();
 
-    LOG(cyclus::LEV_INFO4, "SnkFac")
-        << "Sink " << this->id()
-        << " has reached buying time. The next buy time will be time step "
-        << nextBuyTime;
-  } else {
+    LOG(cyclus::LEV_INFO4, "SnkFac") << "Sink " << this->id() 
+                                     << " has reached buying time. The next buy time will be time step " << nextBuyTime;
+  }
+  else {
     requestAmt = 0;
   }
 
   // inform the simulation about what the sink facility will be requesting
   if (requestAmt > cyclus::eps()) {
-    LOG(cyclus::LEV_INFO4, "SnkFac")
-        << "Sink " << this->id() << " has request amount " << requestAmt
-        << " kg of " << in_commods[0] << ".";
+    LOG(cyclus::LEV_INFO4, "SnkFac") << "Sink " << this->id()
+                                     << " has request amount " << requestAmt
+                                     << " kg of " << in_commods[0] << ".";
     for (vector<string>::iterator commod = in_commods.begin();
          commod != in_commods.end();
          commod++) {
-      LOG(cyclus::LEV_INFO4, "SnkFac")
-          << "Sink " << this->id() << " will request " << requestAmt
-          << " kg of " << *commod << ".";
-      cyclus::toolkit::RecordTimeSeries<double>("demand" + *commod, this,
-                                                requestAmt);
+      LOG(cyclus::LEV_INFO4, "SnkFac") << "Sink " << this->id() 
+                                       << " will request " << requestAmt
+                                       << " kg of " << *commod << ".";
+      cyclus::toolkit::RecordTimeSeries<double>("demand"+*commod, this,
+                                            requestAmt);
     }
   }
   LOG(cyclus::LEV_INFO3, "SnkFac") << "}";
@@ -224,10 +226,10 @@ void Sink::Tock() {
   // On the tock, the sink facility doesn't really do much.
   // Maybe someday it will record things.
   // For now, lets just print out what we have at each timestep.
-  LOG(cyclus::LEV_INFO4, "SnkFac")
-      << "Sink " << this->id() << " is holding " << inventory.quantity()
-      << " units of material at the close of timestep " << context()->time()
-      << ".";
+  LOG(cyclus::LEV_INFO4, "SnkFac") << "Sink " << this->id()
+                                   << " is holding " << inventory.quantity()
+                                   << " units of material at the close of timestep "
+                                   << context()->time() << ".";
   LOG(cyclus::LEV_INFO3, "SnkFac") << "}";
 }
 
@@ -250,14 +252,18 @@ void Sink::SetRequestAmt() {
   }
 
   if (random_size_type == "None") {
-    requestAmt = amt;
-  } else if (random_size_type == "UniformReal") {
-    requestAmt = context()->random_uniform_real(0, amt);
-  } else if (random_size_type == "NormalReal") {
-    requestAmt = context()->random_normal_real(
-        amt * random_size_mean, amt * random_size_stddev, 0, amt);
-  } else {
-    requestAmt = amt;
+    requestAmt =  amt;
+  }
+  else if (random_size_type == "UniformReal") {
+    requestAmt =  context()->random_uniform_real(0, amt);
+  }
+  else if (random_size_type == "NormalReal") {
+    requestAmt =  context()->random_normal_real(amt * random_size_mean,
+                                                amt * random_size_stddev, 
+                                                0, amt);
+  }
+  else {
+    requestAmt =  amt;
   }
   return;
 }
@@ -265,16 +271,14 @@ void Sink::SetRequestAmt() {
 void Sink::SetNextBuyTime() {
   if (random_frequency_type == "None") {
     nextBuyTime = -1;
-  } else if (random_frequency_type == "UniformInt") {
-    nextBuyTime =
-        context()->time() + context()->random_uniform_int(random_frequency_min,
-                                                          random_frequency_max);
-  } else if (random_frequency_type == "NormalInt") {
-    nextBuyTime =
-        context()->time() + context()->random_normal_int(
-                                random_frequency_mean, random_frequency_stddev,
-                                random_frequency_min, random_frequency_max);
-  } else {
+  }
+  else if (random_frequency_type == "UniformInt") {
+    nextBuyTime = context()->time() + context()->random_uniform_int(random_frequency_min, random_frequency_max);
+  }
+  else if (random_frequency_type == "NormalInt") {
+    nextBuyTime = context()->time() + context()->random_normal_int(random_frequency_mean, random_frequency_stddev, random_frequency_min, random_frequency_max);
+  }
+  else {
     nextBuyTime = -1;
   }
   return;

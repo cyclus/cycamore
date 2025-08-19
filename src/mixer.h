@@ -2,7 +2,6 @@
 #define CYCAMORE_SRC_MIXER_H_
 
 #include <string>
-
 #include "cycamore_version.h"
 #include "cyclus.h"
 
@@ -18,7 +17,10 @@ namespace cycamore {
 /// inventories: one for each stream to be mixed, and one output
 /// stream. The supplying of mixed material is constrained by
 /// available inventory of mixed material quantities.
-class Mixer : public cyclus::Facility, public cyclus::toolkit::Position {
+class Mixer
+  : public cyclus::Facility,
+    public cyclus::toolkit::Position {
+
   // clang-format off
   #pragma cyclus note { \
     "niche": "mixing facility", \
@@ -37,7 +39,7 @@ class Mixer : public cyclus::Facility, public cyclus::toolkit::Position {
   virtual ~Mixer(){};
 
   virtual void Tick();
-  virtual void Tock() {};
+  virtual void Tock(){};
   virtual void EnterNotify();
 
   virtual void AcceptMatlTrades(
@@ -45,7 +47,7 @@ class Mixer : public cyclus::Facility, public cyclus::toolkit::Position {
                                   cyclus::Material::Ptr>>& responses);
 
   virtual std::set<cyclus::RequestPortfolio<cyclus::Material>::Ptr>
-  GetMatlRequests();
+      GetMatlRequests();
 
 #pragma cyclus clone
 #pragma cyclus initfromcopy
@@ -82,7 +84,8 @@ class Mixer : public cyclus::Facility, public cyclus::toolkit::Position {
 
   // custom SnapshotInv and InitInv and EnterNotify are used to persist this
   // state var.
-  std::map<std::string, cyclus::toolkit::ResBuf<cyclus::Material>> streambufs;
+  std::map<std::string, cyclus::toolkit::ResBuf<cyclus::Material>>
+      streambufs;
 
   // clang-format off
   #pragma cyclus var { \

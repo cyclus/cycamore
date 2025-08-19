@@ -1,8 +1,8 @@
 #ifndef CYCAMORE_SRC_MANAGER_INST_H_
 #define CYCAMORE_SRC_MANAGER_INST_H_
 
-#include "cycamore_version.h"
 #include "cyclus.h"
+#include "cycamore_version.h"
 
 namespace cycamore {
 
@@ -10,10 +10,11 @@ namespace cycamore {
 /// @section introduction Introduction
 /// @section detailedBehavior Detailed Behavior
 /// @warning The ManagerInst is experimental
-class ManagerInst : public cyclus::Institution,
-                    public cyclus::toolkit::CommodityProducerManager,
-                    public cyclus::toolkit::Builder,
-                    public cyclus::toolkit::Position {
+class ManagerInst
+    : public cyclus::Institution,
+      public cyclus::toolkit::CommodityProducerManager,
+      public cyclus::toolkit::Builder,
+      public cyclus::toolkit::Position {
  public:
   /// Default constructor
   ManagerInst(cyclus::Context* ctx);
@@ -23,7 +24,7 @@ class ManagerInst : public cyclus::Institution,
 
   virtual std::string version() { return CYCAMORE_VERSION; }
 
-#pragma cyclus
+  #pragma cyclus
 
   // clang-format off
   #pragma cyclus note { \
@@ -43,7 +44,8 @@ class ManagerInst : public cyclus::Institution,
 
   /// write information about a commodity producer to a stream
   /// @param producer the producer
-  void WriteProducerInformation(cyclus::toolkit::CommodityProducer* producer);
+  void WriteProducerInformation(cyclus::toolkit::CommodityProducer*
+                                producer);
 
  private:
   /// register a child

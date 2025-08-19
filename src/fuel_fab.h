@@ -2,9 +2,8 @@
 #define CYCAMORE_SRC_FUEL_FAB_H_
 
 #include <string>
-
-#include "cycamore_version.h"
 #include "cyclus.h"
+#include "cycamore_version.h"
 
 // clang-format off
 #pragma cyclus exec \
@@ -27,13 +26,13 @@ namespace cycamore {
 ///     N * (p_i - p_U238) / (p_Pu239 - p_U238)
 ///
 /// for each nuclide where:
-///   - p = nu*sigma_f - sigma_a   for the nuclide
-///   - p_U238 is p for pure U238
-///   - p_Pu239 is p for pure Pu239
-///   - N is the nuclide's atom fraction
-///   - nu is the average number of neutrons per fission
-///   - sigma_f is the microscopic fission cross-section
-///   - sigma_a is the microscopic neutron absorption cross-section
+///   - p = nu*sigma_f - sigma_a   for the nuclide  
+///   - p_U238 is p for pure U238  
+///   - p_Pu239 is p for pure Pu239  
+///   - N is the nuclide's atom fraction  
+///   - nu is the average number of neutrons per fission  
+///   - sigma_f is the microscopic fission cross-section  
+///   - sigma_a is the microscopic neutron absorption cross-section  
 ///
 /// The cross sections are from the simple cross section library in PyNE.
 /// They can be set to either a thermal or fast neutron spectrum. A linear
@@ -54,7 +53,10 @@ namespace cycamore {
 ///     uranium isotopes in fast reactors." Proceedings of the Conference on
 ///     Breeding, Economics, and Safety in Large Fast Power Reactors. 1963.
 /// @endcode
-class FuelFab : public cyclus::Facility, public cyclus::toolkit::Position {
+class FuelFab
+  : public cyclus::Facility,
+    public cyclus::toolkit::Position {
+
   // clang-format off
   #pragma cyclus note { \
     "niche": "fabrication", \
@@ -113,10 +115,10 @@ class FuelFab : public cyclus::Facility, public cyclus::toolkit::Position {
 
   virtual std::string version() { return CYCAMORE_VERSION; }
 
-#pragma cyclus
+  #pragma cyclus
 
-  virtual void Tick() {};
-  virtual void Tock() {};
+  virtual void Tick(){};
+  virtual void Tock(){};
   virtual void EnterNotify();
 
   virtual std::set<cyclus::BidPortfolio<cyclus::Material>::Ptr> GetMatlBids(
@@ -128,11 +130,11 @@ class FuelFab : public cyclus::Facility, public cyclus::toolkit::Position {
                             cyclus::Material::Ptr>>& responses);
 
   virtual void AcceptMatlTrades(
-      const std::vector<std::pair<cyclus::Trade<cyclus::Material>,
-                                  cyclus::Material::Ptr>>& responses);
+      const std::vector<std::pair<
+          cyclus::Trade<cyclus::Material>, cyclus::Material::Ptr>>& responses);
 
   virtual std::set<cyclus::RequestPortfolio<cyclus::Material>::Ptr>
-  GetMatlRequests();
+      GetMatlRequests();
 
  private:
   // clang-format off

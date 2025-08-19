@@ -1,6 +1,6 @@
-#include "storage_tests.h"
-
 #include <gtest/gtest.h>
+
+#include "storage_tests.h"
 
 namespace cycamore {
 
@@ -15,7 +15,7 @@ void StorageTest::TearDown() {
   delete src_facility_;
 }
 
-void StorageTest::InitParameters() {
+void StorageTest::InitParameters(){
   in_r1 = "in_r1";
   in_c1.push_back("in_c1");
   out_c1.push_back("out_c1");
@@ -26,6 +26,7 @@ void StorageTest::InitParameters() {
   package = "foo";
   // Active period longer than any of the residence time related-tests needs
 
+
   cyclus::CompMap v;
   v[922350000] = 1;
   v[922380000] = 2;
@@ -33,7 +34,7 @@ void StorageTest::InitParameters() {
   tc_.get()->AddRecipe(in_r1, recipe);
 }
 
-void StorageTest::SetUpStorage() {
+void StorageTest::SetUpStorage(){
   src_facility_->in_recipe = in_r1;
   src_facility_->in_commods = in_c1;
   src_facility_->out_commods = out_c1;
@@ -45,7 +46,7 @@ void StorageTest::SetUpStorage() {
   src_facility_->package = package;
 }
 
-void StorageTest::TestInitState(Storage* fac) {
+void StorageTest::TestInitState(Storage* fac){
   EXPECT_EQ(residence_time, fac->residence_time);
   EXPECT_EQ(max_inv_size, fac->max_inv_size);
   EXPECT_EQ(throughput, fac->throughput);
@@ -53,7 +54,8 @@ void StorageTest::TestInitState(Storage* fac) {
   EXPECT_EQ(package, fac->package);
 }
 
-void StorageTest::TestAddMat(Storage* fac, cyclus::Material::Ptr mat) {
+void StorageTest::TestAddMat(Storage* fac,
+    cyclus::Material::Ptr mat){
   double amt = mat->quantity();
   double before = fac->inventory.quantity();
   fac->AddMat_(mat);
@@ -61,8 +63,8 @@ void StorageTest::TestAddMat(Storage* fac, cyclus::Material::Ptr mat) {
   EXPECT_EQ(amt, after - before);
 }
 
-void StorageTest::TestBuffers(Storage* fac, double inv, double proc,
-                              double ready, double stocks) {
+void StorageTest::TestBuffers(Storage* fac, double inv,
+    double proc, double ready, double stocks){
   double t = tc_.get()->time();
 
   EXPECT_EQ(inv, fac->inventory.quantity());
@@ -71,24 +73,29 @@ void StorageTest::TestBuffers(Storage* fac, double inv, double proc,
   EXPECT_EQ(ready, fac->ready.quantity());
 }
 
-void StorageTest::TestStocks(Storage* fac, cyclus::CompMap v) {
+void StorageTest::TestStocks(Storage* fac, cyclus::CompMap v){
+
   cyclus::toolkit::ResBuf<cyclus::Material>* buffer = &fac->stocks;
   Material::Ptr final_mat = cyclus::ResCast<Material>(buffer->PopBack());
   cyclus::CompMap final_comp = final_mat->comp()->atom();
-  EXPECT_EQ(final_comp, v);
+  EXPECT_EQ(final_comp,v);
+
 }
 
-void StorageTest::TestCurrentCap(Storage* fac, double inv) {
+void StorageTest::TestCurrentCap(Storage* fac, double inv){
+
   EXPECT_EQ(inv, fac->current_capacity());
 }
 
-void StorageTest::TestReadyTime(Storage* fac, int t) {
+void StorageTest::TestReadyTime(Storage* fac, int t){
+
   EXPECT_EQ(t, fac->ready_time());
 }
 
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 TEST_F(StorageTest, clone) {
-  Storage* cloned_fac = dynamic_cast<Storage*>(src_facility_->Clone());
+  Storage* cloned_fac =
+      dynamic_cast<Storage*> (src_facility_->Clone());
   TestInitState(cloned_fac);
 }
 
@@ -99,8 +106,8 @@ TEST_F(StorageTest, InitialState) {
 }
 
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-TEST_F(StorageTest, CurrentCapacity) {
-  TestCurrentCap(src_facility_, max_inv_size);
+TEST_F(StorageTest, CurrentCapacity){
+  TestCurrentCap(src_facility_,max_inv_size);
   max_inv_size = cyclus::CY_LARGE_DOUBLE;
   SetUpStorage();
   TestInitState(src_facility_);
@@ -115,12 +122,11 @@ TEST_F(StorageTest, Print) {
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 TEST_F(StorageTest, AddMats) {
   double cap = max_inv_size;
-  cyclus::Material::Ptr mat = cyclus::NewBlankMaterial(0.5 * cap);
+  cyclus::Material::Ptr mat = cyclus::NewBlankMaterial(0.5*cap);
   TestAddMat(src_facility_, mat);
 
   cyclus::Composition::Ptr rec = tc_.get()->GetRecipe(in_r1);
-  cyclus::Material::Ptr recmat =
-      cyclus::Material::CreateUntracked(0.5 * cap, rec);
+  cyclus::Material::Ptr recmat = cyclus::Material::CreateUntracked(0.5*cap, rec);
   TestAddMat(src_facility_, recmat);
 }
 
@@ -132,8 +138,9 @@ TEST_F(StorageTest, Tick) {
 
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 TEST_F(StorageTest, Tock) {
+
   // initially, nothing in the buffers
-  TestBuffers(src_facility_, 0, 0, 0, 0);
+  TestBuffers(src_facility_,0,0,0,0);
 
   double cap = throughput;
   cyclus::Composition::Ptr rec = tc_.get()->GetRecipe(in_r1);
@@ -141,30 +148,31 @@ TEST_F(StorageTest, Tock) {
   TestAddMat(src_facility_, mat);
 
   // affter add, the inventory has the material
-  TestBuffers(src_facility_, cap, 0, 0, 0);
+  TestBuffers(src_facility_,cap,0,0,0);
 
   EXPECT_NO_THROW(src_facility_->Tock());
 
   // after tock, the processing buffer has the material
-  TestBuffers(src_facility_, 0, cap, 0, 0);
+  TestBuffers(src_facility_,0,cap,0,0);
 
   EXPECT_EQ(0, tc_.get()->time());
-  for (int i = 1; i < residence_time - 1; ++i) {
+  for( int i = 1; i < residence_time-1; ++i){
     tc_.get()->time(i);
     EXPECT_NO_THROW(src_facility_->Tock());
-    TestBuffers(src_facility_, 0, cap, 0, 0);
+    TestBuffers(src_facility_,0,cap,0,0);
   }
 
   tc_.get()->time(residence_time);
   EXPECT_EQ(residence_time, tc_.get()->time());
-  TestReadyTime(src_facility_, 0);
+  TestReadyTime(src_facility_,0);
   src_facility_->Tock();
-  TestBuffers(src_facility_, 0, 0, 0, cap);
+  TestBuffers(src_facility_,0,0,0,cap);
 
-  tc_.get()->time(residence_time + 1);
-  TestReadyTime(src_facility_, 1);
+  tc_.get()->time(residence_time+1);
+  TestReadyTime(src_facility_,1);
   src_facility_->Tock();
-  TestBuffers(src_facility_, 0, 0, 0, cap);
+  TestBuffers(src_facility_,0,0,0,cap);
+
 }
 
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -180,16 +188,16 @@ TEST_F(StorageTest, NoProcessTime) {
   TestAddMat(src_facility_, mat);
 
   // affter add, the inventory has the material
-  TestBuffers(src_facility_, cap, 0, 0, 0);
+  TestBuffers(src_facility_,cap,0,0,0);
 
   EXPECT_NO_THROW(src_facility_->Tock());
 
   // affter tock, the stocks have the material
-  TestBuffers(src_facility_, 0, 0, 0, cap);
+  TestBuffers(src_facility_,0,0,0,cap);
 }
 
 TEST_F(StorageTest, NoConvert) {
-  // Make sure no conversion occurs
+// Make sure no conversion occurs
   double cap = throughput;
   cyclus::Composition::Ptr rec = tc_.get()->GetRecipe(in_r1);
   cyclus::Material::Ptr mat = cyclus::Material::CreateUntracked(cap, rec);
@@ -198,51 +206,51 @@ TEST_F(StorageTest, NoConvert) {
   EXPECT_NO_THROW(src_facility_->Tock());
 
   tc_.get()->time(residence_time);
-  TestReadyTime(src_facility_, 0);
+  TestReadyTime(src_facility_,0);
   EXPECT_NO_THROW(src_facility_->Tock());
-  TestBuffers(src_facility_, 0, 0, 0, cap);
+  TestBuffers(src_facility_,0,0,0,cap);
   cyclus::CompMap in_rec;
   in_rec[922350000] = 1;
   in_rec[922380000] = 2;
-  TestStocks(src_facility_, in_rec);
+  TestStocks(src_facility_,in_rec);
 }
 
 TEST_F(StorageTest, MultipleSmallBatches) {
   // Add first small batch
   double cap = throughput;
   cyclus::Composition::Ptr rec = tc_.get()->GetRecipe(in_r1);
-  cyclus::Material::Ptr mat = cyclus::Material::CreateUntracked(0.2 * cap, rec);
+  cyclus::Material::Ptr mat = cyclus::Material::CreateUntracked(0.2*cap, rec);
   TestAddMat(src_facility_, mat);
 
   // After add, material is in inventory
-  TestBuffers(src_facility_, 0.2 * cap, 0, 0, 0);
+  TestBuffers(src_facility_,0.2*cap,0,0,0);
 
   // Move first batch into processing
   src_facility_->Tock();
-  TestBuffers(src_facility_, 0, 0.2 * cap, 0, 0);
+  TestBuffers(src_facility_,0,0.2*cap,0,0);
 
   // Add second small batch
   tc_.get()->time(2);
   src_facility_->Tock();
-  cyclus::Material::Ptr mat1 =
-      cyclus::Material::CreateUntracked(0.3 * cap, rec);
-  TestAddMat(src_facility_, mat1);
-  TestBuffers(src_facility_, 0.3 * cap, 0.2 * cap, 0, 0);
+  cyclus::Material::Ptr mat1 = cyclus::Material::CreateUntracked(0.3*cap, rec);
+  TestAddMat(src_facility_,mat1);
+  TestBuffers(src_facility_,0.3*cap,0.2*cap,0,0);
 
   // Move second batch into processing
   EXPECT_NO_THROW(src_facility_->Tock());
-  TestBuffers(src_facility_, 0, 0.5 * cap, 0, 0);
+  TestBuffers(src_facility_,0,0.5*cap,0,0);
 
   // Move first batch to stocks
   tc_.get()->time(residence_time);
-  TestReadyTime(src_facility_, 0);
+  TestReadyTime(src_facility_,0);
   EXPECT_NO_THROW(src_facility_->Tock());
-  TestBuffers(src_facility_, 0, 0.3 * cap, 0, 0.2 * cap);
+  TestBuffers(src_facility_,0,0.3*cap,0,0.2*cap);
 
-  tc_.get()->time(residence_time + 2);
+  tc_.get()->time(residence_time+2);
   EXPECT_NO_THROW(src_facility_->Tock());
-  TestBuffers(src_facility_, 0, 0, 0, 0.5 * cap);
+  TestBuffers(src_facility_,0,0,0,0.5*cap);
 }
+
 
 TEST_F(StorageTest, ChangeCapacity) {
   // src_facility_->discrete_handling_(0);
@@ -255,123 +263,124 @@ TEST_F(StorageTest, ChangeCapacity) {
   cyclus::Material::Ptr mat1 = cyclus::Material::CreateUntracked(cap1, rec);
   TestAddMat(src_facility_, mat1);
   EXPECT_NO_THROW(src_facility_->Tock());
-  TestBuffers(src_facility_, 0, cap1, 0, 0);
+  TestBuffers(src_facility_,0,cap1,0,0);
 
   // Increase throughput, add second and third batches
   tc_.get()->time(2);
   throughput = 500;
   SetUpStorage();
   double cap2 = throughput;
-  cyclus::Material::Ptr mat2 = cyclus::Material::CreateUntracked(cap2, rec);
+  cyclus::Material::Ptr mat2 = cyclus::Material::CreateUntracked(cap2,rec);
   TestAddMat(src_facility_, mat2);
   EXPECT_NO_THROW(src_facility_->Tock());
-  TestBuffers(src_facility_, 0, cap2 + cap1, 0, 0);
+  TestBuffers(src_facility_,0,cap2+cap1,0,0);
   tc_.get()->time(3);
-  cyclus::Material::Ptr mat3 = cyclus::Material::CreateUntracked(cap2, rec);
+  cyclus::Material::Ptr mat3 = cyclus::Material::CreateUntracked(cap2,rec);
   TestAddMat(src_facility_, mat3);
   EXPECT_NO_THROW(src_facility_->Tock());
-  TestBuffers(src_facility_, 0, cap2 * 2 + cap1, 0, 0);
+  TestBuffers(src_facility_,0,cap2*2+cap1,0,0);
 
   // Move first batch to stocks
   tc_.get()->time(residence_time);
   EXPECT_NO_THROW(src_facility_->Tock());
-  TestBuffers(src_facility_, 0, 2 * cap2, 0, cap1);
+  TestBuffers(src_facility_,0,2*cap2,0,cap1);
 
   // Decrease throughput and move portion of second batch to stocks
   throughput = 400;
   SetUpStorage();
-  tc_.get()->time(residence_time + 2);
+  tc_.get()->time(residence_time+2);
   EXPECT_EQ(400, throughput);
   EXPECT_NO_THROW(src_facility_->Tock());
-  TestBuffers(src_facility_, 0, cap2, 100, cap1 + 400);
+  TestBuffers(src_facility_,0,cap2,100,cap1+400);
 
   // Continue to move second batch // and portion of third
-  tc_.get()->time(residence_time + 3);
+  tc_.get()->time(residence_time+3);
   EXPECT_NO_THROW(src_facility_->Tock());
-  TestBuffers(src_facility_, 0, 0, 200, cap1 + cap2 + 300);
+  TestBuffers(src_facility_,0,0,200,cap1+cap2+300);
 
   // Move remainder of third batch
-  tc_.get()->time(residence_time + 4);
+  tc_.get()->time(residence_time+4);
   EXPECT_NO_THROW(src_facility_->Tock());
-  TestBuffers(src_facility_, 0, 0, 0, cap1 + cap2 + cap2);
+  TestBuffers(src_facility_,0,0,0,cap1+cap2+cap2);
+
 }
 
 TEST_F(StorageTest, TwoBatchSameTime) {
   // Add first small batch
   double cap = throughput;
   cyclus::Composition::Ptr rec = tc_.get()->GetRecipe(in_r1);
-  cyclus::Material::Ptr mat = cyclus::Material::CreateUntracked(0.2 * cap, rec);
+  cyclus::Material::Ptr mat = cyclus::Material::CreateUntracked(0.2*cap, rec);
   TestAddMat(src_facility_, mat);
 
   // After add, material is in inventory
-  TestBuffers(src_facility_, 0.2 * cap, 0, 0, 0);
-  cyclus::Material::Ptr mat1 =
-      cyclus::Material::CreateUntracked(0.2 * cap, rec);
+  TestBuffers(src_facility_,0.2*cap,0,0,0);
+  cyclus::Material::Ptr mat1 = cyclus::Material::CreateUntracked(0.2*cap, rec);
   TestAddMat(src_facility_, mat1);
-  TestBuffers(src_facility_, 0.4 * cap, 0, 0, 0);
+  TestBuffers(src_facility_,0.4*cap,0,0,0);
 
   EXPECT_NO_THROW(src_facility_->Tock());
-  TestBuffers(src_facility_, 0, 0.4 * cap, 0, 0);
+  TestBuffers(src_facility_,0,0.4*cap,0,0);
 
   // Move material to stocks
   tc_.get()->time(residence_time);
   EXPECT_NO_THROW(src_facility_->Tock());
-  TestBuffers(src_facility_, 0, 0, 0, 0.4 * cap);
+  TestBuffers(src_facility_,0,0,0,0.4*cap);
 }
 
-TEST_F(StorageTest, ChangeProcessTime) {
+TEST_F(StorageTest,ChangeProcessTime){
   // Initialize process time variable and add first batch
   int proc_time1 = residence_time;
   double cap = throughput;
   cyclus::Composition::Ptr rec = tc_.get()->GetRecipe(in_r1);
   cyclus::Material::Ptr mat = cyclus::Material::CreateUntracked(cap, rec);
   TestAddMat(src_facility_, mat);
-  TestBuffers(src_facility_, cap, 0, 0, 0);
+  TestBuffers(src_facility_,cap,0,0,0);
 
   // Move material to processing
   EXPECT_NO_THROW(src_facility_->Tock());
-  TestBuffers(src_facility_, 0, cap, 0, 0);
+  TestBuffers(src_facility_,0,cap,0,0);
 
   // Add second batch
-  cyclus::Material::Ptr mat1 = cyclus::Material::CreateUntracked(cap, rec);
+  cyclus::Material::Ptr mat1 = cyclus::Material::CreateUntracked(cap,rec);
   tc_.get()->time(8);
-  TestAddMat(src_facility_, mat1);
-  TestBuffers(src_facility_, cap, cap, 0, 0);
+  TestAddMat(src_facility_,mat1);
+  TestBuffers(src_facility_,cap,cap,0,0);
   EXPECT_NO_THROW(src_facility_->Tock());
-  TestBuffers(src_facility_, 0, 2 * cap, 0, 0);
+  TestBuffers(src_facility_,0,2*cap,0,0);
 
   // Increase process time
-  residence_time = proc_time1 + 5;
+  residence_time = proc_time1+5;
   SetUpStorage();
   // src_facility_->residence_time = proc_time1+5;
-  EXPECT_EQ(residence_time, proc_time1 + 5);
-  EXPECT_EQ(residence_time, 15);
+  EXPECT_EQ(residence_time,proc_time1+5);
+  EXPECT_EQ(residence_time,15);
   int proc_time2 = residence_time;
 
   // Make sure material doesn't move before new process time
-  for (int i = proc_time1; i < proc_time2 - 1; ++i) {
-    tc_.get()->time(i);
-    EXPECT_NO_THROW(src_facility_->Tock());
-    TestBuffers(src_facility_, 0, 2 * cap, 0, 0);
+  for( int i=proc_time1; i < proc_time2 - 1; ++i){
+  tc_.get()->time(i);
+  EXPECT_NO_THROW(src_facility_->Tock());
+  TestBuffers(src_facility_,0,2*cap,0,0);
   }
 
   // Move first batch to stocks
   tc_.get()->time(proc_time2);
   EXPECT_NO_THROW(src_facility_->Tock());
-  TestBuffers(src_facility_, 0, cap, 0, cap);
+  TestBuffers(src_facility_,0,cap,0,cap);
 
   // Decrease process time
-  residence_time = proc_time2 - 3;
+  residence_time = proc_time2-3;
   SetUpStorage();
   int proc_time3 = residence_time;
 
   // Move second batch to stocks
-  tc_.get()->time(proc_time3 + 8);
+  tc_.get()->time(proc_time3 +8);
   EXPECT_NO_THROW(src_facility_->Tock());
-  TestBuffers(src_facility_, 0, 0, 0, 2 * cap);
+  TestBuffers(src_facility_,0,0,0,2*cap);
+
 }
 
-TEST_F(StorageTest, DifferentRecipe) {
+TEST_F(StorageTest,DifferentRecipe){
   // Initialize material with different recipe than in_recipe
   double cap = throughput;
   cyclus::CompMap v;
@@ -382,26 +391,26 @@ TEST_F(StorageTest, DifferentRecipe) {
 
   // Move material through the facility
   TestAddMat(src_facility_, mat);
-  TestBuffers(src_facility_, cap, 0, 0, 0);
+  TestBuffers(src_facility_,cap,0,0,0);
   EXPECT_NO_THROW(src_facility_->Tock());
-  TestBuffers(src_facility_, 0, cap, 0, 0);
+  TestBuffers(src_facility_,0,cap,0,0);
   tc_.get()->time(residence_time);
   EXPECT_NO_THROW(src_facility_->Tock());
-  TestBuffers(src_facility_, 0, 0, 0, cap);
+  TestBuffers(src_facility_,0,0,0,cap);
 }
 
-TEST_F(StorageTest, BehaviorTest) {
+TEST_F(StorageTest, BehaviorTest){
   // Verify Storage behavior
 
   std::string config =
-      "   <in_commods> <val>spent_fuel</val> </in_commods> "
-      "   <out_commods> <val>dry_spent</val> </out_commods> "
-      "   <residence_time>1</residence_time>"
-      "   <max_inv_size>10</max_inv_size>";
+    "   <in_commods> <val>spent_fuel</val> </in_commods> "
+    "   <out_commods> <val>dry_spent</val> </out_commods> "
+    "   <residence_time>1</residence_time>"
+    "   <max_inv_size>10</max_inv_size>";
 
   int simdur = 3;
 
-  cyclus::MockSim sim(cyclus::AgentSpec(":cycamore:Storage"), config, simdur);
+  cyclus::MockSim sim(cyclus::AgentSpec (":cycamore:Storage"), config, simdur);
 
   sim.AddSource("spent_fuel").Finalize();
   sim.AddSink("dry_spent").Finalize();
@@ -414,22 +423,23 @@ TEST_F(StorageTest, BehaviorTest) {
   cyclus::QueryResult qr = sim.db().Query("Transactions", &conds);
   int n_trans = qr.rows.size();
   EXPECT_EQ(1, n_trans) << "expected 1 transactions, got " << n_trans;
+
 }
 
-TEST_F(StorageTest, MultipleCommods) {
+TEST_F(StorageTest, MultipleCommods){
   // Verify Storage accepting Multiple Commods
 
   std::string config =
-      "   <in_commods> <val>spent_fuel</val>"
-      "                <val>spent_fuel2</val> </in_commods>"
-      "   <in_commod_prefs> <val>1</val>"
-      "                     <val>1</val> </in_commod_prefs>"
-      "   <out_commods> <val>dry_spent</val> </out_commods> "
-      "   <max_inv_size>10</max_inv_size>";
+    "   <in_commods> <val>spent_fuel</val>"
+    "                <val>spent_fuel2</val> </in_commods>"
+    "   <in_commod_prefs> <val>1</val>"
+    "                     <val>1</val> </in_commod_prefs>"
+    "   <out_commods> <val>dry_spent</val> </out_commods> "
+    "   <max_inv_size>10</max_inv_size>";
 
   int simdur = 2;
 
-  cyclus::MockSim sim(cyclus::AgentSpec(":cycamore:Storage"), config, simdur);
+  cyclus::MockSim sim(cyclus::AgentSpec (":cycamore:Storage"), config, simdur);
 
   sim.AddSource("spent_fuel").capacity(5).Finalize();
   sim.AddSource("spent_fuel2").capacity(5).Finalize();
@@ -451,19 +461,20 @@ TEST_F(StorageTest, MultipleCommods) {
   EXPECT_EQ(1, n_trans2) << "expected 1 transactions, got " << n_trans;
 }
 
+
 // Should get one transaction in a 2 step simulation when agent is active for
 // one step and dormant for one step
-TEST_F(StorageTest, ActiveDormant) {
+TEST_F(StorageTest, ActiveDormant){
   std::string config =
-      "   <in_commods> <val>spent_fuel</val> </in_commods> "
-      "   <out_commods> <val>dry_spent</val> </out_commods> "
-      "   <throughput>1</throughput>"
-      "   <active_buying_val>1</active_buying_val>"
-      "   <dormant_buying_val>1</dormant_buying_val>";
+    "   <in_commods> <val>spent_fuel</val> </in_commods> "
+    "   <out_commods> <val>dry_spent</val> </out_commods> "
+    "   <throughput>1</throughput>"
+    "   <active_buying_val>1</active_buying_val>"
+    "   <dormant_buying_val>1</dormant_buying_val>";
 
   int simdur = 2;
 
-  cyclus::MockSim sim(cyclus::AgentSpec(":cycamore:Storage"), config, simdur);
+  cyclus::MockSim sim(cyclus::AgentSpec (":cycamore:Storage"), config, simdur);
 
   sim.AddSource("spent_fuel").capacity(5).Finalize();
   sim.AddSink("dry_spent").Finalize();
@@ -476,23 +487,23 @@ TEST_F(StorageTest, ActiveDormant) {
   cyclus::QueryResult qr = sim.db().Query("Transactions", &conds);
   int n_trans = qr.rows.size();
   EXPECT_EQ(1, n_trans) << "expected 1 transactions, got " << n_trans;
-}
+ }
 
-// Should get two transactions in a 2 step simulation when there is no
-// dormant period, i.e. agent is always active
-TEST_F(StorageTest, NoDormant) {
+  // Should get two transactions in a 2 step simulation when there is no 
+  // dormant period, i.e. agent is always active
+TEST_F(StorageTest, NoDormant){
   std::string config =
-      "   <in_commods> <val>spent_fuel</val> </in_commods> "
-      "   <out_commods> <val>dry_spent</val> </out_commods> "
-      "   <throughput>1</throughput>"
-      "   <active_buying_frequency_type>Fixed</active_buying_frequency_type>"
-      "   <active_buying_val>1</active_buying_val>"
-      "   <dormant_buying_frequency_type>Fixed</dormant_buying_frequency_type>"
-      "   <dormant_buying_val>-1</dormant_buying_val>";
+    "   <in_commods> <val>spent_fuel</val> </in_commods> "
+    "   <out_commods> <val>dry_spent</val> </out_commods> "
+    "   <throughput>1</throughput>"
+    "   <active_buying_frequency_type>Fixed</active_buying_frequency_type>"
+    "   <active_buying_val>1</active_buying_val>"
+    "   <dormant_buying_frequency_type>Fixed</dormant_buying_frequency_type>"
+    "   <dormant_buying_val>-1</dormant_buying_val>";
 
   int simdur = 3;
 
-  cyclus::MockSim sim(cyclus::AgentSpec(":cycamore:Storage"), config, simdur);
+  cyclus::MockSim sim(cyclus::AgentSpec (":cycamore:Storage"), config, simdur);
 
   sim.AddSource("spent_fuel").capacity(5).Finalize();
   sim.AddSink("dry_spent").Finalize();
@@ -504,23 +515,23 @@ TEST_F(StorageTest, NoDormant) {
   cyclus::QueryResult qr = sim.db().Query("Transactions", &conds);
   int n_trans = qr.rows.size();
   EXPECT_EQ(3, n_trans) << "expected 3 transactions, got " << n_trans;
-}
+ }
 
-TEST_F(StorageTest, UniformActiveNormalDormant) {
+TEST_F(StorageTest, UniformActiveNormalDormant){
   std::string config =
-      "   <in_commods> <val>spent_fuel</val> </in_commods> "
-      "   <out_commods> <val>dry_spent</val> </out_commods> "
-      "   <throughput>1</throughput>"
-      "   <active_buying_frequency_type>Uniform</active_buying_frequency_type>"
-      "   <active_buying_min>2</active_buying_min>"
-      "   <active_buying_max>3</active_buying_max>"
-      "   <dormant_buying_frequency_type>Normal</dormant_buying_frequency_type>"
-      "   <dormant_buying_mean>5</dormant_buying_mean>"
-      "   <dormant_buying_stddev>1</dormant_buying_stddev>";
+    "   <in_commods> <val>spent_fuel</val> </in_commods> "
+    "   <out_commods> <val>dry_spent</val> </out_commods> "
+    "   <throughput>1</throughput>"
+    "   <active_buying_frequency_type>Uniform</active_buying_frequency_type>"
+    "   <active_buying_min>2</active_buying_min>"
+    "   <active_buying_max>3</active_buying_max>"
+    "   <dormant_buying_frequency_type>Normal</dormant_buying_frequency_type>"
+    "   <dormant_buying_mean>5</dormant_buying_mean>"
+    "   <dormant_buying_stddev>1</dormant_buying_stddev>";
 
   int simdur = 20;
 
-  cyclus::MockSim sim(cyclus::AgentSpec(":cycamore:Storage"), config, simdur);
+  cyclus::MockSim sim(cyclus::AgentSpec (":cycamore:Storage"), config, simdur);
 
   sim.AddSource("spent_fuel").capacity(5).Finalize();
   sim.AddSink("dry_spent").Finalize();
@@ -542,18 +553,17 @@ TEST_F(StorageTest, UniformActiveNormalDormant) {
 
 TEST_F(StorageTest, BinomialActiveDormant) {
   std::string config =
-      "   <in_commods> <val>commod</val> </in_commods> "
-      "   <out_commods> <val>commod1</val> </out_commods> "
-      "   <throughput>1</throughput>"
-      "   <active_buying_frequency_type>Binomial</active_buying_frequency_type>"
-      "   <active_buying_end_probability>0.2</active_buying_end_probability>"
-      "   "
-      "<dormant_buying_frequency_type>Binomial</dormant_buying_frequency_type>"
-      "   <dormant_buying_end_probability>0.3</dormant_buying_end_probability>";
+  "   <in_commods> <val>commod</val> </in_commods> "
+  "   <out_commods> <val>commod1</val> </out_commods> "
+  "   <throughput>1</throughput>"
+  "   <active_buying_frequency_type>Binomial</active_buying_frequency_type>"
+  "   <active_buying_end_probability>0.2</active_buying_end_probability>"
+  "   <dormant_buying_frequency_type>Binomial</dormant_buying_frequency_type>"
+  "   <dormant_buying_end_probability>0.3</dormant_buying_end_probability>";
 
   int simdur = 30;
 
-  cyclus::MockSim sim(cyclus::AgentSpec(":cycamore:Storage"), config, simdur);
+  cyclus::MockSim sim(cyclus::AgentSpec (":cycamore:Storage"), config, simdur);
   sim.AddSource("commod").capacity(5).Finalize();
 
   int id = sim.Run();
@@ -573,29 +583,21 @@ TEST_F(StorageTest, BinomialActiveDormant) {
 
 TEST_F(StorageTest, DisruptionActiveDormant) {
   std::string config =
-      "    <in_commods><val>commod</val></in_commods>"
-      "    <out_commods><val>commod1</val></out_commods>"
-      "    <throughput>1</throughput>"
-      "    "
-      "<active_buying_frequency_type>FixedWithDisruption</"
-      "active_buying_frequency_type>"
-      "    "
-      "<active_buying_disruption_probability>0.4</"
-      "active_buying_disruption_probability>"
-      "    <active_buying_val>2</active_buying_val>"
-      "    <active_buying_disruption>5</active_buying_disruption>"
-      "    "
-      "<dormant_buying_frequency_type>FixedWithDisruption</"
-      "dormant_buying_frequency_type>"
-      "    "
-      "<dormant_buying_disruption_probability>0.5</"
-      "dormant_buying_disruption_probability>"
-      "    <dormant_buying_val>1</dormant_buying_val>"
-      "    <dormant_buying_disruption>10</dormant_buying_disruption>";
+  "    <in_commods><val>commod</val></in_commods>"
+  "    <out_commods><val>commod1</val></out_commods>"
+  "    <throughput>1</throughput>"
+  "    <active_buying_frequency_type>FixedWithDisruption</active_buying_frequency_type>"
+  "    <active_buying_disruption_probability>0.4</active_buying_disruption_probability>"
+  "    <active_buying_val>2</active_buying_val>"
+  "    <active_buying_disruption>5</active_buying_disruption>"
+  "    <dormant_buying_frequency_type>FixedWithDisruption</dormant_buying_frequency_type>"
+  "    <dormant_buying_disruption_probability>0.5</dormant_buying_disruption_probability>"
+  "    <dormant_buying_val>1</dormant_buying_val>"
+  "    <dormant_buying_disruption>10</dormant_buying_disruption>";
 
   int simdur = 50;
 
-  cyclus::MockSim sim(cyclus::AgentSpec(":cycamore:Storage"), config, simdur);
+  cyclus::MockSim sim(cyclus::AgentSpec (":cycamore:Storage"), config, simdur);
   sim.AddSource("commod").capacity(5).Finalize();
   int id = sim.Run();
 
@@ -603,29 +605,29 @@ TEST_F(StorageTest, DisruptionActiveDormant) {
   // confirm that transactions are only occurring during active periods
   // first active length = 5 (disrupted)
   EXPECT_EQ(0, qr.GetVal<int>("Time", 0));
-  EXPECT_EQ(1, qr.GetVal<int>("Time", 1));  // ... end of active
-
+  EXPECT_EQ(1, qr.GetVal<int>("Time", 1)); // ... end of active
+  
   // first dormant length = 1 (not disrupted)
   // second active length = 2 (not disrupted)
-  EXPECT_EQ(3, qr.GetVal<int>("Time", 2));  // ... end of dormant
+  EXPECT_EQ(3, qr.GetVal<int>("Time", 2)); // ... end of dormant
   EXPECT_EQ(4, qr.GetVal<int>("Time", 3));
-
+  
   // second dormant length = 10 (disrupted)
   // third active length = 2 (not disrupted)
-  EXPECT_EQ(15, qr.GetVal<int>("Time", 4));  // ... end of second active
+  EXPECT_EQ(15, qr.GetVal<int>("Time", 4)); // ... end of second active
 }
 
-TEST_F(StorageTest, FixedBuyingSize) {
+TEST_F(StorageTest, FixedBuyingSize){
   std::string config =
-      "   <in_commods> <val>spent_fuel</val> </in_commods> "
-      "   <out_commods> <val>dry_spent</val> </out_commods> "
-      "   <throughput>1</throughput>"
-      "   <buying_size_type>Fixed</buying_size_type>"
-      "   <buying_size_val>0.5</buying_size_val>";
+    "   <in_commods> <val>spent_fuel</val> </in_commods> "
+    "   <out_commods> <val>dry_spent</val> </out_commods> "
+    "   <throughput>1</throughput>"
+    "   <buying_size_type>Fixed</buying_size_type>"
+    "   <buying_size_val>0.5</buying_size_val>";
 
   int simdur = 2;
 
-  cyclus::MockSim sim(cyclus::AgentSpec(":cycamore:Storage"), config, simdur);
+  cyclus::MockSim sim(cyclus::AgentSpec (":cycamore:Storage"), config, simdur);
 
   sim.AddSource("spent_fuel").Finalize();
   int id = sim.Run();
@@ -635,18 +637,18 @@ TEST_F(StorageTest, FixedBuyingSize) {
   EXPECT_NEAR(0.5, qr.GetVal<double>("Quantity", 1), 0.00001);
 }
 
-TEST_F(StorageTest, UniformBuyingSize) {
+TEST_F(StorageTest, UniformBuyingSize){
   std::string config =
-      "   <in_commods> <val>spent_fuel</val> </in_commods> "
-      "   <out_commods> <val>dry_spent</val> </out_commods> "
-      "   <throughput>1</throughput>"
-      "   <buying_size_type>Uniform</buying_size_type>"
-      "   <buying_size_min>0.5</buying_size_min>"
-      "   <buying_size_max>0.7</buying_size_max>";
+    "   <in_commods> <val>spent_fuel</val> </in_commods> "
+    "   <out_commods> <val>dry_spent</val> </out_commods> "
+    "   <throughput>1</throughput>"
+    "   <buying_size_type>Uniform</buying_size_type>"
+    "   <buying_size_min>0.5</buying_size_min>"
+    "   <buying_size_max>0.7</buying_size_max>";
 
   int simdur = 2;
 
-  cyclus::MockSim sim(cyclus::AgentSpec(":cycamore:Storage"), config, simdur);
+  cyclus::MockSim sim(cyclus::AgentSpec (":cycamore:Storage"), config, simdur);
 
   sim.AddSource("spent_fuel").Finalize();
   int id = sim.Run();
@@ -656,18 +658,18 @@ TEST_F(StorageTest, UniformBuyingSize) {
   EXPECT_NEAR(0.68825, qr.GetVal<double>("Quantity", 1), 0.00001);
 }
 
-TEST_F(StorageTest, NormalBuyingSize) {
+TEST_F(StorageTest, NormalBuyingSize){
   std::string config =
-      "   <in_commods> <val>spent_fuel</val> </in_commods> "
-      "   <out_commods> <val>dry_spent</val> </out_commods> "
-      "   <throughput>1</throughput>"
-      "   <buying_size_type>Normal</buying_size_type>"
-      "   <buying_size_mean>0.5</buying_size_mean>"
-      "   <buying_size_stddev>0.1</buying_size_stddev>";
+    "   <in_commods> <val>spent_fuel</val> </in_commods> "
+    "   <out_commods> <val>dry_spent</val> </out_commods> "
+    "   <throughput>1</throughput>"
+    "   <buying_size_type>Normal</buying_size_type>"
+    "   <buying_size_mean>0.5</buying_size_mean>"
+    "   <buying_size_stddev>0.1</buying_size_stddev>";
 
   int simdur = 2;
 
-  cyclus::MockSim sim(cyclus::AgentSpec(":cycamore:Storage"), config, simdur);
+  cyclus::MockSim sim(cyclus::AgentSpec (":cycamore:Storage"), config, simdur);
 
   sim.AddSource("spent_fuel").Finalize();
 
@@ -678,24 +680,24 @@ TEST_F(StorageTest, NormalBuyingSize) {
   EXPECT_NEAR(0.32648, qr.GetVal<double>("Quantity", 1), 0.00001);
 }
 
-TEST_F(StorageTest, NormalActiveDormantBuyingSize) {
-  std::string config =
-      "   <in_commods> <val>spent_fuel</val> </in_commods> "
-      "   <out_commods> <val>dry_spent</val> </out_commods> "
-      "   <throughput>1</throughput>"
-      "   <active_buying_frequency_type>Normal</active_buying_frequency_type>"
-      "   <active_buying_mean>3</active_buying_mean>"
-      "   <active_buying_stddev>1</active_buying_stddev>"
-      "   <dormant_buying_frequency_type>Normal</dormant_buying_frequency_type>"
-      "   <dormant_buying_mean>2</dormant_buying_mean>"
-      "   <dormant_buying_stddev>1</dormant_buying_stddev>"
-      "   <buying_size_type>Normal</buying_size_type>"
-      "   <buying_size_mean>0.5</buying_size_mean>"
-      "   <buying_size_stddev>0.1</buying_size_stddev>";
+TEST_F(StorageTest, NormalActiveDormantBuyingSize){
+    std::string config =
+    "   <in_commods> <val>spent_fuel</val> </in_commods> "
+    "   <out_commods> <val>dry_spent</val> </out_commods> "
+    "   <throughput>1</throughput>"
+    "   <active_buying_frequency_type>Normal</active_buying_frequency_type>"
+    "   <active_buying_mean>3</active_buying_mean>"
+    "   <active_buying_stddev>1</active_buying_stddev>"
+    "   <dormant_buying_frequency_type>Normal</dormant_buying_frequency_type>"
+    "   <dormant_buying_mean>2</dormant_buying_mean>"
+    "   <dormant_buying_stddev>1</dormant_buying_stddev>"
+    "   <buying_size_type>Normal</buying_size_type>"
+    "   <buying_size_mean>0.5</buying_size_mean>"
+    "   <buying_size_stddev>0.1</buying_size_stddev>";
 
   int simdur = 15;
 
-  cyclus::MockSim sim(cyclus::AgentSpec(":cycamore:Storage"), config, simdur);
+  cyclus::MockSim sim(cyclus::AgentSpec (":cycamore:Storage"), config, simdur);
 
   sim.AddSource("spent_fuel").capacity(5).Finalize();
   sim.AddSink("dry_spent").Finalize();
@@ -730,61 +732,61 @@ TEST_F(StorageTest, NormalActiveDormantBuyingSize) {
 TEST_F(StorageTest, IncorrectBuyPolSetupUniform) {
   // uniform missing min and max
   std::string config_uniform =
-      "   <in_commods> <val>spent_fuel</val> </in_commods> "
-      "   <out_commods> <val>dry_spent</val> </out_commods> "
-      "   <throughput>1</throughput>"
-      "   <active_buying_frequency_type>Uniform</active_buying_frequency_type>";
+    "   <in_commods> <val>spent_fuel</val> </in_commods> "
+    "   <out_commods> <val>dry_spent</val> </out_commods> "
+    "   <throughput>1</throughput>"
+    "   <active_buying_frequency_type>Uniform</active_buying_frequency_type>";
 
   int simdur = 15;
 
-  cyclus::MockSim sim(cyclus::AgentSpec(":cycamore:Storage"), config_uniform,
-                      simdur);
+  cyclus::MockSim sim(cyclus::AgentSpec (":cycamore:Storage"), config_uniform,
+                                         simdur);
   EXPECT_THROW(sim.Run(), cyclus::ValueError);
 }
 
 TEST_F(StorageTest, IncorrectBuyPolSetupNormal) {
   // normal missing mean and std dev
   std::string config_normal =
-      "   <in_commods> <val>spent_fuel</val> </in_commods> "
-      "   <out_commods> <val>dry_spent</val> </out_commods> "
-      "   <throughput>1</throughput>"
-      "   <active_buying_frequency_type>Normal</active_buying_frequency_type>";
+    "   <in_commods> <val>spent_fuel</val> </in_commods> "
+    "   <out_commods> <val>dry_spent</val> </out_commods> "
+    "   <throughput>1</throughput>"
+    "   <active_buying_frequency_type>Normal</active_buying_frequency_type>";
   int simdur = 15;
 
-  cyclus::MockSim sim(cyclus::AgentSpec(":cycamore:Storage"), config_normal,
-                      simdur);
+  cyclus::MockSim sim(cyclus::AgentSpec (":cycamore:Storage"), config_normal,
+                                         simdur);
   EXPECT_THROW(sim.Run(), cyclus::ValueError);
 }
 
 TEST_F(StorageTest, IncorrectBuyPolSetupMinMax) {
   // tries to set min > max
   std::string config_uniform_min_bigger_max =
-      "   <in_commods> <val>spent_fuel</val> </in_commods> "
-      "   <out_commods> <val>dry_spent</val> </out_commods> "
-      "   <throughput>1</throughput>"
-      "   <active_buying_frequency_type>Uniform</active_buying_frequency_type>"
-      "   <active_buying_min>3</active_buying_min>"
-      "   <active_buying_max>2</active_buying_max>";
+    "   <in_commods> <val>spent_fuel</val> </in_commods> "
+    "   <out_commods> <val>dry_spent</val> </out_commods> "
+    "   <throughput>1</throughput>"
+    "   <active_buying_frequency_type>Uniform</active_buying_frequency_type>"
+    "   <active_buying_min>3</active_buying_min>"
+    "   <active_buying_max>2</active_buying_max>";
 
   int simdur = 15;
 
-  cyclus::MockSim sim(cyclus::AgentSpec(":cycamore:Storage"),
-                      config_uniform_min_bigger_max, simdur);
+  cyclus::MockSim sim(cyclus::AgentSpec (":cycamore:Storage"), 
+                                         config_uniform_min_bigger_max, simdur);
   EXPECT_THROW(sim.Run(), cyclus::ValueError);
 }
 
-TEST_F(StorageTest, PositionInitialize) {
+TEST_F(StorageTest, PositionInitialize){
   // Verify Storage behavior
 
   std::string config =
-      "   <in_commods> <val>spent_fuel</val> </in_commods> "
-      "   <out_commods> <val>dry_spent</val> </out_commods> "
-      "   <residence_time>1</residence_time>"
-      "   <max_inv_size>10</max_inv_size>";
+    "   <in_commods> <val>spent_fuel</val> </in_commods> "
+    "   <out_commods> <val>dry_spent</val> </out_commods> "
+    "   <residence_time>1</residence_time>"
+    "   <max_inv_size>10</max_inv_size>";
 
   int simdur = 3;
 
-  cyclus::MockSim sim(cyclus::AgentSpec(":cycamore:Storage"), config, simdur);
+  cyclus::MockSim sim(cyclus::AgentSpec (":cycamore:Storage"), config, simdur);
 
   sim.AddSource("spent_fuel").Finalize();
   sim.AddSink("dry_spent").Finalize();
@@ -796,20 +798,20 @@ TEST_F(StorageTest, PositionInitialize) {
   EXPECT_EQ(qr.GetVal<double>("Longitude"), 0.0);
 }
 
-TEST_F(StorageTest, Longitude) {
+TEST_F(StorageTest, Longitude){
   // Verify Storage behavior
 
   std::string config =
-      "   <in_commods> <val>spent_fuel</val> </in_commods> "
-      "   <out_commods> <val>dry_spent</val> </out_commods> "
-      "   <residence_time>1</residence_time>"
-      "   <max_inv_size>10</max_inv_size>"
-      "   <latitude>50.0</latitude> "
-      "   <longitude>35.0</longitude> ";
+    "   <in_commods> <val>spent_fuel</val> </in_commods> "
+    "   <out_commods> <val>dry_spent</val> </out_commods> "
+    "   <residence_time>1</residence_time>"
+    "   <max_inv_size>10</max_inv_size>"
+    "   <latitude>50.0</latitude> "
+    "   <longitude>35.0</longitude> ";
 
   int simdur = 3;
 
-  cyclus::MockSim sim(cyclus::AgentSpec(":cycamore:Storage"), config, simdur);
+  cyclus::MockSim sim(cyclus::AgentSpec (":cycamore:Storage"), config, simdur);
 
   sim.AddSource("spent_fuel").Finalize();
   sim.AddSink("dry_spent").Finalize();
@@ -823,14 +825,14 @@ TEST_F(StorageTest, Longitude) {
 
 TEST_F(StorageTest, RQ_Inventory_Invalid) {
   std::string config =
-      "   <in_commods> <val>spent_fuel</val> </in_commods> "
-      "   <out_commods> <val>dry_spent</val> </out_commods> "
-      "   <max_inv_size>5</max_inv_size>"
-      "   <reorder_point>2</reorder_point>"
-      "   <reorder_quantity>10</reorder_quantity>";
+    "   <in_commods> <val>spent_fuel</val> </in_commods> "
+    "   <out_commods> <val>dry_spent</val> </out_commods> "
+    "   <max_inv_size>5</max_inv_size>"
+    "   <reorder_point>2</reorder_point>"
+    "   <reorder_quantity>10</reorder_quantity>";
 
   int simdur = 2;
-
+ 
   cyclus::MockSim sim(cyclus::AgentSpec(":cycamore:Storage"), config, simdur);
 
   EXPECT_THROW(int id = sim.Run(), cyclus::ValueError);
@@ -838,15 +840,15 @@ TEST_F(StorageTest, RQ_Inventory_Invalid) {
 
 TEST_F(StorageTest, RQ_Inventory) {
   std::string config =
-      "   <in_commods> <val>spent_fuel</val> </in_commods> "
-      "   <out_commods> <val>dry_spent</val> </out_commods> "
-      "   <max_inv_size>5</max_inv_size>"
-      "   <reorder_point>2</reorder_point>"
-      "   <reorder_quantity>3</reorder_quantity>";
+    "   <in_commods> <val>spent_fuel</val> </in_commods> "
+    "   <out_commods> <val>dry_spent</val> </out_commods> "
+    "   <max_inv_size>5</max_inv_size>"
+    "   <reorder_point>2</reorder_point>"
+    "   <reorder_quantity>3</reorder_quantity>";
 
   int simdur = 5;
 
-  cyclus::MockSim sim(cyclus::AgentSpec(":cycamore:Storage"), config, simdur);
+  cyclus::MockSim sim(cyclus::AgentSpec (":cycamore:Storage"), config, simdur);
 
   sim.AddSource("spent_fuel").capacity(5).Finalize();
   sim.AddSink("dry_spent").Finalize();
@@ -871,14 +873,14 @@ TEST_F(StorageTest, RQ_Inventory) {
 
 TEST_F(StorageTest, sS_Inventory) {
   std::string config =
-      "   <in_commods> <val>spent_fuel</val> </in_commods> "
-      "   <out_commods> <val>dry_spent</val> </out_commods> "
-      "   <max_inv_size>5</max_inv_size>"
-      "   <reorder_point>2</reorder_point>";
+    "   <in_commods> <val>spent_fuel</val> </in_commods> "
+    "   <out_commods> <val>dry_spent</val> </out_commods> "
+    "   <max_inv_size>5</max_inv_size>"
+    "   <reorder_point>2</reorder_point>";
 
   int simdur = 5;
 
-  cyclus::MockSim sim(cyclus::AgentSpec(":cycamore:Storage"), config, simdur);
+  cyclus::MockSim sim(cyclus::AgentSpec (":cycamore:Storage"), config, simdur);
 
   sim.AddSource("spent_fuel").capacity(5).Finalize();
   sim.AddSink("dry_spent").Finalize();
@@ -902,16 +904,16 @@ TEST_F(StorageTest, sS_Inventory) {
 
 TEST_F(StorageTest, CCap_Inventory) {
   std::string config =
-      "   <in_commods> <val>spent_fuel</val> </in_commods> "
-      "   <out_commods> <val>dry_spent</val> </out_commods> "
-      "   <throughput>1</throughput> "
-      "   <cumulative_cap>2</cumulative_cap> "
-      "   <dormant_buying_frequency_type>Fixed</dormant_buying_frequency_type> "
-      "   <dormant_buying_val>2</dormant_buying_val> ";
+    "   <in_commods> <val>spent_fuel</val> </in_commods> "
+    "   <out_commods> <val>dry_spent</val> </out_commods> "
+    "   <throughput>1</throughput> "
+    "   <cumulative_cap>2</cumulative_cap> "
+    "   <dormant_buying_frequency_type>Fixed</dormant_buying_frequency_type> "
+    "   <dormant_buying_val>2</dormant_buying_val> ";
 
   int simdur = 9;
 
-  cyclus::MockSim sim(cyclus::AgentSpec(":cycamore:Storage"), config, simdur);
+  cyclus::MockSim sim(cyclus::AgentSpec (":cycamore:Storage"), config, simdur);
 
   sim.AddSource("spent_fuel").capacity(5).Finalize();
   sim.AddSink("dry_spent").Finalize();
@@ -939,13 +941,13 @@ TEST_F(StorageTest, CCap_Inventory) {
 TEST_F(StorageTest, PackageExactly) {
   // resource can be packaged without splitting or merging
   std::string config =
-      "   <in_commods> <val>spent_fuel</val> </in_commods> "
-      "   <out_commods> <val>dry_spent</val> </out_commods> "
-      "   <package>foo</package>";
+    "   <in_commods> <val>spent_fuel</val> </in_commods> "
+    "   <out_commods> <val>dry_spent</val> </out_commods> "
+    "   <package>foo</package>";
 
   int simdur = 3;
 
-  cyclus::MockSim sim(cyclus::AgentSpec(":cycamore:Storage"), config, simdur);
+  cyclus::MockSim sim(cyclus::AgentSpec (":cycamore:Storage"), config, simdur);
   sim.context()->AddPackage("foo", 1, 2, "first");
   cyclus::Package::Ptr p = sim.context()->GetPackage("foo");
 
@@ -975,13 +977,13 @@ TEST_F(StorageTest, PackageExactly) {
 TEST_F(StorageTest, PackageSplitEqual) {
   // Resources must be split into two to package. Packaging strategy equal
   std::string config =
-      "   <in_commods> <val>commodity</val> </in_commods> "
-      "   <out_commods> <val>commodity1</val> </out_commods> "
-      "   <package>foo</package>";
+    "   <in_commods> <val>commodity</val> </in_commods> "
+    "   <out_commods> <val>commodity1</val> </out_commods> "
+    "   <package>foo</package>";
 
   int simdur = 3;
 
-  cyclus::MockSim sim(cyclus::AgentSpec(":cycamore:Storage"), config, simdur);
+  cyclus::MockSim sim(cyclus::AgentSpec (":cycamore:Storage"), config, simdur);
   sim.context()->AddPackage("foo", 1, 2, "equal");
   cyclus::Package::Ptr p = sim.context()->GetPackage("foo");
 
@@ -991,10 +993,9 @@ TEST_F(StorageTest, PackageSplitEqual) {
   int id = sim.Run();
 
   std::vector<cyclus::Cond> tr_conds;
-  tr_conds.push_back(
-      cyclus::Cond("Commodity", "==", std::string("commodity1")));
+  tr_conds.push_back(cyclus::Cond("Commodity", "==", std::string("commodity1")));
   cyclus::QueryResult qr_trans = sim.db().Query("Transactions", &tr_conds);
-  // four transactions out of storage. Each resource is split, so two
+  // four transactions out of storage. Each resource is split, so two 
   // transactions at time 1, two at time 2
   EXPECT_EQ(4, qr_trans.rows.size());
 
@@ -1017,13 +1018,13 @@ TEST_F(StorageTest, PackageSplitEqual) {
 TEST_F(StorageTest, PackageSplitFirst) {
   // Resources must be split into two to package. Packaging strategy first
   std::string config =
-      "   <in_commods> <val>commodity</val> </in_commods> "
-      "   <out_commods> <val>commodity1</val> </out_commods> "
-      "   <package>foo</package>";
+    "   <in_commods> <val>commodity</val> </in_commods> "
+    "   <out_commods> <val>commodity1</val> </out_commods> "
+    "   <package>foo</package>";
 
   int simdur = 3;
 
-  cyclus::MockSim sim(cyclus::AgentSpec(":cycamore:Storage"), config, simdur);
+  cyclus::MockSim sim(cyclus::AgentSpec (":cycamore:Storage"), config, simdur);
   sim.context()->AddPackage("foo", 1, 2, "first");
   cyclus::Package::Ptr p = sim.context()->GetPackage("foo");
 
@@ -1033,10 +1034,9 @@ TEST_F(StorageTest, PackageSplitFirst) {
   int id = sim.Run();
 
   std::vector<cyclus::Cond> tr_conds;
-  tr_conds.push_back(
-      cyclus::Cond("Commodity", "==", std::string("commodity1")));
+  tr_conds.push_back(cyclus::Cond("Commodity", "==", std::string("commodity1")));
   cyclus::QueryResult qr_trans = sim.db().Query("Transactions", &tr_conds);
-  // four transactions out of storage. Each resource is split, so two
+  // four transactions out of storage. Each resource is split, so two 
   // transactions at time 1, two at time 2
   EXPECT_EQ(4, qr_trans.rows.size());
 
@@ -1051,17 +1051,17 @@ TEST_F(StorageTest, PackageSplitFirst) {
   // because package does split-first, resources are size 2 and 1
   EXPECT_EQ(qr_res.rows.size(), 4);
 
-  // order of trade execution is not guaranteed. Therefore, create vector,
+  // order of trade execution is not guaranteed. Therefore, create vector, 
   // sort by size, and then check values
   std::vector<double> pkgd_t0 = {qr_res.GetVal<double>("Quantity", 0),
-                                 qr_res.GetVal<double>("Quantity", 1)};
+                                    qr_res.GetVal<double>("Quantity", 1)};
   std::sort(pkgd_t0.begin(), pkgd_t0.end(), std::greater<double>());
   std::vector<double> exp_t0 = {2, 1};
 
   EXPECT_EQ(exp_t0, pkgd_t0);
 
   std::vector<double> pkgd_t1 = {qr_res.GetVal<double>("Quantity", 2),
-                                 qr_res.GetVal<double>("Quantity", 3)};
+                                    qr_res.GetVal<double>("Quantity", 3)};
   std::sort(pkgd_t1.begin(), pkgd_t1.end(), std::greater<double>());
   std::vector<double> exp_t1 = {2, 1};
 
@@ -1070,14 +1070,14 @@ TEST_F(StorageTest, PackageSplitFirst) {
 
 TEST_F(StorageTest, PackageMerge) {
   std::string config =
-      "   <in_commods> <val>commodity</val> </in_commods> "
-      "   <out_commods> <val>commodity1</val> </out_commods> "
-      "   <throughput>1</throughput> "
-      "   <package>foo</package>";
+    "   <in_commods> <val>commodity</val> </in_commods> "
+    "   <out_commods> <val>commodity1</val> </out_commods> "
+    "   <throughput>1</throughput> "
+    "   <package>foo</package>";
 
   int simdur = 5;
 
-  cyclus::MockSim sim(cyclus::AgentSpec(":cycamore:Storage"), config, simdur);
+  cyclus::MockSim sim(cyclus::AgentSpec (":cycamore:Storage"), config, simdur);
   sim.context()->AddPackage("foo", 1, 2, "first");
   cyclus::Package::Ptr p = sim.context()->GetPackage("foo");
 
@@ -1087,8 +1087,7 @@ TEST_F(StorageTest, PackageMerge) {
   int id = sim.Run();
 
   std::vector<cyclus::Cond> tr_conds;
-  tr_conds.push_back(
-      cyclus::Cond("Commodity", "==", std::string("commodity1")));
+  tr_conds.push_back(cyclus::Cond("Commodity", "==", std::string("commodity1")));
 
   cyclus::QueryResult qr_trans = sim.db().Query("Transactions", &tr_conds);
   // two transactions out of storage. Because the source only provides 0.5 each
@@ -1109,16 +1108,16 @@ TEST_F(StorageTest, PackageMerge) {
 }
 
 TEST_F(StorageTest, TransportUnit) {
-  std::string config =
-      "   <in_commods> <val>commodity</val> </in_commods> "
-      "   <out_commods> <val>commodity1</val> </out_commods> "
-      "   <throughput>3</throughput> "
-      "   <package>foo</package>"
-      "   <transport_unit>bar</transport_unit>";
+    std::string config =
+    "   <in_commods> <val>commodity</val> </in_commods> "
+    "   <out_commods> <val>commodity1</val> </out_commods> "
+    "   <throughput>3</throughput> "
+    "   <package>foo</package>"
+    "   <transport_unit>bar</transport_unit>";
 
   int simdur = 3;
 
-  cyclus::MockSim sim(cyclus::AgentSpec(":cycamore:Storage"), config, simdur);
+  cyclus::MockSim sim(cyclus::AgentSpec (":cycamore:Storage"), config, simdur);
   sim.context()->AddPackage("foo", 1, 1, "first");
   cyclus::Package::Ptr p = sim.context()->GetPackage("foo");
   sim.context()->AddTransportUnit("bar", 2, 2, "first");
@@ -1129,8 +1128,7 @@ TEST_F(StorageTest, TransportUnit) {
   int id = sim.Run();
 
   std::vector<cyclus::Cond> tr_conds;
-  tr_conds.push_back(
-      cyclus::Cond("Commodity", "==", std::string("commodity1")));
+  tr_conds.push_back(cyclus::Cond("Commodity", "==", std::string("commodity1")));
 
   cyclus::QueryResult qr_trans = sim.db().Query("Transactions", &tr_conds);
   // 6 transactions. While all three units could be packaged in one time step,
@@ -1158,7 +1156,7 @@ TEST_F(StorageTest, TransportUnit) {
   EXPECT_EQ(1, qr_res.GetVal<double>("Quantity", 5));
 }
 
-}  // namespace cycamore
+} // namespace cycamore
 
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 cyclus::Agent* StorageConstructor(cyclus::Context* ctx) {
@@ -1170,11 +1168,11 @@ cyclus::Agent* StorageConstructor(cyclus::Context* ctx) {
 int ConnectAgentTests();
 static int cyclus_agent_tests_connected = ConnectAgentTests();
 #define CYCLUS_AGENT_TESTS_CONNECTED cyclus_agent_tests_connected
-#endif  // CYCLUS_AGENT_TESTS_CONNECTED
+#endif // CYCLUS_AGENT_TESTS_CONNECTED
 
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 INSTANTIATE_TEST_SUITE_P(StorageFac, FacilityTests,
-                         ::testing::Values(&StorageConstructor));
+                        ::testing::Values(&StorageConstructor));
 
 INSTANTIATE_TEST_SUITE_P(StorageFac, AgentTests,
-                         ::testing::Values(&StorageConstructor));
+                        ::testing::Values(&StorageConstructor));

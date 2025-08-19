@@ -3,17 +3,19 @@
 
 #include <gtest/gtest.h>
 
+#include "cyclus.h"
+#include "timer.h"
+#include "test_context.h"
+#include "institution_tests.h"
 #include "agent_tests.h"
 #include "context.h"
-#include "cyclus.h"
 #include "deploy_inst.h"
-#include "institution_tests.h"
-#include "test_context.h"
-#include "timer.h"
+
 
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-class TestProducer : public cyclus::Facility,
-                     public cyclus::toolkit::CommodityProducer {
+class TestProducer
+    : public cyclus::Facility,
+      public cyclus::toolkit::CommodityProducer {
  public:
   TestProducer(cyclus::Context* ctx);
   ~TestProducer();
@@ -24,7 +26,9 @@ class TestProducer : public cyclus::Facility,
     return m;
   }
 
-  void InitFrom(TestProducer* m) { cyclus::Facility::InitFrom(m); }
+  void InitFrom(TestProducer* m) {
+    cyclus::Facility::InitFrom(m);
+  }
 
   void InitInv(cyclus::Inventories& inv) {}
 

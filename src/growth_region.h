@@ -5,8 +5,8 @@
 #include <utility>
 #include <vector>
 
-#include "cycamore_version.h"
 #include "cyclus.h"
+#include "cycamore_version.h"
 
 // forward declarations
 namespace cycamore {
@@ -19,7 +19,8 @@ class GrowthRegion;
 namespace cycamore {
 
 /// A container of (time, (demand type, demand parameters))
-typedef std::vector<std::pair<int, std::pair<std::string, std::string>>> Demand;
+typedef std::vector<
+  std::pair<int, std::pair<std::string, std::string> > > Demand;
 
 /// This region determines if there is a need to meet a certain
 /// capacity (as defined via input) at each time step. If there is
@@ -34,9 +35,9 @@ typedef std::vector<std::pair<int, std::pair<std::string, std::string>>> Demand;
 /// multiple commodities being demanded.
 ///
 /// @warning The growth region is experimental
-class GrowthRegion : public cyclus::Region, public cyclus::toolkit::Position {
+class GrowthRegion : public cyclus::Region,
+  public cyclus::toolkit::Position {
   friend class GrowthRegionTests;
-
  public:
   /// The default constructor for the GrowthRegion
   GrowthRegion(cyclus::Context* ctx);
@@ -46,7 +47,7 @@ class GrowthRegion : public cyclus::Region, public cyclus::toolkit::Position {
 
   virtual std::string version() { return CYCAMORE_VERSION; }
 
-#pragma cyclus
+  #pragma cyclus
 
   // clang-format off
   #pragma cyclus note { \
@@ -124,7 +125,8 @@ std::map<std::string, std::vector<std::pair<int, std::pair<std::string, std::str
   /// capacity of that commodity
   /// @param commodity the commodity being demanded
   /// @param unmetdemand the unmet demand
-  void OrderBuilds(cyclus::toolkit::Commodity& commodity, double unmetdemand);
+  void OrderBuilds(cyclus::toolkit::Commodity& commodity,
+                   double unmetdemand);
 
  private:
   // clang-format off

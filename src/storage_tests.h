@@ -3,10 +3,11 @@
 
 #include <gtest/gtest.h>
 
-#include "agent_tests.h"
+#include "storage.h"
+
 #include "context.h"
 #include "facility_tests.h"
-#include "storage.h"
+#include "agent_tests.h"
 
 namespace cycamore {
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -20,12 +21,11 @@ class StorageTest : public ::testing::Test {
   void InitParameters();
   void SetUpStorage();
   void TestInitState(cycamore::Storage* fac);
-  void TestAddMat(cycamore::Storage* fac, cyclus::Material::Ptr mat);
-  void TestBuffers(cycamore::Storage* fac, double inv,
-                   double
+  void TestAddMat(cycamore::Storage* fac, 
+      cyclus::Material::Ptr mat);
+  void TestBuffers(cycamore::Storage* fac, double inv, double 
 
-                       proc,
-                   double ready, double stocks);
+      proc, double ready, double stocks);
   void TestStocks(cycamore::Storage* fac, cyclus::CompMap v);
   void TestReadyTime(cycamore::Storage* fac, int t);
   void TestCurrentCap(cycamore::Storage* fac, double inv);
@@ -38,5 +38,6 @@ class StorageTest : public ::testing::Test {
   bool discrete_handling;
   std::string package;
 };
-}  // namespace cycamore
-#endif  // STORAGE_TESTS_H_
+} // namespace cycamore
+#endif // STORAGE_TESTS_H_
+

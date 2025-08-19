@@ -1,5 +1,7 @@
 #ifndef CYCAMORE_SRC_SOURCE_TESTS_H_
 #define CYCAMORE_SRC_SOURCE_TESTS_H_
+#include "source.h"
+
 #include <gtest/gtest.h>
 
 #include <boost/shared_ptr.hpp>
@@ -9,7 +11,6 @@
 #include "exchange_context.h"
 #include "facility_tests.h"
 #include "material.h"
-#include "source.h"
 
 namespace cycamore {
 
@@ -41,10 +42,10 @@ class SourceTest : public ::testing::Test {
   }
   void throughput(cycamore::Source* s, double val) { s->throughput = val; }
 
-  boost::shared_ptr<cyclus::ExchangeContext<cyclus::Material>> GetContext(
+  boost::shared_ptr<cyclus::ExchangeContext<cyclus::Material> > GetContext(
       int nreqs, std::string commodity);
 };
 
-}  // namespace cycamore
+} // namespace cycamore
 
 #endif  // CYCAMORE_SRC_SOURCE_TESTS_H_
