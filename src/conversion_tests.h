@@ -12,6 +12,7 @@
 #include "material.h"
 #include "test_context.h"
 #include "conversion.h"
+#include "pyne.h"
 
 namespace cycamore {
 
@@ -20,9 +21,26 @@ class ConversionTest : public ::testing::Test {
   cyclus::TestContext tc;
   TestFacility* trader;
   cycamore::Conversion* conv_facility;
-  std::string incommod1, incommod2, outcommod_name;
+  std::string incommod1, outcommod_name;
   double throughput_val, input_capacity_val;
   cyclus::Composition::Ptr recipe;
+
+  const double TEST_QUANTITY = 10.0;  
+
+  const int SIMULATION_DURATION = 3;
+  const double DEFAULT_POSITION = 0.0;
+  const double TEST_POSITION = 0.01;
+  
+  const double DEFAULT_THROUGHPUT = 10.0;
+  const double DEFAULT_INPUT_CAPACITY = 50.0;
+  
+  const std::string DEFAULT_CONFIG = 
+    "<incommods>"
+    "  <incommodity>incommod1</incommodity>"
+    "</incommods>"
+    "<outcommod>outcommod</outcommod>"
+    "<throughput>" + std::to_string(DEFAULT_THROUGHPUT) + "</throughput>"
+    "<input_capacity>" + std::to_string(DEFAULT_INPUT_CAPACITY) + "</input_capacity>";
 
   virtual void SetUp();
   virtual void TearDown();

@@ -7,6 +7,9 @@
 #include "cyc_limits.h"
 #include "resource_helpers.h"
 #include "test_context.h"
+#include "pyne.h"
+
+using pyne::nucname::id;
 
 namespace cycamore {
 
@@ -24,15 +27,12 @@ void ConversionTest::TearDown() {
 
 void ConversionTest::InitParameters() {
   incommod1 = "incommod1";
-  incommod2 = "incommod2";
   outcommod_name = "outcommod";
-  throughput_val = 10.0;
-  input_capacity_val = 50.0;
+  throughput_val = DEFAULT_THROUGHPUT;
+  input_capacity_val = DEFAULT_INPUT_CAPACITY;
 
-  // Create a test recipe
   cyclus::CompMap v;
-  v[922350000] = 1;  // U-235
-  v[922380000] = 2;  // U-238
+  v[id("u235")] = 1;
   recipe = cyclus::Composition::CreateFromAtom(v);
   tc.get()->AddRecipe("test_recipe", recipe);
 }
@@ -40,7 +40,6 @@ void ConversionTest::InitParameters() {
 void ConversionTest::SetUpConversion() {
   std::vector<std::string> incommods_vec;
   incommods_vec.push_back(incommod1);
-  incommods_vec.push_back(incommod2);
   
   incommods(conv_facility, incommods_vec);
   outcommod(conv_facility, outcommod_name);
@@ -61,7 +60,7 @@ ConversionTest::GetContext(int nreqs, std::string commodity) {
       new ExchangeContext<Material>());
 
   for (int i = 0; i < nreqs; i++) {
-    Material::Ptr mat = cyclus::NewBlankMaterial(1.0);
+    Material::Ptr mat = cyclus::NewBlankMaterial(TEST_QUANTITY);
     Request<Material>* req = Request<Material>::Create(mat, trader, commodity);
     ec->AddRequest(req);
   }
@@ -97,7 +96,6 @@ TEST_F(ConversionTest, InitialState) {
   
   std::vector<std::string> expected_incommods;
   expected_incommods.push_back(incommod1);
-  expected_incommods.push_back(incommod2);
   EXPECT_EQ(expected_incommods, incommods(conv_facility));
 }
 
@@ -109,11 +107,11 @@ TEST_F(ConversionTest, AvailableFeedstockCapacity) {
   EXPECT_DOUBLE_EQ(input_capacity_val, conv_facility->AvailableFeedstockCapacity());
   
   // Add some material to input buffer
-  cyclus::Material::Ptr mat = cyclus::NewBlankMaterial(20.0);
+  cyclus::Material::Ptr mat = cyclus::NewBlankMaterial(TEST_QUANTITY);
   input_push(conv_facility, mat);
   
   // Capacity should be reduced
-  EXPECT_DOUBLE_EQ(input_capacity_val - 20.0, conv_facility->AvailableFeedstockCapacity());
+  EXPECT_DOUBLE_EQ(input_capacity_val - TEST_QUANTITY, conv_facility->AvailableFeedstockCapacity());
 }
 
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -127,16 +125,14 @@ TEST_F(ConversionTest, GetMatlRequests) {
   std::set<RequestPortfolio<Material>::Ptr> ports =
       conv_facility->GetMatlRequests();
 
-  // Should have one portfolio
   ASSERT_EQ(1, ports.size());
 
   RequestPortfolio<Material>::Ptr port = *ports.begin();
   EXPECT_EQ(conv_facility, port->requester());
 
-  // Should have requests for both input commodities
-  EXPECT_EQ(2, port->requests().size());
+  // Check the portfolio for the request for incommod1 (should be the only one)
+  EXPECT_EQ(1, port->requests().size());
 
-  // Check capacity constraint
   const std::set<CapacityConstraint<Material> >& constrs = port->constraints();
   ASSERT_EQ(1, constrs.size());
   EXPECT_EQ(CapacityConstraint<Material>(input_capacity_val), *constrs.begin());
@@ -170,12 +166,12 @@ TEST_F(ConversionTest, GetMatlBids) {
   conv_facility->EnterNotify();
 
   // Add some material to output buffer
-  cyclus::Material::Ptr mat = cyclus::NewBlankMaterial(15.0);
+  cyclus::Material::Ptr mat = cyclus::NewBlankMaterial(TEST_QUANTITY);
   output_push(conv_facility, mat);
 
   // Create commodity requests
   CommodMap<Material>::type commod_requests;
-  cyclus::Material::Ptr req_mat = cyclus::NewBlankMaterial(5.0);
+  cyclus::Material::Ptr req_mat = cyclus::NewBlankMaterial(TEST_QUANTITY);
   cyclus::Request<Material>* req = cyclus::Request<Material>::Create(
       req_mat, trader, outcommod_name);
   commod_requests[outcommod_name].push_back(req);
@@ -195,7 +191,7 @@ TEST_F(ConversionTest, GetMatlBids) {
   // Check capacity constraint
   const std::set<CapacityConstraint<Material> >& constrs = port->constraints();
   ASSERT_EQ(1, constrs.size());
-  EXPECT_EQ(CapacityConstraint<Material>(15.0), *constrs.begin());
+  EXPECT_EQ(CapacityConstraint<Material>(TEST_QUANTITY), *constrs.begin());
 
   delete req;
 }
@@ -210,7 +206,7 @@ TEST_F(ConversionTest, GetMatlBidsWhenEmpty) {
 
   // Create commodity requests
   CommodMap<Material>::type commod_requests;
-  cyclus::Material::Ptr req_mat = cyclus::NewBlankMaterial(5.0);
+  cyclus::Material::Ptr req_mat = cyclus::NewBlankMaterial(TEST_QUANTITY);
   cyclus::Request<Material>* req = cyclus::Request<Material>::Create(
       req_mat, trader, outcommod_name);
   commod_requests[outcommod_name].push_back(req);
@@ -234,10 +230,10 @@ TEST_F(ConversionTest, AcceptMatlTrades) {
   conv_facility->EnterNotify();
 
   // Create a trade
-  Material::Ptr mat = cyclus::NewBlankMaterial(10.0);
+  Material::Ptr mat = cyclus::NewBlankMaterial(TEST_QUANTITY);
   Request<Material>* req = Request<Material>::Create(mat, trader, incommod1);
   Bid<Material>* bid = Bid<Material>::Create(req, mat, trader);
-  Trade<Material> trade(req, bid, 10.0);
+  Trade<Material> trade(req, bid, TEST_QUANTITY);
 
   std::vector<std::pair<Trade<Material>, Material::Ptr> > responses;
   responses.push_back(std::make_pair(trade, mat));
@@ -246,7 +242,7 @@ TEST_F(ConversionTest, AcceptMatlTrades) {
   conv_facility->AcceptMatlTrades(responses);
 
   // Check that material was added to input buffer
-  EXPECT_DOUBLE_EQ(10.0, input_quantity(conv_facility));
+  EXPECT_DOUBLE_EQ(TEST_QUANTITY, input_quantity(conv_facility));
 
   delete req;
   delete bid;
@@ -262,14 +258,14 @@ TEST_F(ConversionTest, GetMatlTrades) {
   conv_facility->EnterNotify();
 
   // Add material to output buffer
-  Material::Ptr mat = cyclus::NewBlankMaterial(20.0);
+  Material::Ptr mat = cyclus::NewBlankMaterial(TEST_QUANTITY);
   output_push(conv_facility, mat);
 
   // Create a trade
-  Material::Ptr req_mat = cyclus::NewBlankMaterial(5.0);
+  Material::Ptr req_mat = cyclus::NewBlankMaterial(TEST_QUANTITY);
   Request<Material>* req = Request<Material>::Create(req_mat, trader, outcommod_name);
   Bid<Material>* bid = Bid<Material>::Create(req, req_mat, trader);
-  Trade<Material> trade(req, bid, 5.0);
+  Trade<Material> trade(req, bid, TEST_QUANTITY);
 
   std::vector<Trade<Material> > trades;
   trades.push_back(trade);
@@ -281,10 +277,10 @@ TEST_F(ConversionTest, GetMatlTrades) {
 
   // Check response
   ASSERT_EQ(1, responses.size());
-  EXPECT_DOUBLE_EQ(5.0, responses[0].second->quantity());
+  EXPECT_DOUBLE_EQ(TEST_QUANTITY, responses[0].second->quantity());
 
   // Check that material was removed from output buffer
-  EXPECT_DOUBLE_EQ(15.0, output_quantity(conv_facility));
+  EXPECT_DOUBLE_EQ(0.0, output_quantity(conv_facility));
 
   delete req;
   delete bid;
@@ -294,16 +290,16 @@ TEST_F(ConversionTest, GetMatlTrades) {
 TEST_F(ConversionTest, Convert) {
   conv_facility->EnterNotify();
 
-  // Add material to input buffer
-  cyclus::Material::Ptr mat = cyclus::NewBlankMaterial(25.0);
+  // Add material to input buffer (more than throughput)
+  cyclus::Material::Ptr mat = cyclus::NewBlankMaterial(DEFAULT_THROUGHPUT * 2);
   input_push(conv_facility, mat);
 
   // Convert material
   conv_facility->Convert();
 
   // Check that material was moved from input to output
-  EXPECT_DOUBLE_EQ(15.0, input_quantity(conv_facility));  // 25 - 10 (throughput)
-  EXPECT_DOUBLE_EQ(10.0, output_quantity(conv_facility));  // 0 + 10 (throughput)
+  EXPECT_DOUBLE_EQ(DEFAULT_THROUGHPUT, input_quantity(conv_facility));  
+  EXPECT_DOUBLE_EQ(DEFAULT_THROUGHPUT, output_quantity(conv_facility));
 }
 
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -311,15 +307,15 @@ TEST_F(ConversionTest, ConvertWithLessThanThroughput) {
   conv_facility->EnterNotify();
 
   // Add material to input buffer (less than throughput)
-  cyclus::Material::Ptr mat = cyclus::NewBlankMaterial(5.0);
+  cyclus::Material::Ptr mat = cyclus::NewBlankMaterial(DEFAULT_THROUGHPUT / 2);
   input_push(conv_facility, mat);
 
   // Convert material
   conv_facility->Convert();
 
   // Check that all material was moved from input to output
-  EXPECT_DOUBLE_EQ(0.0, input_quantity(conv_facility));   // 5 - 5
-  EXPECT_DOUBLE_EQ(5.0, output_quantity(conv_facility));  // 0 + 5
+  EXPECT_DOUBLE_EQ(0.0, input_quantity(conv_facility)); 
+  EXPECT_DOUBLE_EQ(DEFAULT_THROUGHPUT / 2, output_quantity(conv_facility));
 }
 
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -338,58 +334,42 @@ TEST_F(ConversionTest, ConvertWithEmptyInput) {
 TEST_F(ConversionTest, Tick) {
   conv_facility->EnterNotify();
 
-  // Add material to input buffer
-  cyclus::Material::Ptr mat = cyclus::NewBlankMaterial(25.0);
+  // Add material to input buffer (more than throughput)
+  cyclus::Material::Ptr mat = cyclus::NewBlankMaterial(DEFAULT_THROUGHPUT * 2);
   input_push(conv_facility, mat);
 
   // Tick should trigger conversion
   conv_facility->Tick();
 
   // Check that material was converted
-  EXPECT_DOUBLE_EQ(15.0, input_quantity(conv_facility));
-  EXPECT_DOUBLE_EQ(10.0, output_quantity(conv_facility));
+  EXPECT_DOUBLE_EQ(DEFAULT_THROUGHPUT, input_quantity(conv_facility));
+  EXPECT_DOUBLE_EQ(DEFAULT_THROUGHPUT, output_quantity(conv_facility));
 }
 
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 TEST_F(ConversionTest, PositionInitialize) {
-  std::string config =
-    "<incommods>"
-    "  <incommodity>incommod1</incommodity>"
-    "  <incommodity>incommod2</incommodity>"
-    "</incommods>"
-    "<outcommod>outcommod</outcommod>"
-    "<throughput>10</throughput>"
-    "<input_capacity>50</input_capacity>"
-  ;
-  int simdur = 3;
+  std::string config = DEFAULT_CONFIG;
+  int simdur = SIMULATION_DURATION;
   cyclus::MockSim sim(cyclus::AgentSpec (":cycamore:Conversion"), config, simdur);
   int id = sim.Run();
 
   cyclus::QueryResult qr = sim.db().Query("AgentPosition", NULL);
-  EXPECT_EQ(qr.GetVal<double>("Latitude"), 0.0);
-  EXPECT_EQ(qr.GetVal<double>("Longitude"), 0.0);
+  EXPECT_EQ(qr.GetVal<double>("Latitude"), DEFAULT_POSITION);
+  EXPECT_EQ(qr.GetVal<double>("Longitude"), DEFAULT_POSITION);
 }
 
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 TEST_F(ConversionTest, PositionWithCoordinates) {
-  std::string config =
-    "<incommods>"
-    "  <incommodity>incommod1</incommodity>"
-    "  <incommodity>incommod2</incommodity>"
-    "</incommods>"
-    "<outcommod>outcommod</outcommod>"
-    "<throughput>10</throughput>"
-    "<input_capacity>50</input_capacity>"
-    "<latitude>-0.01</latitude>"
-    "<longitude>0.01</longitude>"
-  ;
-  int simdur = 3;
+  std::string config = DEFAULT_CONFIG + 
+    "<latitude>" + std::to_string(TEST_POSITION) + "</latitude>"
+    "<longitude>" + std::to_string(TEST_POSITION) + "</longitude>";
+  int simdur = SIMULATION_DURATION;
   cyclus::MockSim sim(cyclus::AgentSpec (":cycamore:Conversion"), config, simdur);
   int id = sim.Run();
 
   cyclus::QueryResult qr = sim.db().Query("AgentPosition", NULL);
-  EXPECT_EQ(qr.GetVal<double>("Latitude"), -0.01);
-  EXPECT_EQ(qr.GetVal<double>("Longitude"), 0.01);
+  EXPECT_EQ(qr.GetVal<double>("Latitude"), TEST_POSITION);
+  EXPECT_EQ(qr.GetVal<double>("Longitude"), TEST_POSITION);
 }
 
 }  // namespace cycamore 
