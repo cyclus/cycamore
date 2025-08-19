@@ -18,9 +18,6 @@ class TariffRegion : public cyclus::Region {
   #pragma cyclus
 
  private:
-  cyclus::Region* FindRegionByName(const std::string& name);
-  cyclus::Region* FindRegionInHierarchy(cyclus::Agent* agent, const std::string& name);
-
   #pragma cyclus var { \
     "default": [], \
     "doc": "List of regions that will have a trade adjustment applied to them." \
