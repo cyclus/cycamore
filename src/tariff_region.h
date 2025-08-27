@@ -47,10 +47,10 @@ class TariffRegion : public cyclus::Region {
             supplier_region->prototype());
         if (it != region_names.end()) {
           double cost_multiplier = 1.0 + adjustments[it - region_names.begin()];
-          double pref = 1.0 / cost_multiplier;
+          double pref_multiplier = 1.0 / cost_multiplier;
           double inf = std::numeric_limits<double>::infinity(); 
 
-          bid_pair.second *= cost_multiplier > 0.0 ? pref : inf; 
+          bid_pair.second *= cost_multiplier > 0.0 ? pref_multiplier : inf; 
         }
       }
     }
