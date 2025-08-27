@@ -30,17 +30,9 @@ class TariffRegion : public cyclus::Region {
       for (auto& bid_pair : req_pair.second) {
         cyclus::Bid<T>* bid = bid_pair.first;
 
-        cyclus::Agent* supplier = bid->bidder()->manager();
-
-        cyclus::Region* supplier_region = nullptr;
-        cyclus::Agent* current = supplier;
-        while (current) {
-          supplier_region = dynamic_cast<cyclus::Region*>(current);
-          if (supplier_region) {
-            break;  // Found a region
-          }
-          current = current->parent();
-        }
+        // The supplier should always be a facility, so we can cast to that
+        cyclus::Facility* supplier = dynamic_cast<cyclus::Facility*>(bid->bidder()->manager());
+        cyclus::Region* supplier_region = supplier->GetRegion();
         
         // If the supplier is in the region list, apply the appropriate adjustment
         auto it = std::find(region_names.begin(), region_names.end(), 
@@ -55,7 +47,7 @@ class TariffRegion : public cyclus::Region {
       }
     }
   }
-
+  // clang-format off
   #pragma cyclus var { \
     "default": [], \
     "doc": "List of regions that will have a trade adjustment applied to them." \
@@ -70,7 +62,7 @@ class TariffRegion : public cyclus::Region {
     "tooltip": "Percent as decimal." \
   }
   std::vector<double> adjustments;
-
+  // clang-format on
 };
 
 } // namespace cycamore
