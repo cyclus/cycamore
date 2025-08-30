@@ -14,6 +14,17 @@ void TariffRegion::EnterNotify() {
   BuildTariffLookups();
 }
 
+
+void TariffRegion::Tock() {
+  // Record tariff configuration to database only once during first tock
+  if (!configuration_recorded_) {
+    CLOG(cyclus::LEV_INFO3) << "TariffRegion: Recording configuration to database during Tock";
+    RecordTariffConfiguration();
+    configuration_recorded_ = true;
+    CLOG(cyclus::LEV_INFO3) << "TariffRegion: Configuration recorded successfully";
+  }
+}
+
 // Actual implementation of the DRE Functions using the template function:
 void TariffRegion::AdjustMatlPrefs(cyclus::PrefMap<cyclus::Material>::type& prefs) {
   AdjustPrefsImpl<cyclus::Material>(prefs);
@@ -70,6 +81,41 @@ void TariffRegion::BuildTariffLookups() {
     // Populate the lookup map with the region name and its index
     region_lookup_[region_names[i]] = i;
   }
+  
+  // Build tariff combinations for database recording
+  tariff_combinations_.clear();
+  
+  for (size_t i = 0; i < region_names.size(); ++i) {
+    std::string region_name = region_names[i];
+    double flat_adjustment = (i < region_flat_adjustments.size()) ? 
+                             region_flat_adjustments[i] : 0.0;
+    
+    // Add flat adjustment
+    tariff_combinations_.emplace_back(region_name, "Flat Adjustment", flat_adjustment);
+    
+    // Add commodity-specific tariffs
+    if (i < region_commodity_counts.size()) {
+      size_t start_index = 0;
+      for (size_t j = 0; j < i; ++j) {
+        if (j < region_commodity_counts.size()) {
+          start_index += region_commodity_counts[j];
+        }
+      }
+      
+      for (size_t j = 0; j < region_commodity_counts[i]; ++j) {
+        size_t commodity_index = start_index + j;
+        if (commodity_index < region_commodities.size() && 
+            commodity_index < region_adjustments.size()) {
+          
+          tariff_combinations_.emplace_back(
+            region_name, 
+            region_commodities[commodity_index], 
+            region_adjustments[commodity_index]
+          );
+        }
+      }
+    }
+  }
 }
 
 double TariffRegion::FindTariffForCommodity(cyclus::Region* region, const std::string& commodity) {
@@ -109,61 +155,37 @@ double TariffRegion::FindTariffForCommodity(cyclus::Region* region, const std::s
          region_flat_adjustments[region_index] : 0.0;
 }
 
-// A safety check to validate input since we're using a complex configuration
+// A simple validation check (no database recording)
 void TariffRegion::ValidateConfiguration() {
-  // Check if we have any commodity-specific tariff configuration
-  if (region_names.empty()) {
-    return; // No configuration to validate
+  // Simple validation: check if all input vectors have the same length
+  if (!region_names.empty() && 
+      (region_names.size() != region_commodity_counts.size() ||
+       region_names.size() != region_flat_adjustments.size())) {
+    CLOG(cyclus::LEV_WARN) << "TariffRegion: Input vector length mismatch. "
+                   << "All input vectors should have the same length. "
+                   << "Using flat adjustments for missing regions.";
+  }
+}
+
+void TariffRegion::RecordTariffConfiguration() {
+  // Safety check: only record if we have valid data
+  if (tariff_combinations_.empty()) {
+    return;  // No configuration to record
   }
   
-  size_t num_regions = region_names.size();
-  
-  // Helper lambda function to check list sizes and log warnings
-  auto check_list_size = [&](const std::string& list_name, size_t actual_size, 
-                             const std::string& fallback_msg) {
-    if (actual_size != num_regions) {
-      CLOG(cyclus::LEV_WARN) << "TariffRegion: Mismatch in region configuration. "
-                     << "Found " << num_regions << " region names but "
-                     << actual_size << " " << list_name << ". "
-                     << fallback_msg;
-    }
-  };
-  
-  // Check high-level list sizes
-  check_list_size("commodity counts", region_commodity_counts.size(), 
-                  "Using flat adjustments for missing regions.");
-  check_list_size("flat adjustments", region_flat_adjustments.size(), 
-                  "Using 0.0 tariff for missing flat adjustments.");
-  
-  // Validate flattened commodity/adjustment lists
-  size_t total_expected_commodities = 0;
-  for (size_t i = 0; i < region_commodity_counts.size(); ++i) {
-    total_expected_commodities += region_commodity_counts[i];
-  }
-  
-  if (region_commodities.size() != total_expected_commodities) {
-    CLOG(cyclus::LEV_WARN) << "TariffRegion: Mismatch in commodity list. "
-                   << "Expected " << total_expected_commodities 
-                   << " commodities based on region_commodity_counts but found "
-                   << region_commodities.size() << ". Using flat adjustments.";
-  }
-  
-  if (region_adjustments.size() != total_expected_commodities) {
-    CLOG(cyclus::LEV_WARN) << "TariffRegion: Mismatch in adjustment list. "
-                   << "Expected " << total_expected_commodities 
-                   << " adjustments based on region_commodity_counts but found "
-                   << region_adjustments.size() << ". Using flat adjustments.";
-  }
-  
-  // Check individual region configurations
-  for (size_t i = 0; i < num_regions; ++i) {
-    std::string region_name = region_names[i];
+  // Record each tariff combination
+  for (const auto& combo : tariff_combinations_) {
+    std::string region_name = std::get<0>(combo);
+    std::string commodity = std::get<1>(combo);
+    double adjustment = std::get<2>(combo);
     
-    // Check if this region has a flat adjustment
-    if (i >= region_flat_adjustments.size()) {
-      CLOG(cyclus::LEV_WARN) << "TariffRegion: Region '" << region_name 
-                     << "' has no flat adjustment specified. Using 0.0 tariff.";
-    }
+    context()->NewDatum("TariffSummaryTable")
+        ->AddVal("AgentId", id())
+        ->AddVal("Time", context()->time())
+        ->AddVal("Region", region_name)
+        ->AddVal("Commodity", commodity)
+        ->AddVal("Adjustment", adjustment)  // Convert to percentage
+        ->Record();
   }
 }
 
