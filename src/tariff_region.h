@@ -19,6 +19,8 @@ class TariffRegion : public cyclus::Region {
 
   virtual void EnterNotify();
 
+  virtual void Tock();
+
   // Required DRE Functions
   virtual void AdjustMatlPrefs(cyclus::PrefMap<cyclus::Material>::type& prefs);
   virtual void AdjustProductPrefs(cyclus::PrefMap<cyclus::Product>::type& prefs);
@@ -38,6 +40,9 @@ class TariffRegion : public cyclus::Region {
   
   // Validate the tariff configuration
   void ValidateConfiguration();
+  
+  // Record tariff configuration to database
+  void RecordTariffConfiguration();
 
   #pragma cyclus
 
@@ -106,6 +111,12 @@ class TariffRegion : public cyclus::Region {
   
   // Fast lookup map for performance
   std::map<std::string, size_t> region_lookup_;
+  
+  // Tariff combinations for database recording
+  std::vector<std::tuple<std::string, std::string, double>> tariff_combinations_;
+  
+  // Flag to track if configuration has been recorded to database
+  bool configuration_recorded_ = false;
   // clang-format on
 };
 
