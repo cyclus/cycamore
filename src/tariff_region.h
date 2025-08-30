@@ -5,6 +5,10 @@
 #include <string>
 #include <algorithm>
 #include <limits>
+#include <set>
+#include <utility>
+#include <map>
+#include <unordered_map>
 
 namespace cycamore {
 
@@ -19,6 +23,22 @@ class TariffRegion : public cyclus::Region {
   virtual void AdjustMatlPrefs(cyclus::PrefMap<cyclus::Material>::type& prefs);
   virtual void AdjustProductPrefs(cyclus::PrefMap<cyclus::Product>::type& prefs);
 
+ private:
+  // Pre-compute the set of region agents for faster lookups
+  void BuildRegionSet();
+  
+  // Find the best matching region and its adjustment index
+  std::pair<cyclus::Region*, int> FindMatchingRegion(cyclus::Facility* supplier);
+  
+  // Find the appropriate tariff for a given region and commodity
+  double FindTariffForCommodity(cyclus::Region* region, const std::string& commodity);
+  
+  // Build fast lookup maps from the nested configuration
+  void BuildTariffLookups();
+  
+  // Validate the tariff configuration
+  void ValidateConfiguration();
+
   #pragma cyclus
 
  private:
@@ -27,18 +47,21 @@ class TariffRegion : public cyclus::Region {
   template<typename T>
   void AdjustPrefsImpl(typename cyclus::PrefMap<T>::type& prefs) {
     for (auto& req_pair : prefs) {
+      std::string commodity = req_pair.first->commodity();  // The commodity name
+      
       for (auto& bid_pair : req_pair.second) {
         cyclus::Bid<T>* bid = bid_pair.first;
 
         // The supplier should always be a facility, so we can cast to that
         cyclus::Facility* supplier = dynamic_cast<cyclus::Facility*>(bid->bidder()->manager());
-        cyclus::Region* supplier_region = supplier->GetRegion();
         
-        // If the supplier is in the region list, apply the appropriate adjustment
-        auto it = std::find(region_names.begin(), region_names.end(), 
-            supplier_region->prototype());
-        if (it != region_names.end()) {
-          double cost_multiplier = 1.0 + adjustments[it - region_names.begin()];
+        // Find if any of the supplier's parent regions match our tariff list
+        auto [matching_region, adjustment_index] = FindMatchingRegion(supplier);
+        if (matching_region) {
+          // Use commodity-specific tariff system
+          double adjustment = FindTariffForCommodity(matching_region, commodity);
+          
+          double cost_multiplier = 1.0 + adjustment;
           double pref_multiplier = 1.0 / cost_multiplier;
           double inf = std::numeric_limits<double>::infinity(); 
 
@@ -50,18 +73,39 @@ class TariffRegion : public cyclus::Region {
   // clang-format off
   #pragma cyclus var { \
     "default": [], \
-    "doc": "List of regions that will have a trade adjustment applied to them." \
+    "doc": "Region names for tariff configuration." \
   }
   std::vector<std::string> region_names;
 
   #pragma cyclus var { \
     "default": [], \
-    "doc": "Adjustments (multiply by (1+val)) to apply to cost of trades from " \
-           "affected regions. Positive values are tariffs, negative values " \
-           "are subsidies. Must be in same order as region_names." , \
-    "tooltip": "Percent as decimal." \
+    "doc": "Commodities for each region (flattened list, use region_commodity_counts to parse)." \
   }
-  std::vector<double> adjustments;
+  std::vector<std::string> region_commodities;
+
+  #pragma cyclus var { \
+    "default": [], \
+    "doc": "Adjustments for each region's commodities (flattened list, use region_commodity_counts to parse)." \
+  }
+  std::vector<double> region_adjustments;
+
+  #pragma cyclus var { \
+    "default": [], \
+    "doc": "Number of commodities for each region (used to parse flattened commodity/adjustment lists)." \
+  }
+  std::vector<int> region_commodity_counts;
+
+  #pragma cyclus var { \
+    "default": [], \
+    "doc": "Flat adjustment for each region (default tariff for unspecified commodities)." \
+  }
+  std::vector<double> region_flat_adjustments;
+
+  // Pre-computed set of region agents for faster lookups
+  std::set<cyclus::Region*> region_agents_;
+  
+  // Fast lookup map for performance
+  std::map<std::string, size_t> region_lookup_;
   // clang-format on
 };
 
