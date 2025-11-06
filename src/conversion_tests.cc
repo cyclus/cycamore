@@ -26,8 +26,6 @@ void ConversionTest::TearDown() {
 }
 
 void ConversionTest::InitParameters() {
-  incommod1 = "incommod1";
-  outcommod_name = "outcommod";
   throughput_val = DEFAULT_THROUGHPUT;
   input_capacity_val = DEFAULT_INPUT_CAPACITY;
 
@@ -39,33 +37,15 @@ void ConversionTest::InitParameters() {
 
 void ConversionTest::SetUpConversion() {
   std::vector<std::string> incommods_vec;
-  incommods_vec.push_back(incommod1);
+  incommods_vec.push_back(INCOMMOD1);
   
   incommods(conv_facility, incommods_vec);
-  outcommod(conv_facility, outcommod_name);
+  outcommod(conv_facility, OUTCOMMOD_NAME);
   throughput(conv_facility, throughput_val);
   input_capacity(conv_facility, input_capacity_val);
   
   // Set the actual buffer capacity
   set_input_capacity(conv_facility, input_capacity_val);
-}
-
-boost::shared_ptr<cyclus::ExchangeContext<cyclus::Material> > 
-ConversionTest::GetContext(int nreqs, std::string commodity) {
-  using cyclus::Material;
-  using cyclus::Request;
-  using cyclus::ExchangeContext;
-
-  boost::shared_ptr<ExchangeContext<Material> > ec(
-      new ExchangeContext<Material>());
-
-  for (int i = 0; i < nreqs; i++) {
-    Material::Ptr mat = cyclus::NewBlankMaterial(TEST_QUANTITY);
-    Request<Material>* req = Request<Material>::Create(mat, trader, commodity);
-    ec->AddRequest(req);
-  }
-
-  return ec;
 }
 
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -92,10 +72,10 @@ TEST_F(ConversionTest, InitialState) {
   
   EXPECT_EQ(throughput_val, throughput(conv_facility));
   EXPECT_EQ(input_capacity_val, input_capacity(conv_facility));
-  EXPECT_EQ(outcommod_name, outcommod(conv_facility));
+  EXPECT_EQ(OUTCOMMOD_NAME, outcommod(conv_facility));
   
   std::vector<std::string> expected_incommods;
-  expected_incommods.push_back(incommod1);
+  expected_incommods.push_back(INCOMMOD1);
   EXPECT_EQ(expected_incommods, incommods(conv_facility));
 }
 
@@ -173,8 +153,8 @@ TEST_F(ConversionTest, GetMatlBids) {
   CommodMap<Material>::type commod_requests;
   cyclus::Material::Ptr req_mat = cyclus::NewBlankMaterial(TEST_QUANTITY);
   cyclus::Request<Material>* req = cyclus::Request<Material>::Create(
-      req_mat, trader, outcommod_name);
-  commod_requests[outcommod_name].push_back(req);
+      req_mat, trader, OUTCOMMOD_NAME);
+  commod_requests[OUTCOMMOD_NAME].push_back(req);
 
   std::set<BidPortfolio<Material>::Ptr> ports =
       conv_facility->GetMatlBids(commod_requests);
@@ -208,8 +188,8 @@ TEST_F(ConversionTest, GetMatlBidsWhenEmpty) {
   CommodMap<Material>::type commod_requests;
   cyclus::Material::Ptr req_mat = cyclus::NewBlankMaterial(TEST_QUANTITY);
   cyclus::Request<Material>* req = cyclus::Request<Material>::Create(
-      req_mat, trader, outcommod_name);
-  commod_requests[outcommod_name].push_back(req);
+      req_mat, trader, OUTCOMMOD_NAME);
+  commod_requests[OUTCOMMOD_NAME].push_back(req);
 
   std::set<BidPortfolio<Material>::Ptr> ports =
       conv_facility->GetMatlBids(commod_requests);
@@ -231,7 +211,7 @@ TEST_F(ConversionTest, AcceptMatlTrades) {
 
   // Create a trade
   Material::Ptr mat = cyclus::NewBlankMaterial(TEST_QUANTITY);
-  Request<Material>* req = Request<Material>::Create(mat, trader, incommod1);
+  Request<Material>* req = Request<Material>::Create(mat, trader, INCOMMOD1);
   Bid<Material>* bid = Bid<Material>::Create(req, mat, trader);
   Trade<Material> trade(req, bid, TEST_QUANTITY);
 
@@ -263,7 +243,7 @@ TEST_F(ConversionTest, GetMatlTrades) {
 
   // Create a trade
   Material::Ptr req_mat = cyclus::NewBlankMaterial(TEST_QUANTITY);
-  Request<Material>* req = Request<Material>::Create(req_mat, trader, outcommod_name);
+  Request<Material>* req = Request<Material>::Create(req_mat, trader, OUTCOMMOD_NAME);
   Bid<Material>* bid = Bid<Material>::Create(req, req_mat, trader);
   Trade<Material> trade(req, bid, TEST_QUANTITY);
 
@@ -344,6 +324,22 @@ TEST_F(ConversionTest, Tick) {
   // Check that material was converted
   EXPECT_DOUBLE_EQ(DEFAULT_THROUGHPUT, input_quantity(conv_facility));
   EXPECT_DOUBLE_EQ(DEFAULT_THROUGHPUT, output_quantity(conv_facility));
+}
+
+// - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+TEST_F(ConversionTest, Tock) {
+  conv_facility->EnterNotify();
+
+  // Add material to input buffer
+  cyclus::Material::Ptr mat = cyclus::NewBlankMaterial(DEFAULT_THROUGHPUT);
+  input_push(conv_facility, mat);
+
+  // Tock should not trigger conversion
+  conv_facility->Tock();
+
+  // Check that no conversion happened
+  EXPECT_DOUBLE_EQ(DEFAULT_THROUGHPUT, input_quantity(conv_facility));
+  EXPECT_DOUBLE_EQ(0.0, output_quantity(conv_facility));
 }
 
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -

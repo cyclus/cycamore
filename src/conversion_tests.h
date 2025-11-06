@@ -42,6 +42,9 @@ class ConversionTest : public ::testing::Test {
     "<throughput>" + std::to_string(DEFAULT_THROUGHPUT) + "</throughput>"
     "<input_capacity>" + std::to_string(DEFAULT_INPUT_CAPACITY) + "</input_capacity>";
 
+  const std::string INCOMMOD1 = "incommod1";
+  const std::string OUTCOMMOD_NAME = "outcommod";
+
   virtual void SetUp();
   virtual void TearDown();
   void InitParameters();
@@ -70,8 +73,6 @@ class ConversionTest : public ::testing::Test {
   void output_push(cycamore::Conversion* c, cyclus::Material::Ptr mat) { c->output.Push(mat); }
   void set_input_capacity(cycamore::Conversion* c, double cap) { c->input.capacity(cap); }
 
-  boost::shared_ptr<cyclus::ExchangeContext<cyclus::Material> > GetContext(
-      int nreqs, std::string commodity);
 };
 
 } // namespace cycamore
