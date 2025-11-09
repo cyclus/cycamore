@@ -34,16 +34,16 @@ class ConversionTest : public ::testing::Test {
   const double DEFAULT_THROUGHPUT = 10.0;
   const double DEFAULT_INPUT_CAPACITY = 50.0;
   
-  const std::string DEFAULT_CONFIG = 
-    "<incommods>"
-    "  <incommodity>incommod1</incommodity>"
-    "</incommods>"
-    "<outcommod>outcommod</outcommod>"
-    "<throughput>" + std::to_string(DEFAULT_THROUGHPUT) + "</throughput>"
-    "<input_capacity>" + std::to_string(DEFAULT_INPUT_CAPACITY) + "</input_capacity>";
-
   const std::string INCOMMOD1 = "incommod1";
   const std::string OUTCOMMOD_NAME = "outcommod";
+
+  const std::string DEFAULT_CONFIG = 
+    "<incommods>"
+    "  <incommodity>" + INCOMMOD1 + "</incommodity>"
+    "</incommods>"
+    "<outcommod>" + OUTCOMMOD_NAME + "</outcommod>"
+    "<throughput>" + std::to_string(DEFAULT_THROUGHPUT) + "</throughput>"
+    "<input_capacity>" + std::to_string(DEFAULT_INPUT_CAPACITY) + "</input_capacity>";
 
   virtual void SetUp();
   virtual void TearDown();
