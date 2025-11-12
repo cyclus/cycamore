@@ -65,6 +65,7 @@ void TariffRegion::BuildTariffRules() {
   region_flat_adjustments_map_.clear();
   
   // Build tariff rules from the input configuration
+  size_t commodity_offset = 0;
   for (size_t i = 0; i < region_names.size(); ++i) {
     std::string region_name = region_names[i];
     double flat_adjustment = (i < region_flat_adjustments.size()) ? 
@@ -75,28 +76,25 @@ void TariffRegion::BuildTariffRules() {
     
     // Figure out where in the list of commodities we start for this region
     // Necessary because of the way we've implemented the input file
-    if (i < region_commodity_counts.size()) {
-      size_t start_index = 0;
-      for (size_t j = 0; j < i; ++j) {
-        if (j < region_commodity_counts.size()) {
-          start_index += region_commodity_counts[j];
-        }
-      }
-      
-      // Add commodity-specific tariff rules
-      for (size_t j = 0; j < region_commodity_counts[i]; ++j) {
-        size_t commodity_index = start_index + j;
-        if (commodity_index < region_commodities.size() && 
-            commodity_index < region_adjustments.size()) {
-          
-          tariff_rules_.emplace_back(
-            region_name, 
-            region_commodities[commodity_index], 
-            region_adjustments[commodity_index]
-          );
-        }
+    size_t commodities_for_region =
+        (i < commodity_counts_per_region.size()) ? commodity_counts_per_region[i] : 0;
+    size_t start_index = commodity_offset;
+    
+    // Add commodity-specific tariff rules
+    for (size_t j = 0; j < commodities_for_region; ++j) {
+      size_t commodity_index = start_index + j;
+      if (commodity_index < adjusted_commodities.size() && 
+          commodity_index < commodity_adjustments.size()) {
+        
+        tariff_rules_.emplace_back(
+          region_name, 
+          adjusted_commodities[commodity_index], 
+          commodity_adjustments[commodity_index]
+        );
       }
     }
+    
+    commodity_offset += commodities_for_region;
   }
 }
 
@@ -110,18 +108,11 @@ double TariffRegion::FindTariffForCommodity(cyclus::Region* region, const std::s
     }
   }
   
-  // If no specific tariff found, look for flat adjustment for this region
-  size_t region_index = 0;
-  for (size_t i = 0; i < region_names.size(); ++i) {
-    if (region_names[i] == region_name) {
-      region_index = i;
-      break;
-    }
-  }
-  
-  // Return flat adjustment if it exists for this region
-  if (region_index < region_flat_adjustments.size()) {
-    return region_flat_adjustments[region_index];
+  // If no specific tariff found, fall back to the flat adjustment for this region
+  std::map<std::string, double>::const_iterator flat_it =
+      region_flat_adjustments_map_.find(region_name);
+  if (flat_it != region_flat_adjustments_map_.end()) {
+    return flat_it->second;
   }
   
   // No tariff found, return 0.0
@@ -130,9 +121,12 @@ double TariffRegion::FindTariffForCommodity(cyclus::Region* region, const std::s
 
 void TariffRegion::ValidateConfiguration() {
   // Simple validation: check if all input vectors have the same length
+  int num_adjusted_commodities = std::accumulate(commodity_counts_per_region.begin(), commodity_counts_per_region.end(), 0);
   if (!region_names.empty() && 
-      (region_names.size() != region_commodity_counts.size() ||
-       region_names.size() != region_flat_adjustments.size())) {
+      (region_names.size() != commodity_counts_per_region.size() ||
+       region_names.size() != region_flat_adjustments.size()) ||
+       num_adjusted_commodities != adjusted_commodities.size() ||
+       num_adjusted_commodities != commodity_adjustments.size()) {
     CLOG(cyclus::LEV_WARN) << "TariffRegion: Input vector length mismatch. "
                    << "All input vectors should have the same length. "
                    << "Using flat adjustments for missing regions.";
