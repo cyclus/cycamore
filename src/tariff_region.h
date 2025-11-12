@@ -91,27 +91,28 @@ class TariffRegion : public cyclus::Region {
 
   #pragma cyclus var { \
     "default": [], \
-    "doc": "Commodities for each region (flattened list, use region_commodity_counts to parse)." \
+    "doc": "Commodities for each region (flattened list, use commodity_counts_per_region to parse)." \
   }
-  std::vector<std::string> region_commodities;
+  std::vector<std::string> adjusted_commodities;
 
   #pragma cyclus var { \
     "default": [], \
     "doc": "Adjustments for each region's commodities (flattened list, use region_commodity_counts to parse)." \
   }
-  std::vector<double> region_adjustments;
+  std::vector<double> commodity_adjustments;
 
   #pragma cyclus var { \
     "default": [], \
     "doc": "Number of commodities for each region (used to parse flattened commodity/adjustment lists)." \
   }
-  std::vector<int> region_commodity_counts;
+  std::vector<int> commodity_counts_per_region;
 
   #pragma cyclus var { \
     "default": [], \
     "doc": "Flat adjustment for each region (default tariff for unspecified commodities)." \
   }
   std::vector<double> region_flat_adjustments;
+
   // clang-format on
   
   // Pre-computed set of region agents for faster lookups
