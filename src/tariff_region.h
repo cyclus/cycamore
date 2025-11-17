@@ -34,6 +34,9 @@ class TariffRegion : public cyclus::Region {
   // Helper: Check if any tariff configuration exists
   bool HasTariffConfiguration() const;
   
+  // Helper: Check if configuration has been recorded
+  bool ConfigurationRecorded() const;
+  
   // Helper: Get region prototype name (reduces repeated code)
   std::string GetRegionName(cyclus::Region* region) const;
   
@@ -48,28 +51,7 @@ class TariffRegion : public cyclus::Region {
   // Template function to reduce code duplication between AdjustMatlPrefs and 
   // AdjustProductPrefs
   template<typename T>
-  void AdjustPrefsImpl(typename cyclus::PrefMap<T>::type& prefs) {
-    for (auto& req_pair : prefs) {
-      std::string commodity = req_pair.first->commodity();
-      
-      for (auto& bid_pair : req_pair.second) {
-        cyclus::Bid<T>* bid = bid_pair.first;
-        cyclus::Facility* supplier = dynamic_cast<cyclus::Facility*>(bid->bidder()->manager());
-        
-        // Find if any of the supplier's parent regions match our tariff list
-        cyclus::Region* matching_region = FindMatchingRegion(supplier);
-        if (matching_region) {
-          double adjustment = FindTariffForCommodity(matching_region, commodity);
-          
-          double cost_multiplier = 1.0 + adjustment;
-          double pref_multiplier = 1.0 / cost_multiplier;
-          double inf = std::numeric_limits<double>::infinity(); 
-
-          bid_pair.second *= cost_multiplier > 0.0 ? pref_multiplier : inf; 
-        }
-      }
-    }
-  }
+  void AdjustPrefsImpl(typename cyclus::PrefMap<T>::type& prefs);
   
   // clang-format off
   #pragma cyclus var { \
@@ -92,7 +74,35 @@ class TariffRegion : public cyclus::Region {
 
   // clang-format on
   
+  // Flag to track if configuration has been recorded
+  bool configuration_recorded_;
+  
 };
+
+// Template function implementation (must be in header for template instantiation)
+template<typename T>
+void TariffRegion::AdjustPrefsImpl(typename cyclus::PrefMap<T>::type& prefs) {
+  for (auto& req_pair : prefs) {
+    std::string commodity = req_pair.first->commodity();
+    
+    for (auto& bid_pair : req_pair.second) {
+      cyclus::Bid<T>* bid = bid_pair.first;
+      cyclus::Facility* supplier = dynamic_cast<cyclus::Facility*>(bid->bidder()->manager());
+      
+      // Find if any of the supplier's parent regions match our tariff list
+      cyclus::Region* matching_region = FindMatchingRegion(supplier);
+      if (matching_region) {
+        double adjustment = FindTariffForCommodity(matching_region, commodity);
+        
+        double cost_multiplier = 1.0 + adjustment;
+        double pref_multiplier = 1.0 / cost_multiplier;
+        double inf = std::numeric_limits<double>::infinity(); 
+
+        bid_pair.second *= cost_multiplier > 0.0 ? pref_multiplier : inf; 
+      }
+    }
+  }
+}
 
 } // namespace cycamore
 

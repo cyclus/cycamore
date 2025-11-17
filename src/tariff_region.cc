@@ -3,7 +3,7 @@
 namespace cycamore {
 
 TariffRegion::TariffRegion(cyclus::Context* ctx)
-: cyclus::Region(ctx) {}
+: cyclus::Region(ctx), configuration_recorded_(false) {}
 
 TariffRegion::~TariffRegion() {}
 
@@ -13,7 +13,9 @@ void TariffRegion::EnterNotify() {
 }
 
 void TariffRegion::Tock() {
+  if (!ConfigurationRecorded()) {
     RecordTariffConfiguration();
+  }
 }
 
 // Actual implementation of the DRE Functions using the template function:
@@ -28,6 +30,10 @@ void TariffRegion::AdjustProductPrefs(cyclus::PrefMap<cyclus::Product>::type& pr
 bool TariffRegion::HasTariffConfiguration() const {
   return !adjustment_regions.empty() || global_blanket_adjustment != 0.0 || 
          !global_commodity_adjustments.empty();
+}
+
+bool TariffRegion::ConfigurationRecorded() const {
+  return configuration_recorded_;
 }
 
 std::string TariffRegion::GetRegionName(cyclus::Region* region) const {
@@ -93,7 +99,7 @@ void TariffRegion::ValidateConfiguration() {
   // Basic validation: check that adjustment_regions map is not empty if we expect tariffs
   // The nested structure itself enforces correctness (no parallel list mismatches possible)
   if (!HasTariffConfiguration()) {
-    CLOG(cyclus::LEV_INFO) << "TariffRegion: No tariff configuration specified. "
+    LOG(cyclus::LEV_INFO1, "TariffRegion") << "No tariff configuration specified. "
                    << "No adjustments will be applied.";
   }
 }
@@ -101,8 +107,12 @@ void TariffRegion::ValidateConfiguration() {
 void TariffRegion::RecordTariffConfiguration() {
   // Safety check: only record if we have valid data
   if (!HasTariffConfiguration()) {
+    configuration_recorded_ = true;  // Mark as recorded even if empty
     return;  // No configuration to record
   }
+  
+  // Mark as recorded before actually recording (in case recording throws)
+  configuration_recorded_ = true;
 
   // Record region-specific tariff configurations
   for (const auto& region_entry : adjustment_regions) {
