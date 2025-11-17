@@ -9,9 +9,7 @@ TariffRegion::~TariffRegion() {}
 
 void TariffRegion::EnterNotify() {
   Region::EnterNotify();
-  BuildRegionSet();
   ValidateConfiguration();
-  BuildTariffRules();
 }
 
 void TariffRegion::Tock() {
@@ -27,31 +25,24 @@ void TariffRegion::AdjustProductPrefs(cyclus::PrefMap<cyclus::Product>::type& pr
   AdjustPrefsImpl<cyclus::Product>(prefs);
 }
 
-void TariffRegion::BuildRegionSet() {
-  // Get all agents in the simulation
-  const std::set<cyclus::Agent*>& all_agents = context()->GetAgentList();
-  
-  // Find all regions that match our region_names list
-  for (const auto& agent : all_agents) {
-    if (agent->kind() == "Region") {
-      cyclus::Region* region = static_cast<cyclus::Region*>(agent);
-      // Check if this region's prototype matches any in our list
-      auto it = std::find(region_names.begin(), region_names.end(), 
-                         region->prototype());
-      if (it != region_names.end()) {
-        adjustment_regions_.insert(region);
-      }
-    }
-  }
+bool TariffRegion::HasTariffConfiguration() const {
+  return !adjustment_regions.empty() || global_blanket_adjustment != 0.0 || 
+         !global_commodity_adjustments.empty();
+}
+
+std::string TariffRegion::GetRegionName(cyclus::Region* region) const {
+  return region->prototype();
 }
 
 cyclus::Region* TariffRegion::FindMatchingRegion(cyclus::Facility* supplier) {
   // Get all parent regions of the supplier
   std::vector<cyclus::Region*> parent_regions = supplier->GetAllParentRegions();
   
-  // Check each parent region to see if it's in our tariff list
+  // Check each parent region to see if it's in our tariff configuration
+  // We can directly look up by prototype name in the map (O(1) lookup)
   for (cyclus::Region* parent_region : parent_regions) {
-    if (adjustment_regions_.find(parent_region) != adjustment_regions_.end()) {
+    std::string region_name = GetRegionName(parent_region);
+    if (adjustment_regions.find(region_name) != adjustment_regions.end()) {
       return parent_region;
     }
   }
@@ -60,93 +51,100 @@ cyclus::Region* TariffRegion::FindMatchingRegion(cyclus::Facility* supplier) {
   return nullptr;
 }
 
-void TariffRegion::BuildTariffRules() {
-  tariff_rules_.clear();
-  region_flat_adjustments_map_.clear();
-  
-  // Build tariff rules from the input configuration
-  size_t commodity_offset = 0;
-  for (size_t i = 0; i < region_names.size(); ++i) {
-    std::string region_name = region_names[i];
-    double flat_adjustment = (i < region_flat_adjustments.size()) ? 
-                             region_flat_adjustments[i] : 0.0;
-    
-    // Store flat adjustment for this region
-    region_flat_adjustments_map_[region_name] = flat_adjustment;
-    
-    // Figure out where in the list of commodities we start for this region
-    // Necessary because of the way we've implemented the input file
-    size_t commodities_for_region =
-        (i < commodity_counts_per_region.size()) ? commodity_counts_per_region[i] : 0;
-    size_t start_index = commodity_offset;
-    
-    // Add commodity-specific tariff rules
-    for (size_t j = 0; j < commodities_for_region; ++j) {
-      size_t commodity_index = start_index + j;
-      if (commodity_index < adjusted_commodities.size() && 
-          commodity_index < commodity_adjustments.size()) {
-        
-        tariff_rules_.emplace_back(
-          region_name, 
-          adjusted_commodities[commodity_index], 
-          commodity_adjustments[commodity_index]
-        );
-      }
-    }
-    
-    commodity_offset += commodities_for_region;
-  }
-}
-
 double TariffRegion::FindTariffForCommodity(cyclus::Region* region, const std::string& commodity) {
-  std::string region_name = region->prototype();
+  std::string region_name = GetRegionName(region);
   
-  // First, look for a specific commodity tariff
-  for (const auto& rule : tariff_rules_) {
-    if (rule.region_name == region_name && rule.commodity == commodity) {
-      return rule.adjustment;
+  // Tiered override system (most specific to least specific):
+  // 1. Region-specific commodity adjustment (highest priority)
+  // 2. Region blanket adjustment
+  // 3. Global commodity adjustment
+  // 4. Global blanket adjustment (lowest priority)
+  
+  // Look up the region in our adjustment_regions map
+  auto region_it = adjustment_regions.find(region_name);
+  if (region_it != adjustment_regions.end()) {
+    const auto& region_data = region_it->second;
+    const auto& commodity_adjustments = region_data.second;
+    
+    // Tier 1: Check for region-specific commodity adjustment
+    auto commodity_it = commodity_adjustments.find(commodity);
+    if (commodity_it != commodity_adjustments.end()) {
+      return commodity_it->second;  // Most specific - override everything
+    }
+    
+    // Tier 2: Use region blanket adjustment
+    double region_blanket = region_data.first;
+    if (region_blanket != 0.0) {
+      return region_blanket;  // Override global adjustments
     }
   }
   
-  // If no specific tariff found, fall back to the flat adjustment for this region
-  std::map<std::string, double>::const_iterator flat_it =
-      region_flat_adjustments_map_.find(region_name);
-  if (flat_it != region_flat_adjustments_map_.end()) {
-    return flat_it->second;
+  // Tier 3: Check for global commodity-specific adjustment
+  auto global_commodity_it = global_commodity_adjustments.find(commodity);
+  if (global_commodity_it != global_commodity_adjustments.end()) {
+    return global_commodity_it->second;  // Override global blanket
   }
   
-  // No tariff found, return 0.0
-  return 0.0;
+  // Tier 4: Use global blanket adjustment (lowest priority)
+  return global_blanket_adjustment;
 }
 
 void TariffRegion::ValidateConfiguration() {
-  // Simple validation: check if all input vectors have the same length
-  int num_adjusted_commodities = std::accumulate(commodity_counts_per_region.begin(), commodity_counts_per_region.end(), 0);
-  if (!region_names.empty() && 
-      (region_names.size() != commodity_counts_per_region.size() ||
-       region_names.size() != region_flat_adjustments.size()) ||
-       num_adjusted_commodities != adjusted_commodities.size() ||
-       num_adjusted_commodities != commodity_adjustments.size()) {
-    CLOG(cyclus::LEV_WARN) << "TariffRegion: Input vector length mismatch. "
-                   << "All input vectors should have the same length. "
-                   << "Using flat adjustments for missing regions.";
+  // Basic validation: check that adjustment_regions map is not empty if we expect tariffs
+  // The nested structure itself enforces correctness (no parallel list mismatches possible)
+  if (!HasTariffConfiguration()) {
+    CLOG(cyclus::LEV_INFO) << "TariffRegion: No tariff configuration specified. "
+                   << "No adjustments will be applied.";
   }
 }
 
 void TariffRegion::RecordTariffConfiguration() {
   // Safety check: only record if we have valid data
-  if (region_names.empty()) {
+  if (!HasTariffConfiguration()) {
     return;  // No configuration to record
   }
 
-  // Record each tariff rule (specific commodity tariffs)
-  for (const auto& rule : tariff_rules_) {
-    context()->NewDatum("CommoditySpecificTariffs")
+  // Record region-specific tariff configurations
+  for (const auto& region_entry : adjustment_regions) {
+    const std::string& region_name = region_entry.first;
+    double blanket_adjustment = region_entry.second.first;
+    const auto& commodity_adjustments = region_entry.second.second;
+    
+    // Record blanket adjustment for this region
+    context()->NewDatum("RegionBlanketTariffs")
         ->AddVal("AgentId", id())
         ->AddVal("Time", context()->time())
-        ->AddVal("Region", rule.region_name)
-        ->AddVal("Commodity", rule.commodity)
-        ->AddVal("Adjustment", rule.adjustment)
+        ->AddVal("Region", region_name)
+        ->AddVal("Adjustment", blanket_adjustment)
+        ->Record();
+    
+    // Record commodity-specific adjustments for this region
+    for (const auto& commodity_entry : commodity_adjustments) {
+      context()->NewDatum("CommoditySpecificTariffs")
+          ->AddVal("AgentId", id())
+          ->AddVal("Time", context()->time())
+          ->AddVal("Region", region_name)
+          ->AddVal("Commodity", commodity_entry.first)
+          ->AddVal("Adjustment", commodity_entry.second)
+          ->Record();
+    }
+  }
+  
+  // Record global adjustments if present
+  if (global_blanket_adjustment != 0.0) {
+    context()->NewDatum("GlobalBlanketTariff")
+        ->AddVal("AgentId", id())
+        ->AddVal("Time", context()->time())
+        ->AddVal("Adjustment", global_blanket_adjustment)
+        ->Record();
+  }
+  
+  for (const auto& global_entry : global_commodity_adjustments) {
+    context()->NewDatum("GlobalCommodityTariffs")
+        ->AddVal("AgentId", id())
+        ->AddVal("Time", context()->time())
+        ->AddVal("Commodity", global_entry.first)
+        ->AddVal("Adjustment", global_entry.second)
         ->Record();
   }
 }

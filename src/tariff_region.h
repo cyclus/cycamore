@@ -3,25 +3,12 @@
 
 #include "cyclus.h"
 #include <string>
-#include <algorithm>
 #include <limits>
-#include <set>
 #include <utility>
 #include <map>
-#include <unordered_map>
 #include <vector>
 
 namespace cycamore {
-
-// Simple structure to represent a tariff rule
-struct TariffRule {
-  std::string region_name;
-  std::string commodity;
-  double adjustment;
-  
-  TariffRule(const std::string& region, const std::string& comm, double adj)
-      : region_name(region), commodity(comm), adjustment(adj) {}
-};
 
 class TariffRegion : public cyclus::Region {
  public:
@@ -36,17 +23,19 @@ class TariffRegion : public cyclus::Region {
   virtual void AdjustProductPrefs(cyclus::PrefMap<cyclus::Product>::type& prefs);
 
  private:
-  // Build the set of region agents for faster lookups
-  void BuildRegionSet();
-  
   // Find the best matching region for a supplier
   cyclus::Region* FindMatchingRegion(cyclus::Facility* supplier);
   
   // Find the appropriate tariff for a given region and commodity
+  // Uses tiered override system: region-specific commodity > region blanket > 
+  // global commodity > global blanket
   double FindTariffForCommodity(cyclus::Region* region, const std::string& commodity);
   
-  // Build tariff rules from the input configuration
-  void BuildTariffRules();
+  // Helper: Check if any tariff configuration exists
+  bool HasTariffConfiguration() const;
+  
+  // Helper: Get region prototype name (reduces repeated code)
+  std::string GetRegionName(cyclus::Region* region) const;
   
   // Validate the tariff configuration
   void ValidateConfiguration();
@@ -84,45 +73,24 @@ class TariffRegion : public cyclus::Region {
   
   // clang-format off
   #pragma cyclus var { \
-    "default": [], \
-    "doc": "Region names for tariff configuration." \
+    "default": {}, \
+    "doc": "Tariff configuration: map from region name to (blanket_adjustment, commodity_adjustments_map). Each region can have a blanket adjustment for all commodities and specific adjustments per commodity." \
   }
-  std::vector<std::string> region_names;
+  std::map<std::string, std::pair<double, std::map<std::string, double>>> adjustment_regions;
 
   #pragma cyclus var { \
-    "default": [], \
-    "doc": "Commodities for each region (flattened list, use commodity_counts_per_region to parse)." \
+    "default": 0.0, \
+    "doc": "Optional global blanket adjustment applied to all regions and commodities." \
   }
-  std::vector<std::string> adjusted_commodities;
+  double global_blanket_adjustment;
 
   #pragma cyclus var { \
-    "default": [], \
-    "doc": "Adjustments for each region's commodities (flattened list, use region_commodity_counts to parse)." \
+    "default": {}, \
+    "doc": "Optional global commodity adjustments applied to all regions for specific commodities." \
   }
-  std::vector<double> commodity_adjustments;
-
-  #pragma cyclus var { \
-    "default": [], \
-    "doc": "Number of commodities for each region (used to parse flattened commodity/adjustment lists)." \
-  }
-  std::vector<int> commodity_counts_per_region;
-
-  #pragma cyclus var { \
-    "default": [], \
-    "doc": "Flat adjustment for each region (default tariff for unspecified commodities)." \
-  }
-  std::vector<double> region_flat_adjustments;
+  std::map<std::string, double> global_commodity_adjustments;
 
   // clang-format on
-  
-  // Pre-computed set of region agents for faster lookups
-  std::set<cyclus::Region*> adjustment_regions_;
-  
-  // Simple tariff rules - much cleaner than the complex nested structures
-  std::vector<TariffRule> tariff_rules_;
-  
-  // map of region names to flat adjustments
-  std::map<std::string, double> region_flat_adjustments_map_;
   
 };
 
