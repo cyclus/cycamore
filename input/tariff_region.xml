@@ -304,6 +304,19 @@
             </RegionConfig>
           </item>
         </adjustment_regions>
+        <!-- Global blanket adjustment: applies to all regions and commodities when no more specific tariff exists -->
+        <global_blanket_adjustment>0.05</global_blanket_adjustment>
+        <!-- Global commodity adjustments: apply to all regions for specific commodities when no more specific tariff exists -->
+        <global_commodity_adjustments>
+          <item>
+            <commodity>UF6</commodity>
+            <adjustment>0.20</adjustment>
+          </item>
+          <item>
+            <commodity>IronOre</commodity>
+            <adjustment>-0.05</adjustment>
+          </item>
+        </global_commodity_adjustments>
       </TariffRegion>
     </config>
     <institution>
