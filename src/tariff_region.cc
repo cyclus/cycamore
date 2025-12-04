@@ -40,21 +40,115 @@ std::string TariffRegion::GetRegionName(cyclus::Region* region) const {
   return region->prototype();
 }
 
-cyclus::Region* TariffRegion::FindMatchingRegion(cyclus::Facility* supplier) {
-  // Get all parent regions of the supplier
-  std::vector<cyclus::Region*> parent_regions = supplier->GetAllParentRegions();
+std::vector<cyclus::Region*> TariffRegion::GetAncestorChain(cyclus::Region* region) {
+  std::vector<cyclus::Region*> chain;
+  cyclus::Agent* current = region;
   
-  // Check each parent region to see if it's in our tariff configuration
-  // We can directly look up by prototype name in the map (O(1) lookup)
-  for (cyclus::Region* parent_region : parent_regions) {
-    std::string region_name = GetRegionName(parent_region);
-    if (adjustment_regions_.find(region_name) != adjustment_regions_.end()) {
-      return parent_region;
+  while (current != nullptr) {
+    cyclus::Region* current_region = dynamic_cast<cyclus::Region*>(current);
+    if (current_region != nullptr) {
+      chain.push_back(current_region);
+    }
+    current = current->parent();
+  }
+  
+  return chain;
+}
+
+cyclus::Region* TariffRegion::FindLowestCommonAncestor(cyclus::Region* r1, cyclus::Region* r2) {
+  // Get ancestor chains for both regions
+  std::vector<cyclus::Region*> chain1 = GetAncestorChain(r1);
+  std::vector<cyclus::Region*> chain2 = GetAncestorChain(r2);
+  
+  for (cyclus::Region* ancestor1 : chain1) {
+    for (cyclus::Region* ancestor2 : chain2) {
+      if (ancestor1 == ancestor2) {
+        return ancestor1;  // Found the lowest common ancestor
+      }
     }
   }
   
-  // No matching region found
+  // No common ancestor found (shouldn't happen in a well-formed simulation)
   return nullptr;
+}
+
+double TariffRegion::FindMostSpecificTariff(cyclus::Region* importer_region,
+                                             const std::vector<cyclus::Region*>& supplier_hierarchy,
+                                             const std::string& commodity) {
+  // Check if this importer region is a TariffRegion with configuration
+  TariffRegion* tariff_importer = dynamic_cast<TariffRegion*>(importer_region);
+  if (tariff_importer == nullptr || !tariff_importer->HasTariffConfiguration()) {
+    return 0.0;  // Not a TariffRegion or has no configuration
+  }
+  
+  // Check supplier hierarchy from most specific (supplier itself) to least specific (root)
+  for (cyclus::Region* supplier_ancestor : supplier_hierarchy) {
+    std::string supplier_ancestor_name = GetRegionName(supplier_ancestor);
+    
+    // Check if this tariff region has any configuration for this supplier ancestor
+    auto region_it = tariff_importer->adjustment_regions_.find(supplier_ancestor_name);
+    if (region_it != tariff_importer->adjustment_regions_.end()) {
+      // Found a match! Now apply the tiered override system for this specific region
+      return tariff_importer->FindTariffForCommodity(supplier_ancestor, commodity);
+    }
+  }
+  
+  // No specific rule found for any level of supplier hierarchy
+  // Check if there are global rules (commodity-specific or blanket)
+  auto global_commodity_it = tariff_importer->global_commodity_adjustments_.find(commodity);
+  if (global_commodity_it != tariff_importer->global_commodity_adjustments_.end()) {
+    return global_commodity_it->second;
+  }
+  
+  return tariff_importer->global_blanket_adjustment;
+}
+
+double TariffRegion::ComputeAggregatedTariff(cyclus::Facility* supplier,
+                                              cyclus::Facility* requester,
+                                              const std::string& commodity) {
+  // Get the parent regions for both facilities
+  std::vector<cyclus::Region*> supplier_regions = supplier->GetAllParentRegions();
+  std::vector<cyclus::Region*> requester_regions = requester->GetAllParentRegions();
+  
+  // Handle edge cases
+  if (supplier_regions.empty() || requester_regions.empty()) {
+    return 0.0;  // No regions to compare
+  }
+  
+  // Get the immediate parent regions (first in the list)
+  cyclus::Region* supplier_region = supplier_regions[0];
+  cyclus::Region* requester_region = requester_regions[0];
+  
+  // If they're in the same region, no tariff applies
+  if (supplier_region == requester_region) {
+    return 0.0;
+  }
+  
+  // Find the Lowest Common Ancestor
+  cyclus::Region* lca = FindLowestCommonAncestor(supplier_region, requester_region);
+  
+  // Get supplier's full ancestor chain (for "most specific" lookups)
+  std::vector<cyclus::Region*> supplier_hierarchy = GetAncestorChain(supplier_region);
+  
+  // Get importer chain: from requester up to (but not including) LCA
+  std::vector<cyclus::Region*> importer_chain;
+  cyclus::Agent* current = requester_region;
+  while (current != nullptr && current != lca) {
+    cyclus::Region* current_region = dynamic_cast<cyclus::Region*>(current);
+    if (current_region != nullptr) {
+      importer_chain.push_back(current_region);
+    }
+    current = current->parent();
+  }
+  
+  // Aggregate tariffs from all importer regions
+  double total_tariff = 0.0;
+  for (cyclus::Region* importer : importer_chain) {
+    double tariff = FindMostSpecificTariff(importer, supplier_hierarchy, commodity);
+    total_tariff += tariff;
+  }
+  
+  return total_tariff;
 }
 
 double TariffRegion::FindTariffForCommodity(cyclus::Region* region, const std::string& commodity) {

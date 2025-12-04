@@ -23,8 +23,22 @@ class TariffRegion : public cyclus::Region {
   virtual void AdjustProductPrefs(cyclus::PrefMap<cyclus::Product>::type& prefs);
 
  private:
-  // Find the best matching region for a supplier
-  cyclus::Region* FindMatchingRegion(cyclus::Facility* supplier);
+  // Compute aggregated tariff from all importer regions along the hierarchy
+  double ComputeAggregatedTariff(cyclus::Facility* supplier, 
+                                  cyclus::Facility* requester,
+                                  const std::string& commodity);
+  
+  // Find the Lowest Common Ancestor of two regions
+  cyclus::Region* FindLowestCommonAncestor(cyclus::Region* r1, cyclus::Region* r2);
+  
+  // Get the chain of ancestors from a region up to (and including) root
+  std::vector<cyclus::Region*> GetAncestorChain(cyclus::Region* region);
+  
+  // Find the most specific tariff rule for a supplier's hierarchy from an importer's perspective
+  // Returns the tariff value, checking supplier region hierarchy from most to least specific
+  double FindMostSpecificTariff(cyclus::Region* importer_region,
+                                const std::vector<cyclus::Region*>& supplier_hierarchy,
+                                const std::string& commodity);
   
   // Find the appropriate tariff for a given region and commodity
   // Uses tiered override system: region-specific commodity > region blanket > 
@@ -85,17 +99,18 @@ class TariffRegion : public cyclus::Region {
 template<typename T>
 void TariffRegion::AdjustPrefsImpl(typename cyclus::PrefMap<T>::type& prefs) {
   for (auto& req_pair : prefs) {
-    std::string commodity = req_pair.first->commodity();
+    cyclus::Request<T>* request = req_pair.first;
+    std::string commodity = request->commodity();
+    cyclus::Facility* requester = dynamic_cast<cyclus::Facility*>(request->requester()->manager());
     
     for (auto& bid_pair : req_pair.second) {
       cyclus::Bid<T>* bid = bid_pair.first;
       cyclus::Facility* supplier = dynamic_cast<cyclus::Facility*>(bid->bidder()->manager());
       
-      // Find if any of the supplier's parent regions match our tariff list
-      cyclus::Region* matching_region = FindMatchingRegion(supplier);
-      if (matching_region) {
-        double adjustment = FindTariffForCommodity(matching_region, commodity);
-        
+      // Compute aggregated tariff from all importer regions along the hierarchy
+      double adjustment = ComputeAggregatedTariff(supplier, requester, commodity);
+      
+      if (adjustment != 0.0) {
         double cost_multiplier = 1.0 + adjustment;
         double pref_multiplier = 1.0 / cost_multiplier;
         double inf = std::numeric_limits<double>::infinity(); 
