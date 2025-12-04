@@ -300,7 +300,15 @@
             <region>Germany</region>
             <RegionConfig>
               <blanket_adjustment>-0.10</blanket_adjustment>
-              <commodity_adjustments/>
+              <commodity_adjustments>
+              <!-- Dummy commodity to allow for no commodity specific 
+              adjustments. There MUST be at least one commodity in this list, 
+              otherwise RelaxNG Error will occur-->
+                <item>
+                  <commodity>None</commodity> 
+                  <adjustment>0.00</adjustment>
+                </item>
+              </commodity_adjustments>
             </RegionConfig>
           </item>
         </adjustment_regions>
