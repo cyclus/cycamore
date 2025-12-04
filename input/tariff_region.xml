@@ -230,7 +230,7 @@
           <!-- North Korea: blanket 0.10, with specific adjustments for Yellowcake and IronOre -->
           <item>
             <region>North Korea</region>
-            <RegionConfig>
+            <AdjustmentConfig>
               <blanket_adjustment>0.10</blanket_adjustment>
               <commodity_adjustments>
                 <item>
@@ -242,12 +242,12 @@
                   <adjustment>0.25</adjustment>
                 </item>
               </commodity_adjustments>
-            </RegionConfig>
+            </AdjustmentConfig>
           </item>
           <!-- Russia: blanket 0.20, with specific adjustments for Yellowcake and CopperOre -->
           <item>
             <region>Russia</region>
-            <RegionConfig>
+            <AdjustmentConfig>
               <blanket_adjustment>0.20</blanket_adjustment>
               <commodity_adjustments>
                 <item>
@@ -259,12 +259,12 @@
                   <adjustment>-0.25</adjustment>
                 </item>
               </commodity_adjustments>
-            </RegionConfig>
+            </AdjustmentConfig>
           </item>
           <!-- United Kingdom: blanket 0.30, with specific adjustments for Yellowcake, IronOre, and CopperOre -->
           <item>
             <region>United Kingdom</region>
-            <RegionConfig>
+            <AdjustmentConfig>
               <blanket_adjustment>0.30</blanket_adjustment>
               <commodity_adjustments>
                 <item>
@@ -280,12 +280,12 @@
                   <adjustment>0.55</adjustment>
                 </item>
               </commodity_adjustments>
-            </RegionConfig>
+            </AdjustmentConfig>
           </item>
           <!-- France: blanket 0.40, with specific adjustment for Yellowcake -->
           <item>
             <region>France</region>
-            <RegionConfig>
+            <AdjustmentConfig>
               <blanket_adjustment>0.40</blanket_adjustment>
               <commodity_adjustments>
                 <item>
@@ -293,12 +293,12 @@
                   <adjustment>0.45</adjustment>
                 </item>
               </commodity_adjustments>
-            </RegionConfig>
+            </AdjustmentConfig>
           </item>
           <!-- Germany: blanket -0.10, no commodity-specific adjustments -->
           <item>
             <region>Germany</region>
-            <RegionConfig>
+            <AdjustmentConfig>
               <blanket_adjustment>-0.10</blanket_adjustment>
               <commodity_adjustments>
               <!-- Dummy commodity to allow for no commodity specific 
@@ -309,7 +309,7 @@
                   <adjustment>0.00</adjustment>
                 </item>
               </commodity_adjustments>
-            </RegionConfig>
+            </AdjustmentConfig>
           </item>
         </adjustment_regions>
         <!-- Global blanket adjustment: applies to all regions and commodities when no more specific tariff exists -->

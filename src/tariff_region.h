@@ -56,7 +56,7 @@ class TariffRegion : public cyclus::Region {
   // clang-format off
   #pragma cyclus var { \
     "default": {}, \
-    "alias": ["adjustment_regions", "region", ["RegionConfig", "blanket_adjustment", ["commodity_adjustments", "commodity", "adjustment"]]], \
+    "alias": ["adjustment_regions", "region", ["AdjustmentConfig", "blanket_adjustment", ["commodity_adjustments", "commodity", "adjustment"]]], \
     "doc": "Tariff configuration: map from region name to (blanket_adjustment, commodity_adjustments_map). Each region can have a blanket adjustment for all commodities and specific adjustments per commodity." \
   }
   std::map<std::string, std::pair<double, std::map<std::string, double>>> adjustment_regions_;
