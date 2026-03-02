@@ -109,6 +109,7 @@ void Reactor::EnterNotify() {
     throw ValueError(ss.str());
   }
   
+  InitializeMarginalCost();
   InitializePosition();
 }
 
@@ -231,16 +232,19 @@ std::set<cyclus::RequestPortfolio<Material>::Ptr> Reactor::GetMatlRequests() {
   for (int i = 0; i < n_assem_order; i++) {
     RequestPortfolio<Material>::Ptr port(new RequestPortfolio<Material>());
     std::vector<Request<Material>*> mreqs;
+    auto mu_results = CalcMarginalUtility(fuel_incommods, fuel_prefs);
+    std::vector<std::string> mu_commods = mu_results.first;
+    std::vector<double> mu_values = mu_results.second;
     for (int j = 0; j < fuel_incommods.size(); j++) {
-      std::string commod = fuel_incommods[j];
-      double pref = fuel_prefs[j];
+      
       cyclus::Composition::Ptr recipe = context()->GetRecipe(fuel_inrecipes[j]);
       m = Material::CreateUntracked(assem_size, recipe);
 
-      Request<Material>* r = port->AddRequest(m, this, commod, pref, true);
+      Request<Material>* r = port->AddRequest(m, this, mu_commods[j], mu_values[j], true);
       mreqs.push_back(r);
     }
 
+    // This finds the most-preferred commodity and records demand for it.
     std::vector<double>::iterator result;
     result = std::max_element(fuel_prefs.begin(), fuel_prefs.end());
     int max_index = std::distance(fuel_prefs.begin(), result);
@@ -334,7 +338,14 @@ std::set<cyclus::BidPortfolio<Material>::Ptr> Reactor::GetMatlBids(
       for (int k = 0; k < mats.size(); k++) {
         Material::Ptr m = mats[k];
         tot_bid += m->quantity();
-        port->AddBid(req, m, this, true);
+
+        // We need to be a bit careful here, since this is "waste" material.
+        // For now, we'll set the MC to 0.0, since otherwise we'd have
+        // to figure out how reactors bid on this, given that we can't have
+        // negative arcs.
+        double marginal_cost = 0.0;
+
+        port->AddBid(req, m, this, true, marginal_cost);
         if (tot_bid >= req->target()->quantity()) {
           break;
         }

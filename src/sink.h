@@ -117,6 +117,7 @@ class Sink
  private:
   // Code Injection:
   #include "toolkit/position.cycpp.h"
+  #include "toolkit/marginal_utility.cycpp.h"
 
   double requestAmt;
   int nextBuyTime;

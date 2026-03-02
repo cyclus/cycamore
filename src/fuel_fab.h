@@ -136,6 +136,8 @@ class FuelFab
  private:
   // Code Injection:
   #include "toolkit/position.cycpp.h"
+  #include "toolkit/marginal_cost.cycpp.h"
+  #include "toolkit/marginal_utility.cycpp.h"
 
   #pragma cyclus var { \
     "doc": "Ordered list of commodities on which to requesting filler stream material.", \

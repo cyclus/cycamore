@@ -64,6 +64,7 @@ void Separations::EnterNotify() {
     }
 
     InitializePosition();
+    InitializeMarginalCost();
   }
 
   std::vector<int> eff_pb_;
@@ -220,10 +221,12 @@ Separations::GetMatlRequests() {
   }
 
   std::vector<Request<Material>*> reqs;
+  auto mu_results = CalcMarginalUtility(feed_commods, feed_commod_prefs);
+  std::vector<std::string> mu_commods = mu_results.first;
+  std::vector<double> mu_values = mu_results.second;
   for (int i = 0; i < feed_commods.size(); i++) {
     std::string commod = feed_commods[i];
-    double pref = feed_commod_prefs[i];
-    reqs.push_back(port->AddRequest(m, this, commod, pref, exclusive));
+    reqs.push_back(port->AddRequest(m, this, mu_commods[i], mu_values[i], exclusive));
   }
   port->AddMutualReqs(reqs);
   ports.insert(port);
@@ -295,10 +298,12 @@ std::set<cyclus::BidPortfolio<Material>::Ptr> Separations::GetMatlBids(
         Material::Ptr m = mats[k];
         tot_bid += m->quantity();
 
+        double marginal_cost = CalcMarginalCost(m->UnitValue());
+
         // this fix the problem of the cyclus exchange manager which crashes
         // when a bid with a quantity <=0 is offered.
         if (m->quantity() > cyclus::eps_rsrc()) {
-          port->AddBid(req, m, this, exclusive);
+          port->AddBid(req, m, this, exclusive, marginal_cost);
         }
 
         if (tot_bid >= req->target()->quantity()) {
@@ -328,10 +333,13 @@ std::set<cyclus::BidPortfolio<Material>::Ptr> Separations::GetMatlBids(
         Material::Ptr m = mats[k];
         tot_bid += m->quantity();
 
+
+        double marginal_cost = 0.0; // Set to zero since this is a waste stream?
+
         // this fix the problem of the cyclus exchange manager which crashes
         // when a bid with a quantity <=0 is offered.
         if (m->quantity() > cyclus::eps_rsrc()) {
-          port->AddBid(req, m, this, exclusive);
+          port->AddBid(req, m, this, exclusive, marginal_cost);
         }
 
         if (tot_bid >= req->target()->quantity()) {

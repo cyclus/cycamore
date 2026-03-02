@@ -35,12 +35,16 @@ class ConversionTest : public ::testing::Test {
   const double DEFAULT_INPUT_CAPACITY = 50.0;
   
   const std::string INCOMMOD1 = "incommod1";
+  const double INCOMMOD1_PREF = 0.5;
   const std::string OUTCOMMOD_NAME = "outcommod";
 
   const std::string DEFAULT_CONFIG = 
     "<incommods>"
     "  <incommodity>" + INCOMMOD1 + "</incommodity>"
     "</incommods>"
+    "<incommod_prefs>"
+    "  <incommodity_preference>" + std::to_string(INCOMMOD1_PREF) + "</incommodity_preference>"
+    "</incommod_prefs>"
     "<outcommod>" + OUTCOMMOD_NAME + "</outcommod>"
     "<throughput>" + std::to_string(DEFAULT_THROUGHPUT) + "</throughput>"
     "<input_capacity>" + std::to_string(DEFAULT_INPUT_CAPACITY) + "</input_capacity>";

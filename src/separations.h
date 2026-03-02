@@ -107,6 +107,8 @@ class Separations
  private:
  // Code Injection:
  #include "toolkit/position.cycpp.h"
+ #include "toolkit/marginal_utility.cycpp.h"
+ #include "toolkit/marginal_cost.cycpp.h"
 
   #pragma cyclus var { \
     "doc": "Ordered list of commodities on which to request feed material to " \

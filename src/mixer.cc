@@ -57,8 +57,11 @@ void Mixer::EnterNotify() {
       streambufs[name].capacity(cap);
     }
     in_commods.push_back(streams_[i].second);
+  }
 
-    InitializePosition();
+  // Optional recipe per stream: size to match streams_, use "" where not set
+  if (in_stream_recipes.size() < streams_.size()) {
+    in_stream_recipes.resize(streams_.size(), "");
   }
 
   // ratio normalisation
@@ -91,9 +94,21 @@ void Mixer::EnterNotify() {
   }
 
   sell_policy.Init(this, &output, "output").Set(out_commod).Start();
+
+  // Register output recipe name at sim start so it exists before first mix.
+  // Placeholder composition is overwritten with the real blend when we push.
+  if (!out_recipe.empty()) {
+    cyclus::CompMap empty;
+    context()->AddRecipe(out_recipe, cyclus::Composition::CreateFromMass(empty));
+  }
+
+  InitializeMarginalCost();
+  InitializePosition();
 }
 
 void Mixer::Tick() {
+  using cyclus::toolkit::MatVec;
+
   if (output.quantity() < output.capacity()) {
     double tgt_qty = output.space();
 
@@ -118,9 +133,27 @@ void Mixer::Tick() {
           m->Absorb(m_);
         }
       }
+
+      if (!out_recipe.empty()) {
+        context()->AddRecipe(out_recipe, m->comp());
+      }
       output.Push(m);
     }
   }
+  // Calculate quantity-weighted average unit value of the output buffer
+  // NOTE: We can't just use m->UnitValue().
+  double total_cost = 0.0;
+  double total_qty = 0.0;
+  MatVec output_mats = output.PopN(output.count());
+  for (const auto& mat : output_mats) {
+    total_cost += mat->quantity() * mat->UnitValue();
+    total_qty += mat->quantity();
+  }
+  output.Push(output_mats);
+
+  double avg_unit_value = (total_qty > 0) ? (total_cost / total_qty) : 0.0;
+  sell_policy.set_cost_per_unit(variable_cost_per_unit);
+
   cyclus::toolkit::RecordTimeSeries<double>("supply"+out_commod, this, output.quantity());
 }
 
@@ -151,15 +184,27 @@ Mixer::GetMatlRequests() {
           new RequestPortfolio<cyclus::Material>());
 
       cyclus::Material::Ptr m;
-      m = cyclus::NewBlankMaterial(streambufs[name].space());
+      if (i < in_stream_recipes.size() && !in_stream_recipes[i].empty()) {
+        cyclus::Composition::Ptr rec = context()->GetRecipe(in_stream_recipes[i]);
+        m = cyclus::Material::CreateUntracked(streambufs[name].space(), rec);
+      } else {
+        m = cyclus::NewBlankMaterial(streambufs[name].space());
+      }
 
       std::vector<cyclus::Request<cyclus::Material>*> reqs;
 
-      std::map<std::string, double>::iterator it;
-      for (it = in_commods[i].begin() ; it != in_commods[i].end(); it++) {
-        std::string commod = it->first;
-        double pref = it->second;
-        reqs.push_back(port->AddRequest(m, this, commod , pref, false));
+      // in_commods[i] is map<commodity_name, pref>; extract vectors for CalcMarginalUtility
+      std::vector<std::string> commods;
+      std::vector<double> prefs;
+      for (const auto& kv : in_commods[i]) {
+        commods.push_back(kv.first);   // commodity name
+        prefs.push_back(kv.second);    // pref
+      }
+      auto mu_results = CalcMarginalUtility(commods, prefs);
+      std::vector<std::string> mu_commods = mu_results.first;
+      std::vector<double> mu_values = mu_results.second;
+      for (int i = 0; i < mu_commods.size(); i++) {
+        reqs.push_back(port->AddRequest(m, this, mu_commods[i], mu_values[i], false));
         req_inventories_[reqs.back()] = name;
       }
       port->AddMutualReqs(reqs);

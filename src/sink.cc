@@ -43,6 +43,8 @@ void Sink::EnterNotify() {
 
   inventory.keep_packaging(keep_packaging);
 
+  InitializeMarginalUtility(in_commods, in_commod_prefs);
+
   if (in_commod_prefs.size() == 0) {
     for (int i = 0; i < in_commods.size(); ++i) {
       in_commod_prefs.push_back(cyclus::kDefaultPref);
@@ -106,6 +108,11 @@ Sink::GetMatlRequests() {
   RequestPortfolio<Material>::Ptr port(new RequestPortfolio<Material>());
   Material::Ptr mat;
 
+  // Calculate Marginal Utility for each commodity using its preference
+  auto mu_results = CalcMarginalUtility(in_commods, in_commod_prefs);
+  std::vector<std::string> mu_commods = mu_results.first;
+  std::vector<double> mu_values = mu_results.second;
+
   /// for testing
   if (requestAmt > SpaceAvailable()) {
     SetRequestAmt();
@@ -121,7 +128,7 @@ Sink::GetMatlRequests() {
   if (requestAmt > cyclus::eps()) {  
     std::vector<Request<Material>*> mutuals;
     for (int i = 0; i < in_commods.size(); i++) {
-      mutuals.push_back(port->AddRequest(mat, this, in_commods[i], in_commod_prefs[i]));
+      mutuals.push_back(port->AddRequest(mat, this, mu_commods[i], mu_values[i]));
 
     }
     port->AddMutualReqs(mutuals);

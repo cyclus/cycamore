@@ -235,6 +235,7 @@ class Storage
   #include "toolkit/matl_buy_policy.cycpp.h"
   #include "toolkit/matl_sell_policy.cycpp.h"
   #include "toolkit/position.cycpp.h"
+  #include "toolkit/marginal_cost.cycpp.h"
 
 };
 

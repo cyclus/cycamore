@@ -484,10 +484,16 @@ TEST(ReactorTests, PrefChange) {
   sim.AddSource("enriched_u").Finalize();
   sim.AddRecipe("lwr_fresh", c_uox());
   sim.AddRecipe("lwr_spent", c_spentuox());
+  
   int id = sim.Run();
-
-  QueryResult qr = sim.db().Query("Transactions", NULL);
-  EXPECT_EQ(25, qr.rows.size()) << "failed to adjust preferences properly";
+  
+  // Negative preference values are now silently rejected (arcs removed from graph)
+  // After time 25 when preference becomes -1, no more transactions should occur
+  std::vector<Cond> conds;
+  conds.push_back(Cond("Commodity", "==", std::string("enriched_u")));
+  QueryResult qr = sim.db().Query("Transactions", &conds);
+  // Should have transactions up to time 25, then none after preference becomes -1
+  EXPECT_EQ(25, qr.rows.size()) << "failed to reject trades after negative preference set";
 }
 
 TEST(ReactorTests, RecipeChange) {

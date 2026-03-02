@@ -53,6 +53,7 @@ std::string Source::str() {
 void Source::EnterNotify() {
   cyclus::Facility::EnterNotify();
   InitializePosition();
+  InitializeMarginalCost();
 }
 
 void Source::Build(cyclus::Agent* parent) {
@@ -81,6 +82,8 @@ std::set<cyclus::BidPortfolio<cyclus::Material>::Ptr> Source::GetMatlBids(
   using cyclus::Request;
   using cyclus::TransportUnit;
 
+  // We pass through a material input cost of 0.0, since this is where it comes from
+  double cost = CalcMarginalCost(0.0);
   double max_qty = std::min(throughput, inventory.quantity());
   cyclus::toolkit::RecordTimeSeries<double>("supply"+outcommod, this,
                                             max_qty);
@@ -119,7 +122,7 @@ std::set<cyclus::BidPortfolio<cyclus::Material>::Ptr> Source::GetMatlBids(
       m = outrecipe.empty() ? \
           Material::CreateUntracked(*bit, target->comp()) : \
           Material::CreateUntracked(*bit, context()->GetRecipe(outrecipe));
-      port->AddBid(req, m, this);
+      port->AddBid(req, m, this, false, cost);
     }
   }
 

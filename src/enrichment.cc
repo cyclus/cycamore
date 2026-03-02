@@ -46,7 +46,8 @@ void Enrichment::Build(cyclus::Agent* parent) {
   Facility::Build(parent);
   if (initial_feed > 0) {
     inventory.Push(Material::Create(this, initial_feed,
-                                    context()->GetRecipe(feed_recipe)));
+                                    context()->GetRecipe(feed_recipe), 
+                                    cyclus::Package::unpackaged_name(), 0.0));
   }
 
   LOG(cyclus::LEV_DEBUG2, "EnrFac") << "Enrichment "
@@ -57,12 +58,16 @@ void Enrichment::Build(cyclus::Agent* parent) {
 void Enrichment::EnterNotify() {
   cyclus::Facility::EnterNotify();
   InitializePosition();
+  InitializeMarginalCost();
+  
+  // Need these to be vectorized because of the function signature...
+  feed_commod_vec.push_back(feed_commod);
+  feed_pref_vec.push_back(feed_commod_pref);
 }
 
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 void Enrichment::Tick() {
   current_swu_capacity = SwuCapacity();
-
 }
 
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -87,8 +92,14 @@ Enrichment::GetMatlRequests() {
   Material::Ptr mat = Request_();
   double amt = mat->quantity();
 
+  // Calculate Marginal Utility for the feed commodity using its preference
+  auto mu_results = CalcMarginalUtility(feed_commod_vec, feed_pref_vec);
+  std::vector<std::string> mu_commods = mu_results.first;
+  std::vector<double> mu_values = mu_results.second;
+
   if (amt > cyclus::eps_rsrc()) {
-    port->AddRequest(mat, this, feed_commod);
+    // Since there's only one feed commodity we just use the first element
+    port->AddRequest(mat, this, mu_commods[0], mu_values[0]);
     ports.insert(port);
   }
 
@@ -111,17 +122,18 @@ bool SortBids(cyclus::Bid<Material>* i,
 // Sort offers of input material to have higher preference for more
 //  U-235 content
 void Enrichment::AdjustMatlPrefs(
-    cyclus::PrefMap<Material>::type& prefs) {
+    cyclus::MCMap<Material>::type& mc_prefs,
+    cyclus::MUMap<Material>::type& mu_prefs) {
   using cyclus::Bid;
 
   if (order_prefs == false) {
     return;
   }
 
-  cyclus::PrefMap<Material>::type::iterator reqit;
+  cyclus::MUMap<Material>::type::iterator reqit;
 
-  // Loop over all requests
-  for (reqit = prefs.begin(); reqit != prefs.end(); ++reqit) {
+  // Loop over all requests - adjust MU (marginal utility) since we're the requester
+  for (reqit = mu_prefs.begin(); reqit != mu_prefs.end(); ++reqit) {
     std::vector<Bid<Material>*> bids_vector;
     std::map<Bid<Material>*, double>::iterator mit;
     for (mit = reqit->second.begin(); mit != reqit->second.end(); ++mit) {
@@ -137,7 +149,7 @@ void Enrichment::AdjustMatlPrefs(
     for (int bidit = 0; bidit < bids_vector.size(); bidit++) {
       int new_pref = bidit + 1;
 
-      // For any bids with U-235 qty=0, set pref to zero.
+      // For any bids with U-235 qty=0, set pref to -1 to reject the trade
       if (!u235_mass) {
         Material::Ptr mat = bids_vector[bidit]->offer();
         cyclus::toolkit::MatQuery mq(mat);
@@ -174,6 +186,10 @@ std::set<cyclus::BidPortfolio<Material>::Ptr> Enrichment::GetMatlBids(
   using cyclus::Request;
   using cyclus::toolkit::MatVec;
   using cyclus::toolkit::RecordTimeSeries;
+  using cyclus::toolkit::Assays;
+  using cyclus::toolkit::UraniumAssayMass;
+  using cyclus::toolkit::SwuRequired;
+  using cyclus::toolkit::FeedQty;
 
   std::set<BidPortfolio<Material>::Ptr> ports;
 
@@ -193,7 +209,9 @@ std::set<cyclus::BidPortfolio<Material>::Ptr> Enrichment::GetMatlBids(
       for (int k = 0; k < mats.size(); k++) {
         Material::Ptr m = mats[k];
         Request<Material>* req = *it;
-        tails_port->AddBid(req, m, this);
+
+        double tails_marginal_cost = CalcMarginalCost(m->UnitValue());
+        tails_port->AddBid(req, m, this, false, tails_marginal_cost);
       }
     }
     // overbidding (bidding on every offer)
@@ -215,12 +233,32 @@ std::set<cyclus::BidPortfolio<Material>::Ptr> Enrichment::GetMatlBids(
     for (it = commod_requests.begin(); it != commod_requests.end(); ++it) {
       Request<Material>* req = *it;
       Material::Ptr mat = req->target();
-      double request_enrich = cyclus::toolkit::UraniumAssayMass(mat);
+      double request_enrich = UraniumAssayMass(mat);
       if (ValidReq(req->target()) &&
           ((request_enrich < max_enrich) ||
            (cyclus::AlmostEq(request_enrich, max_enrich)))) {
         Material::Ptr offer = Offer_(req->target());
-        commod_port->AddBid(req, offer, this);
+
+        Assays assays(FeedAssay(), UraniumAssayMass(mat), tails_assay);
+        double swu_cost = GetEconParameter("variable_cost_per_unit");
+        double swu_req = SwuRequired(offer->quantity(), assays);
+        double input_material_qty = FeedQty(offer->quantity(), assays);
+
+        // Calculate average unit value of feed materials (quantity-weighted)
+        double total_cost = 0.0;
+        double total_qty = 0.0;
+        MatVec feed_materials = inventory.PopN(inventory.count());
+        for (const auto& mat : feed_materials) {
+          total_cost += mat->quantity() * mat->UnitValue();
+          total_qty += mat->quantity();
+        }
+        inventory.Push(feed_materials);
+        
+        double avg_unit_value = (total_qty > 0) ? (total_cost / total_qty) : 0.0;
+        double input_material_cost = input_material_qty * avg_unit_value;
+        double marginal_cost = (input_material_cost + swu_cost * swu_req) / offer->quantity();
+
+        commod_port->AddBid(req, offer, this, false, marginal_cost);
       }
     }
 
@@ -338,8 +376,7 @@ void Enrichment::AddMat_(Material::Ptr mat) {
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 Material::Ptr Enrichment::Request_() {
   double qty = std::max(0.0, inventory.capacity() - inventory.quantity());
-  return Material::CreateUntracked(qty,
-                                           context()->GetRecipe(feed_recipe));
+  return Material::CreateUntracked(qty, context()->GetRecipe(feed_recipe));
 }
 
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -

@@ -45,6 +45,9 @@ void Storage::InitFrom(cyclus::QueryableBackend* b) {
 
 //- - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 void Storage::EnterNotify() {
+  InitializeMarginalCost();
+  // TODO: need to add MU here later.
+  
   cyclus::Facility::EnterNotify();
 
   inventory_tracker.set_capacity(max_inv_size);
@@ -102,7 +105,7 @@ void Storage::EnterNotify() {
   std::string tu_name_ = context()->GetTransportUnit(transport_unit)->name();
   if (out_commods.size() == 1) {
     sell_policy.Init(this, &stocks, std::string("stocks"), cyclus::CY_LARGE_DOUBLE, false,
-                     sell_quantity, package_name_, tu_name_)
+                     sell_quantity, package_name_, tu_name_, variable_cost_per_unit)
       .Set(out_commods.front())
       .Start();
 

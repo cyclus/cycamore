@@ -138,6 +138,9 @@ FuelFab::FuelFab(cyclus::Context* ctx)
 
 void FuelFab::EnterNotify() {
   cyclus::Facility::EnterNotify();
+  InitializeMarginalCost();
+  // No benefit to initializing Marginal Utility because we have multiple lists
+  // of commodities and preferences that need to be stored separately.
 
   if (fiss_commod_prefs.empty()) {
     for (int i = 0; i < fiss_commods.size(); i++) {
@@ -181,10 +184,14 @@ std::set<cyclus::RequestPortfolio<Material>::Ptr> FuelFab::GetMatlRequests() {
     }
 
     std::vector<cyclus::Request<Material>*> reqs;
-    for (int i = 0; i < fiss_commods.size(); i++) {
-      std::string commod = fiss_commods[i];
-      double pref = fiss_commod_prefs[i];
-      reqs.push_back(port->AddRequest(m, this, commod, pref, exclusive));
+    auto mu_results_fiss = CalcMarginalUtility(fiss_commods, fiss_commod_prefs);
+
+    // We make new vectors here to ensure they're all in the right order.
+    std::vector<std::string> mu_fiss_commods = mu_results_fiss.first;
+    std::vector<double> mu_fiss_values = mu_results_fiss.second;
+    
+    for (int i = 0; i < mu_fiss_commods.size(); i++) {
+      reqs.push_back(port->AddRequest(m, this, mu_fiss_commods[i], mu_fiss_values[i], exclusive));
       req_inventories_[reqs.back()] = "fiss";
     }
     port->AddMutualReqs(reqs);
@@ -201,10 +208,14 @@ std::set<cyclus::RequestPortfolio<Material>::Ptr> FuelFab::GetMatlRequests() {
     }
 
     std::vector<cyclus::Request<Material>*> reqs;
-    for (int i = 0; i < fill_commods.size(); i++) {
-      std::string commod = fill_commods[i];
-      double pref = fill_commod_prefs[i];
-      reqs.push_back(port->AddRequest(m, this, commod, pref, exclusive));
+
+    // Same as above but now for the fill commodities
+    auto mu_results_fill = CalcMarginalUtility(fill_commods, fill_commod_prefs);
+    std::vector<std::string> mu_fill_commods = mu_results_fill.first;
+    std::vector<double> mu_fill_values = mu_results_fill.second;
+
+    for (int i = 0; i < mu_fill_commods.size(); i++) {
+      reqs.push_back(port->AddRequest(m, this, mu_fill_commods[i], mu_fill_values[i], exclusive));
       req_inventories_[reqs.back()] = "fill";
     }
     port->AddMutualReqs(reqs);
@@ -219,8 +230,17 @@ std::set<cyclus::RequestPortfolio<Material>::Ptr> FuelFab::GetMatlRequests() {
       Composition::Ptr c = context()->GetRecipe(topup_recipe);
       m = Material::CreateUntracked(topup.space(), c);
     }
+
+    // Unfortunately, these need to be vectorized because of the function
+    // signature...
+    std::vector<std::string> topup_commod_vec = {topup_commod};
+    std::vector<double> topup_pref_vec = {topup_pref};
+    auto mu_results_topup = CalcMarginalUtility(topup_commod_vec, topup_pref_vec);
+    std::vector<std::string> mu_topup_commods = mu_results_topup.first;
+    std::vector<double> mu_topup_values = mu_results_topup.second;
+
     cyclus::Request<Material>* r =
-        port->AddRequest(m, this, topup_commod, topup_pref, exclusive);
+        port->AddRequest(m, this, mu_topup_commods[0], mu_topup_values[0], exclusive);
     req_inventories_[r] = "topup";
     ports.insert(port);
   }
@@ -331,12 +351,26 @@ std::set<cyclus::BidPortfolio<Material>::Ptr> FuelFab::GetMatlBids(
       double fill_frac = 1 - fiss_frac;
       fiss_frac = AtomToMassFrac(fiss_frac, c_fiss, c_fill);
       fill_frac = AtomToMassFrac(fill_frac, c_fill, c_fiss);
-      Material::Ptr m1 = Material::CreateUntracked(fiss_frac * tgt_qty, c_fiss);
-      Material::Ptr m2 = Material::CreateUntracked(fill_frac * tgt_qty, c_fill);
+
+      // Since these are bulk buffers, the matl unit_values get averaged over
+      // all historical trades automatically.
+      double fiss_matl_cost = 0;
+      if (!fiss.empty()) {
+        fiss_matl_cost = fiss.Peek()->UnitValue();
+      }
+      double fill_matl_cost = 0;
+      if (!fill.empty()) {
+        fill_matl_cost = fill.Peek()->UnitValue();
+      }
+      
+      Material::Ptr m1 = Material::CreateUntracked(fiss_frac * tgt_qty, c_fiss, fiss_matl_cost);
+      Material::Ptr m2 = Material::CreateUntracked(fill_frac * tgt_qty, c_fill, fill_matl_cost);
       m1->Absorb(m2);
 
+      double marginal_cost = CalcMarginalCost(m1->UnitValue());
+
       bool exclusive = false;
-      port->AddBid(req, m1, this, exclusive);
+      port->AddBid(req, m1, this, exclusive, marginal_cost);
     } else if (topup.count() > 0 && ValidWeights(w_fiss, w_tgt, w_topup)) {
       // only bid with topup if we have filler - otherwise we might be able to
       // meet target with filler when we get it. we should only use topup
@@ -345,13 +379,27 @@ std::set<cyclus::BidPortfolio<Material>::Ptr> FuelFab::GetMatlBids(
       double fiss_frac = 1 - topup_frac;
       fiss_frac = AtomToMassFrac(fiss_frac, c_fiss, c_topup);
       topup_frac = AtomToMassFrac(topup_frac, c_topup, c_fiss);
+
+      // Since these are bulk buffers, the matl unit_values get averaged over
+      // all historical trades automatically.
+      double fiss_matl_cost = 0;
+      if (!fiss.empty()) {
+        fiss_matl_cost = fiss.Peek()->UnitValue();
+      }
+      double topup_matl_cost = 0;
+      if (!topup.empty()) {
+        topup_matl_cost = topup.Peek()->UnitValue();
+      }
+
       Material::Ptr m1 =
-          Material::CreateUntracked(topup_frac * tgt_qty, c_topup);
-      Material::Ptr m2 = Material::CreateUntracked(fiss_frac * tgt_qty, c_fiss);
+          Material::CreateUntracked(topup_frac * tgt_qty, c_topup, topup_matl_cost);
+      Material::Ptr m2 = Material::CreateUntracked(fiss_frac * tgt_qty, c_fiss, fiss_matl_cost);
       m1->Absorb(m2);
 
+      double marginal_cost = CalcMarginalCost(m1->UnitValue());
+
       bool exclusive = false;
-      port->AddBid(req, m1, this, exclusive);
+      port->AddBid(req, m1, this, exclusive, marginal_cost);
     } else if (fiss.count() > 0 && fill.count() > 0 ||
                fiss.count() > 0 && topup.count() > 0) {
       // else can't meet the target weight - don't bid.  Just a plain else

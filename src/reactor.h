@@ -4,6 +4,8 @@
 #include "cyclus.h"
 #include "cycamore_version.h"
 
+#pragma cyclus exec from cyclus.system import CY_LARGE_DOUBLE, CY_LARGE_INT, CY_NEAR_ZERO
+
 namespace cycamore {
 
 /// Reactor is a simple, general reactor based on static compositional
@@ -136,6 +138,8 @@ class Reactor : public cyclus::Facility,
  private:
   // Code Injection:
   #include "toolkit/position.cycpp.h"
+  #include "toolkit/marginal_cost.cycpp.h"
+  #include "toolkit/marginal_utility.cycpp.h"
 
   std::string fuel_incommod(cyclus::Material::Ptr m);
   std::string fuel_outcommod(cyclus::Material::Ptr m);
@@ -245,6 +249,16 @@ class Reactor : public cyclus::Facility,
     "uitype": ["oneormore", "incommodity"], \
   }
   std::vector<std::string> recipe_change_commods;
+
+  #pragma cyclus var { \
+    "default": [], \
+    "uilabel": "Preference for Changed Fresh/Spent Fuel Recipe", \
+    "doc": "The preference for each type of fresh fuel requested corresponding"\
+           " to each input commodity (same order).  If no preferences are " \
+           "specified, 1.0 is used for all fuel requests (default).", \
+    "uitype": ["oneormore", "range"], \
+  }
+  std::vector<double> recipe_change_prefs;
 
   #pragma cyclus var { \
     "default": [], \

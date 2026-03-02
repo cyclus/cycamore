@@ -83,6 +83,7 @@ class Source : public cyclus::Facility,
  private:
  // Code Injection:
  #include "toolkit/position.cycpp.h"
+ #include "toolkit/marginal_cost.cycpp.h"
 
   #pragma cyclus var { \
     "tooltip": "source output commodity", \

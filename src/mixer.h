@@ -76,11 +76,30 @@ class Mixer
   // state var.
   std::map<std::string, cyclus::toolkit::ResBuf<cyclus::Material> > streambufs;
 
+#pragma cyclus var { \
+    "default": [], \
+    "doc": "Optional recipe name for each input stream (same order as in_streams). " \
+           "If set, requests on that stream use this recipe so suppliers (e.g. Enrichment) " \
+           "can match. Empty string or omitted means no recipe (blank/dummy composition).", \
+    "uilabel": "Input Stream Recipes", \
+    "uitype": ["oneormore", "inrecipe"] \
+  }
+  std::vector<std::string> in_stream_recipes;
 
 #pragma cyclus var {                                                 \
   "doc" : "Commodity on which to offer/supply mixed fuel material.", \
   "uilabel" : "Output Commodity", "uitype" : "outcommodity", }
   std::string out_commod;
+
+#pragma cyclus var { \
+    "default": "", \
+    "doc": "Optional name to register the blended composition under. If set, " \
+           "the mixed material's composition is registered as this recipe name " \
+           "in the context (no transmutation); the blend is kept and just named.", \
+    "uilabel": "Output Recipe", \
+    "uitype": "outrecipe", \
+  }
+  std::string out_recipe;
 
 #pragma cyclus var { \
     "doc" : "Maximum amount of mixed material that can be stored." \
@@ -117,6 +136,8 @@ class Mixer
   private:
   // Code Injection:
   #include "toolkit/position.cycpp.h"
+  #include "toolkit/marginal_cost.cycpp.h"
+  #include "toolkit/marginal_utility.cycpp.h"
   
 };
 
