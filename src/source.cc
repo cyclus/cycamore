@@ -94,6 +94,18 @@ void Source::Build(cyclus::Agent* parent) {
 
 }
 
+void Source::CalculateThroughput() {
+  if (variable_throughput == "constant") {
+    return;
+  }
+
+  if (!throughput_function) {
+    throw ValueError("cycamore::Source - throughput function not initialized")
+  }
+
+  throughput = throughput_function->value(context()->time());
+}
+
 std::set<cyclus::BidPortfolio<cyclus::Material>::Ptr> Source::GetMatlBids(
     cyclus::CommodMap<cyclus::Material>::type& commod_requests) {
   using cyclus::BidPortfolio;
