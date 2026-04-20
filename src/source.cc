@@ -94,6 +94,10 @@ void Source::Build(cyclus::Agent* parent) {
 
 }
 
+void Source::Tick() {
+  CalculateThroughput();
+}
+
 void Source::CalculateThroughput() {
   if (variable_throughput == "constant") {
     return;
