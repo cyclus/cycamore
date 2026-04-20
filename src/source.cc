@@ -1,4 +1,5 @@
 #include "source.h"
+#include "toolkit/symbolic_functions.h"
 
 #include <sstream>
 #include <limits>
@@ -53,6 +54,27 @@ std::string Source::str() {
 void Source::EnterNotify() {
   cyclus::Facility::EnterNotify();
   InitializePosition();
+
+  if (variable_throughput == "constant") {
+    throughput_function.reset();
+    return
+  }
+
+  if (variable_throughput == "linear") {
+    if (throughput_params.size() != 2) {
+      throw ValueError("cycamore::Source - linear variable throughput requires 2 ordered parameters: slope and intercept");
+    }
+    throughput_function = SymFunction::Ptr(new LinearFunction(throughput_params));
+  }
+  else if (variable_throughput == "exponential") {
+    if (throughput_params.size() != 3) {
+      throw ValueError("cycamore::Source - exponential variable throughput requires 3 ordered parameters: constant, exponent, and intercept");
+    }
+    throughput = SymFunction::Ptr(new ExponentialFunction(throughput_params));
+  }
+  else {
+    throw ValueError("cycamore::Source - invalid variable throughput type");
+  }
 }
 
 void Source::Build(cyclus::Agent* parent) {
