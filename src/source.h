@@ -128,6 +128,28 @@ class Source : public cyclus::Facility,
   double throughput;
 
   #pragma cyclus var { \
+    "default": "constant", \
+    "tooltip": "variable throughput function", \
+    "doc": "Symbolic function used to calculate variable throughput." \
+           "If 'constant', throughput is fixed. Function options include" \
+           "'linear' and 'exponential'.", \
+    "uilabel": "Throughput Function Type", \
+    "uitype": "symbolicfunction", \
+  }
+  std::string variable_throughput;
+
+  #pragma cyclus var { \
+    "default": [], \
+    "tooltip": "variable thoughput function parameters", \
+    "doc": "Parameters for variable throughput symbolic function in order." \
+           "For 'linear', slope and intercept. For 'exponential', constant," \
+           "exponent, and intercept.", \
+    "uilabel": "Throughout Function Parameters", \
+    "uitype": "symbolicfunctionparams", \
+  }
+  std::vector<double> throughput_params;
+
+  #pragma cyclus var { \
     "default": "unpackaged", \
     "tooltip": "name of package to provide material in", \
     "doc": "Name of package that this source provides. Offers will only be" \
