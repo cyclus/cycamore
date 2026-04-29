@@ -57,23 +57,23 @@ void Source::EnterNotify() {
 
   if (variable_throughput == "constant") {
     throughput_function.reset();
-    return
+    return;
   }
 
   if (variable_throughput == "linear") {
     if (throughput_params.size() != 2) {
-      throw ValueError("cycamore::Source - linear variable throughput requires 2 ordered parameters: slope and intercept");
+      throw cyclus::ValueError("cycamore::Source - linear variable throughput requires 2 ordered parameters: slope and intercept");
     }
     throughput_function = SymFunction::Ptr(new LinearFunction(throughput_params));
   }
   else if (variable_throughput == "exponential") {
     if (throughput_params.size() != 3) {
-      throw ValueError("cycamore::Source - exponential variable throughput requires 3 ordered parameters: constant, exponent, and intercept");
+      throw cyclus::ValueError("cycamore::Source - exponential variable throughput requires 3 ordered parameters: constant, exponent, and intercept");
     }
     throughput = SymFunction::Ptr(new ExponentialFunction(throughput_params));
   }
   else {
-    throw ValueError("cycamore::Source - invalid variable throughput type");
+    throw cyclus::ValueError("cycamore::Source - invalid variable throughput type");
   }
 }
 
@@ -104,7 +104,7 @@ void Source::CalculateThroughput() {
   }
 
   if (!throughput_function) {
-    throw ValueError("cycamore::Source - throughput function not initialized")
+    throw cyclus::ValueError("cycamore::Source - throughput function not initialized");
   }
 
   throughput = throughput_function->value(context()->time());
