@@ -80,6 +80,8 @@ class Source : public cyclus::Facility,
     std::vector<std::pair<cyclus::Trade<cyclus::Material>,
     cyclus::Material::Ptr> >& responses);
 
+  virtual void CalculateThroughput();
+
  private:
  // Code Injection:
  #include "toolkit/position.cycpp.h"
