@@ -133,8 +133,6 @@ class Source : public cyclus::Facility,
     "doc": "Symbolic function used to calculate variable throughput." \
            "If 'constant', throughput is fixed. Function options include" \
            "'linear' and 'exponential'.", \
-    "uilabel": "Throughput Function Type", \
-    "uitype": "symbolicfunction", \
   }
   std::string variable_throughput;
 
