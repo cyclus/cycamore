@@ -149,7 +149,7 @@ class Source : public cyclus::Facility,
   }
   std::vector<double> throughput_params;
   
-  SymFunction::Ptr throughput_function;
+  cyclus::toolkit::SymFunction::Ptr throughput_function;
 
   #pragma cyclus var { \
     "default": "unpackaged", \

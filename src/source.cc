@@ -64,13 +64,13 @@ void Source::EnterNotify() {
     if (throughput_params.size() != 2) {
       throw cyclus::ValueError("cycamore::Source - linear variable throughput requires 2 ordered parameters: slope and intercept");
     }
-    throughput_function = SymFunction::Ptr(new LinearFunction(throughput_params));
+    throughput_function = cyclus::toolkit::SymFunction::Ptr(new cyclus::toolkit::LinearFunction(throughput_params[0],throughput_params[1]));
   }
   else if (variable_throughput == "exponential") {
     if (throughput_params.size() != 3) {
       throw cyclus::ValueError("cycamore::Source - exponential variable throughput requires 3 ordered parameters: constant, exponent, and intercept");
     }
-    throughput = SymFunction::Ptr(new ExponentialFunction(throughput_params));
+    throughput_function = cyclus::toolkit::SymFunction::Ptr(new cyclus::toolkit::ExponentialFunction(throughput_params[0],throughput_params[1],throughput_params[2]));
   }
   else {
     throw cyclus::ValueError("cycamore::Source - invalid variable throughput type");
