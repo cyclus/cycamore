@@ -152,6 +152,8 @@ class Source : public cyclus::Facility,
   
   cyclus::toolkit::SymFunction::Ptr throughput_function;
 
+  int throughput_time;
+
   #pragma cyclus var { \
     "default": "unpackaged", \
     "tooltip": "name of package to provide material in", \
