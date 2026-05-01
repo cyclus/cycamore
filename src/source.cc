@@ -1,5 +1,4 @@
 #include "source.h"
-#include "toolkit/symbolic_functions.h"
 
 #include <sstream>
 #include <limits>

@@ -85,6 +85,7 @@ class Source : public cyclus::Facility,
  private:
  // Code Injection:
  #include "toolkit/position.cycpp.h"
+ #include "toolkit/symbolic_functions.h"
 
   #pragma cyclus var { \
     "tooltip": "source output commodity", \
