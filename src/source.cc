@@ -19,10 +19,13 @@ Source::~Source() {}
 void Source::InitFrom(Source* m) {
   #pragma cyclus impl initfromcopy cycamore::Source
   cyclus::toolkit::CommodityProducer::Copy(m);
+
+  throughput_function.reset();
 }
 
 void Source::InitFrom(cyclus::QueryableBackend* b) {
   #pragma cyclus impl initfromdb cycamore::Source
+  throughput_function.reset();
   namespace tk = cyclus::toolkit;
   tk::CommodityProducer::Add(tk::Commodity(outcommod),
                              tk::CommodInfo(throughput, throughput));
@@ -54,8 +57,9 @@ void Source::EnterNotify() {
   cyclus::Facility::EnterNotify();
   InitializePosition();
 
+  throughput_function.reset();
+
   if (variable_throughput == "constant") {
-    throughput_function.reset();
     return;
   }
 
@@ -63,13 +67,13 @@ void Source::EnterNotify() {
     if (throughput_params.size() != 2) {
       throw cyclus::ValueError("cycamore::Source - linear variable throughput requires 2 ordered parameters: slope and intercept");
     }
-    throughput_function = cyclus::toolkit::SymFunction::Ptr(new cyclus::toolkit::LinearFunction(throughput_params[0],throughput_params[1]));
+    throughput_function.reset(new cyclus::toolkit::LinearFunction(throughput_params[0],throughput_params[1]));
   }
   else if (variable_throughput == "exponential") {
     if (throughput_params.size() != 3) {
       throw cyclus::ValueError("cycamore::Source - exponential variable throughput requires 3 ordered parameters: constant, exponent, and intercept");
     }
-    throughput_function = cyclus::toolkit::SymFunction::Ptr(new cyclus::toolkit::ExponentialFunction(throughput_params[0],throughput_params[1],throughput_params[2]));
+    throughput_function.reset(new cyclus::toolkit::ExponentialFunction(throughput_params[0],throughput_params[1],throughput_params[2]));
   }
   else {
     throw cyclus::ValueError("cycamore::Source - invalid variable throughput type");

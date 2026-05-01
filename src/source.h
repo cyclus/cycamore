@@ -6,6 +6,7 @@
 
 #include "cyclus.h"
 #include "cycamore_version.h"
+#include "toolkit/symbolic_functions.h"
 
 #pragma cyclus exec from cyclus.system import CY_LARGE_DOUBLE, CY_LARGE_INT, CY_NEAR_ZERO
 
@@ -85,7 +86,6 @@ class Source : public cyclus::Facility,
  private:
  // Code Injection:
  #include "toolkit/position.cycpp.h"
- #include "toolkit/symbolic_functions.h"
 
   #pragma cyclus var { \
     "tooltip": "source output commodity", \
