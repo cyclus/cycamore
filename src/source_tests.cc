@@ -28,6 +28,7 @@ void SourceTest::InitParameters() {
   package_name = "testpackage";
   tu_name = "testtu";
   capacity = 5;  // some magic number..
+  throughput_type = "constant";
 
   recipe = cyclus::Composition::CreateFromAtom(cyclus::CompMap());
   tc.get()->AddRecipe(recipe_name, recipe);
@@ -37,6 +38,7 @@ void SourceTest::SetUpSource() {
   outcommod(src_facility, commod);
   outrecipe(src_facility, recipe_name);
   throughput(src_facility, capacity);
+  variable_throughput(src_facility, throughput_type);
 }
 
 TEST_F(SourceTest, Clone) {
