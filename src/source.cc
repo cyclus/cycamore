@@ -60,10 +60,9 @@ void Source::EnterNotify() {
 
   throughput_function.reset();
 
-  if (variable_throughput == "constant") {
-    return;
+  if(variable_throughput != "constant" && variable_throughput != "linear" && variable_throughput != "exponential") {
+    throw cyclus::ValueError("cycamore::Source - invalid variable throughput type");
   }
-
   if (variable_throughput == "linear") {
     if (throughput_params.size() != 2) {
       throw cyclus::ValueError("cycamore::Source - linear variable throughput requires 2 ordered parameters: slope and intercept");
@@ -76,9 +75,7 @@ void Source::EnterNotify() {
     }
     throughput_function.reset(new cyclus::toolkit::ExponentialFunction(throughput_params[0],throughput_params[1],throughput_params[2]));
   }
-  else {
-    throw cyclus::ValueError("cycamore::Source - invalid variable throughput type");
-  }
+
 }
 
 void Source::Build(cyclus::Agent* parent) {
@@ -110,9 +107,11 @@ void Source::CalculateThroughput() {
   if (!throughput_function) {
     throw cyclus::ValueError("cycamore::Source - throughput function not initialized");
   }
-
-  throughput = throughput_function->value(throughput_time);
-  throughput_time += 1;
+  else if(throughput_function) {
+    throughput = throughput_function->value(throughput_time);
+    throughput_time += 1;
+  }
+  
 }
 
 std::set<cyclus::BidPortfolio<cyclus::Material>::Ptr> Source::GetMatlBids(
