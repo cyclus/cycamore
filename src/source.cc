@@ -60,10 +60,15 @@ void Source::EnterNotify() {
 
   throughput_function.reset();
 
-  if(variable_throughput != "constant" && variable_throughput != "linear" && variable_throughput != "exponential") {
+  if (variable_throughput != "constant" && variable_throughput != "linear" && variable_throughput != "exponential") {
     throw cyclus::ValueError("cycamore::Source - invalid variable throughput type");
   }
-  if (variable_throughput == "linear") {
+  if (variable_throughput == "constant") {
+    if (throughput_params.size() != 0) {
+      cyclus::Warn<cyclus::VALUE_WARNING>("Constant throughput requires no throughput_params. Source facility will not use specified throughput_params.");
+    }
+  }
+  else if (variable_throughput == "linear") {
     if (throughput_params.size() != 2) {
       throw cyclus::ValueError("cycamore::Source - linear variable throughput requires 2 ordered parameters: slope and intercept");
     }
