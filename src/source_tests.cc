@@ -278,7 +278,7 @@ TEST_F(SourceTest, InvalidThroughputTypeError) {
   EXPECT_THROW(sim.Run(), cyclus::ValueError);
 }
 
-TEST_F(SourceTest, ThroughtputParamsError) {
+TEST_F(SourceTest, ThroughputParamsError) {
   int simdur = 3;
 
   std::string config1 =

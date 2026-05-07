@@ -60,25 +60,36 @@ void Source::EnterNotify() {
 
   throughput_function.reset();
 
-  if (variable_throughput != "constant" && variable_throughput != "linear" && variable_throughput != "exponential") {
-    throw cyclus::ValueError("cycamore::Source - invalid variable throughput type");
+  if (variable_throughput != "constant" && 
+      variable_throughput != "linear" && 
+      variable_throughput != "exponential") {
+    throw cyclus::ValueError(
+      "cycamore::Source - invalid variable throughput type");
   }
   if (variable_throughput == "constant") {
     if (throughput_params.size() != 0) {
-      cyclus::Warn<cyclus::VALUE_WARNING>("Constant throughput requires no throughput_params. Source facility will not use specified throughput_params.");
+      cyclus::Warn<cyclus::VALUE_WARNING>(
+        "Constant throughput requires no throughput_params. "
+        "Source facility will not use specified throughput_params.");
     }
   }
   else if (variable_throughput == "linear") {
     if (throughput_params.size() != 2) {
-      throw cyclus::ValueError("cycamore::Source - linear variable throughput requires 2 ordered parameters: slope and intercept");
+      throw cyclus::ValueError(
+        "cycamore::Source - linear variable throughput requires 2 ordered "
+        "parameters: slope and intercept");
     }
-    throughput_function.reset(new cyclus::toolkit::LinearFunction(throughput_params[0],throughput_params[1]));
+    throughput_function.reset(new cyclus::toolkit::LinearFunction(
+      throughput_params[0], throughput_params[1]));
   }
   else if (variable_throughput == "exponential") {
     if (throughput_params.size() != 3) {
-      throw cyclus::ValueError("cycamore::Source - exponential variable throughput requires 3 ordered parameters: constant, exponent, and intercept");
+      throw cyclus::ValueError(
+        "cycamore::Source - exponential variable throughput requires 3 ordered "
+        "parameters: constant, exponent, and intercept");
     }
-    throughput_function.reset(new cyclus::toolkit::ExponentialFunction(throughput_params[0],throughput_params[1],throughput_params[2]));
+    throughput_function.reset(new cyclus::toolkit::ExponentialFunction(
+      throughput_params[0], throughput_params[1], throughput_params[2]));
   }
 
 }
@@ -110,9 +121,10 @@ void Source::CalculateThroughput() {
   }
 
   if (!throughput_function) {
-    throw cyclus::ValueError("cycamore::Source - throughput function not initialized");
+    throw cyclus::ValueError(
+      "cycamore::Source - throughput function not initialized");
   }
-  else if(throughput_function) {
+  else if (throughput_function) {
     throughput = throughput_function->value(throughput_time);
     throughput_time += 1;
   }
