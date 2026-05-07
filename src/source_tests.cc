@@ -227,6 +227,96 @@ TEST_F(SourceTest, TransportUnit) {
   QueryResult qr_allres = sim.db().Query("Resources", NULL);
 }
 
+TEST_F(SourceTest, VariableThroughput) {
+  int simdur = 3;
+
+  std::string config1 =
+    "<outcommod>commod</outcommod>"
+    "<outrecipe>recipe</outrecipe>"
+    "<throughput>10</throughput>";
+
+  cyclus::MockSim sim1(cyclus::AgentSpec (":cycamore:Source"), config1, simdur);
+  sim1.context()->AddRecipe(recipe_name, recipe);
+
+  EXPECT_NO_THROW(sim1.Run());
+
+  std::string config2 =
+    "<outcommod>commod</outcommod>"
+    "<outrecipe>recipe</outrecipe>"
+    "<variable_throughput>linear</variable_throughput>"
+    "<throughput_params> <val>1</val> <val>10</val> </throughput_params>"
+    ;
+
+  cyclus::MockSim sim2(cyclus::AgentSpec (":cycamore:Source"), config2, simdur);
+  sim2.context()->AddRecipe(recipe_name, recipe);
+
+  EXPECT_NO_THROW(sim2.Run());
+
+  std::string config3 =
+    "<outcommod>commod</outcommod>"
+    "<outrecipe>recipe</outrecipe>"
+    "<variable_throughput>exponential</variable_throughput>"
+    "<throughput_params> <val>1</val> <val>1</val> <val>10</val> </throughput_params>"
+    ;
+
+  cyclus::MockSim sim3(cyclus::AgentSpec (":cycamore:Source"), config3, simdur);
+  sim3.context()->AddRecipe(recipe_name, recipe);
+
+  EXPECT_NO_THROW(sim3.Run());
+}
+
+TEST_F(SourceTest, InvalidThroughputTypeError) {
+  std::string config =
+    "<outcommod>commod</outcommod>"
+    "<outrecipe>recipe</outrecipe>"
+    "<variable_throughput>invalid</variable_throughput>"
+    ;
+
+  int simdur = 3;
+  cyclus::MockSim sim(cyclus::AgentSpec (":cycamore:Source"), config, simdur);
+
+  EXPECT_THROW(sim.Run(), cyclus::ValueError);
+}
+
+TEST_F(SourceTest, ThroughtputParamsError) {
+  int simdur = 3;
+
+  std::string config1 =
+    "<outcommod>commod</outcommod>"
+    "<outrecipe>recipe</outrecipe>"
+    "<variable_throughput>constant</variable_throughput>"
+    "<throughput_params> <val>1</val> </throughput_params>"
+    ;
+
+  cyclus::MockSim sim1(cyclus::AgentSpec (":cycamore:Source"), config1, simdur);
+
+  cyclus::warn_as_error = true;
+  EXPECT_THROW(sim1.Run(), cyclus::ValueError);
+  cyclus::warn_as_error = false;
+
+  std::string config2 =
+    "<outcommod>commod</outcommod>"
+    "<outrecipe>recipe</outrecipe>"
+    "<variable_throughput>linear</variable_throughput>"
+    "<throughput_params> <val>1</val> </throughput_params>"
+    ;
+
+  cyclus::MockSim sim2(cyclus::AgentSpec (":cycamore:Source"), config2, simdur);
+
+  EXPECT_THROW(sim2.Run(), cyclus::ValueError);
+
+  std::string config3 =
+    "<outcommod>commod</outcommod>"
+    "<outrecipe>recipe</outrecipe>"
+    "<variable_throughput>exponential</variable_throughput>"
+    "<throughput_params> <val>1</val> </throughput_params>"
+    ;
+
+  cyclus::MockSim sim3(cyclus::AgentSpec (":cycamore:Source"), config3, simdur);
+
+  EXPECT_THROW(sim3.Run(), cyclus::ValueError);
+}
+
 boost::shared_ptr< cyclus::ExchangeContext<cyclus::Material> >
 SourceTest::GetContext(int nreqs, std::string commod) {
   using cyclus::Material;
