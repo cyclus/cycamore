@@ -6,6 +6,7 @@
 
 #include "cyclus.h"
 #include "cycamore_version.h"
+#include "toolkit/symbolic_functions.h"
 
 #pragma cyclus exec from cyclus.system import CY_LARGE_DOUBLE, CY_LARGE_INT, CY_NEAR_ZERO
 
@@ -59,7 +60,7 @@ class Source : public cyclus::Facility,
 
   virtual void InitFrom(cyclus::QueryableBackend* b);
 
-  virtual void Tick() {};
+  virtual void Tick();
 
   virtual void Tock() {};
 
@@ -79,6 +80,8 @@ class Source : public cyclus::Facility,
     const std::vector< cyclus::Trade<cyclus::Material> >& trades,
     std::vector<std::pair<cyclus::Trade<cyclus::Material>,
     cyclus::Material::Ptr> >& responses);
+
+  virtual void CalculateThroughput();
 
  private:
  // Code Injection:
@@ -126,6 +129,30 @@ class Source : public cyclus::Facility,
     "doc": "amount of commodity that can be supplied at each time step", \
   }
   double throughput;
+
+  #pragma cyclus var { \
+    "default": "constant", \
+    "tooltip": "variable throughput function", \
+    "doc": "Symbolic function used to calculate variable throughput." \
+           "If 'constant', throughput is fixed. Function options include" \
+           "'linear' and 'exponential'.", \
+  }
+  std::string variable_throughput;
+
+  #pragma cyclus var { \
+    "default": [], \
+    "tooltip": "variable thoughput function parameters", \
+    "doc": "Parameters for variable throughput symbolic function in order." \
+           "For 'linear', slope and intercept. For 'exponential', constant," \
+           "exponent, and intercept.", \
+    "uilabel": "Throughout Function Parameters", \
+    "uitype": "symbolicfunctionparams", \
+  }
+  std::vector<double> throughput_params;
+  
+  cyclus::toolkit::SymFunction::Ptr throughput_function;
+
+  int throughput_time;
 
   #pragma cyclus var { \
     "default": "unpackaged", \
