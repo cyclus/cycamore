@@ -10,11 +10,10 @@ namespace cycamore {
 /// @section introduction Introduction
 /// @section detailedBehavior Detailed Behavior
 /// @warning The ManagerInst is experimental
-class ManagerInst
-    : public cyclus::Institution,
-      public cyclus::toolkit::CommodityProducerManager,
-      public cyclus::toolkit::Builder,
-      public cyclus::toolkit::Position {
+class ManagerInst : public cyclus::Institution,
+                    public cyclus::toolkit::CommodityProducerManager,
+                    public cyclus::toolkit::Builder,
+                    public cyclus::toolkit::Position {
  public:
   /// Default constructor
   ManagerInst(cyclus::Context* ctx);
@@ -24,11 +23,14 @@ class ManagerInst
 
   virtual std::string version() { return CYCAMORE_VERSION; }
 
-  #pragma cyclus
+#pragma cyclus
 
-  #pragma cyclus note {"doc": "An institution that owns and operates a " \
-                              "manually entered list of facilities in " \
-                              "the input file"}
+  // clang-format off
+  #pragma cyclus note { \
+    "doc": "An institution that owns and operates a manually entered list " \
+           "of facilities in the input file", \
+  }
+  // clang-format on
 
   /// enter the simulation and register any children present
   virtual void EnterNotify();
@@ -41,27 +43,27 @@ class ManagerInst
 
   /// write information about a commodity producer to a stream
   /// @param producer the producer
-  void WriteProducerInformation(cyclus::toolkit::CommodityProducer*
-                                producer);
+  void WriteProducerInformation(cyclus::toolkit::CommodityProducer* producer);
 
-  private:
-  // Code Injection:
-  #include "toolkit/position.cycpp.h"
+ private:
+// Code Injection:
+#include "toolkit/position.cycpp.h"
 
   /// register a child
   void Register_(cyclus::Agent* agent);
 
   /// unregister a child
   void Unregister_(cyclus::Agent* agent);
- 
+
+  // clang-format off
   #pragma cyclus var { \
-    "tooltip": "producer facility prototypes",                          \
-    "uilabel": "Producer Prototype List",                               \
-    "uitype": ["oneormore", "prototype"],                                    \
+    "tooltip": "producer facility prototypes", \
+    "uilabel": "Producer Prototype List", \
+    "uitype": ["oneormore", "prototype"], \
     "doc": "A set of facility prototypes that this institution can build. " \
-    "All prototypes in this list must be based on an archetype that "   \
-    "implements the cyclus::toolkit::CommodityProducer interface",      \
-    }
+           "All prototypes in this list must be based on an archetype that " \
+           "implements the cyclus::toolkit::CommodityProducer interface" \
+  }
   std::vector<std::string> prototypes;
 
 };

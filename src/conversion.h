@@ -18,12 +18,11 @@ namespace cycamore {
 class Context;
 
 /// This facility acts as a simple conversion facility from its input commodity
-/// to its output commodity. It has a fixed throughput (per time step), and 
+/// to its output commodity. It has a fixed throughput (per time step), and
 /// converts without regard to the composition of the input material.
-class Conversion
-  : public cyclus::Facility,
-    public cyclus::toolkit::Position  {
+class Conversion : public cyclus::Facility, public cyclus::toolkit::Position {
   friend class ConversionTest;
+
  public:
   Conversion(cyclus::Context* ctx);
 
@@ -31,14 +30,14 @@ class Conversion
 
   virtual std::string version() { return CYCAMORE_VERSION; }
 
-  // clanag-format off
-  #pragma cyclus note { \
+// clang-format off
+#pragma cyclus note { \
     "doc": \
     " A conversion facility that accepts materials and products and with a \n"\
     " fixed throughput (per time step) converts them into its outcommod. " \
     }
 
-  #pragma cyclus decl
+#pragma cyclus decl
   // clang-format on
 
   virtual std::string str();
@@ -48,35 +47,32 @@ class Conversion
   virtual void Tick();
 
   virtual void Tock();
-  
+
   double AvailableFeedstockCapacity();
 
   void Convert();
 
-
   /// @brief Conversion Facilities request Materials of their given commodity.
   virtual std::set<cyclus::RequestPortfolio<cyclus::Material>::Ptr>
-      GetMatlRequests();
+  GetMatlRequests();
 
-  virtual std::set<cyclus::BidPortfolio<cyclus::Material>::Ptr>
-  GetMatlBids(cyclus::CommodMap<cyclus::Material>::type&
-      commod_requests);
+  virtual std::set<cyclus::BidPortfolio<cyclus::Material>::Ptr> GetMatlBids(
+      cyclus::CommodMap<cyclus::Material>::type& commod_requests);
 
   virtual void GetMatlTrades(
-      const std::vector< cyclus::Trade<cyclus::Material> >& trades,
+      const std::vector<cyclus::Trade<cyclus::Material>>& trades,
       std::vector<std::pair<cyclus::Trade<cyclus::Material>,
-      cyclus::Material::Ptr> >& responses);
+                            cyclus::Material::Ptr>>& responses);
 
-  /// @brief Conversion Facilities place accepted trade Materials in their Inventory
+  /// @brief Conversion Facilities place accepted trade Materials in their
+  /// Inventory
   virtual void AcceptMatlTrades(
-      const std::vector< std::pair<cyclus::Trade<cyclus::Material>,
-      cyclus::Material::Ptr> >& responses);
-
- 
+      const std::vector<std::pair<cyclus::Trade<cyclus::Material>,
+                                  cyclus::Material::Ptr>>& responses);
 
  private:
-  // Code Injection:
-  #include "toolkit/position.cycpp.h"
+// Code Injection:
+#include "toolkit/position.cycpp.h"
 
   // clang-format off
   /// all facilities must have at least one input commodity
@@ -126,10 +122,8 @@ class Conversion
   /// a buffer for outgoing material
   cyclus::toolkit::ResBuf<cyclus::Material> output;
   // clang-format on
-
 };
 
 }  // namespace cycamore
 
 #endif  // CYCAMORE_SRC_CONVERSION_H_
-

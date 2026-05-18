@@ -28,45 +28,44 @@ using cyclus::QueryResult;
 
 TEST_F(DeployInstTests, ProtoNames) {
   std::string config =
-     "<prototypes>  <val>foobar</val> </prototypes>"
-     "<build_times> <val>1</val>      </build_times>"
-     "<n_build>     <val>3</val>      </n_build>"
-     "<lifetimes>   <val>2</val>      </lifetimes>"
-     ;
+      "<prototypes>  <val>foobar</val> </prototypes>"
+      "<build_times> <val>1</val>      </build_times>"
+      "<n_build>     <val>3</val>      </n_build>"
+      "<lifetimes>   <val>2</val>      </lifetimes>";
 
   int simdur = 5;
-  cyclus::MockSim sim(cyclus::AgentSpec(":cycamore:DeployInst"), config, simdur);
+  cyclus::MockSim sim(cyclus::AgentSpec(":cycamore:DeployInst"), config,
+                      simdur);
   sim.DummyProto("foobar");
   int id = sim.Run();
 
   cyclus::SqlStatement::Ptr stmt = sim.db().db().Prepare(
-      "SELECT COUNT(*) FROM AgentEntry WHERE Prototype = 'foobar';"
-      );
+      "SELECT COUNT(*) FROM AgentEntry WHERE Prototype = 'foobar';");
   stmt->Step();
   EXPECT_EQ(3, stmt->GetInt(0));
 }
 
 TEST_F(DeployInstTests, BuildTimes) {
   std::string config =
-     "<prototypes>  <val>foobar</val> <val>foobar</val> </prototypes>"
-     "<build_times> <val>1</val>      <val>3</val>      </build_times>"
-     "<n_build>     <val>1</val>      <val>7</val>      </n_build>"
-     ;
+      "<prototypes>  <val>foobar</val> <val>foobar</val> </prototypes>"
+      "<build_times> <val>1</val>      <val>3</val>      </build_times>"
+      "<n_build>     <val>1</val>      <val>7</val>      </n_build>";
 
   int simdur = 5;
-  cyclus::MockSim sim(cyclus::AgentSpec(":cycamore:DeployInst"), config, simdur);
+  cyclus::MockSim sim(cyclus::AgentSpec(":cycamore:DeployInst"), config,
+                      simdur);
   sim.DummyProto("foobar");
   int id = sim.Run();
 
   cyclus::SqlStatement::Ptr stmt = sim.db().db().Prepare(
-      "SELECT COUNT(*) FROM AgentEntry WHERE Prototype = 'foobar' AND EnterTime = 1;"
-      );
+      "SELECT COUNT(*) FROM AgentEntry WHERE Prototype = 'foobar' AND "
+      "EnterTime = 1;");
   stmt->Step();
   EXPECT_EQ(1, stmt->GetInt(0));
 
   stmt = sim.db().db().Prepare(
-      "SELECT COUNT(*) FROM AgentEntry WHERE Prototype = 'foobar' AND EnterTime = 3;"
-      );
+      "SELECT COUNT(*) FROM AgentEntry WHERE Prototype = 'foobar' AND "
+      "EnterTime = 3;");
   stmt->Step();
   EXPECT_EQ(7, stmt->GetInt(0));
 }
@@ -75,154 +74,157 @@ TEST_F(DeployInstTests, BuildTimes) {
 // and in decommissioning.
 TEST_F(DeployInstTests, FiniteLifetimes) {
   std::string config =
-     "<prototypes>  <val>foobar</val> <val>foobar</val> <val>foobar</val> </prototypes>"
-     "<build_times> <val>1</val>      <val>1</val>      <val>2</val>      </build_times>"
-     "<n_build>     <val>1</val>      <val>7</val>      <val>3</val>      </n_build>"
-     "<lifetimes>   <val>1</val>      <val>2</val>      <val>-1</val>     </lifetimes>"
-     ;
+      "<prototypes>  <val>foobar</val> <val>foobar</val> <val>foobar</val> "
+      "</prototypes>"
+      "<build_times> <val>1</val>      <val>1</val>      <val>2</val>      "
+      "</build_times>"
+      "<n_build>     <val>1</val>      <val>7</val>      <val>3</val>      "
+      "</n_build>"
+      "<lifetimes>   <val>1</val>      <val>2</val>      <val>-1</val>     "
+      "</lifetimes>";
 
   int simdur = 5;
-  cyclus::MockSim sim(cyclus::AgentSpec(":cycamore:DeployInst"), config, simdur);
+  cyclus::MockSim sim(cyclus::AgentSpec(":cycamore:DeployInst"), config,
+                      simdur);
   sim.DummyProto("foobar");
   int id = sim.Run();
 
   // check agent deployment
   cyclus::SqlStatement::Ptr stmt = sim.db().db().Prepare(
-      "SELECT COUNT(*) FROM AgentEntry WHERE Prototype = 'foobar' AND EnterTime = 1 AND Lifetime = 1;"
-      );
+      "SELECT COUNT(*) FROM AgentEntry WHERE Prototype = 'foobar' AND "
+      "EnterTime = 1 AND Lifetime = 1;");
   stmt->Step();
   EXPECT_EQ(1, stmt->GetInt(0));
 
   stmt = sim.db().db().Prepare(
-      "SELECT COUNT(*) FROM AgentEntry WHERE Prototype = 'foobar' AND EnterTime = 1 AND Lifetime = 2;"
-      );
+      "SELECT COUNT(*) FROM AgentEntry WHERE Prototype = 'foobar' AND "
+      "EnterTime = 1 AND Lifetime = 2;");
   stmt->Step();
   EXPECT_EQ(7, stmt->GetInt(0));
 
   stmt = sim.db().db().Prepare(
-      "SELECT COUNT(*) FROM AgentEntry WHERE Prototype = 'foobar' AND EnterTime = 2 AND Lifetime = -1;"
-      );
+      "SELECT COUNT(*) FROM AgentEntry WHERE Prototype = 'foobar' AND "
+      "EnterTime = 2 AND Lifetime = -1;");
   stmt->Step();
   EXPECT_EQ(3, stmt->GetInt(0));
 
   // check decommissioning
   stmt = sim.db().db().Prepare(
-      "SELECT COUNT(*) FROM AgentEntry As e JOIN AgentExit AS x ON x.AgentId = e.AgentId WHERE e.Prototype = 'foobar' AND x.ExitTime = 1;"
-      );
+      "SELECT COUNT(*) FROM AgentEntry As e JOIN AgentExit AS x ON x.AgentId = "
+      "e.AgentId WHERE e.Prototype = 'foobar' AND x.ExitTime = 1;");
   stmt->Step();
   EXPECT_EQ(1, stmt->GetInt(0));
 
   stmt = sim.db().db().Prepare(
-      "SELECT COUNT(*) FROM AgentEntry As e JOIN AgentExit AS x ON x.AgentId = e.AgentId WHERE e.Prototype = 'foobar' AND x.ExitTime = 2;"
-      );
+      "SELECT COUNT(*) FROM AgentEntry As e JOIN AgentExit AS x ON x.AgentId = "
+      "e.AgentId WHERE e.Prototype = 'foobar' AND x.ExitTime = 2;");
   stmt->Step();
   EXPECT_EQ(7, stmt->GetInt(0));
 
   // agent with -1 lifetime should not be in AgentExit table
-  stmt = sim.db().db().Prepare(
-      "SELECT COUNT(*) FROM AgentExit;"
-      );
+  stmt = sim.db().db().Prepare("SELECT COUNT(*) FROM AgentExit;");
   stmt->Step();
   EXPECT_EQ(8, stmt->GetInt(0));
 }
 
 TEST_F(DeployInstTests, NoDupProtos) {
   std::string config =
-     "<prototypes>  <val>foobar</val> <val>foobar</val> <val>foobar</val> </prototypes>"
-     "<build_times> <val>1</val>      <val>1</val>      <val>2</val>      </build_times>"
-     "<n_build>     <val>1</val>      <val>7</val>      <val>3</val>      </n_build>"
-     "<lifetimes>   <val>1</val>      <val>1</val>      <val>-1</val>     </lifetimes>"
-     ;
+      "<prototypes>  <val>foobar</val> <val>foobar</val> <val>foobar</val> "
+      "</prototypes>"
+      "<build_times> <val>1</val>      <val>1</val>      <val>2</val>      "
+      "</build_times>"
+      "<n_build>     <val>1</val>      <val>7</val>      <val>3</val>      "
+      "</n_build>"
+      "<lifetimes>   <val>1</val>      <val>1</val>      <val>-1</val>     "
+      "</lifetimes>";
 
   int simdur = 5;
-  cyclus::MockSim sim(cyclus::AgentSpec(":cycamore:DeployInst"), config, simdur);
+  cyclus::MockSim sim(cyclus::AgentSpec(":cycamore:DeployInst"), config,
+                      simdur);
   sim.DummyProto("foobar");
   int id = sim.Run();
 
   // don't duplicate same prototypes with same custom lifetime
   cyclus::SqlStatement::Ptr stmt = sim.db().db().Prepare(
-      "SELECT COUNT(*) FROM Prototypes WHERE Prototype = 'foobar_life_1';"
-      );
+      "SELECT COUNT(*) FROM Prototypes WHERE Prototype = 'foobar_life_1';");
   stmt->Step();
   EXPECT_EQ(1, stmt->GetInt(0));
 
   // don't duplicate custom lifetimes that are identical to original prototype
   // lifetime.
   stmt = sim.db().db().Prepare(
-      "SELECT COUNT(*) FROM Prototypes WHERE Prototype = 'foobar';"
-      );
+      "SELECT COUNT(*) FROM Prototypes WHERE Prototype = 'foobar';");
   stmt->Step();
   EXPECT_EQ(1, stmt->GetInt(0));
 }
 
 TEST_F(DeployInstTests, DeployYear) {
   std::string config =
-     "<prototypes>  <val>foobar</val> </prototypes>"
-     "<build_times> <val>2</val>      </build_times>"
-     "<n_build>     <val>3</val>      </n_build>"
-     "<deployyear>     2012           </deployyear>"
-     ;
+      "<prototypes>  <val>foobar</val> </prototypes>"
+      "<build_times> <val>2</val>      </build_times>"
+      "<n_build>     <val>3</val>      </n_build>"
+      "<deployyear>     2012           </deployyear>";
 
   int simdur = 30;
-  //MockSim starts in 2010 by default
-  cyclus::MockSim sim(cyclus::AgentSpec(":cycamore:DeployInst"), config, simdur);
+  // MockSim starts in 2010 by default
+  cyclus::MockSim sim(cyclus::AgentSpec(":cycamore:DeployInst"), config,
+                      simdur);
   sim.DummyProto("foobar");
   int id = sim.Run();
-  // 2 years and 2 months after MockSim start is 25 time steps 
+  // 2 years and 2 months after MockSim start is 25 time steps
   cyclus::SqlStatement::Ptr stmt = sim.db().db().Prepare(
-      "SELECT COUNT(*) FROM AgentEntry WHERE Prototype = 'foobar' AND EnterTime = '25';"
-      );
+      "SELECT COUNT(*) FROM AgentEntry WHERE Prototype = 'foobar' AND "
+      "EnterTime = '25';");
   stmt->Step();
-  EXPECT_EQ(3, stmt->GetInt(0)); 
+  EXPECT_EQ(3, stmt->GetInt(0));
 }
 
 TEST_F(DeployInstTests, DeployYearEarlyError) {
   std::string config =
-     "<prototypes>  <val>foobar</val> </prototypes>"
-     "<build_times> <val>2</val>      </build_times>"
-     "<n_build>     <val>3</val>      </n_build>"
-     "<deployyear>    2000            </deployyear>"
-     ;
+      "<prototypes>  <val>foobar</val> </prototypes>"
+      "<build_times> <val>2</val>      </build_times>"
+      "<n_build>     <val>3</val>      </n_build>"
+      "<deployyear>    2000            </deployyear>";
 
   int simdur = 5;
-  cyclus::MockSim sim(cyclus::AgentSpec(":cycamore:DeployInst"), config, simdur);
+  cyclus::MockSim sim(cyclus::AgentSpec(":cycamore:DeployInst"), config,
+                      simdur);
 
-  EXPECT_THROW(sim.Run(),cyclus::ValueError); 
+  EXPECT_THROW(sim.Run(), cyclus::ValueError);
 }
 
 TEST_F(DeployInstTests, DeployYearLateWarn) {
   std::string config =
-     "<prototypes>  <val>foobar</val> </prototypes>"
-     "<build_times> <val>2</val>      </build_times>"
-     "<n_build>     <val>3</val>      </n_build>"
-     "<deployyear>    2030          </deployyear>"
-     ;
+      "<prototypes>  <val>foobar</val> </prototypes>"
+      "<build_times> <val>2</val>      </build_times>"
+      "<n_build>     <val>3</val>      </n_build>"
+      "<deployyear>    2030          </deployyear>";
 
   int simdur = 5;
-  cyclus::MockSim sim(cyclus::AgentSpec(":cycamore:DeployInst"), config, simdur);
+  cyclus::MockSim sim(cyclus::AgentSpec(":cycamore:DeployInst"), config,
+                      simdur);
 
   cyclus::warn_as_error = true;
-  EXPECT_THROW(sim.Run(),
-               cyclus::ValueError);
+  EXPECT_THROW(sim.Run(), cyclus::ValueError);
   cyclus::warn_as_error = false;
 
   int id = sim.Run();
   cyclus::SqlStatement::Ptr stmt = sim.db().db().Prepare(
-      "SELECT COUNT(*) FROM AgentEntry WHERE Prototype = 'foobar';"
-      );
+      "SELECT COUNT(*) FROM AgentEntry WHERE Prototype = 'foobar';");
   stmt->Step();
   EXPECT_EQ(0, stmt->GetInt(0));
 }
 
 TEST_F(DeployInstTests, PositionInitialize) {
   std::string config =
-     "<prototypes>  <val>foobar</val> </prototypes>"
-     "<build_times> <val>1</val>      </build_times>"
-     "<n_build>     <val>3</val>      </n_build>"
-     "<lifetimes>   <val>2</val>      </lifetimes>";
+      "<prototypes>  <val>foobar</val> </prototypes>"
+      "<build_times> <val>1</val>      </build_times>"
+      "<n_build>     <val>3</val>      </n_build>"
+      "<lifetimes>   <val>2</val>      </lifetimes>";
 
   int simdur = 5;
-  cyclus::MockSim sim(cyclus::AgentSpec(":cycamore:DeployInst"), config, simdur);
+  cyclus::MockSim sim(cyclus::AgentSpec(":cycamore:DeployInst"), config,
+                      simdur);
   sim.DummyProto("foobar");
   int id = sim.Run();
 
@@ -233,15 +235,16 @@ TEST_F(DeployInstTests, PositionInitialize) {
 
 TEST_F(DeployInstTests, PositionInitialize2) {
   std::string config =
-     "<prototypes>  <val>foobar</val> </prototypes>"
-     "<longitude>   -20.0             </longitude>"
-     "<latitude>    2.0               </latitude>"
-     "<build_times> <val>1</val>      </build_times>"
-     "<n_build>     <val>3</val>      </n_build>"
-     "<lifetimes>   <val>2</val>      </lifetimes>";
+      "<prototypes>  <val>foobar</val> </prototypes>"
+      "<longitude>   -20.0             </longitude>"
+      "<latitude>    2.0               </latitude>"
+      "<build_times> <val>1</val>      </build_times>"
+      "<n_build>     <val>3</val>      </n_build>"
+      "<lifetimes>   <val>2</val>      </lifetimes>";
 
   int simdur = 5;
-  cyclus::MockSim sim(cyclus::AgentSpec(":cycamore:DeployInst"), config, simdur);
+  cyclus::MockSim sim(cyclus::AgentSpec(":cycamore:DeployInst"), config,
+                      simdur);
   sim.DummyProto("foobar");
   int id = sim.Run();
 
@@ -254,10 +257,10 @@ TEST_F(DeployInstTests, producerexists) {
   using std::set;
   ctx_->AddPrototype("foop", producer);
   set<cyclus::toolkit::CommodityProducer*>::iterator it;
-  for (it = src_inst->cyclus::toolkit::CommodityProducerManager::
-          producers().begin();
-       it != src_inst->cyclus::toolkit::CommodityProducerManager::
-          producers().end();
+  for (it = src_inst->cyclus::toolkit::CommodityProducerManager::producers()
+                .begin();
+       it !=
+       src_inst->cyclus::toolkit::CommodityProducerManager::producers().end();
        it++) {
     EXPECT_EQ(dynamic_cast<TestProducer*>(*it)->prototype(),
               producer->prototype());
@@ -284,6 +287,6 @@ static int cyclus_agent_tests_connected = ConnectAgentTests();
 #endif  // CYCLUS_AGENT_TESTS_CONNECTED
 
 INSTANTIATE_TEST_SUITE_P(DeployInst, InstitutionTests,
-                        Values(&DeployInstitutionConstructor));
+                         Values(&DeployInstitutionConstructor));
 INSTANTIATE_TEST_SUITE_P(DeployInst, AgentTests,
-                        Values(&DeployInstitutionConstructor));
+                         Values(&DeployInstitutionConstructor));

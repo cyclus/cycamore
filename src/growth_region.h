@@ -19,8 +19,7 @@ class GrowthRegion;
 namespace cycamore {
 
 /// A container of (time, (demand type, demand parameters))
-typedef std::vector<
-  std::pair<int, std::pair<std::string, std::string> > > Demand;
+typedef std::vector<std::pair<int, std::pair<std::string, std::string>>> Demand;
 
 /// This region determines if there is a need to meet a certain
 /// capacity (as defined via input) at each time step. If there is
@@ -31,13 +30,13 @@ typedef std::vector<
 /// @TODO In order to make GrowthRegion copacetic with init/restart, its input
 /// parameter space was simplified. For now it can only provide growth support
 /// for a single demanded commodity. A relatively simple next step will be to
-/// determin an input API and corresponding implementation that again supports
+/// determine an input API and corresponding implementation that again supports
 /// multiple commodities being demanded.
 ///
 /// @warning The growth region is experimental
-class GrowthRegion : public cyclus::Region,
-  public cyclus::toolkit::Position {
+class GrowthRegion : public cyclus::Region, public cyclus::toolkit::Position {
   friend class GrowthRegionTests;
+
  public:
   /// The default constructor for the GrowthRegion
   GrowthRegion(cyclus::Context* ctx);
@@ -47,16 +46,20 @@ class GrowthRegion : public cyclus::Region,
 
   virtual std::string version() { return CYCAMORE_VERSION; }
 
-  #pragma cyclus
+#pragma cyclus
 
-  #pragma cyclus note {"doc": "A region that governs a scenario in which " \
-                              "there is growth in demand for a commodity. "}
+  // clang-format off
+  #pragma cyclus note { \
+    "doc": \
+      "A region that governs a scenario in which there is growth in demand " \
+      "for a commodity.", \
+  }
+  // clang-format on
 
   /// On each tick, the GrowthRegion queries its supply demand manager
   /// to determine if there exists some demand. If demand for a
   /// commodity exists, then the correct build order for that demand
   /// is constructed and executed.
-  /// @param time is the time to perform the tick
   virtual void Tick();
 
   /// enter the simulation and register any children present
@@ -70,13 +73,14 @@ class GrowthRegion : public cyclus::Region,
   }
 
  protected:
+  // clang-format off
   #pragma cyclus var { \
     "alias": ["growth", "commod", \
-              ["piecewise_function",                                    \
-               ["piece", "start", ["function", "type", "params"]]]],    \
+              ["piecewise_function", \
+               ["piece", "start", ["function", "type", "params"]]]], \
     "uitype": ["oneormore", "string", \
                ["oneormore", \
-                ["pair", "int", ["pair", "string", "string"]]]],      \
+                ["pair", "int", ["pair", "string", "string"]]]], \
     "uilabel": "Growth Demand Curves", \
     "doc": "Nameplate capacity demand functions." \
     "\n\n"                                       \
@@ -102,7 +106,8 @@ class GrowthRegion : public cyclus::Region,
     "  * The parameters associated with each function type can be found on their " \
     "respective documentation pages.",                                  \
   }
-  std::map<std::string, std::vector<std::pair<int, std::pair<std::string, std::string> > > > commodity_demand; // must match Demand typedef
+  std::map<std::string, std::vector<std::pair<int, std::pair<std::string, std::string> > > > commodity_demand;  // must match Demand typedef
+  // clang-format on
 
 #if CYCLUS_HAS_COIN
   /// manager for building things
@@ -118,7 +123,7 @@ class GrowthRegion : public cyclus::Region,
   /// unregister a child
   void Unregister_(cyclus::Agent* agent);
 
-  /// add a demand for a commodity on which this region request that
+  /// add a demand for a commodity on which this region requests that
   /// facilities be built
   void AddCommodityDemand_(std::string commod, Demand& demand);
 
@@ -128,11 +133,11 @@ class GrowthRegion : public cyclus::Region,
   /// @param unmetdemand the unmet demand
   void OrderBuilds(cyclus::toolkit::Commodity& commodity, double unmetdemand);
 
-  private:
-  // Code Injection:
-  #include "toolkit/position.cycpp.h"
-
+ private:
+// Code Injection:
+#include "toolkit/position.cycpp.h"
 };
+
 }  // namespace cycamore
 
 #endif  // CYCAMORE_SRC_GROWTH_REGION_H_

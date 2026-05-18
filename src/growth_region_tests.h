@@ -14,7 +14,6 @@
 #include "region_tests.h"
 #include "agent_tests.h"
 
-
 namespace cycamore {
 
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -

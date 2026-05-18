@@ -33,10 +33,10 @@ TEST_F(ManagerInstTests, producerexists) {
   using std::set;
   ctx_->AddPrototype("foop", producer);
   set<cyclus::toolkit::CommodityProducer*>::iterator it;
-  for (it = src_inst->cyclus::toolkit::CommodityProducerManager::
-          producers().begin();
-       it != src_inst->cyclus::toolkit::CommodityProducerManager::
-          producers().end();
+  for (it = src_inst->cyclus::toolkit::CommodityProducerManager::producers()
+                .begin();
+       it !=
+       src_inst->cyclus::toolkit::CommodityProducerManager::producers().end();
        it++) {
     EXPECT_EQ(dynamic_cast<TestProducer*>(*it)->prototype(),
               producer->prototype());
@@ -61,6 +61,6 @@ static int cyclus_agent_tests_connected = ConnectAgentTests();
 
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 INSTANTIATE_TEST_SUITE_P(ManagerInst, InstitutionTests,
-                        Values(&ManagerInstitutionConstructor));
+                         Values(&ManagerInstitutionConstructor));
 INSTANTIATE_TEST_SUITE_P(ManagerInst, AgentTests,
-                        Values(&ManagerInstitutionConstructor));
+                         Values(&ManagerInstitutionConstructor));

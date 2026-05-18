@@ -6,26 +6,24 @@
 
 #include "conversion.h"
 
-using cyclus::RequestPortfolio;
 using cyclus::BidPortfolio;
-using cyclus::CommodMap;
-using cyclus::Request;
-using cyclus::Trade;
-using cyclus::Material;
 using cyclus::CapacityConstraint;
-using cyclus::toolkit::ResBuf;
+using cyclus::CommodMap;
+using cyclus::Material;
+using cyclus::Request;
+using cyclus::RequestPortfolio;
+using cyclus::Trade;
 using cyclus::toolkit::RecordTimeSeries;
+using cyclus::toolkit::ResBuf;
 
 namespace cycamore {
 
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-Conversion::Conversion(cyclus::Context* ctx)
-    : cyclus::Facility(ctx) {
-
-      // Make our Resource Buffers bulk buffers
-      input = ResBuf<Material>(true);
-      output = ResBuf<Material>(true);
-    }
+Conversion::Conversion(cyclus::Context* ctx) : cyclus::Facility(ctx) {
+  // Make our Resource Buffers bulk buffers
+  input = ResBuf<Material>(true);
+  output = ResBuf<Material>(true);
+}
 
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 Conversion::~Conversion() {}
@@ -105,11 +103,11 @@ std::set<RequestPortfolio<Material>::Ptr> Conversion::GetMatlRequests() {
 
   // Create material request with no recipe
   Material::Ptr mat = cyclus::NewBlankMaterial(available_capacity);
- 
 
   // Add request for all commodities using default preference
   for (std::vector<std::string>::iterator it = incommods.begin();
-       it != incommods.end(); ++it) {
+       it != incommods.end();
+       ++it) {
     Request<Material>* req = port->AddRequest(mat, this, *it);
   }
 
@@ -123,7 +121,7 @@ std::set<RequestPortfolio<Material>::Ptr> Conversion::GetMatlRequests() {
 
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 std::set<BidPortfolio<Material>::Ptr> Conversion::GetMatlBids(
-  CommodMap<Material>::type& commod_requests) {
+    CommodMap<Material>::type& commod_requests) {
   std::set<BidPortfolio<Material>::Ptr> ports;
 
   // Check if we have material to offer
@@ -135,14 +133,15 @@ std::set<BidPortfolio<Material>::Ptr> Conversion::GetMatlBids(
   // Respond to requests for our commodity
   std::vector<Request<Material>*>& requests = commod_requests[outcommod];
   for (std::vector<Request<Material>*>::iterator it = requests.begin();
-      it != requests.end(); ++it) {
-
+       it != requests.end();
+       ++it) {
     double available = output.quantity();
     double requested = (*it)->target()->quantity();
     double offer_qty = std::min(available, requested);
 
     if (offer_qty > 0) {
-      Material::Ptr offer = Material::CreateUntracked(offer_qty, output.Peek()->comp());
+      Material::Ptr offer =
+          Material::CreateUntracked(offer_qty, output.Peek()->comp());
       port->AddBid(*it, offer, this);  // Note: *it, not **it
     }
   }
@@ -157,26 +156,23 @@ std::set<BidPortfolio<Material>::Ptr> Conversion::GetMatlBids(
 
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 void Conversion::AcceptMatlTrades(
-  const std::vector<std::pair<Trade<Material>, Material::Ptr>>& responses) {
-
-  for (std::vector<std::pair<Trade<Material>, Material::Ptr>>::const_iterator it =
-      responses.begin(); it != responses.end(); ++it) {
-
-
+    const std::vector<std::pair<Trade<Material>, Material::Ptr>>& responses) {
+  for (std::vector<std::pair<Trade<Material>, Material::Ptr>>::const_iterator
+           it = responses.begin();
+       it != responses.end();
+       ++it) {
     // Add material to the input buffer
     input.Push(it->second);
-    
   }
 }
 
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 void Conversion::GetMatlTrades(
-  const std::vector<Trade<Material>>& trades,
-  std::vector<std::pair<Trade<Material>, Material::Ptr>>& responses) {
-
+    const std::vector<Trade<Material>>& trades,
+    std::vector<std::pair<Trade<Material>, Material::Ptr>>& responses) {
   for (std::vector<Trade<Material>>::const_iterator it = trades.begin();
-      it != trades.end(); ++it) {
-
+       it != trades.end();
+       ++it) {
     Material::Ptr response = output.Pop(it->amt);
 
     responses.push_back(std::make_pair(*it, response));
@@ -189,4 +185,3 @@ extern "C" cyclus::Agent* ConstructConversion(cyclus::Context* ctx) {
 }
 
 }  // namespace cycamore
-

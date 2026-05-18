@@ -6,6 +6,7 @@ Since last release
 ======================
 
 **Added:**
+* Added clang-format protection to all .h files with #pragma blocks in /src (#644)
 * Added tests for Conversion Facility (#658)
 * Added Conversion Facility (#657)
 * Replaced manual matl_buy/sell_policy code in storage with code injection (#639)
@@ -17,6 +18,7 @@ Since last release
 * Added new variable to Deploy Institution to shift the deployment times (#677)
 
 **Changed:**
+* Ran clang-format on /src (#644)
 * Cleaned up manual definitions of Position in favor of code injection (#641)
 * Rely on ``python3`` in environment instead of ``python`` (#602)
 * Link against ``libxml++`` imported target in CMake instead of ``LIBXMLXX_LIBRARIES`` (#608)

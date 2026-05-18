@@ -10,7 +10,7 @@
 
 namespace cycamore {
 
-typedef std::map<int, std::vector<std::string> > BuildSched;
+typedef std::map<int, std::vector<std::string>> BuildSched;
 
 // Builds and manages agents (facilities) according to a manually specified
 // deployment schedule. Deployed agents are automatically decommissioned at
@@ -19,22 +19,23 @@ typedef std::map<int, std::vector<std::string> > BuildSched;
 // lifetimes.  The same prototype can be specified multiple times with any
 // combination of the same or different build times, build number, and
 // lifetimes.
-class DeployInst : 
-  public cyclus::Institution, 
-  public cyclus::toolkit::CommodityProducerManager,
-  public cyclus::toolkit::Position {
+class DeployInst : public cyclus::Institution,
+                   public cyclus::toolkit::CommodityProducerManager,
+                   public cyclus::toolkit::Position {
+  // clang-format off
   #pragma cyclus note { \
     "doc": \
-      "Builds and manages agents (facilities) according to a manually" \
-      " specified deployment schedule. Deployed agents are automatically" \
-      " decommissioned at the end of their lifetime.  Deployed and" \
-      " decommissioned agents are registered and unregistered with a" \
-      " region. The user specifies a list of prototypes for" \
-      " each and corresponding build times, number to build, and (optionally)" \
-      " lifetimes.  The same prototype can be specified multiple times with" \
-      " any combination of the same or different build times, build number," \
-      " and lifetimes. " \
+      "Builds and manages agents (facilities) according to a manually " \
+      "specified deployment schedule. Deployed agents are automatically " \
+      "decommissioned at the end of their lifetime. Deployed and " \
+      "decommissioned agents are registered and unregistered with a " \
+      "region. The user specifies a list of prototypes for each and " \
+      "corresponding build times, number to build, and (optionally) " \
+      "lifetimes. The same prototype can be specified multiple times " \
+      "with any combination of build times, numbers, and lifetimes.", \
   }
+  // clang-format on
+
  public:
   DeployInst(cyclus::Context* ctx);
 
@@ -42,7 +43,7 @@ class DeployInst :
 
   virtual std::string version() { return CYCAMORE_VERSION; }
 
-  #pragma cyclus
+#pragma cyclus
 
   virtual void Build(cyclus::Agent* parent);
 
@@ -52,35 +53,28 @@ class DeployInst :
   virtual void DecomNotify(Agent* m);
   /// write information about a commodity producer to a stream
   /// @param producer the producer
-  void WriteProducerInformation(cyclus::toolkit::CommodityProducer*
-                                producer);
-
-  private:
-  /// register a child
-  void Register_(cyclus::Agent* agent);
-
-  /// unregister a child
-  void Unregister_(cyclus::Agent* agent);
+  void WriteProducerInformation(cyclus::toolkit::CommodityProducer* producer);
 
  protected:
+  // clang-format off
   #pragma cyclus var { \
     "doc": "Ordered list of prototypes to build.", \
-    "uitype": ("oneormore", "prototype"), \
-    "uilabel": "Prototypes to deploy", \
+    "uitype": ["oneormore", "prototype"], \
+    "uilabel": "Prototypes to deploy" \
   }
   std::vector<std::string> prototypes;
 
   #pragma cyclus var { \
     "doc": "Time step on which to deploy agents given in prototype list " \
-           "(same order).",						\
-    "uilabel": "Deployment times",					\
+           "(same order).", \
+    "uilabel": "Deployment times" \
   }
   std::vector<int> build_times;
 
   #pragma cyclus var { \
     "doc": "Number of each prototype given in prototype list that should be " \
            "deployed (same order).", \
-    "uilabel": "Number to deploy", \
+    "uilabel": "Number to deploy" \
   }
   std::vector<int> n_build;
 
@@ -105,11 +99,16 @@ class DeployInst :
     "uilabel": "Lifetimes" \
   }
   std::vector<int> lifetimes;
+  // clang-format on
 
  private:
-  // Code Injection:
-  #include "toolkit/position.cycpp.h"
+  /// register a child
+  void Register_(cyclus::Agent* agent);
 
+  /// unregister a child
+  void Unregister_(cyclus::Agent* agent);
+// Code Injection:
+#include "toolkit/position.cycpp.h"
 };
 
 }  // namespace cycamore

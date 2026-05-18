@@ -42,10 +42,10 @@ class SourceTest : public ::testing::Test {
   }
   void throughput(cycamore::Source* s, double val) { s->throughput = val; }
 
-  boost::shared_ptr<cyclus::ExchangeContext<cyclus::Material> > GetContext(
+  boost::shared_ptr<cyclus::ExchangeContext<cyclus::Material>> GetContext(
       int nreqs, std::string commodity);
 };
 
-} // namespace cycamore
+}  // namespace cycamore
 
 #endif  // CYCAMORE_SRC_SOURCE_TESTS_H_
