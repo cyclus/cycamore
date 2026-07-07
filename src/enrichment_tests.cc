@@ -810,6 +810,73 @@ TEST_F(EnrichmentTest, PositionInitialize2) {
 }
 
 
+TEST_F(EnrichmentTest, TimeSeriesTests) {
+  // Begin with 10 kg natural uranium and enrich 1 kg of 4% LEU at time 0.
+  // The product sink retires after that trade; a tails sink starts at time 1
+  // so the second step records the remaining feed and generated tails.
+  std::string config =
+    "   <feed_commod>natu</feed_commod> "
+    "   <feed_recipe>natu1</feed_recipe> "
+    "   <product_commod>enr_u</product_commod> "
+    "   <tails_commod>tails</tails_commod> "
+    "   <tails_assay>0.003</tails_assay> "
+    "   <initial_feed>10</initial_feed> ";
+
+  int simdur = 2;
+  cyclus::MockSim sim(cyclus::AgentSpec
+          (":cycamore:Enrichment"), config, simdur);
+  sim.AddRecipe("natu1", c_natu1());
+  sim.AddRecipe("leu", c_leu());
+  sim.AddSink("enr_u").recipe("leu").capacity(1).lifetime(1).Finalize();
+  sim.AddSink("tails").start(1).Finalize();
+  int id = sim.Run();
+
+  cyclus::toolkit::Assays assays(0.007, 0.04, 0.003);
+  double exp_feed = cyclus::toolkit::FeedQty(1, assays);
+  double exp_swu = cyclus::toolkit::SwuRequired(1, assays);
+  double exp_tails = cyclus::toolkit::TailsQty(1, assays);
+  double obs;
+
+  // Feed and SWU record process use, so they are nonzero only on the step
+  // where LEU is produced.
+  QueryResult qr = sim.db().Query("TimeSeriesEnrichmentFeed", NULL);
+  ASSERT_EQ(simdur, qr.rows.size());
+  obs = qr.GetVal<double>("Value", 0);
+  EXPECT_NEAR(exp_feed, obs, cyclus::CY_NEAR_ZERO);
+  obs = qr.GetVal<double>("Value", 1);
+  EXPECT_DOUBLE_EQ(0, obs);
+
+  qr = sim.db().Query("TimeSeriesEnrichmentSWU", NULL);
+  ASSERT_EQ(simdur, qr.rows.size());
+  obs = qr.GetVal<double>("Value", 0);
+  EXPECT_NEAR(exp_swu, obs, cyclus::CY_NEAR_ZERO);
+  obs = qr.GetVal<double>("Value", 1);
+  EXPECT_DOUBLE_EQ(0, obs);
+
+  qr = sim.db().Query("TimeSeriesdemandnatu", NULL);
+  ASSERT_EQ(simdur, qr.rows.size());
+  obs = qr.GetVal<double>("Value", 0);
+  EXPECT_NEAR(exp_feed, obs, cyclus::CY_NEAR_ZERO);
+  obs = qr.GetVal<double>("Value", 1);
+  EXPECT_DOUBLE_EQ(0, obs);
+
+  qr = sim.db().Query("TimeSeriessupplyenr_u", NULL);
+  ASSERT_EQ(simdur, qr.rows.size());
+  // Enrichment's product supply series records feed inventory available to
+  // support product bids: 10 kg initially, then 10 kg minus consumed feed.
+  obs = qr.GetVal<double>("Value", 0);
+  EXPECT_DOUBLE_EQ(10, obs);
+  obs = qr.GetVal<double>("Value", 1);
+  EXPECT_NEAR(10 - exp_feed, obs, cyclus::CY_NEAR_ZERO);
+
+  qr = sim.db().Query("TimeSeriessupplytails", NULL);
+  ASSERT_EQ(simdur, qr.rows.size());
+  obs = qr.GetVal<double>("Value", 0);
+  EXPECT_DOUBLE_EQ(0, obs);
+  obs = qr.GetVal<double>("Value", 1);
+  EXPECT_NEAR(exp_tails, obs, cyclus::CY_NEAR_ZERO);
+}
+
 }  // namespace cycamore
 
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -

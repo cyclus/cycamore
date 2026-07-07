@@ -1156,6 +1156,39 @@ TEST_F(StorageTest, TransportUnit) {
   EXPECT_EQ(1, qr_res.GetVal<double>("Quantity", 5));
 }
 
+TEST_F(StorageTest, TimeSeriesTests) {
+  std::string config =
+    "   <in_commods> <val>spent_fuel</val> </in_commods> "
+    "   <out_commods> <val>dry_spent</val> </out_commods> "
+    "   <residence_time>1</residence_time>"
+    "   <throughput>4</throughput>"
+    "   <max_inv_size>10</max_inv_size>";
+
+  int simdur = 4;
+  cyclus::MockSim sim(cyclus::AgentSpec(":cycamore:Storage"),
+                      config, simdur);
+  // Three kilograms arrive each step, wait one step, and then enter stocks.
+  // The sink removes 2 kg per step once stocks become available.
+  sim.AddSource("spent_fuel").capacity(3).Finalize();
+  sim.AddSink("dry_spent").capacity(2).Finalize();
+  int id = sim.Run();
+
+  cyclus::QueryResult qr =
+      sim.db().Query("TimeSeriesdemandspent_fuel", NULL);
+  ASSERT_EQ(simdur, qr.rows.size());
+  EXPECT_DOUBLE_EQ(7, qr.GetVal<double>("Value", 0));
+  EXPECT_DOUBLE_EQ(4, qr.GetVal<double>("Value", 1));
+  EXPECT_DOUBLE_EQ(3, qr.GetVal<double>("Value", 2));
+  EXPECT_DOUBLE_EQ(2, qr.GetVal<double>("Value", 3));
+
+  qr = sim.db().Query("TimeSeriessupplydry_spent", NULL);
+  ASSERT_EQ(simdur, qr.rows.size());
+  EXPECT_DOUBLE_EQ(0, qr.GetVal<double>("Value", 0));
+  EXPECT_DOUBLE_EQ(3, qr.GetVal<double>("Value", 1));
+  EXPECT_DOUBLE_EQ(4, qr.GetVal<double>("Value", 2));
+  EXPECT_DOUBLE_EQ(5, qr.GetVal<double>("Value", 3));
+}
+
 } // namespace cycamore
 
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -

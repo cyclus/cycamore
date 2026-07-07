@@ -418,5 +418,62 @@ TEST(SeparationsTests, Retire) {
   EXPECT_EQ(qr.GetVal<double>("Latitude"), 10.0);
   EXPECT_EQ(qr.GetVal<double>("Longitude"), 15.0);
  }
-} // namespace cycamore
 
+TEST(SeparationsTests, TimeSeriesTests) {
+  std::string config =
+      "<streams>"
+      "  <item>"
+      "    <commod>stream1</commod>"
+      "    <info>"
+      "      <buf_size>-1</buf_size>"
+      "      <efficiencies>"
+      "        <item><comp>U</comp><eff>0.6</eff></item>"
+      "      </efficiencies>"
+      "    </info>"
+      "  </item>"
+      "</streams>"
+      "<leftover_commod>waste</leftover_commod>"
+      "<throughput>20</throughput>"
+      "<feedbuf_size>100</feedbuf_size>"
+      "<feed_commods><val>feed</val></feed_commods>";
+  CompMap comp;
+  comp[id("U235")] = 0.1;
+  comp[id("U238")] = 0.9;
+  Composition::Ptr recipe = Composition::CreateFromMass(comp);
+
+  int simdur = 3;
+  cyclus::MockSim sim(cyclus::AgentSpec(":cycamore:Separations"),
+                      config, simdur);
+  sim.AddSource("feed").recipe("recipe").capacity(40).Finalize();
+  sim.AddSink("stream1").capacity(100).Finalize();
+  sim.AddSink("waste").capacity(100).Finalize();
+  sim.AddRecipe("recipe", recipe);
+  int id = sim.Run();
+
+  QueryResult qr = sim.db().Query("TimeSeriesdemandfeed", NULL);
+  ASSERT_EQ(simdur, qr.rows.size());
+  // The source adds 40 kg per step while Separations processes 20 kg, so
+  // buffered feed grows and the remaining feed capacity falls by 20 kg.
+  EXPECT_DOUBLE_EQ(100, qr.GetVal<double>("Value", 0));
+  EXPECT_DOUBLE_EQ(80, qr.GetVal<double>("Value", 1));
+  EXPECT_DOUBLE_EQ(60, qr.GetVal<double>("Value", 2));
+
+  qr = sim.db().Query("TimeSeriessupplystream1", NULL);
+  ASSERT_EQ(simdur - 1, qr.rows.size());
+  // Each processed 20 kg batch is split into 12 kg uranium stream and
+  // 8 kg leftovers. There is no supply row before feed arrives, and both
+  // outputs are sold before the next batch is processed.
+  EXPECT_EQ(1, qr.GetVal<int>("Time", 0));
+  EXPECT_EQ(2, qr.GetVal<int>("Time", 1));
+  EXPECT_NEAR(12, qr.GetVal<double>("Value", 0), cyclus::CY_NEAR_ZERO);
+  EXPECT_NEAR(12, qr.GetVal<double>("Value", 1), cyclus::CY_NEAR_ZERO);
+
+  qr = sim.db().Query("TimeSeriessupplywaste", NULL);
+  ASSERT_EQ(simdur - 1, qr.rows.size());
+  EXPECT_EQ(1, qr.GetVal<int>("Time", 0));
+  EXPECT_EQ(2, qr.GetVal<int>("Time", 1));
+  EXPECT_NEAR(8, qr.GetVal<double>("Value", 0), cyclus::CY_NEAR_ZERO);
+  EXPECT_NEAR(8, qr.GetVal<double>("Value", 1), cyclus::CY_NEAR_ZERO);
+}
+
+} // namespace cycamore

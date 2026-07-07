@@ -878,6 +878,62 @@ TEST(ReactorTests, MultipleByProduct) {
 
 }
 
+TEST(ReactorTests, TimeSeriesTests) {
+  std::string config =
+     "  <fuel_inrecipes>  <val>uox</val>      </fuel_inrecipes>  "
+     "  <fuel_outrecipes> <val>spentuox</val> </fuel_outrecipes>  "
+     "  <fuel_incommods>  <val>uox</val>      </fuel_incommods>  "
+     "  <fuel_outcommods> <val>waste</val>    </fuel_outcommods>  "
+     "  <cycle_time>2</cycle_time>  "
+     "  <refuel_time>2</refuel_time>  "
+     "  <assem_size>1</assem_size>  "
+     "  <n_assem_core>1</n_assem_core>  "
+     "  <n_assem_batch>1</n_assem_batch>  "
+     "  <power_cap>10</power_cap>  ";
+
+  int simdur = 7;
+  cyclus::MockSim sim(cyclus::AgentSpec(":cycamore:Reactor"), config, simdur);
+  sim.AddSource("uox").Finalize();
+  sim.AddSink("waste").Finalize();
+  sim.AddRecipe("uox", c_uox());
+  sim.AddRecipe("spentuox", c_spentuox());
+  int id = sim.Run();
+
+  QueryResult qr = sim.db().Query("TimeSeriesPower", NULL);
+  ASSERT_EQ(simdur, qr.rows.size());
+  // Two operating steps are followed by two refueling steps. The second
+  // cycle begins at time 4 and ends with another discharge at time 6.
+  const double exp_power[] = {10, 10, 0, 0, 10, 10, 0};
+  for (int i = 0; i < simdur; ++i)
+    EXPECT_DOUBLE_EQ(exp_power[i], qr.GetVal<double>("Value", i));
+
+  qr = sim.db().Query("TimeSeriessupplyPOWER", NULL);
+  ASSERT_EQ(simdur, qr.rows.size());
+  for (int i = 0; i < simdur; ++i)
+    EXPECT_DOUBLE_EQ(exp_power[i], qr.GetVal<double>("Value", i));
+
+  qr = sim.db().Query("TimeSeriesdemanduox", NULL);
+  ASSERT_EQ(3, qr.rows.size());
+  // Fuel demand is recorded only when an assembly is requested: once for the
+  // initial core and once after each discharge. No demand row is recorded
+  // while the reactor has a full core and is operating.
+  EXPECT_EQ(0, qr.GetVal<int>("Time", 0));
+  EXPECT_EQ(2, qr.GetVal<int>("Time", 1));
+  EXPECT_EQ(6, qr.GetVal<int>("Time", 2));
+  EXPECT_DOUBLE_EQ(1, qr.GetVal<double>("Value", 0));
+  EXPECT_DOUBLE_EQ(1, qr.GetVal<double>("Value", 1));
+  EXPECT_DOUBLE_EQ(1, qr.GetVal<double>("Value", 2));
+
+  qr = sim.db().Query("TimeSeriessupplywaste", NULL);
+  ASSERT_EQ(2, qr.rows.size());
+  // Spent-fuel supply is recorded when a cycle ends and an assembly moves
+  // from the core into spent inventory. The sink removes each assembly before
+  // the next discharge, so both recorded supplies are one assembly.
+  EXPECT_EQ(2, qr.GetVal<int>("Time", 0));
+  EXPECT_EQ(6, qr.GetVal<int>("Time", 1));
+  EXPECT_DOUBLE_EQ(1, qr.GetVal<double>("Value", 0));
+  EXPECT_DOUBLE_EQ(1, qr.GetVal<double>("Value", 1));
+}
+
 } // namespace reactortests
 } // namespace cycamore
-

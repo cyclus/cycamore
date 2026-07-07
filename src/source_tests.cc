@@ -241,6 +241,33 @@ SourceTest::GetContext(int nreqs, std::string commod) {
   return ec;
 }
 
+TEST_F(SourceTest, TimeSeriesTests) {
+  std::string config =
+    "<outcommod>commod</outcommod>"
+    "<inventory_size>8</inventory_size>"
+    "<throughput>5</throughput>";
+  int simdur = 3;
+  cyclus::MockSim sim(cyclus::AgentSpec(":cycamore:Source"), config, simdur);
+  // The source sells 3 kg in each of the first two steps. Its 5 kg throughput
+  // controls the first two offers; the final offer is limited by inventory.
+  sim.AddSink("commod").capacity(3).Finalize();
+  int id = sim.Run();
+
+  cyclus::QueryResult qr = sim.db().Query("TimeSeriessupplycommod", NULL);
+  ASSERT_EQ(simdur, qr.rows.size());
+  double obs;
+  double exp;
+  obs = qr.GetVal<double>("Value", 0);
+  exp = 5;
+  EXPECT_DOUBLE_EQ(exp, obs);
+  obs = qr.GetVal<double>("Value", 1);
+  exp = 5;
+  EXPECT_DOUBLE_EQ(exp, obs);
+  obs = qr.GetVal<double>("Value", 2);
+  exp = 2;
+  EXPECT_DOUBLE_EQ(exp, obs);
+}
+
 } // namespace cycamore
 
 cyclus::Agent* SourceConstructor(cyclus::Context* ctx) {
@@ -256,4 +283,3 @@ static int cyclus_agent_tests_connected = ConnectAgentTests();
 
 INSTANTIATE_TEST_SUITE_P(SourceFac, FacilityTests, Values(&SourceConstructor));
 INSTANTIATE_TEST_SUITE_P(SourceFac, AgentTests, Values(&SourceConstructor));
-
