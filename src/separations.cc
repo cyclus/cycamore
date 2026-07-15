@@ -92,7 +92,7 @@ void Separations::EnterNotify() {
 
   if (feed_commod_prefs.size() == 0) {
     for (int i = 0; i < feed_commods.size(); i++) {
-      feed_commod_prefs.push_back(cyclus::kDefaultPref);
+      feed_commod_prefs.push_back(cyclus::kDefaultUnitCostMod);
     }
   }
 }

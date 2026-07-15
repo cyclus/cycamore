@@ -201,7 +201,7 @@ class Enrichment
   /// @brief The Enrichment adjusts preferences for offers of
   /// natural uranium it has received to maximize U-235 content
   /// Any offers that have zero U-235 content are not accepted
-  virtual void AdjustMatlPrefs(cyclus::PrefMap<cyclus::Material>::type& prefs);
+  virtual void AdjustMatlParams(cyclus::RequestBidMap<cyclus::Material>::type& rb_map);
 
   /// @brief The Enrichment place accepted trade Materials in their
   /// Inventory

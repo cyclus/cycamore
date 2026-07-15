@@ -3,14 +3,18 @@
 
 #include "cyclus.h"
 #include <string>
-#include <limits>
 #include <utility>
 #include <map>
-#include <vector>
 
 namespace cycamore {
 
-class TariffRegion : public cyclus::Region {
+using cyclus::RequestBidMap;
+using cyclus::Material;
+using cyclus::Product;
+using cyclus::Region;
+using Adjustment = std::pair<double, std::string>;
+
+class TariffRegion : public Region {
  public:
   TariffRegion(cyclus::Context* ctx);
   virtual ~TariffRegion();
@@ -19,31 +23,15 @@ class TariffRegion : public cyclus::Region {
   virtual void Tock();
 
   // Required DRE Functions
-  virtual void AdjustMatlPrefs(cyclus::PrefMap<cyclus::Material>::type& prefs);
-  virtual void AdjustProductPrefs(cyclus::PrefMap<cyclus::Product>::type& prefs);
+  virtual void AdjustMatlParams(RequestBidMap<Material>::type& rb_map);
+  virtual void AdjustProductParams(RequestBidMap<Product>::type& rb_map);
 
  private:
-  // Compute aggregated tariff from all importer regions along the hierarchy
-  double ComputeAggregatedTariff(cyclus::Facility* supplier, 
-                                  cyclus::Facility* requester,
-                                  const std::string& commodity);
-  
-  // Find the Lowest Common Ancestor of two regions
-  cyclus::Region* FindLowestCommonAncestor(cyclus::Region* r1, cyclus::Region* r2);
-  
-  // Get the chain of ancestors from a region up to (and including) root
-  std::vector<cyclus::Region*> GetAncestorChain(cyclus::Region* region);
-  
-  // Find the most specific tariff rule for a supplier's hierarchy from an importer's perspective
-  // Returns the tariff value, checking supplier region hierarchy from most to least specific
-  double FindMostSpecificTariff(cyclus::Region* importer_region,
-                                const std::vector<cyclus::Region*>& supplier_hierarchy,
-                                const std::string& commodity);
-  
-  // Find the appropriate tariff for a given region and commodity
+
+  // Find the appropriate adjustment for a given region and commodity
   // Uses tiered override system: region-specific commodity > region blanket > 
   // global commodity > global blanket
-  double FindTariffForCommodity(cyclus::Region* region, const std::string& commodity);
+  Adjustment FindAdjustmentForCommodity(Region* region, const std::string& commodity);
   
   // Helper: Check if any tariff configuration exists
   bool HasTariffConfiguration() const;
@@ -52,7 +40,7 @@ class TariffRegion : public cyclus::Region {
   bool ConfigurationRecorded() const;
   
   // Helper: Get region prototype name (reduces repeated code)
-  std::string GetRegionName(cyclus::Region* region) const;
+  std::string GetRegionName(Region* region) const;
   
   // Validate the tariff configuration
   void ValidateConfiguration();
@@ -62,31 +50,48 @@ class TariffRegion : public cyclus::Region {
 
   #pragma cyclus
 
-  // Template function to reduce code duplication between AdjustMatlPrefs and 
-  // AdjustProductPrefs
+  // Template function to reduce code duplication between Adjust functions
   template<typename T>
-  void AdjustPrefsImpl(typename cyclus::PrefMap<T>::type& prefs);
+  void AdjustParams(typename RequestBidMap<T>::type& rb_map);
   
   // clang-format off
+  
+  /*
   #pragma cyclus var { \
     "default": {}, \
-    "alias": ["adjustment_regions", "region", ["AdjustmentConfig", "blanket_adjustment", ["commodity_adjustments", "commodity", "adjustment"]]], \
+    "alias": ["adjustment_regions", "region", ["AdjustmentConfig", ["blanket", "adjustment", "type"], ["commodity_adjustments", "commodity", ["Adjustment", "adjustment", "type"]]]], \
     "doc": "Tariff configuration: map from region name to (blanket_adjustment, commodity_adjustments_map). Each region can have a blanket adjustment for all commodities and specific adjustments per commodity." \
   }
-  std::map<std::string, std::pair<double, std::map<std::string, double>>> adjustment_regions_;
-
-  #pragma cyclus var { \
-    "default": 0.0, \
-    "doc": "Optional global blanket adjustment applied to all regions and commodities." \
-  }
-  double global_blanket_adjustment;
+  std::map<std::string, std::pair<std::pair<double, std::string>, std::map<std::string, std::pair<double, std::string>>>> adjustment_regions_;
+  */
 
   #pragma cyclus var { \
     "default": {}, \
-    "alias": ["global_commodity_adjustments", "commodity", "adjustment"], \
+    "alias": ["region_commodity_adjustments", "region", ["commodity_adjustments", "commodity", ["Adjustment", "val", "type"]]], \
+    "doc": "Commodity-specific adjustments for individual supplier regions." \
+  }
+  std::map<std::string, std::map<std::string, std::pair<double, std::string>>> region_commodity_adjustments_;
+
+  #pragma cyclus var { \
+    "default": {}, \
+    "alias": ["region_blanket_adjustments", "region", ["Adjustment", "val", "type"]], \
+    "doc": "Optional blanket adjustments for individual supplier regions." \
+  } 
+  std::map<std::string, std::pair<double, std::string>> region_blanket_adjustments_;
+
+  #pragma cyclus var { \
+    "default": [0.0, "unit_cost"], \
+    "alias": ["global_blanket_adjustment", "val", "type"], \
+    "doc": "Optional global blanket adjustment applied to all regions and commodities." \
+  }
+  std::pair<double, std::string> global_blanket_adjustment_;
+
+  #pragma cyclus var { \
+    "default": {}, \
+    "alias": ["global_commodity_adjustments", "commodity", ["Adjustment", "val", "type"]], \
     "doc": "Optional global commodity adjustments applied to all regions for specific commodities." \
   }
-  std::map<std::string, double> global_commodity_adjustments_;
+  std::map<std::string, std::pair<double, std::string>> global_commodity_adjustments_;
 
   // clang-format on
   
@@ -97,25 +102,38 @@ class TariffRegion : public cyclus::Region {
 
 // Template function implementation (must be in header for template instantiation)
 template<typename T>
-void TariffRegion::AdjustPrefsImpl(typename cyclus::PrefMap<T>::type& prefs) {
-  for (auto& req_pair : prefs) {
+void TariffRegion::AdjustParams(typename RequestBidMap<T>::type& rb_map) {
+  for (auto& req_pair : rb_map) {
     cyclus::Request<T>* request = req_pair.first;
     std::string commodity = request->commodity();
-    cyclus::Facility* requester = dynamic_cast<cyclus::Facility*>(request->requester()->manager());
     
     for (auto& bid_pair : req_pair.second) {
       cyclus::Bid<T>* bid = bid_pair.first;
       cyclus::Facility* supplier = dynamic_cast<cyclus::Facility*>(bid->bidder()->manager());
-      
-      // Compute aggregated tariff from all importer regions along the hierarchy
-      double adjustment = ComputeAggregatedTariff(supplier, requester, commodity);
-      
-      if (adjustment != 0.0) {
-        double cost_multiplier = 1.0 + adjustment;
-        double pref_multiplier = 1.0 / cost_multiplier;
-        double inf = std::numeric_limits<double>::infinity(); 
+      Region* supplier_region = supplier->GetParentRegion();
 
-        bid_pair.second *= cost_multiplier > 0.0 ? pref_multiplier : inf; 
+      if (supplier_region == this) {
+        continue;
+      }
+
+      Adjustment adjustment = FindAdjustmentForCommodity(supplier_region, commodity);
+
+      if (adjustment.second == "unit_cost") {
+        const double original_unit_cost = bid->unit_cost();
+        const double adjusted_unit_cost =
+            original_unit_cost * (1.0 + adjustment.first);
+
+        bid->unit_cost(adjusted_unit_cost);
+        bid_pair.second += adjusted_unit_cost - original_unit_cost; 
+      } 
+      else if (adjustment.second == "arc_cost") {
+        bid_pair.second *= (1.0 + adjustment.first);
+      } 
+      else {
+        std::string msg = "Adjustment configured incorrectly. "
+                          "Must be unit_cost or arc_cost. Was: " +
+                          adjustment.second;
+        throw cyclus::ValueError(cyclus::Agent::InformErrorMsg(msg));
       }
     }
   }
