@@ -57,7 +57,8 @@ void TariffRegion::ValidateConfiguration() {
       if (type != "unit_cost" && type != "arc_cost") {
         std::string msg = "Adjustment for region '" + region_entry.first +
                           "' and commodity '" + commodity_entry.first +
-                          "' must have type unit_cost or arc_cost. Was: " + type;
+                          "' must have type unit_cost or arc_cost. Was: " + 
+                          type;
         throw cyclus::ValueError(cyclus::Agent::InformErrorMsg(msg));
       }
     }

@@ -86,8 +86,8 @@ class TariffRegion : public Region {
   // Find the appropriate adjustment for a given region and commodity. Exact
   // matches take precedence over the "*" wildcard in this order:
   // region/commodity, region/*, */commodity, */*.
-  Adjustment FindAdjustmentForCommodity(Region* region, 
-    const std::string& commodity);
+  Adjustment FindAdjustmentForCommodity(Region* region,
+      const std::string& commodity);
 
   // Validate the tariff configuration
   void ValidateConfiguration();
@@ -120,7 +120,8 @@ class TariffRegion : public Region {
 
 };
 
-// Template function implementation (must be in header for template instantiation)
+// Template function implementation (must be in header for template 
+// instantiation)
 template <typename T>
 void TariffRegion::AdjustParams(typename RequestBidMap<T>::type& rb_map) {
   for (auto& req_pair : rb_map) {
@@ -159,6 +160,6 @@ void TariffRegion::AdjustParams(typename RequestBidMap<T>::type& rb_map) {
   }
 }
 
-} // namespace cycamore
+}  // namespace cycamore
 
 #endif  // CYCAMORE_SRC_TARIFF_REGION_H_
