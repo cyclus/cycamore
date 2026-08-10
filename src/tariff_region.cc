@@ -55,11 +55,6 @@ Adjustment TariffRegion::FindAdjustmentForCommodity(
 void TariffRegion::ValidateConfiguration() {
 
   for (const auto& region_entry : adjustments_) {
-    if (region_entry.second.empty()) {
-      std::string msg = "Adjustment region '" + region_entry.first +
-                        "' must contain at least one commodity rule.";
-      throw cyclus::ValueError(cyclus::Agent::InformErrorMsg(msg));
-    }
     for (const auto& commodity_entry : region_entry.second) {
       const std::string& type = commodity_entry.second.second;
       if (type != "unit_cost" && type != "arc_cost") {

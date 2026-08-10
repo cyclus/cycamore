@@ -8,6 +8,29 @@
 
 namespace cycamore {
 
+/// TariffRegion adjusts the costs of resource trades offered by facilities
+/// outside the region. Adjustments may be configured for specific supplier
+/// regions and commodities or applied more broadly using the "*" wildcard.
+/// Bids from facilities within the TariffRegion are not adjusted.
+///
+/// When multiple rules could apply, TariffRegion selects the most specific
+/// rule in this order: an exact region and commodity match, an exact region
+/// with any commodity, any region with an exact commodity, and finally any
+/// region and any commodity. An explicitly configured adjustment of zero is
+/// treated as an exemption and prevents fallback to a less-specific wildcard
+/// rule.
+///
+/// Each rule specifies a fractional adjustment and an adjustment type. A
+/// unit_cost adjustment modifies the supplier's unit cost and updates the
+/// corresponding arc cost by the same amount. An arc_cost adjustment modifies
+/// the complete request-bid arc cost without changing the supplier's unit
+/// cost. For example, an adjustment of 0.25 increases the selected cost by
+/// 25 percent, while an adjustment of -0.25 decreases it by 25 percent.
+///
+/// The configured rules are recorded in the TariffAdjustments output table in
+/// a flattened form so that the region's behavior can be readily inspected
+/// during analysis.
+
 using cyclus::RequestBidMap;
 using cyclus::Material;
 using cyclus::Product;
@@ -15,11 +38,40 @@ using cyclus::Region;
 using Adjustment = std::pair<double, std::string>;
 
 class TariffRegion : public Region {
+  #pragma cyclus note { \
+    "niche": "region", \
+    "doc": \
+      "TariffRegion adjusts the costs of resource trades offered by facilities" \
+      " outside the region. Adjustments may be configured for specific supplier" \
+      " regions and commodities or applied more broadly using the '*' wildcard." \
+      " Bids from facilities within the TariffRegion are not adjusted." \
+      "\n\n" \
+      "When multiple rules could apply, TariffRegion selects the most specific" \
+      " rule in this order: an exact region and commodity match, an exact region" \
+      " with any commodity, any region with an exact commodity, and finally any" \
+      " region and any commodity. An explicitly configured adjustment of zero is" \
+      " treated as an exemption and prevents fallback to a less-specific wildcard" \
+      " rule." \
+      "\n\n" \
+      "Each rule specifies a fractional adjustment and an adjustment type. A" \
+      " unit_cost adjustment modifies the supplier's unit cost and updates the" \
+      " corresponding arc cost by the same amount. An arc_cost adjustment modifies" \
+      " the complete request-bid arc cost without changing the supplier's unit" \
+      " cost. For example, an adjustment of 0.25 increases the selected cost by" \
+      " 25 percent, while an adjustment of -0.25 decreases it by 25 percent." \
+      "\n\n" \
+      "The configured rules are recorded in the TariffAdjustments output table in" \
+      " a flattened form so that the region's behavior can be readily inspected" \
+      " during analysis." \
+      "", \
+    }
   friend class TariffRegionTests;
 
  public:
   TariffRegion(cyclus::Context* ctx);
   virtual ~TariffRegion();
+
+  virtual std::string version() { return CYCAMORE_VERSION; }
 
   virtual void EnterNotify();
   virtual void Tock();
