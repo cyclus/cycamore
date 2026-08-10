@@ -28,9 +28,9 @@ class TariffRegion : public Region {
 
  private:
 
-  // Find the appropriate adjustment for a given region and commodity
-  // Uses tiered override system: region-specific commodity > region blanket > 
-  // global commodity > global blanket
+  // Find the appropriate adjustment for a given region and commodity. Exact
+  // matches take precedence over the "*" wildcard in this order:
+  // region/commodity, region/*, */commodity, */*.
   Adjustment FindAdjustmentForCommodity(Region* region, const std::string& commodity);
   
   // Helper: Check if any tariff configuration exists
@@ -56,42 +56,16 @@ class TariffRegion : public Region {
   
   // clang-format off
   
-  /*
   #pragma cyclus var { \
     "default": {}, \
-    "alias": ["adjustment_regions", "region", ["AdjustmentConfig", ["blanket", "adjustment", "type"], ["commodity_adjustments", "commodity", ["Adjustment", "adjustment", "type"]]]], \
-    "doc": "Tariff configuration: map from region name to (blanket_adjustment, commodity_adjustments_map). Each region can have a blanket adjustment for all commodities and specific adjustments per commodity." \
+    "alias": [["adjustments", "region"], "name", [["commodities", "item"], "commodity", ["Adjustment", "val", "type"]]], \
+    "doc": "Adjustments by supplier region and commodity. The '*' key is a " \
+           "wildcard. Rules are selected in this order: exact region and " \
+           "commodity, exact region and '*', '*' and exact commodity, then " \
+           "'*' and '*'. A present adjustment of zero is an explicit " \
+           "exemption and stops wildcard fallback." \
   }
-  std::map<std::string, std::pair<std::pair<double, std::string>, std::map<std::string, std::pair<double, std::string>>>> adjustment_regions_;
-  */
-
-  #pragma cyclus var { \
-    "default": {}, \
-    "alias": ["region_commodity_adjustments", "region", ["commodity_adjustments", "commodity", ["Adjustment", "val", "type"]]], \
-    "doc": "Commodity-specific adjustments for individual supplier regions." \
-  }
-  std::map<std::string, std::map<std::string, std::pair<double, std::string>>> region_commodity_adjustments_;
-
-  #pragma cyclus var { \
-    "default": {}, \
-    "alias": ["region_blanket_adjustments", "region", ["Adjustment", "val", "type"]], \
-    "doc": "Optional blanket adjustments for individual supplier regions." \
-  } 
-  std::map<std::string, std::pair<double, std::string>> region_blanket_adjustments_;
-
-  #pragma cyclus var { \
-    "default": [0.0, "unit_cost"], \
-    "alias": ["global_blanket_adjustment", "val", "type"], \
-    "doc": "Optional global blanket adjustment applied to all regions and commodities." \
-  }
-  std::pair<double, std::string> global_blanket_adjustment_;
-
-  #pragma cyclus var { \
-    "default": {}, \
-    "alias": ["global_commodity_adjustments", "commodity", ["Adjustment", "val", "type"]], \
-    "doc": "Optional global commodity adjustments applied to all regions for specific commodities." \
-  }
-  std::map<std::string, std::pair<double, std::string>> global_commodity_adjustments_;
+  std::map<std::string, std::map<std::string, std::pair<double, std::string>>> adjustments_;
 
   // clang-format on
   
