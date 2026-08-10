@@ -34,19 +34,10 @@ class TariffRegion : public Region {
   // matches take precedence over the "*" wildcard in this order:
   // region/commodity, region/*, */commodity, */*.
   Adjustment FindAdjustmentForCommodity(Region* region, const std::string& commodity);
-  
-  // Helper: Check if any tariff configuration exists
-  bool HasTariffConfiguration() const;
-  
-  // Helper: Check if configuration has been recorded
-  bool ConfigurationRecorded() const;
-  
-  // Helper: Get region prototype name (reduces repeated code)
-  std::string GetRegionName(Region* region) const;
-  
+
   // Validate the tariff configuration
   void ValidateConfiguration();
-  
+
   // Record tariff configuration to database
   void RecordTariffConfiguration();
 
@@ -57,7 +48,6 @@ class TariffRegion : public Region {
   void AdjustParams(typename RequestBidMap<T>::type& rb_map);
   
   // clang-format off
-  
   #pragma cyclus var { \
     "default": {}, \
     "alias": [["adjustments", "region"], "name", [["commodities", "item"], "commodity", ["Adjustment", "val", "type"]]], \
@@ -70,10 +60,10 @@ class TariffRegion : public Region {
   std::map<std::string, std::map<std::string, std::pair<double, std::string>>> adjustments_;
 
   // clang-format on
-  
+
   // Flag to track if configuration has been recorded
   bool configuration_recorded_;
-  
+
 };
 
 // Template function implementation (must be in header for template instantiation)
@@ -82,7 +72,7 @@ void TariffRegion::AdjustParams(typename RequestBidMap<T>::type& rb_map) {
   for (auto& req_pair : rb_map) {
     cyclus::Request<T>* request = req_pair.first;
     std::string commodity = request->commodity();
-    
+
     for (auto& bid_pair : req_pair.second) {
       cyclus::Bid<T>* bid = bid_pair.first;
       cyclus::Facility* supplier = dynamic_cast<cyclus::Facility*>(bid->bidder()->manager());

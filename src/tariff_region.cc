@@ -13,7 +13,7 @@ void TariffRegion::EnterNotify() {
 }
 
 void TariffRegion::Tock() {
-  if (!ConfigurationRecorded()) {
+  if (!configuration_recorded_) {
     RecordTariffConfiguration();
   }
 }
@@ -27,21 +27,9 @@ void TariffRegion::AdjustProductParams(RequestBidMap<Product>::type& rb_map) {
   AdjustParams<cyclus::Product>(rb_map);
 }
 
-bool TariffRegion::HasTariffConfiguration() const {
-  return !adjustments_.empty();
-}
-
-bool TariffRegion::ConfigurationRecorded() const {
-  return configuration_recorded_;
-}
-
-std::string TariffRegion::GetRegionName(Region* region) const {
-  return region->prototype();
-}
-
 Adjustment TariffRegion::FindAdjustmentForCommodity(
     Region* region, const std::string& commodity) {
-  const std::string region_name = GetRegionName(region);
+  const std::string region_name = region->prototype();
   const std::string wildcard = "*";
   const std::pair<std::string, std::string> candidates[] = {
       {region_name, commodity},
@@ -65,11 +53,6 @@ Adjustment TariffRegion::FindAdjustmentForCommodity(
 }
 
 void TariffRegion::ValidateConfiguration() {
-  if (!HasTariffConfiguration()) {
-    LOG(cyclus::LEV_INFO1, "TariffRegion") << "No tariff configuration specified. "
-                   << "No adjustments will be applied.";
-    return;
-  }
 
   for (const auto& region_entry : adjustments_) {
     if (region_entry.second.empty()) {
@@ -90,10 +73,6 @@ void TariffRegion::ValidateConfiguration() {
 }
 
 void TariffRegion::RecordTariffConfiguration() {
-  if (!HasTariffConfiguration()) {
-    configuration_recorded_ = true;
-    return;
-  }
 
   for (const auto& region_entry : adjustments_) {
     const std::string& region_name = region_entry.first;
@@ -103,6 +82,9 @@ void TariffRegion::RecordTariffConfiguration() {
       const std::string& commodity = commodity_entry.first;
       const Adjustment& adjustment = commodity_entry.second;
 
+      // Add a flat table summarizing adjustments in the simulation for human
+      // readability. Without this, it might be difficult to understand what the
+      // region is configured to do from just the database.
       context()->NewDatum("TariffAdjustments")
           ->AddVal("AgentId", id())
           ->AddVal("Time", context()->time())
