@@ -15,6 +15,8 @@ using cyclus::Region;
 using Adjustment = std::pair<double, std::string>;
 
 class TariffRegion : public Region {
+  friend class TariffRegionTests;
+
  public:
   TariffRegion(cyclus::Context* ctx);
   virtual ~TariffRegion();
