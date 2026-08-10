@@ -7,11 +7,11 @@
 
 #include "bid.h"
 #include "material.h"
+#include "mock_sim.h"
 #include "product.h"
 #include "request.h"
 #include "test_agents/test_facility.h"
 #include "test_agents/test_inst.h"
-#include "mock_sim.h"
 
 namespace cycamore {
 

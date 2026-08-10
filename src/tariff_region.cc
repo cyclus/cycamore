@@ -3,9 +3,7 @@
 namespace cycamore {
 
 TariffRegion::TariffRegion(cyclus::Context* ctx)
-: cyclus::Region(ctx), configuration_recorded_(false) {}
-
-TariffRegion::~TariffRegion() {}
+  : cyclus::Region(ctx), configuration_recorded_(false) {}
 
 void TariffRegion::EnterNotify() {
   Region::EnterNotify();
@@ -53,7 +51,6 @@ Adjustment TariffRegion::FindAdjustmentForCommodity(
 }
 
 void TariffRegion::ValidateConfiguration() {
-
   for (const auto& region_entry : adjustments_) {
     for (const auto& commodity_entry : region_entry.second) {
       const std::string& type = commodity_entry.second.second;
@@ -68,7 +65,6 @@ void TariffRegion::ValidateConfiguration() {
 }
 
 void TariffRegion::RecordTariffConfiguration() {
-
   for (const auto& region_entry : adjustments_) {
     const std::string& region_name = region_entry.first;
     const auto& commodity_adjustments = region_entry.second;

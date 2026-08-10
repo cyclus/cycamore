@@ -1,10 +1,12 @@
 #ifndef CYCAMORE_SRC_TARIFF_REGION_H_
 #define CYCAMORE_SRC_TARIFF_REGION_H_
 
-#include "cyclus.h"
+#include <map>
 #include <string>
 #include <utility>
-#include <map>
+
+#include "cyclus.h"
+#include "cycamore_version.h"
 
 namespace cycamore {
 
@@ -69,7 +71,7 @@ class TariffRegion : public Region {
 
  public:
   TariffRegion(cyclus::Context* ctx);
-  virtual ~TariffRegion();
+  virtual ~TariffRegion() = default;
 
   virtual std::string version() { return CYCAMORE_VERSION; }
 
@@ -81,11 +83,11 @@ class TariffRegion : public Region {
   virtual void AdjustProductParams(RequestBidMap<Product>::type& rb_map);
 
  private:
-
   // Find the appropriate adjustment for a given region and commodity. Exact
   // matches take precedence over the "*" wildcard in this order:
   // region/commodity, region/*, */commodity, */*.
-  Adjustment FindAdjustmentForCommodity(Region* region, const std::string& commodity);
+  Adjustment FindAdjustmentForCommodity(Region* region, 
+    const std::string& commodity);
 
   // Validate the tariff configuration
   void ValidateConfiguration();
@@ -96,9 +98,9 @@ class TariffRegion : public Region {
   #pragma cyclus
 
   // Template function to reduce code duplication between Adjust functions
-  template<typename T>
+  template <typename T>
   void AdjustParams(typename RequestBidMap<T>::type& rb_map);
-  
+
   // clang-format off
   #pragma cyclus var { \
     "default": {}, \
@@ -119,7 +121,7 @@ class TariffRegion : public Region {
 };
 
 // Template function implementation (must be in header for template instantiation)
-template<typename T>
+template <typename T>
 void TariffRegion::AdjustParams(typename RequestBidMap<T>::type& rb_map) {
   for (auto& req_pair : rb_map) {
     cyclus::Request<T>* request = req_pair.first;
@@ -127,14 +129,16 @@ void TariffRegion::AdjustParams(typename RequestBidMap<T>::type& rb_map) {
 
     for (auto& bid_pair : req_pair.second) {
       cyclus::Bid<T>* bid = bid_pair.first;
-      cyclus::Facility* supplier = dynamic_cast<cyclus::Facility*>(bid->bidder()->manager());
+      cyclus::Facility* supplier = dynamic_cast<cyclus::Facility*>(
+        bid->bidder()->manager());
       Region* supplier_region = supplier->GetParentRegion();
 
       if (supplier_region == this) {
         continue;
       }
 
-      Adjustment adjustment = FindAdjustmentForCommodity(supplier_region, commodity);
+      Adjustment adjustment = FindAdjustmentForCommodity(
+        supplier_region, commodity);
 
       if (adjustment.second == "unit_cost") {
         const double original_unit_cost = bid->unit_cost();
@@ -142,12 +146,10 @@ void TariffRegion::AdjustParams(typename RequestBidMap<T>::type& rb_map) {
             original_unit_cost * (1.0 + adjustment.first);
 
         bid->unit_cost(adjusted_unit_cost);
-        bid_pair.second += adjusted_unit_cost - original_unit_cost; 
-      } 
-      else if (adjustment.second == "arc_cost") {
+        bid_pair.second += adjusted_unit_cost - original_unit_cost;
+      } else if (adjustment.second == "arc_cost") {
         bid_pair.second *= (1.0 + adjustment.first);
-      } 
-      else {
+      } else {
         std::string msg = "Adjustment configured incorrectly. "
                           "Must be unit_cost or arc_cost. Was: " +
                           adjustment.second;
