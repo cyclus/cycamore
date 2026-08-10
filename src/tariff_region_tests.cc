@@ -11,9 +11,9 @@
 #include "request.h"
 #include "test_agents/test_facility.h"
 #include "test_agents/test_inst.h"
+#include "mock_sim.h"
 
 namespace cycamore {
-namespace {
 
 class NamedRegion : public cyclus::Region {
  public:
@@ -26,8 +26,6 @@ class NamedRegion : public cyclus::Region {
     return new NamedRegion(context(), prototype());
   }
 };
-
-}  // namespace
 
 void TariffRegionTests::SetUp() {
   region_ = new TariffRegion(tc_.get());
@@ -229,6 +227,42 @@ TEST_F(TariffRegionTests, DoesNotAdjustDomesticBid) {
 
   delete bid;
   delete request;
+}
+
+TEST_F(TariffRegionTests, RecordsConfigurationFromInput) {
+  std::string config =
+      "<adjustments>"
+      "  <region>"
+      "    <name>Alpha</name>"
+      "    <commodities>"
+      "      <item>"
+      "        <commodity>Fuel</commodity>"
+      "        <Adjustment>"
+      "          <val>0.25</val>"
+      "          <type>unit_cost</type>"
+      "        </Adjustment>"
+      "      </item>"
+      "    </commodities>"
+      "  </region>"
+      "</adjustments>";
+
+  int simdur = 2;
+  cyclus::MockSim sim(
+      cyclus::AgentSpec(":cycamore:TariffRegion"), config, simdur);
+  int region_id = sim.Run();
+
+  std::vector<cyclus::Cond> conds;
+  conds.push_back(cyclus::Cond("AgentId", "==", region_id));
+
+  cyclus::QueryResult result =
+      sim.db().Query("TariffAdjustments", &conds);
+
+  ASSERT_EQ(1, result.rows.size());
+  EXPECT_EQ(0, result.GetVal<int>("Time"));
+  EXPECT_EQ("Alpha", result.GetVal<std::string>("Region"));
+  EXPECT_EQ("Fuel", result.GetVal<std::string>("Commodity"));
+  EXPECT_DOUBLE_EQ(0.25, result.GetVal<double>("Adjustment"));
+  EXPECT_EQ("unit_cost", result.GetVal<std::string>("Type"));
 }
 
 }  // namespace cycamore
