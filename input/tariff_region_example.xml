@@ -1,0 +1,209 @@
+<simulation>
+  <control>
+    <duration>10</duration>
+    <startmonth>1</startmonth>
+    <startyear>2000</startyear>
+  </control>
+
+  <archetypes>
+    <spec><lib>cycamore</lib><name>Source</name></spec>
+    <spec><lib>cycamore</lib><name>Sink</name></spec>
+    <spec><lib>cycamore</lib><name>TariffRegion</name></spec>
+    <spec><lib>agents</lib><name>NullInst</name></spec>
+    <spec><lib>agents</lib><name>NullRegion</name></spec>
+  </archetypes>
+
+  <!--Recipe Section (REQUIRED)-->
+  <recipe>
+    <name>Toast</name>
+    <basis>atom</basis>
+    <nuclide>
+        <id>10030000</id> 
+        <comp>1</comp>
+    </nuclide>
+  </recipe>
+
+  <facility>
+    <name>Alpha Fuel Source</name>
+    <config>
+      <Source>
+        <outcommod>Fuel</outcommod>
+        <throughput>10</throughput>
+      </Source>
+    </config>
+  </facility>
+
+  <facility>
+    <name>Beta Fuel Source</name>
+    <config>
+      <Source>
+        <outcommod>Fuel</outcommod>
+        <throughput>10</throughput>
+      </Source>
+    </config>
+  </facility>
+
+  <facility>
+    <name>Gamma Ore Source</name>
+    <config>
+      <Source>
+        <outcommod>Ore</outcommod>
+        <throughput>10</throughput>
+      </Source>
+    </config>
+  </facility>
+
+  <facility>
+    <name>Delta Salt Source</name>
+    <config>
+      <Source>
+        <outcommod>Salt</outcommod>
+        <throughput>10</throughput>
+      </Source>
+    </config>
+  </facility>
+
+  <facility>
+    <name>Import Sink</name>
+    <config>
+      <Sink>
+        <in_commods>
+          <val>Fuel</val>
+          <val>Ore</val>
+          <val>Salt</val>
+        </in_commods>
+        <capacity>2000</capacity>
+      </Sink>
+    </config>
+  </facility>
+
+  <region>
+    <name>Alpha</name>
+    <config><NullRegion/></config>
+    <institution>
+      <name>Alpha Institution</name>
+      <initialfacilitylist>
+        <entry>
+          <prototype>Alpha Fuel Source</prototype>
+          <number>1</number>
+        </entry>
+      </initialfacilitylist>
+      <config><NullInst/></config>
+    </institution>
+  </region>
+
+  <region>
+    <name>Beta</name>
+    <config><NullRegion/></config>
+    <institution>
+      <name>Beta Institution</name>
+      <initialfacilitylist>
+        <entry>
+          <prototype>Beta Fuel Source</prototype>
+          <number>1</number>
+        </entry>
+      </initialfacilitylist>
+      <config><NullInst/></config>
+    </institution>
+  </region>
+
+  <region>
+    <name>Gamma</name>
+    <config><NullRegion/></config>
+    <institution>
+      <name>Gamma Institution</name>
+      <initialfacilitylist>
+        <entry>
+          <prototype>Gamma Ore Source</prototype>
+          <number>1</number>
+        </entry>
+      </initialfacilitylist>
+      <config><NullInst/></config>
+    </institution>
+  </region>
+
+  <region>
+    <name>Delta</name>
+    <config><NullRegion/></config>
+    <institution>
+      <name>Delta Institution</name>
+      <initialfacilitylist>
+        <entry>
+          <prototype>Delta Salt Source</prototype>
+          <number>1</number>
+        </entry>
+      </initialfacilitylist>
+      <config><NullInst/></config>
+    </institution>
+  </region>
+
+  <region>
+    <name>Importer</name>
+    <config>
+      <TariffRegion>
+        <adjustments>
+          <region>
+            <name>Alpha</name>
+            <commodities>
+              <item>
+                <commodity>Fuel</commodity>
+                <Adjustment>
+                  <val>1.00</val>
+                  <type>unit_cost</type>
+                </Adjustment>
+              </item>
+              <item>
+                <commodity>*</commodity>
+                <Adjustment>
+                  <val>0.00</val>
+                  <type>unit_cost</type>
+                </Adjustment>
+              </item>
+            </commodities>
+          </region>
+          <region>
+            <name>Beta</name>
+            <commodities>
+              <item>
+                <commodity>*</commodity>
+                <Adjustment>
+                  <val>0.50</val>
+                  <type>unit_cost</type>
+                </Adjustment>
+              </item>
+            </commodities>
+          </region>
+          <region>
+            <name>*</name>
+            <commodities>
+              <item>
+                <commodity>Ore</commodity>
+                <Adjustment>
+                  <val>0.25</val>
+                  <type>unit_cost</type>
+                </Adjustment>
+              </item>
+              <item>
+                <commodity>*</commodity>
+                <Adjustment>
+                  <val>0.10</val>
+                  <type>unit_cost</type>
+                </Adjustment>
+              </item>
+            </commodities>
+          </region>
+        </adjustments>
+      </TariffRegion>
+    </config>
+    <institution>
+      <name>Importer Institution</name>
+      <initialfacilitylist>
+        <entry>
+          <prototype>Import Sink</prototype>
+          <number>1</number>
+        </entry>
+      </initialfacilitylist>
+      <config><NullInst/></config>
+    </institution>
+  </region>
+</simulation>

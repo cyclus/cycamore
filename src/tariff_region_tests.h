@@ -1,6 +1,7 @@
 #ifndef CYCAMORE_SRC_TARIFF_REGION_TESTS_H_
 #define CYCAMORE_SRC_TARIFF_REGION_TESTS_H_
 
+#include <map>
 #include <string>
 
 #include <gtest/gtest.h>
@@ -14,6 +15,10 @@ namespace cycamore {
 
 class TariffRegionTests : public ::testing::Test {
  protected:
+  typedef std::map<
+      std::string,
+      std::map<std::string, std::pair<double, std::string>>> AdjustmentMap;
+
   virtual void SetUp();
   virtual void TearDown();
 
@@ -22,6 +27,8 @@ class TariffRegionTests : public ::testing::Test {
   Adjustment FindAdjustment(cyclus::Region* supplier_region,
                             const std::string& commodity);
   void ValidateConfiguration();
+  TariffRegion* Clone(TariffRegion* region);
+  const AdjustmentMap& Adjustments(TariffRegion* region);
 
   cyclus::TestContext tc_;
   TariffRegion* region_;

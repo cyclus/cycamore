@@ -53,6 +53,15 @@ void TariffRegionTests::ValidateConfiguration() {
   region_->ValidateConfiguration();
 }
 
+TariffRegion* TariffRegionTests::Clone(TariffRegion* region) {
+  return dynamic_cast<TariffRegion*>(region->Clone());
+}
+
+const TariffRegionTests::AdjustmentMap& TariffRegionTests::Adjustments(
+    TariffRegion* region) {
+  return region->adjustments_;
+}
+
 TEST_F(TariffRegionTests, NoConfigurationMeansNoAdjustment) {
   NamedRegion supplier_region(tc_.get(), "Alpha");
 
@@ -102,10 +111,10 @@ TEST_F(TariffRegionTests, CloneCopiesAdjustments) {
   SetAdjustment("Alpha", "Fuel", 0.1, "unit_cost");
   SetAdjustment("*", "*", 0.2, "arc_cost");
 
-  TariffRegion* clone = dynamic_cast<TariffRegion*>(region_->Clone());
+  TariffRegion* clone = Clone(region_);
 
   ASSERT_NE(static_cast<TariffRegion*>(NULL), clone);
-  EXPECT_EQ(region_->adjustments_, clone->adjustments_);
+  EXPECT_EQ(Adjustments(region_), Adjustments(clone));
   delete clone;
 }
 
