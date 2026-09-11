@@ -58,7 +58,7 @@ class Source : public cyclus::Facility,
 
   virtual void InitFrom(cyclus::QueryableBackend* b);
 
-  virtual void Tick() {};
+  virtual void Tick();
 
   virtual void Tock() {};
 
@@ -149,8 +149,23 @@ class Source : public cyclus::Facility,
   std::string transport_unit;
 
   #pragma cyclus var { \
+    "default": 0, \
+    "doc": "Setting just_in_time to true will force the Source to call " \
+           "Material::Create every time step to create the material it " \
+           "produces up to its throughput 'just in time' instead of " \
+           "creating everything at the start of the simulation.", \
+    "tooltip": "Produce material just in time", \
+    "uilabel": "Just-in-Time Production", \
+    "uitype": "bool", \
+  }
+  bool just_in_time;
+
+  #pragma cyclus var { \
     "tooltip":"Material buffer"}
   cyclus::toolkit::ResBuf<cyclus::Material> inventory;
+
+  #pragma cyclus var {"default": 0.0, "internal": True}
+  double total_material_created;
 
   void SetPackage();
 };

@@ -6,6 +6,7 @@ Since last release
 ======================
 
 **Added:**
+* Just in time mode for Source (#695)
 * Added tests for Conversion Facility (#658)
 * Added Conversion Facility (#657)
 * Replaced manual matl_buy/sell_policy code in storage with code injection (#639)
