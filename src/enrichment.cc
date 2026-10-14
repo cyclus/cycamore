@@ -117,18 +117,18 @@ bool SortBids(cyclus::Bid<Material>* i,
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 // Sort offers of input material to have higher preference for more
 //  U-235 content
-void Enrichment::AdjustMatlPrefs(
-    cyclus::PrefMap<Material>::type& prefs) {
+void Enrichment::AdjustMatlParams(
+    cyclus::RequestBidMap<Material>::type& rb_map) {
   using cyclus::Bid;
 
   if (order_prefs == false) {
     return;
   }
 
-  cyclus::PrefMap<Material>::type::iterator reqit;
+  cyclus::RequestBidMap<Material>::type::iterator reqit;
 
   // Loop over all requests
-  for (reqit = prefs.begin(); reqit != prefs.end(); ++reqit) {
+  for (reqit = rb_map.begin(); reqit != rb_map.end(); ++reqit) {
     std::vector<Bid<Material>*> bids_vector;
     std::map<Bid<Material>*, double>::iterator mit;
     for (mit = reqit->second.begin(); mit != reqit->second.end(); ++mit) {

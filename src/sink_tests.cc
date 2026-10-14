@@ -52,7 +52,7 @@ TEST_F(SinkTest, InitialState) {
   EXPECT_EQ(vexp, src_facility->input_commodities());
 
   src_facility->EnterNotify();
-  double pref[] = {cyclus::kDefaultPref, cyclus::kDefaultPref};
+  double pref[] = {cyclus::kDefaultUnitCostMod, cyclus::kDefaultUnitCostMod};
   std::vector<double> vpref (pref, pref + sizeof(pref) / sizeof(pref[0]) );
   EXPECT_EQ(vpref, src_facility->input_commodity_preferences());
 }
