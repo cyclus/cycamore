@@ -1,5 +1,7 @@
 #include <gtest/gtest.h>
 
+#include <sstream>
+
 #include "storage_tests.h"
 
 namespace cycamore {
@@ -1157,36 +1159,49 @@ TEST_F(StorageTest, TransportUnit) {
 }
 
 TEST_F(StorageTest, TimeSeriesTests) {
-  std::string config =
-    "   <in_commods> <val>spent_fuel</val> </in_commods> "
-    "   <out_commods> <val>dry_spent</val> </out_commods> "
-    "   <residence_time>1</residence_time>"
-    "   <throughput>4</throughput>"
-    "   <max_inv_size>10</max_inv_size>";
+  const std::string input_commodity = "spent_fuel";
+  const std::string output_commodity = "dry_spent";
+  const int residence_time = 1;
+  const double storage_throughput = 4;
+  const double inventory_capacity = 10;
+  const double source_throughput = 3;
+  const double sink_throughput = 2;
+  std::stringstream config;
+  config << "   <in_commods> <val>" << input_commodity
+         << "</val> </in_commods> "
+         << "   <out_commods> <val>" << output_commodity
+         << "</val> </out_commods> "
+         << "   <residence_time>" << residence_time << "</residence_time>"
+         << "   <throughput>" << storage_throughput << "</throughput>"
+         << "   <max_inv_size>" << inventory_capacity << "</max_inv_size>";
 
   int simdur = 4;
   cyclus::MockSim sim(cyclus::AgentSpec(":cycamore:Storage"),
-                      config, simdur);
+                      config.str(), simdur);
   // Three kilograms arrive each step, wait one step, and then enter stocks.
   // The sink removes 2 kg per step once stocks become available.
-  sim.AddSource("spent_fuel").capacity(3).Finalize();
-  sim.AddSink("dry_spent").capacity(2).Finalize();
+  sim.AddSource(input_commodity).capacity(source_throughput).Finalize();
+  sim.AddSink(output_commodity).capacity(sink_throughput).Finalize();
   int id = sim.Run();
 
   cyclus::QueryResult qr =
-      sim.db().Query("TimeSeriesdemandspent_fuel", NULL);
+      sim.db().Query("TimeSeriesdemand" + input_commodity, NULL);
   ASSERT_EQ(simdur, qr.rows.size());
-  EXPECT_DOUBLE_EQ(7, qr.GetVal<double>("Value", 0));
-  EXPECT_DOUBLE_EQ(4, qr.GetVal<double>("Value", 1));
-  EXPECT_DOUBLE_EQ(3, qr.GetVal<double>("Value", 2));
-  EXPECT_DOUBLE_EQ(2, qr.GetVal<double>("Value", 3));
+  // Remaining capacity reflects material distributed across the input,
+  // processing, ready, and stock buffers after each step.
+  const double exp_remaining_capacity[] = {7, 4, 3, 2};
+  for (int i = 0; i < simdur; ++i) {
+    EXPECT_DOUBLE_EQ(exp_remaining_capacity[i], qr.GetVal<double>("Value", i));
+  }
 
-  qr = sim.db().Query("TimeSeriessupplydry_spent", NULL);
+  qr = sim.db().Query("TimeSeriessupply" + output_commodity, NULL);
   ASSERT_EQ(simdur, qr.rows.size());
-  EXPECT_DOUBLE_EQ(0, qr.GetVal<double>("Value", 0));
-  EXPECT_DOUBLE_EQ(3, qr.GetVal<double>("Value", 1));
-  EXPECT_DOUBLE_EQ(4, qr.GetVal<double>("Value", 2));
-  EXPECT_DOUBLE_EQ(5, qr.GetVal<double>("Value", 3));
+  // No stock is available initially because material waits one time step;
+  // subsequent values are stock inventory after processing and sink trades.
+  const double exp_stock_inventory[] = {0, 3, 4, 5};
+  for (int i = 0; i < simdur; ++i) {
+    EXPECT_DOUBLE_EQ(exp_stock_inventory[i], qr.GetVal<double>("Value", i));
+  }
 }
 
 } // namespace cycamore

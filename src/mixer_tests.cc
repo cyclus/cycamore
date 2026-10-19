@@ -8,6 +8,8 @@
 
 #include <gtest/gtest.h>
 
+#include <sstream>
+
 using cyclus::QueryResult;
 
 namespace cycamore {
@@ -523,80 +525,66 @@ TEST(MixerTests, TimeSeriesTests) {
   // One kilogram of output requires 0.8, 0.15, and 0.05 kg from the three
   // input streams. Sources add 1 kg to each stream per step, while the output
   // sink removes each mixed kilogram before the next step.
-  std::string config =
-      "<in_streams>"
-        "<stream>"
-          "<info>"
-            "<mixing_ratio>0.8</mixing_ratio>"
-            "<buf_size>2.5</buf_size>"
-          "</info>"
-          "<commodities>"
-            "<item><commodity>stream1</commodity><pref>1</pref></item>"
-          "</commodities>"
-        "</stream>"
-        "<stream>"
-          "<info>"
-            "<mixing_ratio>0.15</mixing_ratio>"
-            "<buf_size>3</buf_size>"
-          "</info>"
-          "<commodities>"
-            "<item><commodity>stream2</commodity><pref>1</pref></item>"
-          "</commodities>"
-        "</stream>"
-        "<stream>"
-          "<info>"
-            "<mixing_ratio>0.05</mixing_ratio>"
-            "<buf_size>5</buf_size>"
-          "</info>"
-          "<commodities>"
-            "<item><commodity>stream3</commodity><pref>1</pref></item>"
-          "</commodities>"
-        "</stream>"
-      "</in_streams>"
-      "<out_commod>mixedstream</out_commod>"
-      "<outputbuf_size>10</outputbuf_size>"
-      "<throughput>1</throughput>";
+  const std::string commodities[] = {"stream1", "stream2", "stream3"};
+  const double mixing_ratios[] = {0.8, 0.15, 0.05};
+  const double input_buffer_capacities[] = {2.5, 3, 5};
+  const double source_throughput = 1;
+  const double mixer_throughput = 1;
+  const double output_buffer_capacity = 10;
+  std::stringstream config;
+  config << "<in_streams>";
+  for (int i = 0; i < 3; ++i) {
+    config << "<stream>"
+           << "<info>"
+           << "<mixing_ratio>" << mixing_ratios[i] << "</mixing_ratio>"
+           << "<buf_size>" << input_buffer_capacities[i] << "</buf_size>"
+           << "</info>"
+           << "<commodities>"
+           << "<item><commodity>" << commodities[i]
+           << "</commodity><pref>1</pref></item>"
+           << "</commodities>"
+           << "</stream>";
+  }
+  config << "</in_streams>"
+         << "<out_commod>mixedstream</out_commod>"
+         << "<outputbuf_size>" << output_buffer_capacity
+         << "</outputbuf_size>"
+         << "<throughput>" << mixer_throughput << "</throughput>";
   int simdur = 3;
-  cyclus::MockSim sim(cyclus::AgentSpec(":cycamore:Mixer"), config, simdur);
-  sim.AddSource("stream1").recipe("unatstream").capacity(1).Finalize();
-  sim.AddSource("stream2").recipe("uoxstream").capacity(1).Finalize();
-  sim.AddSource("stream3").recipe("pustream").capacity(1).Finalize();
+  cyclus::MockSim sim(cyclus::AgentSpec(":cycamore:Mixer"), config.str(),
+                      simdur);
+  sim.AddSource(commodities[0]).recipe("unatstream")
+      .capacity(source_throughput).Finalize();
+  sim.AddSource(commodities[1]).recipe("uoxstream")
+      .capacity(source_throughput).Finalize();
+  sim.AddSource(commodities[2]).recipe("pustream")
+      .capacity(source_throughput).Finalize();
   sim.AddRecipe("unatstream", c_natu());
   sim.AddRecipe("uoxstream", c_pustream());
   sim.AddRecipe("pustream", c_uox());
-  sim.AddSink("mixedstream").capacity(10).Finalize();
+  sim.AddSink("mixedstream").capacity(output_buffer_capacity).Finalize();
   int id = sim.Run();
 
-  double obs;
-  double exp;
   QueryResult qr = sim.db().Query("TimeSeriessupplymixedstream", NULL);
   ASSERT_EQ(simdur, qr.rows.size());
-  obs = qr.GetVal<double>("Value", 0);
-  exp = 0;
-  EXPECT_DOUBLE_EQ(exp, obs);
-  obs = qr.GetVal<double>("Value", 1);
-  exp = 1;
-  EXPECT_DOUBLE_EQ(exp, obs);
-  obs = qr.GetVal<double>("Value", 2);
-  exp = 1;
-  EXPECT_DOUBLE_EQ(exp, obs);
+  for (int i = 0; i < simdur; ++i) {
+    double expected = i == 0 ? 0 : mixer_throughput;
+    EXPECT_DOUBLE_EQ(expected, qr.GetVal<double>("Value", i));
+  }
 
-  const std::string commods[] = {"stream1", "stream2", "stream3"};
-  const double initial_space[] = {2.5, 3, 5};
-  const double exp_second[] = {2.3, 2.15, 4.05};
-  const double exp_third[] = {2.1, 1.3, 3.1};
   for (int i = 0; i < 3; ++i) {
-    qr = sim.db().Query("TimeSeriesdemand" + commods[i], NULL);
+    qr = sim.db().Query("TimeSeriesdemand" + commodities[i], NULL);
     ASSERT_EQ(simdur, qr.rows.size());
-    obs = qr.GetVal<double>("Value", 0);
-    exp = initial_space[i];
-    EXPECT_DOUBLE_EQ(exp, obs);
-    obs = qr.GetVal<double>("Value", 1);
-    exp = exp_second[i];
-    EXPECT_NEAR(exp, obs, cyclus::CY_NEAR_ZERO);
-    obs = qr.GetVal<double>("Value", 2);
-    exp = exp_third[i];
-    EXPECT_NEAR(exp, obs, cyclus::CY_NEAR_ZERO);
+    for (int time = 0; time < simdur; ++time) {
+      double expected = input_buffer_capacities[i] - time *
+          (source_throughput - mixing_ratios[i] * mixer_throughput);
+      if (time == 0) {
+        EXPECT_DOUBLE_EQ(expected, qr.GetVal<double>("Value", time));
+      } else {
+        EXPECT_NEAR(expected, qr.GetVal<double>("Value", time),
+                    cyclus::CY_NEAR_ZERO);
+      }
+    }
   }
 }
 

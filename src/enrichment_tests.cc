@@ -795,46 +795,31 @@ TEST_F(EnrichmentTest, TimeSeriesTests) {
   double exp_feed = cyclus::toolkit::FeedQty(1, assays);
   double exp_swu = cyclus::toolkit::SwuRequired(1, assays);
   double exp_tails = cyclus::toolkit::TailsQty(1, assays);
-  double obs;
+
+  // Helper lambda. Square brackets capture sim and simdur for use inside.
+  auto check_series = [&sim, simdur](const std::string& table,
+                                     double expected, int time) {
+    QueryResult qr = sim.db().Query(table, NULL);
+    ASSERT_EQ(simdur, qr.rows.size());
+    EXPECT_NEAR(expected, qr.GetVal<double>("Value", time),
+                cyclus::CY_NEAR_ZERO);
+  };
 
   // Feed and SWU record process use, so they are nonzero only on the step
   // where LEU is produced.
-  QueryResult qr = sim.db().Query("TimeSeriesEnrichmentFeed", NULL);
-  ASSERT_EQ(simdur, qr.rows.size());
-  obs = qr.GetVal<double>("Value", 0);
-  EXPECT_NEAR(exp_feed, obs, cyclus::CY_NEAR_ZERO);
-  obs = qr.GetVal<double>("Value", 1);
-  EXPECT_DOUBLE_EQ(0, obs);
+  check_series("TimeSeriesEnrichmentFeed", exp_feed, 0);
+  check_series("TimeSeriesEnrichmentFeed", 0, 1);
+  check_series("TimeSeriesEnrichmentSWU", exp_swu, 0);
+  check_series("TimeSeriesEnrichmentSWU", 0, 1);
+  check_series("TimeSeriesdemandnatu", exp_feed, 0);
+  check_series("TimeSeriesdemandnatu", 0, 1);
 
-  qr = sim.db().Query("TimeSeriesEnrichmentSWU", NULL);
-  ASSERT_EQ(simdur, qr.rows.size());
-  obs = qr.GetVal<double>("Value", 0);
-  EXPECT_NEAR(exp_swu, obs, cyclus::CY_NEAR_ZERO);
-  obs = qr.GetVal<double>("Value", 1);
-  EXPECT_DOUBLE_EQ(0, obs);
-
-  qr = sim.db().Query("TimeSeriesdemandnatu", NULL);
-  ASSERT_EQ(simdur, qr.rows.size());
-  obs = qr.GetVal<double>("Value", 0);
-  EXPECT_NEAR(exp_feed, obs, cyclus::CY_NEAR_ZERO);
-  obs = qr.GetVal<double>("Value", 1);
-  EXPECT_DOUBLE_EQ(0, obs);
-
-  qr = sim.db().Query("TimeSeriessupplyenr_u", NULL);
-  ASSERT_EQ(simdur, qr.rows.size());
   // Enrichment's product supply series records feed inventory available to
   // support product bids: 10 kg initially, then 10 kg minus consumed feed.
-  obs = qr.GetVal<double>("Value", 0);
-  EXPECT_DOUBLE_EQ(10, obs);
-  obs = qr.GetVal<double>("Value", 1);
-  EXPECT_NEAR(10 - exp_feed, obs, cyclus::CY_NEAR_ZERO);
-
-  qr = sim.db().Query("TimeSeriessupplytails", NULL);
-  ASSERT_EQ(simdur, qr.rows.size());
-  obs = qr.GetVal<double>("Value", 0);
-  EXPECT_DOUBLE_EQ(0, obs);
-  obs = qr.GetVal<double>("Value", 1);
-  EXPECT_NEAR(exp_tails, obs, cyclus::CY_NEAR_ZERO);
+  check_series("TimeSeriessupplyenr_u", 10, 0);
+  check_series("TimeSeriessupplyenr_u", 10 - exp_feed, 1);
+  check_series("TimeSeriessupplytails", 0, 0);
+  check_series("TimeSeriessupplytails", exp_tails, 1);
 }
 
 }  // namespace cycamore
