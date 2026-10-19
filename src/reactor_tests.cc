@@ -805,7 +805,8 @@ TEST(ReactorTests, TimeSeriesTests) {
   }
 
   qr = sim.db().Query("TimeSeriesdemanduox", NULL);
-  ASSERT_EQ(3, qr.rows.size());
+  int num_demand_steps = 3;
+  ASSERT_EQ(num_demand_steps, qr.rows.size());
   // Fuel demand is recorded only when an assembly is requested: once for the
   // initial core and once after each discharge. No demand row is recorded
   // while the reactor has a full core and is operating.
