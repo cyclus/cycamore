@@ -572,6 +572,35 @@ cyclus::Agent* SinkConstructor(cyclus::Context* ctx) {
   return new cycamore::Sink(ctx);
 }
 
+TEST_F(SinkTest, TimeSeriesTests) {
+  std::string config =
+    "   <in_commods>"
+    "     <val>commod1</val>"
+    "     <val>commod2</val>"
+    "   </in_commods>"
+    "   <capacity>4</capacity>"
+    "   <max_inv_size>5</max_inv_size>";
+
+  int simdur = 3;
+  cyclus::MockSim sim(cyclus::AgentSpec
+          (":cycamore:Sink"), config, simdur);
+  // The two commodities are alternatives in one mutual request. A source
+  // supplies 3 kg at time 0, leaving 2 kg of inventory space for time 1.
+  // Once that final 2 kg is received, demand is zero and no third row is
+  // recorded.
+  sim.AddSource("commod1").capacity(3).Finalize();
+  int id = sim.Run();
+
+  const std::string commods[] = {"commod1", "commod2"};
+  for (int i = 0; i < 2; ++i) {
+    cyclus::QueryResult qr =
+        sim.db().Query("TimeSeriesdemand" + commods[i], NULL);
+    ASSERT_EQ(simdur - 1, qr.rows.size());
+    EXPECT_DOUBLE_EQ(4, qr.GetVal<double>("Value", 0));
+    EXPECT_DOUBLE_EQ(2, qr.GetVal<double>("Value", 1));
+  }
+}
+
 // required to get functionality in cyclus agent unit tests library
 #ifndef CYCLUS_AGENT_TESTS_CONNECTED
 int ConnectAgentTests();

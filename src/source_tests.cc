@@ -1,5 +1,7 @@
 #include "source_tests.h"
 
+#include <algorithm>
+
 #include <gtest/gtest.h>
 
 #include <sstream>
@@ -241,6 +243,34 @@ SourceTest::GetContext(int nreqs, std::string commod) {
   return ec;
 }
 
+TEST_F(SourceTest, TimeSeriesTests) {
+  const std::string commodity = "commod";
+  const double inventory_size = 8;
+  const double source_throughput = 5;
+  const double sink_throughput = 3;
+  std::stringstream config;
+  config << "<outcommod>" << commodity << "</outcommod>"
+         << "<inventory_size>" << inventory_size << "</inventory_size>"
+         << "<throughput>" << source_throughput << "</throughput>";
+  int simdur = 3;
+  cyclus::MockSim sim(cyclus::AgentSpec(":cycamore:Source"), config.str(),
+                      simdur);
+  // The source sells 3 kg in each of the first two steps. Its 5 kg throughput
+  // controls the first two offers; the final offer is limited by inventory.
+  sim.AddSink(commodity).capacity(sink_throughput).Finalize();
+  int id = sim.Run();
+
+  cyclus::QueryResult qr =
+      sim.db().Query("TimeSeriessupply" + commodity, NULL);
+  ASSERT_EQ(simdur, qr.rows.size());
+  double inventory_remaining = inventory_size;
+  for (int i = 0; i < simdur; ++i) {
+    EXPECT_DOUBLE_EQ(std::min(source_throughput, inventory_remaining),
+                     qr.GetVal<double>("Value", i));
+    inventory_remaining -= sink_throughput;
+  }
+}
+
 } // namespace cycamore
 
 cyclus::Agent* SourceConstructor(cyclus::Context* ctx) {
@@ -256,4 +286,3 @@ static int cyclus_agent_tests_connected = ConnectAgentTests();
 
 INSTANTIATE_TEST_SUITE_P(SourceFac, FacilityTests, Values(&SourceConstructor));
 INSTANTIATE_TEST_SUITE_P(SourceFac, AgentTests, Values(&SourceConstructor));
-

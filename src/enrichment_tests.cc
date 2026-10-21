@@ -810,6 +810,58 @@ TEST_F(EnrichmentTest, PositionInitialize2) {
 }
 
 
+TEST_F(EnrichmentTest, TimeSeriesTests) {
+  // Begin with 10 kg natural uranium and enrich 1 kg of 4% LEU at time 0.
+  // The product sink retires after that trade; a tails sink starts at time 1
+  // so the second step records the remaining feed and generated tails.
+  std::string config =
+    "   <feed_commod>natu</feed_commod> "
+    "   <feed_recipe>natu1</feed_recipe> "
+    "   <product_commod>enr_u</product_commod> "
+    "   <tails_commod>tails</tails_commod> "
+    "   <tails_assay>0.003</tails_assay> "
+    "   <initial_feed>10</initial_feed> ";
+
+  int simdur = 2;
+  cyclus::MockSim sim(cyclus::AgentSpec
+          (":cycamore:Enrichment"), config, simdur);
+  sim.AddRecipe("natu1", c_natu1());
+  sim.AddRecipe("leu", c_leu());
+  sim.AddSink("enr_u").recipe("leu").capacity(1).lifetime(1).Finalize();
+  sim.AddSink("tails").start(1).Finalize();
+  int id = sim.Run();
+
+  cyclus::toolkit::Assays assays(0.007, 0.04, 0.003);
+  double exp_feed = cyclus::toolkit::FeedQty(1, assays);
+  double exp_swu = cyclus::toolkit::SwuRequired(1, assays);
+  double exp_tails = cyclus::toolkit::TailsQty(1, assays);
+
+  // Helper lambda. Square brackets capture sim and simdur for use inside.
+  auto check_series = [&sim, simdur](const std::string& table,
+                                     double expected, int time) {
+    QueryResult qr = sim.db().Query(table, NULL);
+    ASSERT_EQ(simdur, qr.rows.size());
+    EXPECT_NEAR(expected, qr.GetVal<double>("Value", time),
+                cyclus::CY_NEAR_ZERO);
+  };
+
+  // Feed and SWU record process use, so they are nonzero only on the step
+  // where LEU is produced.
+  check_series("TimeSeriesEnrichmentFeed", exp_feed, 0);
+  check_series("TimeSeriesEnrichmentFeed", 0, 1);
+  check_series("TimeSeriesEnrichmentSWU", exp_swu, 0);
+  check_series("TimeSeriesEnrichmentSWU", 0, 1);
+  check_series("TimeSeriesdemandnatu", exp_feed, 0);
+  check_series("TimeSeriesdemandnatu", 0, 1);
+
+  // Enrichment's product supply series records feed inventory available to
+  // support product bids: 10 kg initially, then 10 kg minus consumed feed.
+  check_series("TimeSeriessupplyenr_u", 10, 0);
+  check_series("TimeSeriessupplyenr_u", 10 - exp_feed, 1);
+  check_series("TimeSeriessupplytails", 0, 0);
+  check_series("TimeSeriessupplytails", exp_tails, 1);
+}
+
 }  // namespace cycamore
 
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
