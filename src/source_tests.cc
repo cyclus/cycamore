@@ -55,6 +55,74 @@ TEST_F(SourceTest, Print) {
   EXPECT_NO_THROW(std::string s = src_facility->str());
 }
 
+TEST_F(SourceTest, DefaultProductionCreatesInventoryAtBuild) {
+  cycamore::Source source(tc.get());
+  inventory_size(&source, 12);
+  throughput(&source, 5);
+
+  EXPECT_FALSE(incremental_production(&source));
+  source.Build(NULL);
+  EXPECT_DOUBLE_EQ(12, inventory_quantity(&source));
+  source.Tick();
+  EXPECT_DOUBLE_EQ(12, inventory_quantity(&source));
+}
+
+TEST_F(SourceTest, IncrementalProductionAccumulatesUpToInventorySize) {
+  cycamore::Source source(tc.get());
+  inventory_size(&source, 12);
+  throughput(&source, 5);
+  incremental_production(&source, true);
+
+  source.Build(NULL);
+  EXPECT_DOUBLE_EQ(0, inventory_quantity(&source));
+  source.Tick();
+  EXPECT_DOUBLE_EQ(5, inventory_quantity(&source));
+  source.Tick();
+  EXPECT_DOUBLE_EQ(10, inventory_quantity(&source));
+  source.Tick();
+  EXPECT_DOUBLE_EQ(12, inventory_quantity(&source));
+  source.Tick();
+  EXPECT_DOUBLE_EQ(12, inventory_quantity(&source));
+}
+
+TEST_F(SourceTest, ClonePreservesIncrementalProduction) {
+  incremental_production(src_facility, true);
+  cycamore::Source* clone = dynamic_cast<cycamore::Source*>(src_facility->Clone());
+  ASSERT_TRUE(clone != NULL);
+  EXPECT_TRUE(incremental_production(clone));
+  delete clone;
+}
+
+TEST_F(SourceTest, IncrementalProductionLimitIncludesSuppliedMaterial) {
+  cycamore::Source source(tc.get());
+  inventory_size(&source, 7);
+  throughput(&source, 5);
+  incremental_production(&source, true);
+  source.Build(NULL);
+
+  source.Tick();
+  remove_inventory(&source, 5);
+  source.Tick();
+  EXPECT_DOUBLE_EQ(2, inventory_quantity(&source));
+  remove_inventory(&source, 2);
+  source.Tick();
+  EXPECT_DOUBLE_EQ(0, inventory_quantity(&source));
+}
+
+TEST_F(SourceTest, IncrementalProductionInput) {
+  std::string config =
+    "<outcommod>commod</outcommod>"
+    "<inventory_size>12</inventory_size>"
+    "<throughput>5</throughput>"
+    "<incremental_production>true</incremental_production>";
+  cyclus::MockSim sim(cyclus::AgentSpec(":cycamore:Source"), config, 3);
+  sim.AddSink("commod").Finalize();
+
+  EXPECT_NO_THROW(sim.Run());
+  cyclus::QueryResult transactions = sim.db().Query("Transactions", NULL);
+  EXPECT_EQ(3, transactions.rows.size());
+}
+
 TEST_F(SourceTest, AddBids) {
   using cyclus::Bid;
   using cyclus::BidPortfolio;
