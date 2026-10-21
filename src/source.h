@@ -150,15 +150,15 @@ class Source : public cyclus::Facility,
 
   #pragma cyclus var { \
     "default": 0, \
-    "doc": "Setting just_in_time to true will force the Source to call " \
+    "doc": "Setting continuous_production to true will force the Source to call " \
            "Material::Create every time step to create the material it " \
-           "produces up to its throughput 'just in time' instead of " \
-           "creating everything at the start of the simulation.", \
-    "tooltip": "Produce material just in time", \
-    "uilabel": "Just-in-Time Production", \
+           "produces up to its throughput continuously instead of " \
+           "in a single batch when the facility is built.", \
+    "tooltip": "Produce material continuously", \
+    "uilabel": "Continuous Production", \
     "uitype": "bool", \
   }
-  bool just_in_time;
+  bool continuous_production;
 
   #pragma cyclus var { \
     "tooltip":"Material buffer"}

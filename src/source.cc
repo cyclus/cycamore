@@ -13,7 +13,7 @@ Source::Source(cyclus::Context* ctx)
       throughput(std::numeric_limits<double>::max()),
       package(cyclus::Package::unpackaged_name()),
       transport_unit(cyclus::TransportUnit::unrestricted_name()),
-      just_in_time(false),
+      continuous_production(false),
       total_material_created(0.0) {}
 
 Source::~Source() {}
@@ -64,7 +64,7 @@ void Source::Build(cyclus::Agent* parent) {
   using cyclus::Composition;
   using cyclus::Material;
 
-  if (!just_in_time) {
+  if (!continuous_production) {
     // create all source inventory and place into buf
     cyclus::Material::Ptr all_inv;
     Composition::Ptr blank_comp = Composition::CreateFromMass(CompMap());
@@ -80,7 +80,7 @@ void Source::Tick() {
   using cyclus::Composition;
   using cyclus::Material;
 
-  if (just_in_time) {
+  if (continuous_production) {
     // create material equal to throughput and place into buf
     cyclus::Material::Ptr new_mat;
     double qty_to_create =
