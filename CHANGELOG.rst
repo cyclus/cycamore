@@ -7,6 +7,7 @@ Since last release
 
 **Added:**
 * Incremental production mode for Source (#695)
+* Added tests for all Agent TimeSeries in Cycamore as of 8 June 2026 (#689)
 * Added tests for Conversion Facility (#658)
 * Added Conversion Facility (#657)
 * Replaced manual matl_buy/sell_policy code in storage with code injection (#639)
