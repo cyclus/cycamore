@@ -150,15 +150,15 @@ class Source : public cyclus::Facility,
 
   #pragma cyclus var { \
     "default": 0, \
-    "doc": "Setting continuous_production to true will force the Source to call " \
+    "doc": "Setting incremental_production to true will force the Source to call " \
            "Material::Create every time step to create the material it " \
-           "produces up to its throughput continuously instead of " \
+           "produces up to its throughput incrementally instead of " \
            "in a single batch when the facility is built.", \
-    "tooltip": "Produce material continuously", \
-    "uilabel": "Continuous Production", \
+    "tooltip": "Produce material incrementally", \
+    "uilabel": "Incremental Production", \
     "uitype": "bool", \
   }
-  bool continuous_production;
+  bool incremental_production;
 
   #pragma cyclus var { \
     "tooltip":"Material buffer"}
