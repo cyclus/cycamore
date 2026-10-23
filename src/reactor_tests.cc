@@ -878,6 +878,75 @@ TEST(ReactorTests, MultipleByProduct) {
 
 }
 
+TEST(ReactorTests, TimeSeriesTests) {
+  const int cycle_time = 2;
+  const int refuel_time = 2;
+  const int assemblies_in_core = 1;
+  const int assemblies_per_batch = 1;
+  const double assembly_size = 1;
+  const double power_capacity = 10;
+  std::stringstream config;
+  config << "  <fuel_inrecipes>  <val>uox</val>      </fuel_inrecipes>  "
+         << "  <fuel_outrecipes> <val>spentuox</val> </fuel_outrecipes>  "
+         << "  <fuel_incommods>  <val>uox</val>      </fuel_incommods>  "
+         << "  <fuel_outcommods> <val>waste</val>    </fuel_outcommods>  "
+         << "  <cycle_time>" << cycle_time << "</cycle_time>  "
+         << "  <refuel_time>" << refuel_time << "</refuel_time>  "
+         << "  <assem_size>" << assembly_size << "</assem_size>  "
+         << "  <n_assem_core>" << assemblies_in_core << "</n_assem_core>  "
+         << "  <n_assem_batch>" << assemblies_per_batch
+         << "</n_assem_batch>  "
+         << "  <power_cap>" << power_capacity << "</power_cap>  ";
+
+  int simdur = 7;
+  cyclus::MockSim sim(cyclus::AgentSpec(":cycamore:Reactor"), config.str(),
+                      simdur);
+  sim.AddSource("uox").Finalize();
+  sim.AddSink("waste").Finalize();
+  sim.AddRecipe("uox", c_uox());
+  sim.AddRecipe("spentuox", c_spentuox());
+  int id = sim.Run();
+
+  QueryResult qr = sim.db().Query("TimeSeriesPower", NULL);
+  ASSERT_EQ(simdur, qr.rows.size());
+  // Two operating steps are followed by two refueling steps. The second
+  // cycle begins at time 4 and ends with another discharge at time 6.
+  const int cycle_length = cycle_time + refuel_time;
+  for (int i = 0; i < simdur; ++i) {
+    double expected = i % cycle_length < cycle_time ? power_capacity : 0;
+    EXPECT_DOUBLE_EQ(expected, qr.GetVal<double>("Value", i));
+  }
+
+  qr = sim.db().Query("TimeSeriessupplyPOWER", NULL);
+  ASSERT_EQ(simdur, qr.rows.size());
+  for (int i = 0; i < simdur; ++i) {
+    double expected = i % cycle_length < cycle_time ? power_capacity : 0;
+    EXPECT_DOUBLE_EQ(expected, qr.GetVal<double>("Value", i));
+  }
+
+  qr = sim.db().Query("TimeSeriesdemanduox", NULL);
+  int num_demand_steps = 3;
+  ASSERT_EQ(num_demand_steps, qr.rows.size());
+  // Fuel demand is recorded only when an assembly is requested: once for the
+  // initial core and once after each discharge. No demand row is recorded
+  // while the reactor has a full core and is operating.
+  const int exp_demand_times[] = {0, cycle_time, cycle_time + cycle_length};
+  for (int i = 0; i < 3; ++i) {
+    EXPECT_EQ(exp_demand_times[i], qr.GetVal<int>("Time", i));
+    EXPECT_DOUBLE_EQ(assembly_size, qr.GetVal<double>("Value", i));
+  }
+
+  qr = sim.db().Query("TimeSeriessupplywaste", NULL);
+  ASSERT_EQ(2, qr.rows.size());
+  // Spent-fuel supply is recorded when a cycle ends and an assembly moves
+  // from the core into spent inventory. The sink removes each assembly before
+  // the next discharge, so both recorded supplies are one assembly.
+  const int exp_waste_times[] = {cycle_time, cycle_time + cycle_length};
+  for (int i = 0; i < 2; ++i) {
+    EXPECT_EQ(exp_waste_times[i], qr.GetVal<int>("Time", i));
+    EXPECT_DOUBLE_EQ(assembly_size, qr.GetVal<double>("Value", i));
+  }
+}
+
 } // namespace reactortests
 } // namespace cycamore
-
