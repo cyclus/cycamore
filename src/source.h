@@ -62,6 +62,8 @@ class Source : public cyclus::Facility,
 
   virtual void Tock() {};
 
+  virtual void CreateInventory(double qty);
+
   virtual std::string str();
 
   virtual std::set<cyclus::BidPortfolio<cyclus::Material>::Ptr>
