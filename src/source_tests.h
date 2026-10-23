@@ -41,6 +41,21 @@ class SourceTest : public ::testing::Test {
     s->outcommod = commod;
   }
   void throughput(cycamore::Source* s, double val) { s->throughput = val; }
+  void inventory_size(cycamore::Source* s, double val) {
+    s->inventory_size = val;
+  }
+  void incremental_production(cycamore::Source* s, bool val) {
+    s->incremental_production = val;
+  }
+  bool incremental_production(cycamore::Source* s) {
+    return s->incremental_production;
+  }
+  double inventory_quantity(cycamore::Source* s) {
+    return s->inventory.quantity();
+  }
+  void remove_inventory(cycamore::Source* s, double qty) {
+    s->inventory.Pop(qty);
+  }
 
   boost::shared_ptr<cyclus::ExchangeContext<cyclus::Material> > GetContext(
       int nreqs, std::string commodity);

@@ -9,10 +9,12 @@ namespace cycamore {
 
 Source::Source(cyclus::Context* ctx)
     : cyclus::Facility(ctx),
-      throughput(std::numeric_limits<double>::max()),
       inventory_size(std::numeric_limits<double>::max()),
+      throughput(std::numeric_limits<double>::max()),
       package(cyclus::Package::unpackaged_name()),
-      transport_unit(cyclus::TransportUnit::unrestricted_name()) {}
+      transport_unit(cyclus::TransportUnit::unrestricted_name()),
+      incremental_production(false),
+      total_material_created(0.0) {}
 
 Source::~Source() {}
 
@@ -55,21 +57,36 @@ void Source::EnterNotify() {
   InitializePosition();
 }
 
-void Source::Build(cyclus::Agent* parent) {
-  Facility::Build(parent);
-
+void Source::CreateInventory(double qty) { 
   using cyclus::CompMap;
   using cyclus::Composition;
   using cyclus::Material;
-
-  // create all source inventory and place into buf
-  cyclus::Material::Ptr all_inv;
+  cyclus::Material::Ptr new_mat;
   Composition::Ptr blank_comp = Composition::CreateFromMass(CompMap());
-  all_inv = (outrecipe.empty() || context() == NULL) ? \
-          Material::Create(this, inventory_size, blank_comp) : \
-          Material::Create(this, inventory_size, context()->GetRecipe(outrecipe));
-  inventory.Push(all_inv);
+  new_mat = (outrecipe.empty() || context() == NULL) ? \
+          Material::Create(this, qty, blank_comp) : \
+          Material::Create(this, qty, context()->GetRecipe(outrecipe));
+  inventory.Push(new_mat);
+}
 
+void Source::Build(cyclus::Agent* parent) {
+  Facility::Build(parent);
+
+  if (!incremental_production) {
+    // create all source inventory and place into buf
+    CreateInventory(inventory_size);
+  }
+}
+
+void Source::Tick() {
+  if (incremental_production) {
+    // create material equal to throughput so long as total amount created 
+    // doesn't exceed inventory_size and place it in the buf
+    double qty_to_create =
+          std::min(throughput, inventory_size - total_material_created);
+    CreateInventory(qty_to_create);
+    total_material_created += qty_to_create;
+  }
 }
 
 std::set<cyclus::BidPortfolio<cyclus::Material>::Ptr> Source::GetMatlBids(

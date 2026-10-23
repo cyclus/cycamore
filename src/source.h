@@ -58,9 +58,11 @@ class Source : public cyclus::Facility,
 
   virtual void InitFrom(cyclus::QueryableBackend* b);
 
-  virtual void Tick() {};
+  virtual void Tick();
 
   virtual void Tock() {};
+
+  virtual void CreateInventory(double qty);
 
   virtual std::string str();
 
@@ -149,8 +151,23 @@ class Source : public cyclus::Facility,
   std::string transport_unit;
 
   #pragma cyclus var { \
+    "default": 0, \
+    "doc": "Setting incremental_production to true will force the Source to call " \
+           "Material::Create every time step to create the material it " \
+           "produces up to its throughput incrementally instead of " \
+           "in a single batch when the facility is built.", \
+    "tooltip": "Produce material incrementally", \
+    "uilabel": "Incremental Production", \
+    "uitype": "bool", \
+  }
+  bool incremental_production;
+
+  #pragma cyclus var { \
     "tooltip":"Material buffer"}
   cyclus::toolkit::ResBuf<cyclus::Material> inventory;
+
+  #pragma cyclus var {"default": 0.0, "internal": True}
+  double total_material_created;
 
   void SetPackage();
 };
