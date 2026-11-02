@@ -118,10 +118,7 @@ bool SortBids(cyclus::Bid<Material>* i,
 // Sort offers of input material to have higher preference for more
 // U-235 content
 // NOTE: This function REALLY needs a closer look as a part of the v2.0 update
-// It should probably do something a little more sophisticated wrt the cost of
-// using lower-enriched material, since we can "know" that now. For now, I am
-// going to just make it work "like it does now" but actually "work", and then
-// later I'll come through and do this "correctly". 
+// See cycamore issue #700
 void Enrichment::AdjustMatlParams(
     cyclus::RequestBidMap<Material>::type& rb_map) {
   using cyclus::Bid;
@@ -147,7 +144,7 @@ void Enrichment::AdjustMatlParams(
     bool u235_mass = 0;
 
     for (int bidit = 0; bidit < bids_vector.size(); bidit++) {
-      // Make it negative so that higher U235 concentratoin gives lower 
+      // Make it negative so that higher U235 concentration gives lower 
       // arc_cost.
       int new_pref = -(bidit + 1);
 
