@@ -283,17 +283,18 @@ TEST(FuelFabTests, FissStreamPrefs) {
   sim.AddRecipe("natu", c_natu());
   int id = sim.Run();
 
+  // arc_cost associated with stream_3 > stream_1 > stream_2
   std::vector<Cond> conds;
   conds.push_back(Cond("Commodity", "==", std::string("stream1")));
   QueryResult qr = sim.db().Query("Transactions", &conds);
   Material::Ptr m = sim.GetMaterial(qr.GetVal<int>("ResourceId"));
   EXPECT_DOUBLE_EQ(0.5, m->quantity());
 
-  conds[0] = Cond("Commodity", "==", std::string("stream2"));
+  conds[0] = Cond("Commodity", "==", std::string("stream3"));
   qr = sim.db().Query("Transactions", &conds);
   EXPECT_EQ(0, qr.rows.size());
 
-  conds[0] = Cond("Commodity", "==", std::string("stream3"));
+  conds[0] = Cond("Commodity", "==", std::string("stream2"));
   qr = sim.db().Query("Transactions", &conds);
   m = sim.GetMaterial(qr.GetVal<int>("ResourceId"));
   EXPECT_DOUBLE_EQ(1.0, m->quantity());

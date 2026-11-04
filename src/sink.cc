@@ -45,7 +45,7 @@ void Sink::EnterNotify() {
 
   if (in_commod_prefs.size() == 0) {
     for (int i = 0; i < in_commods.size(); ++i) {
-      in_commod_prefs.push_back(cyclus::kDefaultPref);
+      in_commod_prefs.push_back(cyclus::kDefaultUnitCostMod);
     }
   } else if (in_commod_prefs.size() != in_commods.size()) {
     std::stringstream ss;

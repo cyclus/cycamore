@@ -69,7 +69,7 @@ void Reactor::EnterNotify() {
   // type.  Without this segfaults could occur - yuck.
   if (fuel_prefs.size() == 0) {
     for (int i = 0; i < fuel_outcommods.size(); i++) {
-      fuel_prefs.push_back(cyclus::kDefaultPref);
+      fuel_prefs.push_back(cyclus::kDefaultUnitCostMod);
     }
   }
 

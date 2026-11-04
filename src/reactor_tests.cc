@@ -581,7 +581,10 @@ TEST(ReactorTests, SpentFuelProperCommodTracking) {
 // preferences are adjusted, the ommitted preference vector must be populated
 // with default values - if it wasn't then preferences won't be adjusted
 // correctly and the reactor could segfault.  Check that this doesn't happen.
-TEST(ReactorTests, PrefChange) {
+// NOTE: This test still refers to prefs instead of unit_cost_mod. I will go
+// back over it later as a part of updating the reactor archetype and change
+// this.
+TEST(ReactorTests, UnitCostModChange) {
   // it is important that the fuel_prefs not be present in the config below.
   std::string config =
      "  <fuel_inrecipes>  <val>lwr_fresh</val>  </fuel_inrecipes>  "
@@ -607,7 +610,16 @@ TEST(ReactorTests, PrefChange) {
   int id = sim.Run();
 
   QueryResult qr = sim.db().Query("Transactions", NULL);
-  EXPECT_EQ(25, qr.rows.size()) << "failed to adjust preferences properly";
+  EXPECT_EQ(simdur, qr.rows.size());
+
+  std::vector<Cond> conds;
+  conds.push_back(Cond("Time", "<", 25));
+  qr = sim.db().Query("Transactions", &conds);
+  EXPECT_EQ(cyclus::kDefaultUnitCostMod, qr.GetVal<double>("UnitCostMod"));
+
+  conds[0] = Cond("Time", ">=", 25);
+  qr = sim.db().Query("Transactions", &conds);
+  EXPECT_EQ(-1, qr.GetVal<double>("UnitCostMod"));
 }
 
 TEST(ReactorTests, RecipeChange) {

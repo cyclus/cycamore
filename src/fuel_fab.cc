@@ -141,7 +141,7 @@ void FuelFab::EnterNotify() {
 
   if (fiss_commod_prefs.empty()) {
     for (int i = 0; i < fiss_commods.size(); i++) {
-      fiss_commod_prefs.push_back(cyclus::kDefaultPref);
+      fiss_commod_prefs.push_back(cyclus::kDefaultUnitCostMod);
     }
   } else if (fiss_commod_prefs.size() != fiss_commods.size()) {
     std::stringstream ss;
@@ -152,7 +152,7 @@ void FuelFab::EnterNotify() {
 
   if (fill_commod_prefs.empty()) {
     for (int i = 0; i < fill_commods.size(); i++) {
-      fill_commod_prefs.push_back(cyclus::kDefaultPref);
+      fill_commod_prefs.push_back(cyclus::kDefaultUnitCostMod);
     }
   } else if (fill_commod_prefs.size() != fill_commods.size()) {
     std::stringstream ss;
