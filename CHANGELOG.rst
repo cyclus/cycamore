@@ -7,6 +7,7 @@ Since last release
 
 **Added:**
 * Incremental production mode for Source (#695)
+* Dependabot configuration to keep the GitHub Actions up to date (#706)
 * Added tests for all Agent TimeSeries in Cycamore as of 8 June 2026 (#689)
 * Added tests for Conversion Facility (#658)
 * Added Conversion Facility (#657)
@@ -30,6 +31,7 @@ Since last release
 * Changed the styling of doxygen docs (#626)
 * Use ``CyclusBuildSetup`` macros to replace CMake boilerplate (#627)
 * Updated Doxygen homepage (#632)
+* Updated the GitHub Actions in the workflows to their latest versions, and only push images from the publish workflows for this repository (#706)
 
 **Fixed:**
 * Schedule Decommission in ``Reactor::Tick()`` instead of Decommission (#609)

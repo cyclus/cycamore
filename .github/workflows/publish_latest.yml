@@ -10,6 +10,13 @@ on:
     branches:
       - main
 
+# The GITHUB_TOKEN of a pull request from a fork can only read packages,
+# whatever the permissions of the jobs, so the images are only pushed to
+# (and the registry cache only written to) ghcr.io for events from this
+# repository. Pull requests from forks still build and test the images.
+env:
+  PUSH_IMAGES: ${{ github.event_name != 'pull_request' || github.event.pull_request.head.repo.full_name == github.repository }}
+
 jobs:
   build-dependency-and-test-img:
     runs-on: ubuntu-latest
@@ -40,13 +47,14 @@ jobs:
           echo "tag=latest" >> "$GITHUB_ENV"
 
       - name: Checkout repository
-        uses: actions/checkout@v4
+        uses: actions/checkout@v7
 
       - name: Set up Docker Buildx
-        uses: docker/setup-buildx-action@v3
+        uses: docker/setup-buildx-action@v4
 
       - name: Log in to the Container registry
-        uses: docker/login-action@v3
+        if: env.PUSH_IMAGES == 'true'
+        uses: docker/login-action@v4
         with:
           registry: ghcr.io
           username: ${{ github.actor }}
@@ -54,27 +62,37 @@ jobs:
 
       - name: Build and Test Cycamore
         id: build-cycamore
-        uses: docker/build-push-action@v5
+        uses: docker/build-push-action@v7
         with:
           cache-from: type=registry,ref=ghcr.io/cyclus/cycamore_${{ matrix.ubuntu_versions }}_${{ matrix.pkg_mgr }}/cycamore:ci-layer-cache
-          cache-to: type=registry,ref=ghcr.io/cyclus/cycamore_${{ matrix.ubuntu_versions }}_${{ matrix.pkg_mgr }}/cycamore:ci-layer-cache,mode=max
+          # Write the registry cache only when pushing (it needs packages: write),
+          # and otherwise set cache-to to '' so that no cache is exported. This
+          # is the same cache as cache-from. GitHub Actions expressions cannot
+          # nest ${{ }} or concatenate strings, so format() builds the cache
+          # reference, replacing {0}, {1}, ... with the matrix values after it.
+          cache-to: ${{ env.PUSH_IMAGES == 'true' && format('type=registry,ref=ghcr.io/cyclus/cycamore_{0}_{1}/cycamore:ci-layer-cache,mode=max', matrix.ubuntu_versions, matrix.pkg_mgr) || '' }}
           file: docker/Dockerfile
-          push: true
+          push: ${{ env.PUSH_IMAGES == 'true' }}
           tags: ghcr.io/cyclus/cycamore_${{ matrix.ubuntu_versions }}_${{ matrix.pkg_mgr }}/cycamore:${{ env.tag }}
           build-args: |
             pkg_mgr=${{ matrix.pkg_mgr }}
             ubuntu_version=${{ matrix.ubuntu_versions }}
             cyclus_tag=latest
           
+      # The Cymetric build is FROM the Cycamore image pushed above, so it is
+      # skipped when the images are not pushed. It is still built and tested in
+      # pull requests by build_test.yml, which uses a local registry.
       - name: Checkout Cymetric
-        uses: actions/checkout@v4
+        if: env.PUSH_IMAGES == 'true'
+        uses: actions/checkout@v7
         with:
           repository: cyclus/cymetric
           path: ${{ github.workspace }}/cymetric
 
       - name: Build and Test Cymetric
+        if: env.PUSH_IMAGES == 'true'
         continue-on-error: true
-        uses: docker/build-push-action@v5
+        uses: docker/build-push-action@v7
         with:
           context: ${{ github.workspace }}/cymetric
           file: ${{ github.workspace }}/cymetric/docker/Dockerfile
