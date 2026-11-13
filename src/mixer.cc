@@ -30,12 +30,13 @@ cyclus::Inventories Mixer::SnapshotInv() {
 }
 
 void Mixer::InitInv(cyclus::Inventories& inv) {
-  inv["output-inv-name"] = output.PopNRes(output.count());
-  output.Push(inv["output-inv-name"]);
-
-  cyclus::Inventories::iterator it;
+  cyclus::Inventories::const_iterator it;
   for (it = inv.begin(); it != inv.end(); ++it) {
-    streambufs[it->first].Push(it->second);
+    if (it->first == "output-inv-name") {
+      output.Push(it->second);
+    } else {
+      streambufs[it->first].Push(it->second);
+    }
   }
 }
 
