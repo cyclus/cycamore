@@ -1,5 +1,5 @@
-#ifndef CYCAMORE_SRC_SOURCE_H_
-#define CYCAMORE_SRC_SOURCE_H_
+#ifndef CYCAMORE_SRC_FUNCTIONAL_SOURCE_H_
+#define CYCAMORE_SRC_FUNCTIONAL_SOURCE_H_
 
 #include <set>
 #include <vector>
@@ -22,14 +22,14 @@ class Context;
 /// infinite.  Supplies material results in corresponding decrease in
 /// inventory, and when the inventory size reaches zero, the source can provide
 /// no more material.
-class Source : public cyclus::Facility,
+class FunctionalSource : public cyclus::Facility,
   public cyclus::toolkit::CommodityProducer {
-  friend class SourceTest;
+  friend class FunctionalSourceTest;
  public:
 
-  Source(cyclus::Context* ctx);
+  FunctionalSource(cyclus::Context* ctx);
 
-  virtual ~Source();
+  virtual ~FunctionalSource();
 
   virtual std::string version() { return CYCAMORE_VERSION; }
 
@@ -54,7 +54,7 @@ class Source : public cyclus::Facility,
   #pragma cyclus def snapshotinv
   #pragma cyclus def initinv
 
-  virtual void InitFrom(Source* m);
+  virtual void InitFrom(FunctionalSource* m);
 
   virtual void InitFrom(cyclus::QueryableBackend* b);
 
@@ -171,4 +171,4 @@ class Source : public cyclus::Facility,
 
 }  // namespace cycamore
 
-#endif  // CYCAMORE_SRC_SOURCE_H_
+#endif  // CYCAMORE_SRC_FUNCTIONAL_SOURCE_H_
