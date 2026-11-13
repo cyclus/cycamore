@@ -22,8 +22,7 @@ class Context;
 /// infinite.  Supplies material results in corresponding decrease in
 /// inventory, and when the inventory size reaches zero, the source can provide
 /// no more material.
-class FunctionalSource : public cyclus::Facility,
-  public cyclus::toolkit::CommodityProducer {
+class FunctionalSource : public cyclus::Facility {
   friend class FunctionalSourceTest;
  public:
 
