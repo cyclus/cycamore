@@ -1,4 +1,4 @@
-#include "source.h"
+#include "functional_source.h"
 
 #include <sstream>
 #include <limits>
@@ -7,7 +7,7 @@
 
 namespace cycamore {
 
-Source::Source(cyclus::Context* ctx)
+FunctionalSource::FunctionalSource(cyclus::Context* ctx)
     : cyclus::Facility(ctx),
       inventory_size(std::numeric_limits<double>::max()),
       throughput(std::numeric_limits<double>::max()),
@@ -15,21 +15,21 @@ Source::Source(cyclus::Context* ctx)
       transport_unit(cyclus::TransportUnit::unrestricted_name()),
       incremental_production(false) {}
 
-Source::~Source() {}
+FunctionalSource::~FunctionalSource() {}
 
-void Source::InitFrom(Source* m) {
-  #pragma cyclus impl initfromcopy cycamore::Source
+void FunctionalSource::InitFrom(FunctionalSource* m) {
+  #pragma cyclus impl initfromcopy cycamore::FunctionalSource
   cyclus::toolkit::CommodityProducer::Copy(m);
 }
 
-void Source::InitFrom(cyclus::QueryableBackend* b) {
-  #pragma cyclus impl initfromdb cycamore::Source
+void FunctionalSource::InitFrom(cyclus::QueryableBackend* b) {
+  #pragma cyclus impl initfromdb cycamore::FunctionalSource
   namespace tk = cyclus::toolkit;
   tk::CommodityProducer::Add(tk::Commodity(outcommod),
                              tk::CommodInfo(throughput, throughput));
 }
 
-std::string Source::str() {
+std::string FunctionalSource::str() {
   namespace tk = cyclus::toolkit;
   std::stringstream ss;
   std::string ans;
@@ -51,12 +51,12 @@ std::string Source::str() {
   return ss.str();
 }
 
-void Source::EnterNotify() {
+void FunctionalSource::EnterNotify() {
   cyclus::Facility::EnterNotify();
   InitializePosition();
 }
 
-void Source::CreateInventory(double qty) { 
+void FunctionalSource::CreateInventory(double qty) { 
   using cyclus::CompMap;
   using cyclus::Composition;
   using cyclus::Material;
@@ -68,7 +68,7 @@ void Source::CreateInventory(double qty) {
   inventory.Push(new_mat);
 }
 
-void Source::Build(cyclus::Agent* parent) {
+void FunctionalSource::Build(cyclus::Agent* parent) {
   Facility::Build(parent);
 
   if (!incremental_production) {
@@ -77,7 +77,7 @@ void Source::Build(cyclus::Agent* parent) {
   }
 }
 
-void Source::Tick() {
+void FunctionalSource::Tick() {
   if (incremental_production && inventory_size > 0) {
     // create material equal to throughput so long as total amount created 
     // doesn't exceed inventory_size and place it in the buf
@@ -88,7 +88,7 @@ void Source::Tick() {
   }
 }
 
-std::set<cyclus::BidPortfolio<cyclus::Material>::Ptr> Source::GetMatlBids(
+std::set<cyclus::BidPortfolio<cyclus::Material>::Ptr> FunctionalSource::GetMatlBids(
     cyclus::CommodMap<cyclus::Material>::type& commod_requests) {
   using cyclus::BidPortfolio;
   using cyclus::CapacityConstraint;
@@ -100,9 +100,9 @@ std::set<cyclus::BidPortfolio<cyclus::Material>::Ptr> Source::GetMatlBids(
   double max_qty = std::min(throughput, inventory.quantity());
   cyclus::toolkit::RecordTimeSeries<double>("supply"+outcommod, this,
                                             max_qty);
-  LOG(cyclus::LEV_INFO3, "Source") << prototype() << " is bidding up to "
+  LOG(cyclus::LEV_INFO3, "FunctionalSource") << prototype() << " is bidding up to "
                                    << max_qty << " kg of " << outcommod;
-  LOG(cyclus::LEV_INFO5, "Source") << "stats: " << str();
+  LOG(cyclus::LEV_INFO5, "FunctionalSource") << "stats: " << str();
 
   std::set<BidPortfolio<Material>::Ptr> ports;
   if (max_qty < cyclus::eps()) {
@@ -145,7 +145,7 @@ std::set<cyclus::BidPortfolio<cyclus::Material>::Ptr> Source::GetMatlBids(
   return ports;
 }
 
-void Source::GetMatlTrades(
+void FunctionalSource::GetMatlTrades(
     const std::vector<cyclus::Trade<cyclus::Material> >& trades,
     std::vector<std::pair<cyclus::Trade<cyclus::Material>,
                           cyclus::Material::Ptr> >& responses) {
@@ -187,14 +187,14 @@ void Source::GetMatlTrades(
       }
 
       responses.push_back(std::make_pair(*it, response));
-      LOG(cyclus::LEV_INFO5, "Source") << prototype() << " sent an order"
+      LOG(cyclus::LEV_INFO5, "FunctionalSource") << prototype() << " sent an order"
                                       << " for " << response->quantity() << " of " << outcommod;
     }
   }
 }
 
-extern "C" cyclus::Agent* ConstructSource(cyclus::Context* ctx) {
-  return new Source(ctx);
+extern "C" cyclus::Agent* ConstructFunctionalSource(cyclus::Context* ctx) {
+  return new FunctionalSource(ctx);
 }
 
 }  // namespace cycamore
