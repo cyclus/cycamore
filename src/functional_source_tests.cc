@@ -1,4 +1,4 @@
-#include "source_tests.h"
+#include "functional_source_tests.h"
 
 #include <algorithm>
 
@@ -12,19 +12,19 @@
 
 namespace cycamore {
 
-void SourceTest::SetUp() {
-  src_facility = new cycamore::Source(tc.get());
+void FunctionalSourceTest::SetUp() {
+  src_facility = new cycamore::FunctionalSource(tc.get());
   trader = tc.trader();
   InitParameters();
-  SetUpSource();
+  SetUpFunctionalSource();
   src_facility->Build(NULL);
 }
 
-void SourceTest::TearDown() {
+void FunctionalSourceTest::TearDown() {
   delete src_facility;
 }
 
-void SourceTest::InitParameters() {
+void FunctionalSourceTest::InitParameters() {
   commod = "commod";
   recipe_name = "recipe";
   package_name = "testpackage";
@@ -35,15 +35,15 @@ void SourceTest::InitParameters() {
   tc.get()->AddRecipe(recipe_name, recipe);
 }
 
-void SourceTest::SetUpSource() {
+void FunctionalSourceTest::SetUpFunctionalSource() {
   outcommod(src_facility, commod);
   outrecipe(src_facility, recipe_name);
   throughput(src_facility, capacity);
 }
 
-TEST_F(SourceTest, Clone) {
+TEST_F(FunctionalSourceTest, Clone) {
   cyclus::Context* ctx = tc.get();
-  cycamore::Source* cloned_fac = dynamic_cast<cycamore::Source*>
+  cycamore::FunctionalSource* cloned_fac = dynamic_cast<cycamore::FunctionalSource*>
                                          (src_facility->Clone());
 
   EXPECT_EQ(outcommod(src_facility),  outcommod(cloned_fac));
@@ -53,71 +53,71 @@ TEST_F(SourceTest, Clone) {
   delete cloned_fac;
 }
 
-TEST_F(SourceTest, Print) {
+TEST_F(FunctionalSourceTest, Print) {
   EXPECT_NO_THROW(std::string s = src_facility->str());
 }
 
-TEST_F(SourceTest, DefaultProductionCreatesInventoryAtBuild) {
-  cycamore::Source source(tc.get());
-  inventory_size(&source, 12);
-  throughput(&source, 5);
+TEST_F(FunctionalSourceTest, DefaultProductionCreatesInventoryAtBuild) {
+  cycamore::FunctionalSource functional_source(tc.get());
+  inventory_size(&functional_source, 12);
+  throughput(&functional_source, 5);
 
-  EXPECT_FALSE(incremental_production(&source));
-  source.Build(NULL);
-  EXPECT_DOUBLE_EQ(12, inventory_quantity(&source));
-  source.Tick();
-  EXPECT_DOUBLE_EQ(12, inventory_quantity(&source));
+  EXPECT_FALSE(incremental_production(&functional_source));
+  functional_source.Build(NULL);
+  EXPECT_DOUBLE_EQ(12, inventory_quantity(&functional_source));
+  functional_source.Tick();
+  EXPECT_DOUBLE_EQ(12, inventory_quantity(&functional_source));
 }
 
-TEST_F(SourceTest, IncrementalProductionAccumulatesUpToInventorySize) {
-  cycamore::Source source(tc.get());
-  inventory_size(&source, 12);
-  throughput(&source, 5);
-  incremental_production(&source, true);
+TEST_F(FunctionalSourceTest, IncrementalProductionAccumulatesUpToInventorySize) {
+  cycamore::FunctionalSource functional_source(tc.get());
+  inventory_size(&functional_source, 12);
+  throughput(&functional_source, 5);
+  incremental_production(&functional_source, true);
 
-  source.Build(NULL);
-  EXPECT_DOUBLE_EQ(0, inventory_quantity(&source));
-  source.Tick();
-  EXPECT_DOUBLE_EQ(5, inventory_quantity(&source));
-  source.Tick();
-  EXPECT_DOUBLE_EQ(10, inventory_quantity(&source));
-  source.Tick();
-  EXPECT_DOUBLE_EQ(12, inventory_quantity(&source));
-  source.Tick();
-  EXPECT_DOUBLE_EQ(12, inventory_quantity(&source));
+  functional_source.Build(NULL);
+  EXPECT_DOUBLE_EQ(0, inventory_quantity(&functional_source));
+  functional_source.Tick();
+  EXPECT_DOUBLE_EQ(5, inventory_quantity(&functional_source));
+  functional_source.Tick();
+  EXPECT_DOUBLE_EQ(10, inventory_quantity(&functional_source));
+  functional_source.Tick();
+  EXPECT_DOUBLE_EQ(12, inventory_quantity(&functional_source));
+  functional_source.Tick();
+  EXPECT_DOUBLE_EQ(12, inventory_quantity(&functional_source));
 }
 
-TEST_F(SourceTest, ClonePreservesIncrementalProduction) {
+TEST_F(FunctionalSourceTest, ClonePreservesIncrementalProduction) {
   incremental_production(src_facility, true);
-  cycamore::Source* clone = dynamic_cast<cycamore::Source*>(src_facility->Clone());
+  cycamore::FunctionalSource* clone = dynamic_cast<cycamore::FunctionalSource*>(src_facility->Clone());
   ASSERT_TRUE(clone != NULL);
   EXPECT_TRUE(incremental_production(clone));
   delete clone;
 }
 
-TEST_F(SourceTest, IncrementalProductionLimitIncludesSuppliedMaterial) {
-  cycamore::Source source(tc.get());
-  inventory_size(&source, 7);
-  throughput(&source, 5);
-  incremental_production(&source, true);
-  source.Build(NULL);
+TEST_F(FunctionalSourceTest, IncrementalProductionLimitIncludesSuppliedMaterial) {
+  cycamore::FunctionalSource functional_source(tc.get());
+  inventory_size(&functional_source, 7);
+  throughput(&functional_source, 5);
+  incremental_production(&functional_source, true);
+  functional_source.Build(NULL);
 
-  source.Tick();
-  remove_inventory(&source, 5);
-  source.Tick();
-  EXPECT_DOUBLE_EQ(2, inventory_quantity(&source));
-  remove_inventory(&source, 2);
-  source.Tick();
-  EXPECT_DOUBLE_EQ(0, inventory_quantity(&source));
+  functional_source.Tick();
+  remove_inventory(&functional_source, 5);
+  functional_source.Tick();
+  EXPECT_DOUBLE_EQ(2, inventory_quantity(&functional_source));
+  remove_inventory(&functional_source, 2);
+  functional_source.Tick();
+  EXPECT_DOUBLE_EQ(0, inventory_quantity(&functional_source));
 }
 
-TEST_F(SourceTest, IncrementalProductionInput) {
+TEST_F(FunctionalSourceTest, IncrementalProductionInput) {
   std::string config =
     "<outcommod>commod</outcommod>"
     "<inventory_size>12</inventory_size>"
     "<throughput>5</throughput>"
     "<incremental_production>true</incremental_production>";
-  cyclus::MockSim sim(cyclus::AgentSpec(":cycamore:Source"), config, 3);
+  cyclus::MockSim sim(cyclus::AgentSpec(":cycamore:FunctionalSource"), config, 3);
   sim.AddSink("commod").Finalize();
 
   EXPECT_NO_THROW(sim.Run());
@@ -125,7 +125,7 @@ TEST_F(SourceTest, IncrementalProductionInput) {
   EXPECT_EQ(3, transactions.rows.size());
 }
 
-TEST_F(SourceTest, AddBids) {
+TEST_F(FunctionalSourceTest, AddBids) {
   using cyclus::Bid;
   using cyclus::BidPortfolio;
   using cyclus::CapacityConstraint;
@@ -155,7 +155,7 @@ TEST_F(SourceTest, AddBids) {
   EXPECT_EQ(*constrs.begin(), CapacityConstraint<Material>(capacity));
 }
 
-TEST_F(SourceTest, Response) {
+TEST_F(FunctionalSourceTest, Response) {
   using cyclus::Bid;
   using cyclus::Material;
   using cyclus::Request;
@@ -198,12 +198,12 @@ TEST_F(SourceTest, Response) {
   delete bid;
 }
 
-TEST_F(SourceTest, PositionInitialize) {
+TEST_F(FunctionalSourceTest, PositionInitialize) {
   std::string config =
     "<outcommod>spent_fuel</outcommod>"
   ;
   int simdur = 3;
-  cyclus::MockSim sim(cyclus::AgentSpec (":cycamore:Source"), config, simdur);
+  cyclus::MockSim sim(cyclus::AgentSpec (":cycamore:FunctionalSource"), config, simdur);
   int id = sim.Run();
 
   cyclus::QueryResult qr = sim.db().Query("AgentPosition", NULL);
@@ -212,14 +212,14 @@ TEST_F(SourceTest, PositionInitialize) {
 
 }
 
-TEST_F(SourceTest, Longitude) {
+TEST_F(FunctionalSourceTest, Longitude) {
   std::string config =
     "<outcommod>spent_fuel</outcommod>"
     "<latitude>-0.01</latitude>"
     "<longitude>0.01</longitude>"
   ;
   int simdur = 3;
-  cyclus::MockSim sim(cyclus::AgentSpec (":cycamore:Source"), config, simdur);
+  cyclus::MockSim sim(cyclus::AgentSpec (":cycamore:FunctionalSource"), config, simdur);
   int id = sim.Run();
 
   cyclus::QueryResult qr = sim.db().Query("AgentPosition", NULL);
@@ -228,7 +228,7 @@ TEST_F(SourceTest, Longitude) {
 
 }
 
-TEST_F(SourceTest, Package) {
+TEST_F(FunctionalSourceTest, Package) {
   using cyclus::QueryResult;
   using cyclus::Cond;
 
@@ -239,7 +239,7 @@ TEST_F(SourceTest, Package) {
     "<throughput>5</throughput>";
 
   int simdur = 3;
-  cyclus::MockSim sim(cyclus::AgentSpec (":cycamore:Source"), config, simdur);
+  cyclus::MockSim sim(cyclus::AgentSpec (":cycamore:FunctionalSource"), config, simdur);
   
   sim.context()->AddRecipe(recipe_name, recipe);
   sim.context()->AddPackage(package_name, 3, 4, "first");
@@ -259,7 +259,7 @@ TEST_F(SourceTest, Package) {
   EXPECT_EQ(qr_res.rows.size(), 3); 
 }
 
-TEST_F(SourceTest, TransportUnit) {
+TEST_F(FunctionalSourceTest, TransportUnit) {
   using cyclus::QueryResult;
   using cyclus::Cond;
 
@@ -271,7 +271,7 @@ TEST_F(SourceTest, TransportUnit) {
     "<throughput>10</throughput>";
 
   int simdur = 2;
-  cyclus::MockSim sim(cyclus::AgentSpec (":cycamore:Source"), config, simdur);
+  cyclus::MockSim sim(cyclus::AgentSpec (":cycamore:FunctionalSource"), config, simdur);
   
   sim.context()->AddRecipe(recipe_name, recipe);
   sim.context()->AddPackage(package_name, 3, 4, "equal");
@@ -296,7 +296,7 @@ TEST_F(SourceTest, TransportUnit) {
 }
 
 boost::shared_ptr< cyclus::ExchangeContext<cyclus::Material> >
-SourceTest::GetContext(int nreqs, std::string commod) {
+FunctionalSourceTest::GetContext(int nreqs, std::string commod) {
   using cyclus::Material;
   using cyclus::Request;
   using cyclus::ExchangeContext;
@@ -311,17 +311,17 @@ SourceTest::GetContext(int nreqs, std::string commod) {
   return ec;
 }
 
-TEST_F(SourceTest, TimeSeriesTests) {
+TEST_F(FunctionalSourceTest, TimeSeriesTests) {
   const std::string commodity = "commod";
   const double inventory_size = 8;
-  const double source_throughput = 5;
+  const double functional_source_throughput = 5;
   const double sink_throughput = 3;
   std::stringstream config;
   config << "<outcommod>" << commodity << "</outcommod>"
          << "<inventory_size>" << inventory_size << "</inventory_size>"
-         << "<throughput>" << source_throughput << "</throughput>";
+         << "<throughput>" << functional_source_throughput << "</throughput>";
   int simdur = 3;
-  cyclus::MockSim sim(cyclus::AgentSpec(":cycamore:Source"), config.str(),
+  cyclus::MockSim sim(cyclus::AgentSpec(":cycamore:FunctionalSource"), config.str(),
                       simdur);
   // The source sells 3 kg in each of the first two steps. Its 5 kg throughput
   // controls the first two offers; the final offer is limited by inventory.
@@ -333,7 +333,7 @@ TEST_F(SourceTest, TimeSeriesTests) {
   ASSERT_EQ(simdur, qr.rows.size());
   double inventory_remaining = inventory_size;
   for (int i = 0; i < simdur; ++i) {
-    EXPECT_DOUBLE_EQ(std::min(source_throughput, inventory_remaining),
+    EXPECT_DOUBLE_EQ(std::min(functional_source_throughput, inventory_remaining),
                      qr.GetVal<double>("Value", i));
     inventory_remaining -= sink_throughput;
   }
@@ -341,8 +341,8 @@ TEST_F(SourceTest, TimeSeriesTests) {
 
 } // namespace cycamore
 
-cyclus::Agent* SourceConstructor(cyclus::Context* ctx) {
-  return new cycamore::Source(ctx);
+cyclus::Agent* FunctionalSourceConstructor(cyclus::Context* ctx) {
+  return new cycamore::FunctionalSource(ctx);
 }
 
 // required to get functionality in cyclus agent unit tests library
@@ -352,5 +352,5 @@ static int cyclus_agent_tests_connected = ConnectAgentTests();
 #define CYCLUS_AGENT_TESTS_CONNECTED cyclus_agent_tests_connected
 #endif  // CYCLUS_AGENT_TESTS_CONNECTED
 
-INSTANTIATE_TEST_SUITE_P(SourceFac, FacilityTests, Values(&SourceConstructor));
-INSTANTIATE_TEST_SUITE_P(SourceFac, AgentTests, Values(&SourceConstructor));
+INSTANTIATE_TEST_SUITE_P(FunctionalSourceFac, FacilityTests, Values(&FunctionalSourceConstructor));
+INSTANTIATE_TEST_SUITE_P(FunctionalSourceFac, AgentTests, Values(&FunctionalSourceConstructor));
