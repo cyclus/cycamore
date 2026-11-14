@@ -8,6 +8,7 @@ Since last release
 **Added:**
 * Added TariffRegion archetype (#661)
 * Added tests for Conversion Facility (#658)
+* Added TariffRegion Region (#661)
 * Added Conversion Facility (#657)
 * Replaced manual matl_buy/sell_policy code in storage with code injection (#639)
 * Added package parameter to storage (#603, #612, #616)
@@ -15,8 +16,12 @@ Since last release
 * Added default keep packaging to reactor (#618, #619)
 * Added support for Ubuntu 24.04 (#633)
 * Added (negative)binomial distributions for disruption modeling to storage (#635)
+* Added new variable to Deploy Institution to shift the deployment times (#677)
+* Added variables to enrichment facility for initial tails inventory (#680)
+* Added variable to specify initial spent, fresh, and core inventory for reactor facility (#680)
 
 **Changed:**
+* Some language in the storage cyclus note to make it match actual behavior (#690)
 * Cleaned up manual definitions of Position in favor of code injection (#641)
 * Rely on ``python3`` in environment instead of ``python`` (#602)
 * Link against ``libxml++`` imported target in CMake instead of ``LIBXMLXX_LIBRARIES`` (#608)
@@ -27,7 +32,6 @@ Since last release
 * Updated Doxygen homepage (#632)
 
 **Fixed:**
-
 * Schedule Decommission in ``Reactor::Tick()`` instead of Decommission (#609)
 * When trades fail in Source due to packaging, send empty material instead of seg faulting (#629)
 * Logging of resource moves between ResBufs in Storage is INFO4 not INFO1 (#625)
@@ -35,7 +39,7 @@ Since last release
 * Update conributing guide to match current practice (#662)
 
 **Removed:**
-
+* Removed inheritance of toolkit position by Cycamore agents (#692)
 * Removed references to deprecated ``ResourceBuff`` class (#604)
 * Removed ``Libxml++`` from build requirements (#634)
 
