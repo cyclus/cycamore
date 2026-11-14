@@ -22,6 +22,7 @@ class Context;
 /// that recipe. Requests are made for any number of specified commodities.
 class Sink
   : public cyclus::Facility {
+    friend class SinkTest;
  public:
   Sink(cyclus::Context* ctx);
 
@@ -109,13 +110,12 @@ class Sink
   inline const std::vector<std::string>&
       input_commodities() const { return in_commods; }
 
-  /// @return the input commodities preferences
   inline const std::vector<double>&
-      input_commodity_preferences() const { return in_commod_prefs; }
-
+      unit_cost_modifiers() const { return unit_cost_mods; }
  private:
   // Code Injection:
   #include "toolkit/position.cycpp.h"
+  #include "toolkit/unit_cost.cycpp.h"
 
   double requestAmt;
   int nextBuyTime;
@@ -125,14 +125,6 @@ class Sink
                       "uilabel": "List of Input Commodities", \
                       "uitype": ["oneormore", "incommodity"]}
   std::vector<std::string> in_commods;
-
-  #pragma cyclus var {"default": [],\
-                      "doc":"preferences for each of the given commodities, in the same order."\
-                      "Defauts to 1 if unspecified",\
-                      "uilabel":"In Commody Preferences", \
-                      "range": [None, [CY_NEAR_ZERO, CY_LARGE_DOUBLE]], \
-                      "uitype":["oneormore", "range"]}
-  std::vector<double> in_commod_prefs;
 
   #pragma cyclus var {"default": "", \
                       "tooltip": "requested composition", \

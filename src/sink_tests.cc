@@ -52,9 +52,9 @@ TEST_F(SinkTest, InitialState) {
   EXPECT_EQ(vexp, src_facility->input_commodities());
 
   src_facility->EnterNotify();
-  double pref[] = {cyclus::kDefaultUnitCostMod, cyclus::kDefaultUnitCostMod};
-  std::vector<double> vpref (pref, pref + sizeof(pref) / sizeof(pref[0]) );
-  EXPECT_EQ(vpref, src_facility->input_commodity_preferences());
+  double cost_mods[] = {cyclus::kDefaultUnitCostMod, cyclus::kDefaultUnitCostMod};
+  std::vector<double> vmods (cost_mods, cost_mods + sizeof(cost_mods) / sizeof(cost_mods[0]) );
+  EXPECT_EQ(vmods, src_facility->unit_cost_modifiers());
 }
 
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -219,7 +219,7 @@ TEST_F(SinkTest, InRecipe){
 }
 
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-TEST_F(SinkTest, BidPrefs) {
+TEST_F(SinkTest, BidCostMods) {
   using cyclus::QueryResult;
   using cyclus::Cond;
 
@@ -228,10 +228,10 @@ TEST_F(SinkTest, BidPrefs) {
     "     <val>commods_1</val>"
     "     <val>commods_2</val>"
     "   </in_commods>"
-    "   <in_commod_prefs>"
+    "   <unit_cost_mods>"
     "     <val>10</val> "
     "     <val>1</val> "
-    "   </in_commod_prefs>"
+    "   </unit_cost_mods>"
     "   <capacity>1</capacity>"
     "   <input_capacity>1.0</input_capacity> ";
 
@@ -277,10 +277,10 @@ TEST_F(SinkTest, PositionInitialize) {
     "     <val>commods_1</val>"
     "     <val>commods_2</val>"
     "   </in_commods>"
-    "   <in_commod_prefs>"
+    "   <unit_cost_mods>"
     "     <val>10</val> "
     "     <val>1</val> "
-    "   </in_commod_prefs>"
+    "   </unit_cost_mods>"
     "   <capacity>1</capacity>"
     "   <input_capacity>1.0</input_capacity> ";
 
@@ -311,10 +311,10 @@ TEST_F(SinkTest, PositionInitialize2) {
     "     <val>commods_1</val>"
     "     <val>commods_2</val>"
     "   </in_commods>"
-    "   <in_commod_prefs>"
+    "   <unit_cost_mods>"
     "     <val>10</val> "
     "     <val>1</val> "
-    "   </in_commod_prefs>"
+    "   </unit_cost_mods>"
     "   <capacity>1</capacity>"
     "   <input_capacity>1.0</input_capacity> "
     "   <latitude>50.0</latitude> "

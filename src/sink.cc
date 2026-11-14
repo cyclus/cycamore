@@ -43,13 +43,13 @@ void Sink::EnterNotify() {
 
   inventory.keep_packaging(keep_packaging);
 
-  if (in_commod_prefs.size() == 0) {
+  if (unit_cost_mods.size() == 0) {
     for (int i = 0; i < in_commods.size(); ++i) {
-      in_commod_prefs.push_back(cyclus::kDefaultUnitCostMod);
+      unit_cost_mods.push_back(cyclus::kDefaultUnitCostMod);
     }
-  } else if (in_commod_prefs.size() != in_commods.size()) {
+  } else if (unit_cost_mods.size() != in_commods.size()) {
     std::stringstream ss;
-    ss << "in_commod_prefs has " << in_commod_prefs.size()
+    ss << "unit_cost_mods has " << unit_cost_mods.size()
        << " values, expected " << in_commods.size();
     throw cyclus::ValueError(ss.str());
   }
@@ -121,7 +121,7 @@ Sink::GetMatlRequests() {
   if (requestAmt > cyclus::eps()) {  
     std::vector<Request<Material>*> mutuals;
     for (int i = 0; i < in_commods.size(); i++) {
-      mutuals.push_back(port->AddRequest(mat, this, in_commods[i], in_commod_prefs[i]));
+      mutuals.push_back(port->AddRequest(mat, this, in_commods[i], unit_cost_mods[i]));
 
     }
     port->AddMutualReqs(mutuals);
