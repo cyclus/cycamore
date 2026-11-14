@@ -253,15 +253,15 @@ TEST_F(SinkTest, BidPrefs) {
   conds.push_back(Cond("Commodity", "==", std::string("commods_1")));
   QueryResult qr = sim.db().Query("Transactions", &conds);
 
-  // should trade only with #1 since it has highier priority
-  EXPECT_EQ(1, qr.rows.size());
+  // should trade only with #2 since it has lower unit_cost_mod
+  EXPECT_EQ(0, qr.rows.size());
 
   std::vector<Cond> conds2;
   conds2.push_back(Cond("Commodity", "==", std::string("commods_2")));
   QueryResult qr2 = sim.db().Query("Transactions", &conds2);
 
-  // should trade only with #1 since it has highier priority
-  EXPECT_EQ(0, qr2.rows.size());
+  // should trade only with #2 since it has lower unit_cost_mod
+  EXPECT_EQ(1, qr2.rows.size());
 
 }
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -

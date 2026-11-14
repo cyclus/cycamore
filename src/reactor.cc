@@ -105,11 +105,33 @@ void Reactor::EnterNotify() {
        << " pref_change_values vals, expected " << n << "\n";
   }
 
+  if (initial_core_recipes.size() != initial_core_amt.size()) {
+      ss << "Number of entries for initial core recipes, " << initial_core_recipes.size() 
+      << ", must match the number of entries for initial core assemblies, " << initial_core_amt.size() << "\n";
+    }
+  if (initial_fresh_recipes.size() != initial_fresh_amt.size()) {
+      ss << "Number of entries for initial fresh recipes, " << initial_fresh_recipes.size() 
+      << ", must match the number of entries for initial fresh assemblies, " << initial_fresh_amt.size() << "\n";
+    }
+  if (initial_spent_recipes.size() != initial_spent_amt.size()) {
+      ss << "Number of entries for initial spent recipes, " << initial_spent_recipes.size() 
+      << ", must match the number of entries for initial spent assemblies, " << initial_spent_amt.size() << "\n";
+    }
+  
   if (ss.str().size() > 0) {
     throw ValueError(ss.str());
   }
+
+  ValidateInitialRecipes(initial_fresh_recipes, fuel_inrecipes);
+  ValidateInitialRecipes(initial_core_recipes, fuel_inrecipes);
+  ValidateInitialRecipes(initial_spent_recipes, fuel_outrecipes);
   
   InitializePosition();
+}
+
+void Reactor::Build(cyclus::Agent* parent) {
+  Facility::Build(parent);
+  PushInitialInv(); // load initial inventory into resource buffers 
 }
 
 bool Reactor::CheckDecommissionCondition() {
@@ -123,7 +145,6 @@ void Reactor::Tick() {
   // they
   // can't go at the beginnin of the Tock is so that resource exchange has a
   // chance to occur after the discharge on this same time step.
-
   if (retired()) {
     Record("RETIRED", "");
 
@@ -444,6 +465,43 @@ bool Reactor::Discharge() {
   }
 
   return true;
+}
+
+void Reactor::LoadInitial(std::vector<std::string>& initial_recipes,
+                     std::vector<int>& initial_amts, 
+                     cyclus::toolkit::ResBuf<cyclus::Material>& buffer) {
+  int idx = 0;
+  int avail = int(buffer.space()/assem_size);
+  while (idx < initial_recipes.size() && avail > 0) {
+    int n_init_assems = std::min(initial_amts[idx], avail);
+    if (n_init_assems < initial_amts[idx]) {
+      std::stringstream ss;
+      ss << "Number of " << initial_recipes[idx] << " assemblies has exceeded the inventory capacity. " 
+        << "Not all initial inventory will be filled.";
+      cyclus::Warn<cyclus::VALUE_WARNING>(ss.str());
+    }
+    cyclus::Composition::Ptr recipe = context()->GetRecipe(initial_recipes[idx]);
+    for (int assem = 0; assem < n_init_assems; assem++) {
+       buffer.Push(Material::Create(this, assem_size, recipe));
+        }
+    avail -= n_init_assems;
+    idx++;
+  }
+}
+
+void Reactor::PushInitialInv(){
+  LoadInitial(initial_fresh_recipes,initial_fresh_amt, fresh);
+  LoadInitial(initial_core_recipes,initial_core_amt, core);
+  LoadInitial(initial_spent_recipes,initial_spent_amt, spent);
+}
+
+
+void Reactor::ValidateInitialRecipes(std::vector<std::string> int_invs, std::vector<std::string> recipes){
+  for (int i = 0; i<int_invs.size(); i++) {
+    if (std::find(recipes.begin(), recipes.end(), int_invs[i]) == recipes.end()) {
+    throw KeyError("Recipe not associated with an in-commodity or out-commodity");
+    }
+  }
 }
 
 void Reactor::Load() {

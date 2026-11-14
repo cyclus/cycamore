@@ -35,8 +35,7 @@ typedef std::vector<
 /// multiple commodities being demanded.
 ///
 /// @warning The growth region is experimental
-class GrowthRegion : public cyclus::Region,
-  public cyclus::toolkit::Position {
+class GrowthRegion : public cyclus::Region {
   friend class GrowthRegionTests;
  public:
   /// The default constructor for the GrowthRegion

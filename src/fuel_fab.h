@@ -56,8 +56,7 @@ namespace cycamore {
 ///     Breeding. Economics, and Safety in Large Fast Power Reactors. 1963.
 /// @endcode
 class FuelFab
-  : public cyclus::Facility,
-    public cyclus::toolkit::Position {
+  : public cyclus::Facility {
 #pragma cyclus note { \
 "niche": "fabrication", \
 "doc": \

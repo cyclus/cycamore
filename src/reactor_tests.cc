@@ -52,6 +52,36 @@ Composition::Ptr c_water() {
   return Composition::CreateFromAtom(m);
 };
 
+cyclus::MockSim MaterialInvErrorInput(std::string error_string){
+  std::string start_config =
+     "  <fuel_inrecipes>  <val>uox</val>      <val>mox</val>      </fuel_inrecipes>  "
+     "  <fuel_outrecipes> <val>spentuox</val> <val>spentmox</val> </fuel_outrecipes>  "
+     "  <fuel_incommods>  <val>uox</val>      <val>mox</val>      </fuel_incommods>  "
+     "  <fuel_outcommods> <val>waste</val>    <val>waste</val>    </fuel_outcommods>  "
+    ""
+    " <cycle_time>1</cycle_time> "
+    " <refuel_time>0</refuel_time> "
+    " <assem_size>8</assem_size> "
+    " <n_assem_core>8</n_assem_core> "
+    " <n_assem_batch>2</n_assem_batch> "
+    " <n_assem_fresh>5</n_assem_fresh> "
+    " <n_assem_spent>3</n_assem_spent> "
+    " <power_cap>100</power_cap> "
+    "";
+  
+  std::string config = start_config + error_string;
+
+  int simdur = 0;
+  cyclus::MockSim sim(cyclus::AgentSpec(":cycamore:Reactor"), config, simdur);
+  sim.AddSource("uox").capacity(2).Finalize();
+  sim.AddSource("mox").capacity(2).Finalize();
+  sim.AddRecipe("uox", c_uox());
+  sim.AddRecipe("spentuox", c_spentuox());
+  sim.AddRecipe("mox", c_spentuox());
+  sim.AddRecipe("spentmox", c_spentuox());
+  return sim;
+};
+
 // Test that with a zero refuel_time and a zero capacity fresh fuel buffer
 // (the default), fuel can be ordered and the cycle started with no time step
 // delay.
@@ -333,6 +363,96 @@ TEST(ReactorTests, FullSpentInventoryShutdown) {
 
 }
 
+// tests that that the initial core, fresh fuel, and spent fuel buffers 
+// are filled with the specified number of assemblies and recipes
+TEST(ReactorTests, InitialMaterialInventory) {
+  std::string config =
+    " <fuel_inrecipes> <val>uox</val> </fuel_inrecipes> "
+    " <fuel_outrecipes> <val>spentuox</val> </fuel_outrecipes> "
+    " <fuel_incommods> <val>uox</val> </fuel_incommods> "
+    " <fuel_outcommods> <val>waste</val> </fuel_outcommods> "
+    ""
+    " <cycle_time>1</cycle_time> "
+    " <refuel_time>0</refuel_time> "
+    " <assem_size>8</assem_size> "
+    " <n_assem_core>8</n_assem_core> "
+    " <n_assem_batch>2</n_assem_batch> "
+    " <n_assem_fresh>5</n_assem_fresh> "
+    " <n_assem_spent>3</n_assem_spent> "
+    " <power_cap>100</power_cap> "
+    ""
+    " <initial_core_recipes> <val>uox</val> </initial_core_recipes> "
+    " <initial_fresh_recipes> <val>uox</val> </initial_fresh_recipes> "
+    " <initial_spent_recipes> <val>spentuox</val> </initial_spent_recipes> "
+    " <initial_core_amt> <val>6</val> </initial_core_amt> "
+    " <initial_fresh_amt> <val>6</val> </initial_fresh_amt> "
+    " <initial_spent_amt> <val>2</val> </initial_spent_amt> ";
+
+  int simdur = 0;
+  cyclus::MockSim sim(cyclus::AgentSpec(":cycamore:Reactor"), config, simdur);
+  sim.AddSource("uox").Finalize();
+  sim.AddSink("waste").Finalize();
+  sim.AddRecipe("uox", c_uox());
+  sim.AddRecipe("spentuox", c_spentuox());
+  int id = sim.Run();
+
+
+  std::vector<Cond> conds;
+  QueryResult qr;
+
+  //check the initial inventory of the fresh at timestep 0
+  conds.push_back(Cond("SimTime", "==", 0));
+  conds.push_back(Cond("AgentId","==",id));
+  conds.push_back(Cond("InventoryName","==",std::string("fresh")));
+  qr = sim.db().Query("AgentStateInventories", &conds);
+  EXPECT_EQ(5, qr.rows.size());
+
+  // check the initial inventory of the spent fuel at timestep 0
+  conds[2] = Cond("InventoryName","==",std::string("spent"));
+  qr = sim.db().Query("AgentStateInventories", &conds);
+  EXPECT_EQ(2, qr.rows.size());
+
+  // check the initial inventory of the core at timestep 0
+  conds[2] = Cond("InventoryName","==",std::string("core"));
+  qr = sim.db().Query("AgentStateInventories", &conds);
+  EXPECT_EQ(6, qr.rows.size());
+
+}
+
+TEST(ReactorTests, InitialMaterialInventoryErrors) {
+
+  std::string missing_amt_err =
+    ""
+    " <initial_fresh_recipes> <val>uox</val> <val>mox</val> </initial_fresh_recipes> "
+    " <initial_fresh_amt> <val>6</val> </initial_fresh_amt> ";
+
+    EXPECT_THROW(MaterialInvErrorInput(missing_amt_err).Run(), cyclus::ValueError);
+
+  std::string invalid_recipe_err =
+    ""
+    " <initial_core_recipes> <val>mox</val> <val>invalid_recipe</val> </initial_core_recipes> "
+    " <initial_core_amt> <val>1</val> <val>2</val> </initial_core_amt> ";
+    EXPECT_THROW(MaterialInvErrorInput(invalid_recipe_err).Run(), cyclus::KeyError);
+
+  //the reactor spent fuel buffer will never start to fill with the spentmox amount
+  //because already filled 
+  std::string capacity_exceed_err =
+    ""
+    " <initial_spent_recipes> <val>spentuox</val> <val>spentmox</val> </initial_spent_recipes> "
+    " <initial_spent_amt> <val>40</val> <val>7</val> </initial_spent_amt> ";
+    cyclus::warn_as_error = true;
+    EXPECT_THROW(MaterialInvErrorInput(capacity_exceed_err).Run(), cyclus::ValueError);
+
+    //capacity exceeded with two different recipes in spent buffer 
+    std::string mixed_capacity_exceed_err =
+    ""
+    " <initial_spent_recipes> <val>spentuox</val> <val>spentmox</val> </initial_spent_recipes> "
+    " <initial_spent_amt> <val>2</val> <val>6</val> </initial_spent_amt> ";
+    EXPECT_THROW(MaterialInvErrorInput(mixed_capacity_exceed_err).Run(), cyclus::ValueError);
+    cyclus::warn_as_error = false;
+}
+
+
 // tests that the reactor cycle is delayed as expected when it is unable to
 // acquire fuel in time for the next cycle start.  This checks that after a
 // cycle is delayed past an original scheduled start time, as soon as enough fuel is
@@ -461,7 +581,10 @@ TEST(ReactorTests, SpentFuelProperCommodTracking) {
 // preferences are adjusted, the ommitted preference vector must be populated
 // with default values - if it wasn't then preferences won't be adjusted
 // correctly and the reactor could segfault.  Check that this doesn't happen.
-TEST(ReactorTests, PrefChange) {
+// NOTE: This test still refers to prefs instead of unit_cost_mod. I will go
+// back over it later as a part of updating the reactor archetype and change
+// this.
+TEST(ReactorTests, UnitCostModChange) {
   // it is important that the fuel_prefs not be present in the config below.
   std::string config =
      "  <fuel_inrecipes>  <val>lwr_fresh</val>  </fuel_inrecipes>  "
@@ -487,7 +610,16 @@ TEST(ReactorTests, PrefChange) {
   int id = sim.Run();
 
   QueryResult qr = sim.db().Query("Transactions", NULL);
-  EXPECT_EQ(25, qr.rows.size()) << "failed to adjust preferences properly";
+  EXPECT_EQ(simdur, qr.rows.size());
+
+  std::vector<Cond> conds;
+  conds.push_back(Cond("Time", "<", 25));
+  qr = sim.db().Query("Transactions", &conds);
+  EXPECT_EQ(cyclus::kDefaultUnitCostMod, qr.GetVal<double>("UnitCostMod"));
+
+  conds[0] = Cond("Time", ">=", 25);
+  qr = sim.db().Query("Transactions", &conds);
+  EXPECT_EQ(-1, qr.GetVal<double>("UnitCostMod"));
 }
 
 TEST(ReactorTests, RecipeChange) {

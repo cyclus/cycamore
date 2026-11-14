@@ -21,8 +21,7 @@ class Context;
 /// to its output commodity. It has a fixed throughput (per time step), and 
 /// converts without regard to the composition of the input material.
 class Conversion
-  : public cyclus::Facility,
-    public cyclus::toolkit::Position  {
+  : public cyclus::Facility {
   friend class ConversionTest;
  public:
   Conversion(cyclus::Context* ctx);
@@ -132,4 +131,3 @@ class Conversion
 }  // namespace cycamore
 
 #endif  // CYCAMORE_SRC_CONVERSION_H_
-

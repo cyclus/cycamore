@@ -44,10 +44,17 @@ std::string Enrichment::str() {
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 void Enrichment::Build(cyclus::Agent* parent) {
   Facility::Build(parent);
+
   if (initial_feed > 0) {
     inventory.Push(Material::Create(this, initial_feed,
                                     context()->GetRecipe(feed_recipe)));
-  }
+    }
+  if (initial_tails > 0) {
+      cyclus::CompMap comp;
+      comp[922350000] = tails_assay;
+      comp[922380000] = 1 - tails_assay;
+      tails.Push(Material::Create(this, initial_tails, cyclus::Composition::CreateFromAtom(comp)));
+    }
 
   LOG(cyclus::LEV_DEBUG2, "EnrFac") << "Enrichment "
                                     << " entering the simuluation: ";
@@ -109,7 +116,9 @@ bool SortBids(cyclus::Bid<Material>* i,
 }
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 // Sort offers of input material to have higher preference for more
-//  U-235 content
+// U-235 content
+// NOTE: This function REALLY needs a closer look as a part of the v2.0 update
+// See cycamore issue #700
 void Enrichment::AdjustMatlParams(
     cyclus::RequestBidMap<Material>::type& rb_map) {
   using cyclus::Bid;
@@ -135,14 +144,17 @@ void Enrichment::AdjustMatlParams(
     bool u235_mass = 0;
 
     for (int bidit = 0; bidit < bids_vector.size(); bidit++) {
-      int new_pref = bidit + 1;
+      // Make it negative so that higher U235 concentration gives lower 
+      // arc_cost.
+      int new_pref = -(bidit + 1);
 
-      // For any bids with U-235 qty=0, set pref to zero.
+      // For any bids with U-235 qty=0, remove bid from RequestBidMap.
       if (!u235_mass) {
         Material::Ptr mat = bids_vector[bidit]->offer();
         cyclus::toolkit::MatQuery mq(mat);
         if (mq.mass(922350000) == 0) {
-          new_pref = -1;
+          reqit->second.erase(bids_vector[bidit]);
+          continue;
         } else {
           u235_mass = true;
         }

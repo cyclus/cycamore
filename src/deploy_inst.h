@@ -21,8 +21,7 @@ typedef std::map<int, std::vector<std::string> > BuildSched;
 // lifetimes.
 class DeployInst : 
   public cyclus::Institution, 
-  public cyclus::toolkit::CommodityProducerManager,
-  public cyclus::toolkit::Position {
+  public cyclus::toolkit::CommodityProducerManager {
   #pragma cyclus note { \
     "doc": \
       "Builds and manages agents (facilities) according to a manually" \
@@ -84,6 +83,12 @@ class DeployInst :
   }
   std::vector<int> n_build;
 
+  #pragma cyclus var { \
+    "doc": "Year to start deploying prototypes.", \
+    "default": -1, \
+    "uilabel": "deploy year",\
+  }
+  int deployyear;
 
   #pragma cyclus var {							\
     "doc": "Lifetimes for each prototype in prototype list (same order)." \

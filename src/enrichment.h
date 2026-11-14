@@ -120,8 +120,7 @@ class NatUConverter : public cyclus::Converter<cyclus::Material> {
 ///  tails inventory.
 
 class Enrichment
-  : public cyclus::Facility,
-    public cyclus::toolkit::Position {
+  : public cyclus::Facility {
 #pragma cyclus note {   	  \
   "niche": "enrichment facility",				  \
   "doc":								\
@@ -202,7 +201,8 @@ class Enrichment
   /// @brief The Enrichment adjusts preferences for offers of
   /// natural uranium it has received to maximize U-235 content
   /// Any offers that have zero U-235 content are not accepted
-  virtual void AdjustMatlParams(cyclus::RequestBidMap<cyclus::Material>::type& rb_map);
+  virtual void AdjustMatlParams(
+    cyclus::RequestBidMap<cyclus::Material>::type& rb_map);
 
   /// @brief The Enrichment place accepted trade Materials in their
   /// Inventory
@@ -326,6 +326,14 @@ class Enrichment
     "facility at the beginning of the simulation (kg)"			\
   }
   double initial_feed;
+
+  #pragma cyclus var {							\
+    "default": 0, "tooltip": "initial tails (kg)",		\
+    "uilabel": "Initial tails Inventory",				\
+    "doc": "amount of tails stored at the enrichment "	\
+    "facility at the beginning of the simulation (kg) (based on recipe)"			\
+  }
+  double initial_tails;
 
   #pragma cyclus var {							\
     "default": CY_LARGE_DOUBLE, "tooltip": "max inventory of feed material (kg)", \

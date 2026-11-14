@@ -1,5 +1,6 @@
 #include "deploy_inst_tests.h"
-
+#include "error.h"
+#include "deploy_inst.h"
 // make sure that the deployed agent's prototype name is identical to the
 // originally specified prototype name - this is important to test because
 // DeployInst does some mucking around with registering name-modded prototypes
@@ -152,6 +153,65 @@ TEST_F(DeployInstTests, NoDupProtos) {
       );
   stmt->Step();
   EXPECT_EQ(1, stmt->GetInt(0));
+}
+
+TEST_F(DeployInstTests, DeployYear) {
+  std::string config =
+     "<prototypes>  <val>foobar</val> </prototypes>"
+     "<build_times> <val>2</val>      </build_times>"
+     "<n_build>     <val>3</val>      </n_build>"
+     "<deployyear>     2012           </deployyear>"
+     ;
+
+  int simdur = 30;
+  //MockSim starts in 2010 by default
+  cyclus::MockSim sim(cyclus::AgentSpec(":cycamore:DeployInst"), config, simdur);
+  sim.DummyProto("foobar");
+  int id = sim.Run();
+  // 2 years and 2 months after MockSim start is 25 time steps 
+  cyclus::SqlStatement::Ptr stmt = sim.db().db().Prepare(
+      "SELECT COUNT(*) FROM AgentEntry WHERE Prototype = 'foobar' AND EnterTime = '25';"
+      );
+  stmt->Step();
+  EXPECT_EQ(3, stmt->GetInt(0)); 
+}
+
+TEST_F(DeployInstTests, DeployYearEarlyError) {
+  std::string config =
+     "<prototypes>  <val>foobar</val> </prototypes>"
+     "<build_times> <val>2</val>      </build_times>"
+     "<n_build>     <val>3</val>      </n_build>"
+     "<deployyear>    2000            </deployyear>"
+     ;
+
+  int simdur = 5;
+  cyclus::MockSim sim(cyclus::AgentSpec(":cycamore:DeployInst"), config, simdur);
+
+  EXPECT_THROW(sim.Run(),cyclus::ValueError); 
+}
+
+TEST_F(DeployInstTests, DeployYearLateWarn) {
+  std::string config =
+     "<prototypes>  <val>foobar</val> </prototypes>"
+     "<build_times> <val>2</val>      </build_times>"
+     "<n_build>     <val>3</val>      </n_build>"
+     "<deployyear>    2030          </deployyear>"
+     ;
+
+  int simdur = 5;
+  cyclus::MockSim sim(cyclus::AgentSpec(":cycamore:DeployInst"), config, simdur);
+
+  cyclus::warn_as_error = true;
+  EXPECT_THROW(sim.Run(),
+               cyclus::ValueError);
+  cyclus::warn_as_error = false;
+
+  int id = sim.Run();
+  cyclus::SqlStatement::Ptr stmt = sim.db().db().Prepare(
+      "SELECT COUNT(*) FROM AgentEntry WHERE Prototype = 'foobar';"
+      );
+  stmt->Step();
+  EXPECT_EQ(0, stmt->GetInt(0));
 }
 
 TEST_F(DeployInstTests, PositionInitialize) {

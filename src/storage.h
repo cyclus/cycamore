@@ -80,7 +80,7 @@ class Storage
                               "the residence time has passed. The material is then passed into a 'ready' buffer where it is "\
                               "queued for removal. Currently, all input commodities are lumped into a single output commodity. "\
                               "Storage also has the functionality to handle materials in discrete or continuous batches. Discrete "\
-                              "mode, which is the default, does not split or combine material batches. Continuous mode, however, "\
+                              "mode does not split or combine material batches. Continuous mode, which is the default, however, "\
                               "divides material batches if necessary in order to push materials through the facility as quickly "\
                               "as possible."}
 

@@ -165,6 +165,46 @@ TEST_F(EnrichmentTest, CheckCapConstraint) {
     "traded quantity exceeds capacity constraint";
 }
 
+TEST_F(EnrichmentTest, CheckInitialInventory) {
+  // Tests that a request for more material than is available in
+  // inventory is partially filled with only the inventory quantity.
+
+  std::string config =
+    "   <feed_commod>natu</feed_commod> "
+    "   <feed_recipe>natu1</feed_recipe> "
+    "   <product_commod>enr_u</product_commod> "
+    "   <tails_commod>tails</tails_commod> "
+    "   <tails_assay>0.003</tails_assay> "
+    "   <initial_tails>500</initial_tails> ";
+
+  int simdur = 1;
+
+  cyclus::MockSim sim(cyclus::AgentSpec
+          (":cycamore:Enrichment"), config, simdur);
+
+  sim.AddRecipe("natu1", c_natu1());
+  sim.AddRecipe("leu", c_heu());
+
+  sim.AddSource("natu")
+    .recipe("natu1")
+    .Finalize();
+  sim.AddSink("enr_u")
+    .recipe("leu")
+    .Finalize();
+   sim.AddSink("tails")
+    .Finalize();
+
+  int id = sim.Run();
+
+  std::vector<Cond> conds;
+  conds.push_back(Cond("Time", "==", 0));
+  QueryResult qr = sim.db().Query("TimeSeriessupplytails", &conds);
+  
+  double tails_qty = 500.0;
+
+  EXPECT_EQ(tails_qty, qr.GetVal<double>("Value"));
+}
+
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 TEST_F(EnrichmentTest, RequestEnrich) {
   // this tests verifies that requests for output material exceeding
