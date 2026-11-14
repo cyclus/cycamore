@@ -75,7 +75,7 @@ class Storage
 
   #pragma cyclus note {"doc": "Storage is a simple facility which accepts any number of commodities " \
                               "and holds them for a user specified amount of time. The commodities accepted "\
-                              "are chosen based on the specified preferences list. Once the desired amount of material "\
+                              "are chosen based on the specified unit-cost modifiers. Once the desired amount of material "\
                               "has entered the facility it is passed into a 'processing' buffer where it is held until "\
                               "the residence time has passed. The material is then passed into a 'ready' buffer where it is "\
                               "queued for removal. Currently, all input commodities are lumped into a single output commodity. "\
@@ -97,6 +97,10 @@ class Storage
   virtual void Tock();
 
   virtual std::string version() { return CYCAMORE_VERSION; }
+
+  /// @return unit-cost modifiers for the configured input commodities
+  inline const std::vector<double>&
+      unit_cost_modifiers() const { return unit_cost_mods; }
 
  protected:
   ///   @brief adds a material into the incoming commodity inventory
@@ -134,14 +138,6 @@ class Storage
                       "uilabel":"Input Commodities",\
                       "uitype":["oneormore","incommodity"]}
   std::vector<std::string> in_commods;
-
-  #pragma cyclus var {"default": [],\
-                      "doc":"preferences for each of the given commodities, in the same order."\
-                      "Defauts to 1 if unspecified",\
-                      "uilabel":"In Commody Preferences", \
-                      "range": [None, [CY_NEAR_ZERO, CY_LARGE_DOUBLE]], \
-                      "uitype":["oneormore", "range"]}
-  std::vector<double> in_commod_prefs;
 
   #pragma cyclus var {"tooltip":"output commodity",\
                       "doc":"commodity produced by this facility. Multiple commodity tracking is"\
@@ -235,6 +231,7 @@ class Storage
   #include "toolkit/matl_buy_policy.cycpp.h"
   #include "toolkit/matl_sell_policy.cycpp.h"
   #include "toolkit/position.cycpp.h"
+  #include "toolkit/unit_cost.cycpp.h"
 
 };
 

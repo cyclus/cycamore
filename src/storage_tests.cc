@@ -432,8 +432,8 @@ TEST_F(StorageTest, MultipleCommods){
   std::string config =
     "   <in_commods> <val>spent_fuel</val>"
     "                <val>spent_fuel2</val> </in_commods>"
-    "   <in_commod_prefs> <val>1</val>"
-    "                     <val>1</val> </in_commod_prefs>"
+    "   <unit_cost_mods> <val>1</val>"
+    "                    <val>1</val> </unit_cost_mods>"
     "   <out_commods> <val>dry_spent</val> </out_commods> "
     "   <max_inv_size>10</max_inv_size>";
 

@@ -82,19 +82,19 @@ void Storage::EnterNotify() {
     comp = context()->GetRecipe(in_recipe);
   }
 
-  if (in_commod_prefs.size() == 0) {
+  if (unit_cost_mods.size() == 0) {
     for (int i = 0; i < in_commods.size(); ++i) {
-      in_commod_prefs.push_back(cyclus::kDefaultUnitCostMod);
+      unit_cost_mods.push_back(cyclus::kDefaultUnitCostMod);
     }
-  } else if (in_commod_prefs.size() != in_commods.size()) {
+  } else if (unit_cost_mods.size() != in_commods.size()) {
     std::stringstream ss;
-    ss << "in_commod_prefs has " << in_commod_prefs.size()
+    ss << "unit_cost_mods has " << unit_cost_mods.size()
        << " values, expected " << in_commods.size();
     throw cyclus::ValueError(ss.str());
   }
 
   for (int i = 0; i != in_commods.size(); ++i) {
-    buy_policy.Set(in_commods[i], comp, in_commod_prefs[i]);
+    buy_policy.Set(in_commods[i], comp, unit_cost_mods[i]);
   }
   buy_policy.Start();
 
@@ -104,6 +104,7 @@ void Storage::EnterNotify() {
     sell_policy.Init(this, &stocks, std::string("stocks"), cyclus::CY_LARGE_DOUBLE, false,
                      sell_quantity, package_name_, tu_name_)
       .Set(out_commods.front())
+      .SetUnitCost(unit_cost)
       .Start();
 
   } else {
@@ -136,6 +137,7 @@ std::string Storage::str() {
      << "     Output Commodity = " << out_str << ",\n"
      << "     Residence Time = " << residence_time << ",\n"
      << "     Throughput = " << throughput << ",\n"
+     << "     Unit Cost = " << unit_cost << ",\n"
      << " commod producer members: "
      << " produces " << out_str << "?:" << ans << "'}";
   return ss.str();
@@ -179,8 +181,8 @@ void Storage::Tock() {
   ProcessMat_(throughput);  // place ready into stocks
 
   std::vector<double>::iterator result;
-  result = std::max_element(in_commod_prefs.begin(), in_commod_prefs.end());
-  int maxindx = std::distance(in_commod_prefs.begin(), result);
+  result = std::max_element(unit_cost_mods.begin(), unit_cost_mods.end());
+  int maxindx = std::distance(unit_cost_mods.begin(), result);
   double demand = 0;
   demand = current_capacity();
 
