@@ -19,36 +19,10 @@ FunctionalSource::~FunctionalSource() {}
 
 void FunctionalSource::InitFrom(FunctionalSource* m) {
   #pragma cyclus impl initfromcopy cycamore::FunctionalSource
-  cyclus::toolkit::CommodityProducer::Copy(m);
 }
 
 void FunctionalSource::InitFrom(cyclus::QueryableBackend* b) {
   #pragma cyclus impl initfromdb cycamore::FunctionalSource
-  namespace tk = cyclus::toolkit;
-  tk::CommodityProducer::Add(tk::Commodity(outcommod),
-                             tk::CommodInfo(throughput, throughput));
-}
-
-std::string FunctionalSource::str() {
-  namespace tk = cyclus::toolkit;
-  std::stringstream ss;
-  std::string ans;
-  if (cyclus::toolkit::CommodityProducer::Produces(
-          cyclus::toolkit::Commodity(outcommod))) {
-    ans = "yes";
-  } else {
-    ans = "no";
-  }
-  ss << cyclus::Facility::str() << " supplies commodity '" << outcommod
-     << "' with recipe '" << outrecipe << "' at a throughput of "
-     << throughput << " kg per time step "
-     << " commod producer members: "
-     << " produces " << outcommod << "?: " << ans
-     << " throughput: " << cyclus::toolkit::CommodityProducer::Capacity(outcommod)
-     << " with package type: " << package
-     << " and transport unit type: " << transport_unit
-     << " cost: " << cyclus::toolkit::CommodityProducer::Cost(outcommod);
-  return ss.str();
 }
 
 void FunctionalSource::EnterNotify() {
