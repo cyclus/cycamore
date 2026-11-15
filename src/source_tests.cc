@@ -93,6 +93,26 @@ TEST_F(SourceTest, AddBids) {
   EXPECT_EQ(*constrs.begin(), CapacityConstraint<Material>(capacity));
 }
 
+TEST_F(SourceTest, UnitCostXML) {
+  const double test_throughput = 1.0;
+  const double expected_unit_cost = 7.0;
+  const int sim_dur = 1;
+  std::stringstream config;
+  config << "<outcommod>commod</outcommod><throughput>" << test_throughput
+         << "</throughput><unit_cost>" << expected_unit_cost
+         << "</unit_cost>";
+  cyclus::MockSim sim(cyclus::AgentSpec(":cycamore:Source"), config.str(),
+                      sim_dur);
+  sim.AddSink("commod").Finalize();
+
+  int id = sim.Run();
+  std::vector<cyclus::Cond> conds;
+  conds.push_back(cyclus::Cond("SenderId", "==", id));
+  cyclus::QueryResult qr = sim.db().Query("Transactions", &conds);
+  ASSERT_EQ(1, qr.rows.size());
+  EXPECT_DOUBLE_EQ(expected_unit_cost, qr.GetVal<double>("UnitCost", 0));
+}
+
 TEST_F(SourceTest, Response) {
   using cyclus::Bid;
   using cyclus::Material;

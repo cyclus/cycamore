@@ -1,5 +1,7 @@
 #include <gtest/gtest.h>
 
+#include <sstream>
+
 #include "facility_tests.h"
 #include "agent_tests.h"
 #include "resource_helpers.h"
@@ -55,6 +57,49 @@ TEST_F(SinkTest, InitialState) {
   double cost_mods[] = {cyclus::kDefaultUnitCostMod, cyclus::kDefaultUnitCostMod};
   std::vector<double> vmods (cost_mods, cost_mods + sizeof(cost_mods) / sizeof(cost_mods[0]) );
   EXPECT_EQ(vmods, src_facility->unit_cost_modifiers());
+}
+
+TEST_F(SinkTest, UnitCostMods) {
+  const std::vector<double> expected_cost_mods = {7.0, -2.0};
+  const double test_capacity = 1.0;
+  const int sim_dur = 1;
+  std::stringstream config;
+  config << "<in_commods><val>commod1</val><val>commod2</val></in_commods>"
+         << "<unit_cost_mods><val>" << expected_cost_mods[0] << "</val><val>"
+         << expected_cost_mods[1] << "</val></unit_cost_mods><capacity>"
+         << test_capacity << "</capacity>";
+  cyclus::MockSim sim(cyclus::AgentSpec(":cycamore:Sink"), config.str(),
+                      sim_dur);
+
+  ASSERT_NO_THROW(sim.Run());
+  cycamore::Sink* sink = dynamic_cast<cycamore::Sink*>(sim.agent);
+  ASSERT_NE(nullptr, sink);
+  std::set<cyclus::RequestPortfolio<cyclus::Material>::Ptr> ports =
+      sink->GetMatlRequests();
+  ASSERT_EQ(1, ports.size());
+  const std::vector<cyclus::Request<cyclus::Material>*>& requests =
+      (*ports.begin())->requests();
+  ASSERT_EQ(expected_cost_mods.size(), requests.size());
+  for (std::vector<double>::size_type i = 0; i < expected_cost_mods.size();
+       ++i) {
+    EXPECT_DOUBLE_EQ(expected_cost_mods[i], requests[i]->unit_cost_mod());
+  }
+
+  // Unit-cost modifiers must also be preserved by cloning.
+  cycamore::Sink* clone = dynamic_cast<cycamore::Sink*>(sink->Clone());
+  ASSERT_NE(nullptr, clone);
+  EXPECT_EQ(sink->unit_cost_modifiers(), clone->unit_cost_modifiers());
+  delete clone;
+}
+
+TEST_F(SinkTest, UnitCostModsSizeMismatch) {
+  std::string config =
+      "<in_commods><val>commod1</val><val>commod2</val></in_commods>"
+      "<unit_cost_mods><val>1</val></unit_cost_mods>";
+  const int sim_dur = 1;
+  cyclus::MockSim sim(cyclus::AgentSpec(":cycamore:Sink"), config, sim_dur);
+
+  EXPECT_THROW(sim.Run(), cyclus::ValueError);
 }
 
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -201,28 +246,28 @@ TEST_F(SinkTest, BidCostMods) {
   using cyclus::QueryResult;
   using cyclus::Cond;
 
-  std::string config =
-    "   <in_commods>"
-    "     <val>commods_1</val>"
-    "     <val>commods_2</val>"
-    "   </in_commods>"
-    "   <unit_cost_mods>"
-    "     <val>10</val> "
-    "     <val>1</val> "
-    "   </unit_cost_mods>"
-    "   <capacity>1</capacity>"
-    "   <input_capacity>1.0</input_capacity> ";
+  const double high_unit_cost_mod = 10.0;
+  const double low_unit_cost_mod = 1.0;
+  const double request_capacity = 1.0;
+  const int sim_dur = 1;
 
-  int simdur = 1;
+  std::stringstream config;
+  config << "<in_commods><val>commods_1</val><val>commods_2</val>"
+         << "</in_commods><unit_cost_mods><val>" << high_unit_cost_mod
+         << "</val><val>" << low_unit_cost_mod
+         << "</val></unit_cost_mods><capacity>" << request_capacity
+         << "</capacity><input_capacity>" << request_capacity
+         << "</input_capacity>";
+
   cyclus::MockSim sim(cyclus::AgentSpec
-          (":cycamore:Sink"), config, simdur);
+          (":cycamore:Sink"), config.str(), sim_dur);
 
   sim.AddSource("commods_1")
-    .capacity(1)
+    .capacity(request_capacity)
     .Finalize();
 
   sim.AddSource("commods_2")
-    .capacity(1)
+    .capacity(request_capacity)
     .Finalize();
 
   int id = sim.Run();
@@ -240,6 +285,9 @@ TEST_F(SinkTest, BidCostMods) {
 
   // should trade only with #2 since it has lower unit_cost_mod
   EXPECT_EQ(1, qr2.rows.size());
+  EXPECT_DOUBLE_EQ(low_unit_cost_mod, qr2.GetVal<double>("UnitCostMod", 0));
+  EXPECT_DOUBLE_EQ(qr2.GetVal<double>("UnitCost", 0) + low_unit_cost_mod,
+                   qr2.GetVal<double>("ArcCost", 0));
 
 }
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -

@@ -29,6 +29,7 @@ class StorageTest : public ::testing::Test {
   void TestStocks(cycamore::Storage* fac, cyclus::CompMap v);
   void TestReadyTime(cycamore::Storage* fac, int t);
   void TestCurrentCap(cycamore::Storage* fac, double inv);
+  double GetUnitCost(cycamore::Storage* fac);
 
   std::vector<std::string> in_c1, out_c1;
   std::string in_r1;
