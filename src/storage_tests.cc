@@ -90,7 +90,7 @@ void StorageTest::TestCurrentCap(Storage* fac, double inv){
 }
 
 double StorageTest::GetUnitCost(Storage* fac) {
-  return fac->get_unit_cost();
+  return fac->unit_cost;
 }
 
 void StorageTest::TestReadyTime(Storage* fac, int t){
