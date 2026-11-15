@@ -42,19 +42,16 @@ class SourceTest : public ::testing::Test {
   }
   void throughput(cycamore::Source* s, double val) { s->throughput = val; }
 
-  // NOTE: The getter/setter names are a bit confusing here, but sometimes
-  // it's `get_xyz` instead of just `xyz` because of conflicts with the actual
-  // variable name in the cycpp.h file.
   void unit_cost(cycamore::Source* s, double val) {
-    s->set_unit_cost(val); 
+    s->unit_cost = val; 
   }
 
   double unit_cost(cycamore::Source* s) {
-    return s->get_unit_cost(); 
+    return s->unit_cost; 
   }
 
   void unit_cost_mod(cycamore::Source* s, double val) {
-    s->set_unit_cost_mod(val); 
+    s->unit_cost_mod = val; 
   }
 
   boost::shared_ptr<cyclus::ExchangeContext<cyclus::Material> > GetContext(
