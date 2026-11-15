@@ -541,7 +541,10 @@ TEST_F(SinkTest, RandomNormalSizeUniformFreq) {
   int trans_time = tqr.GetVal<int>("Time", 0);
   EXPECT_EQ(3, trans_time);
   int res_id = tqr.GetVal<int>("ResourceId", 0);
-  double quantity = sim.GetMaterial(res_id)->quantity();
+  std::vector<cyclus::Cond> conds;
+  conds.push_back(cyclus::Cond("ResourceId", "==", res_id));
+  QueryResult rqr = sim.db().Query("Resources", &conds);
+  double quantity = rqr.GetVal<double>("Quantity", 0);
   EXPECT_NEAR(6.54143, quantity, 0.00001);
 }
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -

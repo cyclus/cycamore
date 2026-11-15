@@ -22,7 +22,6 @@ class Context;
 /// that recipe. Requests are made for any number of specified commodities.
 class Sink
   : public cyclus::Facility {
-    friend class SinkTest;
  public:
   Sink(cyclus::Context* ctx);
 
