@@ -108,7 +108,7 @@ TEST_F(SourceTest, Response) {
   EXPECT_NO_THROW(src_facility->GetMatlTrades(trades, responses));
   EXPECT_EQ(responses.size(), 0);
 
-  // default unit_cost_mod used
+  // Use the source's configured bid cost.
   double qty = capacity / 3;
   Request<Material>* request =
       Request<Material>::Create(get_mat(), trader, commod);
@@ -121,8 +121,8 @@ TEST_F(SourceTest, Response) {
 
   // 1 trade
   src_facility->GetMatlTrades(trades, responses);
-  auto& returned_trade = responses[0].first; 
-  EXPECT_EQ(responses.size(), 1);
+  ASSERT_EQ(responses.size(), 1);
+  auto& returned_trade = responses[0].first;
   EXPECT_EQ(responses[0].second->quantity(), qty);
   EXPECT_EQ(responses[0].second->comp(), recipe);
   EXPECT_DOUBLE_EQ(unit_cost(src_facility), returned_trade.bid->unit_cost());

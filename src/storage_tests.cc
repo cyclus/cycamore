@@ -111,6 +111,7 @@ TEST_F(StorageTest, CurrentCapacity){
   max_inv_size = cyclus::CY_LARGE_DOUBLE;
   SetUpStorage();
   TestInitState(src_facility_);
+  TestCurrentCap(src_facility_, max_inv_size);
 }
 
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -397,6 +398,7 @@ TEST_F(StorageTest,DifferentRecipe){
   tc_.get()->time(residence_time);
   EXPECT_NO_THROW(src_facility_->Tock());
   TestBuffers(src_facility_,0,0,0,cap);
+  TestStocks(src_facility_, v);
 }
 
 TEST_F(StorageTest, BehaviorTest){

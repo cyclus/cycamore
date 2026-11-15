@@ -75,37 +75,18 @@ TEST_F(SinkTest, Clone) {
 }
 
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-TEST_F(SinkTest, DISABLED_XMLInit) {
-  std::stringstream ss;
-  ss << "<start>"
-     << "<name>fooname</name>"
-     << "<config>"
-     << "<UNSPECIFIED>"
-     << "<input>"
-     << "  <commodities>"
-     << "  <incommodity>" << commod1_ << "</incommodity>"
-     << "  <incommodity>" << commod2_ << "</incommodity>"
-     << "  </commodities>"
-     << "  <input_capacity>" << capacity_ << "</input_capacity>"
-     << "  <inventorysize>" << inv_ << "</inventorysize>"
-     << "</input>"
-     << "</UNSPECIFIED>"
-     << "</config>"
-     << "</start>";
+TEST_F(SinkTest, XMLInit) {
+  std::string config =
+    "<in_commods><val>acommod</val><val>bcommod</val></in_commods>"
+    "<capacity>5</capacity><max_inv_size>10</max_inv_size>";
+  cyclus::MockSim sim(cyclus::AgentSpec(":cycamore:Sink"), config, 1);
 
-  cyclus::XMLParser p;
-  p.Init(ss);
-  cyclus::InfileTree engine(p);
-  cycamore::Sink fac(tc_.get());
-
-  // EXPECT_NO_THROW(fac.InitFrom(&engine););
-  std::string arr[] = {commod1_, commod2_};
-  std::vector<std::string> vexp (arr, arr + sizeof(arr) / sizeof(arr[0]) );
-  EXPECT_EQ(vexp, fac.input_commodities());
-  EXPECT_DOUBLE_EQ(capacity_, fac.Capacity());
-  EXPECT_DOUBLE_EQ(inv_, fac.MaxInventorySize());
-  EXPECT_DOUBLE_EQ(capacity_, fac.SpaceAvailable());
-  EXPECT_DOUBLE_EQ(0.0, fac.InventorySize());
+  ASSERT_NO_THROW(sim.Run());
+  cycamore::Sink* fac = dynamic_cast<cycamore::Sink*>(sim.agent);
+  ASSERT_NE(nullptr, fac);
+  EXPECT_EQ((std::vector<std::string>{commod1_, commod2_}), fac->input_commodities());
+  EXPECT_DOUBLE_EQ(capacity_, fac->Capacity());
+  EXPECT_DOUBLE_EQ(inv_, fac->MaxInventorySize());
 }
 
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -184,26 +165,22 @@ TEST_F(SinkTest, Accept) {
 }
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 TEST_F(SinkTest, InRecipe){
-// Create a context
   using cyclus::RequestPortfolio;
   using cyclus::Material;
   using cyclus::Request;
-  cyclus::Recorder rec;
-  cyclus::Timer ti;
-  cyclus::Context ctx(&ti, &rec);
-
-  // define some test material in the context
   cyclus::CompMap m;
   m[922350000] = 1;
   m[922580000] = 2;
-
   cyclus::Composition::Ptr c = cyclus::Composition::CreateFromMass(m);
-  ctx.AddRecipe("some_u",c) ;
 
-  // create a sink facility to interact with the DRE
-  cycamore::Sink* snk = new cycamore::Sink(&ctx);
-  snk->AddCommodity("some_u");
-  snk->EnterNotify();
+  std::string config =
+    "<in_commods><val>some_u</val></in_commods>"
+    "<recipe_name>some_u</recipe_name><capacity>1</capacity>";
+  cyclus::MockSim sim(cyclus::AgentSpec(":cycamore:Sink"), config, 1);
+  sim.AddRecipe("some_u", c);
+  ASSERT_NO_THROW(sim.Run());
+  cycamore::Sink* snk = dynamic_cast<cycamore::Sink*>(sim.agent);
+  ASSERT_NE(nullptr, snk);
 
   std::set<RequestPortfolio<Material>::Ptr> ports =
     snk->GetMatlRequests();
@@ -216,6 +193,7 @@ TEST_F(SinkTest, InRecipe){
   Request<Material>* req = *requests.begin();
   EXPECT_EQ(req->requester(), snk);
   EXPECT_EQ(req->commodity(),"some_u");
+  EXPECT_EQ(req->target()->comp(), c);
 }
 
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -524,7 +502,7 @@ TEST_F(SinkTest, RandomNormalFreqMultipleCycles) {
   // check multiple cycles execute at the expected time
   // Get the time from the first, second, and third transactions in the
   // database (0th, 1st, and 2nd entry)
-  // Given the PRNG with default seed, buy times on time step 5, 7, and 10
+  // Given the PRNG with default seed, buy times are 5, 7, and 11.
   int first_trans_time = qr.GetVal<int>("Time", 0);
   EXPECT_EQ(5, first_trans_time);
   int second_trans_time = qr.GetVal<int>("Time", 1);
@@ -563,8 +541,7 @@ TEST_F(SinkTest, RandomNormalSizeUniformFreq) {
   int trans_time = tqr.GetVal<int>("Time", 0);
   EXPECT_EQ(3, trans_time);
   int res_id = tqr.GetVal<int>("ResourceId", 0);
-  QueryResult rqr = sim.db().Query("Resources", NULL);
-  double quantity = rqr.GetVal<double>("Quantity", 0);
+  double quantity = sim.GetMaterial(res_id)->quantity();
   EXPECT_NEAR(6.54143, quantity, 0.00001);
 }
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
