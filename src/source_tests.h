@@ -50,10 +50,6 @@ class SourceTest : public ::testing::Test {
     return s->unit_cost; 
   }
 
-  void unit_cost_mod(cycamore::Source* s, double val) {
-    s->unit_cost_mod = val; 
-  }
-
   boost::shared_ptr<cyclus::ExchangeContext<cyclus::Material> > GetContext(
       int nreqs, std::string commodity);
 };

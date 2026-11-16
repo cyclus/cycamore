@@ -231,7 +231,32 @@ class Storage
   #include "toolkit/matl_buy_policy.cycpp.h"
   #include "toolkit/matl_sell_policy.cycpp.h"
   #include "toolkit/position.cycpp.h"
-  #include "toolkit/unit_cost.cycpp.h"
+
+  #pragma cyclus var { \
+    "default": 1.0, \
+    "uilabel": "Variable Cost Per Unit", \
+    "doc": "Variable cost per unit of production (labor, materials, etc.). " \
+           "The data from the Cost Basis Report represents a variable cost per " \
+           "unit and can be used here.", \
+    "units": "Unit of Currency/Unit of Production", \
+    "uitype": "range", \
+    "range": [-CY_LARGE_DOUBLE, CY_LARGE_DOUBLE], \
+  }
+  double unit_cost;
+
+  #pragma cyclus var { \
+    "default": [], \
+    "uilabel": "Unit Cost Modifiers", \
+    "doc": "List of requesting facility cost modifiers to express preferences." \
+           "In units of currency, in same order as listed input commods." \
+           "Arbitrarily setting this term removes economic meaning from the " \
+           "reported arc_cost in Transactions. Does not affect costs carried " \
+           "through facilities." ,\
+    "units": "Unit of Currency/Unit of Production", \
+    "uitype": "range", \
+    "range": [-CY_LARGE_DOUBLE, CY_LARGE_DOUBLE], \
+  }
+  std::vector<double> unit_cost_mods;
 
 };
 

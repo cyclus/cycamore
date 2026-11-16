@@ -82,7 +82,18 @@ class Source : public cyclus::Facility,
  private:
  // Code Injection:
  #include "toolkit/position.cycpp.h"
- #include "toolkit/unit_cost.cycpp.h"
+
+  #pragma cyclus var { \
+    "default": 1.0, \
+    "uilabel": "Variable Cost Per Unit", \
+    "doc": "Variable cost per unit of production (labor, materials, etc.). " \
+           "The data from the Cost Basis Report represents a variable cost per " \
+           "unit and can be used here.", \
+    "units": "Unit of Currency/Unit of Production", \
+    "uitype": "range", \
+    "range": [-CY_LARGE_DOUBLE, CY_LARGE_DOUBLE], \
+  }
+  double unit_cost;
 
   #pragma cyclus var { \
     "tooltip": "source output commodity", \
