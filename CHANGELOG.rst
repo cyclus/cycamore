@@ -20,6 +20,7 @@ Since last release
 * Added new variable to Deploy Institution to shift the deployment times (#677)
 * Added variables to enrichment facility for initial tails inventory (#680)
 * Added variable to specify initial spent, fresh, and core inventory for reactor facility (#680)
+* Added FunctionalSource archetype as a non-CommodityProducer copy of Source (#709)
 
 **Changed:**
 * Some language in the storage cyclus note to make it match actual behavior (#690)
