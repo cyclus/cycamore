@@ -25,6 +25,16 @@ void FunctionalSource::InitFrom(cyclus::QueryableBackend* b) {
   #pragma cyclus impl initfromdb cycamore::FunctionalSource
 }
 
+std::string FunctionalSource::str() {
+  std::stringstream ss;
+  ss << cyclus::Facility::str() << " supplies commodity '" << outcommod
+     << "' with recipe '" << outrecipe << "' at a throughput of "
+     << throughput << " kg per time step "
+     << " with package type: " << package
+     << " and transport unit type: " << transport_unit;
+  return ss.str();
+}
+
 void FunctionalSource::EnterNotify() {
   cyclus::Facility::EnterNotify();
   InitializePosition();
