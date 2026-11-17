@@ -25,25 +25,26 @@ class ConversionTest : public ::testing::Test {
   double throughput_val, input_capacity_val;
   cyclus::Composition::Ptr recipe;
 
-  const double TEST_QUANTITY = 10.0;  
+  const double kTestQuantity = 10.0;
 
-  const int SIMULATION_DURATION = 3;
-  const double DEFAULT_POSITION = 0.0;
-  const double TEST_POSITION = 0.01;
+  const int kSimulationDuration = 3;
+  const double kDefaultPosition = 0.0;
+  const double kTestPosition = 0.01;
   
-  const double DEFAULT_THROUGHPUT = 10.0;
-  const double DEFAULT_INPUT_CAPACITY = 50.0;
+  const double kTestUnitCost = 4.0;
+  const double kDefaultThroughput = 10.0;
+  const double kDefaultInputCapacity = 50.0;
   
-  const std::string INCOMMOD1 = "incommod1";
-  const std::string OUTCOMMOD_NAME = "outcommod";
+  const std::string kInputCommodity1 = "incommod1";
+  const std::string kOutputCommodity = "outcommod";
 
-  const std::string DEFAULT_CONFIG = 
+  const std::string kDefaultConfig =
     "<incommods>"
-    "  <incommodity>" + INCOMMOD1 + "</incommodity>"
+      "<val>" + kInputCommodity1 + "</val>"
     "</incommods>"
-    "<outcommod>" + OUTCOMMOD_NAME + "</outcommod>"
-    "<throughput>" + std::to_string(DEFAULT_THROUGHPUT) + "</throughput>"
-    "<input_capacity>" + std::to_string(DEFAULT_INPUT_CAPACITY) + "</input_capacity>";
+    "<outcommod>" + kOutputCommodity + "</outcommod>"
+    "<throughput>" + std::to_string(kDefaultThroughput) + "</throughput>"
+    "<input_capacity>" + std::to_string(kDefaultInputCapacity) + "</input_capacity>";
 
   virtual void SetUp();
   virtual void TearDown();
@@ -65,6 +66,18 @@ class ConversionTest : public ::testing::Test {
   }
   void throughput(cycamore::Conversion* c, double val) { c->throughput = val; }
   void input_capacity(cycamore::Conversion* c, double val) { c->input_capacity = val; }
+
+  double unit_cost(cycamore::Conversion* c) { return c->unit_cost; }
+  void unit_cost(cycamore::Conversion* c, double val) { c->unit_cost = val; }
+  std::vector<double> unit_cost_mods(cycamore::Conversion* c) {
+    return c->unit_cost_mods;
+  }
+  void unit_cost_mods(cycamore::Conversion* c, std::vector<double> vals) {
+    c->unit_cost_mods = vals;
+  }
+  cyclus::Material::Ptr output_peek(cycamore::Conversion* c) {
+    return c->output.Peek();
+  }
 
   // Accessor methods for private buffers
   double input_quantity(cycamore::Conversion* c) { return c->input.quantity(); }

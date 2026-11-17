@@ -17,9 +17,9 @@ namespace cycamore {
 
 class Context;
 
-/// This facility acts as a simple conversion facility from its input commodity
-/// to its output commodity. It has a fixed throughput (per time step), and 
-/// converts without regard to the composition of the input material.
+/// Black-box uranium conversion between commodities, preserving uranium mass
+/// and isotopic composition. All material quantities represent kgU; chemical
+/// species and their non-uranium mass are not modeled.
 class Conversion
   : public cyclus::Facility {
   friend class ConversionTest;
@@ -30,11 +30,16 @@ class Conversion
 
   virtual std::string version() { return CYCAMORE_VERSION; }
 
-  // clanag-format off
+  // clang-format off
   #pragma cyclus note { \
     "doc": \
-    " A conversion facility that accepts materials and products and with a \n"\
-    " fixed throughput (per time step) converts them into its outcommod. " \
+    "Accepts Materials and converts between uranium commodities without " \
+    "modeling chemistry or changing uranium mass or isotopic composition. " \
+    "All quantities are kgU, not compound mass. Input requests fill available " \
+    "feed storage independently of processing throughput. Processing occurs " \
+    "before exchange, so newly received feed is processed next timestep. " \
+    "Throughput limits processing only; accumulated product can ship in one " \
+    "timestep and output storage is unlimited." \
     }
 
   #pragma cyclus decl
@@ -78,6 +83,39 @@ class Conversion
   #include "toolkit/position.cycpp.h"
 
   // clang-format off
+  #pragma cyclus var { \
+    "default": 1.0, \
+    "uilabel": "Variable Cost Per Unit", \
+    "doc": "Conversion cost per kgU, added to the carried value of feed " \
+           "when bidding output material. Must be finite and non-negative.", \
+    "units": "Unit of Currency/kgU", \
+    "uitype": "range", \
+    "range": [0.0, CY_LARGE_DOUBLE], \
+    "schema": '<optional><element name="unit_cost"><data type="double">' \
+              '<param name="minInclusive">0</param>' \
+              '<param name="maxInclusive">' + str(CY_LARGE_DOUBLE) + '</param>' \
+              '</data></element></optional>', \
+  }
+  double unit_cost;
+
+  #pragma cyclus var { \
+    "default": [], \
+    "uilabel": "Unit Cost Modifiers", \
+    "doc": "Request cost modifiers in input commodity order; defaults to " \
+           "zero for each commodity. Lower values favor a commodity. " \
+           "Arbitrary modifiers remove economic meaning from reported " \
+           "arc_cost, but do not affect carried material value.", \
+    "units": "Unit of Currency/kgU", \
+    "uitype": ["oneormore", "range"], \
+    "range": [None, [-CY_LARGE_DOUBLE, CY_LARGE_DOUBLE]], \
+    "schema": '<optional><element name="unit_cost_mods"><oneOrMore>' \
+              '<element name="val"><data type="double">' \
+              '<param name="minInclusive">' + str(-CY_LARGE_DOUBLE) + '</param>' \
+              '<param name="maxInclusive">' + str(CY_LARGE_DOUBLE) + '</param>' \
+              '</data></element></oneOrMore></element></optional>', \
+  }
+  std::vector<double> unit_cost_mods;
+
   /// all facilities must have at least one input commodity
   #pragma cyclus var { \
     "tooltip": "input commodities", \
@@ -102,7 +140,13 @@ class Conversion
     "uilabel": "Maximum conversion throughput", \
     "uitype": "range", \
     "range": [0.0, CY_LARGE_DOUBLE], \
-    "doc": "throughput the facility can convert at each time step" \
+    "units": "kgU/timestep", \
+    "doc": "Maximum uranium processing rate; does not limit feed purchases " \
+           "or shipments of accumulated product. Zero disables processing.", \
+    "schema": '<optional><element name="throughput"><data type="double">' \
+              '<param name="minInclusive">0</param>' \
+              '<param name="maxInclusive">' + str(CY_LARGE_DOUBLE) + '</param>' \
+              '</data></element></optional>', \
   }
   double throughput;
 
@@ -112,9 +156,9 @@ class Conversion
     "uilabel": "Maximum Storage of Input Buffer", \
     "uitype": "range", \
     "range": [0.0, CY_LARGE_DOUBLE], \
-    "doc": "Total capacity of the input buffer. The amount requested per " \
-    "time step is the minimum the conversion throughput and this capacity " \
-    "minus the amount of material in the input buffer." \
+    "units": "kgU", \
+    "doc": "Total feed storage capacity in kgU. Requests fill the remaining " \
+           "space regardless of processing throughput." \
   }
   double input_capacity;
 
@@ -123,6 +167,7 @@ class Conversion
   cyclus::toolkit::ResBuf<cyclus::Material> input;
 
   /// a buffer for outgoing material
+  #pragma cyclus var {}
   cyclus::toolkit::ResBuf<cyclus::Material> output;
   // clang-format on
 

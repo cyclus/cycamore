@@ -43,6 +43,14 @@ Conversion::~Conversion() {}
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 void Conversion::EnterNotify() {
   cyclus::Facility::EnterNotify();
+  if (unit_cost_mods.empty()) {
+    unit_cost_mods.assign(incommods.size(), cyclus::kDefaultUnitCostMod);
+  } else if (unit_cost_mods.size() != incommods.size()) {
+    std::stringstream ss;
+    ss << "unit_cost_mods has " << unit_cost_mods.size()
+       << " values, expected " << incommods.size();
+    throw cyclus::ValueError(ss.str());
+  }
   InitializePosition();
 }
 
@@ -63,12 +71,12 @@ std::string Conversion::str() {
   }
   msg += "} until its input is full at ";
   msg += std::to_string(input.capacity());
-  msg += " kg.";
+  msg += " kgU";
 
-  msg += "} and converts ";
+  msg += " and converts up to ";
   msg += std::to_string(throughput);
-  msg += " kg/timestep into commodity ";
-  ss << msg << outcommod;
+  msg += " kgU/timestep into commodity ";
+  ss << msg << outcommod << " at an added cost of " << unit_cost << " per kgU";
   return "" + ss.str();
 }
 
@@ -87,7 +95,7 @@ double Conversion::AvailableFeedstockCapacity() {
 
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
 void Conversion::Convert() {
-  if (input.quantity() > 0) {
+  if (input.quantity() > 0 && throughput > 0) {
     output.Push(input.Pop(std::min(input.quantity(), throughput)));
   }
 }
@@ -107,11 +115,12 @@ std::set<RequestPortfolio<Material>::Ptr> Conversion::GetMatlRequests() {
   Material::Ptr mat = cyclus::NewBlankMaterial(available_capacity);
  
 
-  // Add request for all commodities using default preference
-  for (std::vector<std::string>::iterator it = incommods.begin();
-       it != incommods.end(); ++it) {
-    Request<Material>* req = port->AddRequest(mat, this, *it);
+  // Alternative input commodities satisfy the same feed demand.
+  std::vector<Request<Material>*> mutuals;
+  for (std::size_t i = 0; i < incommods.size(); ++i) {
+    mutuals.push_back(port->AddRequest(mat, this, incommods[i], unit_cost_mods[i]));
   }
+  port->AddMutualReqs(mutuals);
 
   // Add capacity constraint to ensure we never get more feed than capacity
   CapacityConstraint<Material> cc(available_capacity);
@@ -143,7 +152,8 @@ std::set<BidPortfolio<Material>::Ptr> Conversion::GetMatlBids(
 
     if (offer_qty > 0) {
       Material::Ptr offer = Material::CreateUntracked(offer_qty, output.Peek()->comp());
-      port->AddBid(*it, offer, this);  // Note: *it, not **it
+      double bid_cost = output.Peek()->unit_value() + unit_cost;
+      port->AddBid(*it, offer, this, false, bid_cost);
     }
   }
 
