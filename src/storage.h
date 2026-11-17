@@ -237,10 +237,14 @@ class Storage
     "uilabel": "Variable Cost Per Unit", \
     "doc": "Variable cost per unit of production (labor, materials, etc.). " \
            "The data from the Cost Basis Report represents a variable cost per " \
-           "unit and can be used here.", \
+           "unit and can be used here. Must be finite and non-negative.", \
     "units": "Unit of Currency/Unit of Production", \
     "uitype": "range", \
-    "range": [-CY_LARGE_DOUBLE, CY_LARGE_DOUBLE], \
+    "range": [0.0, CY_LARGE_DOUBLE], \
+    "schema": '<optional><element name="unit_cost"><data type="double">' \
+              '<param name="minInclusive">0</param>' \
+              '<param name="maxInclusive">' + str(CY_LARGE_DOUBLE) + '</param>' \
+              '</data></element></optional>', \
   }
   double unit_cost;
 

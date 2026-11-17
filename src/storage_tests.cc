@@ -3,6 +3,7 @@
 #include <sstream>
 
 #include "storage_tests.h"
+#include "xml_parser.h"
 
 namespace cycamore {
 
@@ -103,18 +104,25 @@ TEST_F(StorageTest, clone) {
   Storage* cloned_fac =
       dynamic_cast<Storage*> (src_facility_->Clone());
   TestInitState(cloned_fac);
-}
+  delete cloned_fac;
 
-TEST_F(StorageTest, CloneUnitCosts) {
+  // XML-configured costs and modifiers must also survive cloning.
   const std::vector<double> expected_cost_mods = {4.0, 5.0};
   const double expected_unit_cost = 7.0;
   const int sim_dur = 1;
   std::stringstream config;
-  config << "<in_commods><val>in1</val><val>in2</val></in_commods>"
-         << "<unit_cost_mods><val>" << expected_cost_mods[0] << "</val><val>"
-         << expected_cost_mods[1] << "</val></unit_cost_mods>"
-         << "<out_commods><val>out</val></out_commods><unit_cost>"
-         << expected_unit_cost << "</unit_cost>";
+  config << "<in_commods>"
+           << "<val>in1</val>"
+           << "<val>in2</val>"
+         << "</in_commods>"
+         << "<unit_cost_mods>"
+           << "<val>" << expected_cost_mods[0] << "</val>"
+           << "<val>" << expected_cost_mods[1] << "</val>"
+         << "</unit_cost_mods>"
+         << "<out_commods>"
+           << "<val>out</val>"
+         << "</out_commods>"
+         << "<unit_cost>" << expected_unit_cost << "</unit_cost>";
   cyclus::MockSim sim(cyclus::AgentSpec(":cycamore:Storage"), config.str(),
                       sim_dur);
 
@@ -283,7 +291,6 @@ TEST_F(StorageTest, MultipleSmallBatches) {
   TestBuffers(src_facility_,0,0,0,0.5*cap);
 }
 
-
 TEST_F(StorageTest, ChangeCapacity) {
   // src_facility_->discrete_handling_(0);
   max_inv_size = 10000;
@@ -432,71 +439,56 @@ TEST_F(StorageTest,DifferentRecipe){
   TestStocks(src_facility_, v);
 }
 
-TEST_F(StorageTest, BehaviorTest){
-  // Verify Storage behavior
-
-  std::string config =
-    "   <in_commods> <val>spent_fuel</val> </in_commods> "
-    "   <out_commods> <val>dry_spent</val> </out_commods> "
-    "   <residence_time>1</residence_time>"
-    "   <max_inv_size>10</max_inv_size>";
-
-  int simdur = 3;
-
-  cyclus::MockSim sim(cyclus::AgentSpec (":cycamore:Storage"), config, simdur);
-
-  sim.AddSource("spent_fuel").Finalize();
-  sim.AddSink("dry_spent").Finalize();
-
-  int id = sim.Run();
-
-  // return all transactions where our sstorage facility is the sender
-  std::vector<cyclus::Cond> conds;
-  conds.push_back(cyclus::Cond("Commodity", "==", std::string("dry_spent")));
-  cyclus::QueryResult qr = sim.db().Query("Transactions", &conds);
-  int n_trans = qr.rows.size();
-  EXPECT_EQ(1, n_trans) << "expected 1 transactions, got " << n_trans;
-
-}
-
-TEST_F(StorageTest, UnitCostBid) {
-  const std::string input_commod = "storage_input";
-  const std::string output_commod = "storage_output";
-  const int residence_time = 0;
-  const double throughput = 1.0;
+TEST_F(StorageTest, BehaviorTest) {
+  const std::string input_commodity = "spent_fuel";
+  const std::string output_commodity = "dry_spent";
   const double storage_unit_cost = 4.0;
-  const int sim_dur = 2;
+  const double inventory_capacity = 10.0;
+  const int sim_duration = 3;
   std::stringstream config;
-  config << "<in_commods><val>" << input_commod << "</val></in_commods>"
-         << "<out_commods><val>" << output_commod << "</val></out_commods>"
-         << "<residence_time>" << residence_time << "</residence_time>"
-         << "<throughput>" << throughput << "</throughput><unit_cost>"
-         << storage_unit_cost << "</unit_cost>";
+  config << "<in_commods>"
+           << "<val>" << input_commodity << "</val>"
+         << "</in_commods>"
+         << "<out_commods>"
+           << "<val>" << output_commodity << "</val>"
+         << "</out_commods>"
+         << "<residence_time>1</residence_time>"
+         << "<max_inv_size>" << inventory_capacity << "</max_inv_size>"
+         << "<unit_cost>" << storage_unit_cost << "</unit_cost>";
   cyclus::MockSim sim(cyclus::AgentSpec(":cycamore:Storage"), config.str(),
-                      sim_dur);
-  sim.AddSource(input_commod).capacity(throughput).Finalize();
-  sim.AddSink(output_commod).Finalize();
+                      sim_duration);
+  sim.AddSource(input_commodity).Finalize();
+  sim.AddSink(output_commodity).Finalize();
+  int agent_id = sim.Run();
 
-  int id = sim.Run();
-  std::vector<cyclus::Cond> conds;
-  conds.push_back(cyclus::Cond("SenderId", "==", id));
-  cyclus::QueryResult qr = sim.db().Query("Transactions", &conds);
-  ASSERT_EQ(1, qr.rows.size());
+  std::vector<cyclus::Cond> conditions;
+  conditions.push_back(cyclus::Cond("SenderId", "==", agent_id));
+  auto outgoing = sim.db().Query("Transactions", &conditions);
+  ASSERT_EQ(1, outgoing.rows.size());
+  EXPECT_EQ(output_commodity, outgoing.GetVal<std::string>("Commodity", 0));
   EXPECT_DOUBLE_EQ(storage_unit_cost + cyclus::kDefaultUnitCost,
-                   qr.GetVal<double>("UnitCost", 0));
+                   outgoing.GetVal<double>("UnitCost", 0));
 }
 
 TEST_F(StorageTest, UnitCostModsSelectCommodity) {
   const std::string higher_cost_commod = "higher_cost";
   const std::string lower_cost_commod = "lower_cost";
-  const std::vector<double> cost_mods = {10.0, 1.0};
+  const double higher_cost_modifier = 10.0;
+  const double lower_cost_modifier = -2.0;
   const double max_inv_size = 1.0;
   const int sim_dur = 1;
   std::stringstream config;
-  config << "<in_commods><val>" << higher_cost_commod << "</val><val>"
-         << lower_cost_commod << "</val></in_commods><unit_cost_mods><val>"
-         << cost_mods[0] << "</val><val>" << cost_mods[1]
-         << "</val></unit_cost_mods><out_commods><val>out</val></out_commods>"
+  config << "<in_commods>"
+           << "<val>" << higher_cost_commod << "</val>"
+           << "<val>" << lower_cost_commod << "</val>"
+         << "</in_commods>"
+         << "<unit_cost_mods>"
+           << "<val>" << higher_cost_modifier << "</val>"
+           << "<val>" << lower_cost_modifier << "</val>"
+         << "</unit_cost_mods>"
+         << "<out_commods>"
+           << "<val>out</val>"
+         << "</out_commods>"
          << "<max_inv_size>" << max_inv_size << "</max_inv_size>";
   cyclus::MockSim sim(cyclus::AgentSpec(":cycamore:Storage"), config.str(),
                       sim_dur);
@@ -509,16 +501,63 @@ TEST_F(StorageTest, UnitCostModsSelectCommodity) {
   cyclus::QueryResult qr = sim.db().Query("Transactions", &conds);
   ASSERT_EQ(1, qr.rows.size());
   EXPECT_EQ(lower_cost_commod, qr.GetVal<std::string>("Commodity", 0));
-  EXPECT_DOUBLE_EQ(cost_mods[1], qr.GetVal<double>("UnitCostMod", 0));
-  EXPECT_DOUBLE_EQ(qr.GetVal<double>("UnitCost", 0) + cost_mods[1],
+  EXPECT_DOUBLE_EQ(lower_cost_modifier, qr.GetVal<double>("UnitCostMod", 0));
+  EXPECT_DOUBLE_EQ(qr.GetVal<double>("UnitCost", 0) + lower_cost_modifier,
                    qr.GetVal<double>("ArcCost", 0));
+}
+
+TEST_F(StorageTest, UnitCostInputValidation) {
+  const std::string base_config =
+      "<in_commods>"
+        "<val>feed</val>"
+      "</in_commods>"
+      "<out_commods>"
+        "<val>product</val>"
+      "</out_commods>"
+      "<unit_cost_mods>"
+        "<val>-2</val>"
+      "</unit_cost_mods>";
+  auto validate = [&](const std::string& config) {
+    std::stringstream schema;
+    schema << "<element xmlns=\"http://relaxng.org/ns/structure/1.0\" "
+           << "xmlns:a=\"http://relaxng.org/ns/annotation/1.0\" "
+           << "datatypeLibrary=\"http://www.w3.org/2001/XMLSchema-datatypes\" "
+           << "name=\"config\">"
+           << src_facility_->schema()
+           << "</element>";
+    std::stringstream xml;
+    xml << "<config>" << config << "</config>";
+    cyclus::XMLParser parser;
+    parser.Init(xml);
+    parser.Validate(schema);
+  };
+
+  EXPECT_NO_THROW(validate(base_config));
+  const std::vector<std::string> valid_costs = {"0", "4"};
+  for (const auto& value : valid_costs) {
+    SCOPED_TRACE(value);
+    EXPECT_NO_THROW(validate(base_config + "<unit_cost>" + value + "</unit_cost>"));
+  }
+  const std::vector<std::string> invalid_costs = {"-1", "NaN", "INF", "-INF", "1e300"};
+  for (const auto& value : invalid_costs) {
+    SCOPED_TRACE(value);
+    EXPECT_THROW(validate(base_config + "<unit_cost>" + value + "</unit_cost>"),
+                 cyclus::ValidationError);
+  }
 }
 
 TEST_F(StorageTest, UnitCostModsSizeMismatch) {
   std::string config =
-      "<in_commods><val>in1</val><val>in2</val></in_commods>"
-      "<unit_cost_mods><val>1</val></unit_cost_mods>"
-      "<out_commods><val>out</val></out_commods>";
+      "<in_commods>"
+        "<val>in1</val>"
+        "<val>in2</val>"
+      "</in_commods>"
+      "<unit_cost_mods>"
+        "<val>1</val>"
+      "</unit_cost_mods>"
+      "<out_commods>"
+        "<val>out</val>"
+      "</out_commods>";
   const int sim_dur = 1;
   cyclus::MockSim sim(cyclus::AgentSpec(":cycamore:Storage"), config, sim_dur);
 
@@ -529,12 +568,18 @@ TEST_F(StorageTest, MultipleCommods){
   // Verify Storage accepting Multiple Commods
 
   std::string config =
-    "   <in_commods> <val>spent_fuel</val>"
-    "                <val>spent_fuel2</val> </in_commods>"
-    "   <unit_cost_mods> <val>1</val>"
-    "                    <val>1</val> </unit_cost_mods>"
-    "   <out_commods> <val>dry_spent</val> </out_commods> "
-    "   <max_inv_size>10</max_inv_size>";
+    "<in_commods>"
+      "<val>spent_fuel</val>"
+      "<val>spent_fuel2</val>"
+    "</in_commods>"
+    "<unit_cost_mods>"
+      "<val>1</val>"
+      "<val>1</val>"
+    "</unit_cost_mods>"
+    "<out_commods>"
+      "<val>dry_spent</val>"
+    "</out_commods>"
+    "<max_inv_size>10</max_inv_size>";
 
   int simdur = 2;
 

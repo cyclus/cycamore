@@ -27,7 +27,7 @@ void SourceTest::InitParameters() {
   recipe_name = "recipe";
   package_name = "testpackage";
   tu_name = "testtu";
-  cost = 13; // this and the capacity are set arbitrarily
+  cost = 13;  // this and the capacity are set arbitrarily
   capacity = 5;
 
   recipe = cyclus::Composition::CreateFromAtom(cyclus::CompMap());
@@ -78,8 +78,6 @@ TEST_F(SourceTest, AddBids) {
   ASSERT_TRUE(ports.size() > 0);
   EXPECT_EQ(ports.size(), 1);
 
-
-
   BidPortfolio<Material>::Ptr port = *ports.begin();
   EXPECT_EQ(port->bidder(), src_facility);
   EXPECT_EQ(port->bids().size(), nreqs);
@@ -98,12 +96,12 @@ TEST_F(SourceTest, UnitCostXML) {
   const double expected_unit_cost = 7.0;
   const int sim_dur = 1;
   std::stringstream config;
-  config << "<outcommod>commod</outcommod><throughput>" << test_throughput
-         << "</throughput><unit_cost>" << expected_unit_cost
-         << "</unit_cost>";
+  config << "<outcommod>" << commod << "</outcommod>"
+         << "<throughput>" << test_throughput << "</throughput>"
+         << "<unit_cost>" << expected_unit_cost << "</unit_cost>";
   cyclus::MockSim sim(cyclus::AgentSpec(":cycamore:Source"), config.str(),
                       sim_dur);
-  sim.AddSink("commod").Finalize();
+  sim.AddSink(commod).Finalize();
 
   int id = sim.Run();
   std::vector<cyclus::Cond> conds;
@@ -134,7 +132,7 @@ TEST_F(SourceTest, Response) {
       Request<Material>::Create(get_mat(), trader, commod);
   Bid<Material>* bid =
       Bid<Material>::Create(request, get_mat(), src_facility, false,
-      unit_cost(src_facility));
+                            unit_cost(src_facility));
 
   Trade<Material> trade(request, bid, qty);
   trades.push_back(trade);

@@ -109,8 +109,10 @@ class Sink
   inline const std::vector<std::string>&
       input_commodities() const { return in_commods; }
 
+  /// @return the unit-cost modifiers associated with input commodities
   inline const std::vector<double>&
       unit_cost_modifiers() const { return unit_cost_mods; }
+
  private:
   // Code Injection:
   #include "toolkit/position.cycpp.h"
