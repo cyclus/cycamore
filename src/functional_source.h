@@ -14,8 +14,8 @@ namespace cycamore {
 
 class Context;
 
-/// This facility acts as a source of material with a fixed throughput (per
-/// time step) capacity and a lifetime capacity defined by a total inventory
+/// This facility acts as a source of material with a throughput (per time step)
+/// capacity defined by a function and a lifetime capacity defined by a total inventory
 /// size.  It offers its material as a single commodity. If a composition
 /// recipe is specified, it provides that single material composition to
 /// requesters.  If unspecified, the source provides materials with the exact
@@ -34,8 +34,8 @@ class FunctionalSource : public cyclus::Facility {
   virtual std::string version() { return CYCAMORE_VERSION; }
 
   #pragma cyclus note { \
-    "doc": "This facility acts as a source of material with a fixed throughput (per\n" \
-           "time step) capacity and a lifetime capacity defined by a total inventory\n" \
+    "doc": "This facility acts as a source of material with a throughput (per time step)\n" \
+           "capacity defined by a function and a lifetime capacity defined by a total inventory\n" \
            "size.  It offers its material as a single commodity. If a composition\n" \
            "recipe is specified, it provides that single material composition to\n" \
            "requesters.  If unspecified, the source provides materials with the exact\n" \
