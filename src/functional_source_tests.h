@@ -41,7 +41,12 @@ class FunctionalSourceTest : public ::testing::Test {
   void outcommod(cycamore::FunctionalSource* s, std::string commod) {
     s->outcommod = commod;
   }
-  void throughput(cycamore::FunctionalSource* s, double val) { s->throughput = val; }
+  void throughput(cycamore::FunctionalSource* s, double val) {
+    s->throughput = val;
+  }
+  double current_throughput(cycamore::FunctionalSource* s) {
+    return s->throughput;
+  }
   void inventory_size(cycamore::FunctionalSource* s, double val) {
     s->inventory_size = val;
   }

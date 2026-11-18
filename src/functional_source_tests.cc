@@ -60,6 +60,111 @@ TEST_F(FunctionalSourceTest, Print) {
   EXPECT_NO_THROW(std::string s = src_facility->str());
 }
 
+TEST_F(FunctionalSourceTest, InvalidThroughputFunctionError) {
+  std::string config =
+    "<outcommod>commod</outcommod>"
+    "<outrecipe>recipe</outrecipe>"
+    "<throughput_function>invalid</throughput_function>"
+    "<throughput_params> <val>1</val> <val>1</val> </throughput_params>"
+    ;
+
+  int simdur = 3;
+  cyclus::MockSim sim(cyclus::AgentSpec (":cycamore:FunctionalSource"), config, simdur);
+
+  EXPECT_THROW(sim.Run(), cyclus::ValueError);
+}
+
+TEST_F(FunctionalSourceTest, ThroughputParamsError) {
+  int simdur = 3;
+
+  std::string config1 =
+    "<outcommod>commod</outcommod>"
+    "<outrecipe>recipe</outrecipe>"
+    "<throughput_function>linear</throughput_function>"
+    "<throughput_params> <val>1</val> </throughput_params>"
+    ;
+
+  cyclus::MockSim sim1(cyclus::AgentSpec (":cycamore:FunctionalSource"), config1, simdur);
+
+  EXPECT_THROW(sim1.Run(), cyclus::ValueError);
+
+  std::string config2 =
+    "<outcommod>commod</outcommod>"
+    "<outrecipe>recipe</outrecipe>"
+    "<throughput_function>exponential</throughput_function>"
+    "<throughput_params> <val>1</val> </throughput_params>"
+    ;
+
+  cyclus::MockSim sim2(cyclus::AgentSpec (":cycamore:FunctionalSource"), config2, simdur);
+
+  EXPECT_THROW(sim2.Run(), cyclus::ValueError);
+}
+
+TEST_F(FunctionalSourceTest, LinearFunctionCalculatesExpectedThroughput) {
+  cycamore::FunctionalSource functional_source(tc.get());
+  inventory_size(&functional_source, 15);
+  throughput_function(&functional_source, "linear");
+  throughput_params(&functional_source, {2, 2});
+
+  functional_source.Build(NULL);
+  functional_source.Tick();
+  EXPECT_DOUBLE_EQ(2, current_throughput(&functional_source));
+  functional_source.Tick();
+  EXPECT_DOUBLE_EQ(4, current_throughput(&functional_source));
+  functional_source.Tick();
+  EXPECT_DOUBLE_EQ(6, current_throughput(&functional_source));
+}
+
+TEST_F(FunctionalSourceTest, ExponentialFunctionCalculatesExpectedThroughput) {
+  cycamore::FunctionalSource functional_source(tc.get());
+  inventory_size(&functional_source, 15);
+  throughput_function(&functional_source, "exponential");
+  throughput_params(&functional_source, {1, std::log(2.0), 1});
+
+  functional_source.Build(NULL);
+  functional_source.Tick();
+  EXPECT_DOUBLE_EQ(2, current_throughput(&functional_source));
+  functional_source.Tick();
+  EXPECT_DOUBLE_EQ(3, current_throughput(&functional_source));
+  functional_source.Tick();
+  EXPECT_DOUBLE_EQ(5, current_throughput(&functional_source));
+}
+
+TEST_F(FunctionalSourceTest, ZeroSlopeLinearMatchesSource) {
+  int simdur = 3;
+
+  std::string config1 = 
+    "<outcommod>commod</outcommod>"
+    "<throughput_function>linear</throughput_function>"
+    "<throughput_params> <val>0</val> <val>2</val> </throughput_params>"
+    ;
+
+  std::string config2 =
+    "<outcommod>commod</outcommod>"
+    "<throughput>2</throughput>"
+    ;
+
+  cyclus::MockSim sim1(cyclus::AgentSpec (":cycamore:FunctionalSource"), config1, simdur);
+  cyclus::MockSim sim2(cyclus::AgentSpec (":cycamore:Source"), config2, simdur);
+
+  sim1.Run();
+  sim2.Run();
+
+  cyclus::QueryResult functional_qr =
+      sim1.db().Query("TimeSeriessupplycommod", NULL);
+
+  cyclus::QueryResult source_qr =
+      sim2.db().Query("TimeSeriessupplycommod", NULL);
+
+  ASSERT_EQ(source_qr.rows.size(), functional_qr.rows.size());
+
+  for (int i = 0; i < simdur; ++i) {
+    EXPECT_DOUBLE_EQ(
+        source_qr.GetVal<double>("Value", i),
+        functional_qr.GetVal<double>("Value", i));
+  }
+}
+
 //come back to this
 TEST_F(FunctionalSourceTest, DefaultProductionCreatesInventoryAtBuild) {
   cycamore::FunctionalSource functional_source(tc.get());
