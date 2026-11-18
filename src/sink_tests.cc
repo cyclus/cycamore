@@ -1,5 +1,7 @@
 #include <gtest/gtest.h>
 
+#include <sstream>
+
 #include "facility_tests.h"
 #include "agent_tests.h"
 #include "resource_helpers.h"
@@ -52,9 +54,24 @@ TEST_F(SinkTest, InitialState) {
   EXPECT_EQ(vexp, src_facility->input_commodities());
 
   src_facility->EnterNotify();
-  double pref[] = {cyclus::kDefaultUnitCostMod, cyclus::kDefaultUnitCostMod};
-  std::vector<double> vpref (pref, pref + sizeof(pref) / sizeof(pref[0]) );
-  EXPECT_EQ(vpref, src_facility->input_commodity_preferences());
+  const std::vector<double> expected_modifiers(
+      src_facility->input_commodities().size(), cyclus::kDefaultUnitCostMod);
+  EXPECT_EQ(expected_modifiers, src_facility->unit_cost_modifiers());
+}
+
+TEST_F(SinkTest, UnitCostModsSizeMismatch) {
+  std::string config =
+      "<in_commods>"
+        "<val>commod1</val>"
+        "<val>commod2</val>"
+      "</in_commods>"
+      "<unit_cost_mods>"
+        "<val>1</val>"
+      "</unit_cost_mods>";
+  const int sim_dur = 1;
+  cyclus::MockSim sim(cyclus::AgentSpec(":cycamore:Sink"), config, sim_dur);
+
+  EXPECT_THROW(sim.Run(), cyclus::ValueError);
 }
 
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -75,37 +92,47 @@ TEST_F(SinkTest, Clone) {
 }
 
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-TEST_F(SinkTest, DISABLED_XMLInit) {
-  std::stringstream ss;
-  ss << "<start>"
-     << "<name>fooname</name>"
-     << "<config>"
-     << "<UNSPECIFIED>"
-     << "<input>"
-     << "  <commodities>"
-     << "  <incommodity>" << commod1_ << "</incommodity>"
-     << "  <incommodity>" << commod2_ << "</incommodity>"
-     << "  </commodities>"
-     << "  <input_capacity>" << capacity_ << "</input_capacity>"
-     << "  <inventorysize>" << inv_ << "</inventorysize>"
-     << "</input>"
-     << "</UNSPECIFIED>"
-     << "</config>"
-     << "</start>";
+TEST_F(SinkTest, XMLInit) {
+  const std::vector<double> expected_cost_mods = {7.0, -2.0};
+  const double test_capacity = 1.0;
+  const int sim_dur = 1;
+  const std::vector<std::string> input_commodities = {commod1_, commod2_};
+  std::stringstream config;
+  config << "<in_commods>"
+           << "<val>" << input_commodities[0] << "</val>"
+           << "<val>" << input_commodities[1] << "</val>"
+         << "</in_commods>"
+         << "<unit_cost_mods>"
+           << "<val>" << expected_cost_mods[0] << "</val>"
+           << "<val>" << expected_cost_mods[1] << "</val>"
+         << "</unit_cost_mods>"
+         << "<capacity>" << test_capacity << "</capacity>"
+         << "<max_inv_size>" << inv_ << "</max_inv_size>";
+  cyclus::MockSim sim(cyclus::AgentSpec(":cycamore:Sink"), config.str(),
+                      sim_dur);
 
-  cyclus::XMLParser p;
-  p.Init(ss);
-  cyclus::InfileTree engine(p);
-  cycamore::Sink fac(tc_.get());
+  ASSERT_NO_THROW(sim.Run());
+  cycamore::Sink* sink = dynamic_cast<cycamore::Sink*>(sim.agent);
+  ASSERT_NE(nullptr, sink);
+  EXPECT_EQ(input_commodities, sink->input_commodities());
+  EXPECT_DOUBLE_EQ(test_capacity, sink->Capacity());
+  EXPECT_DOUBLE_EQ(inv_, sink->MaxInventorySize());
+  std::set<cyclus::RequestPortfolio<cyclus::Material>::Ptr> ports =
+      sink->GetMatlRequests();
+  ASSERT_EQ(1, ports.size());
+  const std::vector<cyclus::Request<cyclus::Material>*>& requests =
+      (*ports.begin())->requests();
+  ASSERT_EQ(expected_cost_mods.size(), requests.size());
+  for (std::vector<double>::size_type i = 0; i < expected_cost_mods.size();
+       ++i) {
+    EXPECT_DOUBLE_EQ(expected_cost_mods[i], requests[i]->unit_cost_mod());
+  }
 
-  // EXPECT_NO_THROW(fac.InitFrom(&engine););
-  std::string arr[] = {commod1_, commod2_};
-  std::vector<std::string> vexp (arr, arr + sizeof(arr) / sizeof(arr[0]) );
-  EXPECT_EQ(vexp, fac.input_commodities());
-  EXPECT_DOUBLE_EQ(capacity_, fac.Capacity());
-  EXPECT_DOUBLE_EQ(inv_, fac.MaxInventorySize());
-  EXPECT_DOUBLE_EQ(capacity_, fac.SpaceAvailable());
-  EXPECT_DOUBLE_EQ(0.0, fac.InventorySize());
+  // Unit-cost modifiers must also be preserved by cloning.
+  cycamore::Sink* clone = dynamic_cast<cycamore::Sink*>(sink->Clone());
+  ASSERT_NE(nullptr, clone);
+  EXPECT_EQ(sink->unit_cost_modifiers(), clone->unit_cost_modifiers());
+  delete clone;
 }
 
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -183,27 +210,26 @@ TEST_F(SinkTest, Accept) {
   EXPECT_DOUBLE_EQ(qty, src_facility->InventorySize());
 }
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-TEST_F(SinkTest, InRecipe){
-// Create a context
+TEST_F(SinkTest, InRecipe) {
   using cyclus::RequestPortfolio;
   using cyclus::Material;
   using cyclus::Request;
-  cyclus::Recorder rec;
-  cyclus::Timer ti;
-  cyclus::Context ctx(&ti, &rec);
-
-  // define some test material in the context
   cyclus::CompMap m;
   m[922350000] = 1;
   m[922580000] = 2;
-
   cyclus::Composition::Ptr c = cyclus::Composition::CreateFromMass(m);
-  ctx.AddRecipe("some_u",c) ;
 
-  // create a sink facility to interact with the DRE
-  cycamore::Sink* snk = new cycamore::Sink(&ctx);
-  snk->AddCommodity("some_u");
-  snk->EnterNotify();
+  std::string config =
+    "<in_commods>"
+      "<val>some_u</val>"
+    "</in_commods>"
+    "<recipe_name>some_u</recipe_name>"
+    "<capacity>1</capacity>";
+  cyclus::MockSim sim(cyclus::AgentSpec(":cycamore:Sink"), config, 1);
+  sim.AddRecipe("some_u", c);
+  ASSERT_NO_THROW(sim.Run());
+  cycamore::Sink* snk = dynamic_cast<cycamore::Sink*>(sim.agent);
+  ASSERT_NE(nullptr, snk);
 
   std::set<RequestPortfolio<Material>::Ptr> ports =
     snk->GetMatlRequests();
@@ -216,35 +242,40 @@ TEST_F(SinkTest, InRecipe){
   Request<Material>* req = *requests.begin();
   EXPECT_EQ(req->requester(), snk);
   EXPECT_EQ(req->commodity(),"some_u");
+  EXPECT_EQ(req->target()->comp(), c);
 }
 
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
-TEST_F(SinkTest, BidPrefs) {
+TEST_F(SinkTest, BidCostMods) {
   using cyclus::QueryResult;
   using cyclus::Cond;
 
-  std::string config =
-    "   <in_commods>"
-    "     <val>commods_1</val>"
-    "     <val>commods_2</val>"
-    "   </in_commods>"
-    "   <in_commod_prefs>"
-    "     <val>10</val> "
-    "     <val>1</val> "
-    "   </in_commod_prefs>"
-    "   <capacity>1</capacity>"
-    "   <input_capacity>1.0</input_capacity> ";
+  const double high_unit_cost_mod = 10.0;
+  const double low_unit_cost_mod = 1.0;
+  const double request_capacity = 1.0;
+  const int sim_dur = 1;
 
-  int simdur = 1;
-  cyclus::MockSim sim(cyclus::AgentSpec
-          (":cycamore:Sink"), config, simdur);
+  std::stringstream config;
+  config << "<in_commods>"
+           << "<val>commods_1</val>"
+           << "<val>commods_2</val>"
+         << "</in_commods>"
+         << "<unit_cost_mods>"
+           << "<val>" << high_unit_cost_mod << "</val>"
+           << "<val>" << low_unit_cost_mod << "</val>"
+         << "</unit_cost_mods>"
+         << "<capacity>" << request_capacity << "</capacity>"
+         << "<input_capacity>" << request_capacity << "</input_capacity>";
+
+  cyclus::MockSim sim(cyclus::AgentSpec(":cycamore:Sink"), config.str(),
+                      sim_dur);
 
   sim.AddSource("commods_1")
-    .capacity(1)
+    .capacity(request_capacity)
     .Finalize();
 
   sim.AddSource("commods_2")
-    .capacity(1)
+    .capacity(request_capacity)
     .Finalize();
 
   int id = sim.Run();
@@ -262,6 +293,9 @@ TEST_F(SinkTest, BidPrefs) {
 
   // should trade only with #2 since it has lower unit_cost_mod
   EXPECT_EQ(1, qr2.rows.size());
+  EXPECT_DOUBLE_EQ(low_unit_cost_mod, qr2.GetVal<double>("UnitCostMod", 0));
+  EXPECT_DOUBLE_EQ(qr2.GetVal<double>("UnitCost", 0) + low_unit_cost_mod,
+                   qr2.GetVal<double>("ArcCost", 0));
 
 }
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
@@ -273,16 +307,16 @@ TEST_F(SinkTest, PositionInitialize) {
   using cyclus::QueryResult;
 
   std::string config =
-    "   <in_commods>"
-    "     <val>commods_1</val>"
-    "     <val>commods_2</val>"
-    "   </in_commods>"
-    "   <in_commod_prefs>"
-    "     <val>10</val> "
-    "     <val>1</val> "
-    "   </in_commod_prefs>"
-    "   <capacity>1</capacity>"
-    "   <input_capacity>1.0</input_capacity> ";
+    "<in_commods>"
+      "<val>commods_1</val>"
+      "<val>commods_2</val>"
+    "</in_commods>"
+    "<unit_cost_mods>"
+      "<val>10</val>"
+      "<val>1</val>"
+    "</unit_cost_mods>"
+    "<capacity>1</capacity>"
+    "<input_capacity>1.0</input_capacity>";
 
   int simdur = 1;
   cyclus::MockSim sim(cyclus::AgentSpec
@@ -307,18 +341,18 @@ TEST_F(SinkTest, PositionInitialize2) {
   using cyclus::QueryResult;
 
   std::string config =
-    "   <in_commods>"
-    "     <val>commods_1</val>"
-    "     <val>commods_2</val>"
-    "   </in_commods>"
-    "   <in_commod_prefs>"
-    "     <val>10</val> "
-    "     <val>1</val> "
-    "   </in_commod_prefs>"
-    "   <capacity>1</capacity>"
-    "   <input_capacity>1.0</input_capacity> "
-    "   <latitude>50.0</latitude> "
-    "   <longitude>35.0</longitude> ";
+    "<in_commods>"
+      "<val>commods_1</val>"
+      "<val>commods_2</val>"
+    "</in_commods>"
+    "<unit_cost_mods>"
+      "<val>10</val>"
+      "<val>1</val>"
+    "</unit_cost_mods>"
+    "<capacity>1</capacity>"
+    "<input_capacity>1.0</input_capacity>"
+    "<latitude>50.0</latitude>"
+    "<longitude>35.0</longitude>";
 
   int simdur = 1;
   cyclus::MockSim sim(cyclus::AgentSpec
@@ -524,7 +558,7 @@ TEST_F(SinkTest, RandomNormalFreqMultipleCycles) {
   // check multiple cycles execute at the expected time
   // Get the time from the first, second, and third transactions in the
   // database (0th, 1st, and 2nd entry)
-  // Given the PRNG with default seed, buy times on time step 5, 7, and 10
+  // Given the PRNG with default seed, buy times are 5, 7, and 11.
   int first_trans_time = qr.GetVal<int>("Time", 0);
   EXPECT_EQ(5, first_trans_time);
   int second_trans_time = qr.GetVal<int>("Time", 1);
@@ -563,7 +597,9 @@ TEST_F(SinkTest, RandomNormalSizeUniformFreq) {
   int trans_time = tqr.GetVal<int>("Time", 0);
   EXPECT_EQ(3, trans_time);
   int res_id = tqr.GetVal<int>("ResourceId", 0);
-  QueryResult rqr = sim.db().Query("Resources", NULL);
+  std::vector<cyclus::Cond> conds;
+  conds.push_back(cyclus::Cond("ResourceId", "==", res_id));
+  QueryResult rqr = sim.db().Query("Resources", &conds);
   double quantity = rqr.GetVal<double>("Quantity", 0);
   EXPECT_NEAR(6.54143, quantity, 0.00001);
 }

@@ -40,7 +40,8 @@ std::string Source::str() {
   }
   ss << cyclus::Facility::str() << " supplies commodity '" << outcommod
      << "' with recipe '" << outrecipe << "' at a throughput of "
-     << throughput << " kg per time step "
+     << throughput << " kg per time step"
+     << " and cost of " << unit_cost << " per kg"
      << " commod producer members: "
      << " produces " << outcommod << "?: " << ans
      << " throughput: " << cyclus::toolkit::CommodityProducer::Capacity(outcommod)
@@ -119,7 +120,7 @@ std::set<cyclus::BidPortfolio<cyclus::Material>::Ptr> Source::GetMatlBids(
       m = outrecipe.empty() ? \
           Material::CreateUntracked(*bit, target->comp()) : \
           Material::CreateUntracked(*bit, context()->GetRecipe(outrecipe));
-      port->AddBid(req, m, this);
+      port->AddBid(req, m, this, false, unit_cost);
     }
   }
 

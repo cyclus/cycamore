@@ -27,7 +27,8 @@ void SourceTest::InitParameters() {
   recipe_name = "recipe";
   package_name = "testpackage";
   tu_name = "testtu";
-  capacity = 5;  // some magic number..
+  cost = 13;  // this and the capacity are set arbitrarily
+  capacity = 5;
 
   recipe = cyclus::Composition::CreateFromAtom(cyclus::CompMap());
   tc.get()->AddRecipe(recipe_name, recipe);
@@ -37,6 +38,7 @@ void SourceTest::SetUpSource() {
   outcommod(src_facility, commod);
   outrecipe(src_facility, recipe_name);
   throughput(src_facility, capacity);
+  unit_cost(src_facility, cost);
 }
 
 TEST_F(SourceTest, Clone) {
@@ -47,6 +49,7 @@ TEST_F(SourceTest, Clone) {
   EXPECT_EQ(outcommod(src_facility),  outcommod(cloned_fac));
   EXPECT_EQ(throughput(src_facility), throughput(cloned_fac));
   EXPECT_EQ(outrecipe(src_facility),  outrecipe(cloned_fac));
+  EXPECT_EQ(unit_cost(src_facility),  unit_cost(cloned_fac));
 
   delete cloned_fac;
 }
@@ -78,11 +81,34 @@ TEST_F(SourceTest, AddBids) {
   BidPortfolio<Material>::Ptr port = *ports.begin();
   EXPECT_EQ(port->bidder(), src_facility);
   EXPECT_EQ(port->bids().size(), nreqs);
+  for (auto bid : port->bids()) {
+    EXPECT_DOUBLE_EQ(unit_cost(src_facility), bid->unit_cost());
+  }
 
   const std::set< CapacityConstraint<Material> >& constrs = port->constraints();
   ASSERT_TRUE(constrs.size() > 0);
   EXPECT_EQ(constrs.size(), 1);
   EXPECT_EQ(*constrs.begin(), CapacityConstraint<Material>(capacity));
+}
+
+TEST_F(SourceTest, UnitCostXML) {
+  const double test_throughput = 1.0;
+  const double expected_unit_cost = 7.0;
+  const int sim_dur = 1;
+  std::stringstream config;
+  config << "<outcommod>" << commod << "</outcommod>"
+         << "<throughput>" << test_throughput << "</throughput>"
+         << "<unit_cost>" << expected_unit_cost << "</unit_cost>";
+  cyclus::MockSim sim(cyclus::AgentSpec(":cycamore:Source"), config.str(),
+                      sim_dur);
+  sim.AddSink(commod).Finalize();
+
+  int id = sim.Run();
+  std::vector<cyclus::Cond> conds;
+  conds.push_back(cyclus::Cond("SenderId", "==", id));
+  cyclus::QueryResult qr = sim.db().Query("Transactions", &conds);
+  ASSERT_EQ(1, qr.rows.size());
+  EXPECT_DOUBLE_EQ(expected_unit_cost, qr.GetVal<double>("UnitCost", 0));
 }
 
 TEST_F(SourceTest, Response) {
@@ -100,20 +126,24 @@ TEST_F(SourceTest, Response) {
   EXPECT_NO_THROW(src_facility->GetMatlTrades(trades, responses));
   EXPECT_EQ(responses.size(), 0);
 
+  // Use the source's configured bid cost.
   double qty = capacity / 3;
   Request<Material>* request =
       Request<Material>::Create(get_mat(), trader, commod);
   Bid<Material>* bid =
-      Bid<Material>::Create(request, get_mat(), src_facility);
+      Bid<Material>::Create(request, get_mat(), src_facility, false,
+                            unit_cost(src_facility));
 
   Trade<Material> trade(request, bid, qty);
   trades.push_back(trade);
 
   // 1 trade
   src_facility->GetMatlTrades(trades, responses);
-  EXPECT_EQ(responses.size(), 1);
+  ASSERT_EQ(responses.size(), 1);
+  auto& returned_trade = responses[0].first;
   EXPECT_EQ(responses[0].second->quantity(), qty);
   EXPECT_EQ(responses[0].second->comp(), recipe);
+  EXPECT_DOUBLE_EQ(unit_cost(src_facility), returned_trade.bid->unit_cost());
 
   // 2 trades, total qty = capacity
   trades.push_back(trade);

@@ -20,7 +20,7 @@ class SourceTest : public ::testing::Test {
   TestFacility* trader;
   cycamore::Source* src_facility;
   std::string commod, recipe_name, package_name, tu_name;
-  double capacity;
+  double capacity, cost;
   cyclus::Composition::Ptr recipe;
   cyclus::Package::Ptr package;
   cyclus::TransportUnit::Ptr tu;
@@ -41,6 +41,14 @@ class SourceTest : public ::testing::Test {
     s->outcommod = commod;
   }
   void throughput(cycamore::Source* s, double val) { s->throughput = val; }
+
+  void unit_cost(cycamore::Source* s, double val) {
+    s->unit_cost = val; 
+  }
+
+  double unit_cost(cycamore::Source* s) {
+    return s->unit_cost; 
+  }
 
   boost::shared_ptr<cyclus::ExchangeContext<cyclus::Material> > GetContext(
       int nreqs, std::string commodity);

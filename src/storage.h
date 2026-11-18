@@ -75,7 +75,7 @@ class Storage
 
   #pragma cyclus note {"doc": "Storage is a simple facility which accepts any number of commodities " \
                               "and holds them for a user specified amount of time. The commodities accepted "\
-                              "are chosen based on the specified preferences list. Once the desired amount of material "\
+                              "are chosen based on the specified unit-cost modifiers. Once the desired amount of material "\
                               "has entered the facility it is passed into a 'processing' buffer where it is held until "\
                               "the residence time has passed. The material is then passed into a 'ready' buffer where it is "\
                               "queued for removal. Currently, all input commodities are lumped into a single output commodity. "\
@@ -97,6 +97,10 @@ class Storage
   virtual void Tock();
 
   virtual std::string version() { return CYCAMORE_VERSION; }
+
+  /// @return unit-cost modifiers for the configured input commodities
+  inline const std::vector<double>&
+      unit_cost_modifiers() const { return unit_cost_mods; }
 
  protected:
   ///   @brief adds a material into the incoming commodity inventory
@@ -134,14 +138,6 @@ class Storage
                       "uilabel":"Input Commodities",\
                       "uitype":["oneormore","incommodity"]}
   std::vector<std::string> in_commods;
-
-  #pragma cyclus var {"default": [],\
-                      "doc":"preferences for each of the given commodities, in the same order."\
-                      "Defauts to 1 if unspecified",\
-                      "uilabel":"In Commody Preferences", \
-                      "range": [None, [CY_NEAR_ZERO, CY_LARGE_DOUBLE]], \
-                      "uitype":["oneormore", "range"]}
-  std::vector<double> in_commod_prefs;
 
   #pragma cyclus var {"tooltip":"output commodity",\
                       "doc":"commodity produced by this facility. Multiple commodity tracking is"\
@@ -235,6 +231,36 @@ class Storage
   #include "toolkit/matl_buy_policy.cycpp.h"
   #include "toolkit/matl_sell_policy.cycpp.h"
   #include "toolkit/position.cycpp.h"
+
+  #pragma cyclus var { \
+    "default": 1.0, \
+    "uilabel": "Variable Cost Per Unit", \
+    "doc": "Variable cost per unit of production (labor, materials, etc.). " \
+           "The data from the Cost Basis Report represents a variable cost per " \
+           "unit and can be used here. Must be finite and non-negative.", \
+    "units": "Unit of Currency/Unit of Production", \
+    "uitype": "range", \
+    "range": [0.0, CY_LARGE_DOUBLE], \
+    "schema": '<optional><element name="unit_cost"><data type="double">' \
+              '<param name="minInclusive">0</param>' \
+              '<param name="maxInclusive">' + str(CY_LARGE_DOUBLE) + '</param>' \
+              '</data></element></optional>', \
+  }
+  double unit_cost;
+
+  #pragma cyclus var { \
+    "default": [], \
+    "uilabel": "Unit Cost Modifiers", \
+    "doc": "List of requesting facility cost modifiers to express preferences." \
+           "In units of currency, in same order as listed input commods." \
+           "Arbitrarily setting this term removes economic meaning from the " \
+           "reported arc_cost in Transactions. Does not affect costs carried " \
+           "through facilities." ,\
+    "units": "Unit of Currency/Unit of Production", \
+    "uitype": "range", \
+    "range": [-CY_LARGE_DOUBLE, CY_LARGE_DOUBLE], \
+  }
+  std::vector<double> unit_cost_mods;
 
 };
 

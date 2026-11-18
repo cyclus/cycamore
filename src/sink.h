@@ -109,13 +109,27 @@ class Sink
   inline const std::vector<std::string>&
       input_commodities() const { return in_commods; }
 
-  /// @return the input commodities preferences
+  /// @return the unit-cost modifiers associated with input commodities
   inline const std::vector<double>&
-      input_commodity_preferences() const { return in_commod_prefs; }
+      unit_cost_modifiers() const { return unit_cost_mods; }
 
  private:
   // Code Injection:
   #include "toolkit/position.cycpp.h"
+
+  #pragma cyclus var { \
+    "default": [], \
+    "uilabel": "Unit Cost Modifiers", \
+    "doc": "List of requesting facility cost modifiers to express preferences." \
+           "In units of currency, in same order as listed input commods." \
+           "Arbitrarily setting this term removes economic meaning from the " \
+           "reported arc_cost in Transactions. Does not affect costs carried " \
+           "through facilities." ,\
+    "units": "Unit of Currency/Unit of Production", \
+    "uitype": "range", \
+    "range": [-CY_LARGE_DOUBLE, CY_LARGE_DOUBLE], \
+  }
+  std::vector<double> unit_cost_mods;
 
   double requestAmt;
   int nextBuyTime;
@@ -125,14 +139,6 @@ class Sink
                       "uilabel": "List of Input Commodities", \
                       "uitype": ["oneormore", "incommodity"]}
   std::vector<std::string> in_commods;
-
-  #pragma cyclus var {"default": [],\
-                      "doc":"preferences for each of the given commodities, in the same order."\
-                      "Defauts to 1 if unspecified",\
-                      "uilabel":"In Commody Preferences", \
-                      "range": [None, [CY_NEAR_ZERO, CY_LARGE_DOUBLE]], \
-                      "uitype":["oneormore", "range"]}
-  std::vector<double> in_commod_prefs;
 
   #pragma cyclus var {"default": "", \
                       "tooltip": "requested composition", \
