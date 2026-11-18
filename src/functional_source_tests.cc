@@ -165,7 +165,6 @@ TEST_F(FunctionalSourceTest, ZeroSlopeLinearMatchesSource) {
   }
 }
 
-//come back to this
 TEST_F(FunctionalSourceTest, DefaultProductionCreatesInventoryAtBuild) {
   cycamore::FunctionalSource functional_source(tc.get());
   inventory_size(&functional_source, 12);
@@ -431,7 +430,6 @@ FunctionalSourceTest::GetContext(int nreqs, std::string commod) {
   return ec;
 }
 
-//come back to this
 TEST_F(FunctionalSourceTest, TimeSeriesTests) {
   const std::string commodity = "commod";
   const double inventory_size = 8;
