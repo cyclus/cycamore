@@ -20,6 +20,7 @@ Since last release
 
 **Changed:**
 * Updated Source, Sink, Storage to v2.0 DRE style (#708)
+* Changed some of the facilities to let Cycamore build against cyclus v2.0-dev (#697)
 * Some language in the storage cyclus note to make it match actual behavior (#690)
 * Cleaned up manual definitions of Position in favor of code injection (#641)
 * Rely on ``python3`` in environment instead of ``python`` (#602)
