@@ -6,6 +6,7 @@
 
 #include "cyclus.h"
 #include "cycamore_version.h"
+#include "toolkit/symbolic_functions.h"
 
 #pragma cyclus exec from cyclus.system import CY_LARGE_DOUBLE, CY_LARGE_INT, CY_NEAR_ZERO
 
@@ -116,16 +117,30 @@ class FunctionalSource : public cyclus::Facility {
   }
   double inventory_size;
 
-  #pragma cyclus var {  \
-    "default": CY_LARGE_DOUBLE, \
-    "tooltip": "per time step throughput", \
-    "units": "kg/(time step)", \
-    "uilabel": "Maximum Throughput", \
-    "uitype": "range", \
-    "range": [0.0, CY_LARGE_DOUBLE], \
-    "doc": "amount of commodity that can be supplied at each time step", \
-  }
   double throughput;
+
+  #pragma cyclus var { \
+    "tooltip": "symbolic throughput function", \
+    "doc": "Symbolic function used to calculate variable throughput." \
+           "Function options include 'linear' and 'exponential'.", \
+    "uilabel": "Throughput Function Type", \
+  }
+  std::string throughput_function;
+
+  #pragma cyclus var { \
+    "default": [], \
+    "tooltip": "variable thoughput function parameters", \
+    "doc": "Parameters for variable throughput symbolic function in order." \
+           "For 'linear', slope and intercept. For 'exponential', constant," \
+           "exponent, and intercept.", \
+    "uilabel": "Throughout Function Parameters", \
+    "uitype": "symbolicfunctionparams", \
+  }
+  std::vector<double> throughput_params;
+  
+  cyclus::toolkit::SymFunction::Ptr variable_throughput;
+
+  int throughput_time;
 
   #pragma cyclus var { \
     "default": "unpackaged", \
@@ -166,6 +181,8 @@ class FunctionalSource : public cyclus::Facility {
   cyclus::toolkit::ResBuf<cyclus::Material> inventory;
 
   void SetPackage();
+
+  virtual void CalculateThroughput();
 };
 
 }  // namespace cycamore

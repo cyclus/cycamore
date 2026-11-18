@@ -10,7 +10,7 @@ namespace cycamore {
 FunctionalSource::FunctionalSource(cyclus::Context* ctx)
     : cyclus::Facility(ctx),
       inventory_size(std::numeric_limits<double>::max()),
-      throughput(std::numeric_limits<double>::max()),
+      throughput_time(0),
       package(cyclus::Package::unpackaged_name()),
       transport_unit(cyclus::TransportUnit::unrestricted_name()),
       incremental_production(false) {}
@@ -28,8 +28,8 @@ void FunctionalSource::InitFrom(cyclus::QueryableBackend* b) {
 std::string FunctionalSource::str() {
   std::stringstream ss;
   ss << cyclus::Facility::str() << " supplies commodity '" << outcommod
-     << "' with recipe '" << outrecipe << "' at a throughput of "
-     << throughput << " kg per time step "
+     << "' with recipe '" << outrecipe << "' with a throughput defined by a "
+     << throughput_function << " function "
      << " with package type: " << package
      << " and transport unit type: " << transport_unit;
   return ss.str();
@@ -38,6 +38,32 @@ std::string FunctionalSource::str() {
 void FunctionalSource::EnterNotify() {
   cyclus::Facility::EnterNotify();
   InitializePosition();
+
+  variable_throughput.reset();
+
+  if (throughput_function != "linear" && 
+      throughput_function != "exponential") {
+    throw cyclus::ValueError(
+      "cycamore::FunctionalSource - invalid variable throughput type");
+  }
+  if (throughput_function == "linear") {
+    if (throughput_params.size() != 2) {
+      throw cyclus::ValueError(
+        "cycamore::FunctionalSource - linear variable throughput requires 2 "
+        "ordered parameters: slope and intercept");
+    }
+    variable_throughput.reset(new cyclus::toolkit::LinearFunction(
+      throughput_params[0], throughput_params[1]));
+  }
+  else if (throughput_function == "exponential") {
+    if (throughput_params.size() != 3) {
+      throw cyclus::ValueError(
+        "cycamore::FunctionalSource - exponential variable throughput requires "
+        "3 ordered parameters: constant, exponent, and intercept");
+    }
+    variable_throughput.reset(new cyclus::toolkit::ExponentialFunction(
+      throughput_params[0], throughput_params[1], throughput_params[2]));
+  }
 }
 
 void FunctionalSource::CreateInventory(double qty) { 
@@ -62,6 +88,8 @@ void FunctionalSource::Build(cyclus::Agent* parent) {
 }
 
 void FunctionalSource::Tick() {
+  CalculateThroughput();
+
   if (incremental_production && inventory_size > 0) {
     // create material equal to throughput so long as total amount created 
     // doesn't exceed inventory_size and place it in the buf
@@ -70,6 +98,17 @@ void FunctionalSource::Tick() {
     CreateInventory(qty_to_create);
     inventory_size -= qty_to_create;
   }
+}
+
+void FunctionalSource::CalculateThroughput() {
+  if (!variable_throughput) {
+    throw cyclus::ValueError(
+      "cycamore::FunctionalSource - throughput function not initialized");
+  }
+  else if (variable_throughput) {
+    throughput = variable_throughput->value(throughput_time);
+    throughput_time += 1;
+  } 
 }
 
 std::set<cyclus::BidPortfolio<cyclus::Material>::Ptr> FunctionalSource::GetMatlBids(
