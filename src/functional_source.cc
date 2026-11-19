@@ -10,7 +10,6 @@ namespace cycamore {
 FunctionalSource::FunctionalSource(cyclus::Context* ctx)
     : cyclus::Facility(ctx),
       inventory_size(std::numeric_limits<double>::max()),
-      throughput_time(0),
       package(cyclus::Package::unpackaged_name()),
       transport_unit(cyclus::TransportUnit::unrestricted_name()),
       incremental_production(false) {}
@@ -105,10 +104,8 @@ void FunctionalSource::CalculateThroughput() {
     throw cyclus::ValueError(
       "cycamore::FunctionalSource - throughput function not initialized");
   }
-  else if (variable_throughput) {
-    throughput = variable_throughput->value(throughput_time);
-    throughput_time += 1;
-  } 
+  
+  throughput = variable_throughput->value(context()->time() - enter_time());
 }
 
 std::set<cyclus::BidPortfolio<cyclus::Material>::Ptr> FunctionalSource::GetMatlBids(

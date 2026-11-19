@@ -178,8 +178,6 @@ class FunctionalSource : public cyclus::Facility {
 
   cyclus::toolkit::SymFunction::Ptr variable_throughput;
 
-  int throughput_time;
-
   void SetPackage();
 
   virtual void CalculateThroughput();
