@@ -5,6 +5,7 @@
 #include "cyclus.h"
 #include "equality_helpers.h"
 #include "facility_tests.h"
+#include "pyhooks.h"
 
 #include <gtest/gtest.h>
 
@@ -57,6 +58,7 @@ class MixerTest : public ::testing::Test {
   Mixer* mf_facility_;
 
   virtual void SetUp() {
+    cyclus::PyStart();
     mf_facility_ = new Mixer(tc_.get());
 
     std::vector<std::map<std::string, double> > in_commods;
@@ -82,7 +84,10 @@ class MixerTest : public ::testing::Test {
 
     SetOutStream_comds("out_com");
   }
-  virtual void TearDown() { delete mf_facility_; }
+  virtual void TearDown() {
+    delete mf_facility_;
+    cyclus::PyStop();
+  }
 
   std::vector<std::map<std::string, double> > in_coms;
   std::vector<double> in_frac;
@@ -175,6 +180,64 @@ class MixerTest : public ::testing::Test {
 };
 
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
+TEST_F(MixerTest, InitInvRestoresOutputAndInputs) {
+  cyclus::Inventories inv;
+  inv["output-inv-name"].push_back(
+      cyclus::Material::CreateUntracked(4, c_natu()));
+  inv["output-inv-name"].push_back(
+      cyclus::Material::CreateUntracked(6, c_uox()));
+  inv["in_stream_0"].push_back(
+      cyclus::Material::CreateUntracked(5, c_natu()));
+  inv["in_stream_1"].push_back(
+      cyclus::Material::CreateUntracked(3, c_uox()));
+  inv["in_stream_2"] = std::vector<cyclus::Resource::Ptr>();
+  const cyclus::Inventories expected = inv;
+
+  mf_facility_->InitInv(inv);
+
+  EXPECT_EQ(expected, inv);
+  EXPECT_EQ(2, GetOutPutBuffer()->count());
+  EXPECT_DOUBLE_EQ(10, GetOutPutBuffer()->quantity());
+  std::map<std::string, InvBuffer> streams = GetStreamBuffer();
+  EXPECT_EQ(3, streams.size());
+  EXPECT_EQ(0, streams.count("output-inv-name"));
+  EXPECT_DOUBLE_EQ(5, streams["in_stream_0"].quantity());
+  EXPECT_DOUBLE_EQ(3, streams["in_stream_1"].quantity());
+  EXPECT_DOUBLE_EQ(0, streams["in_stream_2"].quantity());
+  // Preserve resource identity, order, and inventory names across snapshots.
+  EXPECT_EQ(expected, mf_facility_->SnapshotInv());
+  EXPECT_EQ(expected, mf_facility_->SnapshotInv());
+}
+
+TEST_F(MixerTest, InitInvWithOnlyInputs) {
+  cyclus::Inventories inv;
+  inv["in_stream_0"].push_back(
+      cyclus::Material::CreateUntracked(5, c_natu()));
+  const cyclus::Inventories expected = inv;
+
+  mf_facility_->InitInv(inv);
+
+  EXPECT_EQ(expected, inv);
+  EXPECT_EQ(0, GetOutPutBuffer()->count());
+  std::map<std::string, InvBuffer> streams = GetStreamBuffer();
+  EXPECT_EQ(1, streams.size());
+  EXPECT_EQ(0, streams.count("output-inv-name"));
+  EXPECT_DOUBLE_EQ(5, streams["in_stream_0"].quantity());
+  cyclus::Inventories snapshot = expected;
+  snapshot["output-inv-name"] = std::vector<cyclus::Resource::Ptr>();
+  EXPECT_EQ(snapshot, mf_facility_->SnapshotInv());
+}
+
+TEST_F(MixerTest, InitInvWithNoInventories) {
+  cyclus::Inventories inv;
+
+  mf_facility_->InitInv(inv);
+
+  EXPECT_TRUE(inv.empty());
+  EXPECT_EQ(0, GetOutPutBuffer()->count());
+  EXPECT_TRUE(GetStreamBuffer().empty());
+}
+
 // Checking that ratios correctly default to 1/N.
 TEST_F(MixerTest, StreamDefaultRatio) {
   SetOutStream_capacity(50);

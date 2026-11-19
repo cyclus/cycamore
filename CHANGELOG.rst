@@ -34,6 +34,7 @@ Since last release
 * Updated the GitHub Actions in the workflows to their latest versions, and only push images from the publish workflows for this repository (#706)
 
 **Fixed:**
+* Restore Mixer output inventory without overwriting the snapshot or treating output as an input stream.
 * Schedule Decommission in ``Reactor::Tick()`` instead of Decommission (#609)
 * When trades fail in Source due to packaging, send empty material instead of seg faulting (#629)
 * Logging of resource moves between ResBufs in Storage is INFO4 not INFO1 (#625)
