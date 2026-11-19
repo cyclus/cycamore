@@ -17,9 +17,9 @@ namespace cycamore {
 
 class Context;
 
-/// Black-box uranium conversion between commodities, preserving uranium mass
-/// and isotopic composition. All material quantities represent kgU; chemical
-/// species and their non-uranium mass are not modeled.
+/// Black-box conversion from any configured input commodity to a single
+/// output commodity, preserving material mass and isotopic composition.
+/// For uranium conversion, use kgU (kilograms of uranium).
 class Conversion
   : public cyclus::Facility {
   friend class ConversionTest;
@@ -33,10 +33,12 @@ class Conversion
   // clang-format off
   #pragma cyclus note { \
     "doc": \
-    "Accepts Materials and converts between uranium commodities without " \
-    "modeling chemistry or changing uranium mass or isotopic composition. " \
-    "All quantities are kgU, not compound mass. Input requests fill available " \
-    "feed storage independently of processing throughput. Processing occurs " \
+    "Accepts material from any configured input commodity and offers it on " \
+    "a single output commodity, preserving mass and isotopic composition. " \
+    "Conversion does not model chemistry. For uranium conversion, use kgU " \
+    "(kilograms of uranium), excluding other elements in compounds such as " \
+    "U3O8. Input requests fill available feed storage independently of " \
+    "processing throughput. Processing occurs " \
     "before exchange, so newly received feed is processed next timestep. " \
     "Throughput limits processing only; accumulated product can ship in one " \
     "timestep and output storage is unlimited." \
@@ -86,9 +88,9 @@ class Conversion
   #pragma cyclus var { \
     "default": 1.0, \
     "uilabel": "Variable Cost Per Unit", \
-    "doc": "Conversion cost per kgU, added to the carried value of feed " \
+    "doc": "Conversion cost per kg, added to the carried value of feed " \
            "when bidding output material. Must be finite and non-negative.", \
-    "units": "Unit of Currency/kgU", \
+    "units": "Unit of Currency/kg", \
     "uitype": "range", \
     "range": [0.0, CY_LARGE_DOUBLE], \
     "schema": '<optional><element name="unit_cost"><data type="double">' \
@@ -105,7 +107,7 @@ class Conversion
            "zero for each commodity. Lower values favor a commodity. " \
            "Arbitrary modifiers remove economic meaning from reported " \
            "arc_cost, but do not affect carried material value.", \
-    "units": "Unit of Currency/kgU", \
+    "units": "Unit of Currency/kg", \
     "uitype": ["oneormore", "range"], \
     "range": [None, [-CY_LARGE_DOUBLE, CY_LARGE_DOUBLE]], \
     "schema": '<optional><element name="unit_cost_mods"><oneOrMore>' \
@@ -140,8 +142,8 @@ class Conversion
     "uilabel": "Maximum conversion throughput", \
     "uitype": "range", \
     "range": [0.0, CY_LARGE_DOUBLE], \
-    "units": "kgU/timestep", \
-    "doc": "Maximum uranium processing rate; does not limit feed purchases " \
+    "units": "kg/timestep", \
+    "doc": "Maximum material processing rate; does not limit feed purchases " \
            "or shipments of accumulated product. Zero disables processing.", \
     "schema": '<optional><element name="throughput"><data type="double">' \
               '<param name="minInclusive">0</param>' \
@@ -156,8 +158,8 @@ class Conversion
     "uilabel": "Maximum Storage of Input Buffer", \
     "uitype": "range", \
     "range": [0.0, CY_LARGE_DOUBLE], \
-    "units": "kgU", \
-    "doc": "Total feed storage capacity in kgU. Requests fill the remaining " \
+    "units": "kg", \
+    "doc": "Total feed storage capacity. Requests fill the remaining " \
            "space regardless of processing throughput." \
   }
   double input_capacity;

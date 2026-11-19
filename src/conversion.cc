@@ -71,12 +71,12 @@ std::string Conversion::str() {
   }
   msg += "} until its input is full at ";
   msg += std::to_string(input.capacity());
-  msg += " kgU";
+  msg += " kg";
 
   msg += " and converts up to ";
   msg += std::to_string(throughput);
-  msg += " kgU/timestep into commodity ";
-  ss << msg << outcommod << " at an added cost of " << unit_cost << " per kgU";
+  msg += " kg/timestep into commodity ";
+  ss << msg << outcommod << " at an added cost of " << unit_cost << " per kg";
   return "" + ss.str();
 }
 
