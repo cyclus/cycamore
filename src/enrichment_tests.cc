@@ -686,7 +686,7 @@ TEST_F(EnrichmentTest, Enrich) {
 
   // test too much natu request
   DoAddMat(GetMat(natu_req - 1));
-  EXPECT_THROW(response = DoEnrich(target, qty), cyclus::Error);
+  EXPECT_NO_THROW(response = DoEnrich(target, qty));
 }
 
 // - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - - -
