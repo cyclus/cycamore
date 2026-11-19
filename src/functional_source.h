@@ -117,8 +117,6 @@ class FunctionalSource : public cyclus::Facility {
   }
   double inventory_size;
 
-  double throughput;
-
   #pragma cyclus var { \
     "tooltip": "symbolic throughput function", \
     "doc": "Symbolic function used to calculate variable throughput." \
@@ -137,10 +135,6 @@ class FunctionalSource : public cyclus::Facility {
     "uitype": "symbolicfunctionparams", \
   }
   std::vector<double> throughput_params;
-  
-  cyclus::toolkit::SymFunction::Ptr variable_throughput;
-
-  int throughput_time;
 
   #pragma cyclus var { \
     "default": "unpackaged", \
@@ -179,6 +173,12 @@ class FunctionalSource : public cyclus::Facility {
   #pragma cyclus var { \
     "tooltip":"Material buffer"}
   cyclus::toolkit::ResBuf<cyclus::Material> inventory;
+
+  double throughput;
+
+  cyclus::toolkit::SymFunction::Ptr variable_throughput;
+
+  int throughput_time;
 
   void SetPackage();
 
