@@ -6,6 +6,7 @@ Since last release
 ======================
 
 **Added:**
+* Added explicit conversion unit cost and per-input cost modifiers to Conversion. (#711)
 * Added tests for Conversion Facility (#658)
 * Added Conversion Facility (#657)
 * Replaced manual matl_buy/sell_policy code in storage with code injection (#639)
@@ -31,6 +32,9 @@ Since last release
 * Updated Doxygen homepage (#632)
 
 **Fixed:**
+* Grouped Conversion input commodities as alternatives to prevent feed-buffer overfilling.
+  Preserved Conversion output inventory in snapshots and handle zero processing throughput.
+  Clarified Conversion kgU units, processing throughput, and feed storage behavior. (#711)
 * Schedule Decommission in ``Reactor::Tick()`` instead of Decommission (#609)
 * When trades fail in Source due to packaging, send empty material instead of seg faulting (#629)
 * Logging of resource moves between ResBufs in Storage is INFO4 not INFO1 (#625)
