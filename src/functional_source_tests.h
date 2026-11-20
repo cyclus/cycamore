@@ -20,6 +20,8 @@ class FunctionalSourceTest : public ::testing::Test {
   TestFacility* trader;
   cycamore::FunctionalSource* src_facility;
   std::string commod, recipe_name, package_name, tu_name, function;
+  double slope;
+  double intercept;
   std::vector<double> params;
   cyclus::Composition::Ptr recipe;
   cyclus::Package::Ptr package;

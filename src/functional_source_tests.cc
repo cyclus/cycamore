@@ -30,8 +30,8 @@ void FunctionalSourceTest::InitParameters() {
   package_name = "testpackage";
   tu_name = "testtu";
   function = "linear";
-  double slope = 0;
-  double intercept = 5;
+  slope = 0;      // zero to recreate constant throughput
+  intercept = 5;  // some magic number
   params = {slope, intercept};
 
   recipe = cyclus::Composition::CreateFromAtom(cyclus::CompMap());
@@ -208,7 +208,7 @@ TEST_F(FunctionalSourceTest, DefaultProductionCreatesInventoryAtBuild) {
   cycamore::FunctionalSource functional_source(tc.get());
   inventory_size(&functional_source, 12);
   throughput_function(&functional_source, "linear");
-  throughput_params(&functional_source, {0, 5});
+  throughput_params(&functional_source, params);
 
   EXPECT_FALSE(incremental_production(&functional_source));
   functional_source.Build(NULL);
@@ -221,7 +221,7 @@ TEST_F(FunctionalSourceTest, IncrementalProductionAccumulatesUpToInventorySize) 
   cycamore::FunctionalSource functional_source(tc.get());
   inventory_size(&functional_source, 12);
   throughput_function(&functional_source, "linear");
-  throughput_params(&functional_source, {0, 5});
+  throughput_params(&functional_source, params);
   incremental_production(&functional_source, true);
 
   functional_source.Build(NULL);
@@ -248,7 +248,7 @@ TEST_F(FunctionalSourceTest, IncrementalProductionLimitIncludesSuppliedMaterial)
   cycamore::FunctionalSource functional_source(tc.get());
   inventory_size(&functional_source, 7);
   throughput_function(&functional_source, "linear");
-  throughput_params(&functional_source, {0, 5});
+  throughput_params(&functional_source, params);
   incremental_production(&functional_source, true);
   functional_source.Build(NULL);
 
@@ -304,7 +304,7 @@ TEST_F(FunctionalSourceTest, AddBids) {
   const std::set< CapacityConstraint<Material> >& constrs = port->constraints();
   ASSERT_TRUE(constrs.size() > 0);
   EXPECT_EQ(constrs.size(), 1);
-  EXPECT_EQ(*constrs.begin(), CapacityConstraint<Material>(5));
+  EXPECT_EQ(*constrs.begin(), CapacityConstraint<Material>(intercept));
 }
 
 TEST_F(FunctionalSourceTest, Response) {
@@ -322,7 +322,7 @@ TEST_F(FunctionalSourceTest, Response) {
   EXPECT_NO_THROW(src_facility->GetMatlTrades(trades, responses));
   EXPECT_EQ(responses.size(), 0);
 
-  double qty = 5 / 3;
+  double qty = intercept / 3;
   Request<Material>* request =
       Request<Material>::Create(get_mat(), trader, commod);
   Bid<Material>* bid =
@@ -473,13 +473,18 @@ TEST_F(FunctionalSourceTest, TimeSeriesTests) {
   const std::string commodity = "commod";
   const double inventory_size = 8;
   const std::string throughput_function = "linear";
+  const double slope = 0;
+  const double intercept = 5;
   const double sink_throughput = 3;
   const double expected_throughput = 5;
   std::stringstream config;
   config << "<outcommod>" << commodity << "</outcommod>"
          << "<inventory_size>" << inventory_size << "</inventory_size>"
          << "<throughput_function>" << throughput_function << "</throughput_function>"
-         << "<throughput_params><val>0</val><val>5</val></throughput_params>";
+         << "<throughput_params>"
+         << "<val>" << slope << "</val>"
+         << "<val>" << intercept << "</val>"
+         << "</throughput_params>";
   int simdur = 3;
   cyclus::MockSim sim(cyclus::AgentSpec(":cycamore:FunctionalSource"), config.str(),
                       simdur);
