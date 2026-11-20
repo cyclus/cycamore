@@ -19,8 +19,10 @@ class FunctionalSourceTest : public ::testing::Test {
   cyclus::TestContext tc;
   TestFacility* trader;
   cycamore::FunctionalSource* src_facility;
-  std::string commod, recipe_name, package_name, tu_name;
-  double capacity;
+  std::string commod, recipe_name, package_name, tu_name, function;
+  double slope;
+  double intercept;
+  std::vector<double> params;
   cyclus::Composition::Ptr recipe;
   cyclus::Package::Ptr package;
   cyclus::TransportUnit::Ptr tu;
@@ -32,7 +34,6 @@ class FunctionalSourceTest : public ::testing::Test {
 
   std::string outrecipe(cycamore::FunctionalSource* s) { return s->outrecipe; }
   std::string outcommod(cycamore::FunctionalSource* s) { return s->outcommod; }
-  double throughput(cycamore::FunctionalSource* s) { return s->throughput; }
 
   void outrecipe(cycamore::FunctionalSource* s, std::string recipe) {
     s->outrecipe = recipe;
@@ -40,9 +41,26 @@ class FunctionalSourceTest : public ::testing::Test {
   void outcommod(cycamore::FunctionalSource* s, std::string commod) {
     s->outcommod = commod;
   }
-  void throughput(cycamore::FunctionalSource* s, double val) { s->throughput = val; }
+  void throughput(cycamore::FunctionalSource* s, double val) {
+    s->throughput = val;
+  }
+  double current_throughput(cycamore::FunctionalSource* s) {
+    return s->throughput;
+  }
   void inventory_size(cycamore::FunctionalSource* s, double val) {
     s->inventory_size = val;
+  }
+  std::string throughput_function(cycamore::FunctionalSource* s) {
+    return s->throughput_function;
+  }
+  void throughput_function(cycamore::FunctionalSource* s, std::string function) {
+    s->throughput_function = function;
+  }
+  std::vector<double> throughput_params(cycamore::FunctionalSource* s) {
+    return s->throughput_params;
+  }
+  void throughput_params(cycamore::FunctionalSource* s, std::vector<double> params) {
+    s->throughput_params = params;
   }
   void incremental_production(cycamore::FunctionalSource* s, bool val) {
     s->incremental_production = val;

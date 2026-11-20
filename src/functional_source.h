@@ -6,6 +6,7 @@
 
 #include "cyclus.h"
 #include "cycamore_version.h"
+#include "toolkit/symbolic_functions.h"
 
 #pragma cyclus exec from cyclus.system import CY_LARGE_DOUBLE, CY_LARGE_INT, CY_NEAR_ZERO
 
@@ -13,8 +14,8 @@ namespace cycamore {
 
 class Context;
 
-/// This facility acts as a source of material with a fixed throughput (per
-/// time step) capacity and a lifetime capacity defined by a total inventory
+/// This facility acts as a source of material with a throughput (per time step)
+/// capacity defined by a function and a lifetime capacity defined by a total inventory
 /// size.  It offers its material as a single commodity. If a composition
 /// recipe is specified, it provides that single material composition to
 /// requesters.  If unspecified, the source provides materials with the exact
@@ -33,8 +34,8 @@ class FunctionalSource : public cyclus::Facility {
   virtual std::string version() { return CYCAMORE_VERSION; }
 
   #pragma cyclus note { \
-    "doc": "This facility acts as a source of material with a fixed throughput (per\n" \
-           "time step) capacity and a lifetime capacity defined by a total inventory\n" \
+    "doc": "This facility acts as a source of material with a throughput (per time step)\n" \
+           "capacity defined by a function and a lifetime capacity defined by a total inventory\n" \
            "size.  It offers its material as a single commodity. If a composition\n" \
            "recipe is specified, it provides that single material composition to\n" \
            "requesters.  If unspecified, the source provides materials with the exact\n" \
@@ -116,16 +117,24 @@ class FunctionalSource : public cyclus::Facility {
   }
   double inventory_size;
 
-  #pragma cyclus var {  \
-    "default": CY_LARGE_DOUBLE, \
-    "tooltip": "per time step throughput", \
-    "units": "kg/(time step)", \
-    "uilabel": "Maximum Throughput", \
-    "uitype": "range", \
-    "range": [0.0, CY_LARGE_DOUBLE], \
-    "doc": "amount of commodity that can be supplied at each time step", \
+  #pragma cyclus var { \
+    "tooltip": "symbolic throughput function", \
+    "doc": "Symbolic function used to calculate variable throughput." \
+           "Function options include 'linear' and 'exponential'.", \
+    "uilabel": "Throughput Function Type", \
   }
-  double throughput;
+  std::string throughput_function;
+
+  #pragma cyclus var { \
+    "default": [], \
+    "tooltip": "variable thoughput function parameters", \
+    "doc": "Parameters for variable throughput symbolic function in order." \
+           "For 'linear', slope and intercept. For 'exponential', constant," \
+           "exponent, and intercept.", \
+    "uilabel": "Throughout Function Parameters", \
+    "uitype": "symbolicfunctionparams", \
+  }
+  std::vector<double> throughput_params;
 
   #pragma cyclus var { \
     "default": "unpackaged", \
@@ -165,7 +174,13 @@ class FunctionalSource : public cyclus::Facility {
     "tooltip":"Material buffer"}
   cyclus::toolkit::ResBuf<cyclus::Material> inventory;
 
+  double throughput;
+
+  cyclus::toolkit::SymFunction::Ptr variable_throughput;
+
   void SetPackage();
+
+  virtual void CalculateThroughput();
 };
 
 }  // namespace cycamore
