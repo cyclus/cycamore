@@ -34,8 +34,6 @@ class FunctionalSourceTest : public ::testing::Test {
 
   std::string outrecipe(cycamore::FunctionalSource* s) { return s->outrecipe; }
   std::string outcommod(cycamore::FunctionalSource* s) { return s->outcommod; }
-  std::string throughput_function(cycamore::FunctionalSource* s) { return s->throughput_function; }
-  std::vector<double> throughput_params(cycamore::FunctionalSource* s) { return s->throughput_params; }
 
   void outrecipe(cycamore::FunctionalSource* s, std::string recipe) {
     s->outrecipe = recipe;
@@ -52,8 +50,14 @@ class FunctionalSourceTest : public ::testing::Test {
   void inventory_size(cycamore::FunctionalSource* s, double val) {
     s->inventory_size = val;
   }
+  std::string throughput_function(cycamore::FunctionalSource* s) {
+    return s->throughput_function;
+  }
   void throughput_function(cycamore::FunctionalSource* s, std::string function) {
     s->throughput_function = function;
+  }
+  std::vector<double> throughput_params(cycamore::FunctionalSource* s) {
+    return s->throughput_params;
   }
   void throughput_params(cycamore::FunctionalSource* s, std::vector<double> params) {
     s->throughput_params = params;
